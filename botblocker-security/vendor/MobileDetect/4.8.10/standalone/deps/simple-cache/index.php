@@ -1,0 +1,1 @@
+<?php // Security first - BotBlocker’s on guard

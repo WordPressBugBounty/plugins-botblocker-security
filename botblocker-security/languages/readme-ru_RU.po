@@ -1,0 +1,333 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: BotBlocker Security\n"
+"Language: ru_RU\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#######################################################################
+# TITLE / HEADER
+#######################################################################
+
+msgid "BotBlocker Security - Firewall & Bot Protection"
+msgstr "BotBlocker Security — Файрвол и защитa от ботов"
+
+msgid "Protect your WordPress site: firewall, bot & brute-force protection, anti-spam, multi-layer CAPTCHA, optional cloud threat intel."
+msgstr "Защитите свой WordPress-сайт: файрвол, защита от ботов, brute-force атак, антиспам, многослойные CAPTCHA и опциональная облачная проверка угроз."
+
+#######################################################################
+# DESCRIPTION
+#######################################################################
+
+msgid "WordPress Security Plugin & Firewall (WAF)"
+msgstr "Плагин безопасности WordPress и сетевой файрвол (WAF)"
+
+msgid ""
+"Every day, automated bots and hackers bombard websites with attacks. Mass botnets, fake search engine crawlers, brute-force login attempts, and spam bots can overwhelm your WordPress site - stealing data, overloading your server, and defacing content. It's a 24/7 threat to your business. If you’re looking for WordPress site protection, you need a proactive defense that stops these attacks before they reach your website."
+msgstr ""
+"Каждый день сайты подвергаются атакам автоматических ботов и хакеров. Массовые ботнеты, поддельные поисковые боты, brute-force попытки входа и спам-боты могут перегрузить WordPress-сайт, украсть данные и нарушить работу сервера. Это постоянная угроза вашему бизнесу. Для эффективной защиты WordPress вам нужна проактивная система, которая блокирует атаки до того, как они достигнут вашего сайта."
+
+msgid ""
+"BotBlocker Security is the all-in-one solution to keep your site safe from automated threats. This powerful WordPress security plugin and Web Application Firewall (WAF) acts as a dedicated anti-bot firewall, blocking malicious traffic at the front gate without slowing down your site."
+msgstr ""
+"BotBlocker Security — комплексное решение для защиты от автоматических угроз. Это мощный плагин безопасности WordPress и WAF, который работает как анти-бот файрвол, блокируя вредоносный трафик ещё на входе, не замедляя работу сайта."
+
+msgid ""
+"BotBlocker's setup and onboarding experience allows anyone to secure their WordPress site in under 1 minute, regardless of technical expertise. You can rest assured knowing you have enabled the right site protection settings to protect your website."
+msgstr ""
+"Мастер установки BotBlocker позволяет настроить защиту WordPress-сайта менее чем за минуту, независимо от технических навыков. Вы можете быть уверены, что включили правильные параметры безопасности."
+
+#######################################################################
+# FIREWALL / WAF SECTION
+#######################################################################
+
+msgid "🔥 WordPress Firewall (WAF)"
+msgstr "🔥 WordPress-файрвол (WAF)"
+
+msgid ""
+"BotBlocker Security includes an endpoint firewall/WAF that identifies and blocks malicious traffic before it reaches WordPress. Built and maintained by a team focused 100% on WordPress security, our Web Application Firewall protects your site while reducing server load."
+msgstr ""
+"BotBlocker Security включает endpoint-файрвол (WAF), который анализирует и блокирует вредоносный трафик до загрузки WordPress. Разработанный командой, специализирующейся на WordPress-безопасности, наш WAF защищает сайт и снижает нагрузку на сервер."
+
+msgid ""
+"BotBlocker intercepts bad traffic at the earliest stage - even before WordPress or your theme loads. By running as a must-use plugin (MU-plugin) on early init, it blocks threats before WordPress initializes, drastically reducing server load during attacks."
+msgstr ""
+"BotBlocker перехватывает вредоносный трафик на самом раннем этапе, ещё до загрузки WordPress или темы. Работая как MU-плагин на этапе early-init, он блокирует угрозы до инициализации WordPress, значительно снижая нагрузку на сервер во время атак."
+
+msgid "Key Firewall Features:"
+msgstr "Основные функции файрвола:"
+
+msgid "Real-time firewall rule updates via the BotBlocker Threat Defense Feed"
+msgstr "Обновление правил файрвола в реальном времени через BotBlocker Threat Defense Feed"
+
+msgid "Real-time IP Blocklist blocks all requests from the most malicious IPs"
+msgstr "Блокировка самых опасных IP-адресов в реальном времени"
+
+msgid "Early-init protection - blocks threats before WordPress loads"
+msgstr "Защита на раннем этапе — блокировка угроз до загрузки WordPress"
+
+msgid "Cloud-based threat intelligence - cross-checks every visitor against global threat databases"
+msgstr "Облачная проверка угроз — сверка каждого посетителя с глобальными базами угроз"
+
+msgid "No personal data collected - only technical request parameters analyzed (100% GDPR/CCPA-compliant)"
+msgstr "Персональные данные не собираются — анализируются только технические параметры (полностью соответствует GDPR/CCPA)"
+
+msgid "Brute force protection with login attempt limits and multi-layer verification"
+msgstr "Защита от brute-force с ограничением попыток входа и многослойной проверкой"
+
+#######################################################################
+# SECURITY SCANNER
+#######################################################################
+
+msgid "📡 WordPress Security Scanner & Site Protection"
+msgstr "📡 Сканер безопасности WordPress и защита сайта"
+
+msgid ""
+"Every attempt to access your site is thoroughly analyzed and filtered. BotBlocker provides comprehensive site protection across all entry points:"
+msgstr ""
+"Каждая попытка доступа к сайту тщательно анализируется. BotBlocker обеспечивает комплексную защиту сайта по всем точкам входа:"
+
+msgid "**XML-RPC and API Protection** - all endpoints blocked by default. Create access rules for trusted services and add allowed URLs for payment plugins"
+msgstr "**Защита XML-RPC и API** — все endpoints блокируются по умолчанию. Вы можете создавать правила доступа для доверенных сервисов."
+
+msgid "**Spam Prevention** - spammers cannot connect to your site. Automatically block IP addresses that exceed spam comment thresholds"
+msgstr "**Антиспам** — спамеры не смогут подключиться к сайту. IP-адреса нарушителей блокируются автоматически."
+
+msgid "**File Access Protection** - theme and plugin files securely protected from unauthorized access"
+msgstr "**Защита файлов** — защита файлов тем и плагинов от несанкционированного доступа."
+
+msgid "**Deep Analysis** - User-Agent, Accept-Language, GeoIP, PTR, DNSBL, cookies, browser fingerprint, AdBlock, Incognito detection"
+msgstr "**Глубокий анализ** — User-Agent, GeoIP, PTR, DNSBL, cookie, отпечаток браузера, AdBlock, режим инкогнито и многое другое."
+
+msgid "**Network & Protocol Control** - block obsolete HTTP/1.0 clients and disable IPv6 if not used. Cloudflare-aware protection blocks origin bypass attempts"
+msgstr "**Контроль сети и протоколов** — блокировка устаревших клиентов, контроль IPv6, защита от обхода Cloudflare."
+
+#######################################################################
+# LOGIN SECURITY
+#######################################################################
+
+msgid "🔒 Login Security & Bot Protection"
+msgstr "🔒 Защита формы входа и защита от ботов"
+
+msgid ""
+"All login attempts pass through multi-layer filtering and CAPTCHA verification:"
+msgstr ""
+"Все попытки входа проходят через многоуровневую фильтрацию и проверку CAPTCHA:"
+
+msgid "**Multi-layer CAPTCHA Protection** - color buttons, animal images, floating shapes, floating math, Google reCAPTCHA v2/v3"
+msgstr "**Многослойные CAPTCHA** — цветные кнопки, животные, плавающие фигуры, математическая CAPTCHA, Google reCAPTCHA v2/v3"
+
+msgid "**Advanced Anti-bot Challenges** - proprietary CAPTCHA designed to be nearly impossible to bypass"
+msgstr "**Сложные анти-бот задания** — собственные CAPTCHA, устойчивые к обходу даже с помощью ИИ"
+
+msgid "**Intelligent Ban System** - failed CAPTCHA results in configurable ban periods"
+msgstr "**Интеллектуальная система банов** — блокировка IP при повторных ошибках CAPTCHA"
+
+msgid "**Admin Access Simplification** - special mechanism to ease site administrator login while maintaining security"
+msgstr "**Упрощение входа администратора** — специальные механизмы, которые упрощают вход админа, сохраняя высокий уровень защиты"
+
+msgid "**XML-RPC Control** - options including complete disabling"
+msgstr "**Контроль XML-RPC** — возможность полного отключения"
+
+msgid "**Two-Factor Authentication Support** - enhanced login security for administrators"
+msgstr "**Поддержка двухфакторной аутентификации** — повышенная безопасность входа"
+
+#######################################################################
+# SECURITY TOOLS
+#######################################################################
+
+msgid "🛠️ Security Tools"
+msgstr "🛠️ Инструменты безопасности"
+
+msgid ""
+"Comprehensive tools to block attackers and monitor your site in real-time:"
+msgstr ""
+"Расширенные инструменты для блокировки угроз и мониторинга сайта в реальном времени:"
+
+msgid "**Advanced Blocking Rules** - block by IP, IP range, hostname, User-Agent, Referrer, PTR, ASN, country, city"
+msgstr "**Гибкие правила блокировки** — по IP, диапазону IP, User-Agent, рефереру, PTR, ASN, стране, городу и т.д."
+
+msgid "**IP-PTR-Host Mismatch Detection** - detect and block fake crawlers (e.g., fake Googlebots)"
+msgstr "**Определение IP-PTR-Host несоответствий** — обнаружение поддельных GoogleBot и других ботов"
+
+msgid "**Blacklist & Whitelist Management** - instantly allow or block any IP, ASN, range, or User-Agent"
+msgstr "**Черный и белый списки** — быстрый контроль доступа по IP, User-Agent и другим параметрам"
+
+msgid "**Live Traffic Monitoring** - see all traffic in real-time"
+msgstr "**Мониторинг трафика в реальном времени** — все визиты, 404, логины, запросы к файлам"
+
+msgid "**Server IP Identification** - prevent lockouts by protecting server IPs"
+msgstr "**Автоопределение IP сервера** — предотвращает блокировку Cron и внутренних процессов"
+
+msgid "**Visual Dashboard** - charts and stats showing attacks and threat origins"
+msgstr "**Визуальная панель** — графики, статистика и карта угроз"
+
+msgid "**Detailed Security Log** - full logging of attacks and events"
+msgstr "**Подробный журнал безопасности** — запись всех событий и атак"
+
+msgid "**Hide Login URL (Premium Addon)**"
+msgstr "**Скрытие URL страницы входа (Премиум-аддон)**"
+
+#######################################################################
+# PERFORMANCE
+#######################################################################
+
+msgid "⚡ Performance & Integration"
+msgstr "⚡ Производительность и интеграции"
+
+msgid ""
+"BotBlocker's robust defense won't slow your site down - in fact, it often improves performance under attack:"
+msgstr ""
+"Надёжная защита BotBlocker не замедляет сайт — наоборот, повышает производительность под атакой:"
+
+msgid "**Lightweight & Fast** - negligible overhead in normal conditions"
+msgstr "**Лёгкий и быстрый** — минимальная нагрузка при обычной работе"
+
+msgid "**Built-in Caching** - Redis and Memcached support"
+msgstr "**Встроенное кеширование** — поддержка Redis и Memcached"
+
+msgid "**Seamless Compatibility** - works with Cloudflare, CDN, caching plugins"
+msgstr "**Совместимость** — работает с Cloudflare, CDN и кеш-плагинами"
+
+msgid "**Full IPv6 Support**"
+msgstr "**Полная поддержка IPv6**"
+
+msgid "**Server Optimization (Premium Addon)**"
+msgstr "**Оптимизация сервера (Премиум-аддон)**"
+
+#######################################################################
+# UI / SETUP
+#######################################################################
+
+msgid "👤 Easy Setup & User-Friendly Interface"
+msgstr "👤 Простая настройка и удобный интерфейс"
+
+msgid "**Quick Installation Wizard** - configure protection in under 1 minute"
+msgstr "**Мастер быстрой установки** — настройка защиты за минуту"
+
+msgid "**Intuitive Admin Panel** - organized settings with descriptions"
+msgstr "**Интуитивная админ-панель** — удобные настройки и подсказки"
+
+msgid "**Multilingual** - translated into many languages"
+msgstr "**Мультиязычность** — переводы на английский, испанский, немецкий, русский и др."
+
+msgid "**No Conflicts** - built using WP best practices"
+msgstr "**Без конфликтов** — создан по стандартам WordPress"
+
+msgid "**Adjustable Logging** - configurable retention period"
+msgstr "**Гибкий журнал** — настройка периода хранения"
+
+#######################################################################
+# INSTALLATION
+#######################################################################
+
+msgid "Installation"
+msgstr "Установка"
+
+msgid "1. Download the plugin archive or install directly from your WordPress dashboard"
+msgstr "1. Скачайте архив или установите плагин через панель WordPress"
+
+msgid "2. Unpack to wp-content/plugins/botblocker-security/"
+msgstr "2. Распакуйте в wp-content/plugins/botblocker-security/"
+
+msgid "3. Activate BotBlocker Security in the Plugins menu"
+msgstr "3. Активируйте BotBlocker Security в меню Плагины"
+
+msgid "4. Go to BotBlocker to configure protection settings"
+msgstr "4. Перейдите в BotBlocker для настройки"
+
+msgid "The setup wizard will guide you through initial configuration in under 1 minute."
+msgstr "Мастер установки поможет настроить плагин менее чем за минуту."
+
+#######################################################################
+# FAQ
+#######################################################################
+
+msgid "Frequently Asked Questions"
+msgstr "Часто задаваемые вопросы"
+
+msgid "How does BotBlocker Security protect sites from attackers?"
+msgstr "Как BotBlocker защищает сайт от атак?"
+
+msgid ""
+"BotBlocker uses multi-layer site protection: early-init filtering before WordPress loads, cloud-based threat intelligence, advanced CAPTCHA challenges, deep request analysis, and real-time IP blocking."
+msgstr ""
+"BotBlocker использует многоуровневую защиту: фильтрация на раннем этапе, облачные проверки угроз, продвинутые CAPTCHA, глубокий анализ и блокировка IP в реальном времени."
+
+msgid "How does the BotBlocker WordPress Firewall (WAF) work?"
+msgstr "Как работает файрвол (WAF) BotBlocker?"
+
+msgid ""
+"The firewall operates at the earliest stage, analyzing each request's fingerprint and blocking threats instantly."
+msgstr ""
+"Файрвол работает на раннем этапе — анализирует технический отпечаток запроса и блокирует угрозы мгновенно."
+
+msgid "Does the plugin collect personal data?"
+msgstr "Собирает ли плагин персональные данные?"
+
+msgid ""
+"No. Only technical parameters are analyzed (IP, headers, User-Agent). No personal data is collected or transmitted."
+msgstr ""
+"Нет. Анализируются только технические параметры (IP, заголовки, User-Agent). Персональные данные не собираются."
+
+msgid "Do I need an external service?"
+msgstr "Нужен ли внешний сервис?"
+
+msgid ""
+"No. Local protection works out of the box. Cloud checks (PRO) are optional."
+msgstr ""
+"Нет. Локальная защита работает из коробки. Облачные проверки (PRO) — опциональны."
+
+#######################################################################
+# PRIVACY
+#######################################################################
+
+msgid "Privacy"
+msgstr "Конфиденциальность"
+
+msgid ""
+"BotBlocker Security does not collect or process personal data of your visitors. All cloud analysis is performed on technical parameters only."
+msgstr ""
+"BotBlocker Security не собирает и не обрабатывает персональные данные посетителей. Все облачные проверки выполняются только по техническим параметрам."
+
+#######################################################################
+# SUPPORT LINKS
+#######################################################################
+
+msgid "Support and Documentation"
+msgstr "Поддержка и документация"
+
+msgid "Product site:"
+msgstr "Сайт продукта:"
+
+msgid "Documentation:"
+msgstr "Документация:"
+
+msgid "Contact/support:"
+msgstr "Контакты/поддержка:"
+
+msgid "Community:"
+msgstr "Сообщество:"
+
+#######################################################################
+# AUTHORS
+#######################################################################
+
+msgid "Credits & Authors"
+msgstr "Авторы и разработчики"
+
+msgid "BotBlocker Security is developed and maintained by GLOBUS.studio."
+msgstr "BotBlocker Security разработан и поддерживается GLOBUS.studio."
+
+msgid "Concept, architecture & code - Yevhen Leonidov:"
+msgstr "Концепция, архитектура и код — Евгений Леонидов:"
+
+msgid "Code, code review - Andrii Lukashevych"
+msgstr "Код и code review — Андрей Лукашевич"
+
+msgid "Code, translations - Aleksandr Kinakh"
+msgstr "Код, переводы — Александр Кинах"
+
+msgid "BotBlocker Security - The first line of defense for your WordPress site."
+msgstr "BotBlocker Security — первая линия защиты вашего WordPress-сайта."

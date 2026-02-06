@@ -1,0 +1,62 @@
+@media only screen and (max-width: 767px) {
+    .header .header-right {
+        margin-top: 0px !important;
+    }
+
+    .bbcs-header-pro-button {
+        display: none !important;
+    }
+
+    .bbcs-guide-row {
+        justify-content: center;
+    }  
+
+    .userbox {
+        width: 200px;
+    }    
+    
+    .userbox:after {
+         background: none !important; 
+    }   
+    
+    .bbcs-vertical-stack {
+        margin-bottom: 15px;
+    }
+
+    .bbcs-addon-card-body {
+        min-height: auto;
+    }
+
+    .guide-chain-arrow {
+      display: none;
+    }   
+    
+    .guide-chain {
+      justify-content: center;
+    }  
+
+    .bbcs-price-item {
+      width: -webkit-fill-available;
+    }    
+}
+
+@media (min-width: 992px) {
+  .bbcs-info-column {
+    min-height: 400px;
+    padding: 5px;
+  }
+}
+
+@media (max-width: 700px) {
+  .bbcs-health-full {
+    flex-direction: column;
+  }
+
+  .bbcs-health-col {
+    min-width: 100%;
+  }
+
+  .bbcs-grid-5 {
+    grid-template-columns: none;
+  }  
+}

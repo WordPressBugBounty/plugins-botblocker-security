@@ -1,0 +1,1 @@
+/* BotBlocker Security main JS file */

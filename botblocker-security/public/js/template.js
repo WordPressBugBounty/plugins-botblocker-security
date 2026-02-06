@@ -1,0 +1,296 @@
+// BotBlocker Template JavaScript
+
+window.bbcs_clean_and_decode_base64_to_utf8 = function(str) {
+str = str.replace(/\s/g, '');
+return decodeURIComponent(escape(window.atob(str)));
+};
+
+window.ipv4 = '';
+window.ipdbc = '';
+window.rct = '';
+
+window.bbcsDebugEnabled = bbcsJsData.debugEnabled ? 'true' : 'false'; 
+
+window.bbcsDebugLog = function(...args) {
+    if (window.bbcsDebugEnabled) {
+        console.log(...args);
+    }
+};
+
+window.bbcsDebugWarn = function(...args) {
+    if (window.bbcsDebugEnabled) {
+        console.warn(...args);
+    }
+};
+
+window.bbcsDebugError = function(...args) {
+    if (window.bbcsDebugEnabled) {
+        console.error(...args);
+    }
+};
+
+bbcsDebugLog(bbcsJsData.shortName + ' v.' + bbcsJsData.version);
+
+function bbcs_detectAll() {
+    const results = {
+        navigatorMismatch: bbcs_detectNavigatorMismatch(),
+        unsupportedFeatures: bbcs_detectUnsupportedFeatures(),
+        fakePlugins: bbcs_detectFakePlugins(),
+        fontRenderMismatch: bbcs_detectFontRenderMismatch(),
+        chromiumProperties: bbcs_detectChromiumProperties(),
+        jitter: bbcs_detectJitter(), 
+        webGLMismatch: bbcs_detectWebGL(),
+        touchEventMismatch: bbcs_detectTouchEvent(),
+        batteryAPIMismatch: bbcs_detectBatteryAPI(),
+        mediaDevicesMismatch: bbcs_detectMediaDevices(),
+        permissionsMismatch: bbcs_detectPermissions(),
+        languageMismatch: bbcs_detectLanguageMismatch(),
+        crossbrowserIncognito: bbcs_isIncognito(),
+        browserFingerprint: bbcs_computeFingerprint() 
+    };
+    
+    return results;
+}
+
+function bbcs_getDetectionParams() {
+    const startTime = Date.now();
+    const timeoutLimit = 1000; 
+    
+    try {
+        const detectionResult = bbcs_detectAll();
+        
+        if (Date.now() - startTime > timeoutLimit) {
+            bbcsDebugWarn('Detection methods took too long, returning partial results');
+        }
+
+        detectionResult.browserFingerprint = detectionResult.browserFingerprint.fingerprint;
+
+        let detectionParams = '';
+        for (const [key, value] of Object.entries(detectionResult)) {
+            detectionParams += `&${key}=${encodeURIComponent(value)}`;
+        }
+        return detectionParams;
+    } catch (e) {
+        bbcsDebugError('Error during detection:', e);
+        return `&error=detection_failed`;
+    }
+}
+
+function bbcs_areCookiesEnabled() {
+    var cookieEnabled = navigator.cookieEnabled;
+    if (cookieEnabled === undefined) {
+        document.cookie = "testcookie";
+        cookieEnabled = document.cookie.indexOf("testcookie") != -1;
+    }
+    return cookieEnabled;
+}
+
+if (!bbcs_areCookiesEnabled()) {
+    var cookieoff = 1;
+} else {
+    var cookieoff = 0;
+}
+
+if (window.location.hostname !== window.atob(bbcsJsData.hostBase64) && 
+    window.location.hostname !== window.atob(bbcsJsData.hostNoPortBase64)) {
+    window.location = window.atob(bbcsJsData.redirectUrlBase64);
+    throw "stop";
+}
+
+document.getElementById("content").innerHTML = bbcsJsData.loadingText; 
+
+function handleWorkerSignal() {
+    return new Promise(function(resolve) {
+        if (bbcsJsData.recaptchaEnabled) {
+            grecaptcha.ready(function() {
+                grecaptcha.execute(bbcsJsData.recaptchaKey3, {
+                    action: bbcsJsData.country
+                }).then(function(token) {
+                    window.rct = token; 
+                    resolve('HWS');
+                });
+            });
+        } else {
+            window.rct = ''; 
+            resolve('HWS');
+        }
+    });
+}
+
+function dispatchServiceEvent() {
+    return new Promise(function(resolve) {
+        if (bbcsJsData.ipVersion == 6) {
+            var GLOBUS_studio_API_request = new XMLHttpRequest();
+            GLOBUS_studio_API_request.open('GET', bbcsJsData.apiGsIpv6, true);
+            GLOBUS_studio_API_request.setRequestHeader("Content-Type", "application/json");
+            GLOBUS_studio_API_request.timeout = 5000; 
+            GLOBUS_studio_API_request.onload = function() {
+                if (GLOBUS_studio_API_request.readyState === 4 && GLOBUS_studio_API_request.status === 200) {
+                    var json = JSON.parse(GLOBUS_studio_API_request.responseText);
+                    window.ipv4 = json.ip;
+                    window.ipdbc = bbcsJsData.emptyValue;
+                    resolve('DSE');
+                } else {
+                    bbcsDebugError('Error status:', GLOBUS_studio_API_request.status);
+                    resolve('Error DSE');
+                }
+            };
+            GLOBUS_studio_API_request.ontimeout = function() {
+                bbcsDebugError('Timeout');
+                resolve('Error DSE');
+            };
+            GLOBUS_studio_API_request.onerror = function() {
+                bbcsDebugError('Error');
+                resolve('Error DSE');
+            };
+            GLOBUS_studio_API_request.send();
+        } else {
+            window.ipv4 = '';
+            window.ipdbc = '';
+            resolve('Result DSE');
+        }
+    });
+}
+
+function initProcessHandler(result1, result2) {
+    var bbcs_detectionParams = bbcs_getDetectionParams();
+    window.data = 'test=' + bbcsJsData.testHash + 
+        '&h1=' + bbcsJsData.h1Hash + 
+        '&date=' + bbcsJsData.time + 
+        '&hdc=' + bbcsJsData.hosting + 
+        '&a=' + window.adb_var + 
+        '&country=' + bbcsJsData.country + 
+        '&ip=' + bbcsJsData.ip + 
+        '&version=' + bbcsJsData.version + 
+        '&cid=' + bbcsJsData.cid + 
+        '&ptr=' + bbcsJsData.ptr + 
+        '&w=' + screen.width + 
+        '&h=' + screen.height + 
+        '&cw=' + document.documentElement.clientWidth + 
+        '&ch=' + document.documentElement.clientHeight + 
+        '&co=' + screen.colorDepth + 
+        '&pi=' + screen.pixelDepth + 
+        '&ref=' + encodeURIComponent(document.referrer) + 
+        '&accept=' + bbcsJsData.httpAccept + 
+        '&tz=' + Intl.DateTimeFormat().resolvedOptions().timeZone + 
+        '&ipdbc=' + window.ipdbc + 
+        '&ipv4=' + window.ipv4 + 
+        '&rct=' + window.rct + 
+        '&cookieoff=' + cookieoff +
+        bbcs_detectionParams;
+    window[bbcsJsData.checkFunctionName]('botblocker-security', window.data, '');
+    bbcsDebugLog('initProcessHandler -> ', result1, result2);
+}
+
+async function performAsyncStep() {
+    try {
+        const result1 = await handleWorkerSignal();
+        const result2 = await dispatchServiceEvent();
+        initProcessHandler(result1, result2);
+    } catch (error) {
+        bbcsDebugError(error);
+    }
+}
+
+performAsyncStep();
+
+function botblocker_captcha_render() {
+    if (typeof renderCaptcha === 'function') {
+        renderCaptcha();
+    }
+}
+
+window[bbcsJsData.checkFunctionName] = function(s, d, x) {
+    document.getElementById("content").innerHTML = bbcsJsData.loadingText;
+    
+    var data = new FormData();
+    data.append('action', 'bbcs_botblocker_check');
+    data.append('nonce', bbcsJsData.nonce);
+    data.append(bbcsJsData.selectRequestMode, s);
+    data.append('xxx', x);
+    data.append('rowid', bbcsJsData.ruleRecordId);
+    data.append('from_suspect', bbcsJsData.suspectStatus);
+    data.append('suspect_reason', bbcsJsData.reasonForAction);
+    data.append('check_result', bbcsJsData.resultOfAction);
+
+    var additionalParams = new URLSearchParams(d);
+    for (var pair of additionalParams.entries()) {
+        data.append(pair[0], pair[1]);
+    }
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', bbcsJsData.ajaxUrl, true);
+    xhr.timeout = 5000;
+
+    xhr.onload = function() {
+        if (xhr.status == 200) {
+            bbcsDebugLog('Plugin status: ' + xhr.status);
+            try {
+                var responseText = xhr.responseText.trim(); 
+                bbcsDebugLog('Response text:', responseText); 
+
+                if (responseText) {
+                    var obj = JSON.parse(responseText); 
+
+                    if (typeof(obj.cookie) == "string") {
+                        var d = new Date();
+                        d.setTime(d.getTime() + (7 * 24 * 60 * 60 * 1000)); 
+                        var expires = "expires=" + d.toUTCString();
+                        document.cookie = bbcsJsData.uid + "=" + obj.cookie + "-" + bbcsJsData.time + "; SameSite=" + bbcsJsData.samesite + ";" + 
+                            (bbcsJsData.samesite == 'None' ? ' Secure' : '') + "; " + expires + "; path=/;";
+                        document.getElementById("content").innerHTML = bbcsJsData.loadingText;
+                        window.location.href = bbcsJsData.redirectUrl;
+                    } else {
+                        botblocker_captcha_render();
+                        bbcsDebugLog('Bad bot detected');
+                    }
+
+                    if (typeof(obj.error) == "string") {
+                        if (bbcsJsData.jsAdminEnabled) {
+                            if (obj.error == "CiberSecure Account Not Found" 
+                                || obj.error == "This domain don't have a valid license" 
+                                || obj.error == "Subscription Expired" 
+                                || obj.error == "This domain is not registered or not active"
+                                || obj.error == bbcsJsData.jsErrorMessage) {
+                                const ErrorMsg = document.createElement('div');
+                                ErrorMsg.innerHTML = '<h1 style="text-align:center; color:red;">' + obj.error + '</h1>';
+                                document.body.insertAdjacentElement('afterbegin', ErrorMsg);
+                                document.getElementById("content").style.visibility = "hidden";
+                                document.getElementById("content").innerHTML = '';
+                            } else if (obj.error == "Cookies disabled") {
+                                document.getElementById("content").innerHTML = 
+                                "<h2 style=\"text-align:center; color:red;\">" + bbcsJsData.cookieDisabledText + "</h2>";
+                            }
+                        }
+                        if (obj.error == "Wrong Click") {
+                            document.getElementById("content").innerHTML = bbcsJsData.loadingText;
+                            window.location.href = bbcsJsData.redirectUrl;
+                        }
+                    }
+                } else {
+                    bbcsDebugWarn('Empty or invalid response from server.');
+                }
+            } catch (e) {
+                bbcsDebugError('Error parsing JSON:', e);
+                bbcsDebugLog('Response text received:', xhr.responseText); 
+                botblocker_captcha_render();
+            }
+
+        } else {
+            bbcsDebugLog('Error: ' + xhr.status);
+            botblocker_captcha_render();
+        }
+    };
+
+    xhr.ontimeout = function() {
+        bbcsDebugLog('timeout');
+        botblocker_captcha_render();
+    };
+
+    xhr.onerror = function() {
+        bbcsDebugLog('error');
+        botblocker_captcha_render();
+    };
+
+    xhr.send(data);
+};
