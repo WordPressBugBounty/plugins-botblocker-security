@@ -3,9 +3,14 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 class BotBlockerWpRequest {
 
-    public static function send_to_cloud($data, $url)
+    public static function send_to_cloud($data, $url, $endpoint = '')
     {
-        $fullURL = trailingslashit($url) . 'botblocker';
+        $base = untrailingslashit($url);
+        $path = 'botblocker';
+        if (!empty($endpoint)) {
+            $path .= '/' . ltrim($endpoint, '/');
+        }
+        $fullURL = $base . '/' . $path;
 
         $args = [
             'method'      => 'POST',

@@ -56,7 +56,7 @@ $bbcs_cached_remaining_days = bbcs_get_remaining_days();
 		<?php if ( ! $bbcs_is_cloud_api_active ) : ?>
 			<div class="col-xxl-3 col-xl-6 col-lg-6 col-sm-12 col-md-12">
 				<h3 class="bbcs_settings_h3"><?php esc_html_e('PRO features', 'botblocker-security'); ?></h3>
-				<?php $addons_page = ($BBCSA && isset($BBCSA->pages_addons)) ? $BBCSA->pages_addons : admin_url('admin.php?page=bbcs_addons');?>
+				<?php $bbcs_addons_page = ($BBCSA && isset($BBCSA->pages_addons)) ? $BBCSA->pages_addons : admin_url('admin.php?page=bbcs_addons');?>
 				<ul class="bbcs-info-list">
 					<li class="bbcs-info-item"><?php esc_html_e('Early init - blocks before WP loads', 'botblocker-security'); ?></li>
 					<li class="bbcs-info-item"><?php esc_html_e('WordPress Acceleration', 'botblocker-security'); ?></li>
@@ -65,7 +65,7 @@ $bbcs_cached_remaining_days = bbcs_get_remaining_days();
 					<li class="bbcs-info-item"><?php esc_html_e('AI Behavioral analysis', 'botblocker-security'); ?></li>
 					<li class="bbcs-info-item"><?php esc_html_e('Zero-day botnet updates', 'botblocker-security'); ?></li>
 					<li class="bbcs-info-item"><?php esc_html_e('5 Millions+ bots signatures', 'botblocker-security'); ?></li>
-					<li class="bbcs-info-item"><?php esc_html_e('All Premium Addons', 'botblocker-security'); ?> (<a href="<?php echo esc_url( $addons_page ); ?>"><?php echo esc_html__('view', 'botblocker-security'); ?></a>)</li>
+					<li class="bbcs-info-item"><?php esc_html_e('All Premium Addons', 'botblocker-security'); ?> (<a href="<?php echo esc_url( $bbcs_addons_page ); ?>"><?php echo esc_html__('view', 'botblocker-security'); ?></a>)</li>
 					<li class="bbcs-info-item"><?php esc_html_e('Priority Support', 'botblocker-security'); ?></li>
 					<li class="bbcs-info-item"><?php esc_html_e('Emergency help (24h)', 'botblocker-security'); ?></li>
 					<li class="bbcs-info-item"><?php esc_html_e('Attack logs analysis & forensics', 'botblocker-security'); ?></li>

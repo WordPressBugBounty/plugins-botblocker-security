@@ -32,12 +32,11 @@ function bbcs_fetch_cloud_api_key_handler() {
     check_ajax_referer('bbcs_fetch_cloud_api_key_action', 'nonce');
 
     $data = [
-        'fetch_api_key' => true,
     ];
 
-    $cloud = BotBlockerWpRequest::send_to_cloud($data, BOTBLOCKER_API_GS_URL);
+    $cloud = BotBlockerWpRequest::send_to_cloud($data, BOTBLOCKER_API_GS_URL, 'fetch_api_key');
     if ($cloud === false || isset($cloud['error'])) {
-        $cloud = BotBlockerWpRequest::send_to_cloud($data, BOTBLOCKER_API_URL);
+        $cloud = BotBlockerWpRequest::send_to_cloud($data, BOTBLOCKER_API_URL, 'fetch_api_key');
     }
 
     if ($cloud === false) {
@@ -102,12 +101,11 @@ function bbcs_connect_cloud_api_handler() {
         wp_send_json_error(['message' => __('API key is required.', 'botblocker-security')]);
     }
     $data = [
-        'validate_api_key' => true,
         'cloud_api_key' => $api_key,
     ];
-    $cloud = BotBlockerWpRequest::send_to_cloud($data, BOTBLOCKER_API_GS_URL);
+    $cloud = BotBlockerWpRequest::send_to_cloud($data, BOTBLOCKER_API_GS_URL, 'validate_api_key');
     if ($cloud === false || isset($cloud['error'])) {
-        $cloud = BotBlockerWpRequest::send_to_cloud($data, BOTBLOCKER_API_URL);
+        $cloud = BotBlockerWpRequest::send_to_cloud($data, BOTBLOCKER_API_URL, 'validate_api_key');
     }
 
     if ($cloud === false) {
@@ -231,15 +229,14 @@ function bbcs_refresh_cloud_api()
 {
     $BBCS = BotBlocker::getInstance();
     $request_auth = [
-        'refresh_cloud_api' => true,
         'cloud_api_key' => $BBCS->settings->cloud_api_key,
         'domain_api_key' => $BBCS->settings->cloud_api_secret,
     ];
 
     $request_data = array_merge($request_auth);
-    $cloud = BotBlockerWpRequest::send_to_cloud($request_data, BOTBLOCKER_API_GS_URL);
+    $cloud = BotBlockerWpRequest::send_to_cloud($request_data, BOTBLOCKER_API_GS_URL, 'refresh_cloud_api');
     if ($cloud === false || isset($cloud['error'])) {
-        $cloud = BotBlockerWpRequest::send_to_cloud($request_data, BOTBLOCKER_API_URL);
+        $cloud = BotBlockerWpRequest::send_to_cloud($request_data, BOTBLOCKER_API_URL, 'refresh_cloud_api');
     }
 
     if ($cloud === false) {

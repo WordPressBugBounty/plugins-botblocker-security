@@ -5,7 +5,15 @@ return [
     'bbcs_good_bots' => [
         // Major search engines
         'Googlebot'                 => ['.googlebot.com'], // Google main indexer
+        'Googlebot-Image'           => ['.googlebot.com'], // Google Images crawler
+        'Googlebot-Video'           => ['.googlebot.com'], // Google Videos crawler
+        'Googlebot-News'            => ['.googlebot.com'], // Google News crawler
         'GoogleOther'               => ['.google.com'], // Other Google crawlers
+        'GoogleOther-Image'         => ['.google.com'], // GoogleOther images variant
+        'GoogleOther-Video'         => ['.google.com'], // GoogleOther videos variant
+        'Google-InspectionTool'     => ['.google.com'], // Google Search Console testing
+        'Google-CloudVertexBot'     => ['.google.com'], // Vertex AI crawler
+        'Storebot-Google'           => ['.google.com'], // Google Shopping crawler
 
         'bingbot'                   => ['.search.msn.com'], // Bing indexer
 
@@ -22,6 +30,14 @@ return [
         'Bytespider'                => ['.bytedance.com'], // TikTok crawler
         'Yahoo! Slurp'              => ['.yahoo.net'], // Yahoo legacy
         'Y!J'                       => ['.yahoo.co.jp'], // Yahoo! Japan
+
+        // AI / LLM Crawlers
+        'GPTBot'                    => ['.openai.com'], // OpenAI GPT training crawler
+        'OAI-SearchBot'             => ['.openai.com'], // OpenAI search crawler
+        'ChatGPT-User'              => ['.openai.com'], // ChatGPT user-initiated requests
+        'ClaudeBot'                 => ['.anthropic.com'], // Anthropic Claude training crawler
+        'Claude-User'               => ['.anthropic.com'], // Claude user-initiated requests
+        'Claude-SearchBot'          => ['.anthropic.com'], // Claude search crawler
 
         // Social networks and link preview bots
         'facebookexternalhit'       => ['.fbsv.net', '66.220.149.', '31.13.', '2a03:2880:'], // Facebook crawler

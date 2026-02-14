@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: BotBlocker\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-07-27 19:12+0000\n"
-"PO-Revision-Date: 2026-01-10 12:46+0000\n"
+"PO-Revision-Date: 2026-01-16 15:31+0000\n"
 "Last-Translator: \n"
 "Language-Team: Русский\n"
 "Language: ru_RU\n"
@@ -40,6 +40,7 @@ msgstr "404 Не найдено"
 
 #: admin/class-botblocker-setup-wizard.php:438
 #: admin/class-botblocker-setup-wizard.php:996
+#: includes/section/cloud/botblocker-cloud-status.php:67
 msgid "5 Millions+ bots signatures"
 msgstr "5+ миллионов сигнатур ботов"
 
@@ -206,6 +207,10 @@ msgid "Activate a Cloud API connection to install and manage premium add-ons."
 msgstr ""
 "Активируйте соединение Cloud API для установки и управления премиум-"
 "надстройками."
+
+#: includes/shortcode/botblocker-shortcode-tooltips.php:91
+msgid "Activate BotBlocker PRO"
+msgstr "Активировать BotBlocker PRO"
 
 #: admin/class-botblocker-setup-wizard.php:764
 msgid "Activates before other plugins"
@@ -417,6 +422,10 @@ msgstr ""
 msgid "Advanced proxy / VPN / TOR network analysis"
 msgstr "Продвинутый анализ прокси, VPN и сети TOR"
 
+#: includes/section/cloud/botblocker-cloud-status.php:73
+msgid "Advanced reporting & analytics"
+msgstr "Расширенная отчётность и аналитика"
+
 #: admin/class-botblocker-setup-wizard.php:969
 #: admin/partials/botblocker-admin-display-settings.php:87
 msgid "Advanced Settings"
@@ -431,6 +440,7 @@ msgid "After the repair is completed,"
 msgstr "После завершения ремонта,"
 
 #: admin/class-botblocker-setup-wizard.php:989
+#: includes/section/cloud/botblocker-cloud-status.php:65
 msgid "AI Behavioral analysis"
 msgstr "ИИ-анализ поведения"
 
@@ -470,6 +480,10 @@ msgstr "Все тесты совместимости пройдены. Ваш с
 msgid "All existing cookies will become invalid."
 msgstr "Все существующие cookie станут недействительными."
 
+#: includes/utilites/util-botblocker-support.php:112
+msgid "All fields are required"
+msgstr "Все поля обязательны"
+
 #: includes/section/settings/botblocker-set-ui.php:132
 msgid "All hits"
 msgstr "Все хиты"
@@ -478,7 +492,12 @@ msgstr "Все хиты"
 msgid "All information about previous errors will be deleted."
 msgstr "Вся информация о предыдущих ошибках будет удалена."
 
+#: includes/shortcode/botblocker-shortcode-tooltips.php:110
+msgid "All optimized!"
+msgstr "Всё оптимизировано!"
+
 #: admin/class-botblocker-setup-wizard.php:997
+#: includes/section/cloud/botblocker-cloud-status.php:68
 msgid "All Premium Addons"
 msgstr "Все премиум-дополнения"
 
@@ -548,13 +567,17 @@ msgstr "Разрешённые имена хостов / домены (чере�
 msgid "Allowed:"
 msgstr "Разрешено:"
 
-#: includes/section/cloud/botblocker-cloud-status.php:151
+#: includes/section/cloud/botblocker-cloud-status.php:174
 msgid "Already have a license key?"
 msgstr "Уже есть ключ лицензии?"
 
 #: includes/section/settings/botblocker-set-adv.php:70
 msgid "Always present captcha, regardless of other checks."
 msgstr "Всегда вводите Captcha, независимо от других проверок."
+
+#: admin/class-botblocker-admin.php:114
+msgid "An error occurred. Please try again later."
+msgstr "Произошла ошибка. Пожалуйста, попробуйте позже."
 
 #: includes/section/setup/botblocker-setup-pro.php:37
 msgid "And much more..."
@@ -568,11 +591,11 @@ msgstr "Антидетект-браузеры"
 msgid "Apache"
 msgstr "Apache (веб-сервер)"
 
-#: includes/hook/botblocker-hook-cloud-api.php:94
+#: includes/hook/botblocker-hook-cloud-api.php:93
 msgid "API key fetched successfully from cloud server."
 msgstr "Ключ API успешно получен с облачного сервера."
 
-#: includes/hook/botblocker-hook-cloud-api.php:102
+#: includes/hook/botblocker-hook-cloud-api.php:101
 msgid "API key is required."
 msgstr "Требуется ключ API."
 
@@ -626,6 +649,10 @@ msgstr "AS-номер"
 msgid "ASN"
 msgstr "ASN"
 
+#: includes/section/cloud/botblocker-cloud-status.php:71
+msgid "Attack logs analysis & forensics"
+msgstr "Анализ логов атак и цифровая экспертиза"
+
 #: includes/modal/modal-botblocker-db-repair.php:23
 #: includes/modal/modal-botblocker-log-clear.php:11
 #: includes/modal/modal-botblocker-object-cache.php:11
@@ -647,6 +674,10 @@ msgstr "Авто-исправление (рекомендуется)"
 #: includes/shortcode/botblocker-shortcode-health-full.php:70
 msgid "Auto-save administrator IPs"
 msgstr "Автоматическое сохранение IP-адресов администратора"
+
+#: includes/section/cloud/botblocker-cloud-status.php:72
+msgid "Auto-update PTR & UA signatures"
+msgstr "Автообновление PTR- и UA-сигнатур"
 
 #: includes/section/settings/botblocker-set-general.php:120
 msgid "Automatic save administrator IPs"
@@ -1101,7 +1132,7 @@ msgstr ""
 msgid "BotBlocker is disabled"
 msgstr "BotBlocker отключен"
 
-#: admin/partials/botblocker-section-right-sidebar.php:219
+#: admin/partials/botblocker-section-right-sidebar.php:237
 msgid "BotBlocker News"
 msgstr "Новости BotBlocker"
 
@@ -1159,6 +1190,14 @@ msgstr "Страницы BotBlocker"
 #: includes/section/setup/botblocker-setup-pro.php:21
 msgid "BotBlocker PRO"
 msgstr "BotBlocker PRO"
+
+#: includes/section/dashboard/botblocker-dash-health.php:90
+msgid ""
+"BotBlocker PRO is active, but several security shields are disabled. "
+"Activate missing protections to maximize your defense."
+msgstr ""
+"BotBlocker PRO активен, но некоторые уровни защиты отключены. Включите "
+"недостающие механизмы, чтобы обеспечить максимальную защиту."
 
 #: includes/section/tools/botblocker-tools-botblocker.php:16
 msgid ""
@@ -1253,7 +1292,7 @@ msgid "BotBlocker security plugin"
 msgstr "Плагин безопасности BotBlocker"
 
 #: admin/partials/botblocker-section-right-sidebar.php:17
-#: admin/partials/botblocker-section-right-sidebar.php:243
+#: admin/partials/botblocker-section-right-sidebar.php:261
 #: includes/section/tools/botblocker-tools-botblocker.php:31
 msgid "BotBlocker Settings"
 msgstr "Настройки BotBlocker"
@@ -1425,6 +1464,10 @@ msgstr "Кот"
 msgid "Change"
 msgstr "Изменить"
 
+#: includes/utilites/util-botblocker-support.php:60
+msgid "Chat"
+msgstr "Чат"
+
 #: includes/section/settings/botblocker-set-traffic.php:48
 msgid "Check GET Parameters in Referrer"
 msgstr "Проверьте параметры GET в Referrer"
@@ -1585,10 +1628,11 @@ msgstr ""
 #: includes/modal/modal-botblocker-setup-wizard.php:13
 #: includes/modal/modal-botblocker-white-add.php:82
 #: includes/modal/modal-botblocker-white-edit.php:83
+#: includes/utilites/util-botblocker-support.php:25
 msgid "Close"
 msgstr "Закрыть"
 
-#: includes/hook/botblocker-hook-cloud-api.php:227
+#: includes/hook/botblocker-hook-cloud-api.php:225
 msgid "Cloud API connection has been deactivated."
 msgstr "Подключение к Cloud API деактивировано."
 
@@ -1600,11 +1644,11 @@ msgstr "Срок действия Cloud API истек"
 msgid "Cloud API Hits Exhausted"
 msgstr "Обращения к Cloud API исчерпаны"
 
-#: includes/hook/botblocker-hook-cloud-api.php:158
+#: includes/hook/botblocker-hook-cloud-api.php:156
 msgid "Cloud API key connected and validated successfully."
 msgstr "Ключ Cloud API успешно подключен и проверен."
 
-#: includes/hook/botblocker-hook-cloud-api.php:46
+#: includes/hook/botblocker-hook-cloud-api.php:45
 msgid "Cloud API responded with error: "
 msgstr "Cloud API ответил ошибкой: "
 
@@ -1724,7 +1768,7 @@ msgstr "Комментарии отключены."
 
 #: admin/partials/botblocker-admin-display-addons.php:29
 #: includes/section/cloud/botblocker-cloud-status.php:51
-#: includes/section/dashboard/botblocker-dash-health.php:125
+#: includes/section/dashboard/botblocker-dash-health.php:144
 #: includes/section/setup/botblocker-setup-pro.php:48
 msgid "Compare Plans"
 msgstr "Сравнить тарифы"
@@ -1753,6 +1797,10 @@ msgstr "Совместим со всеми плагинами"
 msgid "Compatible with all setups"
 msgstr "Совместим со всеми конфигурациями"
 
+#: includes/shortcode/botblocker-shortcode-tooltips.php:22
+msgid "Complete Setup Wizard"
+msgstr "Завершить мастер настройки"
+
 #: addons/bbcs-speedup/inc/bbcs-speedup-settings.php:110
 msgid "Completely disables the comment functionality on the site."
 msgstr "Полностью отключает функцию комментариев на сайте."
@@ -1780,6 +1828,10 @@ msgstr ""
 #: includes/modal/modal-botblocker-setup-wizard.php:118
 msgid "Configure exclusions"
 msgstr "Настроить исключения"
+
+#: includes/shortcode/botblocker-shortcode-tooltips.php:33
+msgid "Configure reCAPTCHA"
+msgstr "Настроить reCAPTCHA"
 
 #: includes/section/integration/botblocker-int-redis.php:18
 msgid ""
@@ -1845,7 +1897,7 @@ msgstr "Подтверждение очистки от Salt"
 msgid "Confirmation of transient data clearing"
 msgstr "Подтверждение временной очистки данных"
 
-#: includes/section/cloud/botblocker-cloud-status.php:83
+#: includes/section/cloud/botblocker-cloud-status.php:106
 msgid "Connect"
 msgstr "Подключить"
 
@@ -2087,6 +2139,10 @@ msgstr "Пользовательский URL для входа"
 msgid "Custom message shown when login is disabled."
 msgstr "Сообщение для пользователей, если вход на сайт отключён."
 
+#: includes/section/cloud/botblocker-cloud-status.php:74
+msgid "Custom security rules engine"
+msgstr "Модуль пользовательских правил безопасности"
+
 #: admin/class-botblocker-setup-wizard.php:970
 msgid "Customize detection algorithms"
 msgstr "Настройка алгоритмов обнаружения"
@@ -2113,7 +2169,7 @@ msgstr "Ежедневные обновления"
 msgid "Dark"
 msgstr "Темный"
 
-#: admin/class-botblocker-admin.php:401 admin/class-botblocker-admin.php:420
+#: admin/class-botblocker-admin.php:424 admin/class-botblocker-admin.php:443
 msgid "Dashboard"
 msgstr "Панель инструментов"
 
@@ -2216,6 +2272,10 @@ msgstr ""
 #: includes/modal/modal-botblocker-db-repair.php:20
 msgid "delete"
 msgstr "удалить"
+
+#: includes/utilites/util-botblocker-support.php:47
+msgid "Describe your question"
+msgstr "Опишите свой вопрос"
 
 #: admin/class-botblocker-setup-wizard.php:954
 msgid "Detailed logs of all blocked threats"
@@ -2328,7 +2388,7 @@ msgstr ""
 msgid "Disables the XML-RPC protocol to prevent certain types of attacks."
 msgstr "Отключает протокол XML-RPC для предотвращения некоторых типов атак."
 
-#: includes/section/cloud/botblocker-cloud-status.php:83
+#: includes/section/cloud/botblocker-cloud-status.php:106
 msgid "Disconnect"
 msgstr "Отключить"
 
@@ -2340,7 +2400,7 @@ msgstr "Вы хотите продолжить очистку файла жур�
 msgid "Docs"
 msgstr "Документация"
 
-#: botblocker-security.php:224
+#: botblocker-security.php:227
 msgid "Docs & FAQs"
 msgstr "Docs & FAQs"
 
@@ -2471,6 +2531,10 @@ msgstr "Орел"
 msgid "Early init"
 msgstr "Ранняя инициализация"
 
+#: includes/section/cloud/botblocker-cloud-status.php:61
+msgid "Early init - blocks before WP loads"
+msgstr "Ранний запуск - блокировка до загрузки WordPress"
+
 #: admin/class-botblocker-setup-wizard.php:434
 #: admin/class-botblocker-setup-wizard.php:985
 msgid "Early init — blocks before WP loads"
@@ -2595,6 +2659,7 @@ msgstr "Редактировать правило"
 msgid "Edit White Bot"
 msgstr "Редактировать \"Белый Бот\""
 
+#: includes/utilites/util-botblocker-support.php:41
 #: includes/section/settings/botblocker-set-notif.php:37
 msgid "Email"
 msgstr "Электронная почта"
@@ -2604,6 +2669,7 @@ msgid "Email notifications"
 msgstr "Email-уведомления"
 
 #: admin/class-botblocker-setup-wizard.php:999
+#: includes/section/cloud/botblocker-cloud-status.php:70
 msgid "Emergency help (24h)"
 msgstr "Экстренная помощь (24/7)"
 
@@ -2629,7 +2695,8 @@ msgstr "Пустой User-Agent"
 msgid "Enable %s directive in X-Robots-Tag headers"
 msgstr "Включить директиву %s в заголовках X-Robots-Tag"
 
-#: includes/section/integration/botblocker-int-2fa.php:207
+#. %s: role display name, e.g. 'Administrator'
+#: includes/section/integration/botblocker-int-2fa.php:208
 #, php-format
 msgid "Enable BotBlocker Two-Factor Authentication for %s"
 msgstr "Включить двухфакторную аутентификацию BotBlocker для %s"
@@ -2654,6 +2721,10 @@ msgstr ""
 "Включите уведомления по электронной почте о предупреждениях безопасности и "
 "событиях блокировки ботов."
 
+#: includes/shortcode/botblocker-shortcode-tooltips.php:53
+msgid "Enable empty User-Agent blocking"
+msgstr "Включить блокировку пустых User-Agent"
+
 #: includes/section/integration/botblocker-int-recaptcha3.php:44
 msgid ""
 "Enable invisible reCAPTCHA v3 protection to automatically analyze user "
@@ -2662,6 +2733,10 @@ msgstr ""
 "Включите невидимую защиту reCAPTCHA v3 для автоматического анализа поведения "
 "пользователя и блокировки подозрительного трафика ботов без взаимодействия с "
 "пользователем."
+
+#: includes/shortcode/botblocker-shortcode-tooltips.php:62
+msgid "Enable JavaScript verification"
+msgstr "Включить проверку JavaScript"
 
 #: includes/section/settings/botblocker-set-log.php:126
 msgid ""
@@ -2764,6 +2839,14 @@ msgstr ""
 "посетителях. Повышает производительность за счёт сокращения количества "
 "запросов к базе данных для сайтов с высокой посещаемостью."
 
+#: includes/shortcode/botblocker-shortcode-tooltips.php:82
+msgid "Enable MU plugin mode"
+msgstr "Включить режим MU-плагина"
+
+#: includes/shortcode/botblocker-shortcode-tooltips.php:71
+msgid "Enable PTR cache in database"
+msgstr "Включить кеш PTR в базе данных"
+
 #: includes/section/settings/botblocker-set-notif.php:72
 msgid ""
 "Enable Pusher notifications for real-time security alerts and bot blocking "
@@ -2789,6 +2872,10 @@ msgstr ""
 "Включите Redis для кэширования счётчиков безопасности и статистики посещений."
 " Обеспечивает высокопроизводительное хранилище данных для обнаружения угроз "
 "в режиме реального времени и анализа трафика."
+
+#: includes/shortcode/botblocker-shortcode-tooltips.php:44
+msgid "Enable Redis or Memcached"
+msgstr "Включить Redis или Memcached"
 
 #: includes/section/settings/botblocker-set-notif.php:57
 msgid ""
@@ -2818,6 +2905,7 @@ msgstr ""
 "особенно полезна для небольших сайтов или при отсутствии выделенных серверов "
 "кэша для оптимизации производительности."
 
+#: includes/shortcode/botblocker-shortcode-tooltips.php:101
 #: includes/section/integration/botblocker-int-2fa.php:75
 #: includes/section/integration/botblocker-int-2fa.php:85
 msgid "Enable Two-Factor Authentication"
@@ -2876,7 +2964,7 @@ msgstr "Введите 6-значный TOTP-код"
 msgid "Enter a unique salt value for added security."
 msgstr "Введите уникальное значение Salt для дополнительной безопасности."
 
-#: includes/section/cloud/botblocker-cloud-status.php:81
+#: includes/section/cloud/botblocker-cloud-status.php:104
 msgid "Enter API key for BotBlocker Cloud"
 msgstr "Введите ключ API для BotBlocker Cloud"
 
@@ -2947,6 +3035,10 @@ msgstr ""
 "Введите номер порта сервера Redis. Стандартный порт для большинства "
 "установок Redis — 6379."
 
+#: includes/utilites/util-botblocker-support.php:42
+msgid "Enter your email"
+msgstr "Введите email"
+
 #: includes/section/integration/botblocker-int-recaptcha2.php:58
 msgid ""
 "Enter your Google reCAPTCHA v2 secret key. This private key is used to "
@@ -2982,6 +3074,10 @@ msgid ""
 msgstr ""
 "Введите ключ вашего сайта для Google reCAPTCHA v3. Этот ключ обеспечивает "
 "невидимую защиту от ботов, анализируя действия пользователей на вашем сайте."
+
+#: includes/utilites/util-botblocker-support.php:37
+msgid "Enter your name"
+msgstr "Введите своё имя"
 
 #: admin/class-botblocker-setup-wizard.php:796
 msgid "Enterprise-grade protection"
@@ -3123,18 +3219,18 @@ msgstr "Дополнительные настройки ведения журн�
 msgid "Extra options"
 msgstr "Дополнительные опции"
 
-#: includes/hook/botblocker-hook-cloud-api.php:114
+#: includes/hook/botblocker-hook-cloud-api.php:112
 msgid "Failed to connect to Cloud API. Please try again later."
 msgstr ""
 "Не удалось установить соединение с Cloud API. Пожалуйста, попробуйте позже."
 
-#: includes/hook/botblocker-hook-cloud-api.php:44
+#: includes/hook/botblocker-hook-cloud-api.php:43
 msgid "Failed to fetch API key from cloud server. Please try again later."
 msgstr ""
 "Не удалось получить API-ключ от облачного сервера. Пожалуйста, попробуйте "
 "позже."
 
-#: includes/hook/botblocker-hook-cloud-api.php:169
+#: includes/hook/botblocker-hook-cloud-api.php:167
 msgid "Failed to refresh Cloud API"
 msgstr "Не удалось обновить Cloud API."
 
@@ -3146,11 +3242,11 @@ msgstr "Поддельный реферер"
 msgid "Features"
 msgstr "Функции"
 
-#: includes/section/cloud/botblocker-cloud-status.php:155
+#: includes/section/cloud/botblocker-cloud-status.php:178
 msgid "Fetch API key from cloud"
 msgstr "Получить API-ключ из облака"
 
-#: includes/section/cloud/botblocker-cloud-status.php:161
+#: includes/section/cloud/botblocker-cloud-status.php:184
 msgid "Fetches the API keys from the BotBlocker cloud."
 msgstr "Получает API-ключи из облака BotBlocker."
 
@@ -3213,7 +3309,7 @@ msgstr ""
 msgid "Full Protection"
 msgstr "Полная защита"
 
-#: includes/section/dashboard/botblocker-dash-health.php:74
+#: includes/section/dashboard/botblocker-dash-health.php:75
 msgid "Full Protection Active"
 msgstr "Полная защита активна"
 
@@ -3273,7 +3369,7 @@ msgstr "Получить доступ сейчас"
 msgid "Get Browser Type"
 msgstr "Получить тип браузера"
 
-#: includes/section/dashboard/botblocker-dash-health.php:103
+#: includes/section/dashboard/botblocker-dash-health.php:119
 msgid ""
 "Get cloud-powered threat detection, real-time blocking, and enterprise-grade "
 "security features."
@@ -3322,7 +3418,7 @@ msgstr "GMT и часовой пояс"
 msgid "GMT Offset for Reports:"
 msgstr "Смещение часового пояса GMT для отчетов:"
 
-#: admin/class-botblocker-admin.php:394
+#: admin/class-botblocker-admin.php:417
 msgid "Go to BotBlocker Dashboard"
 msgstr "Перейти на панель управления BotBlocker"
 
@@ -3347,12 +3443,12 @@ msgid "Google Analytics ID"
 msgstr "Идентификатор Google Аналитики"
 
 #: includes/section/integration/botblocker-int-2fa.php:173
-#: includes/section/integration/botblocker-int-2fa.php:249
+#: includes/section/integration/botblocker-int-2fa.php:250
 msgid "Google Authenticator (App Store)"
 msgstr "Google Authenticator (App Store)"
 
 #: includes/section/integration/botblocker-int-2fa.php:181
-#: includes/section/integration/botblocker-int-2fa.php:257
+#: includes/section/integration/botblocker-int-2fa.php:258
 msgid "Google Authenticator (Google Play)"
 msgstr "Google Authenticator (Google Play)"
 
@@ -3449,6 +3545,7 @@ msgid "Hide login URL"
 msgstr "Скрыть URL входа"
 
 #: admin/class-botblocker-setup-wizard.php:987
+#: includes/section/cloud/botblocker-cloud-status.php:63
 msgid "Hide Login URL & more"
 msgstr "Скрыть URL входа и др."
 
@@ -3470,7 +3567,7 @@ msgstr "Высокопроизводительная распределенна�
 msgid "Hire a developer"
 msgstr "Нанять разработчика"
 
-#: botblocker-security.php:225
+#: botblocker-security.php:228
 msgid "Hire Developers"
 msgstr "Нанять разработчиков"
 
@@ -3713,7 +3810,7 @@ msgstr ""
 "Улучшите производительность сайта, отключив ненужные ресурсы и функции."
 
 #: admin/partials/botblocker-admin-dashboard-widgets.php:107
-#: includes/section/dashboard/botblocker-dash-health.php:17
+#: includes/section/dashboard/botblocker-dash-health.php:18
 msgid "Improve your plan for excellent security protection."
 msgstr "Улучшите свой план для обеспечения превосходной безопасности."
 
@@ -3751,7 +3848,7 @@ msgstr "Инкогнито / Конфиденциально"
 msgid "Incognito mode"
 msgstr "Режим инкогнито"
 
-#: includes/section/cloud/botblocker-cloud-status.php:75
+#: includes/section/cloud/botblocker-cloud-status.php:98
 #| msgid ""
 #| "Indicates if the BotBlocker Cloud API Connection is active. This option "
 #| "is managed automatically."
@@ -3816,6 +3913,10 @@ msgstr "Неверный 6-значный код. Попробуйте ещё р
 #: includes/shortcode/charts/chart-botblocker-stat.php:62
 msgid "Invalid data parameter."
 msgstr "Неверный параметр данных."
+
+#: includes/utilites/util-botblocker-support.php:116
+msgid "Invalid email address"
+msgstr "Неверный адрес электронной почты"
 
 #: includes/utilites/2FA/inc-botblocker-2fa.php:333
 msgid "Invalid or no verification code"
@@ -4252,6 +4353,10 @@ msgstr ""
 msgid "My PRO status"
 msgstr "Мой PRO-статус"
 
+#: includes/utilites/util-botblocker-support.php:36
+msgid "Name"
+msgstr "Имя"
+
 #: admin/class-botblocker-setup-wizard.php:1026
 msgid "Need help? Visit our"
 msgstr "Нужна помощь? Посетите нашу"
@@ -4266,7 +4371,7 @@ msgstr "Маска сети"
 msgid "New bots discovered today:"
 msgstr "Сегодня обнаружены новые боты:"
 
-#: admin/partials/botblocker-section-right-sidebar.php:222
+#: admin/partials/botblocker-section-right-sidebar.php:240
 msgid "News"
 msgstr "Новости"
 
@@ -4282,7 +4387,7 @@ msgstr "Nginx vs Apache"
 msgid "No active alerts"
 msgstr "Активных предупреждений нет"
 
-#: includes/hook/botblocker-hook-cloud-api.php:48
+#: includes/hook/botblocker-hook-cloud-api.php:47
 msgid "No API key found on cloud server for this domain."
 msgstr "На облачном сервере не найден API-ключ для этого домена."
 
@@ -4504,7 +4609,7 @@ msgstr "Переопределение обнаружения"
 msgid "Page"
 msgstr "Страница"
 
-#: includes/section/dashboard/botblocker-dash-health.php:86
+#: includes/section/dashboard/botblocker-dash-health.php:102
 msgid "Partial Protection"
 msgstr "Частичная защита"
 
@@ -4551,7 +4656,7 @@ msgstr "Версии PHP"
 msgid "Plans"
 msgstr "Планы"
 
-#: includes/section/integration/botblocker-int-2fa.php:220
+#: includes/section/integration/botblocker-int-2fa.php:221
 msgid ""
 "Please scan the QR code using your authentication app (e.g., Google "
 "Authenticator, Authy, etc.) and store the backup codes in a safe place. Each "
@@ -4632,6 +4737,7 @@ msgstr "Приоритет (1-100)"
 
 #: admin/class-botblocker-setup-wizard.php:998
 #: admin/partials/botblocker-section-right-sidebar.php:203
+#: includes/section/cloud/botblocker-cloud-status.php:69
 msgid "Priority Support"
 msgstr "Приоритетная поддержка"
 
@@ -4644,12 +4750,17 @@ msgid "Privacy policy"
 msgstr "Политика конфиденциальности"
 
 #: includes/modal/modal-botblocker-setup-wizard.php:88
+#: includes/utilites/util-botblocker-support.php:60
 msgid "PRO"
 msgstr "PRO"
 
 #: admin/class-botblocker-setup-wizard.php:1010
 msgid "PRO Active!"
 msgstr "PRO активен!"
+
+#: includes/section/dashboard/botblocker-dash-health.php:87
+msgid "PRO Active, Security Incomplete"
+msgstr "PRO активен, защита неполная"
 
 #: includes/section/cloud/botblocker-cloud-plans.php:27
 msgid "PRO active:"
@@ -4658,6 +4769,10 @@ msgstr "PRO активен:"
 #: admin/partials/botblocker-section-right-sidebar.php:189
 msgid "PRO Features"
 msgstr "PRO-функции"
+
+#: includes/section/cloud/botblocker-cloud-status.php:58
+msgid "PRO features"
+msgstr "Функции PRO"
 
 #: includes/section/setup/botblocker-setup-pro.php:8
 msgid "Pro features"
@@ -4677,15 +4792,15 @@ msgstr "PRO активен!"
 msgid "PRO option"
 msgstr "PRO-опция"
 
-#: includes/section/cloud/botblocker-cloud-status.php:58
+#: includes/section/cloud/botblocker-cloud-status.php:81
 msgid "PRO status"
 msgstr "Статус PRO"
 
-#: includes/section/cloud/botblocker-cloud-status.php:66
+#: includes/section/cloud/botblocker-cloud-status.php:89
 msgid "PRO status Active"
 msgstr "Статус PRO: Активен"
 
-#: includes/section/cloud/botblocker-cloud-status.php:67
+#: includes/section/cloud/botblocker-cloud-status.php:90
 msgid "PRO status Not Active"
 msgstr "Статус PRO: Не активен"
 
@@ -4717,6 +4832,10 @@ msgstr ""
 "подозрительного трафика. Значение соли добавляет дополнительный уровень "
 "безопасности, делая значения cookies непредсказуемыми, а политики SameSite "
 "защищают от атак с подделкой межсайтовых запросов (CSRF)."
+
+#: includes/section/dashboard/botblocker-dash-health.php:94
+msgid "Protect"
+msgstr "Защитить"
 
 #: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:10
 msgid "Protect default login endpoints and use a custom login URL."
@@ -4798,6 +4917,10 @@ msgstr "Уведомления Pusher"
 msgid "Query string"
 msgstr "Строка запроса"
 
+#: includes/utilites/util-botblocker-support.php:46
+msgid "Question"
+msgstr "Вопрос"
+
 #: admin/partials/botblocker-admin-display-rules.php:186
 msgid "Quick Guide"
 msgstr "Быстрое руководство"
@@ -4817,6 +4940,10 @@ msgstr "Енот"
 #: includes/section/tools/botblocker-tools-maintenance.php:35
 msgid "Re-install Database"
 msgstr "Переустановить базу данных"
+
+#: includes/section/dashboard/botblocker-dash-health.php:122
+msgid "Read More"
+msgstr "Узнать больше"
 
 #: includes/section/settings/botblocker-set-captcha.php:77
 msgid "Read more"
@@ -4913,7 +5040,7 @@ msgid "Recommended"
 msgstr "Рекомендуется"
 
 #: includes/section/integration/botblocker-int-2fa.php:166
-#: includes/section/integration/botblocker-int-2fa.php:242
+#: includes/section/integration/botblocker-int-2fa.php:243
 msgid "Recommended 2FA Apps"
 msgstr "Рекомендуемые приложения для 2FA"
 
@@ -5005,11 +5132,11 @@ msgstr ""
 msgid "Referer"
 msgstr "Реферер"
 
-#: includes/section/cloud/botblocker-cloud-status.php:140
+#: includes/section/cloud/botblocker-cloud-status.php:163
 msgid "Refresh Cloud API Connection"
 msgstr "Обновить соединение Cloud API"
 
-#: includes/section/cloud/botblocker-cloud-status.php:146
+#: includes/section/cloud/botblocker-cloud-status.php:169
 msgid ""
 "Refreshes the Cloud API Connection status and updates your connection "
 "details from the BotBlocker cloud service."
@@ -5026,11 +5153,11 @@ msgstr "Возврат средств"
 msgid "Regular Plugin"
 msgstr "Обычный плагин"
 
-#: includes/section/cloud/botblocker-cloud-status.php:117
+#: includes/section/cloud/botblocker-cloud-status.php:140
 msgid "Remaining days"
 msgstr "Оставшиеся дни"
 
-#: includes/section/cloud/botblocker-cloud-status.php:94
+#: includes/section/cloud/botblocker-cloud-status.php:117
 msgid "Remaining hits"
 msgstr "Оставшиеся обращения"
 
@@ -5257,7 +5384,7 @@ msgstr "Статистика правил и списков IP-адресов"
 msgid "Run Setup Wizard Again"
 msgstr "Запустить мастер настройки заново"
 
-#: includes/section/dashboard/botblocker-dash-health.php:52
+#: includes/section/dashboard/botblocker-dash-health.php:53
 msgid "Run the wizard to configure protection"
 msgstr "Запустить мастер настройки защиты"
 
@@ -5311,7 +5438,7 @@ msgstr "Salt"
 msgid "Save"
 msgstr "Сохранить"
 
-#: includes/section/integration/botblocker-int-2fa.php:218
+#: includes/section/integration/botblocker-int-2fa.php:219
 msgid "Save Backup Codes"
 msgstr "Сохранить резервные коды"
 
@@ -5431,7 +5558,7 @@ msgstr "Ошибка безопасности. Обновите страницу
 msgid "Security Health Status"
 msgstr "Статус безопасности системы"
 
-#: includes/section/dashboard/botblocker-dash-health.php:35
+#: includes/section/dashboard/botblocker-dash-health.php:36
 msgid "Security score"
 msgstr "Оценка безопасности"
 
@@ -5556,6 +5683,11 @@ msgstr "Самоподключения"
 msgid "Self-test completed successfully! Check your log."
 msgstr "Самодиагностика успешно завершена! Проверьте журнал событий."
 
+#: admin/class-botblocker-admin.php:113
+#: includes/utilites/util-botblocker-support.php:50
+msgid "Send"
+msgstr "Отправить"
+
 #: includes/section/dashboard/botblocker-dash-secret.php:8
 msgid "Send email with BotBlocker management links"
 msgstr "Отправить электронное письмо со ссылками на управление BotBlocker"
@@ -5576,10 +5708,22 @@ msgstr ""
 msgid "Send regular notifications"
 msgstr "Отправлять регулярные уведомления"
 
+#: includes/utilites/util-botblocker-support.php:132
+msgid "Sending failed. Please try again later."
+msgstr "Не удалось отправить. Пожалуйста, попробуйте позже."
+
+#: admin/class-botblocker-admin.php:112
+msgid "Sending..."
+msgstr "Отправка..."
+
 #: includes/section/settings/botblocker-set-adv.php:45
 msgid "Sends suspicious requests to BotBlocker Cloud for in-depth analysis."
 msgstr ""
 "Отправляет подозрительные запросы в BotBlocker Cloud для глубокого анализа."
+
+#: includes/section/cloud/botblocker-cloud-status.php:75
+msgid "SEO bots whitelist management"
+msgstr "Управление белым списком SEO-ботов"
 
 #: includes/section/about/botblocker-about-status.php:33
 msgid "Server OS"
@@ -5692,12 +5836,12 @@ msgstr ""
 "значения обеспечивают более строгую защиту, а более высокие — более "
 "разрешённый доступ в пограничных случаях."
 
-#: admin/class-botblocker-admin.php:408
+#: admin/class-botblocker-admin.php:431
 #: admin/class-botblocker-setup-wizard.php:263
 #: admin/partials/botblocker-admin-dashboard-widgets.php:111
 #: admin/partials/botblocker-admin-display-settings.php:48
 #: includes/section/dashboard/botblocker-dash-geo.php:13
-#: includes/section/dashboard/botblocker-dash-health.php:23
+#: includes/section/dashboard/botblocker-dash-health.php:24
 #: includes/section/dashboard/botblocker-dash-links.php:10
 #: includes/section/dashboard/botblocker-dash-traffic.php:13
 msgid "Settings"
@@ -5711,7 +5855,7 @@ msgstr "Настройки успешно сохранены"
 msgid "Setup Already Completed!"
 msgstr "Настройка уже завершена!"
 
-#: includes/section/dashboard/botblocker-dash-health.php:51
+#: includes/section/dashboard/botblocker-dash-health.php:52
 msgid "Setup not completed"
 msgstr "Настройка не завершена"
 
@@ -5719,9 +5863,9 @@ msgstr "Настройка не завершена"
 msgid "Setup session expired. Please refresh the page."
 msgstr "Сессия настройки истекла. Пожалуйста, обновите страницу."
 
-#: admin/class-botblocker-admin.php:325 admin/class-botblocker-admin.php:326
+#: admin/class-botblocker-admin.php:338 admin/class-botblocker-admin.php:339
 #: admin/partials/botblocker-section-header.php:37
-#: includes/section/dashboard/botblocker-dash-health.php:113
+#: includes/section/dashboard/botblocker-dash-health.php:132
 msgid "Setup Wizard"
 msgstr "Мастер настройки"
 
@@ -5938,6 +6082,11 @@ msgstr "Максимальный уровень защиты"
 msgid "Subscription status"
 msgstr "Статус подписки"
 
+#: includes/utilites/util-botblocker-support.php:16
+#: includes/utilites/util-botblocker-support.php:24
+msgid "Support"
+msgstr "Поддержка"
+
 #: admin/class-botblocker-setup-wizard.php:1027
 msgid "support center"
 msgstr "Центр поддержки"
@@ -5962,7 +6111,7 @@ msgstr "Системное администрирование"
 msgid "System Cron Job Commands"
 msgstr "Команды системных Cron-заданий"
 
-#: admin/partials/botblocker-section-right-sidebar.php:246
+#: admin/partials/botblocker-section-right-sidebar.php:264
 msgid "System Status"
 msgstr "Состояние системы"
 
@@ -6052,7 +6201,7 @@ msgstr ""
 "Страница восстановления базы данных доступна всем без аутентификации, если "
 "эта опция включена. Не забудьте отключить её после использования!"
 
-#: includes/hook/botblocker-hook-cloud-api.php:116
+#: includes/hook/botblocker-hook-cloud-api.php:114
 msgid ""
 "The key you entered is invalid. Please double-check it. Cloud API responded "
 "with: "
@@ -6064,11 +6213,11 @@ msgstr ""
 msgid "The log will start filling again when new errors occur."
 msgstr "Журнал снова начнёт заполняться при возникновении новых ошибок."
 
-#: includes/section/cloud/botblocker-cloud-status.php:99
+#: includes/section/cloud/botblocker-cloud-status.php:122
 msgid "The number of cloud requests remaining for your account."
 msgstr "Количество оставшихся облачных запросов для вашего аккаунта."
 
-#: includes/section/cloud/botblocker-cloud-status.php:122
+#: includes/section/cloud/botblocker-cloud-status.php:145
 msgid ""
 "The number of days remaining for your Cloud API Connection to stay active."
 msgstr ""
@@ -6375,7 +6524,7 @@ msgstr "Неизвестный"
 msgid "Unlock Add-ons Marketplace"
 msgstr "Разблокировать маркетплейс дополнений"
 
-#: includes/section/dashboard/botblocker-dash-health.php:102
+#: includes/section/dashboard/botblocker-dash-health.php:118
 msgid "Unlock Advanced Protection"
 msgstr "Разблокировать расширенную защиту"
 
@@ -6557,6 +6706,10 @@ msgstr "Проверить"
 msgid "Version"
 msgstr "Версия"
 
+#: includes/section/cloud/botblocker-cloud-status.php:68
+msgid "view"
+msgstr "просмотреть"
+
 #: admin/partials/botblocker-section-header.php:109
 msgid "View All"
 msgstr "Просмотреть все"
@@ -6565,11 +6718,11 @@ msgstr "Просмотреть все"
 msgid "View Dashboard"
 msgstr "Перейти в консоль"
 
-#: includes/section/dashboard/botblocker-dash-health.php:29
+#: includes/section/dashboard/botblocker-dash-health.php:30
 msgid "View full Health Status"
 msgstr "Посмотреть полный отчет о состоянии"
 
-#: includes/section/dashboard/botblocker-dash-health.php:131
+#: includes/section/dashboard/botblocker-dash-health.php:150
 msgid "View my PRO"
 msgstr "Посмотреть мою PRO-версию"
 
@@ -6590,6 +6743,7 @@ msgid "VPN & Proxy Blocking"
 msgstr "Блокировка VPN и прокси"
 
 #: admin/class-botblocker-setup-wizard.php:988
+#: includes/section/cloud/botblocker-cloud-status.php:64
 msgid "VPN & TOR Blocking"
 msgstr "Блокировка VPN и TOR"
 
@@ -6707,6 +6861,7 @@ msgid "WordPress 2FA Documentation"
 msgstr "Документация по 2FA для WordPress"
 
 #: admin/class-botblocker-setup-wizard.php:986
+#: includes/section/cloud/botblocker-cloud-status.php:62
 #| msgid "WordPress acceleration"
 msgid "WordPress Acceleration"
 msgstr "Ускорение WordPress"
@@ -6910,7 +7065,7 @@ msgid "You have full access to all enterprise features."
 msgstr "У вас есть полный доступ к функциям Enterprise."
 
 #: admin/partials/botblocker-admin-dashboard-widgets.php:107
-#: includes/section/dashboard/botblocker-dash-health.php:17
+#: includes/section/dashboard/botblocker-dash-health.php:18
 msgid "You have PRO activated. Check your plan."
 msgstr "У вас активирована подписка PRO. Проверьте свой тарифный план."
 
@@ -6978,11 +7133,19 @@ msgstr "Ваш IP-адрес будет навсегда добавлен в д�
 msgid "Your login URL is already customized."
 msgstr "Ваш URL для входа уже настроен."
 
+#: includes/utilites/util-botblocker-support.php:135
+msgid "Your request has been sent successfully!"
+msgstr "Ваш запрос был успешно отправлен!"
+
+#: includes/shortcode/botblocker-shortcode-tooltips.php:111
+msgid "Your security configuration is complete."
+msgstr "Ваша защита полностью настроена."
+
 #: includes/modal/modal-botblocker-hits-add-rule.php:51
 msgid "Your selected data for the rule"
 msgstr "Выбранные вами данные для правила"
 
-#: includes/section/dashboard/botblocker-dash-health.php:77
+#: includes/section/dashboard/botblocker-dash-health.php:78
 msgid ""
 "Your site is fully protected with BotBlocker PRO. Cloud-based security "
 "shields are actively monitoring and blocking advanced threats in real-time."
@@ -6994,7 +7157,7 @@ msgstr ""
 msgid "Your Site is Now Protected!"
 msgstr "Ваш сайт теперь под защитой!"
 
-#: includes/section/dashboard/botblocker-dash-health.php:89
+#: includes/section/dashboard/botblocker-dash-health.php:105
 msgid ""
 "Your site is only partially protected. BotBlocker is already blocking basic "
 "automated attacks, but several critical shields are still disabled."
@@ -7009,6 +7172,7 @@ msgstr "Никакого воздействия на посетителей."
 
 #: admin/class-botblocker-setup-wizard.php:435
 #: admin/class-botblocker-setup-wizard.php:995
+#: includes/section/cloud/botblocker-cloud-status.php:66
 msgid "Zero-day botnet updates"
 msgstr "Обновления для нулевого дня ботнетов"
 

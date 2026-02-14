@@ -14,3 +14,5 @@ include_once BOTBLOCKER_DIR . 'includes/inc-botblocker-ui.php';
 include_once BOTBLOCKER_DIR . 'includes/inc-botblocker-alerts.php';
 
 include_once BOTBLOCKER_DIR . 'includes/utilites/util-botblocker-db.php';
+
+require_once BOTBLOCKER_DIR . 'includes/utilites/2FA/inc-botblocker-2fa.php';

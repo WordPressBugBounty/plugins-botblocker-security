@@ -204,6 +204,7 @@ if (!$bbcs_2fa_verified) {
                             data-bs-toggle="tooltip"
                             data-bs-html="true"
                             data-bs-placement="top"
+                            <?php /* translators: %s: role display name, e.g. 'Administrator' */ ?>
                             data-bs-original-title="<?php echo esc_attr(sprintf(__('Enable BotBlocker Two-Factor Authentication for %s', 'botblocker-security'), $bbcs_role_value['name'])); ?>">
                         </i>
                     </div>

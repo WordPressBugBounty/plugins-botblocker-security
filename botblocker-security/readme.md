@@ -4,7 +4,7 @@ Tags: security, firewall, anti-spam, captcha, brute force
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.6.9
+Stable tag: 1.6.10
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -207,6 +207,11 @@ Use **Allowlist** for admin IPs/services and enable "allow server self-IP" so WP
 
 == Changelog ==
  
+= 1.6.10 =
+Fix captcha verification issue in some environments
+Fix minor UI glitches in admin panel
+Add OpenAI, Claude, and Gemini user agent detection
+
 = 1.6.9 =
 Add 2FA support for admin users
 Add setup wizard improvements

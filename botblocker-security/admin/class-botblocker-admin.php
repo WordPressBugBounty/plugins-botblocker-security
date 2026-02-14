@@ -56,6 +56,8 @@ class Botblocker_Admin
             wp_enqueue_style(BOTBLOCKER_SHORT_NAME . '-datatables', plugin_dir_url(__FILE__) . 'css/datatables/datatables.min.css', array(), BOTBLOCKER_VERSION, 'all');
             wp_enqueue_style(BOTBLOCKER_SHORT_NAME . '-admin', plugin_dir_url(__FILE__) . 'css/botblocker-admin.css', array(), BOTBLOCKER_VERSION, 'all');
             wp_enqueue_style(BOTBLOCKER_SHORT_NAME . '-admin-mobile', plugin_dir_url(__FILE__) . 'css/botblocker-admin-mobile.css', array(), BOTBLOCKER_VERSION, 'all');
+
+            wp_enqueue_style(BOTBLOCKER_SHORT_NAME . '-support-component', plugin_dir_url(__FILE__) . 'css/botblocker-support-component.css', array(), BOTBLOCKER_VERSION, 'all');
         }
         if ($screen->id === 'toplevel_page_bbcs_dashboard') {
             wp_enqueue_style(BOTBLOCKER_SHORT_NAME . '-jsvectormap', plugin_dir_url(__FILE__) . 'css/jsvectormap/jsvectormap.min.css', [], BOTBLOCKER_VERSION);
@@ -100,6 +102,17 @@ class Botblocker_Admin
             ));
             wp_localize_script(BOTBLOCKER_SHORT_NAME . '-common-js', 'botblockerCurrentLocale', array(
                 'locale' => self::$instance->check_translate_for_this_locale($locale)
+            ));
+
+            wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-support-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-support.js', array('jquery'), BOTBLOCKER_VERSION, true);
+            wp_localize_script(BOTBLOCKER_SHORT_NAME . '-support-js', 'botblockerSupportData', array(
+                'ajaxurl' => admin_url('admin-ajax.php'),
+                'nonce'   => wp_create_nonce('botblocker_support_nonce'),
+                'i18n'   => array(
+                    'sending' => __('Sending...', 'botblocker-security'),
+                    'send'    => __('Send', 'botblocker-security'),
+                    'error'   => __('An error occurred. Please try again later.', 'botblocker-security')
+                )
             ));
 
             if ($screen->id === 'toplevel_page_bbcs_dashboard' || $screen->id === 'botblocker_page_bbcs_setup_guide') {
@@ -154,7 +167,7 @@ class Botblocker_Admin
             }
 
             if ($screen->id === 'botblocker_page_bbcs_integrations') {
-                wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-integrations-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-integrations.js', array('jquery'), BOTBLOCKER_VERSION, true);                
+                wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-integrations-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-integrations.js', array('jquery'), BOTBLOCKER_VERSION, true);
                 wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-2fa-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-2fa.js', array('jquery'), BOTBLOCKER_VERSION, true);
                 wp_localize_script(BOTBLOCKER_SHORT_NAME . '-2fa-js', 'botblockerData', array(
                     'ajaxurl' => admin_url('admin-ajax.php'),
@@ -337,51 +350,61 @@ class Botblocker_Admin
     public function dashboard_page()
     {
         require plugin_dir_path(__FILE__) . 'partials/botblocker-admin-display-dashboard.php';
+        do_action('bbcs_show_support_button');
     }
 
     public function settings_page()
     {
         require plugin_dir_path(__FILE__) . 'partials/botblocker-admin-display-settings.php';
+        do_action('bbcs_show_support_button');
     }
 
     public function reports_page()
     {
         require plugin_dir_path(__FILE__) . 'partials/botblocker-admin-display-reports.php';
+        do_action('bbcs_show_support_button');
     }
 
     public function rules_page()
     {
         require plugin_dir_path(__FILE__) . 'partials/botblocker-admin-display-rules.php';
+        do_action('bbcs_show_support_button');
     }
 
     public function tools_page()
     {
         require plugin_dir_path(__FILE__) . 'partials/botblocker-admin-display-tools.php';
+        do_action('bbcs_show_support_button');
     }
 
     public function integrations_page()
     {
         require plugin_dir_path(__FILE__) . 'partials/botblocker-admin-display-integrations.php';
+        do_action('bbcs_show_support_button');
     }
 
     public function cloud_api_page()
     {
         require plugin_dir_path(__FILE__) . 'partials/botblocker-admin-display-cloud-api.php';
+        do_action('bbcs_show_support_button');
     }
 
     public function addons_page()
     {
         require plugin_dir_path(__FILE__) . 'partials/botblocker-admin-display-addons.php';
+        do_action('bbcs_show_support_button');
     }
 
     public function setup_guide_page()
     {
         require plugin_dir_path(__FILE__) . 'partials/botblocker-admin-display-setup-guide.php';
+        do_action('bbcs_show_support_button');
     }
 
     public function about_page()
     {
         require plugin_dir_path(__FILE__) . 'partials/botblocker-admin-display-about.php';
+        do_action('bbcs_show_support_button');
     }
 
     public function add_to_admin_bar($wp_admin_bar)

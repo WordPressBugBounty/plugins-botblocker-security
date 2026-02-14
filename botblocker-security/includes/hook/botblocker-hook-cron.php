@@ -243,7 +243,6 @@ function bbcs_send_suspicious_hits_to_cloud()
 
     $last_date = 0;
     $request_auth = [
-        'suspicious' => true,
         'cloud_api_key' => $BBCS->settings->cloud_api_key,
         'domain_api_key' => $BBCS->settings->cloud_api_secret,
     ];
@@ -256,8 +255,9 @@ function bbcs_send_suspicious_hits_to_cloud()
         // Should not be cached - it's a cron task for cleanup.
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $suspicious_hits = $wpdb->get_results($wpdb->prepare(
-            "SELECT ip, ptr, useragent, date FROM `{$wpdb->bbcs_hits_cloud}` WHERE date > %d ORDER BY date ASC LIMIT %d",
+            "SELECT ip, date FROM `{$wpdb->bbcs_hits_cloud}` WHERE date > %d AND ip != %s ORDER BY date ASC LIMIT %d",
             $last_date,
+            BOTBLOCKER_EMPTY,
             BOTBLOCKER_CLOUD_RECORDS_BATCH
         ), ARRAY_A);
 
@@ -270,16 +270,19 @@ function bbcs_send_suspicious_hits_to_cloud()
         }
         $last_date = $batch_end_date = end($suspicious_hits)['date'];
 
-        $compressed = gzencode(wp_json_encode($suspicious_hits), 9);
-        unset($suspicious_hits);
+        $ip_records = array_map(function($hit) {
+            return ['ip' => $hit['ip']];
+        }, $suspicious_hits);
+        $compressed = gzencode(wp_json_encode($ip_records), 9);
+        unset($suspicious_hits, $ip_records);
         $request_data['hits'][] = base64_encode($compressed);
         unset($compressed);
 
         if (count($request_data['hits']) >= BOTBLOCKER_CLOUD_REQUEST_SIZE) {
             $request_data = array_merge($request_data, $request_auth);
-            $cloud = BotBlockerWpRequest::send_to_cloud($request_data, BOTBLOCKER_API_GS_URL);
+            $cloud = BotBlockerWpRequest::send_to_cloud($request_data, BOTBLOCKER_API_GS_URL, 'suspicious');
             if ($cloud === false) {
-                $cloud = BotBlockerWpRequest::send_to_cloud($request_data, BOTBLOCKER_API_URL);
+                $cloud = BotBlockerWpRequest::send_to_cloud($request_data, BOTBLOCKER_API_URL, 'suspicious');
             }
 
             if ($cloud !== false) {
@@ -300,9 +303,9 @@ function bbcs_send_suspicious_hits_to_cloud()
 
     if (!empty($request_data)) {
         $request_data = array_merge($request_data, $request_auth);
-        $cloud = BotBlockerWpRequest::send_to_cloud($request_data, BOTBLOCKER_API_GS_URL);
+        $cloud = BotBlockerWpRequest::send_to_cloud($request_data, BOTBLOCKER_API_GS_URL, 'suspicious');
         if ($cloud === false) {
-            $cloud = BotBlockerWpRequest::send_to_cloud($request_data, BOTBLOCKER_API_URL);
+            $cloud = BotBlockerWpRequest::send_to_cloud($request_data, BOTBLOCKER_API_URL, 'suspicious');
         }
 
         if ($cloud !== false) {

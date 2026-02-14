@@ -231,7 +231,7 @@ class BotBlockerCaptchaRendererFull {
         $output .= 'function fetchAndSetImage(param, imageId) {
         var url = \'' . admin_url('admin-ajax.php') . '\';
         var formData = new FormData();
-        formData.append(\'action\', \'botblocker_check\');
+        formData.append(\'action\', \'bbcs_botblocker_check\');
         formData.append(\'nonce\', \'' . wp_create_nonce('botblocker_nonce') . '\');
         formData.append(\'img\', param);
         formData.append(\'time\', "' . $this->BBCS->time . '");

@@ -155,7 +155,7 @@ if ($BBCS->settings->utm_referrer == 1 and $BBCS->referer != '') {
 
   // TODO check esc_js 
   if (window.location.hostname !== window.atob("<?php echo esc_js(base64_encode($BBCS->host)); ?>") && window.location.hostname !== window.atob("<?php echo esc_js(base64_encode(strstr($BBCS->host, ':', true))); ?>")) {
-    window.location = window.atob("<?php echo esc_js(base64_encode($BBCS->scheme . '://' . $BBCS->host . $BBCS->uri)); ?>");
+    window.location = window.atob("<?php echo esc_js(base64_encode(esc_url_raw($BBCS->scheme . '://' . $BBCS->host . $BBCS->uri))); ?>");
     throw "stop";
   }
 
@@ -274,7 +274,7 @@ if ($BBCS->settings->utm_referrer == 1 and $BBCS->referer != '') {
     document.getElementById("content").innerHTML = "<?php echo esc_js('Loading...'); ?>";
     
     var data = new FormData();
-    data.append('action', 'botblocker_check');
+    data.append('action', 'bbcs_botblocker_check');
     data.append('nonce', '<?php echo esc_js(wp_create_nonce('botblocker_nonce')); ?>');
     data.append('<?php echo esc_js($BBCS->select_request_mode); ?>', s);
     data.append('xxx', x);
@@ -309,7 +309,7 @@ if ($BBCS->settings->utm_referrer == 1 and $BBCS->referer != '') {
                         var expires = "expires=" + d.toUTCString();
                         document.cookie = "<?php echo esc_js($BBCS->uid); ?>=" + obj.cookie + "-<?php echo esc_js($BBCS->time); ?>; SameSite=<?php echo esc_js($BBCS->settings->samesite); ?>;<?php echo (($BBCS->settings->samesite == 'None') ? ' Secure' : ''); ?>; " + expires + "; path=/;";
                         document.getElementById("content").innerHTML = "<?php echo esc_js('Loading...'); ?>";
-                        window.location.href = "<?php echo esc_url($botblocker_redirect_url); ?>";
+                        window.location.href = "<?php echo esc_js(esc_url_raw($botblocker_redirect_url)); ?>";
                     } else {
                         botblocker_captcha_render(); 
                         bbcsDebugLog('Bad bot detected');
@@ -336,7 +336,7 @@ if ($BBCS->settings->utm_referrer == 1 and $BBCS->referer != '') {
                         <?php } ?>
                         if (obj.error == "Wrong Click") {
                             document.getElementById("content").innerHTML = "<?php echo esc_js('Loading...'); ?>";
-                            window.location.href = "<?php echo esc_url($botblocker_redirect_url); ?>";
+                            window.location.href = "<?php echo esc_js(esc_url_raw($botblocker_redirect_url)); ?>";
                         }
                     }
                 } else {

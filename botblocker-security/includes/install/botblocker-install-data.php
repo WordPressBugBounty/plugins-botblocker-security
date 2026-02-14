@@ -106,8 +106,22 @@ function bbcs_insertDefaultSearchEngines()
     global $wpdb;
     
     $default_search_engines = [
+            ['priority' => 1,  'search' => 'Google-InspectionTool', 'data' => '.googlebot.com', 'rule' => 'allow', 'comment' => 'Search Console', 'disable' => 1],
+            ['priority' => 1,  'search' => 'Chrome-Lighthouse', 'data' => '.google.com', 'rule' => 'allow', 'comment' => 'PageSpeed Insights', 'disable' => 1],
+            ['priority' => 1,  'search' => 'Mediapartners', 'data' => '.googlebot.com .google.com', 'rule' => 'allow', 'comment' => 'AdSense bot', 'disable' => 1],
 
-            ['priority' => 1,  'search' => 'Googlebot', 'data' => '.googlebot.com', 'rule' => 'allow', 'comment' => 'GoogleBot main indexer', 'disable' => 0],
+            ['priority' => 2,  'search' => 'Googlebot-Image', 'data' => '.googlebot.com .google.com', 'rule' => 'allow', 'comment' => 'Google Images', 'disable' => 0],
+            ['priority' => 2,  'search' => 'Googlebot-Video', 'data' => '.googlebot.com .google.com', 'rule' => 'allow', 'comment' => 'Google Videos', 'disable' => 0],
+            ['priority' => 2,  'search' => 'Googlebot-News', 'data' => '.googlebot.com .google.com', 'rule' => 'allow', 'comment' => 'Google News', 'disable' => 0],
+            ['priority' => 2,  'search' => 'Storebot-Google', 'data' => '.google.com', 'rule' => 'allow', 'comment' => 'Google Shopping', 'disable' => 0],
+
+            ['priority' => 5,  'search' => 'GoogleOther-Image', 'data' => '.google.com', 'rule' => 'allow', 'comment' => 'GoogleOther Images', 'disable' => 0],
+            ['priority' => 5,  'search' => 'GoogleOther-Video', 'data' => '.google.com', 'rule' => 'allow', 'comment' => 'GoogleOther Videos', 'disable' => 0],
+            ['priority' => 5,  'search' => 'Google-CloudVertexBot', 'data' => '.google.com .googleusercontent.com', 'rule' => 'allow', 'comment' => 'Vertex AI', 'disable' => 0],
+
+            ['priority' => 10, 'search' => 'Googlebot', 'data' => '.googlebot.com', 'rule' => 'allow', 'comment' => 'GoogleBot (Catch-all)', 'disable' => 0],
+            ['priority' => 10, 'search' => 'GoogleOther', 'data' => '.google.com', 'rule' => 'allow', 'comment' => 'GoogleOther (Catch-all)', 'disable' => 0],
+
             ['priority' => 2,  'search' => 'bingbot', 'data' => 'search.msn.com', 'rule' => 'allow', 'comment' => 'Microsoft Bing search bot', 'disable' => 0],
             ['priority' => 3,  'search' => 'yandex.com', 'data' => '.yandex.ru .yandex.net .yandex.com', 'rule' => 'allow', 'comment' => 'Yandex search bots and services', 'disable' => 0],
             ['priority' => 4,  'search' => 'Applebot', 'data' => '.applebot.apple.com', 'rule' => 'allow', 'comment' => 'Applebot crawler', 'disable' => 0],
@@ -123,6 +137,13 @@ function bbcs_insertDefaultSearchEngines()
             ['priority' => 28, 'search' => 'Y!J', 'data' => '.yahoo.co.jp', 'rule' => 'allow', 'comment' => 'Yahoo! Japan crawler', 'disable' => 0],
             ['priority' => 30, 'search' => 'Yahoo! Slurp', 'data' => '.yahoo.net', 'rule' => 'allow', 'comment' => 'Yahoo legacy crawler', 'disable' => 0],
             ['priority' => 50, 'search' => 'msnbot', 'data' => 'search.msn.com', 'rule' => 'allow', 'comment' => 'Legacy Microsoft search bot', 'disable' => 0],
+
+            ['priority' => 31, 'search' => 'GPTBot', 'data' => '.openai.com', 'rule' => 'allow', 'comment' => 'OpenAI GPT training crawler', 'disable' => 0],
+            ['priority' => 32, 'search' => 'OAI-SearchBot', 'data' => '.openai.com', 'rule' => 'allow', 'comment' => 'OpenAI search crawler', 'disable' => 0],
+            ['priority' => 33, 'search' => 'ChatGPT-User', 'data' => '.openai.com', 'rule' => 'allow', 'comment' => 'ChatGPT user-initiated requests', 'disable' => 0],
+            ['priority' => 34, 'search' => 'ClaudeBot', 'data' => '.anthropic.com', 'rule' => 'allow', 'comment' => 'Anthropic Claude training crawler', 'disable' => 0],
+            ['priority' => 35, 'search' => 'Claude-User', 'data' => '.anthropic.com', 'rule' => 'allow', 'comment' => 'Claude user-initiated requests', 'disable' => 0],
+            ['priority' => 36, 'search' => 'Claude-SearchBot', 'data' => '.anthropic.com', 'rule' => 'allow', 'comment' => 'Claude search crawler', 'disable' => 0],
 
             ['priority' => 11, 'search' => 'facebookexternalhit', 'data' => '.fbsv.net .tfbnw.net', 'rule' => 'allow', 'comment' => 'Facebook crawler', 'disable' => 0],
             ['priority' => 19, 'search' => 'vkShare', 'data' => '.vk.com .vkontakte.ru .userapi.ru', 'rule' => 'allow', 'comment' => 'VK link preview', 'disable' => 0],
@@ -149,10 +170,6 @@ function bbcs_insertDefaultSearchEngines()
             ['priority' => 80, 'search' => 'SemrushBot', 'data' => '.semrush.com', 'rule' => 'dark', 'comment' => 'Semrush SEO crawler', 'disable' => 0],
             ['priority' => 80, 'search' => 'MJ12bot', 'data' => '.majestic12.co.uk .mj12bot.com', 'rule' => 'dark', 'comment' => 'Majestic crawler', 'disable' => 0],
             ['priority' => 80, 'search' => 'DotBot', 'data' => '.moz.com', 'rule' => 'dark', 'comment' => 'Moz DotBot crawler', 'disable' => 0],
-
-            ['priority' => 9,  'search' => 'Chrome-Lighthouse', 'data' => '.google.com', 'rule' => 'allow', 'comment' => 'PageSpeed Insights', 'disable' => 1],
-            ['priority' => 7,  'search' => 'Google-InspectionTool', 'data' => '.googlebot.com', 'rule' => 'allow', 'comment' => 'Search Console', 'disable' => 1],
-            ['priority' => 10, 'search' => 'Mediapartners', 'data' => '.googlebot.com .google.com', 'rule' => 'allow', 'comment' => 'AdSense bot', 'disable' => 1]
     ];
 
     foreach ($default_search_engines as $se) {

@@ -3,8 +3,14 @@
 
     // Cloud API status
     $(document).ready(function () {
-        let updated = false;
-        function refreshCloudAPI() {
+        let isAutoUpdated = false;
+        let fetching = false;
+        function refreshCloudAPI(isAutomaticRefresh) {
+            if (fetching) return;
+            if (isAutomaticRefresh && isAutoUpdated) return;
+            
+            fetching = true;
+            $('#bbcs_refresh_cloud_api').prop('disabled', true);
             $.ajax({
                 url: botblockerData.ajaxurl,
                 type: 'POST',
@@ -16,34 +22,48 @@
                     if (response.success) {
                         $('#bbcs_remaining_hits').val(response.data.remaining_hits);
                         $('#bbcs_remaining_days').val(response.data.remaining_days);
-                        alert('Cloud API information refreshed successfully!');
+                        if (!isAutomaticRefresh) {
+                            alert('Cloud API information refreshed successfully!');
+                        }
                     } else {
-                        alert(response.data.error || 'Failed to refresh Cloud API information.');
+                        if (!isAutomaticRefresh) {
+                            alert(response.data.error || 'Failed to refresh Cloud API information.');
+                        }
                     }
                 },
                 error: function (xhr, status, error) {
-                    alert('AJAX Error: ' + error);
+                    if (!isAutomaticRefresh) {
+                        alert('AJAX Error: ' + error);
+                    }
                 },
                 complete: function () {
-                    updated = true;
+                    fetching = false;
+                    $('#bbcs_refresh_cloud_api').prop('disabled', false);
+                    if (isAutomaticRefresh) {
+                        isAutoUpdated = true;
+                    }
                 }
             });
         }
 
-        $('#bbcs_refresh_cloud_api').on('click', refreshCloudAPI);
+        $('#bbcs_refresh_cloud_api').on('click', function() {
+            refreshCloudAPI(false);
+        });
 
-        if ($('#bbcs_remaining_hits').attr('data-should-fetch') == "true") {
+        if ($('#bbcs_remaining_hits').attr('data-should-fetch') === "true") {
+            function isCloudStatusTabActive() {
+                return $('#cloud-status').hasClass('active');
+            }
+
+            if (isCloudStatusTabActive()) {
+                refreshCloudAPI(true);
+            }
+
             $('a.nav-link[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
-                if (!updated && e.target.getAttribute('href') === '#cloud-status') {
-                    refreshCloudAPI();
+                if (!isAutoUpdated && e.target.getAttribute('href') === '#cloud-status') {
+                    refreshCloudAPI(true);
                 }
             });
-
-            if (window.location.hash === '#cloud-status') {
-                if ($('#bbcs_remaining_hits').attr('data-should-fetch') == "true") {
-                    refreshCloudAPI();
-                }
-            }
         }
     });
  

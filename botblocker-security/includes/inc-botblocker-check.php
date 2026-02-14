@@ -18,6 +18,21 @@ function bbcs_check_request_method($method)
     $allowed_methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];
     // TODO  HEAD OPTIONS CONNECT TRACE
     $method = strtoupper(trim($method));
+
+    if ($method === 'OPTIONS') { // WooCommerce wizard (v10.*)
+        $referer = esc_url_raw(wp_unslash($_SERVER['HTTP_REFERER'] ?? ''));
+        $nonce = sanitize_text_field(wp_unslash($_SERVER['HTTP_X_WP_NONCE'] ?? ''));
+
+        if (!empty($referer) && !empty($nonce)) {
+            $referer_base = untrailingslashit(explode('?', $referer, 2)[0]);
+            $allowed_referer = untrailingslashit(admin_url('admin.php'));
+            if ($referer_base === $allowed_referer) {
+                return true;
+            }
+        }
+        return false; 
+    }
+    
     if (in_array($method, $allowed_methods, true)) {
         return true;
     }
