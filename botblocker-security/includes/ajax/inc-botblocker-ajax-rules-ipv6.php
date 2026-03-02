@@ -3,6 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 function bbcs_get_botblocker_ipv6_rules_callback() {
     check_ajax_referer( 'botblocker_nonce', 'nonce' );
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     global $wpdb;
 
@@ -107,6 +108,7 @@ add_action( 'wp_ajax_bbcs_get_botblocker_ipv6_rules', 'bbcs_get_botblocker_ipv6_
 function bbcs_delete_ipv6_rule_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     global $wpdb;
 
@@ -137,6 +139,7 @@ add_action('wp_ajax_bbcs_delete_ipv6_rule', 'bbcs_delete_ipv6_rule_callback');
 
 function bbcs_toggle_ipv6_rule_callback() {
     check_ajax_referer( 'botblocker_nonce', 'nonce' );
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     global $wpdb;
 
@@ -196,6 +199,7 @@ add_action('wp_ajax_bbcs_toggle_ipv6_rule', 'bbcs_toggle_ipv6_rule_callback' );
 function bbcs_create_ipv6_rule_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     global $wpdb;
 
@@ -300,6 +304,7 @@ add_action('wp_ajax_bbcs_create_ipv6_rule', 'bbcs_create_ipv6_rule_callback');
 function bbcs_update_ipv6_rule_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     global $wpdb;
 
@@ -397,6 +402,7 @@ add_action('wp_ajax_bbcs_update_ipv6_rule', 'bbcs_update_ipv6_rule_callback');
 function bbcs_export_ipv6_rules_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     global $wpdb;
 
@@ -424,6 +430,7 @@ add_action('wp_ajax_bbcs_export_ipv6_rules', 'bbcs_export_ipv6_rules_callback');
 function bbcs_import_ipv6_rules_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     global $wpdb;
 
@@ -493,6 +500,7 @@ add_action('wp_ajax_bbcs_import_ipv6_rules', 'bbcs_import_ipv6_rules_callback');
 function bbcs_clear_all_ipv6_rules_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     $result = bbcs_clear_all_ipv6_rules();
 
@@ -513,6 +521,7 @@ add_action('wp_ajax_bbcs_clear_all_ipv6_rules', 'bbcs_clear_all_ipv6_rules_callb
 
 function bbcs_get_ipv6_rule_details_callback() {
     check_ajax_referer( 'botblocker_nonce', 'nonce' );
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     global $wpdb;
 
@@ -552,6 +561,7 @@ add_action( 'wp_ajax_bbcs_get_ipv6_rule_details', 'bbcs_get_ipv6_rule_details_ca
 function bbcs_import_ipv6_whitelist_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
     bbcs_import_ipv6_list('allow');
 }
 add_action('wp_ajax_bbcs_import_ipv6_whitelist', 'bbcs_import_ipv6_whitelist_callback');
@@ -559,6 +569,7 @@ add_action('wp_ajax_bbcs_import_ipv6_whitelist', 'bbcs_import_ipv6_whitelist_cal
 function bbcs_import_ipv6_blacklist_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
     bbcs_import_ipv6_list('block');
 }
 add_action('wp_ajax_bbcs_import_ipv6_blacklist', 'bbcs_import_ipv6_blacklist_callback');
@@ -655,6 +666,8 @@ function bbcs_clear_all_ipv6_rules()
 
 function bbcs_ipv6_to_php_callback(): void
 {
+	check_ajax_referer('botblocker_nonce', 'nonce');
+	if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 	try {
         bbcs_renderIpsFromDb();
 

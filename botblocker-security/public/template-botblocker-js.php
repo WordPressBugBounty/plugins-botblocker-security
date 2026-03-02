@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit;
+if (!defined('WPINC') || !defined('BOTBLOCKER')) {
+  exit;
+}
 
 /**
  * BotBlocker JavaScript Template
@@ -10,10 +14,6 @@
  * 
  */
 
-// If this file is called directly, abort.
-if (!defined('ABSPATH') || !defined('WPINC') || !defined('BOTBLOCKER')) {
-    exit;
-}
 global $wpdb;
 $BBCS = BotBlocker::getInstance();
 
@@ -267,7 +267,11 @@ if ($BBCS->settings->utm_referrer == 1 and $BBCS->referer != '') {
       // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
       echo $bbcs_renderer->render();
 
+      $bbcs_ct = $bbcs_renderer->getChallengeToken();
     ?>
+    <?php if (!empty($bbcs_ct)) : ?>
+    window.bbcs_challenge_token = "<?php echo esc_js($bbcs_ct); ?>";
+    <?php endif; ?>
   }
 
   function <?php echo esc_js($botblocker_check_function_name); ?>(s, d, x) {
@@ -283,6 +287,9 @@ if ($BBCS->settings->utm_referrer == 1 and $BBCS->referer != '') {
 
     data.append('suspect_reason', '<?php echo esc_js($BBCS->reason_for_action); ?>');
     data.append('check_result', '<?php echo esc_js($BBCS->result_of_action); ?>');
+    if (typeof bbcs_challenge_token !== 'undefined' && bbcs_challenge_token) {
+        data.append('challenge_token', bbcs_challenge_token);
+    }
 
     var additionalParams = new URLSearchParams(d);
     for (var pair of additionalParams.entries()) {

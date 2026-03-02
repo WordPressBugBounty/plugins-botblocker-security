@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: BotBlocker\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-02 12:11+0000\n"
-"PO-Revision-Date: 2026-01-16 15:55+0000\n"
+"PO-Revision-Date: 2026-03-02 08:50+0000\n"
 "Last-Translator: \n"
 "Language-Team: Spanish (Spain)\n"
 "Language: es_ES\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Loco https://localise.biz/\n"
-"X-Loco-Version: 2.8.0; wp-6.9; php-8.3.14\n"
+"X-Loco-Version: 2.8.2; wp-6.9.1; php-8.3.14\n"
 "X-Domain: botblocker-security"
 
 #: admin/partials/botblocker-admin-dashboard-widgets.php:171
@@ -44,6 +44,15 @@ msgstr "Más de 5 millones de firmas de bots"
 #: includes/modal/modal-botblocker-setup-wizard.php:116
 msgid "7-step guided setup"
 msgstr "Configuración guiada en 7 pasos"
+
+#: includes/inc-botblocker-ui.php:57
+msgid "<small>(Realtime)</small>"
+msgstr "<small>(Tiempo real)</small>"
+
+#: includes/inc-botblocker-ui.php:51
+#, php-format
+msgid "<small>(Update every %s)</small>"
+msgstr "<small>(Actualizar cada %s)</small>"
 
 #. 1: Link to the IPv4 tab URL, 2: Link to the IPv6 tab URL.
 #: admin/partials/botblocker-admin-display-rules.php:207
@@ -162,7 +171,7 @@ msgid "Accept-Language"
 msgstr "Accept-Language"
 
 #: includes/botblocker/traits/class-botblocker-block-page-trait.php:29
-#: includes/botblocker/traits/class-botblocker-response-trait.php:205
+#: includes/botblocker/traits/class-botblocker-response-trait.php:217
 msgid "Access has been blocked"
 msgstr "El acceso ha sido bloqueado"
 
@@ -195,6 +204,7 @@ msgstr "Acción"
 msgid "Actions"
 msgstr "Acciones"
 
+#: admin/partials/botblocker-admin-display-addons.php:118
 #: includes/section/integration/botblocker-int-2fa.php:139
 msgid "Activate"
 msgstr "Activar"
@@ -214,8 +224,8 @@ msgid "Activates before other plugins"
 msgstr "Se activa antes que otros complementos"
 
 #: admin/partials/botblocker-section-right-sidebar.php:26
-#: includes/shortcode/botblocker-shortcode-sidebar.php:204
-#: includes/shortcode/botblocker-shortcode-sidebar.php:235
+#: includes/shortcode/botblocker-shortcode-sidebar.php:207
+#: includes/shortcode/botblocker-shortcode-sidebar.php:238
 #: includes/section/setup/botblocker-setup-pro.php:23
 msgid "Active"
 msgstr "Activo"
@@ -328,7 +338,11 @@ msgid ""
 "Add your own rules: IP, User-Agent, PTR, country, paths, and much more..."
 msgstr "Añade tus propias reglas: IP, User-Agent, PTR, país, rutas и más."
 
-#: includes/inc-botblocker-ui.php:224
+#: admin/partials/botblocker-admin-display-addons.php:18
+msgid "Add-ons"
+msgstr "Complementos"
+
+#: includes/inc-botblocker-ui.php:231
 msgid "Add-ons locked. Activate Cloud API to use marketplace features."
 msgstr ""
 "Complementos bloqueados. Activa Cloud API para usar las funciones del "
@@ -347,6 +361,17 @@ msgstr "Información Adicional"
 #: includes/section/settings/botblocker-set-notif.php:66
 msgid "Addons"
 msgstr "Add-ons"
+
+#: includes/section/settings/botblocker-set-cookie.php:109
+msgid ""
+"Adds Vary: Cookie HTTP header to responses for verified visitors. Forces "
+"CDN/proxy caches to differentiate responses by cookie set. May reduce cache "
+"hit ratio. Enable only if caching issues persist after other measures."
+msgstr ""
+"Añade el encabezado HTTP Vary: Cookie a las respuestas para visitantes "
+"verificados. Obliga a que las cachés CDN/proxy diferencien las respuestas "
+"según la cookie establecida. Puede reducir la tasa de aciertos de caché. "
+"Actívelo solo si los problemas de caché persisten tras otras medidas."
 
 #: admin/class-botblocker-setup-wizard.php:881
 msgid "Adequate performance"
@@ -390,12 +415,12 @@ msgid "Advanced data structures"
 msgstr "Estructuras de datos avanzadas"
 
 #: admin/partials/botblocker-admin-display-settings.php:65
-#: includes/section/settings/botblocker-set-adv.php:14
-#: includes/section/settings/botblocker-set-adv.php:30
+#: includes/section/settings/botblocker-set-adv.php:15
+#: includes/section/settings/botblocker-set-adv.php:31
 msgid "Advanced Protection"
 msgstr "Protección Avanzada"
 
-#: includes/section/settings/botblocker-set-adv.php:18
+#: includes/section/settings/botblocker-set-adv.php:19
 msgid ""
 "Advanced Protection provides enhanced security against sophisticated bots by "
 "using cloud-based validation and intelligent verification techniques. These "
@@ -571,7 +596,7 @@ msgstr "Permitidas:"
 msgid "Already have a license key?"
 msgstr "¿Ya tienes una clave de licencia?"
 
-#: includes/section/settings/botblocker-set-adv.php:70
+#: includes/section/settings/botblocker-set-adv.php:71
 msgid "Always present captcha, regardless of other checks."
 msgstr "Mostrar siempre captcha, independientemente de otras comprobaciones."
 
@@ -587,15 +612,25 @@ msgstr "Y mucho más..."
 msgid "Antidetect browsers"
 msgstr "Navegadores antidetect"
 
+#: includes/section/settings/botblocker-set-captcha.php:131
+#, php-format
+msgid ""
+"Any selected captcha type can be combined with verification using reCaptcha "
+"v3. Please <a href=\"%s\">configure integration</a> with reCaptcha."
+msgstr ""
+"Cualquier tipo de CAPTCHA seleccionado puede combinarse con la verificación "
+"mediante reCaptcha v3. Por favor, <a href=\"%s\">configure la integración</a>"
+" con reCaptcha."
+
 #: includes/section/about/botblocker-about-status.php:24
 msgid "Apache"
 msgstr "Apache"
 
-#: includes/hook/botblocker-hook-cloud-api.php:93
+#: includes/hook/botblocker-hook-cloud-api.php:120
 msgid "API key fetched successfully from cloud server."
 msgstr "Clave API obtenida correctamente del servidor en la nube."
 
-#: includes/hook/botblocker-hook-cloud-api.php:101
+#: includes/hook/botblocker-hook-cloud-api.php:128
 msgid "API key is required."
 msgstr "Se requiere la clave API."
 
@@ -655,6 +690,14 @@ msgstr "ASN"
 msgid "Attack logs analysis & forensics"
 msgstr "Análisis de registros de ataques y forense"
 
+#: includes/section/settings/botblocker-set-login-brutforce.php:53
+msgid "Attempt Counting Window (seconds):"
+msgstr "Ventana de conteo de intentos (segundos):"
+
+#: includes/section/settings/botblocker-set-login-brutforce.php:43
+msgid "Attempts Before Blocking:"
+msgstr "Intentos antes de bloquear:"
+
 #: includes/modal/modal-botblocker-db-repair.php:23
 #: includes/modal/modal-botblocker-log-clear.php:11
 #: includes/modal/modal-botblocker-object-cache.php:11
@@ -664,8 +707,8 @@ msgstr "Análisis de registros de ataques y forense"
 msgid "Attention!"
 msgstr "¡Atención!"
 
-#: includes/shortcode/botblocker-shortcode-sidebar.php:221
-#: includes/shortcode/botblocker-shortcode-sidebar.php:252
+#: includes/shortcode/botblocker-shortcode-sidebar.php:224
+#: includes/shortcode/botblocker-shortcode-sidebar.php:255
 msgid "Author"
 msgstr "Autor"
 
@@ -718,7 +761,7 @@ msgstr "Seguridad y compatibilidad equilibradas"
 msgid "Ban Time (seconds):"
 msgstr "Tiempo de bloqueo (segundos):"
 
-#: includes/section/settings/botblocker-set-adv.php:53
+#: includes/section/settings/botblocker-set-adv.php:54
 msgid "Ban Unresponsive Clients"
 msgstr "Bloquear Clientes que no Responden"
 
@@ -1044,7 +1087,7 @@ msgstr ""
 msgid "BotBlocker API URL:"
 msgstr "URL de la API de BotBlocker:"
 
-#: admin/partials/botblocker-admin-display-settings.php:101
+#: admin/partials/botblocker-admin-display-settings.php:104
 #: includes/section/settings/botblocker-set-captcha.php:13
 #: includes/section/settings/botblocker-set-captcha.php:30
 msgid "BotBlocker Captcha"
@@ -1154,7 +1197,7 @@ msgstr ""
 "pequeña tienda online, o un gran sitio web corporativo, encontrará un plan "
 "que se ajuste a sus necesidades y presupuesto."
 
-#: includes/inc-botblocker-ui.php:149
+#: includes/inc-botblocker-ui.php:156
 msgid ""
 "BotBlocker operates in normal mode processing all threat types (bots, "
 "proxies, referrers, languages etc.) after base early filtering."
@@ -1162,7 +1205,7 @@ msgstr ""
 "BotBlocker opera en modo normal procesando todos los tipos de amenazas (bots,"
 " proxies, referentes, lenguajes, etc.) después del filtrado temprano base."
 
-#: includes/inc-botblocker-ui.php:150
+#: includes/inc-botblocker-ui.php:157
 msgid ""
 "BotBlocker operates in normal mode processing all threat types at WordPress "
 "load."
@@ -1318,7 +1361,11 @@ msgstr "Sitio Web de BotBlocker"
 msgid "botblocker.top/contacts"
 msgstr "botblocker.top/contacts"
 
-#: includes/inc-botblocker-ui.php:230
+#: admin/partials/botblocker-admin-display-addons.php:109
+msgid "Broken"
+msgstr "Dañado"
+
+#: includes/inc-botblocker-ui.php:237
 msgid "Browse Add-ons"
 msgstr "Explorar Add-ons"
 
@@ -1357,6 +1404,14 @@ msgstr "Opciones de Navegador"
 msgid "Browser Plugins"
 msgstr "Plugins de Navegador"
 
+#: includes/shortcode/charts/chart-botblocker-stat.php:61
+msgid "Browsers"
+msgstr "Navegadores"
+
+#: includes/section/settings/botblocker-set-login-brutforce.php:25
+msgid "Brute-force attack"
+msgstr "Ataque de fuerza bruta"
+
 #: includes/section/settings/botblocker-set-captcha.php:43
 msgid "Button - \"I am not a robot\""
 msgstr "Botón - \"No soy un robot\""
@@ -1392,6 +1447,10 @@ msgstr ""
 "acceso a su contenido. El plugin es fácil de configurar y funciona "
 "perfectamente con cualquier sitio WordPress."
 
+#: includes/section/settings/botblocker-set-cookie.php:103
+msgid "Cache Compatibility"
+msgstr "Compatibilidad con caché"
+
 #: includes/section/settings/botblocker-set-ui.php:53
 msgid "Cache Duration"
 msgstr "Duración de la Caché"
@@ -1399,6 +1458,10 @@ msgstr "Duración de la Caché"
 #: includes/section/integration/botblocker-int-memcached.php:67
 msgid "Cache Key Prefix:"
 msgstr "Prefijo de Clave de Caché:"
+
+#: includes/inc-botblocker-alerts.php:146
+msgid "Cache Plugin Compatibility"
+msgstr "Compatibilidad con plugins de caché"
 
 #: includes/section/settings/botblocker-set-ui.php:42
 msgid "Cache Plugin Interface"
@@ -1440,7 +1503,7 @@ msgstr "Modo CAPTCHA activado"
 msgid "Captcha Mode:"
 msgstr "Modo de Captcha:"
 
-#: includes/section/settings/botblocker-set-captcha.php:110
+#: includes/section/settings/botblocker-set-captcha.php:113
 msgid "Captcha Timeout (seconds):"
 msgstr "Tiempo de espera de Captcha (segundos):"
 
@@ -1448,7 +1511,7 @@ msgstr "Tiempo de espera de Captcha (segundos):"
 msgid "CAPTCHA Type:"
 msgstr "Tipo de CAPTCHA:"
 
-#: includes/section/settings/botblocker-set-captcha.php:103
+#: includes/section/settings/botblocker-set-captcha.php:106
 msgid "Cat"
 msgstr "Gato"
 
@@ -1507,7 +1570,7 @@ msgstr ""
 "Elige el comportamiento para el acceso bloqueado y mantén segura tu área de "
 "administración."
 
-#: includes/section/settings/botblocker-set-captcha.php:94
+#: includes/section/settings/botblocker-set-captcha.php:97
 msgid ""
 "Choose the set of images displayed in the image captcha. Different packs "
 "include animal themes to make verification engaging and unique."
@@ -1628,19 +1691,19 @@ msgstr ""
 msgid "Close"
 msgstr "Cerrar"
 
-#: includes/hook/botblocker-hook-cloud-api.php:225
+#: includes/hook/botblocker-hook-cloud-api.php:292
 msgid "Cloud API connection has been deactivated."
 msgstr "La conexión con la API en la nube se ha desactivado."
 
-#: includes/inc-botblocker-alerts.php:64
+#: includes/inc-botblocker-alerts.php:70
 msgid "Cloud API Expired"
 msgstr "Cloud API caducado"
 
-#: includes/inc-botblocker-alerts.php:79
+#: includes/inc-botblocker-alerts.php:85
 msgid "Cloud API Hits Exhausted"
 msgstr "Todos los usos de Cloud API agotados"
 
-#: includes/hook/botblocker-hook-cloud-api.php:156
+#: includes/hook/botblocker-hook-cloud-api.php:216
 msgid "Cloud API key connected and validated successfully."
 msgstr "Clave de Cloud API conectada y validada correctamente."
 
@@ -1657,7 +1720,7 @@ msgstr "Verificación basada en la nube"
 msgid "Cloud Bot Detection"
 msgstr "Detección de bots en la nube"
 
-#: includes/section/settings/botblocker-set-adv.php:24
+#: includes/section/settings/botblocker-set-adv.php:25
 msgid "Cloud databases of threats"
 msgstr "Bases de datos en la nube de amenazas"
 
@@ -1669,12 +1732,12 @@ msgstr "Protección en la nube"
 msgid "Cloud threat intelligence"
 msgstr "Inteligencia de amenazas en la nube"
 
-#: includes/section/settings/botblocker-set-adv.php:36
+#: includes/section/settings/botblocker-set-adv.php:37
 msgid "Cloud Validation"
 msgstr "Validación en la Nube"
 
 #: includes/shortcode/botblocker-shortcode-health-full.php:54
-#: includes/section/settings/botblocker-set-adv.php:23
+#: includes/section/settings/botblocker-set-adv.php:24
 msgid "Cloud validation"
 msgstr "Validación en la nube"
 
@@ -1863,7 +1926,7 @@ msgstr "Confirmar y activar"
 
 #: public/captcha/render-recaptcha-with-button-trait.php:36
 #: public/captcha/render-recaptcha-without-button-trait.php:12
-#: public/captcha/render-simple-button-trait.php:39
+#: public/captcha/render-simple-button-trait.php:16
 msgid "Confirm that you are human:"
 msgstr "Confirme que usted es humano:"
 
@@ -1895,12 +1958,12 @@ msgstr "Confirmación de limpieza de datos transitorios"
 msgid "Connect"
 msgstr "Conectar"
 
-#: includes/inc-botblocker-ui.php:265
+#: includes/inc-botblocker-ui.php:272
 msgid "Connect Cloud API now!"
 msgstr "¡Conecta Cloud API ahora!"
 
-#: includes/section/settings/botblocker-set-adv.php:38
-#: includes/section/settings/botblocker-set-adv.php:55
+#: includes/section/settings/botblocker-set-adv.php:39
+#: includes/section/settings/botblocker-set-adv.php:56
 #: includes/section/settings/botblocker-set-browser.php:93
 #: includes/section/settings/botblocker-set-browser.php:112
 #: includes/section/settings/botblocker-set-browser.php:131
@@ -1982,7 +2045,11 @@ msgstr ""
 "cookies de seguridad, incluyendo su duración, atributos de seguridad y "
 "parámetros de encriptación."
 
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:102
+#: includes/shortcode/charts/chart-botblocker-stat.php:41
+msgid "Cookie Hits & Hosts"
+msgstr "Cookie-visitas y hosts"
+
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:103
 msgid ""
 "Cookie is Disabled in your browser. Please Enable the Cookie to continue."
 msgstr ""
@@ -2048,6 +2115,7 @@ msgstr ""
 msgid "Countries list"
 msgstr "Lista de países"
 
+#: includes/inc-botblocker-shortcode.php:201
 #: includes/modal/modal-botblocker-hits-add-rule.php:28
 #: includes/modal/modal-botblocker-rule-add.php:35
 #: includes/modal/modal-botblocker-rule-edit.php:31
@@ -2062,7 +2130,7 @@ msgstr "CronJobs de cPanel"
 msgid "Create custom block/allow rules"
 msgstr "Crear reglas personalizadas de bloqueo/permiso"
 
-#: includes/section/settings/botblocker-set-captcha.php:83
+#: includes/section/settings/botblocker-set-captcha.php:86
 msgid "Create key and secret"
 msgstr "Crear clave y secreto"
 
@@ -2102,7 +2170,7 @@ msgstr "Crítico"
 msgid "Cron"
 msgstr "Cron"
 
-#: admin/partials/botblocker-admin-display-settings.php:110
+#: admin/partials/botblocker-admin-display-settings.php:113
 #: includes/section/settings/botblocker-set-cron.php:13
 msgid "Cron Jobs"
 msgstr "Tareas Programadas (Cron Jobs)"
@@ -2218,6 +2286,10 @@ msgstr "Reparación y optimización de base de datos"
 msgid "Date"
 msgstr "Fecha"
 
+#: includes/inc-botblocker-shortcode.php:199
+msgid "Date/Time"
+msgstr "Fecha/Hora"
+
 #: includes/section/settings/botblocker-set-data.php:97
 msgid "Daylight Saving Time"
 msgstr "Horario de Verano"
@@ -2232,6 +2304,10 @@ msgstr "Ajuste de horario de verano"
 #: includes/section/settings/botblocker-set-ui.php:89
 msgid "days"
 msgstr "días"
+
+#: admin/partials/botblocker-admin-display-addons.php:116
+msgid "Deactivate"
+msgstr "Desactivar"
 
 #: includes/section/tools/botblocker-tools-wordpress.php:25
 msgid "Debug Wordpress"
@@ -2306,6 +2382,10 @@ msgstr ""
 "Detecta si la ejecución de JS falló o fue desactivada. Los navegadores "
 "siempre ejecutan JS básico."
 
+#: includes/inc-botblocker-shortcode.php:203
+msgid "Device"
+msgstr "Dispositivo"
+
 #: includes/section/settings/botblocker-set-browser.php:129
 msgid "Device API Verification"
 msgstr "Verificación de API de Dispositivo"
@@ -2313,6 +2393,35 @@ msgstr "Verificación de API de Dispositivo"
 #: includes/shortcode/botblocker-shortcode-health-full.php:60
 msgid "Device API verification"
 msgstr "Verificación de API de dispositivo"
+
+#: includes/shortcode/charts/chart-botblocker-stat.php:47
+msgctxt "device type label"
+msgid "Box"
+msgstr "Decodificador"
+
+#: includes/shortcode/charts/chart-botblocker-stat.php:46
+msgctxt "device type label"
+msgid "PC"
+msgstr "PC"
+
+#: includes/shortcode/charts/chart-botblocker-stat.php:48
+msgctxt "device type label"
+msgid "Phone"
+msgstr "Teléfono"
+
+#: includes/shortcode/charts/chart-botblocker-stat.php:49
+msgctxt "device type label"
+msgid "Tablet"
+msgstr "Tableta"
+
+#: includes/shortcode/charts/chart-botblocker-stat.php:50
+msgctxt "device type label"
+msgid "TV"
+msgstr "TV"
+
+#: includes/shortcode/charts/chart-botblocker-stat.php:53
+msgid "Device Types"
+msgstr "Tipos de dispositivos"
 
 #: addons/bbcs-speedup/inc/bbcs-speedup-settings.php:107
 msgid "Disable Comments"
@@ -2342,6 +2451,7 @@ msgstr "Desactivar Self Pingbacks"
 msgid "Disable XML-RPC"
 msgstr "Desactivar XML-RPC"
 
+#: includes/section/settings/botblocker-set-cookie.php:115
 #: includes/section/settings/botblocker-set-notif.php:104
 msgid "Disabled"
 msgstr "Desactivado"
@@ -2389,7 +2499,7 @@ msgstr "¿Desea continuar limpiando el archivo de registro?"
 msgid "Docs"
 msgstr "Documentación"
 
-#: botblocker-security.php:227
+#: botblocker-security.php:223
 msgid "Docs & FAQs"
 msgstr "Documentación y Preguntas Frecuentes"
 
@@ -2397,7 +2507,7 @@ msgstr "Documentación y Preguntas Frecuentes"
 msgid "Documentation"
 msgstr "Ver documentación"
 
-#: includes/section/settings/botblocker-set-captcha.php:102
+#: includes/section/settings/botblocker-set-captcha.php:105
 msgid "Dog"
 msgstr "Perro"
 
@@ -2514,7 +2624,7 @@ msgstr ""
 "para su sitio web. Elija el plan que mejor se adapte a sus requisitos y "
 "disfrute de seguridad confiable y soporte de BotBlocker."
 
-#: includes/section/settings/botblocker-set-captcha.php:99
+#: includes/section/settings/botblocker-set-captcha.php:102
 msgid "Eagle"
 msgstr "Águila"
 
@@ -2582,20 +2692,20 @@ msgstr ""
 "asegura \"que solo el tráfico potencialmente limpio \n"
 "                proceda mientras la basura se descarta lo antes posible."
 
-#: includes/inc-botblocker-ui.php:145
+#: includes/inc-botblocker-ui.php:152
 msgid "Early initialization disabled. Enable it for earlier IP filtering."
 msgstr ""
 "Inicialización temprana desactivada. Actívela para un filtrado IP más "
 "temprano."
 
-#: includes/inc-botblocker-ui.php:142
+#: includes/inc-botblocker-ui.php:149
 msgid ""
 "Early initialization disabled: its functions are handled by active MU plugin."
 msgstr ""
 "Inicialización temprana desactivada: sus funciones son manejadas por el "
 "plugin MU activo."
 
-#: includes/inc-botblocker-ui.php:139
+#: includes/inc-botblocker-ui.php:146
 msgid ""
 "Early initialization enabled: IP blacklist and base rule filtering runs "
 "before WordPress loads. MU mode not required."
@@ -2838,6 +2948,10 @@ msgstr ""
 "Habilitar registro cuando la protección de BotBlocker está desactivada para "
 "monitorizar tráfico no protegido."
 
+#: includes/section/settings/botblocker-set-login-brutforce.php:36
+msgid "Enable Login Brutforce Protection"
+msgstr "Activar protección contra fuerza bruta en el inicio de sesión"
+
 #: includes/section/integration/botblocker-int-memcached.php:36
 msgid "Enable Memcached counters"
 msgstr "Habilitar contadores de Memcached"
@@ -2854,6 +2968,11 @@ msgstr ""
 #: includes/shortcode/botblocker-shortcode-tooltips.php:82
 msgid "Enable MU plugin mode"
 msgstr "Habilitar modo de plugin MU"
+
+#: includes/section/settings/botblocker-set-login-brutforce.php:38
+msgid "Enable protection against repeated failed login attempts."
+msgstr ""
+"Activar protección contra intentos fallidos de inicio de sesión repetidos."
 
 #: includes/shortcode/botblocker-shortcode-tooltips.php:71
 msgid "Enable PTR cache in database"
@@ -2923,6 +3042,10 @@ msgstr ""
 msgid "Enable Two-Factor Authentication"
 msgstr "Activar la autenticación de dos pasos"
 
+#: includes/section/settings/botblocker-set-cookie.php:118
+msgid "Enabled"
+msgstr "Activado"
+
 #: includes/section/settings/botblocker-set-traffic.php:40
 msgid ""
 "Enabling helps track traffic sources, retain the original referrer across "
@@ -2953,7 +3076,7 @@ msgstr "Comprobaciones de parámetros del motor"
 msgid "English"
 msgstr "Inglés"
 
-#: includes/inc-botblocker-ui.php:229
+#: includes/inc-botblocker-ui.php:236
 msgid ""
 "Enhance speed, security and user experience with official BotBlocker add-ons."
 msgstr ""
@@ -3206,7 +3329,7 @@ msgstr "Exportar motores de búsqueda y otros bots permitidos a JSON"
 msgid "Export your current BotBlocker settings and data."
 msgstr "Exporte sus configuraciones y datos actuales de BotBlocker."
 
-#: includes/section/settings/botblocker-set-captcha.php:123
+#: includes/section/settings/botblocker-set-captcha.php:126
 msgid "Extended Captcha Check"
 msgstr "Comprobación de Captcha Extendida"
 
@@ -3226,7 +3349,7 @@ msgstr "Configuración de registro extra"
 msgid "Extra options"
 msgstr "Opciones extra"
 
-#: includes/hook/botblocker-hook-cloud-api.php:112
+#: includes/hook/botblocker-hook-cloud-api.php:139
 msgid "Failed to connect to Cloud API. Please try again later."
 msgstr ""
 "No se pudo conectar a Cloud API. Por favor, inténtalo de nuevo más tarde."
@@ -3237,7 +3360,7 @@ msgstr ""
 "Error al obtener la clave API del servidor en la nube. Por favor, inténtalo "
 "de nuevo más tarde."
 
-#: includes/hook/botblocker-hook-cloud-api.php:167
+#: includes/hook/botblocker-hook-cloud-api.php:227
 msgid "Failed to refresh Cloud API"
 msgstr "No se pudo actualizar Cloud API."
 
@@ -3257,7 +3380,7 @@ msgstr "Obtener clave API de la nube"
 msgid "Fetches the API keys from the BotBlocker cloud."
 msgstr "Obtiene las claves API desde la nube de BotBlocker."
 
-#: public/captcha/render-moving-shapes-button-trait.php:66
+#: public/captcha/render-moving-shapes-button-trait.php:64
 msgid "Find the shape:"
 msgstr "Encuentra la forma:"
 
@@ -3269,9 +3392,21 @@ msgstr "Ajustar reglas con precisión"
 msgid "Follow the link:"
 msgstr "Siga el enlace:"
 
-#: includes/section/settings/botblocker-set-adv.php:67
+#: includes/section/settings/botblocker-set-adv.php:79
+msgid "Force Cloud Validation"
+msgstr "Forzar validación en la nube"
+
+#: includes/section/settings/botblocker-set-adv.php:68
 msgid "Force Verification for All"
 msgstr "Forzar Verificación para Todos"
+
+#: includes/section/settings/botblocker-set-adv.php:86
+msgid ""
+"Forces cloud validation for every visitor, regardless of other checks. "
+"Available only for Ultimate tier licenses."
+msgstr ""
+"Fuerza la validación en la nube para cada visitante, независимо de otras "
+"verificaciones. Disponible solo para licencias del nivel Ultimate."
 
 #: includes/section/cloud/botblocker-cloud-plans.php:41
 #: includes/section/cloud/botblocker-cloud-status.php:35
@@ -3326,7 +3461,7 @@ msgstr "Protección total activa"
 msgid "Full Setup Wizard"
 msgstr "Asistente de configuración completo"
 
-#: includes/section/settings/botblocker-set-captcha.php:77
+#: includes/section/settings/botblocker-set-captcha.php:80
 msgid "GD not enabled"
 msgstr "GD no habilitado"
 
@@ -3524,6 +3659,17 @@ msgstr "Guiado"
 msgid "Hardening WordPress"
 msgstr "Fortalecimiento de WordPress"
 
+#: includes/section/settings/botblocker-set-login-brutforce.php:74
+msgid ""
+"Harsher block time applied to repeat offenders who hit max attempts again "
+"after the first ban expired. Acts as escalated punishment for persistent "
+"attacks. Resets when user logs in successfully."
+msgstr ""
+"Se aplica un tiempo de bloqueo más severo a los infractores reincidentes que "
+"alcanzan el máximo de intentos nuevamente después de que haya expirado el "
+"primer bloqueo. Funciona como un castigo escalonado para ataques "
+"persistentes. Se restablece cuando el usuario inicia sesión correctamente."
+
 #: includes/section/settings/botblocker-set-error.php:30
 msgid "Headers"
 msgstr "Cabeceras"
@@ -3579,13 +3725,25 @@ msgstr "Sistema de caché distribuido de alto rendimiento"
 msgid "Hire a developer"
 msgstr "Contratar un desarrollador"
 
-#: botblocker-security.php:228
+#: botblocker-security.php:224
 msgid "Hire Developers"
 msgstr "Contratar desarrolladores"
 
 #: includes/section/settings/botblocker-set-general.php:62
 msgid "Hits Per User"
 msgstr "Impactos Por Usuario"
+
+#: public/captcha/render-hold-button-trait.php:25
+msgid "HOLD"
+msgstr "MANTENER"
+
+#: includes/section/settings/botblocker-set-captcha.php:75
+msgid "Hold Button Captcha"
+msgstr "CAPTCHA de mantener pulsado"
+
+#: public/captcha/render-hold-button-trait.php:24
+msgid "Hold the button and release in the green zone"
+msgstr "Mantenga presionado el botón y suéltelo en la zona verde"
 
 #: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:51
 msgid "Home Page"
@@ -3599,7 +3757,7 @@ msgstr "página de inicio"
 msgid "Homepage Access"
 msgstr "Acceso a la página de inicio"
 
-#: includes/section/settings/botblocker-set-captcha.php:100
+#: includes/section/settings/botblocker-set-captcha.php:103
 msgid "Horse"
 msgstr "Caballo"
 
@@ -3619,6 +3777,16 @@ msgstr "Gráfico de visitantes por hora"
 msgid "How BotBlocker Detects Browser Version, OS, and Device Type"
 msgstr ""
 "Cómo BotBlocker Detecta la Versión del Navegador, SO y Tipo de Dispositivo"
+
+#: includes/section/settings/botblocker-set-login-brutforce.php:64
+msgid ""
+"How long a first-time offender is blocked from logging in. Applied when max "
+"attempts are reached for the first time. After a successful login, this "
+"block status resets."
+msgstr ""
+"Duración del bloqueo para un infractor primerizo. Se aplica cuando se "
+"alcanza el máximo de intentos por primera vez. Después de un inicio de "
+"sesión exitoso, este estado de bloqueo se restablece."
 
 #: admin/class-botblocker-setup-wizard.php:607
 msgid "How Should We Verify Suspicious Visitors?"
@@ -3673,8 +3841,7 @@ msgstr "https://leonidov.dev/"
 msgid "I'll Fix Manually"
 msgstr "Lo arreglaré manualmente"
 
-#: public/captcha/render-simple-button-trait.php:16
-#: public/captcha/render-simple-button-trait.php:27
+#: public/captcha/render-simple-button-trait.php:17
 msgid "I'm not a robot"
 msgstr "No soy un robot"
 
@@ -3695,7 +3862,7 @@ msgstr ""
 "Si se utilizan sistemas de caché externos (Redis, Memcached), también se "
 "limpiarán."
 
-#: public/captcha/render-color-button-trait.php:59
+#: public/captcha/render-color-button-trait.php:64
 msgid "If you are human, click on the similar color"
 msgstr "Si eres humano, haz clic en el color similar."
 
@@ -3750,7 +3917,7 @@ msgstr ""
 msgid "iFrame"
 msgstr "iFrame"
 
-#: includes/section/settings/botblocker-set-captcha.php:91
+#: includes/section/settings/botblocker-set-captcha.php:94
 msgid "Image Captcha Pack:"
 msgstr "Paquete de Captcha de Imagen:"
 
@@ -3854,8 +4021,8 @@ msgstr ""
 msgid "in the root of your site"
 msgstr "en la raíz de su sitio"
 
-#: includes/shortcode/botblocker-shortcode-sidebar.php:204
-#: includes/shortcode/botblocker-shortcode-sidebar.php:235
+#: includes/shortcode/botblocker-shortcode-sidebar.php:207
+#: includes/shortcode/botblocker-shortcode-sidebar.php:238
 msgid "Inactive"
 msgstr "Inactivo"
 
@@ -3890,11 +4057,21 @@ msgstr ""
 msgid "Initialization:"
 msgstr "Inicialización:"
 
+#: admin/partials/botblocker-admin-display-addons.php:69
+#: admin/partials/botblocker-admin-display-addons.php:72
+msgid "Install"
+msgstr "Instalar"
+
+#: admin/partials/botblocker-admin-display-addons.php:37
+#: admin/partials/botblocker-admin-display-addons.php:83
+msgid "Installed"
+msgstr "Instalado"
+
 #: admin/class-botblocker-setup-wizard.php:793
 msgid "Instant IP ban capability"
 msgstr "Capacidad de bloqueo instantáneo de IP"
 
-#: includes/section/settings/botblocker-set-adv.php:60
+#: includes/section/settings/botblocker-set-adv.php:61
 msgid "Instantly blocks clients that fail to respond to cloud validation."
 msgstr ""
 "Bloquea instantáneamente a los clientes que no responden a la validación en "
@@ -3932,7 +4109,7 @@ msgstr ""
 msgid "Invalid 6-digit code. Please try again."
 msgstr "Código de 6 dígitos no válido. Por favor, inténtalo de nuevo."
 
-#: includes/shortcode/charts/chart-botblocker-stat.php:62
+#: includes/shortcode/charts/chart-botblocker-stat.php:73
 msgid "Invalid data parameter."
 msgstr "Parámetro de datos inválido."
 
@@ -3961,6 +4138,7 @@ msgstr "IP"
 msgid "IP / Subnet"
 msgstr "IP / Subred"
 
+#: includes/inc-botblocker-shortcode.php:200
 #: includes/modal/modal-botblocker-rule-ipv4-add.php:27
 #: includes/modal/modal-botblocker-rule-ipv4-edit.php:28
 #: includes/modal/modal-botblocker-rule-ipv6-add.php:27
@@ -3971,6 +4149,10 @@ msgstr "Dirección IP"
 #: includes/shortcode/botblocker-shortcode-rules.php:72
 msgid "IP Addresses"
 msgstr "Direcciones IP"
+
+#: includes/shortcode/charts/chart-botblocker-stat.php:32
+msgid "IP Hits & Hosts"
+msgstr "IP-visitas y hosts"
 
 #: admin/partials/botblocker-admin-dashboard-widgets.php:133
 msgid "IP List Import"
@@ -4029,13 +4211,13 @@ msgstr "Planificador de ISPmanager"
 #: admin/class-botblocker-setup-wizard.php:203
 msgid ""
 "It looks like something is preventing JavaScript from loading on your "
-"website. WP Mail SMTP requires JavaScript in order to give you the best "
-"possible experience."
+"website. BotBlocker Security requires JavaScript in order to give you the "
+"best possible experience."
 msgstr ""
 "Parece que algo está impidiendo que JavaScript se cargue en tu sitio web. WP "
 "Mail SMTP requiere JavaScript para ofrecerte la mejor experiencia posible."
 
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:103
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:104
 msgid ""
 "JavaScript is Disabled in your browser. Please Enable the JavaScript to "
 "continue."
@@ -4055,6 +4237,7 @@ msgstr "jQuery Migrate"
 msgid "JS Info"
 msgstr "Info JS"
 
+#: includes/inc-botblocker-shortcode.php:202
 #: includes/modal/modal-botblocker-hits-add-rule.php:25
 #: includes/modal/modal-botblocker-rule-add.php:28
 #: includes/modal/modal-botblocker-rule-edit.php:25
@@ -4093,7 +4276,7 @@ msgid "Lng"
 msgstr "Idioma"
 
 #: public/captcha/render-recaptcha-with-button-trait.php:37
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:85
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:86
 msgid "Loading..."
 msgstr "Cargando..."
 
@@ -4168,7 +4351,7 @@ msgstr "Registrar visitas si el procesador de BotBlocker está desactivado"
 msgid "Log WordPress Actions"
 msgstr "Registrar Acciones de WordPress"
 
-#: admin/partials/botblocker-admin-display-settings.php:107
+#: admin/partials/botblocker-admin-display-settings.php:110
 #: includes/section/settings/botblocker-set-log.php:14
 msgid "Logging Settings"
 msgstr "Ajustes de Registro"
@@ -4186,6 +4369,23 @@ msgstr ""
 "opciones determinan el nivel de detalle capturado en sus registros de "
 "seguridad, ayudándole a monitorizar amenazas, analizar patrones de tráfico y "
 "mantener registros de seguridad completos para su sitio web."
+
+#: includes/section/settings/botblocker-set-login-brutforce.php:17
+msgid ""
+"Login bruteforce protection limits repeated failed sign-in attempts and "
+"applies temporary lockouts. This reduces the chance of attackers guessing "
+"passwords and protects your admin area from automated abuse."
+msgstr ""
+"La protección contra fuerza bruta en el inicio de sesión limita los intentos "
+"fallidos repetidos y aplica bloqueos temporales. Esto reduce la probabilidad "
+"de que los atacantes adivinen contraseñas y protege el área de "
+"administración frente a abusos automatizados."
+
+#: admin/partials/botblocker-admin-display-settings.php:101
+#: includes/section/settings/botblocker-set-login-brutforce.php:13
+#: includes/section/settings/botblocker-set-login-brutforce.php:31
+msgid "Login Brutforce"
+msgstr "Fuerza bruta de inicio de sesión"
 
 #: admin/class-botblocker-setup-wizard.php:489
 msgid "Login Page"
@@ -4222,6 +4422,10 @@ msgstr "Mantenimiento"
 #: includes/section/setup/botblocker-setup-chain.php:37
 msgid "manage addons"
 msgstr "Administrar Complementos"
+
+#: admin/partials/botblocker-admin-display-addons.php:36
+msgid "Marketplace"
+msgstr "Marketplace"
 
 #: admin/class-botblocker-setup-wizard.php:679
 msgid "Match rotating shapes. Unique BotBlocker exclusive method."
@@ -4303,7 +4507,7 @@ msgstr "Protección mínima"
 msgid "Minor compatibility issues detected"
 msgstr "Se detectaron problemas menores de compatibilidad"
 
-#: includes/inc-botblocker-alerts.php:49
+#: includes/inc-botblocker-alerts.php:55
 msgid "Missing Files"
 msgstr "Archivos Faltantes"
 
@@ -4334,7 +4538,7 @@ msgstr "Más opciones de CAPTCHA disponibles:"
 msgid "Move the slider to adjust the threshold level"
 msgstr "Mueva el control deslizante para ajustar el nivel de umbral"
 
-#: includes/inc-botblocker-ui.php:140
+#: includes/inc-botblocker-ui.php:147
 msgid ""
 "MU mode disabled: early initialization already performs pre-filtering; "
 "enabling MU is unnecessary."
@@ -4347,7 +4551,7 @@ msgstr ""
 msgid "MU plugin"
 msgstr "Plugin MU"
 
-#: includes/inc-botblocker-ui.php:143
+#: includes/inc-botblocker-ui.php:150
 msgid ""
 "MU plugin active: early IP and rule filtering runs before other plugins. "
 "Early initialization not required."
@@ -4359,7 +4563,7 @@ msgstr ""
 msgid "MU Plugin Mode"
 msgstr "Modo de Plugin MU"
 
-#: includes/inc-botblocker-ui.php:146
+#: includes/inc-botblocker-ui.php:153
 msgid ""
 "MU plugin mode disabled. You can enable it (or early initialization) for "
 "preliminary malicious IP rejection."
@@ -4417,7 +4621,7 @@ msgstr "Sin caché"
 msgid "No configuration needed"
 msgstr "Sin configuración previa"
 
-#: includes/inc-botblocker-alerts.php:36
+#: includes/inc-botblocker-alerts.php:42
 msgid "No Connection BBCloud"
 msgstr "Sin conexión a BBCloud"
 
@@ -4425,6 +4629,8 @@ msgstr "Sin conexión a BBCloud"
 msgid "No data available for the specified period."
 msgstr "No hay datos disponibles para el período especificado."
 
+#: includes/inc-botblocker-shortcode.php:23
+#: includes/inc-botblocker-shortcode.php:191
 #: includes/shortcode/botblocker-shortcode-health.php:280
 msgid "No data available."
 msgstr "No hay datos disponibles."
@@ -4464,7 +4670,7 @@ msgstr "Ninguno"
 msgid "Not Active"
 msgstr "No Activo"
 
-#: includes/section/settings/botblocker-set-captcha.php:82
+#: includes/section/settings/botblocker-set-captcha.php:85
 msgid "not set"
 msgstr "no establecido"
 
@@ -4485,13 +4691,23 @@ msgstr ""
 msgid "Notification Types"
 msgstr "Tipos de Notificación"
 
-#: admin/partials/botblocker-admin-display-settings.php:116
+#: admin/partials/botblocker-admin-display-settings.php:119
 msgid "Notifications"
 msgstr "Notificaciones"
 
 #: includes/section/settings/botblocker-set-ui.php:81
 msgid "Number of days to include in the statistical report."
 msgstr "Número de días a incluir en el informe estadístico."
+
+#: includes/section/settings/botblocker-set-login-brutforce.php:44
+msgid ""
+"Number of failed login attempts within the attempt window before the IP is "
+"temporarily blocked. Lower values block faster; higher values allow more "
+"mistakes."
+msgstr ""
+"Número de intentos fallidos de inicio de sesión dentro de la ventana de "
+"intentos antes de que la IP sea bloqueada temporalmente. Valores bajos "
+"bloquean más rápido; valores altos permiten más errores."
 
 #: includes/section/tools/botblocker-tools-maintenance.php:94
 msgid "Object cache cleanup"
@@ -4583,6 +4799,11 @@ msgstr "Naranja"
 #: admin/partials/botblocker-admin-dashboard-widgets.php:201
 msgid "Order of execution"
 msgstr "Orden de ejecución"
+
+#: includes/inc-botblocker-shortcode.php:204
+#: includes/shortcode/charts/chart-botblocker-stat.php:69
+msgid "OS"
+msgstr "OS"
 
 #: includes/section/cloud/botblocker-cloud-services.php:16
 msgid ""
@@ -4694,11 +4915,11 @@ msgstr "Por favor, activa JavaScript y recarga la página."
 msgid "Plesk Cron"
 msgstr "Cron de Plesk"
 
-#: includes/shortcode/botblocker-shortcode-sidebar.php:223
+#: includes/shortcode/botblocker-shortcode-sidebar.php:226
 msgid "Plugin homepage"
 msgstr "Página de inicio del plugin"
 
-#: includes/shortcode/botblocker-shortcode-sidebar.php:200
+#: includes/shortcode/botblocker-shortcode-sidebar.php:203
 msgid "Plugins"
 msgstr "Plugins"
 
@@ -4717,6 +4938,10 @@ msgstr "Evita la carga de scripts y estilos de emojis."
 #: addons/bbcs-speedup/inc/bbcs-speedup-settings.php:172
 msgid "Prevents self-pingbacks when linking to your own posts."
 msgstr "Evita los self-pingbacks al enlazar a tus propias entradas."
+
+#: includes/section/settings/botblocker-set-login-brutforce.php:63
+msgid "Primary Block Time (seconds):"
+msgstr "Tiempo de bloqueo principal (segundos):"
 
 #: admin/partials/botblocker-admin-dashboard-widgets.php:169
 #: admin/partials/botblocker-admin-display-rules.php:53
@@ -4798,8 +5023,8 @@ msgstr "Funciones PRO"
 msgid "PRO is active!"
 msgstr "¡PRO está activo!"
 
-#: includes/section/settings/botblocker-set-adv.php:38
-#: includes/section/settings/botblocker-set-adv.php:55
+#: includes/section/settings/botblocker-set-adv.php:39
+#: includes/section/settings/botblocker-set-adv.php:56
 #: includes/section/settings/botblocker-set-browser.php:93
 #: includes/section/settings/botblocker-set-browser.php:112
 #: includes/section/settings/botblocker-set-browser.php:131
@@ -4832,7 +5057,7 @@ msgstr "Estado PRO del usuario de BotBlocker"
 msgid "Pro Tip:"
 msgstr "Consejo PRO"
 
-#: includes/section/settings/botblocker-set-adv.php:25
+#: includes/section/settings/botblocker-set-adv.php:26
 msgid "PRO vs Free"
 msgstr "PRO vs Gratuito"
 
@@ -4950,7 +5175,7 @@ msgstr "Regla Rápida de IP"
 msgid "Quick Start Guide"
 msgstr "Guía de inicio rápido"
 
-#: includes/section/settings/botblocker-set-captcha.php:101
+#: includes/section/settings/botblocker-set-captcha.php:104
 msgid "Raccoon"
 msgstr "Mapache"
 
@@ -4962,7 +5187,7 @@ msgstr "Reinstalar Base de Datos"
 msgid "Read More"
 msgstr "Leer más"
 
-#: includes/section/settings/botblocker-set-captcha.php:77
+#: includes/section/settings/botblocker-set-captcha.php:80
 msgid "Read more"
 msgstr "Leer más"
 
@@ -5013,7 +5238,7 @@ msgid "reCAPTCHA v2"
 msgstr "reCAPTCHA v2"
 
 #: includes/section/settings/botblocker-set-captcha.php:23
-#: includes/section/settings/botblocker-set-captcha.php:82
+#: includes/section/settings/botblocker-set-captcha.php:85
 msgid "reCaptcha v2"
 msgstr "reCaptcha v2"
 
@@ -5274,7 +5499,7 @@ msgstr "Cadena de manejo de solicitudes"
 msgid "Requests blocked"
 msgstr "Solicitudes bloqueadas"
 
-#: includes/inc-botblocker-alerts.php:50
+#: includes/inc-botblocker-alerts.php:56
 msgid "Required files missing. Regenerated."
 msgstr "Faltan archivos requeridos. Regenerados."
 
@@ -5525,13 +5750,17 @@ msgstr "Visitas de motores de búsqueda"
 msgid "Secondary Ban Time (seconds):"
 msgstr "Tiempo de Bloqueo Secundario (segundos):"
 
+#: includes/section/settings/botblocker-set-login-brutforce.php:73
+msgid "Secondary Block Time (seconds):"
+msgstr "Tiempo de bloqueo secundario (segundos):"
+
 #: includes/shortcode/botblocker-shortcode-health-full.php:52
 #: includes/shortcode/botblocker-shortcode-health.php:100
 msgid "Secondary time ban enabled"
 msgstr "Bloqueo de tiempo secundario activado"
 
 #: includes/botblocker/traits/class-botblocker-block-page-trait.php:30
-#: includes/botblocker/traits/class-botblocker-response-trait.php:206
+#: includes/botblocker/traits/class-botblocker-response-trait.php:218
 msgid "Seconds left until the unlock:"
 msgstr "Segundos restantes hasta el desbloqueo:"
 
@@ -5730,6 +5959,10 @@ msgstr ""
 msgid "Send regular notifications"
 msgstr "Enviar notificaciones regulares"
 
+#: includes/section/settings/botblocker-set-cookie.php:106
+msgid "Send Vary: Cookie Header"
+msgstr "Enviar encabezado Vary: Cookie"
+
 #: includes/utilites/util-botblocker-support.php:132
 msgid "Sending failed. Please try again later."
 msgstr "Error al enviar. Por favor, inténtalo de nuevo más tarde."
@@ -5738,7 +5971,7 @@ msgstr "Error al enviar. Por favor, inténtalo de nuevo más tarde."
 msgid "Sending..."
 msgstr "Enviando…"
 
-#: includes/section/settings/botblocker-set-adv.php:45
+#: includes/section/settings/botblocker-set-adv.php:46
 msgid "Sends suspicious requests to BotBlocker Cloud for in-depth analysis."
 msgstr ""
 "Envía solicitudes sospechosas a BotBlocker Cloud para un análisis en "
@@ -5828,7 +6061,7 @@ msgstr ""
 "elija entre visitantes únicos (por IP) o todos los hits para ver "
 "estadísticas."
 
-#: includes/section/settings/botblocker-set-captcha.php:112
+#: includes/section/settings/botblocker-set-captcha.php:115
 msgid ""
 "Set the time limit for completing the captcha. Users need to verify within "
 "this duration to avoid re-verification."
@@ -5873,7 +6106,7 @@ msgstr ""
 msgid "Settings"
 msgstr "Ajustes"
 
-#: includes/hook/botblocker-hook-settings.php:230
+#: includes/hook/botblocker-hook-settings.php:232
 msgid "Settings saved successfully"
 msgstr "Ajustes guardados correctamente"
 
@@ -5992,7 +6225,7 @@ msgstr ""
 "reglas generales de acceso al sitio."
 
 #: includes/botblocker/traits/class-botblocker-denied-page-trait.php:12
-#: includes/botblocker/traits/class-botblocker-response-trait.php:147
+#: includes/botblocker/traits/class-botblocker-response-trait.php:159
 msgid "Sorry, your request has been denied"
 msgstr "Lo sentimos, su solicitud ha sido denegada"
 
@@ -6044,6 +6277,22 @@ msgstr "Estadísticas"
 #: includes/section/settings/botblocker-set-ui.php:123
 msgid "Statistics Display Mode"
 msgstr "Modo de Visualización de Estadísticas"
+
+#: includes/shortcode/charts/chart-botblocker-stat.php:29
+#: includes/shortcode/charts/chart-botblocker-stat.php:37
+msgctxt "statistics label"
+msgid "Hits"
+msgstr "Solicitudes"
+
+#: includes/shortcode/charts/chart-botblocker-stat.php:38
+msgctxt "statistics label"
+msgid "Unique Hosts"
+msgstr "Hosts únicos"
+
+#: includes/shortcode/charts/chart-botblocker-stat.php:30
+msgctxt "statistics label"
+msgid "Unique IPs"
+msgstr "IP únicas"
 
 #: admin/partials/botblocker-section-right-sidebar.php:20
 msgid "Status"
@@ -6235,7 +6484,7 @@ msgstr ""
 "autenticación cuando la opción está habilitada. ¡No olvide desactivarla "
 "después de usarla!"
 
-#: includes/hook/botblocker-hook-cloud-api.php:114
+#: includes/hook/botblocker-hook-cloud-api.php:141
 msgid ""
 "The key you entered is invalid. Please double-check it. Cloud API responded "
 "with: "
@@ -6267,11 +6516,11 @@ msgstr ""
 "y del núcleo de BotBlocker. Aquí puede verificar el estado actual del plugin,"
 " temas instalados, plugins activos y parámetros clave del servidor."
 
-#: includes/shortcode/botblocker-shortcode-sidebar.php:254
+#: includes/shortcode/botblocker-shortcode-sidebar.php:257
 msgid "Theme homepage"
 msgstr "Página de inicio del tema"
 
-#: includes/shortcode/botblocker-shortcode-sidebar.php:231
+#: includes/shortcode/botblocker-shortcode-sidebar.php:234
 msgid "Themes"
 msgstr "Temas"
 
@@ -6368,6 +6617,17 @@ msgstr "Hora"
 msgid "Time ban enabled"
 msgstr "Bloqueo de tiempo activado"
 
+#: includes/section/settings/botblocker-set-login-brutforce.php:54
+msgid ""
+"Time window for counting failed attempts together. If all max attempts occur "
+"within this window, the ban triggers. After this window expires without "
+"hitting max attempts, the counter resets."
+msgstr ""
+"Ventana de tiempo para contar los intentos fallidos juntos. Si todos los "
+"intentos máximos ocurren dentro de esta ventana, se activa el bloqueo. "
+"Después de que expire esta ventana sin alcanzar el máximo de intentos, el "
+"contador se restablece."
+
 #: includes/section/settings/botblocker-set-ui.php:103
 msgid "Timezone offset applied to report timestamps."
 msgstr ""
@@ -6394,6 +6654,14 @@ msgstr "Visitas hoy"
 msgid "Today statistics"
 msgstr "Estadísticas de hoy"
 
+#: public/captcha/render-hold-button-trait.php:26
+msgid "Too early! Try again."
+msgstr "¡Demasiado pronto! Inténtelo de nuevo."
+
+#: public/captcha/render-hold-button-trait.php:27
+msgid "Too late! Try again."
+msgstr "¡Demasiado tarde! Inténtelo de nuevo."
+
 #: public/2FA/bbcs-2fa.php:53
 msgid "Too many attempts. Try again in 5 minutes."
 msgstr "Demasiados intentos. Inténtalo de nuevo en 5 minutos."
@@ -6403,6 +6671,22 @@ msgstr "Demasiados intentos. Inténtalo de nuevo en 5 minutos."
 #: includes/section/tools/botblocker-tools-maintenance.php:25
 msgid "Tools"
 msgstr "Herramientas"
+
+#: includes/inc-botblocker-shortcode.php:143
+msgid "Top-%d browsers"
+msgstr "Top-%d navegadores"
+
+#: includes/inc-botblocker-shortcode.php:91
+msgid "Top-%d countries"
+msgstr "Top-%d países"
+
+#: includes/inc-botblocker-shortcode.php:117
+msgid "Top-%d devices"
+msgstr "Top-%d dispositivos"
+
+#: includes/inc-botblocker-shortcode.php:65
+msgid "Top-%d IPs"
+msgstr "Top-%d IPs"
 
 #: includes/section/settings/botblocker-set-connect.php:32
 msgid "TOR"
@@ -6444,7 +6728,7 @@ msgstr "Total de reglas:"
 msgid "Total white bots:"
 msgstr "Total de bots permitidos:"
 
-#: admin/partials/botblocker-admin-display-settings.php:104
+#: admin/partials/botblocker-admin-display-settings.php:107
 #: includes/section/settings/botblocker-set-traffic.php:13
 #: includes/section/settings/botblocker-set-traffic.php:33
 #: includes/section/tools/botblocker-tools-botblocker.php:12
@@ -6532,9 +6816,13 @@ msgstr "¡Autenticación de dos factores activada con éxito!"
 msgid "Type"
 msgstr "Tipo"
 
-#: admin/partials/botblocker-admin-display-settings.php:113
+#: admin/partials/botblocker-admin-display-settings.php:116
 msgid "UI settings"
 msgstr "Ajustes de UI"
+
+#: includes/section/settings/botblocker-set-adv.php:81
+msgid "Ultimate tier only"
+msgstr "Solo para el nivel Ultimate"
 
 #: admin/class-botblocker-setup-wizard.php:846
 msgid "Ultra-fast in-memory cache. Best performance."
@@ -6554,9 +6842,13 @@ msgstr ""
 msgid "Unique visitors (by IP)"
 msgstr "Visitantes únicos (por IP)"
 
-#: includes/shortcode/botblocker-shortcode-sidebar.php:146
+#: includes/shortcode/botblocker-shortcode-sidebar.php:149
 msgid "Unknown"
 msgstr "Desconocido"
+
+#: includes/inc-botblocker-ui.php:47
+msgid "Unknown period"
+msgstr "Período desconocido"
 
 #: admin/partials/botblocker-admin-display-addons.php:23
 msgid "Unlock Add-ons Marketplace"
@@ -6574,11 +6866,20 @@ msgstr "Desbloquear la protección empresarial"
 msgid "Unresponsive IP blocking"
 msgstr "Bloqueo de IP no respondientes"
 
+#: admin/partials/botblocker-admin-display-addons.php:80
+#: admin/partials/botblocker-admin-display-addons.php:127
+msgid "Update"
+msgstr "Actualizar"
+
 #: includes/modal/modal-botblocker-salt-clear.php:11
 msgid "Updating the Salt file will reset all visitors' authentication cookies:"
 msgstr ""
 "Actualizar el archivo Salt restablecerá todas las cookies de autenticación "
 "de los visitantes:"
+
+#: includes/section/settings/botblocker-set-adv.php:81
+msgid "Upgrade now!"
+msgstr "¡Actualizar ahora!"
 
 #: admin/class-botblocker-setup-wizard.php:1004
 #: admin/partials/botblocker-section-header.php:54
@@ -6603,6 +6904,17 @@ msgid "URL to redirect to when someone tries to access the default login URL."
 msgstr ""
 "URL a la que redirigir cuando alguien intente acceder a la URL de inicio de "
 "sesión predeterminada."
+
+#: includes/section/settings/botblocker-set-login-brutforce.php:20
+msgid ""
+"Use attempts and block times to balance security with user experience. Short "
+"values reduce friction during mistakes, while longer values increase "
+"protection against persistent attacks."
+msgstr ""
+"Utiliza los intentos y los tiempos de bloqueo para equilibrar la seguridad "
+"con la experiencia del usuario. Valores cortos reducen las molestias por "
+"errores, mientras que valores más largos aumentan la protección contra "
+"ataques persistentes."
 
 #: includes/section/settings/botblocker-set-data.php:21
 msgid ""
@@ -6720,6 +7032,10 @@ msgstr "Procesamiento de referer UTM"
 msgid "Verification Code"
 msgstr "Código de verificación"
 
+#: public/captcha/render-hold-button-trait.php:29
+msgid "Verification failed."
+msgstr "Verificación fallida."
+
 #: includes/section/settings/botblocker-set-browser.php:119
 msgid ""
 "Verifies internal WebKit/Gecko parameters against real-world browser "
@@ -6738,8 +7054,12 @@ msgstr ""
 msgid "Verify"
 msgstr "Verificar"
 
-#: includes/shortcode/botblocker-shortcode-sidebar.php:219
-#: includes/shortcode/botblocker-shortcode-sidebar.php:250
+#: public/captcha/render-hold-button-trait.php:28
+msgid "Verifying..."
+msgstr "Verificando..."
+
+#: includes/shortcode/botblocker-shortcode-sidebar.php:222
+#: includes/shortcode/botblocker-shortcode-sidebar.php:253
 msgid "Version"
 msgstr "Versión"
 
@@ -6892,7 +7212,7 @@ msgstr ""
 "defensas de su sitio, sino que también mejora la velocidad de carga al "
 "reducir la carga innecesaria del servidor."
 
-#: public/captcha/render-moving-shapes-button-trait.php:68
+#: public/captcha/render-moving-shapes-button-trait.php:66
 msgid "with color:"
 msgstr "con color:"
 
@@ -7104,6 +7424,10 @@ msgstr ""
 "Puede preparar su lista en cualquier editor de texto. Cada línea debe "
 "contener una sola dirección IP o subred en formato CIDR (ej. 192.168.1.0/24)."
 
+#: includes/shortcode/botblocker-shortcode-sidebar.php:143
+msgid "You do not have permission to view this information."
+msgstr "No tienes permiso para ver esta información."
+
 #: admin/class-botblocker-setup-wizard.php:257
 msgid ""
 "You have already completed the setup wizard. You can modify settings anytime "
@@ -7138,29 +7462,29 @@ msgstr "Tu cuenta ahora está protegida con la autenticación de dos factores."
 msgid "Your browser does not support the video tag."
 msgstr "Su navegador no admite la etiqueta de video."
 
-#: includes/inc-botblocker-alerts.php:75
+#: includes/inc-botblocker-alerts.php:81
 #| msgid "Your license has exhausted all its hits. Please renew it."
 msgid "Your cloud API has exhausted all its hits. Please renew it."
 msgstr "Tu Cloud API ha agotado todos sus usos. Por favor, renuévala."
 
 #. %d: number of days until the cloud API expires.
-#: includes/inc-botblocker-pro.php:149
+#: includes/inc-botblocker-pro.php:169
 msgid "Your cloud API has expired."
 msgstr "Tu Cloud API ha caducado."
 
-#: includes/inc-botblocker-alerts.php:60
+#: includes/inc-botblocker-alerts.php:66
 #| msgid "Your license has expired. Please renew it."
 msgid "Your cloud API has expired. Please renew it."
 msgstr "Tu Cloud API ha caducado. Por favor, renuévala."
 
 #. %d: number of hits remaining before the cloud API is exhausted.
-#: includes/inc-botblocker-alerts.php:74 includes/inc-botblocker-pro.php:159
+#: includes/inc-botblocker-alerts.php:80 includes/inc-botblocker-pro.php:179
 #| msgid "Your license has less than %d hits remaining."
 msgid "Your cloud API has less than %d hits remaining."
 msgstr "A tu Cloud API le quedan menos de %d usos disponibles."
 
 #. %d: number of hits remaining before the cloud API is exhausted.
-#: includes/inc-botblocker-pro.php:159
+#: includes/inc-botblocker-pro.php:179
 #| msgid "Your license has no hits remaining."
 msgid "Your cloud API has no hits remaining."
 msgstr "Tu Cloud API no tiene usos disponibles."
@@ -7171,7 +7495,7 @@ msgid "Your Cloud API is active. Enjoy full protection."
 msgstr "Tu Cloud API está activo. Disfruta de protección completa."
 
 #. %d: number of days left before the cloud API expires.
-#: includes/inc-botblocker-alerts.php:59 includes/inc-botblocker-pro.php:149
+#: includes/inc-botblocker-alerts.php:65 includes/inc-botblocker-pro.php:169
 #| msgid "Your license will expire in %d days."
 msgid "Your cloud API will expire in %d days."
 msgstr "Tu Cloud API expirará en %d días."

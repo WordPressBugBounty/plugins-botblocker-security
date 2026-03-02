@@ -26,6 +26,7 @@ function bbcs_database_reinstallation()
 function bbcs_database_reinstallation_callback()
 {
 	check_ajax_referer('botblocker_nonce', 'nonce');
+	if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
 	if (bbcs_database_reinstallation()) {
 		wp_send_json_success('Database has been reinstalled successfully.');
@@ -39,6 +40,7 @@ add_action('wp_ajax_bbcs_database_reinstallation', 'bbcs_database_reinstallation
 function bbcs_backup_data_settings_callback()
 {
 	check_ajax_referer('botblocker_nonce', 'nonce');
+	if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
 	global $wpdb;
 
@@ -140,6 +142,7 @@ add_action('wp_ajax_bbcs_backup_data_settings', 'bbcs_backup_data_settings_callb
 function bbcs_import_data_settings_callback()
 {
 	check_ajax_referer('botblocker_nonce', 'nonce');
+	if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
 	global $wpdb;
 
@@ -164,18 +167,33 @@ function bbcs_import_data_settings_callback()
 		}
 	}
 
-	if (!isset($_FILES['zip_file']['tmp_name']) || empty($_FILES['zip_file']['tmp_name'])) {
+	$zip_file = '';
+	if (isset($_FILES['zip_file']) && isset($_FILES['zip_file']['tmp_name'])) {
+		$zip_file = sanitize_text_field(wp_unslash($_FILES['zip_file']['tmp_name']));
+	}
+	if ($zip_file === '') {
 		wp_send_json_error('ZIP file not provided.');
 		return;
 	}
-	$zip_file = sanitize_text_field($_FILES['zip_file']['tmp_name']);
-	if (!file_exists($zip_file)) {
-		wp_send_json_error('ZIP archive not found.');
+	if (!is_uploaded_file($zip_file)) {
+		wp_send_json_error('Invalid upload.');
+		return;
 	}
 
 	$zip = new \ZipArchive();
 	if ($zip->open($zip_file) !== true) {
 		wp_send_json_error('Failed to open ZIP archive.');
+	}
+
+	$allowed_files = array_keys($tables);
+	for ($i = 0; $i < $zip->numFiles; $i++) {
+		$entry = $zip->getNameIndex($i);
+		$name  = basename($entry);
+		if ($name !== pathinfo($name, PATHINFO_FILENAME) . '.sql' || !in_array(pathinfo($name, PATHINFO_FILENAME), $allowed_files, true)) {
+			$zip->close();
+			wp_send_json_error('ZIP contains unexpected file: ' . $name);
+			return;
+		}
 	}
 
 	$zip->extractTo($temp_dir);
@@ -209,11 +227,19 @@ function bbcs_import_data_settings_callback()
 		}
 	}
 
-	foreach ($tables as $table => $table_name) {
-		$dump_file = $temp_dir . '/' . $table . '.sql';
-		if (file_exists($dump_file)) {
-			wp_delete_file($dump_file);
-			clearstatcache(true);
+	$dir_handle = opendir($temp_dir);
+	if ($dir_handle) {
+		while (($file = readdir($dir_handle)) !== false) {
+			if ($file === '.' || $file === '..') { continue; }
+			$full = $temp_dir . '/' . $file;
+			if (is_file($full)) { wp_delete_file($full); }
+		}
+		closedir($dir_handle);
+	}
+	if (WP_Filesystem()) {
+		global $wp_filesystem;
+		if ($wp_filesystem->is_dir($temp_dir)) {
+			$wp_filesystem->rmdir($temp_dir);
 		}
 	}
 
@@ -232,6 +258,7 @@ add_action('wp_ajax_bbcs_import_data_settings', 'bbcs_import_data_settings_callb
 function bbcs_toggle_redis_and_memcached_callback()
 {
 	check_ajax_referer('botblocker_nonce', 'nonce');
+	if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
 	global $wpdb;
 
@@ -264,6 +291,7 @@ add_action('wp_ajax_bbcs_toggle_redis_and_memcached', 'bbcs_toggle_redis_and_mem
 function bbcs_switch_ptr_cache_in_db_callback()
 {
 	check_ajax_referer('botblocker_nonce', 'nonce');
+	if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
 	global $wpdb;
 
@@ -294,6 +322,7 @@ add_action('wp_ajax_bbcs_switch_ptr_cache_in_db', 'bbcs_switch_ptr_cache_in_db_c
 function bbcs_toggle_early_phase_in_db_callback(): void
 {
 	check_ajax_referer('botblocker_nonce', 'nonce');
+	if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
 	// Start output buffering to avoid breaking JSON with warnings/notices
 	if (!ob_get_level()) {
@@ -376,6 +405,7 @@ add_action('wp_ajax_bbcs_toggle_early_phase_in_db', 'bbcs_toggle_early_phase_in_
 
 function bbcs_handle_send_email()
 {
+	check_ajax_referer('botblocker_nonce', 'nonce');
 	if (!current_user_can('manage_options')) {
 		wp_send_json_error(['message' => 'Unauthorized']);
 	}
@@ -393,6 +423,7 @@ add_action('wp_ajax_bbcs_send_email', 'bbcs_handle_send_email');
 function bbcs_create_salt_file_ajax()
 {
 	check_ajax_referer('botblocker_nonce', 'nonce');
+	if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 	$bbcs_start_files = isset($_POST['bbcs_start_files']) ? filter_var(wp_unslash($_POST['bbcs_start_files']), FILTER_VALIDATE_BOOLEAN) : false;
 	$result = bbcs_createSaltFile($bbcs_start_files);
 

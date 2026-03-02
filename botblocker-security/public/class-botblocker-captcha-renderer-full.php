@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit;
+if (!defined('WPINC') || !defined('BOTBLOCKER')) {
+    exit;
+}
 
 /**
  * BotBlocker Captcha Renderer
@@ -9,11 +13,6 @@
  * @copyright  Copyright (c) 2025, BotBlocker
  * 
  */
-
-// If this file is called directly, abort.
-if (!defined('ABSPATH') || !defined('WPINC') || !defined('BOTBLOCKER')) {
-    exit;
-}
 
 /**
  * Class BotBlockerCaptchaRenderer
@@ -30,6 +29,7 @@ class BotBlockerCaptchaRendererFull {
      * @var string JavaScript function name for cloud test
      */
     private $botblocker_check_function_name;
+    private $challengeToken = '';
     
     /**
      * BotBlockerCaptchaRenderer constructor
@@ -40,6 +40,31 @@ class BotBlockerCaptchaRendererFull {
     public function __construct($botblocker_check_function_name) {
         $this->BBCS = BotBlocker::getInstance();
         $this->botblocker_check_function_name = $botblocker_check_function_name;
+    }
+
+    private function createChallenge($correctAnswer, $mode) {
+        $nonce = bin2hex(random_bytes(16));
+        $key = hash('sha256', $this->BBCS->settings->salt, true);
+        $iv = random_bytes(16);
+        $payload = wp_json_encode([
+            'n' => $nonce,
+            'a' => (string) $correctAnswer,
+            't' => (string) $this->BBCS->time,
+            'i' => $this->BBCS->ip,
+            'm' => $mode
+        ]);
+        $encrypted = openssl_encrypt($payload, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
+        $this->challengeToken = base64_encode($iv . $encrypted);
+        set_transient('bbcs_ct_' . $nonce, 1, 600);
+        return $nonce;
+    }
+
+    private function answerHash($nonce, $answer) {
+        return hash('sha256', $this->BBCS->settings->salt . $nonce . (string) $answer . $this->BBCS->time . $this->BBCS->ip);
+    }
+
+    public function getChallengeToken() {
+        return $this->challengeToken;
     }
     
     /**
@@ -65,6 +90,8 @@ class BotBlockerCaptchaRendererFull {
                 return $this->renderMovingShapesButton();
             case 6:
                 return $this->renderAnimatedMathExpression();
+            case 7:
+                return $this->renderHoldButton();
             default:
                 return $this->renderSimpleButton();
         }
@@ -76,24 +103,11 @@ class BotBlockerCaptchaRendererFull {
      * @return string JavaScript code
      */
     private function renderSimpleButton() {
-        $hash0 = '1|'.hash('sha256', $this->BBCS->settings->salt.$this->BBCS->time.$this->BBCS->settings->cloud_api_pass);
-        $style0 = 'o'.md5($hash0);
-        $onestyle = [];
-        $onebtns = [];
-        
-        $onestyle[] = '.'.$style0.' {} ';
-        $onebtns[] = '<div style="cursor: pointer;" class="'.$style0.' '.'s'.md5('botblocker-btn-success'.$this->BBCS->time).'" onclick="'.$this->botblocker_check_function_name.'(\'post\', data, \''.$hash0.'\')">'.'I\'m not a robot'.'</div>';
+        $nonce = $this->createChallenge('confirm', 0);
+        $hash0 = $this->answerHash($nonce, 'confirm');
+        $btnClass = 's'.md5('botblocker-btn-success'.$this->BBCS->time);
 
-        for ($i = 0; $i < wp_rand(2,6); $i++) {
-            $hash0 = '1|'.hash('sha256', $this->BBCS->settings->salt.$this->BBCS->time.$this->BBCS->settings->cloud_api_pass.wp_rand(1,99999));
-            $style0 = 'o'.md5($hash0);
-            $onestyle[] = '.'.$style0.' {display: none;} ';
-            $onebtns[] = '<div style="cursor: pointer;" class="'.$style0.' '.'s'.md5('botblocker-btn-success'.$this->BBCS->time).'" onclick="'.$this->botblocker_check_function_name.'(\'post\', data, \''.$hash0.'\')">'.'I\'m not a robot'.'</div>';
-        }
-        shuffle($onebtns);
-        shuffle($onestyle);
-
-        return 'document.getElementById("content").innerHTML = clean_and_decode_base64_to_utf8("'.base64_encode('<p>'.'Confirm that you are human:'.'</p>'.implode('', $onebtns).'<style>'.implode(' ', $onestyle).'</style>').'");';
+        return 'document.getElementById("content").innerHTML = clean_and_decode_base64_to_utf8("'.base64_encode('<p>Confirm that you are human:</p><div style="cursor:pointer;" class="'.$btnClass.'" onclick="'.$this->botblocker_check_function_name.'(\'post\', data, \''.$hash0.'\')">I\'m not a robot</div>').'");';
     }
     
     /**
@@ -117,7 +131,7 @@ class BotBlockerCaptchaRendererFull {
         shuffle($colors);
         $color = $colors[0];
         
-        $colorhash = hash('sha256', $this->BBCS->settings->salt . $color . $this->BBCS->time . $this->BBCS->settings->cloud_api_pass.$this->BBCS->ip);
+        $nonce = $this->createChallenge($color, 1);
 
         shuffle($colors);
         $tags = array('div', 'span', 'b', 'strong', 'i', 'em');
@@ -125,8 +139,8 @@ class BotBlockerCaptchaRendererFull {
         $buttons = [];
 
         foreach ($colors as $btnColor) {
-            $buttons[] = '<'.$tags[0].' style=\"background-image: url(data:image/png;base64,'.$color_base64[$btnColor].');\" class=\"'.'s'.md5('botblocker-btn-color'.$this->BBCS->time).'\" onclick=\"'.$this->botblocker_check_function_name.'(\'post\', data, \''.$btnColor.'|'.$colorhash.'\')\"></'.$tags[0].'> ';
-            $buttons[] = '<'.$tags[0].' style=\"background-image: url(data:image/png;base64,'.$color_base64[$btnColor].');display:none;\" class=\"'.'s'.md5('botblocker-btn-color'.$this->BBCS->time).'\" onclick=\"'.$this->botblocker_check_function_name.'(\'post\', data, \''.$btnColor.'|'.md5($colorhash).'\')\"></'.$tags[0].'> ';
+            $hash = $this->answerHash($nonce, $btnColor);
+            $buttons[] = '<'.$tags[0].' style=\"background-image: url(data:image/png;base64,'.$color_base64[$btnColor].');\" class=\"'.'s'.md5('botblocker-btn-color'.$this->BBCS->time).'\" onclick=\"'.$this->botblocker_check_function_name.'(\'post\', data, \''.$hash.'\')\"></'.$tags[0].'> ';
         }
         shuffle($buttons);
         $buttons = '<div style=\"max-width: 200px;\">'.implode('',$buttons).'</div>';
@@ -264,24 +278,9 @@ class BotBlockerCaptchaRendererFull {
      * @return string JavaScript code
      */
     private function renderRecaptchaWithButton() {
-
-        $hash0 = '1|'.hash('sha256', $this->BBCS->settings->salt.$this->BBCS->time.$this->BBCS->settings->cloud_api_pass);
-        $style0 = 'o'.md5($hash0);
-        $onestyle = [];
-        $onebtns = [];
-        
-        $onestyle[] = '.'.$style0.' {} ';
-        $onebtns[] = '<div style="cursor: pointer;" class="'.$style0.' '.'s'.md5('botblocker-btn-success'.$this->BBCS->time).'" onclick="'.$this->botblocker_check_function_name.'(\'post\', data, \''.$hash0.'\')">'.'Go to website'.'</div>'; 
-
-        for ($i = 0; $i < wp_rand(2,6); $i++) {
-            $hash0 = '1|'.hash('sha256', $this->BBCS->settings->salt.$this->BBCS->time.$this->BBCS->settings->cloud_api_pass.wp_rand(1,99999));
-            $style0 = 'o'.md5($hash0);
-            $onestyle[] = '.'.$style0.' {display: none;} ';
-            $onebtns[] = '<div style="cursor: pointer;" class="'.$style0.' '.'s'.md5('botblocker-btn-success'.$this->BBCS->time).'" onclick="'.$this->botblocker_check_function_name.'(\'post\', data, \''.$hash0.'\')">'.'Go to website'.'</div>'; 
-        }
-        
-        shuffle($onebtns);
-        shuffle($onestyle);
+        $nonce = $this->createChallenge('confirm', 3);
+        $hash0 = $this->answerHash($nonce, 'confirm');
+        $btnClass = 's'.md5('botblocker-btn-success'.$this->BBCS->time);
 
         return '
         var script = document.createElement("script");
@@ -293,7 +292,7 @@ class BotBlockerCaptchaRendererFull {
 
         window.onRecaptchaSuccess = function(token) {
             data += "&g-recaptcha-response=" + token;
-            document.getElementById("content").innerHTML = "<div style=\"max-width: 302px; text-align: center;margin: 0 auto;\">"+clean_and_decode_base64_to_utf8("'.base64_encode(''.implode('', $onebtns).'</div><style>'.implode(' ', $onestyle).'</style>').'");
+            document.getElementById("content").innerHTML = clean_and_decode_base64_to_utf8("'.base64_encode('<div style="max-width: 302px; text-align: center;margin: 0 auto;"><div style="cursor: pointer;" class="'.$btnClass.'" onclick="'.$this->botblocker_check_function_name.'(\'post\', data, \''.$hash0.'\')">Go to website</div></div>').'");
         }
         ';
     }
@@ -304,8 +303,8 @@ class BotBlockerCaptchaRendererFull {
      * @return string JavaScript code
      */
     private function renderRecaptchaWithoutButton() {
-
-        $hash0 = '1|'.hash('sha256', $this->BBCS->settings->salt.$this->BBCS->time.$this->BBCS->settings->cloud_api_pass);
+        $nonce = $this->createChallenge('confirm', 4);
+        $hash0 = $this->answerHash($nonce, 'confirm');
 
         return '
         var script = document.createElement("script");
@@ -340,7 +339,7 @@ class BotBlockerCaptchaRendererFull {
         $correctShape = $shapes[0];
         $correctColor = $colors[0];
 
-        $correctHash = hash('sha256', $this->BBCS->settings->salt . $correctShape . $this->BBCS->time . $this->BBCS->settings->cloud_api_pass. $this->BBCS->ip);
+        $nonce = $this->createChallenge($correctShape . '_' . $correctColor, 5);
 
         $shapesData = [];
         $usedCombinations = [];
@@ -348,8 +347,7 @@ class BotBlockerCaptchaRendererFull {
         $shapesData[] = [
             'type' => $correctShape,
             'color' => $correctColor,
-            'isCorrect' => true,
-            'hash' => "{$correctShape}|{$correctHash}" 
+            'hash' => $this->answerHash($nonce, $correctShape . '_' . $correctColor)
         ];
         $usedCombinations[] = "{$correctShape}_{$correctColor}";
 
@@ -365,8 +363,7 @@ class BotBlockerCaptchaRendererFull {
             $shapesData[] = [
                 'type' => $randomShape,
                 'color' => $randomColor,
-                'isCorrect' => false,
-                'hash' => "wrong|" . md5($correctHash)
+                'hash' => $this->answerHash($nonce, $randomShape . '_' . $randomColor)
             ];
             
             $usedCombinations[] = $combination;
@@ -588,7 +585,7 @@ class BotBlockerCaptchaRendererFull {
             case '-': $result = $num1 - $num2; break;
         }
 
-        $resultHash = hash('sha256', $this->BBCS->settings->salt . $result . $this->BBCS->time . $this->BBCS->settings->cloud_api_pass. $this->BBCS->ip);
+        $nonce = $this->createChallenge((string)$result, 6);
 
         $wrongAnswers = [];
         for ($i = 0; $i < 3; $i++) {
@@ -609,18 +606,10 @@ class BotBlockerCaptchaRendererFull {
         $answerButtons = [];
         
         foreach ($allAnswers as $answer) {
-            if ($answer === $result) {
-
-                $answerButtons[] = "{
+            $answerButtons[] = "{
                     value: {$answer},
-                    hash: \"{$answer}|math|{$resultHash}\"
+                    hash: \"".$this->answerHash($nonce, (string)$answer)."\"
                 }";
-            } else {
-                $answerButtons[] = "{
-                    value: {$answer},
-                    hash: \"{$answer}|wrong|".md5($resultHash)."\"
-                }";
-            }
         }
         
         $expression = "{$num1} {$operation} {$num2} = ?";
@@ -732,6 +721,176 @@ class BotBlockerCaptchaRendererFull {
             }
 
             animate();
+        })();
+        ';
+    }
+
+    private function renderHoldButton() {
+        $duration   = wp_rand( 2500, 3500 );
+        $zone_width = wp_rand( 12, 18 );
+        $zone_start = wp_rand( 40, 85 - $zone_width );
+        $zone_end   = $zone_start + $zone_width;
+
+        $nonce        = $this->createChallenge( 'hold_confirm', 7 );
+        $correct_hash = $this->answerHash( $nonce, 'hold_confirm' );
+        $fn           = $this->botblocker_check_function_name;
+
+        return '
+        document.getElementById("content").innerHTML = "";
+
+        (function() {
+            var duration = ' . (int) $duration . ';
+            var zoneStart = ' . (int) $zone_start . ';
+            var zoneEnd = ' . (int) $zone_end . ';
+            var correctHash = "' . $correct_hash . '";
+            var maxAttempts = 3;
+            var attempts = 0;
+            var holding = false;
+            var startTime = 0;
+            var animFrame = null;
+            var submitted = false;
+
+            var container = document.createElement("div");
+            container.style.cssText = "text-align:center;max-width:340px;margin:0 auto;user-select:none;-webkit-user-select:none;";
+
+            var instruction = document.createElement("p");
+            instruction.textContent = "Hold the button and release in the green zone";
+            instruction.style.cssText = "margin-bottom:20px;font-size:14px;color:#555;";
+            container.appendChild(instruction);
+
+            var track = document.createElement("div");
+            track.style.cssText = "position:relative;width:100%;height:60px;background:#e8e8e8;border-radius:8px;overflow:hidden;cursor:pointer;border:2px solid #ccc;touch-action:none;-webkit-touch-callout:none;";
+
+            var zone = document.createElement("div");
+            zone.style.cssText = "position:absolute;top:0;bottom:0;background:rgba(76,175,80,0.3);border-left:2px dashed #4CAF50;border-right:2px dashed #4CAF50;z-index:1;left:" + zoneStart + "%;width:" + (zoneEnd - zoneStart) + "%;";
+            track.appendChild(zone);
+
+            var fill = document.createElement("div");
+            fill.style.cssText = "position:absolute;top:0;left:0;bottom:0;width:0%;background:#7785ef;z-index:2;";
+            track.appendChild(fill);
+
+            var btnText = document.createElement("div");
+            btnText.style.cssText = "position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;z-index:3;text-shadow:0 1px 2px rgba(0,0,0,0.3);pointer-events:none;";
+            btnText.textContent = "HOLD";
+            track.appendChild(btnText);
+
+            container.appendChild(track);
+
+            var status = document.createElement("p");
+            status.style.cssText = "margin-top:15px;font-size:13px;color:#888;min-height:20px;";
+            status.textContent = "";
+            container.appendChild(status);
+
+            var attemptInfo = document.createElement("p");
+            attemptInfo.style.cssText = "margin-top:5px;font-size:12px;color:#aaa;";
+            attemptInfo.textContent = "";
+            container.appendChild(attemptInfo);
+
+            document.getElementById("content").appendChild(container);
+
+            function updateFill() {
+                if (!holding) return;
+                var elapsed = Date.now() - startTime;
+                var progress = Math.min((elapsed / duration) * 100, 100);
+                fill.style.width = progress + "%";
+
+                if (progress < zoneStart) {
+                    fill.style.background = "#7785ef";
+                } else if (progress <= zoneEnd) {
+                    fill.style.background = "#4CAF50";
+                } else {
+                    fill.style.background = "#f44336";
+                }
+
+                if (progress >= 100) {
+                    handleRelease();
+                    return;
+                }
+
+                animFrame = requestAnimationFrame(updateFill);
+            }
+
+            function handlePress(e) {
+                if (submitted || holding) return;
+                e.preventDefault();
+                holding = true;
+                startTime = Date.now();
+                fill.style.width = "0%";
+                fill.style.background = "#7785ef";
+                status.textContent = "";
+                status.style.color = "#888";
+                animFrame = requestAnimationFrame(updateFill);
+            }
+
+            function handleRelease(e) {
+                if (submitted || !holding) return;
+                if (e && e.preventDefault) e.preventDefault();
+                holding = false;
+                if (animFrame) {
+                    cancelAnimationFrame(animFrame);
+                    animFrame = null;
+                }
+
+                var elapsed = Date.now() - startTime;
+                var progress = Math.min((elapsed / duration) * 100, 100);
+                fill.style.width = progress + "%";
+
+                attempts++;
+
+                if (progress >= zoneStart && progress <= zoneEnd) {
+                    submitted = true;
+                    fill.style.background = "#4CAF50";
+                    status.textContent = "Verifying...";
+                    status.style.color = "#4CAF50";
+                    track.style.cursor = "default";
+                    setTimeout(function() {
+                        ' . $fn . '("post", data, correctHash);
+                    }, 300);
+                } else if (attempts >= maxAttempts) {
+                    submitted = true;
+                    fill.style.background = "#f44336";
+                    status.textContent = "Verification failed.";
+                    status.style.color = "#f44336";
+                    track.style.cursor = "default";
+                    setTimeout(function() {
+                        ' . $fn . '("post", data, "wrong");
+                    }, 500);
+                } else {
+                    if (progress < zoneStart) {
+                        status.textContent = "Too early! Try again.";
+                    } else {
+                        status.textContent = "Too late! Try again.";
+                    }
+                    status.style.color = "#f44336";
+                    attemptInfo.textContent = attempts + "/" + maxAttempts;
+                    setTimeout(function() {
+                        fill.style.width = "0%";
+                        fill.style.background = "#7785ef";
+                    }, 800);
+                }
+            }
+
+            function handleCancel(e) {
+                if (holding) {
+                    handleRelease(e);
+                }
+            }
+
+            if (window.PointerEvent) {
+                track.addEventListener("pointerdown", handlePress);
+                track.addEventListener("pointerup", handleRelease);
+                track.addEventListener("pointercancel", handleCancel);
+                track.addEventListener("pointerleave", handleCancel);
+            } else {
+                track.addEventListener("mousedown", handlePress);
+                track.addEventListener("mouseup", handleRelease);
+                track.addEventListener("mouseleave", handleCancel);
+                track.addEventListener("touchstart", handlePress, { passive: false });
+                track.addEventListener("touchend", handleRelease, { passive: false });
+                track.addEventListener("touchcancel", handleCancel, { passive: false });
+            }
+
+            track.addEventListener("contextmenu", function(e) { e.preventDefault(); });
         })();
         ';
     }

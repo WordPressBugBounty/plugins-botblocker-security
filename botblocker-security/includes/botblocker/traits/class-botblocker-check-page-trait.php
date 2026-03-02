@@ -36,6 +36,7 @@ trait BotBlockerCheckPageTrait {
                 'checkFunction' => $this->js_data['checkFunctionName'],
                 'data' => 'window.data',
                 'autoRender' => false,
+                'challengeToken' => $renderer->getChallengeToken(),
             )
         );
     }

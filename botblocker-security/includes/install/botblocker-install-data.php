@@ -131,7 +131,7 @@ function bbcs_insertDefaultSearchEngines()
             ['priority' => 12, 'search' => 'SeznamBot', 'data' => '.seznam.cz', 'rule' => 'allow', 'comment' => 'Seznam.cz search engine bot', 'disable' => 0],
             ['priority' => 15, 'search' => 'NaverBot', 'data' => '.naver.com', 'rule' => 'allow', 'comment' => 'Naver search engine bot', 'disable' => 0],
             ['priority' => 16, 'search' => 'Sogou', 'data' => '.sogou.com', 'rule' => 'allow', 'comment' => 'Sogou search engine bot', 'disable' => 0],
-            ['priority' => 18, 'search' => 'Baiduspider', 'data' => '.baidu.com', 'rule' => 'dark', 'comment' => 'Baidu search engine bot (China)', 'disable' => 0],
+            ['priority' => 18, 'search' => 'Baiduspider', 'data' => '.baidu.com', 'rule' => 'allow', 'comment' => 'Baidu search engine bot (China)', 'disable' => 0],
             ['priority' => 20, 'search' => 'MojeekBot', 'data' => '.mojeek.com', 'rule' => 'allow', 'comment' => 'Mojeek search engine bot', 'disable' => 0],
             ['priority' => 22, 'search' => 'Bytespider', 'data' => '.bytedance.com', 'rule' => 'allow', 'comment' => 'TikTok crawler', 'disable' => 0],
             ['priority' => 28, 'search' => 'Y!J', 'data' => '.yahoo.co.jp', 'rule' => 'allow', 'comment' => 'Yahoo! Japan crawler', 'disable' => 0],
@@ -321,6 +321,7 @@ function bbcs_insertDefaultSettings($salt_bb)
         'cloud_api_secret' => $cloud_api_secret,
         'cloud_api_email' => $cloud_api_email,
         'cloud_api_pass' => $cloud_api_pass,
+        'cloud_api_tier' => '',
 
         'secret_botblocker_get_param' => $secret_param,
 

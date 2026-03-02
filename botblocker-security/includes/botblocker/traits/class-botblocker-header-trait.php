@@ -9,16 +9,42 @@ trait BotBlockerHeaderTrait {
         }    
     }
 
+    /**
+     * Prevent caching of security-critical pages (check, denied, block, AJAX).
+     * Mirrors MU-phase headers from mu-botblocker-header.php.
+     */
+    private function send_no_cache_headers(): void {
+        if (!headers_sent()) {
+            header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+            header('Pragma: no-cache');
+            header('Expires: Thu, 10 Aug 2000 06:00:00 GMT');
+            header('X-LiteSpeed-Cache-Control: no-cache');
+        }
+    }
+
+    /**
+     * Send Vary: Cookie header so caches distinguish responses by cookie set.
+     * Controlled by the vary_cookie plugin setting.
+     */
+    public function send_vary_cookie_header(): void {
+        if (isset($this->settings->vary_cookie) && $this->settings->vary_cookie == 1) {
+            if (!headers_sent()) {
+                header('Vary: Cookie', false);
+            }
+        }
+    }
+
     public function set_work_headers() {
+        $this->send_no_cache_headers();
         header('Content-Type: text/html; charset=UTF-8');
         header('Access-Control-Allow-Methods: POST');
-        header('Access-Control-Allow-Origin: *');
+        //header('Access-Control-Allow-Origin: *'); // TEST!
         header('Access-Control-Allow-Headers: *');
         header('X-Robots-Tag: noindex');
     }
 
     public function set_check_headers() {
-        // TODO HEADERS ALREADY SENT ON doing_wp_cron
+        $this->send_no_cache_headers();
         header('Content-Type: text/html; charset=UTF-8');
         header('X-Robots-Tag: noindex');
         header($this->protocol . ' ' . $this->error_headers[$this->settings->header_test_code]);
@@ -26,6 +52,7 @@ trait BotBlockerHeaderTrait {
     }
 
     public function set_denied_headers() {
+        $this->send_no_cache_headers();
         header('X-Robots-Tag: noindex, noarchive');
         header($this->protocol . ' ' . $this->error_headers[$this->settings->header_error_code]);
         header('Status: ' . $this->error_headers[$this->settings->header_error_code]);

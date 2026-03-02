@@ -78,6 +78,12 @@ function bbcs_send_expiration_email($message, $expired = false) {
         return false;
     }
 
+    $transient_key = 'bbcs_email_sent_' . md5($message . ($expired ? '1' : '0'));
+    
+    if (get_transient($transient_key)) {
+        return false;
+    }
+
     $subject = $expired ? 'Your BotBlocker Cloud API connection has Expired' : 'Your BotBlocker Cloud API connection is Expiring Soon';
     $message = "
         <html>
@@ -98,5 +104,11 @@ function bbcs_send_expiration_email($message, $expired = false) {
         'From: BotBlocker <no-reply@' . wp_parse_url(BOTBLOCKER_SITE_URL, PHP_URL_HOST) . '>'
     ];
 
-    return wp_mail($admin_email, $subject, $message, $headers);
+    $email_sent = wp_mail($admin_email, $subject, $message, $headers);
+    
+    if ($email_sent) {
+        set_transient($transient_key, 1, DAY_IN_SECONDS);
+    }
+
+    return $email_sent;
 }

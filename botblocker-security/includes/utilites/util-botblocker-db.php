@@ -54,8 +54,8 @@ function bbcs_storePTRrule() {
         $data['ip1'] = bbcs_ipToNumeric($ips[0]);
         $data['ip2'] = bbcs_ipToNumeric($ips[1]);
     } else {
-        $data['ip1'] = bbcs_ipToNumeric(bbcs_expandIPv6($ips[0]));
-        $data['ip2'] = bbcs_ipToNumeric(bbcs_expandIPv6($ips[1]));
+        $data['ip1'] = bbcs_ipv6_bin(bbcs_expandIPv6($ips[0]));
+        $data['ip2'] = bbcs_ipv6_bin(bbcs_expandIPv6($ips[1]));
     }
 
     /**

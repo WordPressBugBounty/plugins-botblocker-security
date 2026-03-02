@@ -29,7 +29,7 @@ trait BBCS_RenderMovingShapesButtonTrait {
         $correctShape = $shapes[0];
         $correctColor = $colors[0];
 
-        $correctHash = hash('sha256', $this->BBCS->settings->salt . $correctShape . $this->BBCS->time . $this->BBCS->settings->cloud_api_pass . $this->BBCS->ip);
+        $nonce = $this->createChallenge($correctShape . '_' . $correctColor, 5);
 
         $shapesData = [];
         $usedCombinations = [];
@@ -37,8 +37,7 @@ trait BBCS_RenderMovingShapesButtonTrait {
         $shapesData[] = [
             'type' => $correctShape,
             'color' => $correctColor,
-            'isCorrect' => true,
-            'hash' => "{$correctShape}|{$correctHash}" 
+            'hash' => $this->answerHash($nonce, $correctShape . '_' . $correctColor)
         ];
         $usedCombinations[] = "{$correctShape}_{$correctColor}";
 
@@ -54,8 +53,7 @@ trait BBCS_RenderMovingShapesButtonTrait {
             $shapesData[] = [
                 'type' => $randomShape,
                 'color' => $randomColor,
-                'isCorrect' => false,
-                'hash' => "wrong|" . md5($correctHash)
+                'hash' => $this->answerHash($nonce, $randomShape . '_' . $randomColor)
             ];
             
             $usedCombinations[] = $combination;

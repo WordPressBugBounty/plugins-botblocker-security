@@ -41,6 +41,7 @@ class BotBlockerSettings {
     
 
     public $botblocker_force_check = 0;
+    public $force_cloud_validation = 0;
 
     public $botblocker_log_error = 0; 
     public $botblocker_log_admin = 1; 
@@ -62,6 +63,7 @@ class BotBlockerSettings {
 
     public $cookie = 'BotBlocker';
     public $cookie_lifetime = 604800;
+    public $vary_cookie = 0;
     
     public $daylight_saving_time = 0;
     public $disable = 0;
@@ -80,6 +82,7 @@ class BotBlockerSettings {
     public $cloud_api_key = '';
     public $cloud_api_pass = '';
     public $cloud_api_secret = ''; 
+    public $cloud_api_tier = '';
 
     public $memcached_enable = 1; 
     public $memcached_host = '127.0.0.1'; 
@@ -97,6 +100,12 @@ class BotBlockerSettings {
     public $recaptcha_secret3 = ''; 
     public $recaptcha_tresshold = 0.5; 
     public $recaptcha_v3_ipv6_block = 0;
+
+    public $login_brutforce_enabled = 1;
+    public $login_brutforce_attempts = 5;
+    public $login_brutforce_period = 900;
+    public $login_brutforce_primary_block_time = 900;
+    public $login_brutforce_secondary_block_time = 1800;
 
     public $redis_db = 0; 
     public $redis_enable = 0; 

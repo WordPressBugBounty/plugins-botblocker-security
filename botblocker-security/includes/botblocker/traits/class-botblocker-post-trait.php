@@ -124,19 +124,32 @@ trait BotBlockerPostTrait
             }
         }
 
-        if ($this->settings->bbcs_captcha_mode == 0 or $this->settings->bbcs_captcha_mode == 3 or $this->settings->bbcs_captcha_mode == 4) {
+        $challenge_token_raw = isset($_POST['challenge_token']) ? sanitize_text_field(wp_unslash($_POST['challenge_token'])) : '';
+        if (!empty($challenge_token_raw)) {
+            require_once(dirname(__DIR__, 3) . '/public/class-botblocker-captcha-renderer.php');
+            $ct_result = BotBlockerCaptchaRenderer::verifyChallengeToken(
+                $this->settings->salt,
+                $challenge_token_raw,
+                sanitize_text_field(wp_unslash($_POST['xxx'])),
+                sanitize_text_field(wp_unslash($_POST['date'])),
+                sanitize_text_field(wp_unslash($_POST['ip']))
+            );
+            if ($ct_result === false) {
+                $this->process_wrong_click();
+            }
+            // If reCAPTCHA verification changed the mode (failed), reject
+            $token_mode = isset($ct_result['m']) ? (int) $ct_result['m'] : -1;
+            if (in_array($token_mode, [3, 4]) && (int) $this->settings->bbcs_captcha_mode !== $token_mode) {
+                $this->process_wrong_click();
+            }
+        } elseif ($this->settings->bbcs_captcha_mode == 3 || $this->settings->bbcs_captcha_mode == 4) {
             $date_from_post = isset($_POST['date']) ? sanitize_text_field(wp_unslash($_POST['date'])) : '';
             $xxx_from_post = isset($_POST['xxx']) ? sanitize_text_field(wp_unslash($_POST['xxx'])) : '';
             $hash0 = '1|' . hash('sha256', $this->settings->salt . $date_from_post . $this->settings->cloud_api_pass);
             if ($hash0 != $xxx_from_post) {
-                $this->settings->bbcs_captcha_mode = 1;
-                if ($this->settings->time_ban < 1) {
-                    $this->settings->time_ban = '1';
-                }
+                $this->process_wrong_click();
             }
-        }
-
-        if ($this->settings->bbcs_captcha_mode == 1 or $this->settings->bbcs_captcha_mode == 2) {
+        } elseif ($this->settings->bbcs_captcha_mode == 2) {
             $xxx2 = explode('|', sanitize_text_field(wp_unslash($_POST['xxx'])));
             if (!isset($xxx2[1])) $this->process_die('{"error": "Error NoPost 1"}');
             $_POST['color'] = $xxx2[0];
@@ -156,68 +169,8 @@ trait BotBlockerPostTrait
                         sanitize_text_field(wp_unslash($_POST['ip']))
                 )
             ) $this->process_wrong_click();
-        } elseif ($this->settings->bbcs_captcha_mode == 5) {
-            // Moving Shapes (5)
-            $xxx2 = explode('|', sanitize_text_field(wp_unslash($_POST['xxx'])));
-            if (!isset($xxx2[1])) $this->process_die('{"error": "Error NoPost 5"}');
-
-            $_POST['shape'] = $xxx2[0];
-            $_POST['shape_hash'] = $xxx2[1];
-
-            // "wrong|"
-            if (!isset($_POST['shape']) || strpos(sanitize_text_field(wp_unslash($_POST['shape'])), 'wrong') === 0) {
-                $this->process_wrong_click();
-            }
-
-            if (
-                empty($_POST['shape_hash'])
-                ||
-                sanitize_text_field(wp_unslash($_POST['shape_hash']))
-                !=
-                hash(
-                    'sha256',
-                    $this->settings->salt .
-                        sanitize_text_field(wp_unslash($_POST['shape'])) .
-                        sanitize_text_field(wp_unslash($_POST['date'])) .
-                        $this->settings->cloud_api_pass .
-                        sanitize_text_field(wp_unslash($_POST['ip']))
-                )
-            ) $this->process_wrong_click();
-        } elseif ($this->settings->bbcs_captcha_mode == 6) {
-            // Math Expression (6)
-            $xxx2 = explode('|', sanitize_text_field(wp_unslash($_POST['xxx'])));
-            if (count($xxx2) < 3) $this->process_die('{"error": "Error NoPost 6"}');
-
-            $_POST['answer'] = $xxx2[0];
-            $_POST['type'] = $xxx2[1];
-            $_POST['answer_hash'] = $xxx2[2];
-
-            if (!empty($_POST['type']) && $_POST['type'] === 'wrong') {
-                $this->process_wrong_click();
-            } elseif (!empty($_POST['type']) && $_POST['type'] === 'math') {
-
-                if (
-                    empty($_POST['answer_hash']) || empty($_POST['answer'])
-                    ||
-                    sanitize_text_field(wp_unslash($_POST['answer_hash']))
-                    !=
-                    hash(
-                        'sha256',
-                        $this->settings->salt .
-                            sanitize_text_field(wp_unslash($_POST['answer'])) .
-                            sanitize_text_field(wp_unslash($_POST['date'])) .
-                            $this->settings->cloud_api_pass .
-                            sanitize_text_field(wp_unslash($_POST['ip']))
-                    )
-                ) $this->process_wrong_click();
-            } else {
-                $this->process_die('{"error": "Error NoPost Type"}');
-            }
-        } elseif ($this->settings->bbcs_captcha_mode == 3) {
-            // ReCAPTCHA v2 + I am not robot
-
-        } elseif ($this->settings->bbcs_captcha_mode == 0) {
-            // Single button
+        } else {
+            $this->process_wrong_click();
         }
 
         if ($this->settings->botblocker_log_tests == 1) {
@@ -261,10 +214,11 @@ trait BotBlockerPostTrait
 
         global $wpdb;
 
-        if (!isset($_POST['ip'])) {
+        // Use server-side IP to prevent ban spoofing via POST parameter
+        if (!isset($_SERVER['REMOTE_ADDR'])) {
             $this->process_die('{"error": "Bad IP"}');
         }
-        $ip_sanitized = sanitize_text_field(wp_unslash($_POST['ip']));
+        $ip_sanitized = trim(preg_replace("/[^0-9a-zA-Z\.\:]/", "", sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR']))));
         if (filter_var($ip_sanitized, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
             $this->ip_version = 4;
         } elseif (filter_var($ip_sanitized, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
@@ -275,7 +229,7 @@ trait BotBlockerPostTrait
 
         $fromdate = $this->time - 86401;
 
-        $ip_from_post   = isset($_POST['ip']) ? sanitize_text_field(wp_unslash($_POST['ip'])) : '';
+        $ip_from_post   = $ip_sanitized;
         $passed_code    = 8;
         $fromdate       = (int) $fromdate;
 
@@ -314,7 +268,7 @@ trait BotBlockerPostTrait
             $this->settings->time_ban = 400;
         }
 
-        $ip = sanitize_text_field(wp_unslash($_POST['ip']));
+        $ip = $ip_sanitized;
 
         if ($this->ip_version == 4) {
             // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.

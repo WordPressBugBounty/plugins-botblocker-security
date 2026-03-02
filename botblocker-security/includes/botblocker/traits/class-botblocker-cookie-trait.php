@@ -125,7 +125,7 @@ trait BotBlockerCookieTrait {
 
         $secure = ( $samesite === 'None' ) ? true : ( function_exists('wp_is_using_https') ? wp_is_using_https() : is_ssl() );
 
-        $httponly = false;
+        $httponly = true;
 
         if ( version_compare( PHP_VERSION, '7.3.0', '>=' ) ) {
             setcookie( $name, (string) $value, [

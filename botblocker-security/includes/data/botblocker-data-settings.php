@@ -37,6 +37,7 @@ function bbcs_get_allowed_fields(): array {
         'block_vpn_users',
         'block_web_engine_options',
         'botblocker_force_check',
+        'force_cloud_validation',
         'botblocker_log_admin',
         'botblocker_log_allow',
         'botblocker_log_bbcs',
@@ -74,11 +75,17 @@ function bbcs_get_allowed_fields(): array {
         'hosting_block',
         'iframe_stop',
         'last_rule',
+        'login_brutforce_attempts',
+        'login_brutforce_enabled',
+        'login_brutforce_period',
+        'login_brutforce_primary_block_time',
+        'login_brutforce_secondary_block_time',
         'cloud_api_type',
         'cloud_api_email',
         'cloud_api_key',
         'cloud_api_pass',
         'cloud_api_secret',
+        'cloud_api_tier',
         'memcached_enable',
         'memcached_host',
         'memcached_port',
@@ -113,6 +120,7 @@ function bbcs_get_allowed_fields(): array {
         'use_transients_for_cloud',
         'utm_noindex',
         'utm_referrer',
+        'vary_cookie',
         'x_robots_directives',
     ];
 }
@@ -125,6 +133,7 @@ function bbcs_loadDefaultSettings(){
         'bbcs_captcha_mode' => 2,
         'bbcs_captcha_wait' => 10,
         'cloud_api_type' => 'cloud_basic',
+        'cloud_api_tier' => '',
         'counter_today' => 0, 
         'counter_total' => 0, 
 
@@ -214,17 +223,25 @@ function bbcs_loadDefaultSettings(){
         'autosave_admin_ip' => 0,
         'ptr_cache_in_db' => 1,
         'botblocker_force_check' => 0,
+        'force_cloud_validation' => 0,
         'cache_ui_data' => 1, // default on
         'cache_ui_duration' => 1800,
         'daylight_saving_time' => 0,
         'use_transients_for_cloud' => 0,
         'cookie_lifetime' => 604800,
+        'vary_cookie' => 0,
 
         'telegram_notifications' => 0,
         'email_notifications' => 0,
         'pusher_notifications' => 0,
         'critical_load_notifications' => 0,
         'regular_notifications_frequency' => 'disabled',
+
+        'login_brutforce_enabled' => 1,
+        'login_brutforce_attempts' => 5,
+        'login_brutforce_period' => 900,
+        'login_brutforce_primary_block_time' => 900,
+        'login_brutforce_secondary_block_time' => 1800,
 
         'bbcs_2fa_enable' => 0,        
     );
@@ -278,6 +295,13 @@ function bbcs_loadLightSecurity(){
         'ptr_cache_in_db' => 1,
         'botblocker_force_check' => 1,
         'cookie_lifetime' => 604800,
+        'vary_cookie' => 0,
+
+        'login_brutforce_enabled' => 1,
+        'login_brutforce_attempts' => 5,
+        'login_brutforce_period' => 900,
+        'login_brutforce_primary_block_time' => 900,
+        'login_brutforce_secondary_block_time' => 1800,
 
         // pro
         'check' => 0,
@@ -338,6 +362,13 @@ function bbcs_loadStrongSecurity(){
         'ptr_cache_in_db' => 1,
         'botblocker_force_check' => 1,
         'cookie_lifetime' => 604800,
+        'vary_cookie' => 0,
+
+        'login_brutforce_enabled' => 1,
+        'login_brutforce_attempts' => 5,
+        'login_brutforce_period' => 900,
+        'login_brutforce_primary_block_time' => 900,
+        'login_brutforce_secondary_block_time' => 1800,
 
         // pro
         'check' => 0,
@@ -398,6 +429,13 @@ function bbcs_loadFullSecurity(){
         'ptr_cache_in_db' => 1,
         'botblocker_force_check' => 1,
         'cookie_lifetime' => 604800,
+        'vary_cookie' => 0,
+
+        'login_brutforce_enabled' => 1,
+        'login_brutforce_attempts' => 5,
+        'login_brutforce_period' => 900,
+        'login_brutforce_primary_block_time' => 900,
+        'login_brutforce_secondary_block_time' => 1800,
 
         // pro
         'check' => 1,

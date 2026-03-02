@@ -25,6 +25,12 @@ function bbcs_alerts_get_all(): array
 		$alerts[] = $cloud_api_hits_exhausted_alert;
 	}
 
+	// Cache plugin compatibility warnings
+	$cache_alert = bbcs_alerts_detect_cache_incompatibility();
+	if (!empty($cache_alert)) {
+		$alerts[] = $cache_alert;
+	}
+
 	return $alerts;
 }
 
@@ -81,4 +87,63 @@ function bbcs_alerts_set_cloud_api_hits_exhausted($hits_left = null): void
 	];
 
 	set_transient('bbcs_cloud_api_hits_exhausted_alert', $alert, DAY_IN_SECONDS);
+}
+
+/**
+ * Detect active cache plugins that may require manual server-level configuration.
+ * Returns an alert array if an incompatible mode is detected, or null if OK.
+ */
+function bbcs_alerts_detect_cache_incompatibility(): ?array
+{
+	if (!function_exists('is_plugin_active')) {
+		include_once ABSPATH . 'wp-admin/includes/plugin.php';
+	}
+
+	$warnings = [];
+
+	// WP Super Cache — Expert (mod_rewrite) mode bypasses PHP entirely
+	if (defined('WPCACHEHOME') || is_plugin_active('wp-super-cache/wp-cache.php')) {
+		$wpsc_config = defined('WPCACHEHOME') ? rtrim(WPCACHEHOME, '/') . '/wp-cache-config.php' : '';
+		$is_mod_rewrite = false;
+		if ($wpsc_config && file_exists($wpsc_config)) {
+			$config_content = file_get_contents($wpsc_config);
+			if ($config_content !== false && preg_match('/\$wp_cache_mod_rewrite\s*=\s*1/', $config_content)) {
+				$is_mod_rewrite = true;
+			}
+		}
+		if ($is_mod_rewrite) {
+			$warnings[] = 'WP Super Cache (Expert/mod_rewrite mode) — serves cached pages via .htaccess, bypassing PHP. Add a cookie-based exception. See CACHE-COMPATIBILITY.md.';
+		}
+	}
+
+	// W3 Total Cache — Disk Enhanced with rewrite rules
+	if (is_plugin_active('w3-total-cache/w3-total-cache.php')) {
+		if (defined('W3TC_DIR')) {
+			$warnings[] = 'W3 Total Cache detected — if using Disk Enhanced mode with rewrite rules, add a cookie-based server exception. See CACHE-COMPATIBILITY.md.';
+		}
+	}
+
+	// Nginx FastCGI / Redis page cache (server-level)
+	if (isset($_SERVER['SERVER_SOFTWARE']) && stripos(sanitize_text_field(wp_unslash($_SERVER['SERVER_SOFTWARE'])), 'nginx') !== false) {
+		if (defined('WP_CACHE') && WP_CACHE) {
+			$warnings[] = 'Nginx detected with WP_CACHE enabled — if using FastCGI Cache, ensure the BotBlocker cookie bypasses it. See CACHE-COMPATIBILITY.md.';
+		}
+	}
+
+	// LiteSpeed server with LSCache
+	if (is_plugin_active('litespeed-cache/litespeed-cache.php')) {
+		// LSCWP respects X-LiteSpeed-Cache-Control: no-cache — auto-compatible
+		// but still worth noting for users
+	}
+
+	if (empty($warnings)) {
+		return null;
+	}
+
+	return [
+		'type'    => 'cache_compatibility',
+		'icon'    => 'fas fa-exclamation-triangle bg-warning text-light',
+		'title'   => __('Cache Plugin Compatibility', 'botblocker-security'),
+		'message' => implode(' | ', $warnings)
+	];
 }

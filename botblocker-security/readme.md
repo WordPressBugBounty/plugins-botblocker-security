@@ -4,7 +4,7 @@ Tags: security, firewall, anti-spam, captcha, brute force
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.6.10
+Stable tag: 1.6.11
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -75,6 +75,7 @@ BotBlocker's robust defense won't slow your site down - in fact, it often improv
 
 * **Lightweight & Fast** - negligible overhead in normal conditions. Reduces database and server load during attacks
 * **Built-in Caching** - Redis and Memcached support for high-traffic environments
+* **Cache Plugin Compatibility** - automatic `DONOTCACHEPAGE` + `Cache-Control: no-store` on verification pages. Works with WP Super Cache (PHP mode), W3 Total Cache, WP Rocket, LiteSpeed Cache, Hummingbird, and more. Server-level caches (Nginx FastCGI, Varnish, Cloudflare) may need a cookie-based bypass rule - see `CACHE-COMPATIBILITY.md`
 * **Seamless Compatibility** - works with Cloudflare, CDN services, caching plugins, and optimizers
 * **Full IPv6 Support** - all security functions work with both IPv4 and IPv6
 * **Server Optimization** *(Premium Addon)* - additional performance enhancements for high-traffic sites
@@ -168,6 +169,10 @@ No. Local protection works out of the box. **Cloud checks (PRO)** are optional a
 
 Yes. BotBlocker recognizes proxy headers to resolve the real client IP and can block origin bypass attempts. Fully compatible with Cloudflare and other CDN services.
 
+= Does BotBlocker work with caching plugins? =
+
+Yes. BotBlocker automatically sets `DONOTCACHEPAGE` and `Cache-Control: no-store` headers on verification/denied pages, preventing PHP-based cache plugins from caching them. WP Super Cache (PHP mode), W3 Total Cache, WP Rocket, LiteSpeed Cache, and Hummingbird work out of the box. For server-level caches (Nginx FastCGI, Varnish) or WP Super Cache Expert (mod_rewrite) mode, add a cookie-based bypass rule - see `CACHE-COMPATIBILITY.md` included with the plugin. The MU-plugin phase also defines `DONOTCACHEPAGE` for visitors without a BotBlocker cookie.
+
 = Can I protect XML-RPC/REST API or login/comments? =
 
 Yes. XML-RPC and REST API endpoints are blocked by default. You can create access rules for trusted services and protect login/comments with multi-layer CAPTCHA verification.
@@ -207,6 +212,18 @@ Use **Allowlist** for admin IPs/services and enable "allow server self-IP" so WP
 
 == Changelog ==
  
+= 1.6.11 =
+Add new captcha type: hold button
+Add cache compatibility layer: no-cache headers, DONOTCACHEPAGE, MU-phase cookie check
+Add Vary: Cookie header option (Settings → Cookies → Cache Compatibility)
+Add cache plugin incompatibility detection and admin alerts
+Add CACHE-COMPATIBILITY.md with Nginx, Varnish, Apache, Cloudflare config examples
+Add new security rules to block emerging threats
+Import data security improvements
+Update libraries and dependencies
+Improve translation files
+Fix minor bugs
+
 = 1.6.10 =
 Fix captcha verification issue in some environments
 Fix minor UI glitches in admin panel

@@ -44,11 +44,12 @@ class BotBlockerUI {
     public static function is_realtime(){
         $BBCS = BotBlocker::getInstance();
         $durations = bbcs_get_cache_durations();
-        $duration_name = $durations[$BBCS->settings->cache_ui_duration] ?? 'Unknown period';
+        $duration_name = $durations[$BBCS->settings->cache_ui_duration] ?? __('Unknown period', 'botblocker-security');
         if ($BBCS->settings->cache_ui_data == 1){
-            return " <small>(Update every " . $duration_name.')</small>';
+            // translators: %s is the cache update interval duration name (e.g. "1 hour").
+            return '<small>' . esc_html( sprintf( __('(Update every %s)', 'botblocker-security'), $duration_name ) ) . '</small>';
         } else {
-            return ' <small>(Realtime)</small>';
+            return '<small>' . esc_html__('(Realtime)', 'botblocker-security') . '</small>';
         }
     }
 

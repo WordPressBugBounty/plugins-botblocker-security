@@ -63,8 +63,20 @@ trait BotBlockerResponseTrait {
         }
     }
 
+    /**
+     * Define WP no-cache constants to prevent caching plugins from storing this response.
+     */
+    private function define_no_cache_constants(): void {
+        // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
+        if (!defined('DONOTCACHEPAGE'))   define('DONOTCACHEPAGE', true);
+        if (!defined('DONOTCACHEOBJECT')) define('DONOTCACHEOBJECT', true);
+        if (!defined('DONOTCACHEDB'))     define('DONOTCACHEDB', true);
+        // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
+    }
+
     public function perform_check() : void
     {
+        $this->define_no_cache_constants();
         $this->reset_post_headers();
         $this->set_iframe_headers(); 
         $this->set_check_headers();
@@ -86,6 +98,7 @@ trait BotBlockerResponseTrait {
 
     public function show_denied_page($message = null) : void
     {
+        $this->define_no_cache_constants();
         $this->set_denied_headers();
         $this->set_denied_page($message); 
         if ($this->settings->secure_mode == self::SECURE_MODE_FULL) $this->process_die();
@@ -103,6 +116,7 @@ trait BotBlockerResponseTrait {
 
     public function show_block_page($bbcs_ip_test = null) : void
     {
+        $this->define_no_cache_constants();
         $this->set_iframe_headers();
         $this->set_denied_headers();
         $this->set_block_page($bbcs_ip_test);

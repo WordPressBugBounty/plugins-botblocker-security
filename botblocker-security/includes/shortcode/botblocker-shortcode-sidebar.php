@@ -139,6 +139,9 @@ add_shortcode('bbcs_database_total', 'bbcs_getDatabaseAll');
 
 function bbcs_system_status_view()
 {
+    if (!current_user_can('manage_options')) {
+        return esc_html__('You do not have permission to view this information.', 'botblocker-security');
+    }
     global $wpdb;
 
     $output = "<pre class=\"bbcs_pre\">";

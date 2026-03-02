@@ -71,6 +71,9 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
             			<option value="6" <?php selected('6', isset($bbcs_settings['bbcs_captcha_mode']) ? $bbcs_settings['bbcs_captcha_mode'] : '2'); ?>>
                 			<?php esc_html_e('Dynamic Digit Captcha', 'botblocker-security'); ?>
             			</option>
+            			<option value="7" <?php selected('7', isset($bbcs_settings['bbcs_captcha_mode']) ? $bbcs_settings['bbcs_captcha_mode'] : '2'); ?>>
+                			<?php esc_html_e('Hold Button Captcha', 'botblocker-security'); ?>
+            			</option>
 
         			</select>
         			<?php if (isset($BBCS->prefly['gd']) && $BBCS->prefly['gd'] === 0): ?>
@@ -122,7 +125,15 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 			<h3 class="bbcs_settings_h3"><?php esc_html_e('Extended Captcha Check', 'botblocker-security'); ?></h3>
 				<p class="bbcs_info_paragraph">
-				Any selected captcha type can be combined with verification using reCaptcha v3. Please <a href="<?php echo esc_url($BBCSA->pages_integrations); ?>#bbcs_recaptchav3">configure integration</a> with reCaptcha.
+				<?php
+					printf(
+						wp_kses_post(
+							// translators: %s is the URL to the reCaptcha v3 integration configuration page.
+							__('Any selected captcha type can be combined with verification using reCaptcha v3. Please <a href="%s">configure integration</a> with reCaptcha.', 'botblocker-security')
+						),
+						esc_url($BBCSA->pages_integrations) . '#bbcs_recaptchav3'
+					);
+					?>
 				</p>
 		</div>
 	</div>

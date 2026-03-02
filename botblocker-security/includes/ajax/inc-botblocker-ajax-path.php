@@ -2,6 +2,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 function bbcs_get_botblocker_paths_callback() {
     check_ajax_referer( 'botblocker_nonce', 'nonce' );
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     global $wpdb;
 
@@ -108,6 +109,7 @@ add_action( 'wp_ajax_bbcs_get_botblocker_paths', 'bbcs_get_botblocker_paths_call
 
 function bbcs_get_path_details_callback() {
     check_ajax_referer( 'botblocker_nonce', 'nonce' );
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     global $wpdb;
 
@@ -148,6 +150,7 @@ add_action( 'wp_ajax_bbcs_get_path_details', 'bbcs_get_path_details_callback' );
 function bbcs_update_path_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     /**
      * REVIEWER NOTE:
@@ -195,6 +198,7 @@ add_action('wp_ajax_bbcs_update_path', 'bbcs_update_path_callback');
 function bbcs_delete_path_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     if( !isset($_POST['id']) || empty($_POST['id']) ) {
         wp_send_json_error('Missing required field: id');
@@ -224,6 +228,7 @@ add_action('wp_ajax_bbcs_delete_path', 'bbcs_delete_path_callback');
 
 function bbcs_toggle_path_callback() {
     check_ajax_referer( 'botblocker_nonce', 'nonce' );
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     global $wpdb;
 
@@ -253,6 +258,7 @@ add_action( 'wp_ajax_bbcs_toggle_path', 'bbcs_toggle_path_callback' );
 function bbcs_create_path_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     /**
      * REVIEWER NOTE:
@@ -327,6 +333,7 @@ add_action('wp_ajax_bbcs_create_path', 'bbcs_create_path_callback');
 function bbcs_export_paths_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     global $wpdb;
     
@@ -354,6 +361,7 @@ add_action('wp_ajax_bbcs_export_paths', 'bbcs_export_paths_callback');
 function bbcs_import_paths_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     if (!isset($_POST['paths']) || empty($_POST['paths'])) {
         wp_send_json_error('Missing required field: paths');
@@ -429,6 +437,7 @@ add_action('wp_ajax_bbcs_import_paths', 'bbcs_import_paths_callback');
 function bbcs_clear_all_paths_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     $result = bbcs_clear_all_paths();
 
@@ -453,6 +462,8 @@ function bbcs_clear_all_paths()
 
 function bbcs_path_to_php_callback(): void
 {
+	check_ajax_referer('botblocker_nonce', 'nonce');
+	if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 	try {
         bbcs_renderPathsFromDb();
 		if (BOTBLOCKER_CACHE_WP) {

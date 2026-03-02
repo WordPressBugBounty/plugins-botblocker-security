@@ -41,14 +41,11 @@ function bbcs_get_statistics($period_days = 7)
                 COUNT(DISTINCT CASE WHEN IFNULL(ch.device,'NA')='tablet'AND ch.ip!='' THEN ch.ip END)     AS tablet,
                 COUNT(DISTINCT CASE WHEN IFNULL(ch.device,'NA')='tv'    AND ch.ip!='' THEN ch.ip END)     AS tv,
                 COUNT(DISTINCT CASE WHEN ch.hit = 1 AND ch.ip != '' THEN ch.ip END)                      AS hit_hosts,
-                SUM(NULLIF(ch.hit, 0))                               AS hit_count,
-                GROUP_CONCAT(DISTINCT CONCAT(IFNULL(NULLIF(ch.browser,''),'NA'), ':', ch.ip) SEPARATOR ',')          AS browsers,
-                GROUP_CONCAT(DISTINCT CONCAT(IFNULL(NULLIF(ch.os,''),'NA'), ':', ch.ip) SEPARATOR ',')                AS operating_systems,
-                GROUP_CONCAT(DISTINCT CONCAT(IFNULL(NULLIF(ch.wbot,''),'NA'), ':', ch.ip) SEPARATOR ',')              AS white_bots
+                SUM(NULLIF(ch.hit, 0))                               AS hit_count
             FROM (
-                SELECT date, ip, device, hit, browser, os, wbot, page, method FROM `{$wpdb->bbcs_hits}`
+                SELECT date, ip, device, hit, page, method FROM `{$wpdb->bbcs_hits}`
                 UNION ALL
-                SELECT date, ip, device, hit, browser, os, wbot, page, method FROM `{$wpdb->bbcs_hits_suspicious}`
+                SELECT date, ip, device, hit, page, method FROM `{$wpdb->bbcs_hits_suspicious}`
             ) AS ch
             LEFT JOIN `{$wpdb->bbcs_page_filters}` AS pf ON ch.page LIKE pf.pattern
             LEFT JOIN `{$wpdb->bbcs_self_ips}` AS si ON ch.ip = si.search
@@ -79,14 +76,11 @@ function bbcs_get_statistics($period_days = 7)
                 COUNT(DISTINCT CASE WHEN IFNULL(ch.device,'NA')='tablet'AND ch.ip!='' THEN ch.ip END)     AS tablet,
                 COUNT(DISTINCT CASE WHEN IFNULL(ch.device,'NA')='tv'    AND ch.ip!='' THEN ch.ip END)     AS tv,
                 COUNT(DISTINCT CASE WHEN ch.hit = 1 AND ch.ip != '' THEN ch.ip END)                      AS hit_hosts,
-                SUM(NULLIF(ch.hit, 0))                               AS hit_count,
-                GROUP_CONCAT(DISTINCT CONCAT(IFNULL(NULLIF(ch.browser,''),'NA'), ':', ch.ip) SEPARATOR ',')          AS browsers,
-                GROUP_CONCAT(DISTINCT CONCAT(IFNULL(NULLIF(ch.os,''),'NA'), ':', ch.ip) SEPARATOR ',')                AS operating_systems,
-                GROUP_CONCAT(DISTINCT CONCAT(IFNULL(NULLIF(ch.wbot,''),'NA'), ':', ch.ip) SEPARATOR ',')              AS white_bots
+                SUM(NULLIF(ch.hit, 0))                               AS hit_count
             FROM (
-                SELECT date, ip, device, hit, browser, os, wbot, page, method FROM `{$wpdb->bbcs_hits}`
+                SELECT date, ip, device, hit, page, method FROM `{$wpdb->bbcs_hits}`
                 UNION ALL
-                SELECT date, ip, device, hit, browser, os, wbot, page, method FROM `{$wpdb->bbcs_hits_suspicious}`
+                SELECT date, ip, device, hit, page, method FROM `{$wpdb->bbcs_hits_suspicious}`
             ) AS ch
             LEFT JOIN `{$wpdb->bbcs_page_filters}` AS pf ON ch.page LIKE pf.pattern
             LEFT JOIN `{$wpdb->bbcs_self_ips}` AS si ON ch.ip = si.search
@@ -104,63 +98,15 @@ function bbcs_get_statistics($period_days = 7)
         ARRAY_A
     );
 
-    foreach (['today_results', 'period_results'] as $result_set) {
-        $browsers           = [];
-        $operating_systems  = [];
-        $white_bots         = [];
+    $grouped = bbcs_get_all_grouped_counts($period_start, $today_start, $today_end, $gmt_offset_str);
 
-        $browser_data = ! empty(${$result_set}['browsers']) && is_string(${$result_set}['browsers'])
-            ? explode(',', ${$result_set}['browsers'])
-            : [];
-        $os_data      = ! empty(${$result_set}['operating_systems']) && is_string(${$result_set}['operating_systems'])
-            ? explode(',', ${$result_set}['operating_systems'])
-            : [];
-        $bot_data     = ! empty(${$result_set}['white_bots']) && is_string(${$result_set}['white_bots'])
-            ? explode(',', ${$result_set}['white_bots'])
-            : [];
+    $today_results['browsers']          = $grouped['today']['browsers'];
+    $today_results['operating_systems'] = $grouped['today']['operating_systems'];
+    $today_results['white_bots']        = $grouped['today']['white_bots'];
 
-        if (! empty($browser_data[0])) {
-            foreach ($browser_data as $item) {
-                $data = explode(':', $item);
-                if (count($data) === 2) {
-                    [$browser, $ip] = $data;
-                    if ($browser !== '' && $ip !== '') {
-                        $browsers[$browser][$ip] = true;
-                    }
-                }
-            }
-        }
-
-        if (! empty($os_data[0])) {
-            foreach ($os_data as $item) {
-                $data = explode(':', $item);
-                if (count($data) === 2) {
-                    [$os, $ip] = $data;
-                    if ($os !== '' && $ip !== '') {
-                        $operating_systems[$os][$ip] = true;
-                    }
-                }
-            }
-        }
-
-        if (! empty($bot_data[0])) {
-            foreach ($bot_data as $item) {
-                $data = explode(':', $item);
-                if (count($data) === 2) {
-                    [$bot, $ip] = $data;
-                    if ($bot !== '' && $ip !== '') {
-                        $white_bots[$bot][$ip] = true;
-                    }
-                }
-            }
-        }
-        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-        ${$result_set}['browsers']          = array_map('count', $browsers);
-        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-        ${$result_set}['operating_systems'] = array_map('count', $operating_systems);
-        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-        ${$result_set}['white_bots']        = array_map('count', $white_bots);
-    }
+    $period_results['browsers']          = $grouped['period']['browsers'];
+    $period_results['operating_systems'] = $grouped['period']['operating_systems'];
+    $period_results['white_bots']        = $grouped['period']['white_bots'];
 
     $BBCS->counters = [
         'today'  => $today_results,
@@ -174,6 +120,83 @@ function bbcs_get_statistics($period_days = 7)
             set_transient($cache_key, $BBCS->counters, $BBCS->settings->cache_ui_duration);
         }
     }
+}
+
+function bbcs_get_all_grouped_counts(\DateTime $period_start, \DateTime $today_start, \DateTime $today_end, $gmt_offset_str)
+{
+    global $wpdb;
+
+    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching
+    $rows = $wpdb->get_results(
+        $wpdb->prepare(
+            "
+            SELECT DISTINCT
+                ch.ip,
+                IFNULL(NULLIF(ch.browser,''), 'NA') AS browser,
+                IFNULL(NULLIF(ch.os,''), 'NA')      AS os,
+                IFNULL(NULLIF(ch.wbot,''), 'NA')    AS wbot,
+                CASE WHEN ch.date >= UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
+                     THEN 1 ELSE 0 END AS is_today
+            FROM (
+                SELECT date, ip, browser, os, wbot, page, method FROM `{$wpdb->bbcs_hits}`
+                UNION ALL
+                SELECT date, ip, browser, os, wbot, page, method FROM `{$wpdb->bbcs_hits_suspicious}`
+            ) AS ch
+            LEFT JOIN `{$wpdb->bbcs_page_filters}` AS pf ON ch.page LIKE pf.pattern
+            LEFT JOIN `{$wpdb->bbcs_self_ips}` AS si ON ch.ip = si.search
+            WHERE ch.date BETWEEN UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
+                            AND UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
+            AND pf.pattern IS NULL
+            AND si.search IS NULL
+            AND ch.method = 'GET'
+            AND ch.ip != ''
+            ",
+            $today_start->format('Y-m-d H:i:s'),
+            $gmt_offset_str,
+            $period_start->format('Y-m-d H:i:s'),
+            $gmt_offset_str,
+            $today_end->format('Y-m-d H:i:s'),
+            $gmt_offset_str
+        ),
+        ARRAY_A
+    );
+    // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+    $today  = ['browsers' => [], 'operating_systems' => [], 'white_bots' => []];
+    $period = ['browsers' => [], 'operating_systems' => [], 'white_bots' => []];
+
+    foreach ($rows as $row) {
+        $ip = $row['ip'];
+
+        $period['browsers'][$row['browser']][$ip]          = true;
+        $period['operating_systems'][$row['os']][$ip]      = true;
+        $period['white_bots'][$row['wbot']][$ip]           = true;
+
+        if ((int) $row['is_today'] === 1) {
+            $today['browsers'][$row['browser']][$ip]       = true;
+            $today['operating_systems'][$row['os']][$ip]   = true;
+            $today['white_bots'][$row['wbot']][$ip]        = true;
+        }
+    }
+
+    $to_counts = static function (array $map): array {
+        $counts = array_map('count', $map);
+        arsort($counts);
+        return $counts;
+    };
+
+    return [
+        'today' => [
+            'browsers'          => $to_counts($today['browsers']),
+            'operating_systems' => $to_counts($today['operating_systems']),
+            'white_bots'        => $to_counts($today['white_bots']),
+        ],
+        'period' => [
+            'browsers'          => $to_counts($period['browsers']),
+            'operating_systems' => $to_counts($period['operating_systems']),
+            'white_bots'        => $to_counts($period['white_bots']),
+        ],
+    ];
 }
 
 function bbcs_get_top_data($type, $limit, $days)
@@ -207,9 +230,14 @@ function bbcs_get_top_data($type, $limit, $days)
     $end_date   = $end_date_obj->format('Y-m-d H:i:s');
 
     $uniq_type        = isset($BBCS->settings->admin_uniq_type) ? $BBCS->settings->admin_uniq_type : 'host';
-    $count_expression = ($uniq_type === 'host')
-        ? "COUNT(DISTINCT CONCAT(ip, '-', {$type}))"
-        : "COUNT(*)";
+
+    if ($type === 'ip') {
+        $count_expression = "COUNT(*)";
+    } elseif ($uniq_type === 'host') {
+        $count_expression = "COUNT(DISTINCT CONCAT(ip, '-', {$type}))";
+    } else {
+        $count_expression = "COUNT(*)";
+    }
 
     $found = false;
     if (BOTBLOCKER_CACHE_WP) {

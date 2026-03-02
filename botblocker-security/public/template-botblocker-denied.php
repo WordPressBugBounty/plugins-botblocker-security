@@ -1,6 +1,6 @@
 <?php
-// If this file is called directly, abort.
-if (!defined('ABSPATH') || !defined('WPINC') || !defined('BOTBLOCKER')) {
+if ( ! defined( 'ABSPATH' ) ) exit;
+if (!defined('WPINC') || !defined('BOTBLOCKER')) {
     exit;
 }
  

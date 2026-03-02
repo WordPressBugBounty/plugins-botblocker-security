@@ -18,6 +18,7 @@ function bbcs_get_botblocker_hits( $where ) {
      * - Suppression is scoped only around those lines.
      */
     check_ajax_referer( 'botblocker_nonce', 'nonce' );
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     global $wpdb;
     $BBCS = BotBlocker::getInstance();
@@ -188,6 +189,7 @@ add_action('wp_ajax_bbcs_get_botblocker_all_hits', 'bbcs_get_botblocker_all_hits
 
 function bbcs_get_botblocker_hits_data_for_modal_callback() {
     check_ajax_referer( 'botblocker_nonce', 'nonce' );
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     if ( empty( $_POST['cid'] ) ) {
         wp_send_json_error( 'CID is not set or empty' );
@@ -246,6 +248,7 @@ function bbcs_detectIPType($ip) {
 function bbcs_hit_to_rule_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     if (
         !isset($_POST['type']) || empty($_POST['type']) ||

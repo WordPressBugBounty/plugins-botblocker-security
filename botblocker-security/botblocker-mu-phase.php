@@ -35,6 +35,29 @@ class BotBlockerMuPhase
 			$this->increment_blocked_hit();
 			$this->show_denied_page();
 		}
+		// Prevent caching for unverified visitors (no BotBlocker cookie).
+		// PHP-based cache plugins check DONOTCACHEPAGE at shutdown.
+		$this->prevent_cache_for_unverified();
+	}
+
+	/**
+	 * If visitor has no BotBlocker cookie, tell cache plugins not to cache.
+	 * This prevents caching of the verification page or serving cached
+	 * content to visitors who haven't passed the check yet.
+	 */
+	private function prevent_cache_for_unverified(): void
+	{
+		$cookie_name = $this->settings['cookie'] ?? 'BotBlocker';
+		if (empty($cookie_name)) {
+			$cookie_name = 'BotBlocker';
+		}
+		if (!isset($_COOKIE[$cookie_name]) || empty($_COOKIE[$cookie_name])) {
+			// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
+			if (!defined('DONOTCACHEPAGE'))   define('DONOTCACHEPAGE', true);
+			if (!defined('DONOTCACHEOBJECT')) define('DONOTCACHEOBJECT', true);
+			if (!defined('DONOTCACHEDB'))     define('DONOTCACHEDB', true);
+			// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
+		}
 	}
 
 	private function show_denied_page(): void

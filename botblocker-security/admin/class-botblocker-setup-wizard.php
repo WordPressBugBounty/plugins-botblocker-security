@@ -200,7 +200,7 @@ class BotBlocker_SetupWizard
 						<div>
 							<div id="bbcs-error-js">
 								<h3><?php esc_html_e( 'Whoops, something\'s not working.', 'botblocker-security' ); ?></h3>
-								<p class="info"><?php esc_html_e( 'It looks like something is preventing JavaScript from loading on your website. WP Mail SMTP requires JavaScript in order to give you the best possible experience.', 'botblocker-security' ); ?></p>
+								<p class="info"><?php esc_html_e( 'It looks like something is preventing JavaScript from loading on your website. BotBlocker Security requires JavaScript in order to give you the best possible experience.', 'botblocker-security' ); ?></p>
 								<p class="info">
 									<?php esc_html_e( 'In order to fix this issue, please check each of the items below:', 'botblocker-security' ); ?>
 								</p>

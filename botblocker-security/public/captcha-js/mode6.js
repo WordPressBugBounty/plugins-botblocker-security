@@ -1,7 +1,7 @@
 /* CAPTCHA Mode 6 JS (animated math) */
 
 function renderMode6Captcha(params) {
-    const { expression, answers, instructionText } = params;
+    const { expressionData, answers, instructionText } = params;
     
     document.getElementById("content").innerHTML = `
         <div style="text-align:center;">
@@ -17,12 +17,13 @@ function renderMode6Captcha(params) {
         const answerDiv = document.getElementById("answerOptions");
 
         const chars = [];
-        for (let i = 0; i < expression.length; i++) {
+        for (let i = 0; i < expressionData.length; i++) {
+            const item = expressionData[i];
             chars.push({
-                char: expression[i],
-                x: 50 + i * 20,
+                char: item.c,
+                x: 50 + i * 20 + (item.o || 0),
                 y: 40,
-                baseX: 50 + i * 20,
+                baseX: 50 + i * 20 + (item.o || 0),
                 baseY: 40,
                 color: getRandomColor(),
                 amplitude: Math.random() * 5 + 2,

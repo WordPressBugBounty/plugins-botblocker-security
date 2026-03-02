@@ -3,6 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 function bbcs_get_botblocker_ipv4_rules_callback() {
     check_ajax_referer( 'botblocker_nonce', 'nonce' );
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     global $wpdb;
 
@@ -104,6 +105,7 @@ add_action( 'wp_ajax_bbcs_get_botblocker_ipv4_rules', 'bbcs_get_botblocker_ipv4_
 function bbcs_delete_ipv4_rule_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     global $wpdb;
 
@@ -135,6 +137,7 @@ add_action('wp_ajax_bbcs_delete_ipv4_rule', 'bbcs_delete_ipv4_rule_callback');
 
 function bbcs_toggle_ipv4_rule_callback() {
     check_ajax_referer( 'botblocker_nonce', 'nonce' );
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     global $wpdb;
 
@@ -196,6 +199,7 @@ add_action( 'wp_ajax_bbcs_toggle_ipv4_rule', 'bbcs_toggle_ipv4_rule_callback' );
 function bbcs_create_ipv4_rule_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     global $wpdb;
 
@@ -308,6 +312,7 @@ add_action('wp_ajax_bbcs_create_ipv4_rule', 'bbcs_create_ipv4_rule_callback');
 function bbcs_update_ipv4_rule_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     global $wpdb;
 
@@ -378,12 +383,13 @@ add_action('wp_ajax_bbcs_update_ipv4_rule', 'bbcs_update_ipv4_rule_callback');
 function bbcs_export_ipv4_rules_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     global $wpdb;
 
     $found = false;
 
-    if (!BOTBLOCKER_CACHE_WP) {
+    if (BOTBLOCKER_CACHE_WP) {
         $cache_version = 1;
         $cache_version = wp_cache_get('bbcs_ajax_ipv4_rules_cache_version', 'botblocker-security') ?: 1;
         $cache_key = 'bbcs_export_ipv4_rules' . bbcs_get_wp_cache_version() . $cache_version;
@@ -408,6 +414,7 @@ add_action('wp_ajax_bbcs_export_ipv4_rules', 'bbcs_export_ipv4_rules_callback');
 function bbcs_import_ipv4_rules_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     global $wpdb;
 
@@ -483,6 +490,7 @@ add_action('wp_ajax_bbcs_import_ipv4_rules', 'bbcs_import_ipv4_rules_callback');
 function bbcs_clear_all_ipv4_rules_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     $result = bbcs_clear_all_ipv4_rules();
 
@@ -503,6 +511,7 @@ add_action('wp_ajax_bbcs_clear_all_ipv4_rules', 'bbcs_clear_all_ipv4_rules_callb
 
 function bbcs_get_ipv4_rule_details_callback() {
     check_ajax_referer( 'botblocker_nonce', 'nonce' );
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     global $wpdb;
 
@@ -542,6 +551,7 @@ add_action( 'wp_ajax_bbcs_get_ipv4_rule_details', 'bbcs_get_ipv4_rule_details_ca
 function bbcs_import_ipv4_whitelist_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
     bbcs_import_ipv4_list('allow');
 }
 add_action('wp_ajax_bbcs_import_ipv4_whitelist', 'bbcs_import_ipv4_whitelist_callback');
@@ -549,6 +559,7 @@ add_action('wp_ajax_bbcs_import_ipv4_whitelist', 'bbcs_import_ipv4_whitelist_cal
 function bbcs_import_ipv4_blacklist_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
     bbcs_import_ipv4_list('block');
 }
 add_action('wp_ajax_bbcs_import_ipv4_blacklist', 'bbcs_import_ipv4_blacklist_callback');
@@ -646,6 +657,8 @@ function bbcs_clear_all_ipv4_rules()
 
 function bbcs_ipv4_to_php_callback(): void
 {
+    check_ajax_referer('botblocker_nonce', 'nonce');
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
     try {
         bbcs_renderIpsFromDb();
         if (BOTBLOCKER_CACHE_WP) {

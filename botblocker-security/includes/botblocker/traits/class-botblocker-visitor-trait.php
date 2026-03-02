@@ -77,7 +77,7 @@ trait BotBlockerVisitorTrait {
                 $this->delete_cookie($this->uid);
             }
         }
-        if ($this->cookie_expected_hash == $this->cookie_stored_hash) {
+        if (hash_equals($this->cookie_expected_hash, (string) $this->cookie_stored_hash)) {
             $this->update_cookie_counter();
             return true;
         } else {

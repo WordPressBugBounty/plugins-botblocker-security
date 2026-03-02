@@ -99,6 +99,26 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                         value="<?php echo isset($bbcs_settings['salt']) ? esc_html($bbcs_settings['salt']) : ''; ?>">
                 </div>
             </div>
+
+            <h3 class="bbcs_settings_h3"><?php esc_html_e('Cache Compatibility', 'botblocker-security'); ?></h3>
+            <div class="bbcs_text_input mb-2">
+                <div class="bbcs_label_input_box">
+                    <span class="bbcs-label-input"><?php esc_html_e('Send Vary: Cookie Header', 'botblocker-security'); ?></span>
+                    <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"
+                        data-bs-placement="top"
+                        data-bs-original-title="<?php esc_attr_e('Adds Vary: Cookie HTTP header to responses for verified visitors. Forces CDN/proxy caches to differentiate responses by cookie set. May reduce cache hit ratio. Enable only if caching issues persist after other measures.', 'botblocker-security'); ?>"></i>
+                </div>
+                <div class="bbcs_text_input_inner">
+                    <select class="bbcs_select_input_input" name="vary_cookie">
+                        <option value="0"
+                            <?php selected(0, isset($bbcs_settings['vary_cookie']) ? (int)$bbcs_settings['vary_cookie'] : 0); ?>>
+                            <?php esc_html_e('Disabled', 'botblocker-security'); ?></option>
+                        <option value="1"
+                            <?php selected(1, isset($bbcs_settings['vary_cookie']) ? (int)$bbcs_settings['vary_cookie'] : 0); ?>>
+                            <?php esc_html_e('Enabled', 'botblocker-security'); ?></option>
+                    </select>
+                </div>
+            </div>
         </div>
     </div>
 </div>

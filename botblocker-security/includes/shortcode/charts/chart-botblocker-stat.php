@@ -25,21 +25,32 @@ function bbcs_display_statistics_chart($atts)
 
     switch ($atts['data']) {
         case 'ip_hits_hosts':
-            $labels = array('Hits', 'Unique IPs');
+            $labels = array(
+                _x('Hits', 'statistics label', 'botblocker-security'),
+                _x('Unique IPs', 'statistics label', 'botblocker-security'));
             $values = array((int) $data['hits'], (int) $data['uniques']);
-            $title  = 'IP Hits & Hosts';
+            $title  = __('IP Hits & Hosts', 'botblocker-security');
             break;
 
         case 'cookie_hits_hosts':
-            $labels = array('Hits', 'Unique Hosts');
+            $labels = array(
+                _x('Hits', 'statistics label', 'botblocker-security'),
+                _x('Unique Hosts', 'statistics label', 'botblocker-security')
+                );
             $values = array((int) $data['hit_count'], (int) $data['hit_hosts']);
-            $title  = 'Cookie Hits & Hosts';
+            $title  = __('Cookie Hits & Hosts', 'botblocker-security');
             break;
 
         case 'device_types':
-            $labels = array('PC', 'Box', 'Phone', 'Tablet', 'TV');
+            $labels = array(
+                _x('PC', 'device type label', 'botblocker-security'),
+                _x('Box', 'device type label', 'botblocker-security'),
+                _x('Phone', 'device type label', 'botblocker-security'),
+                _x('Tablet', 'device type label', 'botblocker-security'),
+                _x('TV', 'device type label', 'botblocker-security')
+                );
             $values = array((int) $data['pc'], (int) $data['box'], (int) $data['phone'], (int) $data['tablet'], (int) $data['tv']);
-            $title  = 'Device Types';
+            $title  = __('Device Types', 'botblocker-security');
             break;
 
         case 'browsers':
@@ -47,7 +58,7 @@ function bbcs_display_statistics_chart($atts)
                 $labels[] = sanitize_text_field((string) $browser);
                 $values[] = (int) $count;
             }
-            $title = 'Browsers';
+            $title = __('Browsers', 'botblocker-security');
             break;
 
         case 'operating_systems':
@@ -55,7 +66,7 @@ function bbcs_display_statistics_chart($atts)
                 $labels[] = sanitize_text_field((string) $os);
                 $values[] = (int) $count;
             }
-            $title = 'OS';
+            $title = __('OS', 'botblocker-security');
             break;
 
         default:

@@ -8,18 +8,23 @@ include_once BOTBLOCKER_DIR . 'includes/install/botblocker-install-files.php';
 
 function bbcs_check_install()
 {
-    $bbcs_start_files = false;
-
 	$upload_dir = bbcs_get_protected_upload_dir();
 	if ($upload_dir === null) {
-		define('BOTBLOCKER_UPLOADS_DIR', bbcs_create_protected_upload_dir());
-	} else {
-		define('BOTBLOCKER_UPLOADS_DIR', $upload_dir);
+		$upload_dir = bbcs_create_protected_upload_dir();
 	}
 
-	define('BOTBLOCKER_DATA_DIR', BOTBLOCKER_UPLOADS_DIR . 'data/');
-	define('BOTBLOCKER_ADDONS_DIR', BOTBLOCKER_UPLOADS_DIR . 'addons/');
-	define('BOTBLOCKER_ADDONS_URL', bbcs_get_protected_upload_dir(true) . 'addons/');	
+	if (!defined('BOTBLOCKER_UPLOADS_DIR')) {
+		define('BOTBLOCKER_UPLOADS_DIR', $upload_dir);
+	}
+	if (!defined('BOTBLOCKER_DATA_DIR')) {
+		define('BOTBLOCKER_DATA_DIR', BOTBLOCKER_UPLOADS_DIR . 'data/');
+	}
+	if (!defined('BOTBLOCKER_ADDONS_DIR')) {
+		define('BOTBLOCKER_ADDONS_DIR', BOTBLOCKER_UPLOADS_DIR . 'addons/');
+	}
+	if (!defined('BOTBLOCKER_ADDONS_URL')) {
+		define('BOTBLOCKER_ADDONS_URL', bbcs_get_protected_upload_dir(true) . 'addons/');
+	}	
 
     if (!bbcs_tablesExist()) {
         bbcs_createTables();
@@ -106,24 +111,28 @@ function bbcs_saveSettingsToFile($settings)
 function bbcs_saveSettingsToDatabase($settings)
 {
     global $wpdb;
+
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    $existing = $wpdb->get_col("SELECT `key` FROM `{$wpdb->bbcs_settings}`");
+    $existing_keys = array_flip($existing);
+
     foreach ($settings as $setting_key => $setting_value) {
-        // REVIEWER NOTE: Custom BotBlocker-Security table. Query is cached. No direct unsanitized SQL is executed.
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-        if ($wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM `{$wpdb->bbcs_settings}` WHERE `key` = %s", $setting_key)) == 0) {
-            $wpdb->insert(
-                $wpdb->bbcs_settings,
-                ['key' => $setting_key, 'value' => is_array($setting_value) ? wp_json_encode($setting_value) : $setting_value],
-                ['%s', '%s']
-            );
-        } else {
-            // REVIEWER NOTE: Custom BotBlocker-Security table. Query is cached. No direct unsanitized SQL is executed.
+        $val = is_array($setting_value) ? wp_json_encode($setting_value) : $setting_value;
+        if (isset($existing_keys[$setting_key])) {
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $wpdb->update(
                 $wpdb->bbcs_settings,
-                ['value' => is_array($setting_value) ? wp_json_encode($setting_value) : $setting_value],
+                ['value' => $val],
                 ['key' => $setting_key],
                 ['%s'],
                 ['%s']
+            );
+        } else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+            $wpdb->insert(
+                $wpdb->bbcs_settings,
+                ['key' => $setting_key, 'value' => $val],
+                ['%s', '%s']
             );
         }
     }

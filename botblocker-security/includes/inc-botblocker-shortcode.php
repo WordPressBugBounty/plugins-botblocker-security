@@ -20,7 +20,7 @@ function bbcs_render_top_list($type, $limit, $days)
     $data = bbcs_get_top_data($type, $limit, $days);
 
     if (empty($data)) {
-        return '<p>No data available.</p>';
+        return '<p>' . esc_html_e('No data available.', 'botblocker-security') .'</p>';
     }
 
     $output = '<ul class="bbcs-top-ul">';
@@ -58,7 +58,12 @@ add_shortcode('bbcs_top_ips', function ($atts) {
         }
     }
     $atts = shortcode_atts(['limit' => 5, 'days' => 7], $atts, 'bbcs_top_ips');
-    $html = '<div class="bbcs-statistics-chart-title-div-start"><span class="bbcs-statistics-chart-title">Top-' . intval($atts['limit']) . ' IPs</span></div>';
+    // $html = '<div class="bbcs-statistics-chart-title-div-start"><span class="bbcs-statistics-chart-title">Top-' . intval($atts['limit']) . ' IPs</span></div>';
+    // translators: %d is the number of top IP addresses to display.
+    $bbcs_ips_title = sprintf( __('Top-%d IPs', 'botblocker-security'), intval($atts['limit']) );
+    $html = '<div class="bbcs-statistics-chart-title-div-start">
+                <span class="bbcs-statistics-chart-title">' . esc_html( $bbcs_ips_title ) . '</span>
+            </div>';
     $output = $html . bbcs_render_top_list('ip', intval($atts['limit']), intval($atts['days']));
     if ($BBCS->settings->cache_ui_data == 1) {
         set_transient($cache_key, $output, $BBCS->settings->cache_ui_duration);
@@ -76,7 +81,12 @@ add_shortcode('bbcs_top_countries', function ($atts) {
         }
     }
     $atts = shortcode_atts(['limit' => 5, 'days' => 7], $atts, 'bbcs_top_countries');
-    $html = '<div class="bbcs-statistics-chart-title-div-start"><span class="bbcs-statistics-chart-title">Top-' . intval($atts['limit']) . ' countries</span></div>';
+    // $html = '<div class="bbcs-statistics-chart-title-div-start"><span class="bbcs-statistics-chart-title">Top-' . intval($atts['limit']) . ' countries</span></div>';
+    // translators: %d is the number of top countries to display.
+    $bbcs_countries_title = sprintf( __('Top-%d countries', 'botblocker-security'), intval($atts['limit']) );
+    $html = '<div class="bbcs-statistics-chart-title-div-start">
+                <span class="bbcs-statistics-chart-title">' . esc_html( $bbcs_countries_title ) . '</span>
+            </div>';
     $output = $html . bbcs_render_top_list('country', intval($atts['limit']), intval($atts['days']));
     if ($BBCS->settings->cache_ui_data == 1) {
         set_transient($cache_key, $output, $BBCS->settings->cache_ui_duration);
@@ -94,7 +104,12 @@ add_shortcode('bbcs_top_devices', function ($atts) {
         }
     }
     $atts = shortcode_atts(['limit' => 5, 'days' => 7], $atts, 'bbcs_top_devices');
-    $html = '<div class="bbcs-statistics-chart-title-div-start"><span class="bbcs-statistics-chart-title">Top-' . intval($atts['limit']) . ' devices</span></div>';
+    // $html = '<div class="bbcs-statistics-chart-title-div-start"><span class="bbcs-statistics-chart-title">Top-' . intval($atts['limit']) . ' devices</span></div>';
+    // translators: %d is the number of top devices to display.
+    $bbcs_devices_title = sprintf( __('Top-%d devices', 'botblocker-security'), intval($atts['limit']) );
+    $html = '<div class="bbcs-statistics-chart-title-div-start">
+                <span class="bbcs-statistics-chart-title">' . esc_html( $bbcs_devices_title ) . '</span>
+            </div>';
     $output =  $html . bbcs_render_top_list('device', intval($atts['limit']), intval($atts['days']));
     if ($BBCS->settings->cache_ui_data == 1) {
         set_transient($cache_key, $output, $BBCS->settings->cache_ui_duration);
@@ -112,7 +127,12 @@ add_shortcode('bbcs_top_browsers', function ($atts) {
         }
     }
     $atts = shortcode_atts(['limit' => 5, 'days' => 7], $atts, 'bbcs_top_browsers');
-    $html = '<div class="bbcs-statistics-chart-title-div-start"><span class="bbcs-statistics-chart-title">Top-' . intval($atts['limit']) . ' browsers</span></div>';
+    // $html = '<div class="bbcs-statistics-chart-title-div-start"><span class="bbcs-statistics-chart-title">Top-' . intval($atts['limit']) . ' browsers</span></div>';
+    // translators: %d is the number of top browsers to display.
+    $bbcs_browsers_title = sprintf( __('Top-%d browsers', 'botblocker-security'), intval($atts['limit']) );
+    $html = '<div class="bbcs-statistics-chart-title-div-start">
+                <span class="bbcs-statistics-chart-title">' . esc_html( $bbcs_browsers_title ) . '</span>
+            </div>';    
     $output = $html . bbcs_render_top_list('browser', intval($atts['limit']), intval($atts['days']));
     if ($BBCS->settings->cache_ui_data == 1) {
         set_transient($cache_key, $output, $BBCS->settings->cache_ui_duration);
@@ -156,7 +176,7 @@ function bbcs_latest_hits_shortcode()
     ", ARRAY_A);
 
     if (empty($results)) {
-        return '<p>No data available.</p>';
+        return '<p>' . esc_html_e('No data available.', 'botblocker-security') .'</p>';
     }
 
     ob_start();
@@ -164,12 +184,12 @@ function bbcs_latest_hits_shortcode()
     <table class="bbcs-table">
         <thead>
             <tr>
-                <th>Date/Time</th>
-                <th>IP Address</th>
-                <th>Country</th>
-                <th>Language</th>
-                <th>Device</th>
-                <th>OS</th>
+                <th><?php esc_html_e('Date/Time', 'botblocker-security') ?></th>
+                <th><?php esc_html_e('IP Address', 'botblocker-security') ?></th>
+                <th><?php esc_html_e('Country', 'botblocker-security') ?></th>
+                <th><?php esc_html_e('Language', 'botblocker-security') ?></th>
+                <th><?php esc_html_e('Device', 'botblocker-security') ?></th>
+                <th><?php esc_html_e('OS', 'botblocker-security') ?></th>
             </tr>
         </thead>
         <tbody>

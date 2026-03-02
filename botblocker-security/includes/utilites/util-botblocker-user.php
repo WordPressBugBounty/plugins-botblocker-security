@@ -5,8 +5,8 @@ class BotBlockerWpUser {
 
     public static function getAvatarPath($user_id)
     { 
-        $avatar = get_avatar($user_id);
-        if (!empty(esc_url($avatar))) {
+        $avatar = get_avatar_url($user_id);
+        if (!empty($avatar) && !empty(esc_url($avatar))) {
             return esc_url($avatar);
         } else {
             return BOTBLOCKER_EMPTY;

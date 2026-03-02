@@ -49,15 +49,28 @@ trait BotBlockerLocalTrait
         * if country base 1 != country base 5 - FAKE
         */
 
+        $force_cloud = ($this->settings->force_cloud_validation == 1 && bbcs_isCloudAPIUltimate());
+
+        if ($this->settings->check == 1 && $force_cloud) {
+            $this->processCloudCheck();
+        }
+
         $this->processAdblockerDetect();
         $this->processAntidetect();
+
         $this->processReCaptchaV3();
 
         // checkHostingExtended
         // checkAdblockers
 
-        if ($this->settings->check == 1) {
+        if ($this->settings->check == 1 && !$force_cloud) {
             $this->processCloudCheck();
+        }
+
+        if ($this->settings->botblocker_force_check == 1) {
+            $payload = bbcs_local_check_result('error', 'Force check captcha required', '');
+            wp_send_json($payload);
+            $this->process_die();
         }
 
         $this->post_hash_cookie = md5($this->settings->salt . $this->settings->cloud_api_pass . $this->refhost . $this->useragent . $this->ip . $this->time) . '-' . $this->time;
@@ -706,7 +719,8 @@ trait BotBlockerLocalTrait
                 $this->process_die();
             }
 
-            if ($this->post_recaptcha_score <= $this->settings->recaptcha_tresshold && $this->settings->check == 0) {
+            $force_cloud_active = ($this->settings->force_cloud_validation == 1 && $this->settings->cloud_api_tier === 'ultimate');
+            if ($this->post_recaptcha_score <= $this->settings->recaptcha_tresshold && $this->settings->check == 0 && !$force_cloud_active) {
                 $payload = bbcs_local_check_result('error', 'Recaptcha threshold failed', '');
                 wp_send_json($payload);
                 $this->process_die();

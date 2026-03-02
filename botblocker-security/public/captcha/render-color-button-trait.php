@@ -4,61 +4,66 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 trait BBCS_RenderColorButtonTrait {
 
     private function getColorButtonData() {
-        $color_base64 = [
-            'RED' => 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg==',
-            'BLACK' => 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=',
-            'YELLOW' => 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5/hPwAIAgL/4d1j8wAAAABJRU5ErkJggg==',
-            'GRAY' => 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNs+A8AAgUBgQvw1B0AAAAASUVORK5CYII=',
-            'BLUE' => 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPj/HwADBwIAMCbHYQAAAABJRU5ErkJggg==',
-            'GREEN' => 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkaGD4DwACiQGBU29HsgAAAABJRU5ErkJggg==',
-            'MAROON' => 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAMSURBVBhXY2hgYAAAAYQAgVMkorQAAAAASUVORK5CYII=',
-            'PURPLE' => 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAMSURBVBhXY/jP8B8ABAAB/4jQ/cwAAAAASUVORK5CYII='
-        ];
-
         $colors = $this->BBCS->list_of_colors_for_captcha;
         shuffle($colors);
         $color = $colors[0];
-        
-        $colorhash = hash('sha256', $this->BBCS->settings->salt . $color . $this->BBCS->time . $this->BBCS->settings->cloud_api_pass.$this->BBCS->ip);
+
+        $nonce = $this->createChallenge($color, 1);
 
         shuffle($colors);
-        $tags = array('div', 'span', 'b', 'strong', 'i', 'em');
-        shuffle($tags);
-        $buttonElements = [];
+        $colorClass = 's' . md5('botblocker-btn-color' . $this->BBCS->time);
+        $buttonData = [];
 
-        foreach ($colors as $btnColor) {
-            $buttonElements[] = '<'.$tags[0].' style="background-image: url(data:image/png;base64,'.$color_base64[$btnColor].');" class="s'.md5('botblocker-btn-color'.$this->BBCS->time).'" onclick="'.$this->botblocker_check_function_name.'(\'post\', data, \''.$btnColor.'|'.$colorhash.'\')">'.'</'.$tags[0].'>';
-            $buttonElements[] = '<'.$tags[0].' style="background-image: url(data:image/png;base64,'.$color_base64[$btnColor].');display:none;" class="s'.md5('botblocker-btn-color'.$this->BBCS->time).'" onclick="'.$this->botblocker_check_function_name.'(\'post\', data, \''.$btnColor.'|'.md5($colorhash).'\')">'.'</'.$tags[0].'>';
-        }
-        shuffle($buttonElements);
-
-        $imageForCheck = imagecreatetruecolor(wp_rand(1,30), wp_rand(1,30));
-
-        $color_code = [
-            'RED' => imagecolorallocate($imageForCheck, wp_rand(220,255), wp_rand(0,30), wp_rand(0,30)),
-            'BLACK' => imagecolorallocate($imageForCheck, wp_rand(0,15), wp_rand(0,25), wp_rand(0,25)),
-            'YELLOW' => imagecolorallocate($imageForCheck, wp_rand(245,255), wp_rand(220,255), wp_rand(0,25)),
-            'GRAY' => imagecolorallocate($imageForCheck, wp_rand(120,130), wp_rand(125,135), wp_rand(125,135)),
-            'BLUE' => imagecolorallocate($imageForCheck, wp_rand(0,30), wp_rand(0,30), wp_rand(155,255)),
-            'GREEN' => imagecolorallocate($imageForCheck, wp_rand(0,30), wp_rand(125,250), wp_rand(0,30)),
-            'MAROON' => imagecolorallocate($imageForCheck, wp_rand(120,130), wp_rand(0,20), wp_rand(0,20)),
-            'PURPLE' => imagecolorallocate($imageForCheck, wp_rand(120,130), wp_rand(0,20), wp_rand(120,130))
+        $color_rgb = [
+            'RED' => [wp_rand(220,255), wp_rand(0,30), wp_rand(0,30)],
+            'BLACK' => [wp_rand(0,15), wp_rand(0,25), wp_rand(0,25)],
+            'YELLOW' => [wp_rand(245,255), wp_rand(220,255), wp_rand(0,25)],
+            'GRAY' => [wp_rand(120,130), wp_rand(125,135), wp_rand(125,135)],
+            'BLUE' => [wp_rand(0,30), wp_rand(0,30), wp_rand(155,255)],
+            'GREEN' => [wp_rand(0,30), wp_rand(125,250), wp_rand(0,30)],
+            'MAROON' => [wp_rand(120,130), wp_rand(0,20), wp_rand(0,20)],
+            'PURPLE' => [wp_rand(120,130), wp_rand(0,20), wp_rand(120,130)]
         ];
 
-        imagefill($imageForCheck, 0, 0, $color_code[$color]);
+        foreach ($colors as $btnColor) {
+            $sz = wp_rand(8, 20);
+            $img = imagecreatetruecolor($sz, $sz);
+            $rgb = $color_rgb[$btnColor];
+            $c = imagecolorallocate($img, $rgb[0], $rgb[1], $rgb[2]);
+            imagefill($img, 0, 0, $c);
+            for ($n = 0; $n < wp_rand(2, 6); $n++) {
+                $nc = imagecolorallocate($img, wp_rand(0,255), wp_rand(0,255), wp_rand(0,255));
+                imagesetpixel($img, wp_rand(0, $sz-1), wp_rand(0, $sz-1), $nc);
+            }
+            ob_start();
+            imagepng($img);
+            imagedestroy($img);
+            $btnImgData = base64_encode(ob_get_clean());
+
+            $buttonData[] = [
+                'image' => $btnImgData,
+                'hash' => $this->answerHash($nonce, $btnColor),
+            ];
+        }
+        shuffle($buttonData);
+
+        $targetSz = wp_rand(14, 30);
+        $targetImg = imagecreatetruecolor($targetSz, $targetSz);
+        $rgb = $color_rgb[$color];
+        $tc = imagecolorallocate($targetImg, $rgb[0], $rgb[1], $rgb[2]);
+        imagefill($targetImg, 0, 0, $tc);
         ob_start();
-        imagepng($imageForCheck);
-        imagedestroy($imageForCheck);
-        $image_data = ob_get_contents();
-        ob_end_clean();
+        imagepng($targetImg);
+        imagedestroy($targetImg);
+        $targetImgData = base64_encode(ob_get_clean());
 
         return [
             'mode' => 1,
             'params' => [
-                'buttons' => $buttonElements,
+                'buttons' => $buttonData,
                 'instruction' => __('If you are human, click on the similar color', 'botblocker-security'),
-                'colorImageData' => base64_encode($image_data),
-                'colorImageId' => md5('botblocker-btn-color'.$this->BBCS->time)
+                'colorImageData' => $targetImgData,
+                'colorClass' => $colorClass,
             ]
         ];
     }

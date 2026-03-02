@@ -15,7 +15,7 @@ $bbcs_has_cloud_api = $bbcs_ctx['has_cloud_api'];
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-9 сol-lg-9 col-xl-9 col-xxl-10">
             <section class="card">
-                <header class="card-header"><h2 class="card-title">Add-ons</h2></header>
+                <header class="card-header"><h2 class="card-title"><?php esc_html_e('Add-ons','botblocker-security'); ?></h2></header>
                 <div class="card-body bbcs-addon-card-body">
 
             <?php if ( $bbcs_addons_locked || !$bbcs_has_cloud_api) : ?>
@@ -33,8 +33,8 @@ $bbcs_has_cloud_api = $bbcs_ctx['has_cloud_api'];
             <?php endif; ?>
 
                     <ul class="nav nav-tabs">
-                        <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#bbcs-market">Marketplace</a></li>
-                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#bbcs-installed">Installed</a></li>
+                        <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#bbcs-market"><?php esc_html_e('Marketplace','botblocker-security'); ?></a></li>
+                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#bbcs-installed"><?php esc_html_e('Installed','botblocker-security'); ?></a></li>
                     </ul>
                     <div class="tab-content mt-3">
                         <div class="tab-pane container fade show active" id="bbcs-market">
@@ -66,10 +66,10 @@ $bbcs_has_cloud_api = $bbcs_ctx['has_cloud_api'];
                                                             <input type="hidden" name="slug" value="<?php echo esc_attr($bbcs_slug); ?>">
                                                             <input type="hidden" name="url" value="<?php echo esc_attr($bbcs_item['url']); ?>">
                                                             <?php wp_nonce_field('bbcs_install_addon','bbcs_install_addon_nonce'); ?>
-                                                            <button type="submit" class="btn bbcs-btn-addons btn-primary btn-xs">Install</button>
+                                                            <button type="submit" class="btn bbcs-btn-addons btn-primary btn-xs"><?php esc_html_e('Install','botblocker-security'); ?></button>
                                                         </form>
                                                     <?php else: ?>
-                                                        <button class="btn bbcs-btn-addons btn-primary btn-xs bbcs-btn-blink">Install</button>
+                                                        <button class="btn bbcs-btn-addons btn-primary btn-xs bbcs-btn-blink"><?php esc_html_e('Install','botblocker-security'); ?></button>
                                                     <?php endif; ?>
                                                 <?php elseif($bbcs_updateAvail): ?>
                                                     <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="bbcs-inline m-0">
@@ -77,10 +77,10 @@ $bbcs_has_cloud_api = $bbcs_ctx['has_cloud_api'];
                                                         <input type="hidden" name="slug" value="<?php echo esc_attr($bbcs_slug); ?>">
                                                         <input type="hidden" name="url" value="<?php echo esc_attr($bbcs_item['url']); ?>">
                                                         <?php wp_nonce_field('bbcs_update_addon','bbcs_update_addon_nonce'); ?>
-                                                        <button type="submit" class="btn bbcs-btn-addons btn-warning btn-xs">Update</button>
+                                                        <button type="submit" class="btn bbcs-btn-addons btn-warning btn-xs"><?php esc_html_e('Update','botblocker-security'); ?></button>
                                                     </form>
                                                 <?php else: ?>
-                                                    <button class="btn bbcs-btn-addons btn-secondary btn-xs" disabled>Installed</button>
+                                                    <button class="btn bbcs-btn-addons btn-secondary btn-xs" disabled><?php esc_html_e('Installed','botblocker-security'); ?></button>
                                                 <?php endif; ?>
                                                 <?php if($bbcs_tools_link): ?><a href="<?php echo esc_url( $bbcs_tools_link ); ?>" class="btn bbcs-btn-addons btn-outline-secondary btn-xs" title="Addon Settings"><i class="fa-solid fa-gear"></i></a><?php endif; ?>
                                             </div>
@@ -106,16 +106,16 @@ $bbcs_has_cloud_api = $bbcs_ctx['has_cloud_api'];
                                             <p class="card-text bbcs-card-text-flex">&nbsp;<?php echo esc_html($bbcs_addon['description']); ?></p>
                                             <div class="bbcs-actions-row d-flex align-items-center flex-wrap gap-1">
                                                 <?php if($bbcs_broken): ?>
-                                                    <button class="btn bbcs-btn-addons btn-secondary btn-xs" disabled>Broken</button>
+                                                    <button class="btn bbcs-btn-addons btn-secondary btn-xs" disabled><?php esc_html_e('Broken','botblocker-security'); ?></button>
                                                 <?php else: ?>
                                                     <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="bbcs-inline m-0">
                                                         <input type="hidden" name="action" value="bbcs_toggle_addon">
                                                         <input type="hidden" name="slug" value="<?php echo esc_attr($bbcs_slug); ?>">
                                                         <?php wp_nonce_field('bbcs_toggle_addon','bbcs_toggle_addon_nonce'); ?>
                                                         <?php if($bbcs_isActive): ?>
-                                                            <button type="submit" class="btn bbcs-btn-addons btn-danger btn-xs">Deactivate</button>
+                                                            <button type="submit" class="btn bbcs-btn-addons btn-danger btn-xs"><?php esc_html_e('Deactivate','botblocker-security'); ?></button>
                                                         <?php else: ?>
-                                                            <button type="submit" class="btn bbcs-btn-addons btn-primary btn-xs">Activate</button>
+                                                            <button type="submit" class="btn bbcs-btn-addons btn-primary btn-xs"><?php esc_html_e('Activate','botblocker-security'); ?></button>
                                                         <?php endif; ?>
                                                     </form>
                                                     <?php if($bbcs_updateAvail && $bbcs_remote): ?>
@@ -124,7 +124,7 @@ $bbcs_has_cloud_api = $bbcs_ctx['has_cloud_api'];
                                                             <input type="hidden" name="slug" value="<?php echo esc_attr($bbcs_slug); ?>">
                                                             <input type="hidden" name="url" value="<?php echo esc_attr($bbcs_remote['url']); ?>">
                                                             <?php wp_nonce_field('bbcs_update_addon','bbcs_update_addon_nonce'); ?>
-                                                            <button type="submit" class="btn bbcs-btn-addons btn-warning btn-xs">Update</button>
+                                                            <button type="submit" class="btn bbcs-btn-addons btn-warning btn-xs"><?php esc_html_e('Update','botblocker-security'); ?></button>
                                                         </form>
                                                     <?php endif; ?>
                                                 <?php endif; ?>

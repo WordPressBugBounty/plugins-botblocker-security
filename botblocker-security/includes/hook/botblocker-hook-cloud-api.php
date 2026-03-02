@@ -73,6 +73,32 @@ function bbcs_fetch_cloud_api_key_handler() {
         array('value' => $cloud['api_secret']),
         array('key' => 'cloud_api_secret')
     );
+
+    //! TODO REMOVE WHEN MIGRATIONS ARE IMPLEMENTED
+    $tier_exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $wpdb->bbcs_settings WHERE `key` = %s", 'cloud_api_tier'));
+    if ($tier_exists) {
+        $wpdb->update(
+            $wpdb->bbcs_settings,
+            array('value' => $cloud['tier']),
+            array('key' => 'cloud_api_tier')
+        );
+    } else {
+        $wpdb->insert(
+            $wpdb->bbcs_settings,
+            array(
+                'key' => 'cloud_api_tier',
+                'value' => $cloud['tier']
+            )
+        );
+    }
+
+    if (!isset($cloud['tier']) || $cloud['tier'] !== 'ultimate') {
+        $wpdb->update(
+            $wpdb->bbcs_settings,
+            array('value' => 0),
+            array('key' => 'force_cloud_validation')
+        );
+    }
     // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
     bbcs_set_remaining_hits($cloud['hits']);
@@ -82,6 +108,7 @@ function bbcs_fetch_cloud_api_key_handler() {
         wp_cache_delete('bbcs_cloud_api_type' . bbcs_get_wp_cache_version(), 'botblocker-security');
         wp_cache_delete('bbcs_cloud_api_key' . bbcs_get_wp_cache_version(), 'botblocker-security');
         wp_cache_delete('bbcs_cloud_api_secret' . bbcs_get_wp_cache_version(), 'botblocker-security');
+        wp_cache_delete('bbcs_cloud_api_tier' . bbcs_get_wp_cache_version(), 'botblocker-security');
     }
 
     bbcs_generateSettingsFileFromDb();
@@ -141,10 +168,43 @@ function bbcs_connect_cloud_api_handler() {
         array('key' => 'cloud_api_secret')
     );
 
+    $cloud_api_tier = isset($cloud['api_tier']) ? sanitize_text_field($cloud['api_tier']) : '';
+    if (!bbcs_is_valid_cloud_api_tier($cloud_api_tier)) {
+        $cloud_api_tier = '';
+    }
+    
+    //! TODO REMOVE WHEN MIGRATIONS ARE IMPLEMENTED
+    $tier_exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $wpdb->bbcs_settings WHERE `key` = %s", 'cloud_api_tier'));
+    if ($tier_exists) {
+        $wpdb->update(
+            $wpdb->bbcs_settings,
+            array('value' => $cloud_api_tier),
+            array('key' => 'cloud_api_tier')
+        );
+    } else {
+        $wpdb->insert(
+            $wpdb->bbcs_settings,
+            array(
+                'key' => 'cloud_api_tier',
+                'value' => $cloud_api_tier
+            )
+        );
+    }
+
+    if ($cloud_api_tier !== 'ultimate') {
+        $wpdb->update(
+            $wpdb->bbcs_settings,
+            array('value' => 0),
+            array('key' => 'force_cloud_validation')
+        );
+    }
+    // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
     if (BOTBLOCKER_CACHE_WP) {
         wp_cache_delete('bbcs_cloud_api_type' . bbcs_get_wp_cache_version(), 'botblocker-security');
         wp_cache_delete('bbcs_cloud_api_key' . bbcs_get_wp_cache_version(), 'botblocker-security');
         wp_cache_delete('bbcs_cloud_api_secret' . bbcs_get_wp_cache_version(), 'botblocker-security');
+        wp_cache_delete('bbcs_cloud_api_tier' . bbcs_get_wp_cache_version(), 'botblocker-security');
     }
 
     bbcs_generateSettingsFileFromDb();
@@ -208,12 +268,19 @@ function bbcs_deactivate_cloud_api_handler() {
         array('value' => ''),
         array('key' => 'cloud_api_secret')
     );
+
+    $wpdb->update(
+        $wpdb->bbcs_settings,
+        array('value' => ''),
+        array('key' => 'cloud_api_tier')
+    );
     // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
     if (BOTBLOCKER_CACHE_WP) {
         wp_cache_delete('bbcs_cloud_api_type' . bbcs_get_wp_cache_version(), 'botblocker-security');
         wp_cache_delete('bbcs_cloud_api_key' . bbcs_get_wp_cache_version(), 'botblocker-security');
         wp_cache_delete('bbcs_cloud_api_secret' . bbcs_get_wp_cache_version(), 'botblocker-security');
+        wp_cache_delete('bbcs_cloud_api_tier' . bbcs_get_wp_cache_version(), 'botblocker-security');
     }
 
     bbcs_generateSettingsFileFromDb();

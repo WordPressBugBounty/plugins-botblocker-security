@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
  * This class is responsible for all the operations against bots.
  * It handles detections, logging, and blocking of suspicious bot activities.
  * 
- * @version    1.6.10
+ * @version    1.6.11
  * @package    Botblocker 
  * @subpackage Botblocker/includes
  */
@@ -87,6 +87,7 @@ class BotBlocker extends BotBlockerBase
         $this->process_headers();
         
         if ($this->process_cookies()) {
+            $this->send_vary_cookie_header();
             $this->set_x_robot_headers(); 
             return;
         }
@@ -99,7 +100,7 @@ class BotBlocker extends BotBlockerBase
 
         //if ($this->check_last_rule()) return;
 
-        if ($this->settings->botblocker_force_check == true) {
+        if ($this->settings->botblocker_force_check == 1) {
             $this->redirect_to_dark('Force check event');
         }
 

@@ -98,6 +98,9 @@ settings_errors('botblocker_messages');
 								<a class="nav-link" data-bs-toggle="tab" href="#error"><?php esc_html_e('Error & Access Settings', 'botblocker-security'); ?></a>
 							</li>
 							<li class="nav-item">
+								<a class="nav-link" data-bs-toggle="tab" href="#login_brutforce"><?php esc_html_e('Login Brutforce', 'botblocker-security'); ?></a>
+							</li>
+							<li class="nav-item">
 								<a class="nav-link" data-bs-toggle="tab" href="#captcha"><?php esc_html_e('BotBlocker Captcha', 'botblocker-security'); ?></a>
 							</li>						
 							<li class="nav-item">
@@ -121,6 +124,7 @@ settings_errors('botblocker_messages');
                                 include_once BOTBLOCKER_DIR . 'includes/section/settings/botblocker-set-cookie.php';
                                 include_once BOTBLOCKER_DIR . 'includes/section/settings/botblocker-set-general.php';
                                 include_once BOTBLOCKER_DIR . 'includes/section/settings/botblocker-set-error.php';
+								include_once BOTBLOCKER_DIR . 'includes/section/settings/botblocker-set-login-brutforce.php';
                                 include_once BOTBLOCKER_DIR . 'includes/section/settings/botblocker-set-captcha.php';
                                 include_once BOTBLOCKER_DIR . 'includes/section/settings/botblocker-set-traffic.php';
                                 include_once BOTBLOCKER_DIR . 'includes/section/settings/botblocker-set-log.php';

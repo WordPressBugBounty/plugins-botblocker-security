@@ -153,6 +153,7 @@ function bbcs_botblocker_handle_settings_save()
         'botblocker_log_goodip',
         'botblocker_log_block',
         'botblocker_force_check',
+        'force_cloud_validation',
         'noarchive',
         'iframe_stop',
         'hosting_block',
@@ -175,7 +176,8 @@ function bbcs_botblocker_handle_settings_save()
         'telegram_notifications',
         'email_notifications',
         'pusher_notifications',
-        'critical_load_notifications'
+        'critical_load_notifications',
+        'login_brutforce_enabled'
     ];
 
     if (!isset($_POST['x_robots_directives'])) {

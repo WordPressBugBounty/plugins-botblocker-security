@@ -16,7 +16,7 @@ trait BBCS_RenderAnimatedMathExpressionTrait {
             case '-': $result = $num1 - $num2; break;
         }
 
-        $resultHash = hash('sha256', $this->BBCS->settings->salt . $result . $this->BBCS->time . $this->BBCS->settings->cloud_api_pass . $this->BBCS->ip);
+        $nonce = $this->createChallenge((string) $result, 6);
 
         $wrongAnswers = [];
         for ($i = 0; $i < 3; $i++) {
@@ -37,26 +37,26 @@ trait BBCS_RenderAnimatedMathExpressionTrait {
         $answerButtons = [];
         
         foreach ($allAnswers as $answer) {
-            if ($answer === $result) {
-                $answerButtons[] = [
-                    'value' => $answer,
-                    'hash' => "{$answer}|math|{$resultHash}"
-                ];
-            } else {
-                $answerButtons[] = [
-                    'value' => $answer,
-                    'hash' => "{$answer}|wrong|".md5($resultHash)
-                ];
-            }
+            $answerButtons[] = [
+                'value' => $answer,
+                'hash' => $this->answerHash($nonce, (string) $answer)
+            ];
         }
         
-        $expression = "{$num1} {$operation} {$num2} = ?";
+        $expressionChars = str_split("{$num1} {$operation} {$num2} = ?");
+        $expressionData = [];
+        foreach ($expressionChars as $ch) {
+            $expressionData[] = [
+                'c' => $ch,
+                'o' => wp_rand(-3, 3),
+            ];
+        }
 
         return [
             'mode' => 6,
             'params' => [
                 'instructionText' => __("Solve the following:", 'botblocker-security'),
-                'expression' => $expression,
+                'expressionData' => $expressionData,
                 'answers' => $answerButtons
             ]
         ];

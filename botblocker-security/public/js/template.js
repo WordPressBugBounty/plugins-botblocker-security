@@ -212,6 +212,9 @@ window[bbcsJsData.checkFunctionName] = function(s, d, x) {
     data.append('from_suspect', bbcsJsData.suspectStatus);
     data.append('suspect_reason', bbcsJsData.reasonForAction);
     data.append('check_result', bbcsJsData.resultOfAction);
+    if (typeof bbcsCaptchaData !== 'undefined' && bbcsCaptchaData.challengeToken) {
+        data.append('challenge_token', bbcsCaptchaData.challengeToken);
+    }
 
     var additionalParams = new URLSearchParams(d);
     for (var pair of additionalParams.entries()) {
@@ -253,7 +256,11 @@ window[bbcsJsData.checkFunctionName] = function(s, d, x) {
                                 || obj.error == "This domain is not registered or not active"
                                 || obj.error == bbcsJsData.jsErrorMessage) {
                                 const ErrorMsg = document.createElement('div');
-                                ErrorMsg.innerHTML = '<h1 style="text-align:center; color:red;">' + obj.error + '</h1>';
+                                const errH1 = document.createElement('h1');
+                                errH1.style.textAlign = 'center';
+                                errH1.style.color = 'red';
+                                errH1.textContent = obj.error;
+                                ErrorMsg.appendChild(errH1);
                                 document.body.insertAdjacentElement('afterbegin', ErrorMsg);
                                 document.getElementById("content").style.visibility = "hidden";
                                 document.getElementById("content").innerHTML = '';

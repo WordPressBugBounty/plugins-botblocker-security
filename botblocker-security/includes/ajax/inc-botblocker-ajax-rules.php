@@ -13,6 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
  */
 function bbcs_get_botblocker_rules_callback() {
     check_ajax_referer( 'botblocker_nonce', 'nonce' );
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     global $wpdb;
 
@@ -140,6 +141,7 @@ add_action( 'wp_ajax_bbcs_get_botblocker_rules', 'bbcs_get_botblocker_rules_call
  */
 function bbcs_get_rule_details_callback() {
     check_ajax_referer( 'botblocker_nonce', 'nonce' );
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     global $wpdb;
 
@@ -190,6 +192,7 @@ add_action( 'wp_ajax_bbcs_get_rule_details', 'bbcs_get_rule_details_callback' );
 function bbcs_update_rule_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     global $wpdb;
 
@@ -239,6 +242,7 @@ add_action('wp_ajax_bbcs_update_rule', 'bbcs_update_rule_callback');
 function bbcs_delete_rule_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     global $wpdb;
 
@@ -278,6 +282,7 @@ add_action('wp_ajax_bbcs_delete_rule', 'bbcs_delete_rule_callback');
  */
 function bbcs_toggle_rule_callback() {
     check_ajax_referer( 'botblocker_nonce', 'nonce' );
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     global $wpdb;
     $id = isset($_POST['id']) ? absint( wp_unslash( $_POST['id'] ) ) : null;
@@ -347,6 +352,7 @@ add_action( 'wp_ajax_bbcs_toggle_rule', 'bbcs_toggle_rule_callback' );
 function bbcs_create_rule_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     global $wpdb;
 
@@ -405,6 +411,7 @@ add_action('wp_ajax_bbcs_create_rule', 'bbcs_create_rule_callback');
 function bbcs_export_rules_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     global $wpdb;
 
@@ -432,6 +439,7 @@ add_action('wp_ajax_bbcs_export_rules', 'bbcs_export_rules_callback');
 function bbcs_import_rules_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     global $wpdb;
 
@@ -492,6 +500,7 @@ add_action('wp_ajax_bbcs_import_rules', 'bbcs_import_rules_callback');
 function bbcs_clear_all_rules_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     $result = bbcs_clear_all_rules();
 
@@ -518,6 +527,8 @@ function bbcs_clear_all_rules()
 
 function bbcs_rules_to_php_callback(): void
 {
+	check_ajax_referer('botblocker_nonce', 'nonce');
+	if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 	try {
         bbcs_renderRulesFromDb();
 
@@ -534,6 +545,7 @@ add_action('wp_ajax_bbcs_rules_to_php', 'bbcs_rules_to_php_callback');
 
 function bbcs_create_ip_rule_callback() {
     check_ajax_referer('botblocker_nonce', 'nonce');
+    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
 
     if ( ! isset( $_POST['ip'] ) ) {
         wp_send_json_error( 'Missing IP address' );

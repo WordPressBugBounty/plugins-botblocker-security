@@ -1,6 +1,54 @@
 <?php
 if (! defined('ABSPATH')) exit; // Exit if accessed directly
 
+function bbcs_atomic_file_write( $filePath, $content ) {
+    $dir = dirname( $filePath );
+    if ( ! is_dir( $dir ) || ! wp_is_writable( $dir ) ) {
+        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+            error_log( '[BotBlocker] Directory not writable: ' . $dir );
+        }
+        return false;
+    }
+    $tmpFile = $dir . DIRECTORY_SEPARATOR . '.bbcs_tmp_' . basename( $filePath ) . '.' . getmypid();
+    // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+    $bytes = @file_put_contents( $tmpFile, $content, LOCK_EX );
+    if ( $bytes === false ) {
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+        @unlink( $tmpFile );
+        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+            error_log( '[BotBlocker] Failed to write config: ' . basename( $filePath ) );
+        }
+        return false;
+    }
+    // Atomic rename (same-filesystem guarantee on Linux/macOS)
+    // phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename
+    if ( @rename( $tmpFile, $filePath ) ) {
+        if ( function_exists( 'opcache_invalidate' ) ) {
+            @opcache_invalidate( $filePath, true );
+        }
+        return true;
+    }
+    // Fallback for Windows or cross-device mounts
+    // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_copy
+    if ( @copy( $tmpFile, $filePath ) ) {
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+        @unlink( $tmpFile );
+        if ( function_exists( 'opcache_invalidate' ) ) {
+            @opcache_invalidate( $filePath, true );
+        }
+        return true;
+    }
+    // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+    @unlink( $tmpFile );
+    if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+        error_log( '[BotBlocker] Failed to save config: ' . basename( $filePath ) );
+    }
+    return false;
+}
+
 
 function bbcs_renderProxyFromDb()
 {
@@ -67,7 +115,7 @@ function bbcs_renderProxyFromDb()
     $proxyContent .= "];\n";
 
     $proxyFile = BOTBLOCKER_DATA_DIR . 'proxy.php';
-    file_put_contents($proxyFile, $proxyContent);
+    bbcs_atomic_file_write($proxyFile, $proxyContent);
 }
 
 function bbcs_renderPathsFromDb()
@@ -104,7 +152,7 @@ function bbcs_renderPathsFromDb()
     $paths = rtrim($paths, ",\n");
 
     $content = BBCS_STOP_DIRECT . "\nreturn [\n'bbcs_path' => [\n$paths\n],\n];";
-    file_put_contents(BOTBLOCKER_DATA_DIR . 'paths.php', $content);
+    bbcs_atomic_file_write(BOTBLOCKER_DATA_DIR . 'paths.php', $content);
 }
 
 function bbcs_renderRulesFromDb()
@@ -139,7 +187,7 @@ function bbcs_renderRulesFromDb()
     $rules = rtrim($rules, ",\n");
 
     $content = BBCS_STOP_DIRECT . "\nreturn [\n'bbcs_rule' => [\n$rules\n],\n];";
-    file_put_contents(BOTBLOCKER_DATA_DIR . 'rules.php', $content);
+    bbcs_atomic_file_write(BOTBLOCKER_DATA_DIR . 'rules.php', $content);
 }
 
 function bbcs_renderSearchEnginesFromDb()
@@ -198,7 +246,7 @@ function bbcs_renderSearchEnginesFromDb()
     $se_data .= "    ]\n";
     $se_data .= "];\n";
 
-    file_put_contents(BOTBLOCKER_DATA_DIR . 'search_engines.php', $se_data);
+    bbcs_atomic_file_write(BOTBLOCKER_DATA_DIR . 'search_engines.php', $se_data);
 }
 
 function bbcs_renderIpsFromDb()
@@ -278,7 +326,7 @@ function bbcs_renderIpsFromDb()
     }
     $ip_data .= "];\n";
 
-    file_put_contents(BOTBLOCKER_DATA_DIR . 'ip.php', $ip_data);
+    bbcs_atomic_file_write(BOTBLOCKER_DATA_DIR . 'ip.php', $ip_data);
 }
  
 function bbcs_generateSettingsFileFromDb($type = null)
@@ -346,7 +394,7 @@ function bbcs_generateSettingsFileFromDb($type = null)
      $settingsContent = BBCS_STOP_DIRECT . "\nreturn " . bbcs_php_export( $settings, 0, true ) . ";\n";
 
      $settingsFile = BOTBLOCKER_DATA_DIR . 'settings.php';
-     file_put_contents($settingsFile, $settingsContent);
+     bbcs_atomic_file_write($settingsFile, $settingsContent);
 
      bbcs_clearFileCache();
      if(!isset($type)) {

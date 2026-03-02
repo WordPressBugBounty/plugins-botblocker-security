@@ -16,6 +16,7 @@ function bbcs_getCloudSettings()
                 'cloud_api_key' => $BBCS->settings->cloud_api_key ?? null,
                 'cloud_api_secret' => $BBCS->settings->cloud_api_secret ?? null,
                 'cloud_api_email' => $BBCS->settings->cloud_api_email ?? null,
+                'cloud_api_tier' => $BBCS->settings->cloud_api_tier ?? null,
             ];
             if (array_filter($settings)) {
                 return $settings;
@@ -29,7 +30,7 @@ function bbcs_getCloudSettings()
         return $cached_settings;
     }
 
-    $setting_keys = ['cloud_api_type', 'cloud_api_key', 'cloud_api_secret', 'cloud_api_email'];
+    $setting_keys = ['cloud_api_type', 'cloud_api_key', 'cloud_api_secret', 'cloud_api_email', 'cloud_api_tier'];
     $settings = [];
     
     // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
@@ -105,6 +106,25 @@ function bbcs_getCloudAPIStatus()
     }
 
     return $status;
+}
+
+function bbcs_is_valid_cloud_api_tier($tier)
+{
+    return in_array($tier, ['premium', 'pro', 'ultimate'], true);
+}
+
+function bbcs_getCloudAPITier()
+{
+    $tier = bbcs_getCloudSetting('cloud_api_tier');
+    if (!empty($tier) && bbcs_is_valid_cloud_api_tier($tier)) {
+        return $tier;
+    }
+    return '';
+}
+
+function bbcs_isCloudAPIUltimate()
+{
+    return bbcs_isCloudAPIActive() && bbcs_getCloudAPITier() === 'ultimate';
 }
 
 function bbcs_get_remaining_days()

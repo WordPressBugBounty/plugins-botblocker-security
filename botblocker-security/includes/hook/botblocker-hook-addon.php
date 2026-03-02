@@ -39,6 +39,24 @@ function bbcs_toggle_addon_handler()
     exit;
 }
 
+function bbcs_is_allowed_addon_url( $url ) {
+    $allowed_domains = array( 'botblocker.top', 'globus.studio' );
+    $parsed = wp_parse_url( $url );
+    if ( empty( $parsed['scheme'] ) || ! in_array( $parsed['scheme'], array( 'https', 'http' ), true ) ) {
+        return false;
+    }
+    if ( empty( $parsed['host'] ) ) {
+        return false;
+    }
+    $host = strtolower( $parsed['host'] );
+    foreach ( $allowed_domains as $domain ) {
+        if ( $host === $domain || substr( $host, -( strlen( $domain ) + 1 ) ) === '.' . $domain ) {
+            return true;
+        }
+    }
+    return false;
+}
+
 add_action('admin_post_bbcs_install_addon', 'bbcs_install_addon_handler');
 function bbcs_install_addon_handler()
 {
@@ -54,6 +72,10 @@ function bbcs_install_addon_handler()
     $redir = admin_url('admin.php?page=bbcs_addons');
     if ($slug === '' || $url === '') {
         wp_safe_redirect(esc_url_raw(add_query_arg('bbcs_error', 'install_args', $redir)));
+        exit;
+    }
+    if ( ! bbcs_is_allowed_addon_url( $url ) ) {
+        wp_safe_redirect( esc_url_raw( add_query_arg( 'bbcs_error', 'url_not_allowed', $redir ) ) );
         exit;
     }
     if (!function_exists('download_url')) {
@@ -134,6 +156,10 @@ function bbcs_update_addon_handler()
     $redir = admin_url('admin.php?page=bbcs_addons');
     if ($slug === '' || $url === '') {
         wp_safe_redirect(esc_url_raw($redir));
+        exit;
+    }
+    if ( ! bbcs_is_allowed_addon_url( $url ) ) {
+        wp_safe_redirect( esc_url_raw( add_query_arg( 'bbcs_error', 'url_not_allowed', $redir ) ) );
         exit;
     }
     $active = get_option('botblocker_active_addons', []);
