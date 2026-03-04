@@ -15,9 +15,10 @@ class BotBlockerSettings {
     public $bbcs_api_gs_url = '';
     public $bbcs_api_url = '';
 
+    public $bbcs_captcha_img_inline = 1;
     public $bbcs_captcha_img_pack = 1;
-    public $bbcs_captcha_mode = 2; 
-    public $bbcs_captcha_wait = 10;
+    public $bbcs_captcha_mode = 1; 
+    public $bbcs_captcha_wait = 30;
 
     public $block_adblocker_users = 1;
     public $block_cf_users = 1;

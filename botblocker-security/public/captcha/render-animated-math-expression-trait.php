@@ -19,16 +19,23 @@ trait BBCS_RenderAnimatedMathExpressionTrait {
         $nonce = $this->createChallenge((string) $result, 6);
 
         $wrongAnswers = [];
-        for ($i = 0; $i < 3; $i++) {
+        $maxRetries = 50;
+        $retries = 0;
+        while (count($wrongAnswers) < 3 && $retries < $maxRetries) {
+            $retries++;
             $offset = wp_rand(1, 5) * (wp_rand(0, 1) ? 1 : -1);
-            $wrongAnswer = $result + $offset;
-            if ($wrongAnswer > 0 && $wrongAnswer != $result) {
-                $wrongAnswers[] = $wrongAnswer;
-            } else {
-                $wrongAnswer = $result + wp_rand(1, 5); 
-                if ($wrongAnswer == $result) $wrongAnswer++;
-                $wrongAnswers[] = $wrongAnswer;
+            $candidate = $result + $offset;
+            if ($candidate > 0 && $candidate != $result && !in_array($candidate, $wrongAnswers)) {
+                $wrongAnswers[] = $candidate;
             }
+        }
+        // Fallback: guarantee exactly 3 wrong answers
+        $fallback = $result + 6;
+        while (count($wrongAnswers) < 3) {
+            if ($fallback > 0 && $fallback != $result && !in_array($fallback, $wrongAnswers)) {
+                $wrongAnswers[] = $fallback;
+            }
+            $fallback++;
         }
 
         $allAnswers = array_merge([$result], $wrongAnswers);

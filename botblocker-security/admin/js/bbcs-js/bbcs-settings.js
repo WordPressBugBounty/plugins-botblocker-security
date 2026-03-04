@@ -4,10 +4,13 @@
     function toggleImgPack() {
         var mode = $('select[name="bbcs_captcha_mode"]').val();
         var $pack = $('#bbcs_captcha_img_pack');
+        var $inline = $('#bbcs_captcha_img_inline');
         if (mode === '2') {
             $pack.prop('disabled', false);
+            $inline.prop('disabled', false);
         } else {
             $pack.prop('disabled', true);
+            $inline.prop('disabled', true);
         }
     }
 

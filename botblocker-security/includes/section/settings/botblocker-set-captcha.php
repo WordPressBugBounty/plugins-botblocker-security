@@ -39,39 +39,39 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
     			</div>    			
 				<div class="bbcs_text_input_inner">
         			<select class="bbcs_select_input_input" name="bbcs_captcha_mode">
-            			<option value="0" <?php selected('0', isset($bbcs_settings['bbcs_captcha_mode']) ? $bbcs_settings['bbcs_captcha_mode'] : '2'); ?>>
+            			<option value="0" <?php selected('0', isset($bbcs_settings['bbcs_captcha_mode']) ? $bbcs_settings['bbcs_captcha_mode'] : BOTBLOCKER_CAPTCHA_MODE_DEFAULT); ?>>
                 			<?php esc_html_e('Button - "I am not a robot"', 'botblocker-security'); ?>
             			</option>
             			<option value="1" <?php 
-                			selected('1', isset($bbcs_settings['bbcs_captcha_mode']) ? $bbcs_settings['bbcs_captcha_mode'] : '2'); 
+                			selected('1', isset($bbcs_settings['bbcs_captcha_mode']) ? $bbcs_settings['bbcs_captcha_mode'] : BOTBLOCKER_CAPTCHA_MODE_DEFAULT);
                 			echo ($BBCS->prefly['gd'] === 0 ? 'disabled' : ''); ?>> 
                 			<?php esc_html_e('Color Buttons', 'botblocker-security'); ?>
             			</option>
             			<option value="2" <?php 
-                			selected('2', isset($bbcs_settings['bbcs_captcha_mode']) ? $bbcs_settings['bbcs_captcha_mode'] : '2'); 
+                			selected('2', isset($bbcs_settings['bbcs_captcha_mode']) ? $bbcs_settings['bbcs_captcha_mode'] : BOTBLOCKER_CAPTCHA_MODE_DEFAULT); 
                 			echo ($BBCS->prefly['gd'] === 0 ? 'disabled' : ''); ?>
                 			>
                 			<?php esc_html_e('BotBlocker Image Captcha', 'botblocker-security'); ?>
             			</option>
 
-            			<option value="3" <?php selected('3', isset($bbcs_settings['bbcs_captcha_mode']) ? $bbcs_settings['bbcs_captcha_mode'] : '2'); 
+            			<option value="3" <?php selected('3', isset($bbcs_settings['bbcs_captcha_mode']) ? $bbcs_settings['bbcs_captcha_mode'] : BOTBLOCKER_CAPTCHA_MODE_DEFAULT); 
             			echo (empty($BBCS->settings->recaptcha_key2) || empty($BBCS->settings->recaptcha_secret2) ? 'disabled' : '');
             			?>>
                 			<?php esc_html_e('reCAPTCHA v2 "I am not a robot"', 'botblocker-security'); ?>
             			</option>
-            			<option value="4" <?php selected('4', isset($bbcs_settings['bbcs_captcha_mode']) ? $bbcs_settings['bbcs_captcha_mode'] : '2'); 
+            			<option value="4" <?php selected('4', isset($bbcs_settings['bbcs_captcha_mode']) ? $bbcs_settings['bbcs_captcha_mode'] : BOTBLOCKER_CAPTCHA_MODE_DEFAULT); 
             			echo (empty($BBCS->settings->recaptcha_key2) || empty($BBCS->settings->recaptcha_secret2) ? 'disabled' : '');
             			?>>
                 			<?php esc_html_e('reCAPTCHA v2', 'botblocker-security'); ?>
             			</option>
 
-            			<option value="5" <?php selected('5', isset($bbcs_settings['bbcs_captcha_mode']) ? $bbcs_settings['bbcs_captcha_mode'] : '2'); ?>>
+            			<option value="5" <?php selected('5', isset($bbcs_settings['bbcs_captcha_mode']) ? $bbcs_settings['bbcs_captcha_mode'] : BOTBLOCKER_CAPTCHA_MODE_DEFAULT); ?>>
                 			<?php esc_html_e('Dynamic Shape Captcha', 'botblocker-security'); ?>
             			</option>    
-            			<option value="6" <?php selected('6', isset($bbcs_settings['bbcs_captcha_mode']) ? $bbcs_settings['bbcs_captcha_mode'] : '2'); ?>>
+            			<option value="6" <?php selected('6', isset($bbcs_settings['bbcs_captcha_mode']) ? $bbcs_settings['bbcs_captcha_mode'] : BOTBLOCKER_CAPTCHA_MODE_DEFAULT); ?>>
                 			<?php esc_html_e('Dynamic Digit Captcha', 'botblocker-security'); ?>
             			</option>
-            			<option value="7" <?php selected('7', isset($bbcs_settings['bbcs_captcha_mode']) ? $bbcs_settings['bbcs_captcha_mode'] : '2'); ?>>
+            			<option value="7" <?php selected('7', isset($bbcs_settings['bbcs_captcha_mode']) ? $bbcs_settings['bbcs_captcha_mode'] : BOTBLOCKER_CAPTCHA_MODE_DEFAULT); ?>>
                 			<?php esc_html_e('Hold Button Captcha', 'botblocker-security'); ?>
             			</option>
 
@@ -86,6 +86,22 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                 			(<a href="https://www.google.com/recaptcha/admin/create" target="_blank"><?php esc_html_e('Create key and secret', 'botblocker-security'); ?></a>)
             			</small>
         			<?php endif; ?>
+    			</div>
+			</div>
+
+			<div class="bbcs_text_input mb-2" id="bbcs_captcha_img_inline_block">
+    			<div class="bbcs_label_input_box">
+        			<span class="bbcs-label-input"><?php esc_html_e('Image Delivery Mode:', 'botblocker-security'); ?></span>
+        			<i class="fa-regular fa-circle-question"
+        			data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top"
+        			data-bs-original-title="<?php esc_attr_e('Choose how captcha images are delivered to the browser. Inline Base64 embeds all images directly in the page data (faster, more reliable, no extra requests). Separate Requests loads each image via an individual AJAX call (legacy method).', 'botblocker-security'); ?>">
+        			</i>
+    			</div>
+    			<div class="bbcs_text_input_inner">
+        			<select class="bbcs_select_input_input" name="bbcs_captcha_img_inline" id="bbcs_captcha_img_inline" <?php echo ( isset( $bbcs_settings['bbcs_captcha_mode'] ) && $bbcs_settings['bbcs_captcha_mode'] == '2' ) ? '' : 'disabled'; ?>>
+            			<option value="1" <?php selected( '1', isset( $bbcs_settings['bbcs_captcha_img_inline'] ) ? $bbcs_settings['bbcs_captcha_img_inline'] : '1' ); ?>><?php esc_html_e('Inline Base64 (Recommended)', 'botblocker-security'); ?></option>
+            			<option value="0" <?php selected( '0', isset( $bbcs_settings['bbcs_captcha_img_inline'] ) ? $bbcs_settings['bbcs_captcha_img_inline'] : '1' ); ?>><?php esc_html_e('Separate Requests (Legacy)', 'botblocker-security'); ?></option>
+        			</select>
     			</div>
 			</div>
 
@@ -119,7 +135,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
         			<input type="number" 
 					class="bbcs_number_input_input" 
 					name="bbcs_captcha_wait" 
-					value="<?php echo isset($bbcs_settings['bbcs_captcha_wait']) ? esc_html($bbcs_settings['bbcs_captcha_wait']) : 15; ?>">
+					value="<?php echo isset($bbcs_settings['bbcs_captcha_wait']) ? esc_html($bbcs_settings['bbcs_captcha_wait']) : 30; ?>">
     			</div>
 			</div>
 

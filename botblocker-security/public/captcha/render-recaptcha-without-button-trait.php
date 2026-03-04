@@ -4,7 +4,8 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 trait BBCS_RenderRecaptchaWithoutButtonTrait {
 
     private function getRecaptchaWithoutButtonData() {
-        $hash0 = '1|'.hash('sha256', $this->BBCS->settings->salt.$this->BBCS->time.$this->BBCS->settings->cloud_api_pass);
+        $nonce = $this->createChallenge('confirm', 4);
+        $hash0 = $this->answerHash($nonce, 'confirm');
 
         return [
             'mode' => 4,

@@ -6,7 +6,7 @@ define('BOTBLOCKER_SHORT_NAME', 'BotBlocker'); // A shorter version of the plugi
 if(!defined('BOTBLOCKER_TABLE_PREFIX')) define('BOTBLOCKER_TABLE_PREFIX', 'bbcs_'); // The prefix used for database tables
 define('BOTBLOCKER_PREFIX', 'bb_'); // The prefix used for settings and options
 
-define('BOTBLOCKER_VERSION', '1.6.11'); // The version number of the plugin
+define('BOTBLOCKER_VERSION', '1.6.12'); // The version number of the plugin
 define('BOTBLOCKER_DB_VERSION', '2.1.0'); // The database version of the plugin
 define('BOTBLOCKER_WIZARD_ON_UPDATE', false); // Show setup wizard after plugin update
 
@@ -56,6 +56,8 @@ define('BOTBLOCKER_CACHE_REMAINING_DAYS_TIME', DAY_IN_SECONDS); // Cache remaini
 define('BOTBLOCKER_CACHE_RULES_CHECK_TIME', BOTBLOCKER_CACHE_WP ? HOUR_IN_SECONDS : 0); // Cache rules check time
 
 define('BOTBLOCKER_WIDGETS', true); // A constant to indicate that the plugin includes dashboard widgets
+
+define('BOTBLOCKER_CAPTCHA_MODE_DEFAULT', 1); // Color Buttons
 
 define('BOTBLOCKER_ENVATO_URL', 'https://codecanyon.net/item/botblocker/99999999'); 				// The URL of the Envato page for BotBlocker
 define('BOTBLOCKER_WORDPRESS_URL', 'https://wordpress.org/plugins/botblocker-security/'); 			// The URL of the WordPress page for BotBlocker

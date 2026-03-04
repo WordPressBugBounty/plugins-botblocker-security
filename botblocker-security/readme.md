@@ -4,7 +4,7 @@ Tags: security, firewall, anti-spam, captcha, brute force
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.6.11
+Stable tag: 1.6.12
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -212,6 +212,13 @@ Use **Allowlist** for admin IPs/services and enable "allow server self-IP" so WP
 
 == Changelog ==
  
+= 1.6.12 =
+Add new mode of image CAPTCHA: Image Delivery Mode (for high-traffic sites with caching)
+Improve compatibility with Firefox and Safari browsers
+Fix minor issues with CAPTCHA rendering in some environments
+Fix lagacy mode of Image CAPTCHA
+Update translation mode
+
 = 1.6.11 =
 Add new captcha type: hold button
 Add cache compatibility layer: no-cache headers, DONOTCACHEPAGE, MU-phase cookie check

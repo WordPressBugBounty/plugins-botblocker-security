@@ -341,7 +341,7 @@ if ($BBCS->settings->utm_referrer == 1 and $BBCS->referer != '') {
                                 ?></h2>";
                             }
                         <?php } ?>
-                        if (obj.error == "Wrong Click") {
+                        if (obj.error == "timeout" || obj.error == "Wrong Click") {
                             document.getElementById("content").innerHTML = "<?php echo esc_js('Loading...'); ?>";
                             window.location.href = "<?php echo esc_js(esc_url_raw($botblocker_redirect_url)); ?>";
                         }

@@ -362,6 +362,18 @@ function bbcs_update_ipv4_rule_callback()
     }
 
     // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+    $overlap = $wpdb->get_var($wpdb->prepare(
+        "SELECT search FROM `{$wpdb->bbcs_ipv4rules}`
+        WHERE ((ip1 <= %d AND ip2 >= %d) OR (ip1 >= %d AND ip2 <= %d)) AND id != %d LIMIT 1",
+        $data['ip2'], $data['ip1'], $data['ip1'], $data['ip2'], $id
+    ));
+    if ($overlap) {
+        wp_send_json_error('IP range overlaps with an existing rule: ' . $overlap);
+        return;
+    }
+
+    // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
     // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     $result = $wpdb->update($wpdb->bbcs_ipv4rules, $data, array('id' => $id));
 

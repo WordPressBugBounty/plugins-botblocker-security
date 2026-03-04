@@ -1,56 +1,90 @@
-/* CAPTCHA Mode 2 JS (image button) */
-
 function renderMode2Captcha(params) {
-    const { 
-        targetImageData, 
-        instruction, 
-        buttons, 
-        imageRequests,
-        ajaxUrl,
-        nonce,
-        time,
-        selectRequestMode
-    } = params;
-    
-    const buttonsHtml = buttons.join('');
-    
-    document.getElementById("content").innerHTML = `
-        <img src="data:image/png;base64,${targetImageData}" />
-        <p>${instruction}</p>
-        <p style="max-width: 499px;">${buttonsHtml}</p>
-    `;
+    var targetImageData = params.targetImageData;
+    var instruction = params.instruction;
 
-    function fetchAndSetImage(imageParam, elementId) {
-        const formData = new FormData();
-        formData.append('action', 'bbcs_botblocker_check');
-        formData.append('nonce', nonce);
-        formData.append('img', imageParam);
-        formData.append('time', time);
-        formData.append(selectRequestMode, 'img');
+    var content = document.getElementById("content");
+    content.innerHTML = "";
 
-        const requestOptions = {
-            method: 'POST',
-            body: formData
-        };
+    var img = document.createElement("img");
+    img.src = "data:image/png;base64," + targetImageData;
+    content.appendChild(img);
 
-        fetch(ajaxUrl, requestOptions)
-            .then(response => response.blob())
-            .then(blob => {
-                const imageUrl = URL.createObjectURL(blob);
-                const img = document.createElement('img');
-                img.src = imageUrl;
-                const span = document.getElementById(elementId);
-                if (span) {
-                    span.appendChild(img);
-                }
-            })
-            .catch(error => console.error('Retrieve image error:', error));
-    }
+    var p = document.createElement("p");
+    p.textContent = instruction;
+    content.appendChild(p);
 
-    if (Array.isArray(imageRequests)) {
-        imageRequests.forEach(req => {
-            fetchAndSetImage(req.imageParam, req.elementId);
-        });
+    if (params.buttonImages) {
+        /* Inline base64 mode: all images are embedded directly in captcha data. */
+        var buttonImages = params.buttonImages;
+        var row = document.createElement("p");
+        row.style.maxWidth = "499px";
+
+        for (var i = 0; i < buttonImages.length; i++) {
+            (function(item) {
+                var span = document.createElement("span");
+                span.id = item.id;
+                span.style.cursor = "pointer";
+
+                var btnImg = document.createElement("img");
+                btnImg.src = "data:image/jpeg;base64," + item.imageData;
+                span.appendChild(btnImg);
+
+                span.addEventListener("click", function() {
+                    window[bbcsJsData.checkFunctionName]("post", window.data, item.clickHash);
+                });
+
+                row.appendChild(span);
+            })(buttonImages[i]);
+        }
+
+        content.appendChild(row);
+
+    } else if (params.imageRequests) {
+        /* Legacy mode: images loaded via separate AJAX requests. */
+        var buttons = params.buttons;
+        var imageRequests = params.imageRequests;
+        var ajaxUrl = params.ajaxUrl;
+        var nonce = params.nonce;
+        var time = params.time;
+        var selectRequestMode = params.selectRequestMode;
+
+        var rowEl = document.createElement("p");
+        rowEl.style.maxWidth = "499px";
+        rowEl.innerHTML = buttons.join("");
+        content.appendChild(rowEl);
+
+        function fetchAndSetImage(imageParam, elementId) {
+            var formData = new FormData();
+            formData.append("action", "bbcs_botblocker_check");
+            formData.append("nonce", nonce);
+            formData.append("img", imageParam);
+            formData.append("time", time);
+            formData.append(selectRequestMode, "img");
+
+            fetch(ajaxUrl, { method: "POST", body: formData })
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error("HTTP " + response.status);
+                    }
+                    return response.blob();
+                })
+                .then(function(blob) {
+                    var imageUrl = URL.createObjectURL(blob);
+                    var imgEl = document.createElement("img");
+                    imgEl.src = imageUrl;
+                    var span = document.getElementById(elementId);
+                    if (span) {
+                        span.appendChild(imgEl);
+                    }
+                })
+                .catch(function(error) {
+                    console.error("Retrieve image error:", error);
+                });
+        }
+
+        for (var j = 0; j < imageRequests.length; j++) {
+            fetchAndSetImage(imageRequests[j].imageParam, imageRequests[j].elementId);
+        }
     }
 }
 

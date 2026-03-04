@@ -41,7 +41,10 @@ trait BBCS_RenderMovingShapesButtonTrait {
         ];
         $usedCombinations[] = "{$correctShape}_{$correctColor}";
 
-        for ($i = 0; $i < 4; $i++) {
+        $maxRetries = 50;
+        $retries = 0;
+        while (count($shapesData) < 5 && $retries < $maxRetries) {
+            $retries++;
             $randomShape = $shapes[array_rand($shapes)];
             $randomColor = $colors[array_rand($colors)];
             

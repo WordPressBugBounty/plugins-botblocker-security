@@ -54,7 +54,7 @@ trait BotBlockerResponseTrait {
                         bbcs_storeData('BBCS File Error - Not Found', 80);
                     }
                     bbcs_process_hit(80);
-                    $this->process_die('404 - Image not found ' . $imagePath);
+                    $this->process_die('404 - Image not found');
                 }
             }
             $this->process_die();

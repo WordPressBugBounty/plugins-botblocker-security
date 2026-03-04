@@ -14,6 +14,7 @@ function bbcs_get_allowed_fields(): array {
         'autosave_admin_ip',
         'bbcs_api_gs_url',
         'bbcs_api_url',
+        'bbcs_captcha_img_inline',
         'bbcs_captcha_img_pack',
         'bbcs_captcha_mode',
         'bbcs_captcha_wait',
@@ -129,9 +130,10 @@ function bbcs_loadDefaultSettings(){
     return array(
         'secure_mode' => 2,
         'disable' => 0,
+        'bbcs_captcha_img_inline' => 1,
         'bbcs_captcha_img_pack' => 1,
-        'bbcs_captcha_mode' => 2,
-        'bbcs_captcha_wait' => 10,
+        'bbcs_captcha_mode' => BOTBLOCKER_CAPTCHA_MODE_DEFAULT,
+        'bbcs_captcha_wait' => 30,
         'cloud_api_type' => 'cloud_basic',
         'cloud_api_tier' => '',
         'counter_today' => 0, 
@@ -251,9 +253,10 @@ function bbcs_loadLightSecurity(){
     return array(
         'secure_mode' => 2,
         'disable' => 0,
+        'bbcs_captcha_img_inline' => 1,
         'bbcs_captcha_img_pack' => 1,
-        'bbcs_captcha_mode' => 2,
-        'bbcs_captcha_wait' => 10,
+        'bbcs_captcha_mode' => BOTBLOCKER_CAPTCHA_MODE_DEFAULT,
+        'bbcs_captcha_wait' => 30,
 
         'block_empty_ua' => 1,
         'block_empty_lang' => 1,
@@ -318,9 +321,10 @@ function bbcs_loadStrongSecurity(){
     return array(
         'secure_mode' => 2,
         'disable' => 0,
+        'bbcs_captcha_img_inline' => 1,
         'bbcs_captcha_img_pack' => 1,
-        'bbcs_captcha_mode' => 2,
-        'bbcs_captcha_wait' => 10,
+        'bbcs_captcha_mode' => BOTBLOCKER_CAPTCHA_MODE_DEFAULT,
+        'bbcs_captcha_wait' => 30,
 
         'block_empty_ua' => 1,
         'block_empty_lang' => 1,
@@ -385,9 +389,10 @@ function bbcs_loadFullSecurity(){
     return array(
         'secure_mode' => 2,
         'disable' => 0,
+        'bbcs_captcha_img_inline' => 1,
         'bbcs_captcha_img_pack' => 1,
-        'bbcs_captcha_mode' => 2,
-        'bbcs_captcha_wait' => 10,
+        'bbcs_captcha_mode' => BOTBLOCKER_CAPTCHA_MODE_DEFAULT,
+        'bbcs_captcha_wait' => 30,
 
         'block_empty_ua' => 1,
         'block_empty_lang' => 1,

@@ -269,7 +269,7 @@ window[bbcsJsData.checkFunctionName] = function(s, d, x) {
                                 "<h2 style=\"text-align:center; color:red;\">" + bbcsJsData.cookieDisabledText + "</h2>";
                             }
                         }
-                        if (obj.error == "Wrong Click") {
+                        if (obj.error == "timeout" || obj.error == "Wrong Click") {
                             document.getElementById("content").innerHTML = bbcsJsData.loadingText;
                             window.location.href = bbcsJsData.redirectUrl;
                         }

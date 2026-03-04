@@ -84,7 +84,7 @@ trait BotBlockerPostTrait
         * if country base 1 != country base 5 - FAKE
         */
 
-        if ($this->time - $_POST['date'] > $this->settings->bbcs_captcha_wait) $this->process_die('{"cookie":"000"}');
+        if ($this->time - $_POST['date'] > $this->settings->bbcs_captcha_wait) $this->process_die('{"error":"timeout"}');
 
         if ($this->settings->bbcs_captcha_mode == 3 || $this->settings->bbcs_captcha_mode == 4) {
 
@@ -146,7 +146,7 @@ trait BotBlockerPostTrait
             $date_from_post = isset($_POST['date']) ? sanitize_text_field(wp_unslash($_POST['date'])) : '';
             $xxx_from_post = isset($_POST['xxx']) ? sanitize_text_field(wp_unslash($_POST['xxx'])) : '';
             $hash0 = '1|' . hash('sha256', $this->settings->salt . $date_from_post . $this->settings->cloud_api_pass);
-            if ($hash0 != $xxx_from_post) {
+            if (!hash_equals($hash0, $xxx_from_post)) {
                 $this->process_wrong_click();
             }
         } elseif ($this->settings->bbcs_captcha_mode == 2) {
@@ -157,18 +157,18 @@ trait BotBlockerPostTrait
             if (!isset($_POST['color'], $_POST['color_hash'], $_POST['date'], $_POST['ip'])) {
                 $this->process_die('{"error": "Missing required POST data"}');
             }
-            if (
-                sanitize_text_field(wp_unslash($_POST['color_hash']))
-                !=
-                hash(
-                    'sha256',
-                    $this->settings->salt .
-                        sanitize_text_field(wp_unslash($_POST['color'])) .
-                        sanitize_text_field(wp_unslash($_POST['date'])) .
-                        $this->settings->cloud_api_pass .
-                        sanitize_text_field(wp_unslash($_POST['ip']))
-                )
-            ) $this->process_wrong_click();
+            $submitted_hash = sanitize_text_field(wp_unslash($_POST['color_hash']));
+            $expected_hash = hash(
+                'sha256',
+                $this->settings->salt .
+                    sanitize_text_field(wp_unslash($_POST['color'])) .
+                    sanitize_text_field(wp_unslash($_POST['date'])) .
+                    $this->settings->cloud_api_pass .
+                    sanitize_text_field(wp_unslash($_POST['ip']))
+            );
+            if (!hash_equals($expected_hash, $submitted_hash)) {
+                $this->process_wrong_click();
+            }
         } else {
             $this->process_wrong_click();
         }
