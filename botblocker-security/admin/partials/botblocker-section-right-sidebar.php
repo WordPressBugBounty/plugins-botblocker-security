@@ -8,6 +8,7 @@ $BBCSA = Botblocker_Admin::getInstance();
 $bbcs_cloud_api_active = (function_exists('bbcs_isCloudAPIActive') && bbcs_isCloudAPIActive());
 $bbcs_early_addon_active = function_exists('bbcs_is_addon_active') ? bbcs_is_addon_active('bbcs-early-init') : false;
 $bbcs_early_available = $bbcs_cloud_api_active && $bbcs_early_addon_active;
+$bbcs_contact_email_collected = (int) get_option('bbcs_contact_email_collected', 0) === 1;
 
 ?><section class="card bbcs-card-border-left ">
     <header class="card-header bbcs_small_header">
@@ -268,3 +269,25 @@ $bbcs_early_available = $bbcs_cloud_api_active && $bbcs_early_addon_active;
         <?php echo do_shortcode('[bbcs_system_status]'); ?>
     </div>
 </section>
+
+<?php if (!$bbcs_contact_email_collected): ?>
+<section class="card bbcs-card-border-left ">
+    <header class="card-header bbcs_small_header">
+        <div class="card-actions bbcs_header_controls">
+            <a href="<?php echo esc_url($BBCSA->pages_settings); ?>" data-bs-toggle="tooltip" data-bs-html="true"
+                data-bs-placement="top"
+                data-bs-original-title="<?php esc_html_e('BotBlocker Settings', 'botblocker-security'); ?>"><i
+                    class="fa-solid fa-gear bbcs-h-btn-gray"></i></a>
+        </div>
+        <h2 class="card-title"><?php esc_html_e('Security Updates & Offers', 'botblocker-security'); ?></h2>
+        <p class="card-subtitle"><?php esc_html_e('Subscribe to receive important security news and special offers', 'botblocker-security'); ?></p>
+    </header>
+    <div class="card-body">
+        <input value="<?php echo esc_attr( bbcs_getsupportData() ); ?>" type="email" id="bbcs_contact_email" class="form-control mb-2" placeholder="<?php esc_attr_e('Your email', 'botblocker-security'); ?>">
+        <button type="button" id="bbcs_send_activation_btn" class="mt-2 btn btn-sm bbcs-btn-primary-cta">
+            <?php esc_html_e('Subscribe', 'botblocker-security'); ?>
+        </button>
+        <div id="bbcs_activation_response" class="mt-2" style="display: none;"></div>
+    </div>
+</section>
+<?php endif; ?>

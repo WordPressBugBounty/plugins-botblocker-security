@@ -98,15 +98,15 @@ function bbcs_createTables()
         `id` BIGINT(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
         `priority` INTEGER NOT NULL DEFAULT 100,
         `search` TEXT NOT NULL,
-        `ip1` TEXT NOT NULL,
-        `ip2` TEXT NOT NULL,
+        `ip1` VARCHAR(11) NOT NULL DEFAULT '',
+        `ip2` VARCHAR(11) NOT NULL DEFAULT '',
         `rule` TEXT NOT NULL,
         `comment` TEXT NOT NULL,
         `expires` BIGINT(20) NOT NULL DEFAULT " . BOTBLOCKER_EXP_INF . ",
         `disable` INTEGER NOT NULL DEFAULT 0,
         `readonly` INTEGER NOT NULL DEFAULT 0,
         UNIQUE KEY search (search(191)),
-        KEY ipv4range_disabled_index (disable, ip1(191), ip2(191))
+        KEY ipv4range_disabled_index (disable, ip1, ip2)
     ) $charset_collate;";
 
     dbDelta($sql_ipv4rules);
@@ -158,8 +158,7 @@ function bbcs_createTables()
         `disable` INTEGER NOT NULL DEFAULT 0,
         `rule` TEXT NOT NULL,
         `comment` TEXT NOT NULL,
-        KEY i_priority (priority),
-        KEY i_search (search(191))
+        KEY i_priority (priority)
     ) $charset_collate;";
 
     dbDelta($sql_rules);
@@ -168,7 +167,7 @@ function bbcs_createTables()
      * Creates the 'bbcs_settings' table in the database.
      */
     $sql_settings = "CREATE TABLE IF NOT EXISTS `{$wpdb->bbcs_settings}` (
-        `key` VARCHAR(255) NOT NULL UNIQUE,
+        `key` VARCHAR(191) NOT NULL UNIQUE,
         `value` TEXT NOT NULL
     ) $charset_collate;";
 
@@ -190,11 +189,11 @@ function bbcs_createTables()
      * Creates the 'bbcs_ptrcache' table in the database.
      */
     $sql_ptrcache = "CREATE TABLE IF NOT EXISTS `{$wpdb->bbcs_ptrcache}` (
-        `ip` TEXT(191) NOT NULL default '', 
-        `ptr` TEXT(256) NOT NULL default '', 
-        `date` INTEGER NOT NULL default '0', 
+        `ip` VARCHAR(45) NOT NULL DEFAULT '',
+        `ptr` VARCHAR(255) NOT NULL DEFAULT '',
+        `date` INTEGER NOT NULL DEFAULT 0,
         `etime` TEXT,
-        PRIMARY KEY (ip(191))
+        PRIMARY KEY (ip)
     ) $charset_collate;";
 
     dbDelta($sql_ptrcache);
@@ -214,9 +213,10 @@ function bbcs_createTables()
     ) $charset_collate;";
 
     dbDelta($sql_counters);
-    
+
+    bbcs_create_daily_summary_table();
+
     bbcs_create_page_filters_tables();
-    bbcs_create_self_ips_view();
 }
 
 function bbcs_tablesExist()
@@ -320,10 +320,9 @@ function bbcs_create_page_filters_tables() {
     
     $sql = "CREATE TABLE IF NOT EXISTS `{$wpdb->bbcs_page_filters}` (
         `id` INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
-        `pattern` VARCHAR(255) NOT NULL,
+        `pattern` VARCHAR(191) NOT NULL,
         `category` VARCHAR(32) NOT NULL,
-        UNIQUE KEY `pattern` (`pattern`),
-        KEY `idx_category` (`category`)
+        UNIQUE KEY `pattern` (`pattern`)
     ) $charset_collate;";
     
     dbDelta($sql);
@@ -372,28 +371,3 @@ function bbcs_create_page_filters_tables() {
     }
 }
 
-function bbcs_create_self_ips_view() {
-    global $wpdb;
-    // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
-    $wpdb->query("DROP VIEW IF EXISTS `{$wpdb->bbcs_self_ips}`");
-    $wpdb->query("
-        CREATE VIEW `{$wpdb->bbcs_self_ips}` AS
-        SELECT 
-            id,
-            search
-        FROM `{$wpdb->bbcs_ipv4rules}`
-        WHERE readonly = 1
-          AND comment NOT LIKE 'Admin%'
-
-        UNION ALL
-
-        SELECT 
-            id,
-            search
-        FROM `{$wpdb->bbcs_ipv6rules}`
-        WHERE readonly = 1
-          AND comment NOT LIKE 'Admin%'
-    ");
-    // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
-}

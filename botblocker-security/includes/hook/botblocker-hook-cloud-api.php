@@ -74,23 +74,11 @@ function bbcs_fetch_cloud_api_key_handler() {
         array('key' => 'cloud_api_secret')
     );
 
-    //! TODO REMOVE WHEN MIGRATIONS ARE IMPLEMENTED
-    $tier_exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $wpdb->bbcs_settings WHERE `key` = %s", 'cloud_api_tier'));
-    if ($tier_exists) {
-        $wpdb->update(
-            $wpdb->bbcs_settings,
-            array('value' => $cloud['tier']),
-            array('key' => 'cloud_api_tier')
-        );
-    } else {
-        $wpdb->insert(
-            $wpdb->bbcs_settings,
-            array(
-                'key' => 'cloud_api_tier',
-                'value' => $cloud['tier']
-            )
-        );
-    }
+    $wpdb->update(
+        $wpdb->bbcs_settings,
+        array('value' => $cloud['tier']),
+        array('key' => 'cloud_api_tier')
+    );
 
     if (!isset($cloud['tier']) || $cloud['tier'] !== 'ultimate') {
         $wpdb->update(
@@ -173,23 +161,11 @@ function bbcs_connect_cloud_api_handler() {
         $cloud_api_tier = '';
     }
     
-    //! TODO REMOVE WHEN MIGRATIONS ARE IMPLEMENTED
-    $tier_exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $wpdb->bbcs_settings WHERE `key` = %s", 'cloud_api_tier'));
-    if ($tier_exists) {
-        $wpdb->update(
-            $wpdb->bbcs_settings,
-            array('value' => $cloud_api_tier),
-            array('key' => 'cloud_api_tier')
-        );
-    } else {
-        $wpdb->insert(
-            $wpdb->bbcs_settings,
-            array(
-                'key' => 'cloud_api_tier',
-                'value' => $cloud_api_tier
-            )
-        );
-    }
+    $wpdb->update(
+        $wpdb->bbcs_settings,
+        array('value' => $cloud_api_tier),
+        array('key' => 'cloud_api_tier')
+    );
 
     if ($cloud_api_tier !== 'ultimate') {
         $wpdb->update(

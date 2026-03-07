@@ -21,7 +21,7 @@ $bbcs_has_cloud_api = $bbcs_ctx['has_cloud_api'];
             <?php if ( $bbcs_addons_locked || !$bbcs_has_cloud_api) : ?>
                 <div class="alert alert-warning bbcs-mb-16" role="alert">
                     <h4 class="alert-heading"><?php esc_html_e('Unlock Add-ons Marketplace','botblocker-security'); ?></h4>
-                    <p><?php esc_html_e('Activate a Cloud API connection to install and manage premium add-ons.','botblocker-security'); ?></p>
+                    <p><?php esc_html_e('Activate a BotBlocker PRO to install and manage premium add-ons.','botblocker-security'); ?></p>
                     <?php if ( isset( $BBCSA->pages_cloud_api ) ) : ?>
                         <?php if ( $bbcs_has_cloud_api ) : ?>
                             <a href="<?php echo esc_url( $BBCSA->pages_cloud_api ); ?>" target="_blank" class="btn btn-default btn-sm bbcs-link-blink"><i class="fa-solid fa-rocket me-1"></i><?php esc_html_e('Get Access Now','botblocker-security'); ?></a>

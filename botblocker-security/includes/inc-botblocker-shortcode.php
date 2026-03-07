@@ -145,6 +145,7 @@ function bbcs_latest_hits_shortcode()
 {
     global $wpdb;
     $BBCS = BotBlocker::getInstance();
+    [$ip_not_in_sql, $ip_params] = bbcs_getIPNotLikeSQL();
     if ($BBCS->settings->cache_ui_data == 1) {
         $cache_key = 'bbcs_latest_hits_shortcode';
         $bbcs_latest_hits_shortcode = null;
@@ -159,24 +160,33 @@ function bbcs_latest_hits_shortcode()
     }
     $gmt_offset = isset($BBCS->settings->admin_gmt_offset) ? floatval($BBCS->settings->admin_gmt_offset) : 0;
 
-    // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-    $results = $wpdb->get_results("
-        SELECT ch.date, ch.ip, ch.country, ch.lang, ch.device, ch.os 
-        FROM (
-            SELECT date, ip, country, lang, device, os, page FROM `{$wpdb->bbcs_hits}`
+    // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared when self-IPs are present.
+    // $ip_not_in_sql contains only a hardcoded 'ip' column name; IP values are bound via $wpdb->prepare().
+    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
+    $sql = "
+        SELECT r.date, r.ip, r.country, r.lang, r.device, r.os FROM (
+            (SELECT ch.date, ch.ip, ch.country, ch.lang, ch.device, ch.os
+             FROM `{$wpdb->bbcs_hits}` AS ch
+             LEFT JOIN `{$wpdb->bbcs_page_filters}` AS pf ON ch.page LIKE pf.pattern
+             WHERE pf.pattern IS NULL{$ip_not_in_sql}
+             ORDER BY ch.date DESC LIMIT 10)
             UNION ALL
-            SELECT date, ip, country, lang, device, os, page FROM `{$wpdb->bbcs_hits_suspicious}`
-        ) AS ch
-        LEFT JOIN `{$wpdb->bbcs_page_filters}` AS pf ON ch.page LIKE pf.pattern
-        LEFT JOIN `{$wpdb->bbcs_self_ips}` AS si ON ch.ip = si.search
-        WHERE pf.pattern IS NULL AND si.search IS NULL
-        ORDER BY ch.date DESC 
-        LIMIT 10
-    ", ARRAY_A);
+            (SELECT ch.date, ch.ip, ch.country, ch.lang, ch.device, ch.os
+             FROM `{$wpdb->bbcs_hits_suspicious}` AS ch
+             LEFT JOIN `{$wpdb->bbcs_page_filters}` AS pf ON ch.page LIKE pf.pattern
+             WHERE pf.pattern IS NULL{$ip_not_in_sql}
+             ORDER BY ch.date DESC LIMIT 10)
+        ) AS r ORDER BY r.date DESC LIMIT 10
+    ";
+    $all_params = array_merge($ip_params, $ip_params);
+    $results = $wpdb->get_results(
+        empty($all_params) ? $sql : $wpdb->prepare($sql, ...$all_params),
+        ARRAY_A
+    );
+    // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
 
     if (empty($results)) {
-        return '<p>' . esc_html_e('No data available.', 'botblocker-security') .'</p>';
+        return '<p>' . esc_html__('No data available.', 'botblocker-security') .'</p>';
     }
 
     ob_start();

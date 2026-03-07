@@ -33,6 +33,7 @@ $bbcs_tables = [
 	$wpdb->bbcs_ipv6rules,
 	$wpdb->bbcs_counters,
 	$wpdb->bbcs_page_filters,
+	$wpdb->bbcs_daily_summary,
 ];
 
 /** REVIEWER NOTE:
@@ -47,7 +48,26 @@ foreach ( $bbcs_tables as $bbcs_table ) {
 	$wpdb->query( "DROP TABLE IF EXISTS `{$bbcs_table}`" );
 }
 
-if (!empty($wpdb->bbcs_self_ips)) {
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
-    $wpdb->query("DROP VIEW IF EXISTS `{$wpdb->bbcs_self_ips}`");
-}
+// Clean up plugin options
+delete_option('bbcs_db_version');
+delete_option('bbcs_wizard_completed');
+delete_option('bbcs_setup_wizard_completed');
+delete_option('bbcs_setup_wizard_completed_at');
+
+delete_option('bbcs_wizard_cache_type');
+delete_option('bbcs_wizard_preset');
+delete_option('bbcs_wizard_ux_mode');
+delete_option('bbcs_wizard_captcha_mode');
+delete_option('bbcs_wizard_init_mode');
+
+delete_option('bbcs_contact_email_collected');
+delete_option('bbcs_support_data');
+
+delete_option('bbcs_2fa_rules_version');
+
+delete_option('bbcs_activation_prevent_redirect');
+delete_option('bbcs_initial_version');
+
+delete_option('botblocker_active_addons');
+delete_option('botblocker_tools_core_settings');
+delete_option('botblocker_tools_login_settings');

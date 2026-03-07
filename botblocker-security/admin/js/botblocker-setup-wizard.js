@@ -15,7 +15,26 @@
                 this.restoreProgress();
                 this.bindEvents();
                 this.displayCurrentIP();
+                this.initializeContactEmail();
                 this.showStep(this.currentStep);
+            },
+
+            initializeContactEmail: function() {
+                const $emailInput = $('#bbcs-wizard-contact-email');
+                if (!$emailInput.length) {
+                    return;
+                }
+
+                const storedEmail = localStorage.getItem('bbcs_wizard_contact_email');
+                if (storedEmail) {
+                    $emailInput.val(storedEmail);
+                } else if (!$emailInput.val() && bbcs_setup_wizard_vars.current_user_email) {
+                    $emailInput.val(bbcs_setup_wizard_vars.current_user_email);
+                }
+
+                $emailInput.on('input', function () {
+                    localStorage.setItem('bbcs_wizard_contact_email', $(this).val().trim());
+                });
             },
             
             bindEvents: function() {
@@ -245,6 +264,7 @@
             
             clearProgress: function() {
                 localStorage.removeItem('bbcs_wizard_progress');
+                localStorage.removeItem('bbcs_wizard_contact_email');
             },
             
             displayCurrentIP: function() {
@@ -284,6 +304,20 @@
                         }
                         this.currentTime = 0;
                     });
+                } else if (step === 5) {
+                    // Step 5: Initialization Mode - восстановить кнопку
+                    const $btn = $('.bbcs-wizard-save-init-mode');
+                    if (!$btn.data('original-text')) {
+                        $btn.data('original-text', $btn.html());
+                    }
+                    $btn.prop('disabled', this.selectedInitMode === null).html($btn.data('original-text'));
+                } else if (step === 6) {
+                    // Step 6: Cache Selection - восстановить кнопку
+                    const $btn = $('.bbcs-wizard-save-cache');
+                    if (!$btn.data('original-text')) {
+                        $btn.data('original-text', $btn.html());
+                    }
+                    $btn.prop('disabled', this.selectedCache === null).html($btn.data('original-text'));
                 }
             },
             
@@ -318,6 +352,16 @@
                         }
                         this.currentTime = 0;
                     });
+                } else if (step === 5) {
+                    const $btn = $('.bbcs-wizard-save-init-mode');
+                    if ($btn.data('original-text')) {
+                        $btn.html($btn.data('original-text')).prop('disabled', this.selectedInitMode === null);
+                    }
+                } else if (step === 6) {
+                    const $btn = $('.bbcs-wizard-save-cache');
+                    if ($btn.data('original-text')) {
+                        $btn.html($btn.data('original-text')).prop('disabled', this.selectedCache === null);
+                    }
                 }
                 this.saveProgress();
                 this.showStep(step);
@@ -609,12 +653,15 @@
             },
             
             completeWizard: function() {
+                const contactEmail = ($('#bbcs-wizard-contact-email').val() || '').trim();
+
                 $.ajax({
                     url: bbcs_setup_wizard_vars.ajax_url,
                     type: 'POST',
                     data: {
                         action: 'bbcs_wizard_complete',
-                        nonce: bbcs_setup_wizard_vars.nonce
+                        nonce: bbcs_setup_wizard_vars.nonce,
+                        contact_email: contactEmail
                     },
                     success: (response) => {
                         if (response.success) {

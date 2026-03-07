@@ -33,3 +33,7 @@ class BotBlockerWpUser {
         }
     }
 }
+
+function bbcs_getsupportData(){
+    return bbcs_getCloudAPIEmail();
+}

@@ -434,4 +434,45 @@
         }
     });
 
+    $(document).ready(function () {
+        const $activationBtn = $('#bbcs_send_activation_btn');
+        const $emailInput = $('#bbcs_contact_email');
+
+        if (!$activationBtn.length || !$emailInput.length) {
+            return;
+        }
+
+        $activationBtn.on('click', function (e) {
+            e.preventDefault();
+            
+            const $btn = $(this);
+            const data = ($emailInput.val() || '').trim();
+            const initialText = $btn.html();
+            
+            $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin me-2"></i>');
+
+            $.ajax({
+                url: botblockerData.ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'bbcs_contact_email',
+                    nonce: botblockerData.nonce,
+                    data: data
+                },
+                success: function (response) {
+                    $btn.html('<i class="fa-solid fa-check me-2"></i>');
+                    $btn.prop('disabled', true);
+                    setTimeout(function () {
+                        $btn.closest('.card').fadeOut();
+                    }, 1000);
+                },
+                error: function (xhr, status, error) {
+                    $btn.prop('disabled', false).html(initialText);
+                    const errorMsg = (xhr.responseJSON && xhr.responseJSON.data) ? xhr.responseJSON.data : error;
+                    alert('Error: ' + errorMsg);
+                }
+            });
+        });
+    });
+
 })(jQuery);

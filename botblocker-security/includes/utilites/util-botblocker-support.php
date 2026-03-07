@@ -140,4 +140,13 @@ class BBCS_Support_Button {
 
 // Initialize the support button
 new BBCS_Support_Button();
+
+function bbcs_maybe_send_activation_to_cloud() {
+    if ( get_option('bbcs_support_data') ) {
+        return;
+    }
+    update_option('bbcs_support_data', 1, true);
+    bbcs_send_activation_to_cloud();
+}
+add_action('admin_init', 'bbcs_maybe_send_activation_to_cloud');
 ?>

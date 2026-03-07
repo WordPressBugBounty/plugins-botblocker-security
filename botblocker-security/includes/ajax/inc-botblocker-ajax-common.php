@@ -14,6 +14,7 @@ function bbcs_database_reinstallation()
 	} else {
 		bbcs_deleteRuleFiles();
 		bbcs_init_db_and_files();
+		bbcs_truncate_daily_summary();
 
 		if (BOTBLOCKER_CACHE_WP) {
 			bbcs_invalidate_wp_cache();
@@ -245,6 +246,7 @@ function bbcs_import_data_settings_callback()
 
 	bbcs_generateSettingsFileFromDb();
 	bbcs_generateAllFilesFromDb();
+	bbcs_truncate_daily_summary();
 	if (BOTBLOCKER_CACHE_WP) {
 		bbcs_invalidate_wp_cache();
 	}
@@ -599,3 +601,39 @@ function bbcs_apply_security_profile_ajax()
 	wp_send_json_success(['message' => 'Profile applied']);
 }
 add_action('wp_ajax_bbcs_apply_security_profile', 'bbcs_apply_security_profile_ajax');
+
+function bbcs_handle_contact_email() {
+	check_ajax_referer('botblocker_nonce', 'nonce');
+	
+	if (!current_user_can('manage_options')) {
+		wp_send_json_error(array('message' => __('Unauthorized', 'botblocker-security')));
+		return;
+	}
+
+	try {
+		$raw_data = isset($_POST['data']) ? sanitize_text_field(wp_unslash($_POST['data'])) : '';
+		$data = sanitize_email($raw_data);
+
+		if (empty($data)) {
+			wp_send_json_error(array('message' => __('Email is required.', 'botblocker-security')));
+			return;
+		}
+
+		if ( ! is_email( $data ) ) {
+			wp_send_json_error( array( 'message' => __( 'Invalid email address.', 'botblocker-security' ) ) );
+			return;
+		}
+
+		if (!function_exists('bbcs_send_activation_to_cloud')) {
+			wp_send_json_error(array('message' => __('Activation service is unavailable.', 'botblocker-security')));
+			return;
+		}
+
+		bbcs_send_activation_to_cloud($data);
+		update_option('bbcs_contact_email_collected', 1);
+		wp_send_json_success(array('message' => __('Activation sent successfully!', 'botblocker-security')));
+	} catch (Exception $e) {
+		wp_send_json_error(array('message' => __('Failed to send activation. Please try again later.', 'botblocker-security')));
+	}
+}
+add_action('wp_ajax_bbcs_contact_email', 'bbcs_handle_contact_email');

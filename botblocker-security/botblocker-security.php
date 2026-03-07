@@ -10,13 +10,13 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
  *
  * @link              https://globus.studio
  * @package           botblocker-security
- * @version           1.6.12
+ * @version           1.6.13
  *
  * @wordpress-plugin
  * Plugin Name:       BotBlocker Security - Firewall & Bot Protection
  * Plugin URI:        https://botblocker.top/
  * Description:       BotBlocker Security is a powerful WordPress plugin designed to safeguard your website from unwanted bots and malicious activities. With advanced detection algorithms, BotBlocker identifies and blocks harmful bots, reducing spam and protecting your site's resources. The plugin provides real-time monitoring and customizable rules, allowing you to control access and enhance site security effortlessly. Easy to install and configure, BotBlocker ensures a smooth user experience while keeping your site safe from automated threats. Keep your WordPress site secure and running efficiently with BotBlocker.
- * Version:           1.6.12
+ * Version:           1.6.13
  * Author:            Yevhen Leonidov
  * Author URI:        https://leonidov.dev/
  * License:           GPL-2.0+

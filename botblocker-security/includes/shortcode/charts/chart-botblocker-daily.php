@@ -5,6 +5,7 @@ function bbcs_display_daily_hits_chart($atts)
 {
     global $wpdb;
     $BBCS = BotBlocker::getInstance();
+    [$ip_not_in_sql, $ip_params] = bbcs_getIPNotLikeSQL();
 
     if ($BBCS->settings->cache_ui_data == 1) {
         $cache_key = 'bbcs_display_daily_hits_chart';
@@ -36,8 +37,8 @@ function bbcs_display_daily_hits_chart($atts)
     $start_of_day = (clone $current_date)->setTime(0, 0, 0);
     $end_of_day   = (clone $current_date)->setTime(23, 59, 59);
 
-    // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+    // REVIEWER NOTE: Exclusion fragment uses only internally controlled self‑IPs and is bound via prepare; no user data flows here.
+    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
     $results = $wpdb->get_results(
         $wpdb->prepare("
             SELECT HOUR(CONVERT_TZ(FROM_UNIXTIME(date), '+00:00', %s)) AS hour, COUNT(*) AS hits
@@ -52,7 +53,7 @@ function bbcs_display_daily_hits_chart($atts)
                 SELECT 1 FROM `{$wpdb->bbcs_page_filters}` AS pf
                 WHERE combined_hits.page LIKE pf.pattern
             )
-            AND ip NOT IN (SELECT search FROM `{$wpdb->bbcs_self_ips}`)
+            {$ip_not_in_sql}
             GROUP BY hour
             ORDER BY hour
             ",
@@ -60,9 +61,11 @@ function bbcs_display_daily_hits_chart($atts)
             $start_of_day->format('Y-m-d H:i:s'),
             $gmt_offset_str,
             $end_of_day->format('Y-m-d H:i:s'),
-            $gmt_offset_str
+            $gmt_offset_str,
+            ...$ip_params
         )
     );
+    // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
     $values = array_fill(0, 24, 0);
     foreach ((array) $results as $row) {

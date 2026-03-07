@@ -141,6 +141,60 @@ body.botblocker-security-setup-wizard {
     min-width: 36px;
 }
 
+.bbcs-email-card {
+    background: #f8f7ff;
+    border: 1.5px solid #c7d2fe;
+    border-left: 4px solid #667eea;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.08);
+    padding: 20px 24px;
+    margin: 24px auto;
+    max-width: 500px;
+}
+
+
+.bbcs-email-card-title {
+    font-size: 16px;
+    margin: 0 0 12px;
+    color: #111827;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.bbcs-email-card-form {
+    display: grid;
+    gap: 8px;
+}
+
+.bbcs-email-card-form .form-control {
+    border-radius: 10px;
+    border-color: #d1d5db;
+    background: #f8fafc;
+}
+
+.bbcs-email-card-label {
+    font-size: 14px;
+    color: #374151;
+    font-weight: 500;
+}
+
+.bbcs-email-card-hint {
+    margin: 0;
+    color: #6b7280;
+    font-size: 13px;
+}
+
+
+.bbcs-email-card-title::before {
+    content: "\f0e0";                             /* fa envelope icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 14px;
+    color: #667eea;
+}
+
 /* Presets (Step 1) */
 .bbcs-wizard-presets {
     display: grid;

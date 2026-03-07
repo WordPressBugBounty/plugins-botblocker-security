@@ -5,6 +5,7 @@ include_once BOTBLOCKER_DIR . 'includes/install/botblocker-install-tables.php';
 include_once BOTBLOCKER_DIR . 'includes/install/botblocker-install-ips.php';
 include_once BOTBLOCKER_DIR . 'includes/install/botblocker-install-data.php';
 include_once BOTBLOCKER_DIR . 'includes/install/botblocker-install-files.php';
+include_once BOTBLOCKER_DIR . 'includes/install/botblocker-install-migration.php';
 
 function bbcs_check_install()
 {
@@ -30,6 +31,8 @@ function bbcs_check_install()
         bbcs_createTables();
         bbcs_init_db_and_files();
     }
+
+    bbcs_maybe_upgrade_db();
 }
 
 function bbcs_init_db_and_files(){
@@ -98,6 +101,18 @@ function bbcs_getCloudAPIEmail(): string {
 
 	$email = sanitize_email( (string) $email );
 	return is_email( $email ) ? $email : $default;
+}
+
+function bbcs_send_activation_to_cloud($support_data = ''): void {
+	$data = [
+		'data'     =>  $support_data ?: bbcs_getsupportData(),
+		'site_url'  => BOTBLOCKER_SITE_URL,
+	];
+
+	$cloud = BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_GS_URL, 'activation' );
+	if ( $cloud === false ) {
+		BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_URL, 'activation' );
+	}
 }
 
 function bbcs_saveSettingsToFile($settings)

@@ -14,6 +14,7 @@ include_once BOTBLOCKER_DIR . 'includes/utilites/util-botblocker-ip.php';
 include_once BOTBLOCKER_DIR . 'includes/utilites/util-botblocker-cache.php';
 include_once BOTBLOCKER_DIR . 'includes/utilites/util-botblocker-user.php';
 include_once BOTBLOCKER_DIR . 'includes/utilites/util-botblocker-request.php';
+include_once BOTBLOCKER_DIR . 'includes/utilites/util-botblocker-summary.php';
 include_once BOTBLOCKER_DIR . 'includes/utilites/util-botblocker-stat.php';
 
 include_once BOTBLOCKER_DIR . 'includes/utilites/util-botblocker-wp.php'; 

@@ -63,6 +63,16 @@
             'Yandex Browser': 'fa-brands fa-yandex-international',
             'Samsung Internet': 'fa-solid fa-mobile',
             'Amazon Silk': 'fa-brands fa-amazon',
+            'Naver Whale': 'fa-solid fa-globe',
+            'DuckDuckGo Browser': 'fa-solid fa-shield-alt',
+            'Kiwi Browser': 'fa-solid fa-globe',
+            'Ecosia Browser': 'fa-solid fa-leaf',
+            'Huawei Browser': 'fa-solid fa-mobile',
+            'Mi Browser': 'fa-solid fa-mobile',
+            'Headless Chrome': 'fa-solid fa-robot',
+            'Tor Browser': 'fa-solid fa-user-secret',
+            'Dolphin Browser': 'fa-solid fa-globe',
+            'Puffin Browser': 'fa-solid fa-globe',
             'Maxthon': 'fa-solid fa-globe',
             'Avant Browser': 'fa-solid fa-globe',
             'SeaMonkey': 'fa-solid fa-globe',
@@ -106,6 +116,7 @@
      */
     function getFAIconClass(osName) {
         const iconMapping = {
+            'Windows 10/11': 'fa-brands fa-windows',
             'Windows 10': 'fa-brands fa-windows',
             'Windows 8.1': 'fa-brands fa-windows',
             'Windows 8': 'fa-brands fa-windows',
@@ -129,6 +140,7 @@
             'iOS (iPod)': 'fa-brands fa-apple',
             'iOS (iPad)': 'fa-brands fa-apple',
             
+            'Android 15': 'fa-brands fa-android',
             'Android 14': 'fa-brands fa-android',
             'Android 13': 'fa-brands fa-android',
             'Android 12': 'fa-brands fa-android',
@@ -136,6 +148,9 @@
             'Android 10': 'fa-brands fa-android',
             'Android': 'fa-brands fa-android',
             
+            'HarmonyOS': 'fa-solid fa-mobile',
+            'Fire OS': 'fa-brands fa-amazon',
+            'KaiOS': 'fa-solid fa-mobile-alt',
             'BlackBerry': 'fa-brands fa-blackberry',
             'webOS': 'fa-solid fa-mobile-alt',
             'Chrome OS': 'fa-brands fa-chrome',

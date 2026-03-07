@@ -4,7 +4,7 @@ Tags: security, firewall, anti-spam, captcha, brute force
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.6.12
+Stable tag: 1.6.13
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,7 +32,7 @@ BotBlocker Security includes an endpoint **firewall/WAF** that identifies and bl
 * Real-time IP Blocklist blocks all requests from the most malicious IPs
 * Early-init protection - blocks threats before WordPress loads
 * Cloud-based threat intelligence - cross-checks every visitor against global threat databases
-* No personal data collected - only technical request parameters analyzed (100% GDPR/CCPA-compliant)
+* No visitor data collected - only technical request parameters analyzed (GDPR/CCPA-compliant)
 * Brute force protection with login attempt limits and multi-layer verification
 
 = 📡 WordPress Security Scanner & Site Protection =
@@ -136,7 +136,7 @@ Choose from various CAPTCHA types to protect your site:
 * Dynamic and graphical anti-bot challenges
 * Automatic logging with adjustable retention
 * Session tracking and verification
-* No personal data collected (100% GDPR/CCPA-compliant)
+* No visitor data collected — GDPR/CCPA-compliant (see FAQ for admin notification details)
 
 == Installation ==
 
@@ -159,7 +159,7 @@ The **firewall/WAF** operates at the earliest stage - before WordPress loads - a
 
 = Does the plugin collect personal data? =
 
-No. Only technical request parameters are analyzed (IP, headers, User-Agent). **No personally identifiable information** is collected, stored, or transmitted. 100% GDPR/CCPA compliant.
+BotBlocker does **not** collect any visitor PII - only technical request parameters (IP, headers, User-Agent) are analyzed locally. Full details are available in `PRIVACY.md` included with the plugin.
 
 = Do I need an external service? =
 
@@ -212,6 +212,14 @@ Use **Allowlist** for admin IPs/services and enable "allow server self-IP" so WP
 
 == Changelog ==
  
+= 1.6.13 =
+Improve support for shared hosting environments with dynamic self-IP detection and allowlist management
+Improve statistics sammary generation
+Upadte browser detection
+Update OS detection
+Add privacy readme file
+Update translation files
+
 = 1.6.12 =
 Add new mode of image CAPTCHA: Image Delivery Mode (for high-traffic sites with caching)
 Improve compatibility with Firefox and Safari browsers

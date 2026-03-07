@@ -51,8 +51,11 @@ function bbcs_remove_cron_tasks()
     wp_clear_scheduled_hook('bbcs_five_days_task');
     wp_clear_scheduled_hook('bbcs_two_hours_task');
     wp_clear_scheduled_hook('bbcs_one_time_task');
+    wp_clear_scheduled_hook('bbcs_summary_backfill');
 }
 
+add_action('bbcs_hourly_task', 'bbcs_summary_cron_handler');
+add_action('bbcs_summary_backfill', 'bbcs_summary_backfill_handler');
 
 add_action('bbcs_daily_task', 'bbcs_daily_task_handler');
 function bbcs_daily_task_handler()
@@ -229,6 +232,8 @@ function bbcs_clean_old_hits_data()
     if ($suspicious_result === false) {
         // error_log( 'BotBlocker: FAILED to delete old data from hits_suspicious table. Error: ' . $wpdb->last_error );
     }
+
+    bbcs_clean_old_summary_data($store_period);
 }
 
 function bbcs_send_suspicious_hits_to_cloud()

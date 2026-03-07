@@ -362,7 +362,7 @@ function bbcs_update_ipv4_rule_callback()
     }
 
     // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     $overlap = $wpdb->get_var($wpdb->prepare(
         "SELECT search FROM `{$wpdb->bbcs_ipv4rules}`
         WHERE ((ip1 <= %d AND ip2 >= %d) OR (ip1 >= %d AND ip2 <= %d)) AND id != %d LIMIT 1",

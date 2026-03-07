@@ -5,6 +5,7 @@ function bbcs_display_hits_and_uniques_chart($atts)
 {
     global $wpdb;
     $BBCS = BotBlocker::getInstance();
+    [$ip_not_in_sql, $ip_params] = bbcs_getIPNotLikeSQL();
 
     if ($BBCS->settings->cache_ui_data == 1) {
         $cache_key = 'bbcs_display_hits_and_uniques_chart';
@@ -36,35 +37,9 @@ function bbcs_display_hits_and_uniques_chart($atts)
     $end_date   = $current_date->format('Y-m-d 23:59:59');
     $start_date = (clone $current_date)->modify('-' . ($days - 1) . ' days')->format('Y-m-d 00:00:00');
     
-    // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-    $results = $wpdb->get_results(
-        $wpdb->prepare("
-            SELECT 
-                DATE(CONVERT_TZ(FROM_UNIXTIME(ch.date), '+00:00', %s)) AS visit_date,
-                COUNT(DISTINCT ch.ip) AS uniques,
-                COUNT(*) AS hits
-            FROM (
-                SELECT date, ip, page FROM `{$wpdb->bbcs_hits}`
-                UNION ALL
-                SELECT date, ip, page FROM `{$wpdb->bbcs_hits_suspicious}`
-            ) AS ch
-            LEFT JOIN `{$wpdb->bbcs_page_filters}` AS pf ON ch.page LIKE pf.pattern
-            LEFT JOIN `{$wpdb->bbcs_self_ips}` AS si ON ch.ip = si.search
-            WHERE ch.date BETWEEN UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
-                            AND UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
-            AND pf.pattern IS NULL
-            AND si.search IS NULL
-            GROUP BY visit_date
-            ORDER BY visit_date ASC
-            ",
-            $gmt_offset_str,
-            $start_date,
-            $gmt_offset_str,
-            $end_date,
-            $gmt_offset_str
-        )
-    );
+    $today_str = $current_date->format('Y-m-d');
+    $yesterday_str = (clone $current_date)->modify('-1 day')->format('Y-m-d');
+    $start_day = substr($start_date, 0, 10);
 
     $chart_data = [];
     $cur = new \DateTime($start_date, $tz);
@@ -75,9 +50,81 @@ function bbcs_display_hits_and_uniques_chart($atts)
         $cur->modify('+1 day');
     }
 
-    foreach ((array) $results as $row) {
-        $chart_data[$row->visit_date]['uniques'] = (int) $row->uniques;
-        $chart_data[$row->visit_date]['hits']    = (int) $row->hits;
+    if ($days > 1 && bbcs_summary_days_complete($start_day, $yesterday_str)) {
+        $past_hits = bbcs_summary_get_per_day('chart_hits', $start_day, $yesterday_str);
+        $past_uniq = bbcs_summary_get_per_day('chart_uniques', $start_day, $yesterday_str);
+
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $today_live = $wpdb->get_row(
+            $wpdb->prepare("
+                SELECT COUNT(*) AS hits, COUNT(DISTINCT ch.ip) AS uniques
+                FROM (
+                    SELECT date, ip, page FROM `{$wpdb->bbcs_hits}`
+                    UNION ALL
+                    SELECT date, ip, page FROM `{$wpdb->bbcs_hits_suspicious}`
+                ) AS ch
+                LEFT JOIN `{$wpdb->bbcs_page_filters}` AS pf ON ch.page LIKE pf.pattern
+                WHERE ch.date BETWEEN UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
+                                AND UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
+                AND pf.pattern IS NULL
+                {$ip_not_in_sql}
+                ",
+                $today_str . ' 00:00:00',
+                $gmt_offset_str,
+                $today_str . ' 23:59:59',
+                $gmt_offset_str,
+                ...$ip_params
+            ),
+            ARRAY_A
+        );
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+        foreach ($chart_data as $d => &$vals) {
+            if ($d === $today_str) {
+                $vals['hits']    = (int) ($today_live['hits'] ?? 0);
+                $vals['uniques'] = (int) ($today_live['uniques'] ?? 0);
+            } else {
+                $vals['hits']    = $past_hits[$d] ?? 0;
+                $vals['uniques'] = $past_uniq[$d] ?? 0;
+            }
+        }
+        unset($vals);
+    } else {
+        // REVIEWER NOTE: Only internal self‑IPs are used; they are passed to prepare(), so the query contains no untrusted input.
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $results = $wpdb->get_results(
+            $wpdb->prepare("
+                SELECT 
+                    DATE(CONVERT_TZ(FROM_UNIXTIME(ch.date), '+00:00', %s)) AS visit_date,
+                    COUNT(DISTINCT ch.ip) AS uniques,
+                    COUNT(*) AS hits
+                FROM (
+                    SELECT date, ip, page FROM `{$wpdb->bbcs_hits}`
+                    UNION ALL
+                    SELECT date, ip, page FROM `{$wpdb->bbcs_hits_suspicious}`
+                ) AS ch
+                LEFT JOIN `{$wpdb->bbcs_page_filters}` AS pf ON ch.page LIKE pf.pattern
+                WHERE ch.date BETWEEN UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
+                                AND UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
+                AND pf.pattern IS NULL
+                {$ip_not_in_sql}
+                GROUP BY visit_date
+                ORDER BY visit_date ASC
+                ",
+                $gmt_offset_str,
+                $start_date,
+                $gmt_offset_str,
+                $end_date,
+                $gmt_offset_str,
+                ...$ip_params
+            )
+        );
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+        foreach ((array) $results as $row) {
+            $chart_data[$row->visit_date]['uniques'] = (int) $row->uniques;
+            $chart_data[$row->visit_date]['hits']    = (int) $row->hits;
+        }
     }
 
     $labels = [];

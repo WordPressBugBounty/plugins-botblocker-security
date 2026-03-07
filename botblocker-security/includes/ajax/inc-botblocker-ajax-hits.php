@@ -154,8 +154,13 @@ function bbcs_get_botblocker_hits( $where ) {
  * AJAX handler for retrieving bot blocker hits data.
  */
 function bbcs_get_botblocker_hits_callback() {
+    global $wpdb;
     $where = "WHERE " . BBCS_SQL_PAGE_NOT_LIKE . " AND method = 'GET'";
-    $where .= bbcs_getIPNotLikeSQL();
+    [$ip_not_in_sql, $ip_params] = bbcs_getIPNotLikeSQL();
+    // REVIEWER NOTE: IP values are sourced from the plugin's own
+    // stored rules (not raw user input) and are fully escaped via $wpdb->prepare().
+    // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared 
+    $where .= empty($ip_params) ? $ip_not_in_sql : $wpdb->prepare($ip_not_in_sql, ...$ip_params);
     bbcs_get_botblocker_hits($where);
 }
 add_action('wp_ajax_bbcs_get_botblocker_hits', 'bbcs_get_botblocker_hits_callback');

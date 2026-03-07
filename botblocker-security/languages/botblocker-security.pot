@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BotBlocker\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-02 08:15+0000\n"
+"POT-Creation-Date: 2026-03-05 10:45+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -15,6 +15,16 @@ msgstr ""
 "X-Generator: Loco https://localise.biz/\n"
 "X-Loco-Version: 2.8.0; wp-6.8.2; php-8.3.14\n"
 "X-Domain: botblocker-security"
+
+#: includes/inc-botblocker-ui.php:52
+msgid "(Realtime)"
+msgstr ""
+
+#. %s is the cache update interval duration name (e.g. "1 hour").
+#: includes/inc-botblocker-ui.php:50
+#, php-format
+msgid "(Update every %s)"
+msgstr ""
 
 #: admin/partials/botblocker-admin-dashboard-widgets.php:171
 msgid "1 = highest. Higher priority rules processed first."
@@ -32,7 +42,7 @@ msgstr ""
 msgid "2FA service unavailable"
 msgstr ""
 
-#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:50
+#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:51
 msgid "404 Not Found"
 msgstr ""
 
@@ -44,15 +54,6 @@ msgstr ""
 
 #: includes/modal/modal-botblocker-setup-wizard.php:116
 msgid "7-step guided setup"
-msgstr ""
-
-#: includes/inc-botblocker-ui.php:57
-msgid "<small>(Realtime)</small>"
-msgstr ""
-
-#: includes/inc-botblocker-ui.php:51
-#, php-format
-msgid "<small>(Update every %s)</small>"
 msgstr ""
 
 #. 1: Link to the IPv4 tab URL, 2: Link to the IPv6 tab URL.
@@ -151,7 +152,7 @@ msgid "Accept-Language"
 msgstr ""
 
 #: includes/botblocker/traits/class-botblocker-block-page-trait.php:29
-#: includes/botblocker/traits/class-botblocker-response-trait.php:217
+#: includes/botblocker/traits/class-botblocker-response-trait.php:219
 msgid "Access has been blocked"
 msgstr ""
 
@@ -164,8 +165,8 @@ msgid ""
 "Access to the built-in WordPress database repair and optimization feature"
 msgstr ""
 
-#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-core.php:180
-#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:63
+#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-core.php:181
+#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:64
 msgid "Access to this page has been restricted."
 msgstr ""
 
@@ -188,7 +189,7 @@ msgid "Activate"
 msgstr ""
 
 #: admin/partials/botblocker-admin-display-addons.php:24
-msgid "Activate a Cloud API connection to install and manage premium add-ons."
+msgid "Activate a BotBlocker PRO to install and manage premium add-ons."
 msgstr ""
 
 #: includes/shortcode/botblocker-shortcode-tooltips.php:91
@@ -312,7 +313,7 @@ msgstr ""
 msgid "Add-ons"
 msgstr ""
 
-#: includes/inc-botblocker-ui.php:231
+#: includes/inc-botblocker-ui.php:225
 msgid "Add-ons locked. Activate Cloud API to use marketplace features."
 msgstr ""
 
@@ -448,7 +449,7 @@ msgstr ""
 msgid "All existing cookies will become invalid."
 msgstr ""
 
-#: includes/utilites/util-botblocker-support.php:112
+#: includes/utilites/util-botblocker-support.php:114
 msgid "All fields are required"
 msgstr ""
 
@@ -555,7 +556,8 @@ msgstr ""
 msgid "Antidetect browsers"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:131
+#. %s is the URL to the reCaptcha v3 integration configuration page.
+#: includes/section/settings/botblocker-set-captcha.php:148
 #, php-format
 msgid ""
 "Any selected captcha type can be combined with verification using reCaptcha "
@@ -1071,13 +1073,13 @@ msgid ""
 "budget."
 msgstr ""
 
-#: includes/inc-botblocker-ui.php:156
+#: includes/inc-botblocker-ui.php:150
 msgid ""
 "BotBlocker operates in normal mode processing all threat types (bots, "
 "proxies, referrers, languages etc.) after base early filtering."
 msgstr ""
 
-#: includes/inc-botblocker-ui.php:157
+#: includes/inc-botblocker-ui.php:151
 msgid ""
 "BotBlocker operates in normal mode processing all threat types at WordPress "
 "load."
@@ -1198,7 +1200,7 @@ msgstr ""
 msgid "Broken"
 msgstr ""
 
-#: includes/inc-botblocker-ui.php:237
+#: includes/inc-botblocker-ui.php:231
 msgid "Browse Add-ons"
 msgstr ""
 
@@ -1316,7 +1318,7 @@ msgstr ""
 msgid "Captcha Mode:"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:113
+#: includes/section/settings/botblocker-set-captcha.php:129
 msgid "Captcha Timeout (seconds):"
 msgstr ""
 
@@ -1324,7 +1326,7 @@ msgstr ""
 msgid "CAPTCHA Type:"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:106
+#: includes/section/settings/botblocker-set-captcha.php:122
 msgid "Cat"
 msgstr ""
 
@@ -1333,7 +1335,7 @@ msgstr ""
 msgid "Change"
 msgstr ""
 
-#: includes/utilites/util-botblocker-support.php:60
+#: includes/utilites/util-botblocker-support.php:62
 msgid "Chat"
 msgstr ""
 
@@ -1363,6 +1365,14 @@ msgid ""
 "methods are designed to be bot-proof while keeping real users happy."
 msgstr ""
 
+#: includes/section/settings/botblocker-set-captcha.php:97
+msgid ""
+"Choose how captcha images are delivered to the browser. Inline Base64 embeds "
+"all images directly in the page data (faster, more reliable, no extra "
+"requests). Separate Requests loads each image via an individual AJAX call "
+"(legacy method)."
+msgstr ""
+
 #: includes/section/settings/botblocker-set-notif.php:99
 msgid "Choose how often to receive regular status reports and summaries."
 msgstr ""
@@ -1371,17 +1381,17 @@ msgstr ""
 msgid "Choose how to treat this IP / subnet."
 msgstr ""
 
-#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:11
+#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:12
 msgid "Choose the behavior for blocked access and keep your admin area safe."
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:97
+#: includes/section/settings/botblocker-set-captcha.php:113
 msgid ""
 "Choose the set of images displayed in the image captcha. Different packs "
 "include animal themes to make verification engaging and unique."
 msgstr ""
 
-#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:45
+#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:46
 msgid "Choose what happens when someone tries to access the default login URL."
 msgstr ""
 
@@ -1480,7 +1490,7 @@ msgstr ""
 #: includes/modal/modal-botblocker-setup-wizard.php:13
 #: includes/modal/modal-botblocker-white-add.php:82
 #: includes/modal/modal-botblocker-white-edit.php:83
-#: includes/utilites/util-botblocker-support.php:25
+#: includes/utilites/util-botblocker-support.php:27
 msgid "Close"
 msgstr ""
 
@@ -1605,9 +1615,9 @@ msgstr ""
 msgid "Comment (optional)"
 msgstr ""
 
-#: addons/bbcs-speedup/inc/bbcs-speedup-core.php:82
-#: addons/bbcs-speedup/inc/bbcs-speedup-core.php:278
-#: addons/bbcs-speedup/inc/bbcs-speedup-core.php:282
+#: addons/bbcs-speedup/inc/bbcs-speedup-core.php:83
+#: addons/bbcs-speedup/inc/bbcs-speedup-core.php:279
+#: addons/bbcs-speedup/inc/bbcs-speedup-core.php:283
 msgid "Comments are disabled."
 msgstr ""
 
@@ -1696,8 +1706,8 @@ msgstr ""
 msgid "Confirm and activate"
 msgstr ""
 
-#: public/captcha/render-recaptcha-with-button-trait.php:36
-#: public/captcha/render-recaptcha-without-button-trait.php:12
+#: public/captcha/render-recaptcha-with-button-trait.php:37
+#: public/captcha/render-recaptcha-without-button-trait.php:13
 #: public/captcha/render-simple-button-trait.php:16
 msgid "Confirm that you are human:"
 msgstr ""
@@ -1730,7 +1740,7 @@ msgstr ""
 msgid "Connect"
 msgstr ""
 
-#: includes/inc-botblocker-ui.php:272
+#: includes/inc-botblocker-ui.php:266
 msgid "Connect Cloud API now!"
 msgstr ""
 
@@ -1874,7 +1884,7 @@ msgstr ""
 msgid "Countries list"
 msgstr ""
 
-#: includes/inc-botblocker-shortcode.php:201
+#: includes/inc-botblocker-shortcode.php:195
 #: includes/modal/modal-botblocker-hits-add-rule.php:28
 #: includes/modal/modal-botblocker-rule-add.php:35
 #: includes/modal/modal-botblocker-rule-edit.php:31
@@ -1946,11 +1956,11 @@ msgstr ""
 msgid "cURL command:"
 msgstr ""
 
-#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:34
+#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:35
 msgid "Custom Login URL"
 msgstr ""
 
-#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:60
+#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:61
 msgid "Custom message shown when login is disabled."
 msgstr ""
 
@@ -2034,7 +2044,7 @@ msgstr ""
 msgid "Date"
 msgstr ""
 
-#: includes/inc-botblocker-shortcode.php:199
+#: includes/inc-botblocker-shortcode.php:193
 msgid "Date/Time"
 msgstr ""
 
@@ -2085,7 +2095,7 @@ msgstr ""
 msgid "delete"
 msgstr ""
 
-#: includes/utilites/util-botblocker-support.php:47
+#: includes/utilites/util-botblocker-support.php:49
 msgid "Describe your question"
 msgstr ""
 
@@ -2117,7 +2127,7 @@ msgid ""
 "Detects if JS execution failed or was disabled. Browsers always run basic JS."
 msgstr ""
 
-#: includes/inc-botblocker-shortcode.php:203
+#: includes/inc-botblocker-shortcode.php:197
 msgid "Device"
 msgstr ""
 
@@ -2196,7 +2206,7 @@ msgstr ""
 msgid "disabled"
 msgstr ""
 
-#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:44
+#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:45
 msgid "Disabled Behavior"
 msgstr ""
 
@@ -2238,7 +2248,7 @@ msgstr ""
 msgid "Documentation"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:105
+#: includes/section/settings/botblocker-set-captcha.php:121
 msgid "Dog"
 msgstr ""
 
@@ -2329,7 +2339,7 @@ msgid ""
 "support from BotBlocker."
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:102
+#: includes/section/settings/botblocker-set-captcha.php:118
 msgid "Eagle"
 msgstr ""
 
@@ -2372,16 +2382,16 @@ msgid ""
 "                proceeds while junk is dropped as early as possible."
 msgstr ""
 
-#: includes/inc-botblocker-ui.php:152
+#: includes/inc-botblocker-ui.php:146
 msgid "Early initialization disabled. Enable it for earlier IP filtering."
 msgstr ""
 
-#: includes/inc-botblocker-ui.php:149
+#: includes/inc-botblocker-ui.php:143
 msgid ""
 "Early initialization disabled: its functions are handled by active MU plugin."
 msgstr ""
 
-#: includes/inc-botblocker-ui.php:146
+#: includes/inc-botblocker-ui.php:140
 msgid ""
 "Early initialization enabled: IP blacklist and base rule filtering runs "
 "before WordPress loads. MU mode not required."
@@ -2444,7 +2454,7 @@ msgstr ""
 msgid "Edit White Bot"
 msgstr ""
 
-#: includes/utilites/util-botblocker-support.php:41
+#: includes/utilites/util-botblocker-support.php:43
 #: includes/section/settings/botblocker-set-notif.php:37
 msgid "Email"
 msgstr ""
@@ -2683,7 +2693,7 @@ msgstr ""
 msgid "English"
 msgstr ""
 
-#: includes/inc-botblocker-ui.php:236
+#: includes/inc-botblocker-ui.php:230
 msgid ""
 "Enhance speed, security and user experience with official BotBlocker add-ons."
 msgstr ""
@@ -2760,7 +2770,7 @@ msgid ""
 "installations."
 msgstr ""
 
-#: includes/utilites/util-botblocker-support.php:42
+#: includes/utilites/util-botblocker-support.php:44
 msgid "Enter your email"
 msgstr ""
 
@@ -2789,7 +2799,7 @@ msgid ""
 "protection by analyzing user interactions across your website."
 msgstr ""
 
-#: includes/utilites/util-botblocker-support.php:37
+#: includes/utilites/util-botblocker-support.php:39
 msgid "Enter your name"
 msgstr ""
 
@@ -2905,7 +2915,7 @@ msgstr ""
 msgid "Export your current BotBlocker settings and data."
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:126
+#: includes/section/settings/botblocker-set-captcha.php:142
 msgid "Extended Captcha Check"
 msgstr ""
 
@@ -2953,7 +2963,7 @@ msgstr ""
 msgid "Fetches the API keys from the BotBlocker cloud."
 msgstr ""
 
-#: public/captcha/render-moving-shapes-button-trait.php:64
+#: public/captcha/render-moving-shapes-button-trait.php:67
 msgid "Find the shape:"
 msgstr ""
 
@@ -3127,8 +3137,8 @@ msgstr ""
 msgid "Go to the built-in WordPress tool for diagnosing issues"
 msgstr ""
 
-#: public/captcha/render-recaptcha-with-button-trait.php:14
-#: public/captcha/render-recaptcha-with-button-trait.php:23
+#: public/captcha/render-recaptcha-with-button-trait.php:15
+#: public/captcha/render-recaptcha-with-button-trait.php:24
 msgid "Go to website"
 msgstr ""
 
@@ -3198,7 +3208,7 @@ msgid "Guided"
 msgstr ""
 
 #: addons/bbcs-early-init/inc/bbcs-early-init-settings.php:17
-#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:15
+#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:16
 msgid "Hardening WordPress"
 msgstr ""
 
@@ -3278,11 +3288,11 @@ msgstr ""
 msgid "Hold the button and release in the green zone"
 msgstr ""
 
-#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:51
+#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:52
 msgid "Home Page"
 msgstr ""
 
-#: addons/bbcs-speedup/inc/bbcs-speedup-core.php:214
+#: addons/bbcs-speedup/inc/bbcs-speedup-core.php:215
 msgid "homepage"
 msgstr ""
 
@@ -3290,7 +3300,7 @@ msgstr ""
 msgid "Homepage Access"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:103
+#: includes/section/settings/botblocker-set-captcha.php:119
 msgid "Horse"
 msgstr ""
 
@@ -3392,7 +3402,8 @@ msgstr ""
 msgid "If you are human, click on the similar color"
 msgstr ""
 
-#: public/captcha/render-image-button-trait.php:73
+#: public/captcha/render-image-button-trait.php:99
+#: public/captcha/render-image-button-trait.php:109
 msgid "If you are human, click on the similar image"
 msgstr ""
 
@@ -3432,8 +3443,12 @@ msgstr ""
 msgid "iFrame"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:94
+#: includes/section/settings/botblocker-set-captcha.php:110
 msgid "Image Captcha Pack:"
+msgstr ""
+
+#: includes/section/settings/botblocker-set-captcha.php:94
+msgid "Image Delivery Mode:"
 msgstr ""
 
 #: admin/class-botblocker-setup-wizard.php:659
@@ -3553,6 +3568,10 @@ msgstr ""
 msgid "Initialization:"
 msgstr ""
 
+#: includes/section/settings/botblocker-set-captcha.php:102
+msgid "Inline Base64 (Recommended)"
+msgstr ""
+
 #: admin/partials/botblocker-admin-display-addons.php:69
 #: admin/partials/botblocker-admin-display-addons.php:72
 msgid "Install"
@@ -3602,7 +3621,7 @@ msgstr ""
 msgid "Invalid data parameter."
 msgstr ""
 
-#: includes/utilites/util-botblocker-support.php:116
+#: includes/utilites/util-botblocker-support.php:118
 msgid "Invalid email address"
 msgstr ""
 
@@ -3627,7 +3646,7 @@ msgstr ""
 msgid "IP / Subnet"
 msgstr ""
 
-#: includes/inc-botblocker-shortcode.php:200
+#: includes/inc-botblocker-shortcode.php:194
 #: includes/modal/modal-botblocker-rule-ipv4-add.php:27
 #: includes/modal/modal-botblocker-rule-ipv4-edit.php:28
 #: includes/modal/modal-botblocker-rule-ipv6-add.php:27
@@ -3722,7 +3741,7 @@ msgstr ""
 msgid "JS Info"
 msgstr ""
 
-#: includes/inc-botblocker-shortcode.php:202
+#: includes/inc-botblocker-shortcode.php:196
 #: includes/modal/modal-botblocker-hits-add-rule.php:25
 #: includes/modal/modal-botblocker-rule-add.php:28
 #: includes/modal/modal-botblocker-rule-edit.php:25
@@ -3758,7 +3777,7 @@ msgstr ""
 msgid "Lng"
 msgstr ""
 
-#: public/captcha/render-recaptcha-with-button-trait.php:37
+#: public/captcha/render-recaptcha-with-button-trait.php:38
 #: includes/botblocker/traits/class-botblocker-check-page-trait.php:86
 msgid "Loading..."
 msgstr ""
@@ -3862,7 +3881,7 @@ msgstr ""
 msgid "Login Page"
 msgstr ""
 
-#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:21
+#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:22
 msgid "Login URL"
 msgstr ""
 
@@ -3953,11 +3972,11 @@ msgid ""
 "visitors"
 msgstr ""
 
-#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:59
+#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:60
 msgid "Message"
 msgstr ""
 
-#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:49
+#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:50
 msgid "Message (Default)"
 msgstr ""
 
@@ -3995,7 +4014,7 @@ msgstr ""
 msgid "Move the slider to adjust the threshold level"
 msgstr ""
 
-#: includes/inc-botblocker-ui.php:147
+#: includes/inc-botblocker-ui.php:141
 msgid ""
 "MU mode disabled: early initialization already performs pre-filtering; "
 "enabling MU is unnecessary."
@@ -4006,7 +4025,7 @@ msgstr ""
 msgid "MU plugin"
 msgstr ""
 
-#: includes/inc-botblocker-ui.php:150
+#: includes/inc-botblocker-ui.php:144
 msgid ""
 "MU plugin active: early IP and rule filtering runs before other plugins. "
 "Early initialization not required."
@@ -4016,7 +4035,7 @@ msgstr ""
 msgid "MU Plugin Mode"
 msgstr ""
 
-#: includes/inc-botblocker-ui.php:153
+#: includes/inc-botblocker-ui.php:147
 msgid ""
 "MU plugin mode disabled. You can enable it (or early initialization) for "
 "preliminary malicious IP rejection."
@@ -4026,7 +4045,7 @@ msgstr ""
 msgid "My PRO status"
 msgstr ""
 
-#: includes/utilites/util-botblocker-support.php:36
+#: includes/utilites/util-botblocker-support.php:38
 msgid "Name"
 msgstr ""
 
@@ -4081,7 +4100,7 @@ msgid "No data available for the specified period."
 msgstr ""
 
 #: includes/inc-botblocker-shortcode.php:23
-#: includes/inc-botblocker-shortcode.php:191
+#: includes/inc-botblocker-shortcode.php:185
 #: includes/shortcode/botblocker-shortcode-health.php:280
 msgid "No data available."
 msgstr ""
@@ -4240,7 +4259,7 @@ msgstr ""
 msgid "Order of execution"
 msgstr ""
 
-#: includes/inc-botblocker-shortcode.php:204
+#: includes/inc-botblocker-shortcode.php:198
 #: includes/shortcode/charts/chart-botblocker-stat.php:69
 msgid "OS"
 msgstr ""
@@ -4419,7 +4438,7 @@ msgid "Privacy policy"
 msgstr ""
 
 #: includes/modal/modal-botblocker-setup-wizard.php:88
-#: includes/utilites/util-botblocker-support.php:60
+#: includes/utilites/util-botblocker-support.php:62
 msgid "PRO"
 msgstr ""
 
@@ -4501,7 +4520,7 @@ msgstr ""
 msgid "Protect"
 msgstr ""
 
-#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:10
+#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:11
 msgid "Protect default login endpoints and use a custom login URL."
 msgstr ""
 
@@ -4573,7 +4592,7 @@ msgstr ""
 msgid "Query string"
 msgstr ""
 
-#: includes/utilites/util-botblocker-support.php:46
+#: includes/utilites/util-botblocker-support.php:48
 msgid "Question"
 msgstr ""
 
@@ -4589,7 +4608,7 @@ msgstr ""
 msgid "Quick Start Guide"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:104
+#: includes/section/settings/botblocker-set-captcha.php:120
 msgid "Raccoon"
 msgstr ""
 
@@ -4700,11 +4719,11 @@ msgstr ""
 msgid "Red"
 msgstr ""
 
-#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:52
+#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:53
 msgid "Redirect"
 msgstr ""
 
-#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:69
+#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:70
 msgid "Redirect URL"
 msgstr ""
 
@@ -4968,7 +4987,7 @@ msgstr ""
 msgid "Roles with 2FA"
 msgstr ""
 
-#: addons/bbcs-speedup/inc/bbcs-speedup-core.php:213
+#: addons/bbcs-speedup/inc/bbcs-speedup-core.php:214
 msgid "RSS feeds are disabled. Please visit the "
 msgstr ""
 
@@ -5129,7 +5148,7 @@ msgid "Secondary time ban enabled"
 msgstr ""
 
 #: includes/botblocker/traits/class-botblocker-block-page-trait.php:30
-#: includes/botblocker/traits/class-botblocker-response-trait.php:218
+#: includes/botblocker/traits/class-botblocker-response-trait.php:220
 msgid "Seconds left until the unlock:"
 msgstr ""
 
@@ -5283,7 +5302,7 @@ msgid "Self-test completed successfully! Check your log."
 msgstr ""
 
 #: admin/class-botblocker-admin.php:113
-#: includes/utilites/util-botblocker-support.php:50
+#: includes/utilites/util-botblocker-support.php:52
 msgid "Send"
 msgstr ""
 
@@ -5309,7 +5328,7 @@ msgstr ""
 msgid "Send Vary: Cookie Header"
 msgstr ""
 
-#: includes/utilites/util-botblocker-support.php:132
+#: includes/utilites/util-botblocker-support.php:134
 msgid "Sending failed. Please try again later."
 msgstr ""
 
@@ -5325,11 +5344,15 @@ msgstr ""
 msgid "SEO bots whitelist management"
 msgstr ""
 
+#: includes/section/settings/botblocker-set-captcha.php:103
+msgid "Separate Requests (Legacy)"
+msgstr ""
+
 #: includes/section/about/botblocker-about-status.php:33
 msgid "Server OS"
 msgstr ""
 
-#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:35
+#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:36
 msgid "Set a custom login URL to hide wp-login.php."
 msgstr ""
 
@@ -5395,7 +5418,7 @@ msgid ""
 "all hits for viewing stats."
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:115
+#: includes/section/settings/botblocker-set-captcha.php:131
 msgid ""
 "Set the time limit for completing the captcha. Users need to verify within "
 "this duration to avoid re-verification."
@@ -5519,7 +5542,7 @@ msgstr ""
 msgid "Software versions"
 msgstr ""
 
-#: public/captcha/render-animated-math-expression-trait.php:58
+#: public/captcha/render-animated-math-expression-trait.php:65
 msgid "Solve the following:"
 msgstr ""
 
@@ -5534,7 +5557,7 @@ msgid ""
 msgstr ""
 
 #: includes/botblocker/traits/class-botblocker-denied-page-trait.php:12
-#: includes/botblocker/traits/class-botblocker-response-trait.php:159
+#: includes/botblocker/traits/class-botblocker-response-trait.php:161
 msgid "Sorry, your request has been denied"
 msgstr ""
 
@@ -5656,8 +5679,8 @@ msgstr ""
 msgid "Subscription status"
 msgstr ""
 
-#: includes/utilites/util-botblocker-support.php:16
-#: includes/utilites/util-botblocker-support.php:24
+#: includes/utilites/util-botblocker-support.php:18
+#: includes/utilites/util-botblocker-support.php:26
 msgid "Support"
 msgstr ""
 
@@ -5920,19 +5943,23 @@ msgstr ""
 msgid "Tools"
 msgstr ""
 
-#: includes/inc-botblocker-shortcode.php:143
+#. %d is the number of top browsers to display.
+#: includes/inc-botblocker-shortcode.php:132
 msgid "Top-%d browsers"
 msgstr ""
 
-#: includes/inc-botblocker-shortcode.php:91
+#. %d is the number of top countries to display.
+#: includes/inc-botblocker-shortcode.php:86
 msgid "Top-%d countries"
 msgstr ""
 
-#: includes/inc-botblocker-shortcode.php:117
+#. %d is the number of top devices to display.
+#: includes/inc-botblocker-shortcode.php:109
 msgid "Top-%d devices"
 msgstr ""
 
-#: includes/inc-botblocker-shortcode.php:65
+#. %d is the number of top IP addresses to display.
+#: includes/inc-botblocker-shortcode.php:63
 msgid "Top-%d IPs"
 msgstr ""
 
@@ -6126,7 +6153,7 @@ msgstr ""
 msgid "URI"
 msgstr ""
 
-#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:70
+#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:71
 msgid "URL to redirect to when someone tries to access the default login URL."
 msgstr ""
 
@@ -6389,7 +6416,7 @@ msgid ""
 "server load."
 msgstr ""
 
-#: public/captcha/render-moving-shapes-button-trait.php:66
+#: public/captcha/render-moving-shapes-button-trait.php:69
 msgid "with color:"
 msgstr ""
 
@@ -6493,7 +6520,7 @@ msgstr ""
 msgid "WP-cron"
 msgstr ""
 
-#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:28
+#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:29
 msgid ""
 "WPS Hide Login is active and managing your login URL. You can turn it off to "
 "unlock and use the customization options below."
@@ -6640,11 +6667,11 @@ msgstr ""
 msgid "Your IP address will be permanently trusted"
 msgstr ""
 
-#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:26
+#: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:27
 msgid "Your login URL is already customized."
 msgstr ""
 
-#: includes/utilites/util-botblocker-support.php:135
+#: includes/utilites/util-botblocker-support.php:137
 msgid "Your request has been sent successfully!"
 msgstr ""
 

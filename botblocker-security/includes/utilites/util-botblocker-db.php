@@ -107,18 +107,20 @@ function bbcs_getIPNotLikeSQL()
 {
     $BBCS = BotBlocker::getInstance();
     if (empty($BBCS->self_ips) || !is_array($BBCS->self_ips)) {
-        return '';
+        return ['', []];
     }
-
-	$ips = [];
-
-	foreach ($BBCS->self_ips as $ip => $status) {
-		if ($status === 'allow') {
-			$ips[] = "'$ip'";
-		}
-	}
-
-	return ' AND ip NOT IN ( ' . implode(', ', $ips) . ' )';
+    $ips = [];
+    foreach ($BBCS->self_ips as $ip => $status) {
+        if ($status === 'allow') {
+            $ips[] = $ip;
+        }
+    }
+    if (empty($ips)) {
+        return ['', []];
+    }
+    $placeholders = implode(', ', array_fill(0, count($ips), '%s'));
+    $fragment = " AND ip NOT IN ( $placeholders )";
+    return [$fragment, $ips];
 }
 
 function bbcs_generateAllFilesFromDb(): bool

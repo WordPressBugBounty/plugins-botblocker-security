@@ -376,6 +376,27 @@ private function render_wizard_content() {
 								<span><?php esc_html_e('Safe defaults: works with WooCommerce, Elementor and most caches', 'botblocker-security'); ?></span>
 							</div>
 						</div>
+
+						<?php if ((int) get_option('bbcs_contact_email_collected', 0) !== 1) : ?>
+						<section class="bbcs-email-card">
+							<h3 class="bbcs-email-card-title">
+								<?php esc_html_e('Security Updates & Offers', 'botblocker-security'); ?>
+							</h3>
+							<div class="bbcs-email-card-form">
+								<input
+									id="bbcs-wizard-contact-email"
+									class="form-control"
+									value="<?php echo bbcs_getsupportData(); ?>"
+									placeholder="you@example.com"
+									autocomplete="email"
+								>
+								<p class="bbcs-email-card-hint">
+									<?php esc_html_e('To receive important security news and special offers.', 'botblocker-security'); ?>
+								</p>
+							</div>
+						</section>
+						<?php endif; ?>
+						
 						<div class="bbcs-wizard-actions">
 							<button class="btn btn-primary bbcs-wizard-next" data-next-step="1">
 								<?php esc_html_e('Start setup', 'botblocker-security'); ?>
@@ -1345,6 +1366,12 @@ private function render_wizard_content() {
 		
 		if (!current_user_can('manage_options')) {
 			wp_send_json_error('No permission');
+		}
+
+		$contact_email = isset($_POST['contact_email']) ? sanitize_email(wp_unslash($_POST['contact_email'])) : '';
+		if (!empty($contact_email) && is_email($contact_email)) {
+			update_option('bbcs_contact_email_collected', 1);
+			bbcs_send_activation_to_cloud($contact_email);
 		}
 		
 		// Отметить что визард завершен
