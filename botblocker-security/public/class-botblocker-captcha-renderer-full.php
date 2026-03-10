@@ -161,7 +161,9 @@ class BotBlockerCaptchaRendererFull {
         imagefill($imageForCheck, 0, 0, $color_code[$color]);
         ob_start();
         imagepng($imageForCheck);
-        imagedestroy($imageForCheck);
+        if (PHP_VERSION_ID < 80000) {
+            imagedestroy($imageForCheck);
+        }
         $image_data = ob_get_contents();
         ob_end_clean();
 
@@ -222,7 +224,9 @@ class BotBlockerCaptchaRendererFull {
         ob_start();
         imagepng($image_for_check);
         $image_data = ob_get_contents();
-        imagedestroy($image_for_check);
+        if (PHP_VERSION_ID < 80000) {
+            imagedestroy($image_for_check);
+        }
         ob_end_clean();
 
         $target_b64 = base64_encode($image_data);

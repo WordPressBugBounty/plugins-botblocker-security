@@ -37,7 +37,9 @@ trait BBCS_RenderColorButtonTrait {
             }
             ob_start();
             imagepng($img);
-            imagedestroy($img);
+            if (PHP_VERSION_ID < 80000) {
+                imagedestroy($img);
+            }
             $btnImgData = base64_encode(ob_get_clean());
 
             $buttonData[] = [
@@ -54,7 +56,9 @@ trait BBCS_RenderColorButtonTrait {
         imagefill($targetImg, 0, 0, $tc);
         ob_start();
         imagepng($targetImg);
-        imagedestroy($targetImg);
+        if (PHP_VERSION_ID < 80000) {
+            imagedestroy($targetImg);
+        }
         $targetImgData = base64_encode(ob_get_clean());
 
         return [

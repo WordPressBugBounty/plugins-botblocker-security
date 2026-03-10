@@ -88,7 +88,9 @@ trait BBCS_RenderImageButtonTrait {
 		ob_start();
 		imagepng( $image_for_check );
 		$image_data = ob_get_contents();
-		imagedestroy( $image_for_check );
+		if ( PHP_VERSION_ID < 80000 ) {
+			imagedestroy( $image_for_check );
+		}
 		ob_end_clean();
 
 		if ( $inline_mode === 1 ) {

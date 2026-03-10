@@ -97,6 +97,22 @@ if ($BBCS->settings->utm_referrer == 1 and $BBCS->referer != '') {
  
     bbcsDebugLog('<?php echo esc_js(BOTBLOCKER_SHORT_NAME); ?> v.<?php echo esc_js($BBCS->version); ?>');
 
+    var bbcsDdosRetryCount = 0;
+    var bbcsDdosMaxRetries = 2;
+
+    function bbcs_extractDdosCookie(responseText) {
+        if (!responseText) return false;
+        if (responseText.indexOf('document.cookie') !== -1 && responseText.indexOf('<script') !== -1) {
+            var cookieMatch = responseText.match(/document\.cookie\s*=\s*"([^"]+)"/);
+            if (cookieMatch && cookieMatch[1]) {
+                bbcsDebugLog('DDoS protection response detected, setting cookie and retrying');
+                document.cookie = cookieMatch[1];
+                return true;
+            }
+        }
+        return false;
+    }
+
     function bbcs_detectAll() {
         const results = {
             navigatorMismatch: bbcs_detectNavigatorMismatch(),
@@ -171,7 +187,7 @@ if ($BBCS->settings->utm_referrer == 1 and $BBCS->referer != '') {
       <?php if ($BBCS->settings->recaptcha_check == 1 && !empty($BBCS->settings->recaptcha_key3)) { ?>
         grecaptcha.ready(function() {
           grecaptcha.execute('<?php echo esc_js($BBCS->settings->recaptcha_key3); ?>', {
-            action: '<?php echo esc_js($BBCS->country); ?>'
+            action: '<?php echo esc_js(preg_replace('/[^A-Za-z0-9\/_]/', '_', $BBCS->country)); ?>'
           }).then(function(token) {
             rct = token; 
             resolve('HWS');
@@ -351,12 +367,26 @@ if ($BBCS->settings->utm_referrer == 1 and $BBCS->referer != '') {
                 }
             } catch (e) {
                 bbcsDebugError('Error parsing JSON:', e);
-                bbcsDebugLog('Response text received:', xhr.responseText); 
+                bbcsDebugLog('Response text received:', xhr.responseText);
+                if (bbcsDdosRetryCount < bbcsDdosMaxRetries && bbcs_extractDdosCookie(xhr.responseText)) {
+                    bbcsDdosRetryCount++;
+                    setTimeout(function() {
+                        <?php echo esc_js($botblocker_check_function_name); ?>(s, d, x);
+                    }, 1000);
+                    return;
+                }
                 botblocker_captcha_render(); 
             }
 
         } else {
             bbcsDebugLog('Error: ' + xhr.status);
+            if (bbcsDdosRetryCount < bbcsDdosMaxRetries && bbcs_extractDdosCookie(xhr.responseText)) {
+                bbcsDdosRetryCount++;
+                setTimeout(function() {
+                    <?php echo esc_js($botblocker_check_function_name); ?>(s, d, x);
+                }, 1000);
+                return;
+            }
             botblocker_captcha_render(); 
         }
     };

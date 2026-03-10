@@ -5,14 +5,30 @@ if (! defined('ABSPATH')) exit;
 /**
  * Two-Factor Authentication (2FA) with Google Authenticator
  * 
+ * Conditionally loads Google2FA v8.0 (PHP < 8.1) or v9.0 (PHP >= 8.1)
+ * 
  * @package botblocker-security
- * @version 2.1
+ * @version 2.2
  */
 
-// Try to load local Composer autoloader for 2FA vendor packages if present.
-$bbcs_2fa_autoload = BOTBLOCKER_DIR . 'vendor/2FA/autoload.php';
+// Determine which version to load based on PHP version
+$bbcs_php_version = PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION;
+
+if (version_compare($bbcs_php_version, '8.1', '>=')) {
+    // PHP 8.1+: Load Google2FA v9.0
+    $bbcs_2fa_autoload = BOTBLOCKER_DIR . 'vendor/2FA/v9/autoload.php';
+} else {
+    // PHP < 8.1: Load Google2FA v8.0
+    $bbcs_2fa_autoload = BOTBLOCKER_DIR . 'vendor/2FA/v8/autoload.php';
+}
+
+// Load the appropriate version
 if (file_exists($bbcs_2fa_autoload)) {
     require_once $bbcs_2fa_autoload;
+} else {
+    // Log error for debugging
+    // error_log('BotBlocker: Google2FA autoload not found at ' . $bbcs_2fa_autoload);
+    // Continue running without 2FA fallback
 }
 
 global $wpdb;

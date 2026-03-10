@@ -72,6 +72,23 @@ trait BotBlockerResponseTrait {
         if (!defined('DONOTCACHEOBJECT')) define('DONOTCACHEOBJECT', true);
         if (!defined('DONOTCACHEDB'))     define('DONOTCACHEDB', true);
         // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
+
+        $this->register_wpfc_no_cache_filter();
+    }
+
+    /**
+     * Make WP Fastest Cache respect DONOTCACHEPAGE.
+     */
+    private function register_wpfc_no_cache_filter(): void {
+        if (defined('BBCS_WPFC_COMPAT')) return;
+        define('BBCS_WPFC_COMPAT', true);
+
+        add_filter('wpfc_buffer_callback_filter', static function ($buffer) {
+            if (defined('DONOTCACHEPAGE') && DONOTCACHEPAGE) {
+                return '';
+            }
+            return $buffer;
+        }, 1);
     }
 
     public function perform_check() : void

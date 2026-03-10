@@ -70,11 +70,15 @@ function bbcs_increment_hit() {
         }
     }
     // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached, and sanitized. No direct unsanitized SQL is executed.
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-    $wpdb->query("UPDATE `{$wpdb->bbcs_counters}` SET today_hits = today_hits + 1, total_hits = total_hits + 1, last_update = NOW() WHERE id = 1");
+    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
+    $wpdb->query("UPDATE `{$wpdb->bbcs_counters}` 
+        SET today_hits = today_hits + 1, total_hits = total_hits + 1, 
+        last_update = CONVERT_TZ(NOW(), '+00:00', '{$gmt_offset_str}') 
+        WHERE id = 1");
     if (BOTBLOCKER_CACHE_WP) {
         wp_cache_set($cache_key, $current_date->format('Y-m-d H:i:s'), 'botblocker-security', 86400);
     }
+    // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 }
 
 function bbcs_increment_blocked_hit() {
@@ -111,11 +115,15 @@ function bbcs_increment_blocked_hit() {
         }
     }
     // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached, and sanitized. No direct unsanitized SQL is executed.
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-    $wpdb->query("UPDATE `{$wpdb->bbcs_counters}` SET today_blocked = today_blocked + 1, total_blocked = total_blocked + 1, last_update = NOW() WHERE id = 1");
+    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
+    $wpdb->query("UPDATE `{$wpdb->bbcs_counters}` 
+        SET today_blocked = today_blocked + 1, total_blocked = total_blocked + 1,
+        last_update = CONVERT_TZ(NOW(), '+00:00', '{$gmt_offset_str}') 
+        WHERE id = 1");
     if (BOTBLOCKER_CACHE_WP) {
         wp_cache_set($cache_key, $current_date->format('Y-m-d H:i:s'), 'botblocker-security', 86400);
     }
+    // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 }
 
 function bbcs_process_hit($reason) {

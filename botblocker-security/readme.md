@@ -2,9 +2,9 @@
 Contributors: globusstudio, alukashevych, alexandrkinakh
 Tags: security, firewall, anti-spam, captcha, brute force
 Requires at least: 5.0
-Tested up to: 6.9
+Tested up to: 6.9.2
 Requires PHP: 7.4
-Stable tag: 1.6.13
+Stable tag: 1.6.14
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -75,7 +75,8 @@ BotBlocker's robust defense won't slow your site down - in fact, it often improv
 
 * **Lightweight & Fast** - negligible overhead in normal conditions. Reduces database and server load during attacks
 * **Built-in Caching** - Redis and Memcached support for high-traffic environments
-* **Cache Plugin Compatibility** - automatic `DONOTCACHEPAGE` + `Cache-Control: no-store` on verification pages. Works with WP Super Cache (PHP mode), W3 Total Cache, WP Rocket, LiteSpeed Cache, Hummingbird, and more. Server-level caches (Nginx FastCGI, Varnish, Cloudflare) may need a cookie-based bypass rule - see `CACHE-COMPATIBILITY.md`
+* **Cache Plugin Compatibility** - automatic `DONOTCACHEPAGE` + `Cache-Control: no-store` on verification pages. Works with WP Super Cache (PHP mode), W3 Total Cache, WP Rocket, LiteSpeed Cache, Hummingbird, and more. Server-level caches (Nginx FastCGI, Varnish, Cloudflare) may need a cookie-based bypass rule - see `docs/CACHE-COMPATIBILITY.md`
+* **DDoS Protection Compatibility** - automatic detection of JS-challenges from DDoS-Guard, Stormwall, and similar services. See `docs/DDOS-COMPATIBILITY.md` for advanced configuration
 * **Seamless Compatibility** - works with Cloudflare, CDN services, caching plugins, and optimizers
 * **Full IPv6 Support** - all security functions work with both IPv4 and IPv6
 * **Server Optimization** *(Premium Addon)* - additional performance enhancements for high-traffic sites
@@ -159,7 +160,7 @@ The **firewall/WAF** operates at the earliest stage - before WordPress loads - a
 
 = Does the plugin collect personal data? =
 
-BotBlocker does **not** collect any visitor PII - only technical request parameters (IP, headers, User-Agent) are analyzed locally. Full details are available in `PRIVACY.md` included with the plugin.
+BotBlocker does **not** collect any visitor PII - only technical request parameters (IP, headers, User-Agent) are analyzed locally. Full details are available in `docs/PRIVACY.md` included with the plugin.
 
 = Do I need an external service? =
 
@@ -169,9 +170,13 @@ No. Local protection works out of the box. **Cloud checks (PRO)** are optional a
 
 Yes. BotBlocker recognizes proxy headers to resolve the real client IP and can block origin bypass attempts. Fully compatible with Cloudflare and other CDN services.
 
+= Does BotBlocker work behind DDoS protection services (DDoS-Guard, Stormwall, etc.)? =
+
+Yes. Since version 1.6.13, BotBlocker automatically detects and handles simple JS-challenge responses from external DDoS protection services. For advanced challenges (Proof-of-Work, interactive CAPTCHA from the DDoS provider), add `/wp-admin/admin-ajax.php` to the challenge bypass list in your DDoS service control panel. See `docs/DDOS-COMPATIBILITY.md` included with the plugin for detailed configuration examples.
+
 = Does BotBlocker work with caching plugins? =
 
-Yes. BotBlocker automatically sets `DONOTCACHEPAGE` and `Cache-Control: no-store` headers on verification/denied pages, preventing PHP-based cache plugins from caching them. WP Super Cache (PHP mode), W3 Total Cache, WP Rocket, LiteSpeed Cache, and Hummingbird work out of the box. For server-level caches (Nginx FastCGI, Varnish) or WP Super Cache Expert (mod_rewrite) mode, add a cookie-based bypass rule - see `CACHE-COMPATIBILITY.md` included with the plugin. The MU-plugin phase also defines `DONOTCACHEPAGE` for visitors without a BotBlocker cookie.
+Yes. BotBlocker automatically sets `DONOTCACHEPAGE` and `Cache-Control: no-store` headers on verification/denied pages, preventing PHP-based cache plugins from caching them. WP Super Cache (PHP mode), W3 Total Cache, WP Rocket, LiteSpeed Cache, and Hummingbird work out of the box. For server-level caches (Nginx FastCGI, Varnish) or WP Super Cache Expert (mod_rewrite) mode, add a cookie-based bypass rule - see `docs/CACHE-COMPATIBILITY.md` included with the plugin. The MU-plugin phase also defines `DONOTCACHEPAGE` for visitors without a BotBlocker cookie.
 
 = Can I protect XML-RPC/REST API or login/comments? =
 
@@ -212,10 +217,17 @@ Use **Allowlist** for admin IPs/services and enable "allow server self-IP" so WP
 
 == Changelog ==
  
+= 1.6.14 =
+Add automatic DDoS protection service compatibility (DDoS-Guard, Stormwall, etc.)
+Add docs/DDOS-COMPATIBILITY.md documentation
+Update cache compatibility layer
+Update 2FA libraries
+Update translation files
+
 = 1.6.13 =
 Improve support for shared hosting environments with dynamic self-IP detection and allowlist management
 Improve statistics sammary generation
-Upadte browser detection
+Update browser detection
 Update OS detection
 Add privacy readme file
 Update translation files
@@ -232,7 +244,7 @@ Add new captcha type: hold button
 Add cache compatibility layer: no-cache headers, DONOTCACHEPAGE, MU-phase cookie check
 Add Vary: Cookie header option (Settings → Cookies → Cache Compatibility)
 Add cache plugin incompatibility detection and admin alerts
-Add CACHE-COMPATIBILITY.md with Nginx, Varnish, Apache, Cloudflare config examples
+Add docs/CACHE-COMPATIBILITY.md with Nginx, Varnish, Apache, Cloudflare config examples
 Add new security rules to block emerging threats
 Import data security improvements
 Update libraries and dependencies
