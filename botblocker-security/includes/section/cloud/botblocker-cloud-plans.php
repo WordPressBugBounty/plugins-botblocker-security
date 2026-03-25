@@ -9,22 +9,22 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                 // REVIEWER NOTE: This image is a static plugin asset, not a user-uploaded Media Library image.
                 // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage ?>
                 <img src="<?php echo esc_url(BOTBLOCKER_URL . 'public/icons/tarifs.svg'); ?>"
-                    alt="<?php esc_attr_e('GLOBUS.studio / BotBlocker API', 'botblocker-security'); ?>"
+                    alt="<?php esc_attr_e('BotBlocker subscription plans', 'botblocker-security'); ?>"
                     class="img-fluid bbcs-info-image mb-3">
 
                 <p class="bbcs-info-text">
-                    <?php esc_html_e('BotBlocker offers a variety of subscription plans tailored to different types of businesses. Whether you run a personal blog, a small online store, or a large corporate website, you will find a plan that fits your needs and budget.', 'botblocker-security'); ?>
+                    <?php esc_html_e('BotBlocker offers subscription plans for sites of any size — from personal blogs to large corporate websites.', 'botblocker-security'); ?>
                 </p>
                 <p class="bbcs-info-text">
-                    <?php esc_html_e('Each plan provides a unique set of features and protection levels, ensuring that every customer receives the right tools for their website. Choose the plan that best matches your requirements and enjoy reliable security and support from BotBlocker.', 'botblocker-security'); ?>
+                    <?php esc_html_e('Each plan includes a specific set of features and protection levels. Choose the one that matches your requirements.', 'botblocker-security'); ?>
                 </p>
 
                 <?php 
                 $BBCSA = class_exists('Botblocker_Admin') ? Botblocker_Admin::getInstance() : null; 
-                $bbcs_pages_cloud_api = $BBCSA && isset($BBCSA->pages_cloud_api) ? $BBCSA->pages_cloud_api : admin_url('admin.php?page=bbcs_cloud_api');
+                $bbcs_pages_cloud_api = $BBCSA && isset($BBCSA->pages_cloud_api) ? $BBCSA->pages_cloud_api : bbcs_admin_page_url('bbcs_cloud_api');
                 if ( function_exists('bbcs_isCloudAPIActive') && bbcs_isCloudAPIActive() ) : ?>
                     <div class="alert alert-success p-2 mb-3" style="font-size:11px; line-height:14px;">
-                        <strong><?php esc_html_e('PRO active:', 'botblocker-security'); ?></strong> <?php esc_html_e('Thank you for supporting BotBlocker. Manage your subscription details below.', 'botblocker-security'); ?>
+                        <strong><?php esc_html_e('PRO active:', 'botblocker-security'); ?></strong> <?php esc_html_e('Manage your subscription details below.', 'botblocker-security'); ?>
                         <a class="ms-1 bbcs-simple-link" href="<?php echo esc_url( $bbcs_pages_cloud_api . '#cloud-status'); ?>">
                             <?php esc_html_e('Subscription status', 'botblocker-security'); ?>
                         </a>
@@ -40,7 +40,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                     <a href="<?php echo esc_url(BOTBLOCKER_DOCS_URL)?>/botblocker-free-vs-pro-which-version-to-choose/" target="_blank" 
                     class="bbcs-info-footer-a"><?php esc_html_e('Free vs PRO', 'botblocker-security'); ?></a>  
                     <a href="<?php echo esc_url(BOTBLOCKER_DOCS_URL)?>/complete-list-of-botblocker-features/" target="_blank" 
-                    class="bbcs-info-footer-a"><?php esc_html_e('Botblocker Features', 'botblocker-security'); ?></a>  
+                    class="bbcs-info-footer-a"><?php esc_html_e('BotBlocker Features', 'botblocker-security'); ?></a>  
                     <a href="<?php echo esc_url(BOTBLOCKER_DOCS_URL)?>/how-botblocker-pros-cloud-verification-defeats-bots/" target="_blank" 
                     class="bbcs-info-footer-a"><?php esc_html_e('BotBlocker PRO', 'botblocker-security'); ?></a>
                     

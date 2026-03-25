@@ -13,10 +13,10 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 					class="img-fluid bbcs-info-image mb-3">
 
 				<p class="bbcs-info-text">
-					<?php esc_html_e('Simple bot detection provides the first line of defense against automated threats by analyzing basic request characteristics that legitimate browsers always include. These fundamental checks catch the majority of simple bots and scrapers that fail to properly mimic real browser behavior.', 'botblocker-security'); ?>
+					<?php esc_html_e('Simple bot detection analyzes basic browser characteristics to catch bots that fail to mimic real browsers.', 'botblocker-security'); ?>
 				</p>
 				<p class="bbcs-info-text">
-					<?php esc_html_e('Each detection method targets specific bot weaknesses: missing headers that browsers always send, JavaScript execution failures, geographic inconsistencies, and malformed user agent strings. Enable these options based on your site\'s needs while considering that legitimate users with disabilities or privacy tools may occasionally trigger false positives.', 'botblocker-security'); ?>
+					<?php esc_html_e('Each method targets a specific bot weakness. Some privacy tools may trigger false positives.', 'botblocker-security'); ?>
 				</p>
 				<hr class="bbcs-info-hr">
 				<div class="bbcs-info-footer">
@@ -45,7 +45,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 				<i class="fa-regular fa-circle-question"
 					data-bs-toggle="tooltip" data-bs-html="true" 
 					data-bs-placement="top"
-					data-bs-original-title="<?php esc_attr_e('Blocks requests with missing User-Agent header. Never set by real browsers.', 'botblocker-security'); ?>">
+					data-bs-original-title="<?php esc_attr_e('Block requests with missing User-Agent header.', 'botblocker-security'); ?>">
 				</i>
 			</div>
 
@@ -58,7 +58,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 				<i class="fa-regular fa-circle-question"
 					data-bs-toggle="tooltip" data-bs-html="true" 
 					data-bs-placement="top"
-					data-bs-original-title="<?php esc_attr_e('Matches known anti-detect or malformed User-Agent patterns.', 'botblocker-security'); ?>">
+					data-bs-original-title="<?php esc_attr_e('Block known anti-detect and malformed User-Agent strings.', 'botblocker-security'); ?>">
 				</i>
 			</div>
 
@@ -71,7 +71,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 				<i class="fa-regular fa-circle-question"
 					data-bs-toggle="tooltip" data-bs-html="true" 
 					data-bs-placement="top"
-					data-bs-original-title="<?php esc_attr_e('Blocks requests without an Accept-Language header; common in automated scripts.', 'botblocker-security'); ?>">
+					data-bs-original-title="<?php esc_attr_e('Block requests with missing Accept-Language header.', 'botblocker-security'); ?>">
 				</i>
 			</div>
 
@@ -84,7 +84,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 				<i class="fa-regular fa-circle-question"
 					data-bs-toggle="tooltip" data-bs-html="true" 
 					data-bs-placement="top"
-					data-bs-original-title="<?php esc_attr_e('Detects if JS execution failed or was disabled. Browsers always run basic JS.', 'botblocker-security'); ?>">
+					data-bs-original-title="<?php esc_attr_e('Block visitors without JavaScript support.', 'botblocker-security'); ?>">
 				</i>
 			</div>
 
@@ -94,11 +94,11 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 					<span class="bbcs_label_input_checkbox"><?php esc_html_e('Fake Referer', 'botblocker-security'); ?></span>
 				</div>
 				<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top"
-					data-bs-original-title="<?php esc_attr_e('Blocks requests with obviously spoofed Referer headers.', 'botblocker-security'); ?>">
+					data-bs-original-title="<?php esc_attr_e('Block requests with spoofed Referer headers.', 'botblocker-security'); ?>">
 				</i>
 			</div>
 
-		<h3 class="bbcs_settings_h3"><?php esc_html_e('PTR options', 'botblocker-security'); ?></h3>
+		<h3 class="bbcs_settings_h3"><?php esc_html_e('PTR Options', 'botblocker-security'); ?></h3>
 			<div class="bbcs_checkbox_input mb-2">
 				<div class="bbcs_label_checkbox_box">
 					<input type="checkbox" name="block_ip_ptr_match" class="bbcs_checkbox_input_input" value="1"
@@ -108,10 +108,10 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 				<i class="fa-regular fa-circle-question"
 					data-bs-toggle="tooltip" data-bs-html="true" 
 					data-bs-placement="top"
-					data-bs-original-title="<?php esc_attr_e('Bans IPs whose forward/reverse DNS entries don\'t align-common for suspicious hosts. Block IP = PTR', 'botblocker-security'); ?>">
+					data-bs-original-title="<?php esc_attr_e('Block IPs where forward and reverse DNS records don&#39;t match.', 'botblocker-security'); ?>">
 				</i>
 			</div>
-		<h3 class="bbcs_settings_h3"><?php esc_html_e('Extra options', 'botblocker-security'); ?></h3>
+		<h3 class="bbcs_settings_h3"><?php esc_html_e('Extra Options', 'botblocker-security'); ?></h3>
 			<div class="bbcs_checkbox_input mb-2">
 				<div class="bbcs_label_checkbox_box">
 					<input type="checkbox" name="block_incorrect_lang_users" class="bbcs_checkbox_input_input" value="1"
@@ -121,7 +121,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 				<i class="fa-regular fa-circle-question"
 					data-bs-toggle="tooltip" data-bs-html="true" 
 					data-bs-placement="top"
-					data-bs-original-title="<?php esc_attr_e('Compares browser language to GeoIP; large discrepancies often signal a bot. Use this option with caution.', 'botblocker-security'); ?>">
+					data-bs-original-title="<?php esc_attr_e('Flag visitors whose browser language doesn&#39;t match their GeoIP location. May affect travelers and VPN users.', 'botblocker-security'); ?>">
 				</i>
 			</div>
 

@@ -66,18 +66,18 @@ function bbcs_register_custom_dashboard_widgets(): void
 	if (defined('BOTBLOCKER_DISPLAY_NEWS') && BOTBLOCKER_DISPLAY_NEWS) {
 		wp_add_dashboard_widget(
 			'bbcs_news_widget',
-			'BotBlocker news',
+			__('BotBlocker News', 'botblocker-security'),
 			'bbcs_display_news_widget'
 		);
 	}
 	wp_add_dashboard_widget(
 		'custom_stats_widget',
-		'BotBlocker Stats',
+		__('BotBlocker Stats', 'botblocker-security'),
 		'bbcs_display_stats_widget'
 	);
 	wp_add_dashboard_widget(
 		'custom_form_widget',
-		'BotBlocker Quick Rule',
+		__('BotBlocker Quick Rule', 'botblocker-security'),
 		'bbcs_display_form_widget'
 	);
 }
@@ -104,7 +104,7 @@ function bbcs_display_stats_widget(): void
 		<div style="position: absolute; z-index: 100;">
 			<div class="bbcs-card-actions">
 				<a href="<?php echo esc_url($BBCSA->pages_cloud_api); ?>" class="bbcs-icon-button" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top"
-					data-bs-original-title="<?php echo $has_pro ? esc_attr__('You have PRO activated. Check your plan.', 'botblocker-security') : esc_attr__('Improve your plan for excellent security protection.', 'botblocker-security'); ?>">
+					data-bs-original-title="<?php echo $has_pro ? esc_attr__('You have PRO activated. Check your plan.', 'botblocker-security') : esc_attr__('Upgrade your plan for better protection.', 'botblocker-security'); ?>">
 					<i class="bbcs-card-action fa-solid fa-crown <?php echo $has_pro ? 'bbcs-cloud-api-color' : ''; ?>"></i>
 				</a>
 				<a href="<?php echo esc_url($BBCSA->pages_settings); ?>" class="bbcs-icon-button" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top"
@@ -161,7 +161,7 @@ function bbcs_display_form_widget(): void
 	<div class="bbcs-quick-rule-widget" style="margin-top: 20px;">
 		<h4 class="bbcs-qr-title"><i class="fa-solid fa-bolt" aria-hidden="true"></i> <?php esc_html_e('Quick IP Rule', 'botblocker-security'); ?></h4>
 		<p class="bbcs-qr-desc" style="margin-top:4px;">
-			<?php esc_html_e('Add a fast allow/block rule for an IP address or subnet. Use import buttons to bulk add search engines / white bots (IPv4 / IPv6).', 'botblocker-security'); ?>
+			<?php esc_html_e('Create allow/block rules for IPs or subnets. Use import buttons to add search engines and white bots.', 'botblocker-security'); ?>
 		</p>
 		<form id="addIpRuleForm" class="bbcs-qr-form" novalidate>
 			<div class="bbcs-qr-grid">

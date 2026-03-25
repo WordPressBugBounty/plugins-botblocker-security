@@ -65,7 +65,7 @@ trait BBCS_RenderColorButtonTrait {
             'mode' => 1,
             'params' => [
                 'buttons' => $buttonData,
-                'instruction' => __('If you are human, click on the similar color', 'botblocker-security'),
+                'instruction' => __('Click on the matching color', 'botblocker-security'),
                 'colorImageData' => $targetImgData,
                 'colorClass' => $colorClass,
             ]

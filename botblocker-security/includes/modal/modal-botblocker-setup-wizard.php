@@ -30,7 +30,7 @@ $bbcs_connect_url = isset($BBCSA) && !empty($BBCSA->pages_cloud_api ?? '') ? esc
                 <ul class="mb-3 ps-3 small flex-grow-1" style="line-height: 1.3; color: #4b5563; list-style: disc;">
                   <li style="margin-bottom: 3px;"><?php esc_html_e('Minimal protection', 'botblocker-security'); ?></li>
                   <li style="margin-bottom: 3px;"><?php esc_html_e('Maximum compatibility', 'botblocker-security'); ?></li>
-                  <li style="margin-bottom: 3px;"><?php esc_html_e('Testing & debug mode', 'botblocker-security'); ?></li>
+                  <li style="margin-bottom: 3px;"><?php esc_html_e('Testing and debug mode', 'botblocker-security'); ?></li>
                   <li style="margin-bottom: 3px;"><?php esc_html_e('Low resource usage', 'botblocker-security'); ?></li>
                 </ul>
                 <button type="button" class="btn btn-sm w-100 bbcs-apply-profile mt-auto" data-mode="light" style="background: #6b7280; color: white; border: none; font-weight: 500; padding: 10px; border-radius: 8px; transition: all 0.2s ease;">
@@ -53,7 +53,7 @@ $bbcs_connect_url = isset($BBCSA) && !empty($BBCSA->pages_cloud_api ?? '') ? esc
                   <span class="badge" style="background: #0ea5e9; font-size: 10px; padding: 2px 8px;"><?php esc_html_e('Balanced', 'botblocker-security'); ?></span>
                 </div>
                 <ul class="mb-3 ps-3 small flex-grow-1" style="line-height: 1.3; color: #075985; list-style: disc;">
-                  <li style="margin-bottom: 3px;"><?php esc_html_e('Balanced security & compatibility', 'botblocker-security'); ?></li>
+                  <li style="margin-bottom: 3px;"><?php esc_html_e('Balanced security and compatibility', 'botblocker-security'); ?></li>
                   <li style="margin-bottom: 3px;"><?php esc_html_e('Blocks common threats', 'botblocker-security'); ?></li>
                   <li style="margin-bottom: 3px;"><?php esc_html_e('Safe defaults', 'botblocker-security'); ?></li>
                   <li style="margin-bottom: 3px;"><?php esc_html_e('One-click activation', 'botblocker-security'); ?></li>
@@ -118,7 +118,7 @@ $bbcs_connect_url = isset($BBCSA) && !empty($BBCSA->pages_cloud_api ?? '') ? esc
                   <li style="margin-bottom: 3px;"><?php esc_html_e('Configure exclusions', 'botblocker-security'); ?></li>
                   <li style="margin-bottom: 3px;"><?php esc_html_e('Review security score', 'botblocker-security'); ?></li>
                 </ul>
-                <a href="<?php echo esc_url( admin_url('admin.php?page=bbcs_setup_wizard') ); ?>" class="btn btn-sm w-100 mt-auto" style="background: #f59e0b; color: white; border: none; font-weight: 500; padding: 10px; border-radius: 8px; transition: all 0.2s ease; text-decoration: none;">
+                <a href="<?php echo esc_url( bbcs_site_admin_page_url('bbcs_setup_wizard') ); ?>" class="btn btn-sm w-100 mt-auto" style="background: #f59e0b; color: white; border: none; font-weight: 500; padding: 10px; border-radius: 8px; transition: all 0.2s ease; text-decoration: none;">
                   <i class="fa-solid fa-wand-magic-sparkles me-1"></i><?php esc_html_e('Start Wizard', 'botblocker-security'); ?>
                 </a>
               </div>

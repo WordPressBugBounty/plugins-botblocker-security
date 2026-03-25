@@ -27,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                             <div class="bbcs_text_input">
                                 <div class="bbcs_label_input_box">
                                     <span class="bbcs-label-input"><?php esc_html_e('HTTP Header', 'botblocker-security'); ?></span>
-                                    <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e('Select the HTTP header used to forward real IP', 'botblocker-security'); ?>"></i>
+                                    <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e('HTTP header for forwarding the real IP', 'botblocker-security'); ?>"></i>
                                 </div>
                                 <div class="bbcs_text_input_inner">
                                     <select class="bbcs_select_input_input" id="value" name="value" required>
@@ -50,7 +50,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                             <div class="bbcs_text_input">
                                 <div class="bbcs_label_input_box">
                                     <span class="bbcs-label-input"><?php esc_html_e('Comment', 'botblocker-security'); ?></span>
-                                    <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e('Add a comment for this proxy (e.g., CloudFlare IPv4)', 'botblocker-security'); ?>"></i>
+                                    <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e('Comment for this proxy (e.g., Cloudflare IPv4)', 'botblocker-security'); ?>"></i>
                                 </div>
                                 <div class="bbcs_text_input_inner">
                                     <input type="text" class="bbcs_text_input_input" id="comment" name="comment" placeholder="e.g., CloudFlare IPv4">

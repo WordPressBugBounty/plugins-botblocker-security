@@ -31,6 +31,16 @@
         });
     }
 
+    function showConfirmHitsClearModal(callback) {
+        $("#confirmHitsClearModal").modal("show");
+        $("#confirmHitsClearButton").off("click").on("click", function() {
+            $("#confirmHitsClearModal").modal("hide");
+            if (typeof callback === "function") {
+                callback();
+            }
+        });
+    }
+
     function showConfirmRewriteRulesModal(callback) {
         $("#confirmRewriteRulesModal").modal("show");
         $("#confirmRewriteRulesButton").off("click").on("click", function() {
@@ -322,6 +332,31 @@
                         alert(response.data.message || 'Transients successfully cleared!');
                     } else {
                         alert(response.data.message || 'Failed to clear transients.');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('AJAX error:', error);
+                    alert('An error occurred while performing the operation.');
+                }
+            });
+        });
+    });
+
+    $('#bbcs-clear-hits-database').on('click', function () {
+        showConfirmHitsClearModal(function() {
+            $.ajax({
+                url: botblockerData.ajaxurl,
+                method: 'POST',
+                data: {
+                    action: 'bbcs_clear_hits_database',
+                    nonce: botblockerData.nonce
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.data.message || 'Visitors data successfully cleared!');
+                        window.location.reload();
+                    } else {
+                        alert(response.data.message || 'Failed to clear visitors data.');
                     }
                 },
                 error: function (xhr, status, error) {

@@ -12,14 +12,14 @@ $bbcs_has_pro = bbcs_isCloudAPIActive();
                 // REVIEWER NOTE: This image is a static plugin asset, not a user-uploaded Media Library image.
                 // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage ?>
 				<img src="<?php echo esc_url(BOTBLOCKER_URL . 'public/icons/connections-types.svg'); ?>" 
-					alt="<?php esc_attr_e('Simple Bot Detection', 'botblocker-security'); ?>" 
+					alt="<?php esc_attr_e('Connection Types', 'botblocker-security'); ?>" 
 					class="img-fluid bbcs-info-image mb-3">
 
 				<p class="bbcs-info-text">
-					<?php esc_html_e('Connection Type filtering provides advanced protection against malicious traffic by analyzing how visitors connect to your website. This powerful security layer identifies and blocks suspicious connection methods commonly used by bots, scrapers, and automated attacks.', 'botblocker-security'); ?>				
+					<?php esc_html_e('Connection filtering blocks suspicious connection methods used by bots and scrapers.', 'botblocker-security'); ?>				
 				</p>
 				<p class="bbcs-info-text">
-					<?php esc_html_e('By restricting access from proxy servers, data centers, VPN endpoints, and legacy protocols, you can significantly reduce automated threats while maintaining seamless access for legitimate users. These settings are particularly effective against sophisticated bot networks that attempt to hide their origin through anonymizing services.', 'botblocker-security'); ?>
+					<?php esc_html_e('Restrict proxy servers, data centers, VPNs, and legacy protocols to reduce automated threats.', 'botblocker-security'); ?>
 				</p>
 				<hr class="bbcs-info-hr">
 				<div class="bbcs-info-footer">
@@ -29,7 +29,7 @@ $bbcs_has_pro = bbcs_isCloudAPIActive();
 					<a href="<?php echo esc_url(BOTBLOCKER_DOCS_URL)?>/what-is-http-understanding-protocol-versions-and-blocking-http-1-0-in-botblocker/" target="_blank" class="bbcs-info-footer-a"><?php esc_html_e('HTTP', 'botblocker-security'); ?></a>
 					<a href="<?php echo esc_url(BOTBLOCKER_DOCS_URL)?>/hosting-detection-why-botblocker-identifies-hosting-providers-and-what-it-means-for-security/" target="_blank" class="bbcs-info-footer-a"><?php esc_html_e('Detect hosting', 'botblocker-security'); ?></a>
 					<a href="<?php echo esc_url(BOTBLOCKER_DOCS_URL)?>/what-is-a-vpn-how-virtual-private-networks-work-and-why-they-matter/" target="_blank" class="bbcs-info-footer-a"><?php esc_html_e('VPN', 'botblocker-security'); ?></a>
-					<a href="<?php echo esc_url(BOTBLOCKER_DOCS_URL)?>/what-is-tor-how-botblocker-detects-and-blocks-connections-from-the-tor-network/" target="_blank" class="bbcs-info-footer-a"><?php esc_html_e('TOR', 'botblocker-security'); ?></a>
+					<a href="<?php echo esc_url(BOTBLOCKER_DOCS_URL)?>/what-is-tor-how-botblocker-detects-and-blocks-connections-from-the-tor-network/" target="_blank" class="bbcs-info-footer-a"><?php esc_html_e('Tor', 'botblocker-security'); ?></a>
 				</div>				
 			</div>
 		</div>
@@ -46,7 +46,7 @@ $bbcs_has_pro = bbcs_isCloudAPIActive();
     			<i class="fa-regular fa-circle-question"
         			data-bs-toggle="tooltip" data-bs-html="true" 
         			data-bs-placement="top"
-        			data-bs-original-title="<?php esc_attr_e('Blocks HTTP proxy IP ranges (anonymous/open proxies).', 'botblocker-security'); ?>">
+        			data-bs-original-title="<?php esc_attr_e('Block HTTP proxy IP ranges.', 'botblocker-security'); ?>">
     			</i>
 			</div>
 
@@ -59,7 +59,7 @@ $bbcs_has_pro = bbcs_isCloudAPIActive();
     			<i class="fa-regular fa-circle-question"
         			data-bs-toggle="tooltip" data-bs-html="true" 
         			data-bs-placement="top"
-        			data-bs-original-title="<?php esc_attr_e('Bans direct hits from Cloudflare\'s IP ranges without proper validation.', 'botblocker-security'); ?>">
+        			data-bs-original-title="<?php esc_attr_e('Block unauthenticated requests from Cloudflare IPs.', 'botblocker-security'); ?>">
     			</i>
 			</div>
 
@@ -72,7 +72,7 @@ $bbcs_has_pro = bbcs_isCloudAPIActive();
     			<i class="fa-regular fa-circle-question"
         			data-bs-toggle="tooltip" data-bs-html="true" 
         			data-bs-placement="top"
-        			data-bs-original-title="<?php esc_attr_e('Disables access via IPv6. Rare for typical end-user traffic.', 'botblocker-security'); ?>">
+        			data-bs-original-title="<?php esc_attr_e('Block access via IPv6 protocol.', 'botblocker-security'); ?>">
     			</i>
 			</div>
 
@@ -85,7 +85,7 @@ $bbcs_has_pro = bbcs_isCloudAPIActive();
     			<i class="fa-regular fa-circle-question"
         			data-bs-toggle="tooltip" data-bs-html="true" 
         			data-bs-placement="top"
-        			data-bs-original-title="<?php esc_attr_e('Blocks legacy HTTP/1.0; modern browsers use 1.1 or 2.0.', 'botblocker-security'); ?>">
+        			data-bs-original-title="<?php esc_attr_e('Block legacy HTTP/1.0 protocol.', 'botblocker-security'); ?>">
     			</i>
 			</div>
 
@@ -101,7 +101,7 @@ $bbcs_has_pro = bbcs_isCloudAPIActive();
 				data-bs-toggle="tooltip" 
 				data-bs-html="true"  
 				data-bs-placement="top" 
-				data-bs-original-title="<?php esc_attr_e('Blocks IP ranges owned by major data centers (Shared hostings, VDS/VPS, DigitalOcean, AWS, etc.). Real users do not come from hostings. Search engines and white bots are never blocked.', 'botblocker-security'); ?>">
+				data-bs-original-title="<?php esc_attr_e('Block data center IPs (VPS, AWS, DigitalOcean, etc.). Search engines are always whitelisted.', 'botblocker-security'); ?>">
     			</i>
 			</div>
 
@@ -120,7 +120,7 @@ $bbcs_has_pro = bbcs_isCloudAPIActive();
     			<i class="fa-regular fa-circle-question"
         			data-bs-toggle="tooltip" data-bs-html="true" 
         			data-bs-placement="top"
-        			data-bs-original-title="<?php esc_attr_e('Detects and blocks known VPN endpoint IPs.', 'botblocker-security'); ?>">
+        			data-bs-original-title="<?php esc_attr_e('Block traffic from known VPN service IP addresses.', 'botblocker-security'); ?>">
     			</i>
 			</div>
 			<div class="bbcs_checkbox_input mb-2">
@@ -138,7 +138,7 @@ $bbcs_has_pro = bbcs_isCloudAPIActive();
     			<i class="fa-regular fa-circle-question"
         			data-bs-toggle="tooltip" data-bs-html="true" 
         			data-bs-placement="top"
-        			data-bs-original-title="<?php esc_attr_e('Blocks all traffic coming from known Tor exit nodes.', 'botblocker-security'); ?>">
+        			data-bs-original-title="<?php esc_attr_e('Block traffic from known Tor exit nodes.', 'botblocker-security'); ?>">
     			</i>
 			</div>
 
@@ -152,7 +152,7 @@ $bbcs_has_pro = bbcs_isCloudAPIActive();
     			<i class="fa-regular fa-circle-question"
         			data-bs-toggle="tooltip" data-bs-html="true" 
         			data-bs-placement="top"
-        			data-bs-original-title="<?php esc_attr_e('Some hosting control panels may place restrictions on your resources, such as during updates, automated tasks, or maintenance processes that operate outside of the command-line mode. Enabling this setting allows requests from your server\'s IP address (where this site is hosted) to bypass these restrictions. If disabled, requests from your server\'s IP will be handled according to general site access rules.', 'botblocker-security'); ?>">
+        			data-bs-original-title="<?php esc_attr_e('Allow your server IP to bypass security checks for updates and automated tasks.', 'botblocker-security'); ?>">
     			</i>
 			</div>
 

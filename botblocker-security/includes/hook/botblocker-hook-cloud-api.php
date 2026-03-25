@@ -26,7 +26,7 @@ function bbcs_cloud_api_parse_request($wp)
         $wp->query_vars['botblocker_cloud_api'] = '1';
     }
 }
-add_action('parse_request', 'bbcs_cloud_api_parse_request', 0); 
+add_action('parse_request', 'bbcs_cloud_api_parse_request', 0);
 
 function bbcs_fetch_cloud_api_key_handler() {
     check_ajax_referer('bbcs_fetch_cloud_api_key_action', 'nonce');
@@ -40,72 +40,31 @@ function bbcs_fetch_cloud_api_key_handler() {
     }
 
     if ($cloud === false) {
-        wp_send_json_error(['message' => __('Failed to fetch API key from cloud server. Please try again later.', 'botblocker-security')]);
+        wp_send_json_error(['message' => __('Failed to retrieve API key. Try again later.', 'botblocker-security')]);
     } elseif (isset($cloud['error'])) {
         wp_send_json_error(['message' => __('Cloud API responded with error: ', 'botblocker-security') . $cloud['error']]);
     } elseif (empty($cloud['api_key']) || empty($cloud['api_secret'])) {
-        wp_send_json_error(['message' => __('No API key found on cloud server for this domain.', 'botblocker-security')]);
+        wp_send_json_error(['message' => __('No API key found for this domain.', 'botblocker-security')]);
     }
-
-    global $wpdb;
-    // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-    $wpdb->update(
-        $wpdb->bbcs_settings,
-        array('value' => 'cloud_extended'),
-        array('key' => 'cloud_api_type')
-    );
-    
-    $wpdb->update(
-        $wpdb->bbcs_settings,
-        array('value' => $cloud['email']),
-        array('key' => 'cloud_api_email')
-    );
-
-    $wpdb->update(
-        $wpdb->bbcs_settings,
-        array('value' => $cloud['api_key']),
-        array('key' => 'cloud_api_key')
-    );
-
-    $wpdb->update(
-        $wpdb->bbcs_settings,
-        array('value' => $cloud['api_secret']),
-        array('key' => 'cloud_api_secret')
-    );
-
-    $wpdb->update(
-        $wpdb->bbcs_settings,
-        array('value' => $cloud['tier']),
-        array('key' => 'cloud_api_tier')
-    );
-
-    if (!isset($cloud['tier']) || $cloud['tier'] !== 'ultimate') {
-        $wpdb->update(
-            $wpdb->bbcs_settings,
-            array('value' => 0),
-            array('key' => 'force_cloud_validation')
-        );
-    }
-    // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
     bbcs_set_remaining_hits($cloud['hits']);
     bbcs_set_remaining_days($cloud['days']);
 
-    if (BOTBLOCKER_CACHE_WP) {
-        wp_cache_delete('bbcs_cloud_api_type' . bbcs_get_wp_cache_version(), 'botblocker-security');
-        wp_cache_delete('bbcs_cloud_api_key' . bbcs_get_wp_cache_version(), 'botblocker-security');
-        wp_cache_delete('bbcs_cloud_api_secret' . bbcs_get_wp_cache_version(), 'botblocker-security');
-        wp_cache_delete('bbcs_cloud_api_tier' . bbcs_get_wp_cache_version(), 'botblocker-security');
+    // BBCS-MULTISITE
+    $bbcs_propagate = array(
+        'cloud_api_type'   => 'cloud_extended',
+        'cloud_api_email'  => $cloud['email'],
+        'cloud_api_key'    => $cloud['api_key'],
+        'cloud_api_secret' => $cloud['api_secret'],
+        'cloud_api_tier'   => $cloud['tier'],
+        'check'            => 1,
+    );
+    if ( ! isset( $cloud['tier'] ) || $cloud['tier'] !== 'ultimate' ) {
+        $bbcs_propagate['force_cloud_validation'] = 0;
     }
+    bbcs_sync_cloud_settings_network( $bbcs_propagate );
 
-    bbcs_generateSettingsFileFromDb();
-
-    delete_transient('bbcs_cloud_api_expired_alert');
-    delete_transient('bbcs_cloud_api_hits_exhausted_alert');
-    delete_transient('bbcs_cloud_api_status_transient');
-
-    wp_send_json_success(['message' => __('API key fetched successfully from cloud server.', 'botblocker-security')]);
+    wp_send_json_success(['message' => __('API key retrieved successfully.', 'botblocker-security')]);
 }
 add_action('wp_ajax_bbcs_fetch_cloud_api_key', 'bbcs_fetch_cloud_api_key_handler');
 
@@ -124,72 +83,31 @@ function bbcs_connect_cloud_api_handler() {
     }
 
     if ($cloud === false) {
-        wp_send_json_error(['message' => __('Failed to connect to Cloud API. Please try again later.', 'botblocker-security')]);
+        wp_send_json_error(['message' => __('Failed to connect to Cloud API. Try again later.', 'botblocker-security')]);
     } elseif (isset($cloud['error'])) {
-        wp_send_json_error(['message' => __('The key you entered is invalid. Please double-check it. Cloud API responded with: ', 'botblocker-security') . $cloud['error']]);
+        wp_send_json_error(['message' => __('Invalid API key. Cloud API responded with: ', 'botblocker-security') . $cloud['error']]);
     }
-
-    global $wpdb;
-    // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-    $wpdb->update(
-        $wpdb->bbcs_settings,
-        array('value' => 'cloud_extended'),
-        array('key' => 'cloud_api_type')
-    );
-
-    $wpdb->update(
-        $wpdb->bbcs_settings,
-        array('value' => $cloud['email']),
-        array('key' => 'cloud_api_email')
-    );
-
-    $wpdb->update(
-        $wpdb->bbcs_settings,
-        array('value' => $cloud['api_key']),
-        array('key' => 'cloud_api_key')
-    );
-
-    $wpdb->update(
-        $wpdb->bbcs_settings,
-        array('value' => $cloud['api_secret']),
-        array('key' => 'cloud_api_secret')
-    );
 
     $cloud_api_tier = isset($cloud['api_tier']) ? sanitize_text_field($cloud['api_tier']) : '';
     if (!bbcs_is_valid_cloud_api_tier($cloud_api_tier)) {
         $cloud_api_tier = '';
     }
-    
-    $wpdb->update(
-        $wpdb->bbcs_settings,
-        array('value' => $cloud_api_tier),
-        array('key' => 'cloud_api_tier')
+
+    // BBCS-MULTISITE
+    $bbcs_propagate = array(
+        'cloud_api_type'   => 'cloud_extended',
+        'cloud_api_email'  => $cloud['email'],
+        'cloud_api_key'    => $cloud['api_key'],
+        'cloud_api_secret' => $cloud['api_secret'],
+        'cloud_api_tier'   => $cloud_api_tier,
+        'check'            => 1,
     );
-
-    if ($cloud_api_tier !== 'ultimate') {
-        $wpdb->update(
-            $wpdb->bbcs_settings,
-            array('value' => 0),
-            array('key' => 'force_cloud_validation')
-        );
+    if ( $cloud_api_tier !== 'ultimate' ) {
+        $bbcs_propagate['force_cloud_validation'] = 0;
     }
-    // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    bbcs_sync_cloud_settings_network( $bbcs_propagate );
 
-    if (BOTBLOCKER_CACHE_WP) {
-        wp_cache_delete('bbcs_cloud_api_type' . bbcs_get_wp_cache_version(), 'botblocker-security');
-        wp_cache_delete('bbcs_cloud_api_key' . bbcs_get_wp_cache_version(), 'botblocker-security');
-        wp_cache_delete('bbcs_cloud_api_secret' . bbcs_get_wp_cache_version(), 'botblocker-security');
-        wp_cache_delete('bbcs_cloud_api_tier' . bbcs_get_wp_cache_version(), 'botblocker-security');
-    }
-
-    bbcs_generateSettingsFileFromDb();
-
-    delete_transient('bbcs_cloud_api_expired_alert');
-    delete_transient('bbcs_cloud_api_hits_exhausted_alert');
-    delete_transient('bbcs_cloud_api_status_transient');
-
-    wp_send_json_success(['message' => __('Cloud API key connected and validated successfully.', 'botblocker-security')]);
+    wp_send_json_success(['message' => __('Cloud API key connected and validated.', 'botblocker-security')]);
 }
 add_action('wp_ajax_bbcs_connect_cloud_api', 'bbcs_connect_cloud_api_handler');
 
@@ -209,7 +127,7 @@ function bbcs_refresh_cloud_api_handler()
         'remaining_hits' => $res['hits'],
         'remaining_days' => $res['days']
     ];
-    
+
     wp_send_json_success($response_data);
 }
 add_action('wp_ajax_bbcs_refresh_cloud_api', 'bbcs_refresh_cloud_api_handler');
@@ -217,59 +135,24 @@ add_action('wp_ajax_bbcs_refresh_cloud_api', 'bbcs_refresh_cloud_api_handler');
 function bbcs_deactivate_cloud_api_handler() {
     check_ajax_referer('bbcs_deactivate_cloud_api_action', 'nonce');
 
-    global $wpdb;
+    // BBCS-MULTISITE
+    bbcs_sync_cloud_settings_network( array(
+        'cloud_api_type'   => '',
+        'cloud_api_email'  => '',
+        'cloud_api_key'    => '',
+        'cloud_api_secret' => '',
+        'cloud_api_tier'   => '',
+    ) );
 
-    // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-    $wpdb->update(
-        $wpdb->bbcs_settings,
-        array('value' => ''),
-        array('key' => 'cloud_api_type')
-    );
-
-    $wpdb->update(
-        $wpdb->bbcs_settings,
-        array('value' => ''),
-        array('key' => 'cloud_api_email')
-    );
-
-    $wpdb->update(
-        $wpdb->bbcs_settings,
-        array('value' => ''),
-        array('key' => 'cloud_api_key')
-    );
-
-    $wpdb->update(
-        $wpdb->bbcs_settings,
-        array('value' => ''),
-        array('key' => 'cloud_api_secret')
-    );
-
-    $wpdb->update(
-        $wpdb->bbcs_settings,
-        array('value' => ''),
-        array('key' => 'cloud_api_tier')
-    );
-    // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-
-    if (BOTBLOCKER_CACHE_WP) {
-        wp_cache_delete('bbcs_cloud_api_type' . bbcs_get_wp_cache_version(), 'botblocker-security');
-        wp_cache_delete('bbcs_cloud_api_key' . bbcs_get_wp_cache_version(), 'botblocker-security');
-        wp_cache_delete('bbcs_cloud_api_secret' . bbcs_get_wp_cache_version(), 'botblocker-security');
-        wp_cache_delete('bbcs_cloud_api_tier' . bbcs_get_wp_cache_version(), 'botblocker-security');
-    }
-
-    bbcs_generateSettingsFileFromDb();
-
-    delete_transient('bbcs_cloud_api_expired_alert');
-    delete_transient('bbcs_cloud_api_hits_exhausted_alert');
-    delete_transient('bbcs_cloud_api_status_transient');
-
-    wp_send_json_success(['message' => __('Cloud API connection has been deactivated.', 'botblocker-security')]);
+    wp_send_json_success(['message' => __('Cloud API connection deactivated.', 'botblocker-security')]);
 }
 add_action('wp_ajax_bbcs_deactivate_cloud_api', 'bbcs_deactivate_cloud_api_handler');
 function bbcs_refresh_cloud_api()
 {
+    if (!bbcs_isCloudAPIActive()) {
+        return false;
+    }
+
     $BBCS = BotBlocker::getInstance();
     $request_auth = [
         'cloud_api_key' => $BBCS->settings->cloud_api_key,
@@ -292,7 +175,7 @@ function bbcs_refresh_cloud_api()
     bbcs_set_remaining_days($cloud['days']);
 
     bbcs_check_cloud_api_expiry();
-    
+
     return [
         'hits' => $cloud['hits'],
         'days' => $cloud['days']

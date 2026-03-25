@@ -27,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                             <div class="bbcs_text_input">
                                 <div class="bbcs_label_input_box">
                                     <span class="bbcs-label-input"><?php esc_html_e('Rule', 'botblocker-security'); ?></span>
-                                    <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e('Select the action for this bot', 'botblocker-security'); ?>"></i>
+                                    <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e('Action for this bot', 'botblocker-security'); ?>"></i>
                                 </div>
                                 <div class="bbcs_text_input_inner">
                                     <select class="bbcs_select_input_input" id="rule" name="rule" required>

@@ -35,14 +35,21 @@ visitor gets stuck. The exact cookie name and format vary by provider:
 ## Built-in Automatic Mitigation (v1.6.13+)
 
 Starting from version **1.6.13**, BotBlocker detects non-JSON AJAX responses
-that contain `document.cookie = "…"` patterns. When detected:
+from external DDoS protection services. When detected:
 
-1. The cookie value is extracted and set in the browser automatically.
-2. The AJAX request is retried after a 1-second delay.
-3. Up to **2 retries** are attempted before falling back to CAPTCHA.
+1. The cookie value is extracted (both `"…"` and `'…'` patterns) and set in
+   the browser automatically.
+2. The AJAX request is retried with progressive delays (1s, 2s, 3s).
+3. Up to **3 retries** are attempted.
+4. If all retries fail, BotBlocker **redirects to the original page** instead
+   of showing CAPTCHA again. This mirrors the "manual refresh" that would
+   otherwise be needed — the DDoS service cookie is already set, and the
+   BotBlocker cookie may already be valid from a partial success.
+5. During retries, the XHR timeout is increased from 5s to 10s to accommodate
+   slower DDoS service round-trips.
 
-This handles **simple JS-challenge** responses (cookie-only, no computation)
-from most DDoS protection services without any manual configuration.
+This handles the vast majority of real-world DDoS protection setups including
+SShield, DDoS-Guard, Stormwall, and similar services.
 
 ---
 

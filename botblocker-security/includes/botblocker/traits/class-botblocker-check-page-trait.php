@@ -8,7 +8,7 @@ trait BotBlockerCheckPageTrait {
             $this->template_data_check = array(
                 'extra_data' => $this->ip,
                 'h1_title' => __('Please turn JavaScript on and reload the page', 'botblocker-security'),
-                'h2_title' => __('Checking your browser before accessing the website', 'botblocker-security'),
+                'h2_title' => __('Verifying your browser', 'botblocker-security'),
                 'plugin_name' => __('BotBlocker security plugin', 'botblocker-security')
             );
             $this->prepare_check_js_data();
@@ -100,8 +100,8 @@ trait BotBlockerCheckPageTrait {
             'emptyValue' => BOTBLOCKER_EMPTY,
             'jsAdminEnabled' => (defined('BOTBLOCKER_JS_ADMIN') && BOTBLOCKER_JS_ADMIN == true),
             'jsErrorMessage' => $this->js_error_message,
-            'cookieDisabledText' => __('Cookie is Disabled in your browser. Please Enable the Cookie to continue.', 'botblocker-security'),
-            'jsDisabledText' => __('JavaScript is Disabled in your browser. Please Enable the JavaScript to continue.', 'botblocker-security'),
+            'cookieDisabledText' => __('Cookies are disabled in your browser. Enable cookies to continue.', 'botblocker-security'),
+            'jsDisabledText' => __('JavaScript is disabled in your browser. Enable JavaScript to continue.', 'botblocker-security'),
             'redirectUrl' => esc_js(esc_url_raw($bot_blocker_redirect_url)),
             'checkFunctionName' => $botblocker_check_function_name,
             'selectRequestMode' => $this->select_request_mode,

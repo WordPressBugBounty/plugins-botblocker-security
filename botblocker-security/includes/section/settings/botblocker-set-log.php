@@ -15,10 +15,10 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 					class="img-fluid bbcs-info-image mb-3">
 
 				<p class="bbcs-info-text">
-					<?php esc_html_e('Logging settings control what security events and visitor activities are recorded for analysis and troubleshooting. These options determine the level of detail captured in your security logs, helping you monitor threats, analyze traffic patterns, and maintain comprehensive security records for your website.', 'botblocker-security'); ?>
+					<?php esc_html_e('Choose which security events and visitor activities to log.', 'botblocker-security'); ?>
 				</p>
 				<p class="bbcs-info-text">
-					<?php esc_html_e('Selective logging allows you to focus on specific security events while managing storage space and performance. Enable logging for verification requests, allowed visitors, and blocked attempts to build a complete security picture. Administrative and WordPress action logging provides insight into backend activities and potential security issues.', 'botblocker-security'); ?>
+					<?php esc_html_e('Log verification requests, allowed visitors, blocked attempts, and admin actions.', 'botblocker-security'); ?>
 				</p>
 				<hr class="bbcs-info-hr">
 				<div class="bbcs-info-footer">
@@ -30,7 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 		</div>
 
 		<div class="col-xxl-3 col-xl-6 col-lg-6 col-sm-12 col-md-12">
-			<h3 class="bbcs_settings_h3"><?php esc_html_e('Visitor logging settings', 'botblocker-security'); ?></h3>
+			<h3 class="bbcs_settings_h3"><?php esc_html_e('Visitor Logging Settings', 'botblocker-security'); ?></h3>
 
 			<div class="bbcs_checkbox_input mb-2">
 			<div class="bbcs_label_checkbox_box">
@@ -38,7 +38,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 				<span class="bbcs_label_input_checkbox"><?php esc_html_e('Log Manual Verification Requests', 'botblocker-security'); ?></span>
 			</div>
 			<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top" 
-			data-bs-original-title="<?php esc_attr_e('Enable logging of users who are required to pass manual verification.', 'botblocker-security'); ?>">
+			data-bs-original-title="<?php esc_attr_e('Log visitors sent to CAPTCHA verification.', 'botblocker-security'); ?>">
 			</i>
 			</div>
 
@@ -48,7 +48,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 				<span class="bbcs_label_input_checkbox"><?php esc_html_e('Log Verified Local Visitors', 'botblocker-security'); ?></span>
 			</div>
 			<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top" 
-			data-bs-original-title="<?php esc_attr_e('Enable logging of users who have previously passed verification and are allowed based on IP or cookies.', 'botblocker-security'); ?>">
+			data-bs-original-title="<?php esc_attr_e('Log previously verified visitors (by IP or cookie).', 'botblocker-security'); ?>">
 			</i>
 			</div>
 
@@ -58,7 +58,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 				<span class="bbcs_label_input_checkbox"><?php esc_html_e('Log Allowed Visitors', 'botblocker-security'); ?></span>
 			</div>
 			<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top" 
-			data-bs-original-title="<?php esc_attr_e('Enable logging of visitors who meet security criteria and are allowed access.', 'botblocker-security'); ?>">
+			data-bs-original-title="<?php esc_attr_e('Log visitors that pass all security checks.', 'botblocker-security'); ?>">
 			</i>
 			</div>
 
@@ -68,7 +68,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 				<span class="bbcs_label_input_checkbox"><?php esc_html_e('Log Suspected Fake Bots', 'botblocker-security'); ?></span>
 			</div>
 			<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top" 
-			data-bs-original-title="<?php esc_attr_e('Enable logging of visitors suspected to be bots using fake or spoofed data.', 'botblocker-security'); ?>">
+			data-bs-original-title="<?php esc_attr_e('Log visitors suspected of data spoofing.', 'botblocker-security'); ?>">
 			</i>
 			</div>
 
@@ -78,7 +78,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 				<span class="bbcs_label_input_checkbox"><?php esc_html_e('Log Known Good IPs', 'botblocker-security'); ?></span>
 			</div>
 			<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top" 
-			data-bs-original-title="<?php esc_attr_e('Enable logging of visits from trusted or whitelisted IP addresses.', 'botblocker-security'); ?>">
+			data-bs-original-title="<?php esc_attr_e('Log visits from whitelisted IPs.', 'botblocker-security'); ?>">
 			</i>
 			</div>
 
@@ -88,14 +88,14 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 				<span class="bbcs_label_input_checkbox"><?php esc_html_e('Log Blocked Visitors', 'botblocker-security'); ?></span>
 			</div>
 			<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top" 
-			data-bs-original-title="<?php esc_attr_e('Enable logging of visitors who were blocked based on security rules.', 'botblocker-security'); ?>">
+			data-bs-original-title="<?php esc_attr_e('Log blocked visitors.', 'botblocker-security'); ?>">
 			</i>
 			</div>
 
 		</div>
 		
 		<div class="col-xxl-3 col-xl-6 col-lg-6 col-sm-12 col-md-12">
-			<h3 class="bbcs_settings_h3"><?php esc_html_e('Admin & WP logging settings', 'botblocker-security'); ?></h3>
+			<h3 class="bbcs_settings_h3"><?php esc_html_e('Admin and WordPress Logging', 'botblocker-security'); ?></h3>
 
 			<div class="bbcs_checkbox_input mb-2">
 			<div class="bbcs_label_checkbox_box">
@@ -103,17 +103,17 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 				<span class="bbcs_label_input_checkbox"><?php esc_html_e('Log Actions in WordPress Admin Panel', 'botblocker-security'); ?></span>
 			</div>
 			<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top" 
-			data-bs-original-title="<?php esc_attr_e('Enable logging of actions performed within the WordPress admin panel by authorized users.', 'botblocker-security'); ?>">
+			data-bs-original-title="<?php esc_attr_e('Log WordPress admin panel actions.', 'botblocker-security'); ?>">
 			</i>
 			</div>			
 
 			<div class="bbcs_checkbox_input mb-2">
 			<div class="bbcs_label_checkbox_box">
     			<input type="checkbox" name="botblocker_log_bbcs" value="1" <?php checked(1, isset($bbcs_settings['botblocker_log_bbcs']) ? $bbcs_settings['botblocker_log_bbcs'] : 0); ?>>
-    			<span class="bbcs_label_input_checkbox"><?php esc_html_e('Log BotBlocker pages visits', 'botblocker-security'); ?></span>
+    			<span class="bbcs_label_input_checkbox"><?php esc_html_e('Log BotBlocker Page Visits', 'botblocker-security'); ?></span>
 			</div>
 			<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top" 
-			data-bs-original-title="<?php esc_attr_e('Enable logging of visits to BotBlocker verification and protection pages for monitoring purposes.', 'botblocker-security'); ?>">
+			data-bs-original-title="<?php esc_attr_e('Log visits to BotBlocker CAPTCHA and verification pages.', 'botblocker-security'); ?>">
 			</i>
 			</div> 
 			
@@ -123,23 +123,23 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 				<span class="bbcs_label_input_checkbox"><?php esc_html_e('Log WordPress Actions', 'botblocker-security'); ?></span>
 			</div>
 			<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top" 
-			data-bs-original-title="<?php esc_attr_e('Enable logging of actions on the website, including blocked access attempts based on security rules.', 'botblocker-security'); ?>">
+			data-bs-original-title="<?php esc_attr_e('Log site-level actions and blocked access attempts.', 'botblocker-security'); ?>">
 			</i>
 			</div>  
 
-			<h3 class="bbcs_settings_h3"><?php esc_html_e('Errors logging settings', 'botblocker-security'); ?></h3>
+			<h3 class="bbcs_settings_h3"><?php esc_html_e('Error Logging', 'botblocker-security'); ?></h3>
 
 			<div class="bbcs_checkbox_input mb-2">
 			<div class="bbcs_label_checkbox_box">
     			<input type="checkbox" name="botblocker_log_error" value="1" <?php checked(1, isset($bbcs_settings['botblocker_log_error']) ? $bbcs_settings['botblocker_log_error'] : 1); ?>>
-    			<span class="bbcs_label_input_checkbox"><?php esc_html_e('Log BotBlocker errors', 'botblocker-security'); ?></span>
+    			<span class="bbcs_label_input_checkbox"><?php esc_html_e('Log BotBlocker Errors', 'botblocker-security'); ?></span>
 			</div>
 			<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top" 
-			data-bs-original-title="<?php esc_attr_e('Enable logging of BotBlocker internal errors and system issues for debugging purposes.', 'botblocker-security'); ?>">
+			data-bs-original-title="<?php esc_attr_e('Log BotBlocker errors and system issues.', 'botblocker-security'); ?>">
 			</i>
 			</div>   
 
-			<h3 class="bbcs_settings_h3"><?php esc_html_e('Extra logging settings', 'botblocker-security'); ?></h3>
+			<h3 class="bbcs_settings_h3"><?php esc_html_e('Extra Logging', 'botblocker-security'); ?></h3>
 
 			<div class="bbcs_checkbox_input mb-2">
 			<div class="bbcs_label_checkbox_box">
@@ -147,17 +147,17 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
     			<span class="bbcs_label_input_checkbox"><?php esc_html_e('Log CLI requests', 'botblocker-security'); ?></span>
 			</div>
 			<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top" 
-			data-bs-original-title="<?php esc_attr_e('Enable logging of command-line interface requests and automated scripts accessing your site.', 'botblocker-security'); ?>">
+			data-bs-original-title="<?php esc_attr_e('Log CLI and automated script requests.', 'botblocker-security'); ?>">
 			</i>
 			</div>        
 
  			<div class="bbcs_checkbox_input mb-2">
 			<div class="bbcs_label_checkbox_box">
     			<input type="checkbox" name="botblocker_log_disabled" value="1" <?php checked(1, isset($bbcs_settings['botblocker_log_disabled']) ? $bbcs_settings['botblocker_log_disabled'] : 0); ?>>
-    			<span class="bbcs_label_input_checkbox"><?php esc_html_e('Log visits if BotBlocker processor is off', 'botblocker-security'); ?></span>
+    			<span class="bbcs_label_input_checkbox"><?php esc_html_e('Log Visits When BotBlocker Protection is Disabled', 'botblocker-security'); ?></span>
 			</div>
 			<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top" 
-			data-bs-original-title="<?php esc_attr_e('Enable logging when BotBlocker protection is disabled to monitor unprotected traffic.', 'botblocker-security'); ?>">
+			data-bs-original-title="<?php esc_attr_e('Log visits when BotBlocker protection is off.', 'botblocker-security'); ?>">
 			</i>
 			</div> 			
 

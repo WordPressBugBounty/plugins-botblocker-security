@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
     <div class="bbcs_text_input mb-2">
         <div class="bbcs_label_input_box">
             <span
-                class="bbcs-label-input-small"><?php esc_html_e('Secret link for disable current check by BotBlocker', 'botblocker-security'); ?></span>
+                class="bbcs-label-input-small"><?php esc_html_e('Secret link to disable the current BotBlocker check', 'botblocker-security'); ?></span>
             <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"
                 data-bs-placement="top"
                 title="<?php esc_attr_e('Use this link to temporarily disable BotBlocker checks for the current session.', 'botblocker-security'); ?>">
@@ -33,7 +33,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
     <div class="bbcs_text_input mb-2">
         <div class="bbcs_label_input_box">
             <span
-                class="bbcs-label-input-small"><?php esc_html_e('Secret link for full disable BotBlocker', 'botblocker-security'); ?></span>
+                class="bbcs-label-input-small"><?php esc_html_e('Secret link to fully disable BotBlocker', 'botblocker-security'); ?></span>
             <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"
                 data-bs-placement="top"
                 title="<?php esc_attr_e('Use this link to completely disable BotBlocker.', 'botblocker-security'); ?>">
@@ -51,7 +51,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
     <div class="bbcs_text_input mb-2">
         <div class="bbcs_label_input_box">
             <span
-                class="bbcs-label-input-small"><?php esc_html_e('Secret link for re-enable BotBlocker', 'botblocker-security') ?></span>
+                class="bbcs-label-input-small"><?php esc_html_e('Secret link to re-enable BotBlocker', 'botblocker-security') ?></span>
             <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"
                 data-bs-placement="top"
                 title="<?php esc_attr_e('Use this link to re-enable BotBlocker.', 'botblocker-security'); ?>">

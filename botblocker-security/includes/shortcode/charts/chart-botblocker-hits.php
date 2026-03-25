@@ -10,11 +10,9 @@ function bbcs_display_hits_and_uniques_chart($atts)
     if ($BBCS->settings->cache_ui_data == 1) {
         $cache_key = 'bbcs_display_hits_and_uniques_chart';
         $cached = null;
-        if (BOTBLOCKER_CACHE_WP) {
-            $cached = wp_cache_get($cache_key, 'botblocker-security');
-        } else {
-            $cached = get_transient($cache_key);
-        }
+
+        $cached = get_transient($cache_key);
+
         if ($cached) {
             return $cached;
         }
@@ -36,7 +34,7 @@ function bbcs_display_hits_and_uniques_chart($atts)
 
     $end_date   = $current_date->format('Y-m-d 23:59:59');
     $start_date = (clone $current_date)->modify('-' . ($days - 1) . ' days')->format('Y-m-d 00:00:00');
-    
+
     $today_str = $current_date->format('Y-m-d');
     $yesterday_str = (clone $current_date)->modify('-1 day')->format('Y-m-d');
     $start_day = substr($start_date, 0, 10);
@@ -54,7 +52,7 @@ function bbcs_display_hits_and_uniques_chart($atts)
         $past_hits = bbcs_summary_get_per_day('chart_hits', $start_day, $yesterday_str);
         $past_uniq = bbcs_summary_get_per_day('chart_uniques', $start_day, $yesterday_str);
 
-        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $today_live = $wpdb->get_row(
             $wpdb->prepare("
                 SELECT COUNT(*) AS hits, COUNT(DISTINCT ch.ip) AS uniques
@@ -77,7 +75,7 @@ function bbcs_display_hits_and_uniques_chart($atts)
             ),
             ARRAY_A
         );
-        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
         foreach ($chart_data as $d => &$vals) {
             if ($d === $today_str) {
@@ -91,10 +89,10 @@ function bbcs_display_hits_and_uniques_chart($atts)
         unset($vals);
     } else {
         // REVIEWER NOTE: Only internal self‑IPs are used; they are passed to prepare(), so the query contains no untrusted input.
-        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $results = $wpdb->get_results(
             $wpdb->prepare("
-                SELECT 
+                SELECT
                     DATE(CONVERT_TZ(FROM_UNIXTIME(ch.date), '+00:00', %s)) AS visit_date,
                     COUNT(DISTINCT ch.ip) AS uniques,
                     COUNT(*) AS hits
@@ -119,7 +117,7 @@ function bbcs_display_hits_and_uniques_chart($atts)
                 ...$ip_params
             )
         );
-        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
         foreach ((array) $results as $row) {
             $chart_data[$row->visit_date]['uniques'] = (int) $row->uniques;
@@ -144,11 +142,9 @@ function bbcs_display_hits_and_uniques_chart($atts)
     $output = ob_get_clean();
 
     if ($BBCS->settings->cache_ui_data == 1) {
-        if (BOTBLOCKER_CACHE_WP) {
-            wp_cache_set($cache_key, $output, 'botblocker-security', $BBCS->settings->cache_ui_duration);
-        } else {
-            set_transient($cache_key, $output, $BBCS->settings->cache_ui_duration);
-        }
+
+        set_transient($cache_key, $output, $BBCS->settings->cache_ui_duration);
+
     }
 
     return $output;

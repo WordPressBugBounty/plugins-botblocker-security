@@ -60,7 +60,7 @@ function bbcs_checkPopularPlugins()
     $installedPlugins = [];
 
     foreach ($plugins as $name => $pluginFile) {
-        if (is_plugin_active($pluginFile)) {
+        if (is_plugin_active($pluginFile) || (is_multisite() && is_plugin_active_for_network($pluginFile))) {
             $installedPlugins[] = $name;
         }
     }

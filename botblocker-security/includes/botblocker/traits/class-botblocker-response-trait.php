@@ -234,7 +234,7 @@ trait BotBlockerResponseTrait {
             if (isset($this_ip_test['expires']) && is_numeric($this_ip_test['expires']) && $this_ip_test['expires'] - $this->time < 86401) { // TODO time
                 $waitTime = (int)($this_ip_test['expires'] - $this->time + 4);
                 $accessBlocked = esc_html(__('Access has been blocked', 'botblocker-security'));
-                $secondsLeft = esc_html(__('Seconds left until the unlock:', 'botblocker-security'));
+                $secondsLeft = esc_html(__('Seconds until unlock:', 'botblocker-security'));
                 $ban_message = '<center><h1 class="info info-block">' . $accessBlocked . '</h1>
                     <h5 class="block-string">' . $secondsLeft . ' <span id="countdownTimer"><b>' . $waitTime . '</b></span></h5></center>
                     <script>

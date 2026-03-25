@@ -31,6 +31,51 @@ window.bbcsDebugError = function(...args) {
 
 bbcsDebugLog(bbcsJsData.shortName + ' v.' + bbcsJsData.version);
 
+var bbcsDdosRetryCount = 0;
+var bbcsDdosMaxRetries = 3;
+
+function bbcs_isDdosResponse(responseText) {
+    if (!responseText) return false;
+    try {
+        JSON.parse(responseText.trim());
+        return false;
+    } catch(e) {}
+    return responseText.indexOf('<') !== -1 || responseText.indexOf('document.cookie') !== -1;
+}
+
+function bbcs_extractDdosCookie(responseText) {
+    if (!responseText) return false;
+    var cookiePatterns = [
+        /document\.cookie\s*=\s*"([^"]+)"/,
+        /document\.cookie\s*=\s*'([^']+)'/
+    ];
+    for (var i = 0; i < cookiePatterns.length; i++) {
+        var cookieMatch = responseText.match(cookiePatterns[i]);
+        if (cookieMatch && cookieMatch[1]) {
+            bbcsDebugLog('DDoS protection cookie detected, setting: ' + cookieMatch[1].substring(0, 20) + '...');
+            document.cookie = cookieMatch[1];
+            return true;
+        }
+    }
+    return false;
+}
+
+function bbcs_handleDdosResponse(responseText, s, d, x, checkFn) {
+    bbcs_extractDdosCookie(responseText);
+    if (bbcsDdosRetryCount < bbcsDdosMaxRetries) {
+        bbcsDdosRetryCount++;
+        var delay = bbcsDdosRetryCount * 1000;
+        bbcsDebugLog('DDoS retry ' + bbcsDdosRetryCount + '/' + bbcsDdosMaxRetries + ' in ' + delay + 'ms');
+        setTimeout(function() {
+            checkFn(s, d, x);
+        }, delay);
+        return true;
+    }
+    bbcsDebugLog('DDoS retries exhausted, redirecting to page');
+    window.location.href = bbcsJsData.redirectUrl;
+    return true;
+}
+
 function bbcs_detectAll() {
     const results = {
         navigatorMismatch: bbcs_detectNavigatorMismatch(),
@@ -223,7 +268,7 @@ window[bbcsJsData.checkFunctionName] = function(s, d, x) {
 
     var xhr = new XMLHttpRequest();
     xhr.open('POST', bbcsJsData.ajaxUrl, true);
-    xhr.timeout = 5000;
+    xhr.timeout = bbcsDdosRetryCount > 0 ? 10000 : 5000;
 
     xhr.onload = function() {
         if (xhr.status == 200) {
@@ -279,23 +324,41 @@ window[bbcsJsData.checkFunctionName] = function(s, d, x) {
                 }
             } catch (e) {
                 bbcsDebugError('Error parsing JSON:', e);
-                bbcsDebugLog('Response text received:', xhr.responseText); 
+                bbcsDebugLog('Response text received:', xhr.responseText);
+                if (bbcs_isDdosResponse(xhr.responseText)) {
+                    var checkFn = window[bbcsJsData.checkFunctionName];
+                    if (bbcs_handleDdosResponse(xhr.responseText, s, d, x, checkFn)) return;
+                }
                 botblocker_captcha_render();
             }
 
         } else {
             bbcsDebugLog('Error: ' + xhr.status);
+            if (bbcs_isDdosResponse(xhr.responseText)) {
+                var checkFn = window[bbcsJsData.checkFunctionName];
+                if (bbcs_handleDdosResponse(xhr.responseText, s, d, x, checkFn)) return;
+            }
             botblocker_captcha_render();
         }
     };
 
     xhr.ontimeout = function() {
         bbcsDebugLog('timeout');
+        if (bbcsDdosRetryCount > 0) {
+            bbcsDebugLog('Timeout during DDoS retry, redirecting');
+            window.location.href = bbcsJsData.redirectUrl;
+            return;
+        }
         botblocker_captcha_render();
     };
 
     xhr.onerror = function() {
         bbcsDebugLog('error');
+        if (bbcsDdosRetryCount > 0) {
+            bbcsDebugLog('Error during DDoS retry, redirecting');
+            window.location.href = bbcsJsData.redirectUrl;
+            return;
+        }
         botblocker_captcha_render();
     };
 

@@ -8,7 +8,7 @@ $BBCSA = Botblocker_Admin::getInstance();
 $bbcs_cloud_api_active = (function_exists('bbcs_isCloudAPIActive') && bbcs_isCloudAPIActive());
 $bbcs_early_addon_active = function_exists('bbcs_is_addon_active') ? bbcs_is_addon_active('bbcs-early-init') : false;
 $bbcs_early_available = $bbcs_cloud_api_active && $bbcs_early_addon_active;
-$bbcs_contact_email_collected = (int) get_option('bbcs_contact_email_collected', 0) === 1;
+$bbcs_contact_email_collected = (int) bbcs_get_option('bbcs_contact_email_collected', 0) === 1;
 
 ?><section class="card bbcs-card-border-left ">
     <header class="card-header bbcs_small_header">
@@ -51,7 +51,7 @@ $bbcs_contact_email_collected = (int) get_option('bbcs_contact_email_collected',
                 <a href="#">
                     <i class="fas fa-info-circle bbcs-gray ms-1" data-bs-toggle="tooltip" data-bs-html="true"
                         data-bs-placement="top"
-                        data-bs-original-title="<?php esc_html_e('Early initialization via wp-config allows black/white IP lists to work before the WordPress core loads', 'botblocker-security'); ?>">
+                        data-bs-original-title="<?php esc_html_e('Loads black/white IP lists via wp-config before WordPress core starts', 'botblocker-security'); ?>">
                     </i>
                 </a>
             </span>
@@ -60,16 +60,16 @@ $bbcs_contact_email_collected = (int) get_option('bbcs_contact_email_collected',
         <div class="text-muted bbcs-sidebar-pro-text " <?php echo $bbcs_early_available ? 'hidden' : ''; ?>>
             <?php 
             if (!$bbcs_cloud_api_active && !$bbcs_early_addon_active) {
-                echo esc_html__('Requires active Cloud API Connection and Early Init addon.', 'botblocker-security');
+                echo esc_html__('Requires Cloud API and the Early Init add-on.', 'botblocker-security');
             } elseif (!$bbcs_cloud_api_active) {
                 echo esc_html__('Requires active PRO', 'botblocker-security');
             } else {
-                echo esc_html__('Requires Early Init addon to be enabled.', 'botblocker-security');
+                echo esc_html__('Requires the Early Init add-on to be enabled.', 'botblocker-security');
             }
             ?>
-            (<a href="<?php echo esc_url($BBCSA->pages_cloud_api); ?>"><?php esc_html_e('Buy PRO now!', 'botblocker-security'); ?></a>
+            (<a href="<?php echo esc_url($BBCSA->pages_cloud_api); ?>"><?php esc_html_e('Get PRO', 'botblocker-security'); ?></a>
             <?php esc_html_e('or', 'botblocker-security'); ?>
-            <a href="<?php echo esc_url($BBCSA->pages_addons); ?>"><?php esc_html_e('manage addons', 'botblocker-security'); ?></a>)
+            <a href="<?php echo esc_url($BBCSA->pages_addons); ?>"><?php esc_html_e('manage add-ons', 'botblocker-security'); ?></a>)
         </div>
         
         <div class="bbcs_switch_container">
@@ -87,7 +87,7 @@ $bbcs_contact_email_collected = (int) get_option('bbcs_contact_email_collected',
                 <a href="#">
                     <i class="fas fa-info-circle bbcs-gray ms-1" data-bs-toggle="tooltip" data-bs-html="true"
                         data-bs-placement="top"
-                        data-bs-original-title="<?php esc_html_e('Running as an MU plugin allows black/white IP lists to work before regular plugins and the WordPress core are fully loaded', 'botblocker-security'); ?>">
+                        data-bs-original-title="<?php esc_html_e('MU mode loads black/white IP lists before regular plugins and WordPress core', 'botblocker-security'); ?>">
                     </i>
                 </a>
             </span>
@@ -108,7 +108,7 @@ $bbcs_contact_email_collected = (int) get_option('bbcs_contact_email_collected',
                 <a href="#">
                     <i class="fas fa-info-circle bbcs-gray ms-1" data-bs-toggle="tooltip" data-bs-html="true"
                         data-bs-placement="top" 
-                        data-bs-original-title="<?php esc_html_e('Redis  used to speed up the work of long stages of processing site visitors', 'botblocker-security'); ?>">
+                        data-bs-original-title="<?php esc_html_e('Speeds up visitor processing via Redis', 'botblocker-security'); ?>">
                     </i>
                 </a>
             </span>
@@ -131,7 +131,7 @@ $bbcs_contact_email_collected = (int) get_option('bbcs_contact_email_collected',
                 <a href="#">
                     <i class="fas fa-info-circle bbcs-gray ms-1" data-bs-toggle="tooltip" data-bs-html="true"
                         data-bs-placement="top"
-                        data-bs-original-title="<?php esc_html_e('Memcached used to speed up the work of long stages of processing site visitors', 'botblocker-security'); ?>">
+                        data-bs-original-title="<?php esc_html_e('Speeds up visitor processing via Memcached', 'botblocker-security'); ?>">
                     </i>
                 </a>
             </span>
@@ -147,7 +147,7 @@ $bbcs_contact_email_collected = (int) get_option('bbcs_contact_email_collected',
                 <a href="#">
                     <i class="fas fa-info-circle bbcs-gray ms-1" data-bs-toggle="tooltip" data-bs-html="true"
                         data-bs-placement="top"
-                        data-bs-original-title="<?php esc_html_e('Enabling this option will significantly speed up repeat user checks within 24 hours', 'botblocker-security'); ?>">
+                        data-bs-original-title="<?php esc_html_e('Caches PTR lookups to speed up repeat visitor checks (24h TTL)', 'botblocker-security'); ?>">
                     </i>
                 </a>
             </span>
@@ -195,11 +195,11 @@ $bbcs_contact_email_collected = (int) get_option('bbcs_contact_email_collected',
             <li><i class="fa-solid fa-check me-1"></i><?php esc_html_e('Hide login URL', 'botblocker-security'); ?></li>
             <li><i class="fa-solid fa-check me-1"></i><?php esc_html_e('Speed Optimizations', 'botblocker-security'); ?></li>            
             <li><i class="fa-solid fa-check me-1"></i><?php esc_html_e('Cloud Bot Detection', 'botblocker-security'); ?></li>
-            <li><i class="fa-solid fa-check me-1"></i><?php esc_html_e('VPN & Proxy Blocking', 'botblocker-security'); ?></li>
+            <li><i class="fa-solid fa-check me-1"></i><?php esc_html_e('VPN and Proxy Blocking', 'botblocker-security'); ?></li>
             <li><i class="fa-solid fa-check me-1"></i><?php esc_html_e('Behavioral Analysis', 'botblocker-security'); ?></li>
             <li><i class="fa-solid fa-check me-1"></i><?php esc_html_e('Threat Intelligence', 'botblocker-security'); ?></li>
             <li><i class="fa-solid fa-check me-1"></i><?php esc_html_e('Daily Updates', 'botblocker-security'); ?></li>
-            <li><i class="fa-solid fa-check me-1"></i><?php esc_html_e('All Addons Access', 'botblocker-security'); ?></li>
+            <li><i class="fa-solid fa-check me-1"></i><?php esc_html_e('All Add-ons Access', 'botblocker-security'); ?></li>
             <li><i class="fa-solid fa-check me-1"></i><?php esc_html_e('Early Initialization', 'botblocker-security'); ?></li>
             <li><i class="fa-solid fa-check me-1"></i><?php esc_html_e('Priority Support', 'botblocker-security'); ?></li>
         </ul>
@@ -279,8 +279,8 @@ $bbcs_contact_email_collected = (int) get_option('bbcs_contact_email_collected',
                 data-bs-original-title="<?php esc_html_e('BotBlocker Settings', 'botblocker-security'); ?>"><i
                     class="fa-solid fa-gear bbcs-h-btn-gray"></i></a>
         </div>
-        <h2 class="card-title"><?php esc_html_e('Security Updates & Offers', 'botblocker-security'); ?></h2>
-        <p class="card-subtitle"><?php esc_html_e('Subscribe to receive important security news and special offers', 'botblocker-security'); ?></p>
+        <h2 class="card-title"><?php esc_html_e('Security Updates and Offers', 'botblocker-security'); ?></h2>
+        <p class="card-subtitle"><?php esc_html_e('Get security updates and offers by email', 'botblocker-security'); ?></p>
     </header>
     <div class="card-body">
         <input value="<?php echo esc_attr( bbcs_getsupportData() ); ?>" type="email" id="bbcs_contact_email" class="form-control mb-2" placeholder="<?php esc_attr_e('Your email', 'botblocker-security'); ?>">

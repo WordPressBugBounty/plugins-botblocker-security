@@ -10,9 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 					alt="<?php esc_attr_e('Contacts and Support', 'botblocker-security'); ?>" 
 					class="img-fluid bbcs-info-image mb-3">
                 <p class="bbcs-info-text">
-                    <?php esc_html_e('If you have any questions, suggestions, or need assistance with BotBlocker, 
-					please feel free to reach out to us. We are here to help you make the most of our plugin and 
-					ensure your website is protected from unwanted bots and malicious traffic.', 'botblocker-security'); ?>
+                    <?php esc_html_e('Questions, suggestions, or need help? Contact us through any channel below.', 'botblocker-security'); ?>
                 </p>
 				<hr class="bbcs-info-hr">
 				<div class="bbcs-info-footer">
@@ -28,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 					target="_blank" class="bbcs-info-footer-a"><?php esc_html_e('System administration', 'botblocker-security'); ?></a>
 
 					<a href="<?php echo esc_url(BOTBLOCKER_DOCS_URL)?>/custom-plugin-and-theme-development-for-wordpress-any-complexity-any-technology/" 
-					target="_blank" class="bbcs-info-footer-a"><?php esc_html_e('Wordpress development', 'botblocker-security'); ?></a>
+					target="_blank" class="bbcs-info-footer-a"><?php esc_html_e('WordPress development', 'botblocker-security'); ?></a>
 				</div>
 			</div>
 		</div>
@@ -52,7 +50,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			<br> -->
 			<a href="<?php echo esc_url(BOTBLOCKER_WORDPRESS_URL)?>"
 			class="btn btn-xs"><i class="fa-brands fa-wordpress-simple"></i>&nbsp;
-				<?php esc_html_e('Wordpress plugin page', 'botblocker-security'); ?>
+				<?php esc_html_e('WordPress plugin page', 'botblocker-security'); ?>
 			</a>
 			<br>
 			<a href="<?php echo esc_url(BOTBLOCKER_MAILTO_LINK)?>" class="btn btn-xs">

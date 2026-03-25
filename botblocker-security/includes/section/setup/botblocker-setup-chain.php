@@ -34,7 +34,7 @@ $bbcs_early_available = $bbcs_is_cloud_api_active && $bbcs_early_addon_active;
                     <?php if ( ! $bbcs_early_available ) : ?>
                             <a href="<?php echo esc_url( $BBCSA->pages_cloud_api ); ?>"><?php esc_html_e('Connect now!', 'botblocker-security'); ?></a>
                             <?php esc_html_e('or', 'botblocker-security'); ?>
-                            <a href="<?php echo esc_url( $BBCSA->pages_addons ); ?>"><?php esc_html_e('manage addons', 'botblocker-security'); ?></a>
+                            <a href="<?php echo esc_url( $BBCSA->pages_addons ); ?>"><?php esc_html_e('manage add-ons', 'botblocker-security'); ?></a>
                     <?php endif; ?>                    
                 </p>
             </div>
@@ -61,13 +61,7 @@ $bbcs_early_available = $bbcs_is_cloud_api_active && $bbcs_early_addon_active;
         </div>
         <div class="bbcs-vertical-stack-box">
             <p class="bbcs-guide-p">
-                <?php esc_html_e('Early initialization and/or MU plugin mode let BotBlocker reject 
-                requests at the very first IP gate: the user maintained and automatically built 
-                blacklist (bots, malicious networks, previously blocked IPs) is 
-                checked before heavier logic. With Early Init, WordPress itself does not load at 
-                all, minimizing memory and CPU. With the MU plugin, filtering executes before regular 
-                plugins and the theme, also saving resources. This ensures only potentially clean traffic 
-                proceeds while junk is dropped as early as possible.', 'botblocker-security'); ?>
+                <?php esc_html_e('Early Init and MU plugin modes reject requests at the first gate: IPs on the blacklist (bots, malicious networks, previously blocked) are dropped before heavier logic runs. With Early Init, WordPress does not load at all — saving memory and CPU. The MU plugin filters before regular plugins and the theme. Only clean traffic proceeds; junk is dropped as early as possible.', 'botblocker-security'); ?>
             </p>
         </div>
         <div class="bbcs-vertical-stack-box">

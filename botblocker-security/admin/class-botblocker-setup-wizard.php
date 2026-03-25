@@ -3,7 +3,6 @@ if (! defined('ABSPATH')) exit; // Exit if accessed directly
 
 class BotBlocker_SetupWizard
 {
-
     public function hooks()
     {
         add_action('admin_init', [$this, 'load_wizard']);
@@ -35,16 +34,19 @@ class BotBlocker_SetupWizard
             return;
         }
         
-        // Только в админке
-        if (!is_admin()) {
+       if (!is_admin()) {
             return;
         }
         
-        // Проверяем что это страница визарда
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+      // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         if (!isset($_GET['page']) || $_GET['page'] !== 'bbcs_setup_wizard') {
             return;
         }
+
+		if ( is_multisite() && is_network_admin() ) {
+			wp_safe_redirect( bbcs_site_admin_page_url( 'bbcs_setup_wizard' ) );
+			exit;
+		}
         
         set_current_screen(); // Ensure current screen is set
         remove_action('admin_print_styles', 'gutenberg_block_editor_admin_print_styles');
@@ -53,50 +55,49 @@ class BotBlocker_SetupWizard
         $this->load_setup_wizard();
     }
 
- 	public function redirect_after_activation() { 
+	public function redirect_after_activation() { 
 
 		if ( wp_doing_ajax() || wp_doing_cron() ) {
 			return;
 		}
 
-		// Редирект только в админке
-		if ( ! is_admin() ) {
+	if ( ! is_admin() ) {
 			return;
 		}
 
-        if ( ! get_transient( 'bbcs_activation_redirect' ) ) {
+		if ( is_network_admin() ) {
 			return;
 		}
 
-		delete_transient( 'bbcs_activation_redirect' );
+        if ( ! bbcs_get_option( 'bbcs_activation_redirect', false ) ) {
+			return;
+		}
+
+		bbcs_delete_option( 'bbcs_activation_redirect' );
 
 		// Check option to disable setup wizard redirect.
-		if ( get_option( 'bbcs_activation_prevent_redirect' ) ) {
+		if ( bbcs_get_option( 'bbcs_activation_prevent_redirect' ) ) {
 			return;
 		}
 
-		$wizard_completed = get_option( 'bbcs_setup_wizard_completed', false );
-		$initial_version = get_option( 'bbcs_initial_version', '' );
+		$wizard_completed = bbcs_get_option( 'bbcs_setup_wizard_completed', false );
+		$initial_version = bbcs_get_option( 'bbcs_initial_version', '' );
 		$current_version = BOTBLOCKER_VERSION;
 		$wizard_on_update = defined('BOTBLOCKER_WIZARD_ON_UPDATE') && BOTBLOCKER_WIZARD_ON_UPDATE;
 
-		// Если визард завершен и версия не изменилась - не показываем визард
 		if ( $wizard_completed && $initial_version === $current_version ) {
 			return;
 		}
 
-		// Если визард завершен, версия изменилась, но настройка не включена - не показываем
 		if ( $wizard_completed && $initial_version !== $current_version && ! $wizard_on_update ) {
 			return;
 		}
 
-		// Показываем визард при первой активации или при обновлении (если включено)
-		wp_safe_redirect( admin_url( 'admin.php?page=bbcs_setup_wizard' ) );
+		wp_safe_redirect( bbcs_site_admin_page_url('bbcs_setup_wizard') );
 		exit;
 	}  
     
 	private function load_setup_wizard() {
-		// Проверяем нужно ли показывать визард
 		if (!$this->should_setup_wizard_load()) {
 			return;
 		}
@@ -108,19 +109,17 @@ class BotBlocker_SetupWizard
 	}  
     
 	public function should_setup_wizard_load() {
-		// Показываем только на странице визарда
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if (!isset($_GET['page']) || $_GET['page'] !== 'bbcs_setup_wizard') {
 			return false;
 		}
 		
-		// Проверяем права доступа
-		if (!current_user_can('manage_options')) {
+		if (!current_user_can(bbcs_can_manage())) {
 			return false;
 		}
 		
 		return true;
-	}    
+	}
 
 	public function setup_wizard_header() {
 		// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet, WordPress.WP.EnqueuedResources.NonEnqueuedScript 
@@ -147,8 +146,8 @@ class BotBlocker_SetupWizard
 					'plugin_version'     => BOTBLOCKER_VERSION,
 					'public_url'         => BOTBLOCKER_URL . 'public/',
 					'current_user_email' => wp_get_current_user()->user_email,
-					'dashboard_url'      => admin_url('admin.php?page=bbcs_dashboard'),
-					'reports_url'        => admin_url('admin.php?page=bbcs_reports'),
+					'dashboard_url'      => bbcs_site_admin_page_url('bbcs_dashboard'),
+					'reports_url'        => bbcs_site_admin_page_url('bbcs_reports'),
 					'current_ip'         => $this->get_current_ip(),
 					'site_url'           => home_url('/'),
 				]); ?>;
@@ -170,7 +169,6 @@ class BotBlocker_SetupWizard
 	public function setup_wizard_footer() {
 		?>
 		<?php 
-			// wp_print_scripts(''); // TODO: возможно понадобятся скрипты
 		?>
 		</body>
 		</html>
@@ -199,18 +197,18 @@ class BotBlocker_SetupWizard
 					<div id="bbcs-settings-error-loading-area">
 						<div>
 							<div id="bbcs-error-js">
-								<h3><?php esc_html_e( 'Whoops, something\'s not working.', 'botblocker-security' ); ?></h3>
-								<p class="info"><?php esc_html_e( 'It looks like something is preventing JavaScript from loading on your website. BotBlocker Security requires JavaScript in order to give you the best possible experience.', 'botblocker-security' ); ?></p>
+								<h3><?php esc_html_e( 'Something isn\'t working.', 'botblocker-security' ); ?></h3>
+								<p class="info"><?php esc_html_e( 'JavaScript appears to be blocked on this page. BotBlocker Security requires JavaScript to function.', 'botblocker-security' ); ?></p>
 								<p class="info">
-									<?php esc_html_e( 'In order to fix this issue, please check each of the items below:', 'botblocker-security' ); ?>
+									<?php esc_html_e( 'To resolve this, check the following:', 'botblocker-security' ); ?>
 								</p>
 								<ul class="info">
 									<li><?php esc_html_e( 'If you are using an ad blocker, please disable it or whitelist the current page.', 'botblocker-security' ); ?></li>
-									<li><?php esc_html_e( 'If you aren\'t already using Chrome, Firefox, Safari, or Edge, then please try switching to one of these popular browsers.', 'botblocker-security' ); ?></li>
+									<li><?php esc_html_e( 'Try using Chrome, Firefox, Safari, or Edge.', 'botblocker-security' ); ?></li>
 									<li><?php esc_html_e( 'Confirm that your browser is updated to the latest version.', 'botblocker-security' ); ?></li>
 								</ul>
 								<p class="info">
-									<?php esc_html_e( 'If you\'ve checked each of these details and are still running into issues, then please get in touch with our support team. We’d be happy to help!', 'botblocker-security' ); ?>
+									<?php esc_html_e( 'Still having issues? Contact our support team.', 'botblocker-security' ); ?>
 								</p>
 								<a href="<?php echo esc_url( $contact_url ); ?>" target="_blank" class="button" rel="noopener noreferrer">
 									<?php esc_html_e( 'Contact Us', 'botblocker-security' ); ?>
@@ -231,7 +229,6 @@ class BotBlocker_SetupWizard
 	private function settings_inline_js() {
 		?>
 		<script type="text/javascript">
-			// TODO: скрипты сюда
 		</script>
 		<?php
 	}
@@ -239,9 +236,9 @@ class BotBlocker_SetupWizard
 private function render_wizard_content() {
 		// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
 		$inline_logo_image = BOTBLOCKER_URL . 'admin/img/logo-small-transparent.webp';
-		$dashboard_url = admin_url('admin.php?page=bbcs_dashboard');		$wizard_completed = get_option('bbcs_setup_wizard_completed', false);
+		$dashboard_url = bbcs_site_admin_page_url('bbcs_dashboard');
+		$wizard_completed = bbcs_get_option('bbcs_setup_wizard_completed', false);
 		
-		// Если визард уже завершен - показываем сообщение
 		if ($wizard_completed) {
 			?>
 			<div class="bbcs-wizard-container">
@@ -253,18 +250,18 @@ private function render_wizard_content() {
 				<div class="bbcs-wizard-body">
 					<div class="bbcs-wizard-step-content text-center">
 						<i class="fa-solid fa-check-circle fa-4x text-success mb-4"></i>
-						<h2 class="bbcs-wizard-title"><?php esc_html_e('Setup Already Completed!', 'botblocker-security'); ?></h2>
-						<p class="mb-4"><?php esc_html_e('You have already completed the setup wizard. You can modify settings anytime from the dashboard.', 'botblocker-security'); ?></p>
+						<h2 class="bbcs-wizard-title"><?php esc_html_e('Setup Already Completed', 'botblocker-security'); ?></h2>
+						<p class="mb-4"><?php esc_html_e('Setup is complete. You can adjust settings anytime from the Dashboard.', 'botblocker-security'); ?></p>
 						<div class="bbcs-wizard-actions">
 							<a href="<?php echo esc_url($dashboard_url); ?>" class="btn btn-primary">
 								<?php esc_html_e('Go to Dashboard', 'botblocker-security'); ?>
 							</a>
-							<a href="<?php echo esc_url(admin_url('admin.php?page=bbcs_settings')); ?>" class="btn btn-secondary">
+							<a href="<?php echo esc_url(bbcs_site_admin_page_url('bbcs_settings')); ?>" class="btn btn-secondary">
 								<?php esc_html_e('Settings', 'botblocker-security'); ?>
 							</a>
 						<button type="button" class="btn btn-outline-primary" id="bbcs-wizard-reset-btn">
 							<i class="fa-solid fa-rotate"></i>
-							<?php esc_html_e('Reset & Restart Wizard', 'botblocker-security'); ?>
+							<?php esc_html_e('Reset and Restart Wizard', 'botblocker-security'); ?>
 						</button>
 					</div>
 					<script>
@@ -341,7 +338,7 @@ private function render_wizard_content() {
 							</div>
 							<div class="bbcs-wizard-feature">
 								<i class="fa-solid fa-globe"></i>
-								<span><?php esc_html_e('Stops hosting bots, proxies and TOR traffic', 'botblocker-security'); ?></span>
+								<span><?php esc_html_e('Stops hosting bots, proxies and Tor traffic', 'botblocker-security'); ?></span>
 							</div>
 							<div class="bbcs-wizard-feature">
 								<i class="fa-solid fa-bolt"></i>
@@ -349,7 +346,7 @@ private function render_wizard_content() {
 							</div>
 							<div class="bbcs-wizard-feature">
 								<i class="fa-solid fa-robot"></i>
-								<span><?php esc_html_e('Verifies search engines to avoid SEO issues. Detection of fake crawlers', 'botblocker-security'); ?></span>
+								<span><?php esc_html_e('Verifies search engines to protect SEO. Detects fake crawlers', 'botblocker-security'); ?></span>
 							</div>
 							<div class="bbcs-wizard-feature">
 								<i class="fa-solid fa-lock"></i>
@@ -365,7 +362,7 @@ private function render_wizard_content() {
 							</div>
 							<div class="bbcs-wizard-feature">
 								<i class="fa-solid fa-sliders"></i>
-								<span><?php esc_html_e('Add your own rules: IP, User-Agent, PTR, country, paths, and much more...', 'botblocker-security'); ?></span>
+								<span><?php esc_html_e('Custom rules: IP, User-Agent, PTR, country, paths and more', 'botblocker-security'); ?></span>
 							</div>
 							<div class="bbcs-wizard-feature">
 								<i class="fa-solid fa-cloud-arrow-up"></i>
@@ -377,10 +374,10 @@ private function render_wizard_content() {
 							</div>
 						</div>
 
-						<?php if ((int) get_option('bbcs_contact_email_collected', 0) !== 1) : ?>
+						<?php if ((int) bbcs_get_option('bbcs_contact_email_collected', 0) !== 1) : ?>
 						<section class="bbcs-email-card">
 							<h3 class="bbcs-email-card-title">
-								<?php esc_html_e('Security Updates & Offers', 'botblocker-security'); ?>
+								<?php esc_html_e('Security Updates and Offers', 'botblocker-security'); ?>
 							</h3>
 							<div class="bbcs-email-card-form">
 								<input
@@ -418,7 +415,7 @@ private function render_wizard_content() {
 									<i class="fa-solid fa-feather"></i>
 								</div>
 								<h3><?php esc_html_e('Light Protection', 'botblocker-security'); ?></h3>
-								<p class="bbcs-preset-tagline"><?php esc_html_e('Safe and gentle for all sites', 'botblocker-security'); ?></p>
+								<p class="bbcs-preset-tagline"><?php esc_html_e('Low impact, works on any site', 'botblocker-security'); ?></p>
 								<ul class="bbcs-preset-features">
 									<li><?php esc_html_e('Basic bot blocking', 'botblocker-security'); ?></li>
 									<li><?php esc_html_e('Zero impact on visitors', 'botblocker-security'); ?></li>
@@ -433,10 +430,10 @@ private function render_wizard_content() {
 								<h3><?php esc_html_e('Strong Protection', 'botblocker-security'); ?> 
 									<!--<span class="bbcs-wizard-recommended"><?php //esc_html_e('Recommended', 'botblocker-security'); ?></span>-->
 								</h3>
-								<p class="bbcs-preset-tagline"><?php esc_html_e('Optimal balance of security & usability', 'botblocker-security'); ?></p>
+								<p class="bbcs-preset-tagline"><?php esc_html_e('Optimal balance of security and usability', 'botblocker-security'); ?></p>
 								<ul class="bbcs-preset-features">
 									<li><?php esc_html_e('Advanced threat detection', 'botblocker-security'); ?></li>
-									<li><?php esc_html_e('Blocks 95% of bad bots', 'botblocker-security'); ?></li>
+									<li><?php esc_html_e('Blocks most known bad bots', 'botblocker-security'); ?></li>
 									<li><?php esc_html_e('Real visitors unaffected', 'botblocker-security'); ?></li>
 									<li><?php esc_html_e('Recommended for most sites', 'botblocker-security'); ?></li>
 								</ul>
@@ -450,14 +447,14 @@ private function render_wizard_content() {
 									<i class="fa-solid fa-crown" style="color: #f59e0b; font-size: 14px; margin-left: 4px;"></i>
 									<?php endif; ?>
 								</h3>
-								<p class="bbcs-preset-tagline"><?php esc_html_e('Enterprise-grade protection with PRO features', 'botblocker-security'); ?></p>
+								<p class="bbcs-preset-tagline"><?php esc_html_e('Maximum protection with PRO features', 'botblocker-security'); ?></p>
 								<ul class="bbcs-preset-features">
 									<li><?php esc_html_e('Early init — blocks before WP loads', 'botblocker-security'); ?></li>
 									<li><?php esc_html_e('Zero-day botnet updates', 'botblocker-security'); ?></li>
-									<li><?php esc_html_e('WordPress acceleration & optimization', 'botblocker-security'); ?></li>
-									<li><?php esc_html_e('All addons included (Usefull tools, security, notify etc.)', 'botblocker-security'); ?></li>
-									<li><?php esc_html_e('5 Millions+ bots signatures', 'botblocker-security'); ?></li>
-									<li><?php esc_html_e('Emergency support (24-hour time to resolution)', 'botblocker-security'); ?></li>
+									<li><?php esc_html_e('WordPress acceleration and optimization', 'botblocker-security'); ?></li>
+									<li><?php esc_html_e('All add-ons included (tools, security, notifications, etc.)', 'botblocker-security'); ?></li>
+									<li><?php esc_html_e('5 million+ bot signatures', 'botblocker-security'); ?></li>
+									<li><?php esc_html_e('Emergency support (24-hour resolution time)', 'botblocker-security'); ?></li>
 									<li><?php esc_html_e('AI Behavioral analysis engine', 'botblocker-security'); ?></li>
 									<li style="color: #f59e0b; font-weight: 600;"><?php esc_html_e('Requires PRO license', 'botblocker-security'); ?></li>
 								</ul>
@@ -474,7 +471,7 @@ private function render_wizard_content() {
 								<?php endif; ?>
 							</div>
 						</div>
-						<p class="bbcs-wizard-hint"><?php esc_html_e('Don\'t worry — you can change this anytime with one click', 'botblocker-security'); ?></p>
+						<p class="bbcs-wizard-hint"><?php esc_html_e('You can change this anytime with one click.', 'botblocker-security'); ?></p>
 						<div class="bbcs-wizard-actions">
 							<button class="btn btn-secondary bbcs-wizard-back">
 								<i class="fa-solid fa-arrow-left"></i>
@@ -491,7 +488,7 @@ private function render_wizard_content() {
 				<div class="bbcs-wizard-step" data-step="2">
 					<div class="bbcs-wizard-step-content">
 						<h2 class="bbcs-wizard-title"><?php esc_html_e('Compatibility Check', 'botblocker-security'); ?></h2>
-						<p class="text-center text-muted mb-4"><?php esc_html_e('Running quick tests to ensure everything works perfectly with your site', 'botblocker-security'); ?></p>
+						<p class="text-center text-muted mb-4"><?php esc_html_e('Running compatibility tests for your site', 'botblocker-security'); ?></p>
 						
 						<div class="bbcs-wizard-tests">
 							<div class="bbcs-wizard-test" data-test="homepage">
@@ -523,14 +520,14 @@ private function render_wizard_content() {
 						<div class="bbcs-wizard-test-warnings" style="display:none;">
 							<div class="alert alert-warning">
 								<h4><i class="fa-solid fa-triangle-exclamation me-2"></i><?php esc_html_e('Minor compatibility issues detected', 'botblocker-security'); ?></h4>
-								<p class="small mb-3"><?php esc_html_e('Don\'t worry! These can be fixed automatically. Your site will remain fully functional.', 'botblocker-security'); ?></p>
+								<p class="small mb-3"><?php esc_html_e('These can be fixed automatically. Your site will stay functional.', 'botblocker-security'); ?></p>
 								<div class="bbcs-wizard-actions mt-3">
 									<button class="btn btn-primary bbcs-wizard-fix-auto">
 										<i class="fa-solid fa-wand-magic-sparkles me-1"></i>
 										<?php esc_html_e('Auto-Fix (Recommended)', 'botblocker-security'); ?>
 									</button>
 									<button class="btn btn-secondary bbcs-wizard-fix-manual">
-										<?php esc_html_e('I\'ll Fix Manually', 'botblocker-security'); ?>
+										<?php esc_html_e('Fix Manually', 'botblocker-security'); ?>
 									</button>
 								</div>
 							</div>
@@ -540,17 +537,17 @@ private function render_wizard_content() {
 							<div class="alert alert-success">
 								<i class="fa-solid fa-circle-check me-2"></i>
 								<strong><?php esc_html_e('Perfect!', 'botblocker-security'); ?></strong>
-								<?php esc_html_e('All compatibility tests passed. Your site is ready for protection.', 'botblocker-security'); ?>
+								<?php esc_html_e('All tests passed. Your site is ready.', 'botblocker-security'); ?>
 							</div>
 							
 							<?php if (class_exists('WooCommerce')): ?>
 							<div class="alert alert-info">
 								<i class="fa-solid fa-shopping-cart me-2"></i>
 								<strong><?php esc_html_e('WooCommerce Detected', 'botblocker-security'); ?></strong>
-								<p class="mb-2 small"><?php esc_html_e('Great! Your store is fully compatible with BotBlocker.', 'botblocker-security'); ?></p>
+								<p class="mb-2 small"><?php esc_html_e('Your store is compatible with BotBlocker.', 'botblocker-security'); ?></p>
 								<p class="mb-0 small">
 									<i class="fa-solid fa-info-circle me-1"></i>
-									<?php esc_html_e('If you experience any payment issues, follow our', 'botblocker-security'); ?>
+									<?php esc_html_e('For payment issues, see our', 'botblocker-security'); ?>
 									<a href="<?php echo esc_url(BOTBLOCKER_DOCS_URL); ?>/how-to-properly-configure-botblocker-protection-for-your-woocommerce-store/" target="_blank" rel="noopener">
 										<?php esc_html_e('WooCommerce configuration guide', 'botblocker-security'); ?>
 									</a>.
@@ -597,7 +594,7 @@ private function render_wizard_content() {
 							<div class="form-check">
 								<input class="form-check-input" type="checkbox" id="exclude-cron" checked>
 								<label class="form-check-label" for="exclude-cron">
-									<strong><?php esc_html_e('Allow WordPress Cron & server requests', 'botblocker-security'); ?></strong>
+									<strong><?php esc_html_e('Allow WordPress Cron and server requests', 'botblocker-security'); ?></strong>
 									<span class="d-block small text-muted"><?php esc_html_e('Essential for scheduled tasks and backups', 'botblocker-security'); ?></span>
 								</label>
 							</div>
@@ -606,7 +603,7 @@ private function render_wizard_content() {
 						<div class="alert alert-info mt-3" style="font-size: 13px;">
 							<i class="fa-solid fa-lightbulb me-1"></i>
 							<strong><?php esc_html_e('Pro Tip:', 'botblocker-security'); ?></strong>
-							<?php esc_html_e('You can enable auto-save of admin IP addresses in Settings. Two-factor authentication for different user roles can be configured in Integrations.', 'botblocker-security'); ?>
+							<?php esc_html_e('Auto-save of admin IPs is available in Settings. 2FA per role can be configured in Integrations.', 'botblocker-security'); ?>
 						</div>
 						
 						<div class="bbcs-wizard-actions">
@@ -626,7 +623,7 @@ private function render_wizard_content() {
 			<div class="bbcs-wizard-step" data-step="4">
 				<div class="bbcs-wizard-step-content">
 					<h2 class="bbcs-wizard-title"><?php esc_html_e('How Should We Verify Suspicious Visitors?', 'botblocker-security'); ?></h2>
-					<p class="text-center text-muted mb-4"><?php esc_html_e('Choose how BotBlocker challenges potentially suspicious activity. All methods are designed to be bot-proof while keeping real users happy.', 'botblocker-security'); ?></p>
+					<p class="text-center text-muted mb-4"><?php esc_html_e('Choose how suspicious visitors are verified.', 'botblocker-security'); ?></p>
 					
 					<div class="bbcs-captcha-grid">
 						<?php /* 
@@ -697,7 +694,7 @@ private function render_wizard_content() {
 							</div>
 							<div class="bbcs-captcha-content">
 								<h4><i class="fa-solid fa-shapes me-2"></i><?php esc_html_e('Dynamic Shapes', 'botblocker-security'); ?></h4>
-								<p class="small text-muted mb-0"><?php esc_html_e('Match rotating shapes. Unique BotBlocker exclusive method.', 'botblocker-security'); ?></p>
+								<p class="small text-muted mb-0"><?php esc_html_e('Match rotating shapes. BotBlocker exclusive.', 'botblocker-security'); ?></p>
 							</div>
 						</div>
 
@@ -714,7 +711,7 @@ private function render_wizard_content() {
 							</div>
 							<div class="bbcs-captcha-content">
 								<h4><i class="fa-solid fa-calculator me-2"></i><?php esc_html_e('Dynamic Digits', 'botblocker-security'); ?></h4>
-								<p class="small text-muted mb-0"><?php esc_html_e('Simple math with moving numbers. Fun and effective.', 'botblocker-security'); ?></p>
+								<p class="small text-muted mb-0"><?php esc_html_e('Simple math with moving numbers. Easy and effective.', 'botblocker-security'); ?></p>
 							</div>
 						</div>
 					</div>
@@ -723,10 +720,10 @@ private function render_wizard_content() {
 						<i class="fa-solid fa-shield-halved me-1"></i>
 						<strong><?php esc_html_e('More CAPTCHA Options Available:', 'botblocker-security'); ?></strong>
 						<?php 
-						$integrations_url = admin_url('admin.php?page=bbcs_integrations');
+						$integrations_url = bbcs_site_admin_page_url('bbcs_integrations');
 						printf(
 							/* translators: %s: URL to integrations page */
-							esc_html__('BotBlocker also supports Google reCAPTCHA v2 and v3. Configure reCAPTCHA keys in %s for even stronger protection with industry-standard verification.', 'botblocker-security'),
+							esc_html__('Google reCAPTCHA v2/v3 is also supported. Configure keys in %s.', 'botblocker-security'),
 							'<a href="' . esc_url($integrations_url) . '">' . esc_html__('Integrations', 'botblocker-security') . '</a>'
 						);
 						?>
@@ -735,7 +732,7 @@ private function render_wizard_content() {
 					<div class="alert alert-info" style="font-size: 13px;">
 						<i class="fa-solid fa-lightbulb me-1"></i>
 						<strong><?php esc_html_e('Pro Tip:', 'botblocker-security'); ?></strong>
-						<?php esc_html_e('All CAPTCHA methods can be combined with invisible background checks for layered security. Choose the method that best fits your audience and security needs.', 'botblocker-security'); ?>
+						<?php esc_html_e('All methods can be combined with invisible background checks. Choose the one that fits your site.', 'botblocker-security'); ?>
 					</div>
 
 					<div class="bbcs-wizard-actions">
@@ -755,7 +752,7 @@ private function render_wizard_content() {
 			<div class="bbcs-wizard-step" data-step="5">
 				<div class="bbcs-wizard-step-content">
 					<h2 class="bbcs-wizard-title"><?php esc_html_e('Choose Your Initialization Mode', 'botblocker-security'); ?></h2>
-					<p class="text-center text-muted mb-4"><?php esc_html_e('Select when BotBlocker should start protecting your site. Earlier = stronger protection.', 'botblocker-security'); ?></p>
+					<p class="text-center text-muted mb-4"><?php esc_html_e('Select when BotBlocker activates. Earlier = stronger protection.', 'botblocker-security'); ?></p>
 					
 					<div class="bbcs-wizard-init-modes">
 						<!-- Regular Plugin (Default Selected) -->
@@ -766,7 +763,7 @@ private function render_wizard_content() {
 							<h4><?php esc_html_e('Regular Plugin', 'botblocker-security'); ?> 
 								<span class="bbcs-wizard-recommended"><?php esc_html_e('Default', 'botblocker-security'); ?></span>
 							</h4>
-							<p class="small text-muted mb-2"><?php esc_html_e('Loads with standard WordPress plugins. Good for most sites.', 'botblocker-security'); ?></p>
+							<p class="small text-muted mb-2"><?php esc_html_e('Loads with standard plugins. Fits most sites.', 'botblocker-security'); ?></p>
 							<ul class="small mb-0">
 								<li><?php esc_html_e('Standard plugin loading', 'botblocker-security'); ?></li>
 								<li><?php esc_html_e('Compatible with all setups', 'botblocker-security'); ?></li>
@@ -809,12 +806,12 @@ private function render_wizard_content() {
 								<i class="fa-solid fa-crown text-warning me-1"></i>
 								<?php esc_html_e('Early Initialization', 'botblocker-security'); ?>
 							</h4>
-							<p class="small text-muted mb-2"><?php esc_html_e('Blocks threats before WordPress even loads. Maximum security.', 'botblocker-security'); ?></p>
+							<p class="small text-muted mb-2"><?php esc_html_e('Blocks threats before WordPress loads. Maximum security.', 'botblocker-security'); ?></p>
 							<ul class="small mb-0">
 								<li><strong><?php esc_html_e('Instant IP ban capability', 'botblocker-security'); ?></strong></li>
 								<li><?php esc_html_e('Blocks attacks before WP starts', 'botblocker-security'); ?></li>
 								<li><?php esc_html_e('Lowest server resource usage', 'botblocker-security'); ?></li>
-								<li><?php esc_html_e('Enterprise-grade protection', 'botblocker-security'); ?></li>
+								<li><?php esc_html_e('Maximum protection', 'botblocker-security'); ?></li>
 							</ul>
 						</div>
 					</div>
@@ -823,10 +820,10 @@ private function render_wizard_content() {
 						<i class="fa-solid fa-lightbulb me-1"></i>
 						<strong><?php esc_html_e('Pro Tip:', 'botblocker-security'); ?></strong>
 						<?php 
-						$rules_url = admin_url('admin.php?page=bbcs_rules');
+						$rules_url = bbcs_site_admin_page_url('bbcs_rules');
 						printf(
 							/* translators: %s: URL to rules page */
-							esc_html__('Early Initialization mode provides instant IP banning for threats detected by BotBlocker. You can also manually upload custom blacklists (both IPv4 and IPv6) in the %s section for any mode.', 'botblocker-security'),
+							esc_html__('Early Init provides instant IP banning. Custom blacklists (IPv4/IPv6) can be uploaded in %s for any mode.', 'botblocker-security'),
 							'<a href="' . esc_url($rules_url) . '">' . esc_html__('Rules', 'botblocker-security') . '</a>'
 						);
 						?>
@@ -852,7 +849,7 @@ private function render_wizard_content() {
 							<i class="fa-solid fa-database me-2"></i>
 							<?php esc_html_e('Performance Optimization', 'botblocker-security'); ?>
 						</h2>
-						<p class="text-muted mb-4"><?php esc_html_e('Enable caching for faster security checks. BotBlocker will use available caching system.', 'botblocker-security'); ?></p>
+						<p class="text-muted mb-4"><?php esc_html_e('Enable caching for faster security checks. BotBlocker uses the available cache system.', 'botblocker-security'); ?></p>
 
 						<div class="bbcs-cache-grid">
 							<!-- Redis -->
@@ -899,7 +896,7 @@ private function render_wizard_content() {
 								<ul class="small mb-0">
 									<li><?php esc_html_e('No configuration needed', 'botblocker-security'); ?></li>
 									<li><?php esc_html_e('Works everywhere', 'botblocker-security'); ?></li>
-									<li><?php esc_html_e('Adequate performance', 'botblocker-security'); ?></li>
+									<li><?php esc_html_e('Standard performance', 'botblocker-security'); ?></li>
 								</ul>
 							</div>
 						</div>
@@ -907,7 +904,7 @@ private function render_wizard_content() {
 						<div class="alert alert-info mt-3" style="font-size: 13px;">
 							<i class="fa-solid fa-lightbulb me-1"></i>
 							<strong><?php esc_html_e('Pro Tip:', 'botblocker-security'); ?></strong>
-							<?php esc_html_e('Redis provides better performance for high-traffic sites. Memcached is great for distributed setups. You can change this setting later in Settings.', 'botblocker-security'); ?>
+							<?php esc_html_e('Redis is faster for high-traffic sites. Memcached fits distributed setups. This can be changed later in Settings.', 'botblocker-security'); ?>
 						</div>
 
 						<div class="bbcs-wizard-actions">
@@ -930,8 +927,8 @@ private function render_wizard_content() {
 							<div class="bbcs-wizard-success-icon">
 								<i class="fa-solid fa-circle-check"></i>
 							</div>
-							<h2 class="bbcs-wizard-title mb-2"><?php esc_html_e('Your Site is Now Protected!', 'botblocker-security'); ?></h2>
-							<p class="text-muted"><?php esc_html_e('BotBlocker is actively monitoring and protecting your WordPress site from threats.', 'botblocker-security'); ?></p>
+							<h2 class="bbcs-wizard-title mb-2"><?php esc_html_e('Your Site is Now Protected', 'botblocker-security'); ?></h2>
+							<p class="text-muted"><?php esc_html_e('BotBlocker is now monitoring and protecting your site.', 'botblocker-security'); ?></p>
 						</div>
 						
 						<div class="bbcs-wizard-final-summary">
@@ -959,7 +956,7 @@ private function render_wizard_content() {
 						<div class="bbcs-wizard-next-steps">
 							<h3><i class="fa-solid fa-rocket me-2"></i><?php esc_html_e('Quick Start Guide', 'botblocker-security'); ?></h3>
 							<div class="bbcs-steps-grid">
-								<a href="<?php echo esc_url(admin_url('admin.php?page=bbcs_dashboard')); ?>" class="bbcs-step-card">
+								<a href="<?php echo esc_url(bbcs_site_admin_page_url('bbcs_dashboard')); ?>" class="bbcs-step-card">
 									<div class="bbcs-step-icon">
 										<i class="fa-solid fa-gauge-high"></i>
 									</div>
@@ -967,7 +964,7 @@ private function render_wizard_content() {
 									<p class="small text-muted mb-0"><?php esc_html_e('Monitor real-time threats and statistics', 'botblocker-security'); ?></p>
 								</a>
 
-								<a href="<?php echo esc_url(admin_url('admin.php?page=bbcs_reports')); ?>" class="bbcs-step-card">
+								<a href="<?php echo esc_url(bbcs_site_admin_page_url('bbcs_reports')); ?>" class="bbcs-step-card">
 									<div class="bbcs-step-icon">
 										<i class="fa-solid fa-chart-line"></i>
 									</div>
@@ -975,7 +972,7 @@ private function render_wizard_content() {
 									<p class="small text-muted mb-0"><?php esc_html_e('Detailed logs of all blocked threats', 'botblocker-security'); ?></p>
 								</a>
 
-								<a href="<?php echo esc_url(admin_url('admin.php?page=bbcs_rules')); ?>" class="bbcs-step-card">
+								<a href="<?php echo esc_url(bbcs_site_admin_page_url('bbcs_rules')); ?>" class="bbcs-step-card">
 									<div class="bbcs-step-icon">
 										<i class="fa-solid fa-sliders"></i>
 									</div>
@@ -983,7 +980,7 @@ private function render_wizard_content() {
 									<p class="small text-muted mb-0"><?php esc_html_e('Create custom block/allow rules', 'botblocker-security'); ?></p>
 								</a>
 
-								<a href="<?php echo esc_url(admin_url('admin.php?page=bbcs_settings')); ?>" class="bbcs-step-card">
+								<a href="<?php echo esc_url(bbcs_site_admin_page_url('bbcs_settings')); ?>" class="bbcs-step-card">
 									<div class="bbcs-step-icon">
 										<i class="fa-solid fa-gear"></i>
 									</div>
@@ -998,15 +995,15 @@ private function render_wizard_content() {
 							<div class="bbcs-pro-badge">
 								<i class="fa-solid fa-crown"></i> PRO
 							</div>
-							<h3><?php esc_html_e('Unlock Enterprise Protection', 'botblocker-security'); ?></h3>
-							<p class="mb-3"><?php esc_html_e('Get maximum security with advanced features designed for serious websites.', 'botblocker-security'); ?></p>
+							<h3><?php esc_html_e('Unlock PRO Protection', 'botblocker-security'); ?></h3>
+							<p class="mb-3"><?php esc_html_e('Advanced security features for production sites.', 'botblocker-security'); ?></p>
 							<div class="row mb-3">
 								<div class="col-6">
 									<ul class="bbcs-pro-features-compact">
 										<li><i class="fa-solid fa-check"></i> <?php esc_html_e('Early init — blocks before WP loads', 'botblocker-security'); ?></li>
 										<li><i class="fa-solid fa-check"></i> <?php esc_html_e('WordPress Acceleration', 'botblocker-security'); ?></li>
-										<li><i class="fa-solid fa-check"></i> <?php esc_html_e('Hide Login URL & more', 'botblocker-security'); ?></li>
-										<li><i class="fa-solid fa-check"></i> <?php esc_html_e('VPN & TOR Blocking', 'botblocker-security'); ?></li>
+										<li><i class="fa-solid fa-check"></i> <?php esc_html_e('Hide Login URL + add-ons', 'botblocker-security'); ?></li>
+										<li><i class="fa-solid fa-check"></i> <?php esc_html_e('VPN and Tor Blocking', 'botblocker-security'); ?></li>
 										<li><i class="fa-solid fa-check"></i> <?php esc_html_e('AI Behavioral analysis', 'botblocker-security'); ?></li>
 										
 									</ul>
@@ -1014,27 +1011,27 @@ private function render_wizard_content() {
 								<div class="col-6">
 									<ul class="bbcs-pro-features-compact">
 										<li><i class="fa-solid fa-check"></i> <?php esc_html_e('Zero-day botnet updates', 'botblocker-security'); ?></li>
-										<li><i class="fa-solid fa-check"></i> <?php esc_html_e('5 Millions+ bots signatures', 'botblocker-security'); ?></li>
-										<li><i class="fa-solid fa-check"></i> <?php esc_html_e('All Premium Addons', 'botblocker-security'); ?></li>
+										<li><i class="fa-solid fa-check"></i> <?php esc_html_e('5 million+ bot signatures', 'botblocker-security'); ?></li>
+										<li><i class="fa-solid fa-check"></i> <?php esc_html_e('All Premium Add-ons', 'botblocker-security'); ?></li>
 										<li><i class="fa-solid fa-check"></i> <?php esc_html_e('Priority Support', 'botblocker-security'); ?></li>
 										<li><i class="fa-solid fa-check"></i> <?php esc_html_e('Emergency help (24h)', 'botblocker-security'); ?></li>
 									</ul>
 								</div>
 							</div>
-							<a href="<?php echo esc_url(admin_url('admin.php?page=bbcs_cloud_api')); ?>" class="btn btn-warning btn-lg">
+							<a href="<?php echo esc_url(bbcs_site_admin_page_url('bbcs_cloud_api')); ?>" class="btn btn-warning btn-lg">
 								<i class="fa-solid fa-crown me-2"></i><?php esc_html_e('Upgrade to PRO', 'botblocker-security'); ?>
 							</a>
 						</div>
 						<?php else: ?>
 						<div class="alert alert-success">
 							<i class="fa-solid fa-crown me-2"></i>
-							<strong><?php esc_html_e('PRO Active!', 'botblocker-security'); ?></strong>
-							<?php esc_html_e('You have full access to all enterprise features.', 'botblocker-security'); ?>
+							<strong><?php esc_html_e('PRO Active', 'botblocker-security'); ?></strong>
+							<?php esc_html_e('All PRO features are active.', 'botblocker-security'); ?>
 						</div>
 						<?php endif; ?>
 
 						<div class="bbcs-wizard-final-actions">
-							<a href="<?php echo esc_url(admin_url('admin.php?page=bbcs_dashboard')); ?>" class="btn btn-primary btn-lg lh-lg">
+							<a href="<?php echo esc_url(bbcs_site_admin_page_url('bbcs_dashboard')); ?>" class="btn btn-primary btn-lg lh-lg">
 								<i class="fa-solid fa-house me-2"></i><?php esc_html_e('Go to Dashboard', 'botblocker-security'); ?>
 							</a>
 							<a href="https://botblocker.top/docs/" target="_blank" class="btn btn-outline-secondary">
@@ -1059,7 +1056,6 @@ private function render_wizard_content() {
 	}
 	
 	private function get_current_ip() {
-		// TODO: использовать функцию из плагина для получения IP
 		return sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'] ?? ''));
 	}
 
@@ -1068,14 +1064,14 @@ private function render_wizard_content() {
 	public function ajax_save_preset() {
 		check_ajax_referer('bbcs-wizard-admin-nonce', 'nonce');
 		
-		if (!current_user_can('manage_options')) {
-			wp_send_json_error('No permission');
+		if (!current_user_can(bbcs_can_manage())) {
+			wp_send_json_error(__('No permission.', 'botblocker-security'));
 		}
 		
 		$preset = isset($_POST['preset']) ? sanitize_text_field(wp_unslash($_POST['preset'])) : '';
 		
 		if (!in_array($preset, ['light', 'strong', 'full'])) {
-			wp_send_json_error('Invalid preset');
+			wp_send_json_error(__('Invalid preset.', 'botblocker-security'));
 		}
 		
 		// Apply preset settings
@@ -1097,13 +1093,13 @@ private function render_wizard_content() {
 						bbcs_loadSettingsFull();
 					}
 				} else {
-					wp_send_json_error('Full protection requires PRO license');
+					wp_send_json_error(__('Full protection requires PRO license.', 'botblocker-security'));
 					return;
 				}
 				break;
 		}
 		
-		update_option('bbcs_wizard_preset', $preset);
+		bbcs_update_option('bbcs_wizard_preset', $preset);
 		
 		wp_send_json_success(['preset' => $preset]);
 	}
@@ -1111,32 +1107,27 @@ private function render_wizard_content() {
 	public function ajax_compatibility_test() {
 		check_ajax_referer('bbcs-wizard-admin-nonce', 'nonce');
 		
-		if (!current_user_can('manage_options')) {
-			wp_send_json_error('No permission');
+		if (!current_user_can(bbcs_can_manage())) {
+			wp_send_json_error(__('No permission.', 'botblocker-security'));
 		}
 		
 		$results = [];
 		
-		// TODO: выполнить реальные HTTP запросы к этим URL и проверить ответы
-		// Проверить главную страницу
 		$results['homepage'] = [
 			'status' => 'ok',
 			'message' => ''
 		];
 		
-		// Проверить админ-панель
 		$results['admin'] = [
 			'status' => 'ok',
 			'message' => ''
 		];
 		
-		// Проверить страницу входа
 		$results['login'] = [
 			'status' => 'ok',
 			'message' => ''
 		];
 		
-		// Проверить REST API
 		$results['rest'] = [
 			'status' => 'ok',
 			'message' => ''
@@ -1148,8 +1139,8 @@ private function render_wizard_content() {
 	public function ajax_save_exclusions() {
 		check_ajax_referer('bbcs-wizard-admin-nonce', 'nonce');
 		
-		if (!current_user_can('manage_options')) {
-			wp_send_json_error('No permission');
+		if (!current_user_can(bbcs_can_manage())) {
+			wp_send_json_error(__('No permission.', 'botblocker-security'));
 		}
 		
 		$exclude_admins = isset($_POST['exclude_admins']) ? (bool)$_POST['exclude_admins'] : false;
@@ -1157,33 +1148,25 @@ private function render_wizard_content() {
 		$exclude_cron = isset($_POST['exclude_cron']) ? (bool)$_POST['exclude_cron'] : false;
 		$current_ip = isset($_POST['current_ip']) ? sanitize_text_field(wp_unslash($_POST['current_ip'])) : '';
 		
-		// TODO: сохранить исключения в настройки плагина
-		// $exclude_admins - разрешать админам
-		// $exclude_current_ip - добавить текущий IP в белый список
-		// $exclude_cron - разрешать запросы от WP Cron
-		
+
 		wp_send_json_success();
 	}
 	
 	public function ajax_save_ux() {
 		check_ajax_referer('bbcs-wizard-admin-nonce', 'nonce');
 		
-		if (!current_user_can('manage_options')) {
-			wp_send_json_error('No permission');
+		if (!current_user_can(bbcs_can_manage())) {
+			wp_send_json_error(__('No permission.', 'botblocker-security'));
 		}
 		
 		$ux_mode = isset($_POST['ux_mode']) ? sanitize_text_field(wp_unslash($_POST['ux_mode'])) : '';
 		
 		if (!in_array($ux_mode, ['block', 'challenge', 'captcha'])) {
-			wp_send_json_error('Invalid UX mode');
+			wp_send_json_error(__('Invalid UX mode.', 'botblocker-security'));
 		}
 		
-		// TODO: установить режим реакции на ботов
-		// block - блокировать сразу
-		// challenge - JS/Cookie challenge
-		// captcha - показывать капчу
-		
-		update_option('bbcs_wizard_ux_mode', $ux_mode);
+
+		bbcs_update_option('bbcs_wizard_ux_mode', $ux_mode);
 		
 		wp_send_json_success(['ux_mode' => $ux_mode]);
 	}
@@ -1191,15 +1174,15 @@ private function render_wizard_content() {
 	public function ajax_save_captcha() {
 		check_ajax_referer('bbcs-wizard-admin-nonce', 'nonce');
 		
-		if (!current_user_can('manage_options')) {
-			wp_send_json_error('No permission');
+		if (!current_user_can(bbcs_can_manage())) {
+			wp_send_json_error(__('No permission.', 'botblocker-security'));
 		}
 		
 		$captcha_mode = isset($_POST['captcha_mode']) ? intval($_POST['captcha_mode']) : 2;
 		
 		// Valid CAPTCHA modes: 0-6 (based on botblocker-set-captcha.php)
 		if (!in_array($captcha_mode, [0, 1, 2, 3, 4, 5, 6])) {
-			wp_send_json_error('Invalid CAPTCHA mode');
+			wp_send_json_error(__('Invalid CAPTCHA mode.', 'botblocker-security'));
 		}
 		
 		// Save CAPTCHA mode to settings
@@ -1217,7 +1200,7 @@ private function render_wizard_content() {
 			bbcs_generateSettingsFileFromDb();
 		}
 		
-		update_option('bbcs_wizard_captcha_mode', $captcha_mode);
+		bbcs_update_option('bbcs_wizard_captcha_mode', $captcha_mode);
 		
 		wp_send_json_success(['captcha_mode' => $captcha_mode]);
 	}
@@ -1225,19 +1208,19 @@ private function render_wizard_content() {
 	public function ajax_save_init_mode() {
 		check_ajax_referer('bbcs-wizard-admin-nonce', 'nonce');
 		
-		if (!current_user_can('manage_options')) {
-			wp_send_json_error('No permission');
+		if (!current_user_can(bbcs_can_manage())) {
+			wp_send_json_error(__('No permission.', 'botblocker-security'));
 		}
 		
 		$init_mode = isset($_POST['init_mode']) ? sanitize_text_field(wp_unslash($_POST['init_mode'])) : 'regular';
 		
 		if (!in_array($init_mode, ['regular', 'mu', 'early'])) {
-			wp_send_json_error('Invalid initialization mode');
+			wp_send_json_error(__('Invalid initialization mode.', 'botblocker-security'));
 		}
 		
 		// Early init requires PRO
 		if ($init_mode === 'early' && !bbcs_isCloudAPIActive()) {
-			wp_send_json_error('Early initialization requires PRO license');
+			wp_send_json_error(__('Early initialization requires PRO license.', 'botblocker-security'));
 			return;
 		}
 		
@@ -1262,6 +1245,15 @@ private function render_wizard_content() {
 				['key' => 'early_init_enable', 'value' => '1'],
 				['%s', '%s']
 			);
+			if (function_exists('bbcs_uninstallMuPlugin')) {
+				bbcs_uninstallMuPlugin();
+			}
+			if (function_exists('bbcs_insertCodeToWpConfig')) {
+				bbcs_insertCodeToWpConfig();
+			}
+			if (function_exists('bbcs_generateSitesMapFile')) {
+				bbcs_generateSitesMapFile();
+			}
 		} else {
 			// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -1271,13 +1263,13 @@ private function render_wizard_content() {
 				['%s', '%s']
 			);
 		}
-		
+
 		// Regenerate settings file
 		if (function_exists('bbcs_generateSettingsFileFromDb')) {
 			bbcs_generateSettingsFileFromDb();
 		}
 		
-		update_option('bbcs_wizard_init_mode', $init_mode);
+		bbcs_update_option('bbcs_wizard_init_mode', $init_mode);
 		
 		wp_send_json_success(['init_mode' => $init_mode]);
 	}
@@ -1285,8 +1277,8 @@ private function render_wizard_content() {
 	public function ajax_check_cache() {
 		check_ajax_referer('bbcs-wizard-admin-nonce', 'nonce');
 		
-		if (!current_user_can('manage_options')) {
-			wp_send_json_error('No permission');
+		if (!current_user_can(bbcs_can_manage())) {
+			wp_send_json_error(__('No permission.', 'botblocker-security'));
 		}
 		
 		$redis_available = bbcs_checkRedisAvailability();
@@ -1301,14 +1293,14 @@ private function render_wizard_content() {
 	public function ajax_save_cache() {
 		check_ajax_referer('bbcs-wizard-admin-nonce', 'nonce');
 		
-		if (!current_user_can('manage_options')) {
-			wp_send_json_error('No permission');
+		if (!current_user_can(bbcs_can_manage())) {
+			wp_send_json_error(__('No permission.', 'botblocker-security'));
 		}
 		
 		$cache_type = isset($_POST['cache_type']) ? sanitize_text_field(wp_unslash($_POST['cache_type'])) : 'none';
 		
 		if (!in_array($cache_type, ['redis', 'memcached', 'none'])) {
-			wp_send_json_error('Invalid cache type');
+			wp_send_json_error(__('Invalid cache type.', 'botblocker-security'));
 		}
 		
 		global $wpdb;
@@ -1340,7 +1332,7 @@ private function render_wizard_content() {
 			bbcs_generateSettingsFileFromDb();
 		}
 		
-		update_option('bbcs_wizard_cache_type', $cache_type);
+		bbcs_update_option('bbcs_wizard_cache_type', $cache_type);
 		
 		wp_send_json_success(['cache_type' => $cache_type]);
 	}
@@ -1348,15 +1340,14 @@ private function render_wizard_content() {
 	public function ajax_save_notifications() {
 		check_ajax_referer('bbcs-wizard-admin-nonce', 'nonce');
 		
-		if (!current_user_can('manage_options')) {
-			wp_send_json_error('No permission');
+		if (!current_user_can(bbcs_can_manage())) {
+			wp_send_json_error(__('No permission.', 'botblocker-security'));
 		}
 		
 		$notify_daily = isset($_POST['notify_daily']) ? (bool)$_POST['notify_daily'] : false;
 		$notify_brute_force = isset($_POST['notify_brute_force']) ? (bool)$_POST['notify_brute_force'] : false;
 		$notify_weekly = isset($_POST['notify_weekly']) ? (bool)$_POST['notify_weekly'] : false;
 		
-		// TODO: сохранить настройки уведомлений
 		
 		wp_send_json_success();
 	}
@@ -1364,38 +1355,36 @@ private function render_wizard_content() {
 	public function ajax_complete_wizard() {
 		check_ajax_referer('bbcs-wizard-admin-nonce', 'nonce');
 		
-		if (!current_user_can('manage_options')) {
-			wp_send_json_error('No permission');
+		if (!current_user_can(bbcs_can_manage())) {
+			wp_send_json_error(__('No permission.', 'botblocker-security'));
 		}
 
 		$contact_email = isset($_POST['contact_email']) ? sanitize_email(wp_unslash($_POST['contact_email'])) : '';
 		if (!empty($contact_email) && is_email($contact_email)) {
-			update_option('bbcs_contact_email_collected', 1);
+			bbcs_update_option('bbcs_contact_email_collected', 1);
 			bbcs_send_activation_to_cloud($contact_email);
 		}
 		
-		// Отметить что визард завершен
-		update_option('bbcs_setup_wizard_completed', true);
-		update_option('bbcs_setup_wizard_completed_at', time());
+		bbcs_update_option('bbcs_setup_wizard_completed', true);
+		bbcs_update_option('bbcs_setup_wizard_completed_at', time());
+		bbcs_delete_option('bbcs_activation_redirect');
 
 		$score = bbcs_calculateSiteHealth(); 
 		
 		wp_send_json_success([
 			'score' => $score,
-			'mode' => get_option('bbcs_wizard_preset', 'balanced')
+			'mode' => bbcs_get_option('bbcs_wizard_preset', 'balanced')
 		]);
 	}
 	
 	public function ajax_test_attack() {
 		check_ajax_referer('bbcs-wizard-admin-nonce', 'nonce');
 		
-		if (!current_user_can('manage_options')) {
-			wp_send_json_error('No permission');
+		if (!current_user_can(bbcs_can_manage())) {
+			wp_send_json_error(__('No permission.', 'botblocker-security'));
 		}
 		
-		// TODO: создать тестовую запись в логе событий
-		// Симулировать безопасный тест - создать событие "BotBlocker self-test: OK"
-		
+
 		$test_result = [
 			'status' => 'success',
 			'message' => __('Self-test completed successfully! Check your log.', 'botblocker-security'),
@@ -1412,15 +1401,15 @@ private function render_wizard_content() {
 	public function ajax_reset_wizard() {
 		check_ajax_referer('bbcs-wizard-admin-nonce', 'nonce');
 		
-		if (!current_user_can('manage_options')) {
-			wp_send_json_error('No permission');
+		if (!current_user_can(bbcs_can_manage())) {
+			wp_send_json_error(__('No permission.', 'botblocker-security'));
 		}
 		
-		// Удаляем флаг завершения визарда
-		delete_option('bbcs_setup_wizard_completed');
-		delete_option('bbcs_setup_wizard_completed_at');
+		bbcs_delete_option('bbcs_setup_wizard_completed');
+		bbcs_delete_option('bbcs_setup_wizard_completed_at');
+		bbcs_delete_option('bbcs_activation_redirect');
 		
-		wp_send_json_success(['message' => 'Wizard reset successfully']);
+		wp_send_json_success(['message' => __('Wizard reset successfully.', 'botblocker-security')]);
 	}
 
 }

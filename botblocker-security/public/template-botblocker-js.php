@@ -98,19 +98,48 @@ if ($BBCS->settings->utm_referrer == 1 and $BBCS->referer != '') {
     bbcsDebugLog('<?php echo esc_js(BOTBLOCKER_SHORT_NAME); ?> v.<?php echo esc_js($BBCS->version); ?>');
 
     var bbcsDdosRetryCount = 0;
-    var bbcsDdosMaxRetries = 2;
+    var bbcsDdosMaxRetries = 3;
+
+    function bbcs_isDdosResponse(responseText) {
+        if (!responseText) return false;
+        try {
+            JSON.parse(responseText.trim());
+            return false;
+        } catch(e) {}
+        return responseText.indexOf('<') !== -1 || responseText.indexOf('document.cookie') !== -1;
+    }
 
     function bbcs_extractDdosCookie(responseText) {
         if (!responseText) return false;
-        if (responseText.indexOf('document.cookie') !== -1 && responseText.indexOf('<script') !== -1) {
-            var cookieMatch = responseText.match(/document\.cookie\s*=\s*"([^"]+)"/);
+        var cookiePatterns = [
+            /document\.cookie\s*=\s*"([^"]+)"/,
+            /document\.cookie\s*=\s*'([^']+)'/
+        ];
+        for (var i = 0; i < cookiePatterns.length; i++) {
+            var cookieMatch = responseText.match(cookiePatterns[i]);
             if (cookieMatch && cookieMatch[1]) {
-                bbcsDebugLog('DDoS protection response detected, setting cookie and retrying');
+                bbcsDebugLog('DDoS protection cookie detected, setting: ' + cookieMatch[1].substring(0, 20) + '...');
                 document.cookie = cookieMatch[1];
                 return true;
             }
         }
         return false;
+    }
+
+    function bbcs_handleDdosResponse(responseText, s, d, x) {
+        bbcs_extractDdosCookie(responseText);
+        if (bbcsDdosRetryCount < bbcsDdosMaxRetries) {
+            bbcsDdosRetryCount++;
+            var delay = bbcsDdosRetryCount * 1000;
+            bbcsDebugLog('DDoS retry ' + bbcsDdosRetryCount + '/' + bbcsDdosMaxRetries + ' in ' + delay + 'ms');
+            setTimeout(function() {
+                <?php echo esc_js($botblocker_check_function_name); ?>(s, d, x);
+            }, delay);
+            return true;
+        }
+        bbcsDebugLog('DDoS retries exhausted, redirecting to page');
+        window.location.href = "<?php echo esc_js(esc_url_raw($botblocker_redirect_url)); ?>";
+        return true;
     }
 
     function bbcs_detectAll() {
@@ -180,7 +209,7 @@ if ($BBCS->settings->utm_referrer == 1 and $BBCS->referer != '') {
     return decodeURIComponent(escape(window.atob(str)));
   }
 
-  document.getElementById("content").innerHTML = "<?php echo esc_js('Loading...'); ?>";
+  document.getElementById("content").innerHTML = "<?php echo esc_js(__('Loading...', 'botblocker-security')); ?>";
 
   function handleWorkerSignal() {
     return new Promise(function(resolve) {
@@ -291,7 +320,7 @@ if ($BBCS->settings->utm_referrer == 1 and $BBCS->referer != '') {
   }
 
   function <?php echo esc_js($botblocker_check_function_name); ?>(s, d, x) {
-    document.getElementById("content").innerHTML = "<?php echo esc_js('Loading...'); ?>";
+    document.getElementById("content").innerHTML = "<?php echo esc_js(__('Loading...', 'botblocker-security')); ?>";
     
     var data = new FormData();
     data.append('action', 'bbcs_botblocker_check');
@@ -314,7 +343,7 @@ if ($BBCS->settings->utm_referrer == 1 and $BBCS->referer != '') {
 
     var xhr = new XMLHttpRequest();
     xhr.open('POST', '<?php echo esc_url(admin_url('admin-ajax.php')); ?>', true);
-    xhr.timeout = 5000;
+    xhr.timeout = bbcsDdosRetryCount > 0 ? 10000 : 5000;
 
     xhr.onload = function() {
         if (xhr.status == 200) {
@@ -331,7 +360,7 @@ if ($BBCS->settings->utm_referrer == 1 and $BBCS->referer != '') {
                         d.setTime(d.getTime() + (7 * 24 * 60 * 60 * 1000)); 
                         var expires = "expires=" + d.toUTCString();
                         document.cookie = "<?php echo esc_js($BBCS->uid); ?>=" + obj.cookie + "-<?php echo esc_js($BBCS->time); ?>; SameSite=<?php echo esc_js($BBCS->settings->samesite); ?>;<?php echo (($BBCS->settings->samesite == 'None') ? ' Secure' : ''); ?>; " + expires + "; path=/;";
-                        document.getElementById("content").innerHTML = "<?php echo esc_js('Loading...'); ?>";
+                        document.getElementById("content").innerHTML = "<?php echo esc_js(__('Loading...', 'botblocker-security')); ?>";
                         window.location.href = "<?php echo esc_js(esc_url_raw($botblocker_redirect_url)); ?>";
                     } else {
                         botblocker_captcha_render(); 
@@ -353,12 +382,12 @@ if ($BBCS->settings->utm_referrer == 1 and $BBCS->referer != '') {
                             } else if (obj.error == "Cookies disabled") {
                                 document.getElementById("content").innerHTML = 
                                 "<h2 style=\"text-align:center; color:red;\"><?php 
-                                echo esc_js('Cookie is Disabled in your browser. Please Enable the Cookie to continue.');
+                echo esc_js(__('Cookies are disabled in your browser. Enable cookies to continue.', 'botblocker-security'));
                                 ?></h2>";
                             }
                         <?php } ?>
                         if (obj.error == "timeout" || obj.error == "Wrong Click") {
-                            document.getElementById("content").innerHTML = "<?php echo esc_js('Loading...'); ?>";
+                            document.getElementById("content").innerHTML = "<?php echo esc_js(__('Loading...', 'botblocker-security')); ?>";
                             window.location.href = "<?php echo esc_js(esc_url_raw($botblocker_redirect_url)); ?>";
                         }
                     }
@@ -368,24 +397,16 @@ if ($BBCS->settings->utm_referrer == 1 and $BBCS->referer != '') {
             } catch (e) {
                 bbcsDebugError('Error parsing JSON:', e);
                 bbcsDebugLog('Response text received:', xhr.responseText);
-                if (bbcsDdosRetryCount < bbcsDdosMaxRetries && bbcs_extractDdosCookie(xhr.responseText)) {
-                    bbcsDdosRetryCount++;
-                    setTimeout(function() {
-                        <?php echo esc_js($botblocker_check_function_name); ?>(s, d, x);
-                    }, 1000);
-                    return;
+                if (bbcs_isDdosResponse(xhr.responseText)) {
+                    if (bbcs_handleDdosResponse(xhr.responseText, s, d, x)) return;
                 }
                 botblocker_captcha_render(); 
             }
 
         } else {
             bbcsDebugLog('Error: ' + xhr.status);
-            if (bbcsDdosRetryCount < bbcsDdosMaxRetries && bbcs_extractDdosCookie(xhr.responseText)) {
-                bbcsDdosRetryCount++;
-                setTimeout(function() {
-                    <?php echo esc_js($botblocker_check_function_name); ?>(s, d, x);
-                }, 1000);
-                return;
+            if (bbcs_isDdosResponse(xhr.responseText)) {
+                if (bbcs_handleDdosResponse(xhr.responseText, s, d, x)) return;
             }
             botblocker_captcha_render(); 
         }
@@ -393,11 +414,21 @@ if ($BBCS->settings->utm_referrer == 1 and $BBCS->referer != '') {
 
     xhr.ontimeout = function() {
         bbcsDebugLog('timeout');
+        if (bbcsDdosRetryCount > 0) {
+            bbcsDebugLog('Timeout during DDoS retry, redirecting');
+            window.location.href = "<?php echo esc_js(esc_url_raw($botblocker_redirect_url)); ?>";
+            return;
+        }
         botblocker_captcha_render();
     };
 
     xhr.onerror = function() {
         bbcsDebugLog('error');
+        if (bbcsDdosRetryCount > 0) {
+            bbcsDebugLog('Error during DDoS retry, redirecting');
+            window.location.href = "<?php echo esc_js(esc_url_raw($botblocker_redirect_url)); ?>";
+            return;
+        }
         botblocker_captcha_render();
     };
 
@@ -408,6 +439,6 @@ if ($BBCS->settings->utm_referrer == 1 and $BBCS->referer != '') {
 
 <noscript>
   <h2 style="text-align:center; color:red;">
-    <?php echo esc_js('JavaScript is Disabled in your browser. Please Enable the JavaScript to continue.'); ?>
+    <?php echo esc_html(__('JavaScript is disabled in your browser. Enable JavaScript to continue.', 'botblocker-security')); ?>
   </h2>
 </noscript>

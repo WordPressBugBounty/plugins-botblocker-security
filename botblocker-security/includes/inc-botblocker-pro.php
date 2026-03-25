@@ -176,7 +176,7 @@ function bbcs_check_cloud_api_expiry()
             if (! $expired) {
                 $expired = $threshold == 0;
                 /* translators: %d: number of hits remaining before the cloud API is exhausted. */
-                $warnings[] = $expired ? __('Your cloud API has no hits remaining.', 'botblocker-security') : sprintf(__('Your cloud API has less than %d hits remaining.', 'botblocker-security'), $threshold);
+                $warnings[] = $expired ? __('Your cloud API has no hits remaining.', 'botblocker-security') : sprintf(__('Your cloud API has fewer than %d hits remaining.', 'botblocker-security'), $threshold);
                 break;
             }
         }

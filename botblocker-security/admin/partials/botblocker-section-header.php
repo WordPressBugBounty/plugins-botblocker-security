@@ -30,9 +30,9 @@ $bbcs_has_pro = bbcs_isCloudAPIActive();
 	<div class="header-right">
 		<?php 
 		// Показываем кнопку визарда если он еще не завершен
-		if (!get_option('bbcs_setup_wizard_completed', false)) : ?>
+		if (!bbcs_get_option('bbcs_setup_wizard_completed', false)) : ?>
 		<span class="bbcs-header-wizard-button">
-			<a href="<?php echo esc_url(admin_url('admin.php?page=bbcs_setup_wizard')); ?>" class="mt-2 btn btn-xs btn-primary">
+			<a href="<?php echo esc_url(bbcs_site_admin_page_url('bbcs_setup_wizard')); ?>" class="mt-2 btn btn-xs btn-primary">
 				<i class="fa-solid fa-wand-magic-sparkles"></i>&nbsp;
 				<?php esc_html_e('Setup Wizard', 'botblocker-security'); ?>
 			</a>
@@ -40,7 +40,7 @@ $bbcs_has_pro = bbcs_isCloudAPIActive();
 		<span class="separator"></span>
 		<?php else : ?>
 		<span class="bbcs-header-wizard-button">
-			<a href="<?php echo esc_url(admin_url('admin.php?page=bbcs_setup_wizard')); ?>" class="mt-2 btn btn-xs btn-default">
+			<a href="<?php echo esc_url(bbcs_site_admin_page_url('bbcs_setup_wizard')); ?>" class="mt-2 btn btn-xs btn-default">
 				<i class="fa-solid fa-rotate"></i>&nbsp;
 				<?php esc_html_e('Run Setup Wizard Again', 'botblocker-security'); ?>
 			</a>
@@ -56,7 +56,7 @@ $bbcs_has_pro = bbcs_isCloudAPIActive();
 			<?php endif; ?>	
 			<?php if ($bbcs_has_pro == true): ?>
 				<a href="<?php echo esc_url($BBCSA->pages_cloud_api); ?>" class="mt-2 btn btn-xs btn-default bbcs-cloud-api-color"><i class="fa-solid fa-crown"></i>&nbsp;<b>
-					<?php esc_html_e('PRO is active!' ,'botblocker-security'); ?></b>
+					<?php esc_html_e('PRO is active' ,'botblocker-security'); ?></b>
 				</a>
 			<?php endif; ?>				
 		</span>
@@ -86,19 +86,19 @@ $bbcs_has_pro = bbcs_isCloudAPIActive();
 										<i class="fas fa-thumbs-up bg-primary text-light"></i>
 									</div>
 									<span class="title"><?php esc_html_e('No active alerts', 'botblocker-security'); ?></span>
-									<span class="message"><?php esc_html_e('All right', 'botblocker-security'); ?></span>
+									<span class="message"><?php esc_html_e('No issues found', 'botblocker-security'); ?></span>
 								</a>
 							</li>
 							<?php endif; ?>
 							
 							<?php foreach ($bbcs_alerts as $bbcs_alert) : ?>
 								<li>
-									<a href="#" class="clearfix">
+									<a href="<?php echo !empty($bbcs_alert['link']) ? esc_url($bbcs_alert['link']) : '#'; ?>" class="clearfix">
 										<div class="image">
 										<i class="<?php echo esc_html($bbcs_alert['icon']); ?>"></i>
 										</div>
 										<span class="title"><?php echo esc_html($bbcs_alert['title']); ?></span>
-										<span class="message"><?php echo esc_html($bbcs_alert['message']); ?></span>
+										<span class="message"><?php echo esc_html($bbcs_alert['message']); ?><?php if (!empty($bbcs_alert['link_text'])) : ?> <strong><?php echo esc_html($bbcs_alert['link_text']); ?></strong><?php endif; ?></span>
 									</a>
 								</li>
 							<?php endforeach; ?>
@@ -178,7 +178,7 @@ $bbcs_has_pro = bbcs_isCloudAPIActive();
 					<li>
 						<a role="menuitem" tabindex="-1" 
 						href="https://<?php echo esc_html(BOTBLOCKER_SERVER);?>/docs/" target="_blank">
-						<i class="fa-solid fa-book bbcs-h-btn-gray"></i> <?php esc_html_e('Docs', 'botblocker-security'); ?></a>
+						<i class="fa-solid fa-book bbcs-h-btn-gray"></i> <?php esc_html_e('Documentation', 'botblocker-security'); ?></a>
 					</li>
 					<li class="divider"></li>	
 					<li>
@@ -195,7 +195,7 @@ $bbcs_has_pro = bbcs_isCloudAPIActive();
 					<li>
 						<a role="menuitem" tabindex="-1" 
 						href="https://<?php echo esc_html(BOTBLOCKER_SERVER);?>/contacts" target="_blank">
-						<i class="fa-solid fa-envelope bbcs-h-btn-gray"></i> <?php esc_html_e('Contacts', 'botblocker-security'); ?></a>
+						<i class="fa-solid fa-envelope bbcs-h-btn-gray"></i> <?php esc_html_e('Contact Us', 'botblocker-security'); ?></a>
 					</li>																		
 				</ul>
 			</div>

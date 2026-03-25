@@ -2,7 +2,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 function bbcs_get_botblocker_paths_callback() {
     check_ajax_referer( 'botblocker_nonce', 'nonce' );
-    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+    if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
     global $wpdb;
 
@@ -14,76 +14,50 @@ function bbcs_get_botblocker_paths_callback() {
     $search_has = $search_raw !== '';
     $like       = '%' . $wpdb->esc_like( $search_raw ) . '%';
 
-    $found = false;
-    if (BOTBLOCKER_CACHE_WP) {
-        $cache_version = wp_cache_get('bbcs_ajax_paths_cache_version', 'botblocker-security') ?: 1;
-    
-        $cache_key = 'bbcs_paths' . bbcs_get_wp_cache_version() . $cache_version . '_' . md5(wp_json_encode([
-            'search_has' => $search_has,
-            'search' => $search_raw,
-            'start' => $start,
-            'length' => $length
-        ]));
-        
-        $cache_data = wp_cache_get($cache_key, 'botblocker-security', false, $found);
-    }
-    
-    if ($found !== false) {
-        $total = $cache_data['total'];
-        $results = $cache_data['results'];
+    if ( $search_has ) {
+        // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $total = $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT COUNT(*) FROM `{$wpdb->bbcs_path}` WHERE id LIKE %s OR `search` LIKE %s OR rule LIKE %s OR comment LIKE %s",
+                $like, $like, $like, $like
+            )
+        );
+        // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $results = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT id, priority, `search`, rule, comment, disable
+                    FROM `{$wpdb->bbcs_path}`
+                    WHERE id LIKE %s OR `search` LIKE %s OR rule LIKE %s OR comment LIKE %s
+                    ORDER BY priority DESC
+                    LIMIT %d, %d",
+                $like, $like, $like, $like, $start, $length
+            ),
+            ARRAY_A
+        );
     } else {
-        if ( $search_has ) {
-            // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-            $total = $wpdb->get_var(
-                $wpdb->prepare(
-                    "SELECT COUNT(*) FROM `{$wpdb->bbcs_path}` WHERE id LIKE %s OR `search` LIKE %s OR rule LIKE %s OR comment LIKE %s",
-                    $like, $like, $like, $like
-                )
-            );
-            // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-            $results = $wpdb->get_results(
-                $wpdb->prepare(
-                    "SELECT id, priority, `search`, rule, comment, disable
-                        FROM `{$wpdb->bbcs_path}`
-                        WHERE id LIKE %s OR `search` LIKE %s OR rule LIKE %s OR comment LIKE %s
-                        ORDER BY priority DESC
-                        LIMIT %d, %d",
-                    $like, $like, $like, $like, $start, $length
-                ),
-                ARRAY_A
-            );
-        } else {
-            // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-            $total = $wpdb->get_var(
-                $wpdb->prepare(
-                    "SELECT COUNT(*) FROM `{$wpdb->bbcs_path}` WHERE 1 = %d",
-                    1
-                )
-            );
-            // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-            $results = $wpdb->get_results(
-                $wpdb->prepare(
-                    "SELECT id, priority, `search`, rule, comment, disable
-                        FROM `{$wpdb->bbcs_path}`
-                        WHERE 1 = %d
-                        ORDER BY priority DESC
-                        LIMIT %d, %d",
-                    1, $start, $length
-                ),
-                ARRAY_A
-            );
-        }
-        
-        if (BOTBLOCKER_CACHE_WP) {
-            wp_cache_set($cache_key, [
-                'total' => $total,
-                'results' => $results
-            ], 'botblocker-security', 15);
-        }
+        // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $total = $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT COUNT(*) FROM `{$wpdb->bbcs_path}` WHERE 1 = %d",
+                1
+            )
+        );
+        // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $results = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT id, priority, `search`, rule, comment, disable
+                    FROM `{$wpdb->bbcs_path}`
+                    WHERE 1 = %d
+                    ORDER BY priority DESC
+                    LIMIT %d, %d",
+                1, $start, $length
+            ),
+            ARRAY_A
+        );
     }
 
     $data = array();
@@ -109,23 +83,13 @@ add_action( 'wp_ajax_bbcs_get_botblocker_paths', 'bbcs_get_botblocker_paths_call
 
 function bbcs_get_path_details_callback() {
     check_ajax_referer( 'botblocker_nonce', 'nonce' );
-    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+    if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
     global $wpdb;
 
     $id         = isset( $_POST['id'] ) ? absint(wp_unslash($_POST['id'])) : 0;
-    
-    $found = false;
-
-    if (BOTBLOCKER_CACHE_WP) {
-        $cache_version = wp_cache_get('bbcs_ajax_paths_cache_version', 'botblocker-security') ?: 1;
-        $cache_key = 'bbcs_path_details' . bbcs_get_wp_cache_version() . $cache_version . '_' . $id;
-        $path = wp_cache_get($cache_key, 'botblocker-security', false, $found);
-    }
-
-    if ($found === false) {
         // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching
         $path = $wpdb->get_row(
             $wpdb->prepare(
                 "SELECT * FROM `{$wpdb->bbcs_path}` WHERE id = %d",
@@ -134,15 +98,10 @@ function bbcs_get_path_details_callback() {
             ARRAY_A
         );
 
-        if ($path && BOTBLOCKER_CACHE_WP) {
-            wp_cache_set($cache_key, $path, 'botblocker-security', HOUR_IN_SECONDS);
-        }
-    }
-
     if ( $path ) {
         wp_send_json_success( $path );
     } else {
-        wp_send_json_error( 'Path not found' );
+        wp_send_json_error( __('Path not found.', 'botblocker-security') );
     }
 }
 add_action( 'wp_ajax_bbcs_get_path_details', 'bbcs_get_path_details_callback' );
@@ -150,7 +109,7 @@ add_action( 'wp_ajax_bbcs_get_path_details', 'bbcs_get_path_details_callback' );
 function bbcs_update_path_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
-    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+    if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
     /**
      * REVIEWER NOTE:
@@ -163,7 +122,8 @@ function bbcs_update_path_callback()
     $required_fields = ['id', 'priority', 'search', 'rule'];
     foreach ($required_fields as $field) {
         if (!isset($_POST[$field]) || empty($_POST[$field])) {
-            wp_send_json_error("Missing required field: $field");
+            // translators: %s is the name of the required field.
+            wp_send_json_error(sprintf(__('Missing required field: %s.', 'botblocker-security'), $field));
             return;
         }
     }
@@ -179,18 +139,16 @@ function bbcs_update_path_callback()
     );
     /* phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotValidated */
     // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching
     $result = $wpdb->update($wpdb->bbcs_path, $data, array('id' => $id));
 
     if ($result !== false) {
         bbcs_renderPathsFromDb();
         bbcs_clearFileCache();
-        if (BOTBLOCKER_CACHE_WP) {
-            wp_cache_set('bbcs_ajax_paths_cache_version', time(), 'botblocker-security');
-        }
-        wp_send_json_success('Path updated successfully');
+
+        wp_send_json_success(__('Path updated successfully.', 'botblocker-security'));
     } else {
-        wp_send_json_error('Failed to update path');
+        wp_send_json_error(__('Failed to update path.', 'botblocker-security'));
     }
 }
 add_action('wp_ajax_bbcs_update_path', 'bbcs_update_path_callback');
@@ -198,10 +156,10 @@ add_action('wp_ajax_bbcs_update_path', 'bbcs_update_path_callback');
 function bbcs_delete_path_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
-    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+    if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
     if( !isset($_POST['id']) || empty($_POST['id']) ) {
-        wp_send_json_error('Missing required field: id');
+        wp_send_json_error(__('Missing required field: id.', 'botblocker-security'));
         return;
     }
 
@@ -210,31 +168,29 @@ function bbcs_delete_path_callback()
     $id = intval(wp_unslash($_POST['id']));
 
     // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching
     $result = $wpdb->delete($wpdb->bbcs_path, array('id' => $id));
 
     if ($result !== false) {
         bbcs_renderPathsFromDb();
         bbcs_clearFileCache();
-        if (BOTBLOCKER_CACHE_WP) {
-            wp_cache_set('bbcs_ajax_paths_cache_version', time(), 'botblocker-security');
-        }
-        wp_send_json_success('Path deleted successfully');
+
+        wp_send_json_success(__('Path deleted successfully.', 'botblocker-security'));
     } else {
-        wp_send_json_error('Failed to delete path');
+        wp_send_json_error(__('Failed to delete path.', 'botblocker-security'));
     }
 }
 add_action('wp_ajax_bbcs_delete_path', 'bbcs_delete_path_callback');
 
 function bbcs_toggle_path_callback() {
     check_ajax_referer( 'botblocker_nonce', 'nonce' );
-    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+    if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
     global $wpdb;
 
     $id         = isset( $_POST['id'] ) ? absint( wp_unslash( $_POST['id'] ) ) : 0;
     // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching
     $result = $wpdb->query(
         $wpdb->prepare(
             "UPDATE `{$wpdb->bbcs_path}` SET disable = 1 - disable WHERE id = %d",
@@ -245,12 +201,10 @@ function bbcs_toggle_path_callback() {
     if ( false !== $result ) {
         bbcs_renderPathsFromDb();
         bbcs_clearFileCache();
-        if (BOTBLOCKER_CACHE_WP) {
-            wp_cache_set('bbcs_ajax_paths_cache_version', time(), 'botblocker-security');
-        }
-        wp_send_json_success( 'Path toggled successfully' );
+
+        wp_send_json_success( __('Path toggled successfully.', 'botblocker-security') );
     } else {
-        wp_send_json_error( 'Failed to toggle path' );
+        wp_send_json_error( __('Failed to toggle path.', 'botblocker-security') );
     }
 }
 add_action( 'wp_ajax_bbcs_toggle_path', 'bbcs_toggle_path_callback' );
@@ -258,7 +212,7 @@ add_action( 'wp_ajax_bbcs_toggle_path', 'bbcs_toggle_path_callback' );
 function bbcs_create_path_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
-    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+    if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
     /**
      * REVIEWER NOTE:
@@ -271,7 +225,8 @@ function bbcs_create_path_callback()
     $required_fields = ['priority', 'search', 'rule'];
     foreach ($required_fields as $field) {
         if (!isset($_POST[$field]) || empty($_POST[$field])) {
-            wp_send_json_error("Missing required field: $field");
+            // translators: %s is the name of the required field.
+            wp_send_json_error(sprintf(__('Missing required field: %s.', 'botblocker-security'), $field));
             return;
         }
     }
@@ -279,29 +234,15 @@ function bbcs_create_path_callback()
     global $wpdb;
 
     $search = sanitize_textarea_field(wp_unslash($_POST['search']));
-    
-    $found = false;
-    if (BOTBLOCKER_CACHE_WP) {
-        $cache_version = 1;
-        $cache_version = wp_cache_get('bbcs_ajax_paths_cache_version', 'botblocker-security') ?: 1;
-        $exists_cache_key = 'bbcs_path_exists' . bbcs_get_wp_cache_version() . $cache_version . '_' . md5($search);
-        $exists = false;
-        $exists = wp_cache_get($exists_cache_key, 'botblocker-security', false, $found);
-    }
-    
-    if ($found === false) {
-        // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-        $exists = $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM `{$wpdb->bbcs_path}` WHERE `search` = %s",
-            $search
-        ));
-        if (BOTBLOCKER_CACHE_WP) {
-            wp_cache_set($exists_cache_key, $exists, 'botblocker-security', 15);
-        }
-    }
+    // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    $exists = $wpdb->get_var($wpdb->prepare(
+        "SELECT COUNT(*) FROM `{$wpdb->bbcs_path}` WHERE `search` = %s",
+        $search
+    ));
+
     if ($exists) {
-        wp_send_json_error('Path already exists');
+        wp_send_json_error(__('Path already exists.', 'botblocker-security'));
         return;
     }
 
@@ -314,18 +255,16 @@ function bbcs_create_path_callback()
     );
     /* phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotValidated */
     // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     $result = $wpdb->insert($wpdb->bbcs_path, $data);
 
     if ($result !== false) {
         bbcs_renderPathsFromDb();
         bbcs_clearFileCache();
-        if (BOTBLOCKER_CACHE_WP) {
-            wp_cache_set('bbcs_ajax_paths_cache_version', time(), 'botblocker-security');
-        }
-        wp_send_json_success('Path created successfully');
+
+        wp_send_json_success(__('Path created successfully.', 'botblocker-security'));
     } else {
-        wp_send_json_error('Failed to create path');
+        wp_send_json_error(__('Failed to create path.', 'botblocker-security'));
     }
 }
 add_action('wp_ajax_bbcs_create_path', 'bbcs_create_path_callback');
@@ -333,26 +272,12 @@ add_action('wp_ajax_bbcs_create_path', 'bbcs_create_path_callback');
 function bbcs_export_paths_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
-    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+    if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
     global $wpdb;
-    
-    $found = false;
-    if (BOTBLOCKER_CACHE_WP) {
-        $cache_version = wp_cache_get('bbcs_ajax_paths_cache_version', 'botblocker-security') ?: 1;
-        $cache_key = 'bbcs_export_paths' . bbcs_get_wp_cache_version() . $cache_version;
-        $paths = wp_cache_get($cache_key, 'botblocker-security', false, $found);
-    }
-
-    if ($found === false) {
-        // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-        $paths = $wpdb->get_results("SELECT * FROM `{$wpdb->bbcs_path}`", ARRAY_A);
-        
-        if (BOTBLOCKER_CACHE_WP) {
-            wp_cache_set($cache_key, $paths, 'botblocker-security', 15);
-        }
-    }
+    // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    $paths = $wpdb->get_results("SELECT * FROM `{$wpdb->bbcs_path}`", ARRAY_A);
 
     wp_send_json_success($paths);
 }
@@ -361,10 +286,10 @@ add_action('wp_ajax_bbcs_export_paths', 'bbcs_export_paths_callback');
 function bbcs_import_paths_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
-    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+    if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
     if (!isset($_POST['paths']) || empty($_POST['paths'])) {
-        wp_send_json_error('Missing required field: paths');
+        wp_send_json_error(__('Missing required field: paths.', 'botblocker-security'));
         return;
     }
 
@@ -376,29 +301,15 @@ function bbcs_import_paths_callback()
         $skipped = 0;
         foreach ($paths as $path) {
             $search = sanitize_textarea_field($path['search']);
-            
-            $found = false;
-            if (BOTBLOCKER_CACHE_WP) {
-                $cache_version = 1;
-                $cache_version = wp_cache_get('bbcs_ajax_paths_cache_version', 'botblocker-security') ?: 1;
-                $exists_cache_key = 'bbcs_path_exists' . bbcs_get_wp_cache_version() . $cache_version . '_' . md5($search);
-                $existing = false;
-                $existing = wp_cache_get($exists_cache_key, 'botblocker-security', false, $found);
-            }
-            
-            if ($found === false) {
-                // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-                $existing = $wpdb->get_var(
-                    $wpdb->prepare(
-                        "SELECT COUNT(*) FROM `{$wpdb->bbcs_path}` WHERE search = %s",
-                        $search
-                    )
-                );
-                if (BOTBLOCKER_CACHE_WP) {
-                    wp_cache_set($exists_cache_key, $existing, 'botblocker-security', 15);
-                }
-            }
+            // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $existing = $wpdb->get_var(
+                $wpdb->prepare(
+                    "SELECT COUNT(*) FROM `{$wpdb->bbcs_path}` WHERE search = %s",
+                    $search
+                )
+            );
+
             if ($existing == 0) {
                 $data = array(
                     'priority' => intval($path['priority']),
@@ -408,7 +319,7 @@ function bbcs_import_paths_callback()
                     'disable' => intval($path['disable'])
                 );
                 // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching
                 $result = $wpdb->insert($wpdb->bbcs_path, $data);
                 if ($result !== false) {
                     $imported++;
@@ -420,16 +331,12 @@ function bbcs_import_paths_callback()
         bbcs_renderPathsFromDb();
         bbcs_clearFileCache();
 
-        if (BOTBLOCKER_CACHE_WP) {
-            wp_cache_set('bbcs_ajax_paths_cache_version', time(), 'botblocker-security');
-        }
-        
         wp_send_json_success(array(
             'imported' => $imported,
             'skipped' => $skipped,
         ));
     } else {
-        wp_send_json_error('Invalid JSON format');
+        wp_send_json_error(__('Invalid JSON format.', 'botblocker-security'));
     }
 }
 add_action('wp_ajax_bbcs_import_paths', 'bbcs_import_paths_callback');
@@ -437,19 +344,17 @@ add_action('wp_ajax_bbcs_import_paths', 'bbcs_import_paths_callback');
 function bbcs_clear_all_paths_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
-    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+    if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
     $result = bbcs_clear_all_paths();
 
     if ($result !== false) {
         bbcs_renderPathsFromDb();
         bbcs_clearFileCache();
-        if (BOTBLOCKER_CACHE_WP) {
-            wp_cache_set('bbcs_ajax_paths_cache_version', time(), 'botblocker-security');
-        }
-        wp_send_json_success('All paths have been cleared');
+
+        wp_send_json_success(__('All paths have been cleared.', 'botblocker-security'));
     } else {
-        wp_send_json_error('Failed to clear paths');
+        wp_send_json_error(__('Failed to clear paths.', 'botblocker-security'));
     }
 }
 add_action('wp_ajax_bbcs_clear_all_paths', 'bbcs_clear_all_paths_callback');
@@ -463,16 +368,14 @@ function bbcs_clear_all_paths()
 function bbcs_path_to_php_callback(): void
 {
 	check_ajax_referer('botblocker_nonce', 'nonce');
-	if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+	if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 	try {
         bbcs_renderPathsFromDb();
-		if (BOTBLOCKER_CACHE_WP) {
-		    wp_cache_set('bbcs_ajax_paths_cache_version', time(), 'botblocker-security');
-		}
-		wp_send_json_success('Paths file generated successfully.');
+
+		wp_send_json_success(__('Paths file generated successfully.', 'botblocker-security'));
 	} catch(\Throwable $e) {
 		//error_log('bbcs_path_to_php_callback error: ' . $e->getMessage());
-		wp_send_json_error('Failed to generate paths file from database.');
+		wp_send_json_error(__('Failed to generate paths file from database.', 'botblocker-security'));
 	}
 }
 add_action('wp_ajax_bbcs_path_to_php', 'bbcs_path_to_php_callback');

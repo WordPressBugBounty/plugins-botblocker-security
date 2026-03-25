@@ -107,7 +107,7 @@ class BotBlockerCaptchaRendererFull {
         $hash0 = $this->answerHash($nonce, 'confirm');
         $btnClass = 's'.md5('botblocker-btn-success'.$this->BBCS->time);
 
-        return 'document.getElementById("content").innerHTML = clean_and_decode_base64_to_utf8("'.base64_encode('<p>Confirm that you are human:</p><div style="cursor:pointer;" class="'.$btnClass.'" onclick="'.$this->botblocker_check_function_name.'(\'post\', data, \''.$hash0.'\')">I\'m not a robot</div>').'");';
+        return 'document.getElementById("content").innerHTML = clean_and_decode_base64_to_utf8("'.base64_encode('<p>'.esc_html__('Confirm that you are human:', 'botblocker-security').'</p><div style="cursor:pointer;" class="'.$btnClass.'" onclick="'.$this->botblocker_check_function_name.'(\'post\', data, \''.$hash0.'\')">'.esc_html__("I'm not a robot", 'botblocker-security').'</div>').'");';
     }
     
     /**
@@ -167,7 +167,7 @@ class BotBlockerCaptchaRendererFull {
         $image_data = ob_get_contents();
         ob_end_clean();
 
-        return 'document.getElementById("content").innerHTML = "<div class=\"s'.md5('botblocker-btn-color'.$this->BBCS->time).'\" style=\"cursor: none; pointer-events: none; background-image: url(data:image/png;base64,'.base64_encode($image_data).');\" /></div><p>'.'If you are human, click on the similar color'.'</p>'.$buttons.'";';
+        return 'document.getElementById("content").innerHTML = "<div class=\"s'.md5('botblocker-btn-color'.$this->BBCS->time).'\" style=\"cursor: none; pointer-events: none; background-image: url(data:image/png;base64,'.base64_encode($image_data).');\" /></div><p>'.esc_js(__('Click on the matching color', 'botblocker-security')).'</p>'.$buttons.'";';
     }
     
     /**
@@ -254,7 +254,7 @@ class BotBlockerCaptchaRendererFull {
                 tImg.src = "data:image/png;base64,' . $target_b64 . '";
                 c.appendChild(tImg);
                 var p = document.createElement("p");
-                p.textContent = "If you are human, click on the similar image";
+                p.textContent = "' . esc_js(__('Click on the matching image', 'botblocker-security')) . '";
                 c.appendChild(p);
                 var row = document.createElement("p");
                 row.style.maxWidth = "500px";
@@ -297,7 +297,7 @@ class BotBlockerCaptchaRendererFull {
 
         $output = '';
         // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage
-        $output .= 'document.getElementById("content").innerHTML = "<img src=\"data:image/png;base64,' . $target_b64 . '\" /><p>If you are human, click on the similar image</p>' . $buttons . '";';
+        $output .= 'document.getElementById("content").innerHTML = "<img src=\"data:image/png;base64,' . $target_b64 . '\" /><p>' . esc_js(__('Click on the matching image', 'botblocker-security')) . '</p>' . $buttons . '";';
         
         $output .= 'function fetchAndSetImage(param, imageId) {
         var url = \'' . admin_url('admin-ajax.php') . '\';
@@ -341,18 +341,20 @@ class BotBlockerCaptchaRendererFull {
         $nonce = $this->createChallenge('confirm', 3);
         $hash0 = $this->answerHash($nonce, 'confirm');
         $btnClass = 's'.md5('botblocker-btn-success'.$this->BBCS->time);
+        $i18n_confirm = esc_js(__('Confirm that you are human:', 'botblocker-security'));
+        $i18n_loading = esc_js(__('Loading...', 'botblocker-security'));
 
         return '
         var script = document.createElement("script");
         script.src = "https://www.google.com/recaptcha/api.js";
         document.body.appendChild(script);
         script.onload = function() {
-            document.getElementById("content").innerHTML = "<div style=\"max-width: 302px; text-align: center;margin: 0 auto;\"><p>'.'Confirm that you are human:'.'</p><p class=\"g-recaptcha\" style=\"display: inline-block;\" data-sitekey=\"'.$this->BBCS->settings->recaptcha_key2.'\" data-callback=\"onRecaptchaSuccess\">'.'Loading...'.'</p></div>";
+            document.getElementById("content").innerHTML = "<div style=\"max-width: 302px; text-align: center;margin: 0 auto;\"><p>'.$i18n_confirm.'</p><p class=\"g-recaptcha\" style=\"display: inline-block;\" data-sitekey=\"'.$this->BBCS->settings->recaptcha_key2.'\" data-callback=\"onRecaptchaSuccess\">'.$i18n_loading.'</p></div>";
         }
 
         window.onRecaptchaSuccess = function(token) {
             data += "&g-recaptcha-response=" + token;
-            document.getElementById("content").innerHTML = clean_and_decode_base64_to_utf8("'.base64_encode('<div style="max-width: 302px; text-align: center;margin: 0 auto;"><div style="cursor: pointer;" class="'.$btnClass.'" onclick="'.$this->botblocker_check_function_name.'(\'post\', data, \''.$hash0.'\')">Go to website</div></div>').'");
+            document.getElementById("content").innerHTML = clean_and_decode_base64_to_utf8("'.base64_encode('<div style="max-width: 302px; text-align: center;margin: 0 auto;"><div style="cursor: pointer;" class="'.$btnClass.'" onclick="'.$this->botblocker_check_function_name.'(\'post\', data, \''.$hash0.'\')">'.esc_html__('Go to website', 'botblocker-security').'</div></div>').'");
         }
         ';
     }
@@ -365,18 +367,20 @@ class BotBlockerCaptchaRendererFull {
     private function renderRecaptchaWithoutButton() {
         $nonce = $this->createChallenge('confirm', 4);
         $hash0 = $this->answerHash($nonce, 'confirm');
+        $i18n_confirm = esc_js(__('Confirm that you are human:', 'botblocker-security'));
+        $i18n_loading = esc_js(__('Loading...', 'botblocker-security'));
 
         return '
         var script = document.createElement("script");
         script.src = "https://www.google.com/recaptcha/api.js";
         document.body.appendChild(script);
         script.onload = function() {
-            document.getElementById("content").innerHTML = "<div style=\"max-width: 302px; text-align: center;margin: 0 auto;\"><p>'.'Confirm that you are human:'.'</p><p class=\"g-recaptcha\" style=\"display: inline-block;\" data-sitekey=\"'.$this->BBCS->settings->recaptcha_key2.'\" data-callback=\"onRecaptchaSuccess\">'.'Loading...'.'</p></div>";
+            document.getElementById("content").innerHTML = "<div style=\"max-width: 302px; text-align: center;margin: 0 auto;\"><p>'.$i18n_confirm.'</p><p class=\"g-recaptcha\" style=\"display: inline-block;\" data-sitekey=\"'.$this->BBCS->settings->recaptcha_key2.'\" data-callback=\"onRecaptchaSuccess\">'.$i18n_loading.'</p></div>";
         }
 
         window.onRecaptchaSuccess = function(token) {
             data += "&g-recaptcha-response=" + token;
-            document.getElementById("content").innerHTML = "'.'Loading...'.'";
+            document.getElementById("content").innerHTML = "'.$i18n_loading.'";
             '.$this->botblocker_check_function_name.'(\'post\', data, \''.$hash0.'\');
         }
         ';
@@ -435,24 +439,24 @@ class BotBlockerCaptchaRendererFull {
         shuffle($shapesData);
 
         $shapeLabels = [
-            'circle' => 'Circle',
-            'square' => 'Square',
-            'triangle' => 'Triangle',
-            'star' => 'Star',
-            'hexagon' => 'Hexagon',
+            'circle' => __('Circle', 'botblocker-security'),
+            'square' => __('Square', 'botblocker-security'),
+            'triangle' => __('Triangle', 'botblocker-security'),
+            'star' => __('Star', 'botblocker-security'),
+            'hexagon' => __('Hexagon', 'botblocker-security'),
         ];
 
         $colorLabels = [
-            'red' => 'Red',
-            'blue' => 'Blue',
-            'green' => 'Green',
-            'purple' => 'Purple',
-            'orange' => 'Orange',
+            'red' => __('Red', 'botblocker-security'),
+            'blue' => __('Blue', 'botblocker-security'),
+            'green' => __('Green', 'botblocker-security'),
+            'purple' => __('Purple', 'botblocker-security'),
+            'orange' => __('Orange', 'botblocker-security'),
         ];
 
-        $findShapeText = 'Find the shape:' . ' ';
+        $findShapeText = __('Find the shape:', 'botblocker-security') . ' ';
         $shapeText = $shapeLabels[$correctShape] . ', ';
-        $withColorText = 'with color:' . ' ';
+        $withColorText = __('with color:', 'botblocker-security') . ' ';
         $colorText = $colorLabels[$correctColor];
         
         $instruction = "{$findShapeText} {$shapeText} {$withColorText} {$colorText}";
@@ -686,7 +690,7 @@ class BotBlockerCaptchaRendererFull {
         $answersJSON = implode(",\n                ", $answerButtons);
 
         return '
-        document.getElementById("content").innerHTML = "<div style=\"text-align:center;\"><p>' . "Solve the following:" . '</p><canvas id=\"mathCanvas\" width=\"300\" height=\"80\" style=\"border:1px solid #ddd;\"></canvas><div id=\"answerOptions\" style=\"margin-top:15px;\"></div></div>";
+        document.getElementById("content").innerHTML = "<div style=\"text-align:center;\"><p>' . esc_js(__('Solve the following:', 'botblocker-security')) . '</p><canvas id=\"mathCanvas\" width=\"300\" height=\"80\" style=\"border:1px solid #ddd;\"></canvas><div id=\"answerOptions\" style=\"margin-top:15px;\"></div></div>";
 
         (function() {
             const canvas = document.getElementById("mathCanvas");
@@ -805,6 +809,13 @@ class BotBlockerCaptchaRendererFull {
         $correct_hash = $this->answerHash( $nonce, 'hold_confirm' );
         $fn           = $this->botblocker_check_function_name;
 
+        $i18n_instruction = esc_js(__('Hold the button and release in the green zone', 'botblocker-security'));
+        $i18n_hold        = esc_js(__('HOLD', 'botblocker-security'));
+        $i18n_verifying   = esc_js(__('Verifying...', 'botblocker-security'));
+        $i18n_failed      = esc_js(__('Verification failed.', 'botblocker-security'));
+        $i18n_too_early   = esc_js(__('Too early. Try again.', 'botblocker-security'));
+        $i18n_too_late    = esc_js(__('Too late. Try again.', 'botblocker-security'));
+
         return '
         document.getElementById("content").innerHTML = "";
 
@@ -824,7 +835,7 @@ class BotBlockerCaptchaRendererFull {
             container.style.cssText = "text-align:center;max-width:340px;margin:0 auto;user-select:none;-webkit-user-select:none;";
 
             var instruction = document.createElement("p");
-            instruction.textContent = "Hold the button and release in the green zone";
+            instruction.textContent = "' . $i18n_instruction . '";
             instruction.style.cssText = "margin-bottom:20px;font-size:14px;color:#555;";
             container.appendChild(instruction);
 
@@ -841,7 +852,7 @@ class BotBlockerCaptchaRendererFull {
 
             var btnText = document.createElement("div");
             btnText.style.cssText = "position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;z-index:3;text-shadow:0 1px 2px rgba(0,0,0,0.3);pointer-events:none;";
-            btnText.textContent = "HOLD";
+            btnText.textContent = "' . $i18n_hold . '";
             track.appendChild(btnText);
 
             container.appendChild(track);
@@ -910,7 +921,7 @@ class BotBlockerCaptchaRendererFull {
                 if (progress >= zoneStart && progress <= zoneEnd) {
                     submitted = true;
                     fill.style.background = "#4CAF50";
-                    status.textContent = "Verifying...";
+                    status.textContent = "' . $i18n_verifying . '";
                     status.style.color = "#4CAF50";
                     track.style.cursor = "default";
                     setTimeout(function() {
@@ -919,7 +930,7 @@ class BotBlockerCaptchaRendererFull {
                 } else if (attempts >= maxAttempts) {
                     submitted = true;
                     fill.style.background = "#f44336";
-                    status.textContent = "Verification failed.";
+                    status.textContent = "' . $i18n_failed . '";
                     status.style.color = "#f44336";
                     track.style.cursor = "default";
                     setTimeout(function() {
@@ -927,9 +938,9 @@ class BotBlockerCaptchaRendererFull {
                     }, 500);
                 } else {
                     if (progress < zoneStart) {
-                        status.textContent = "Too early! Try again.";
+                        status.textContent = "' . $i18n_too_early . '";
                     } else {
-                        status.textContent = "Too late! Try again.";
+                        status.textContent = "' . $i18n_too_late . '";
                     }
                     status.style.color = "#f44336";
                     attemptInfo.textContent = attempts + "/" + maxAttempts;

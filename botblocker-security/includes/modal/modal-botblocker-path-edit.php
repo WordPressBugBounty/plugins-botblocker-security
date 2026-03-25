@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                             <div class="bbcs_text_input">
                                 <div class="bbcs_label_input_box">
                                     <span class="bbcs-label-input"><?php esc_html_e('Priority', 'botblocker-security'); ?></span>
-                                    <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e('Set the priority of the path rule (1-100)', 'botblocker-security'); ?>"></i>
+                                    <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e('Path rule priority (1-100)', 'botblocker-security'); ?>"></i>
                                 </div>
                                 <div class="bbcs_text_input_inner">
                                     <input type="range" class="bbcs_text_input_input" id="priority" name="priority" min="1" max="100" required>
@@ -27,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                             <div class="bbcs_text_input">
                                 <div class="bbcs_label_input_box">
                                     <span class="bbcs-label-input"><?php esc_html_e('Rule', 'botblocker-security'); ?></span>
-                                    <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e('Select the action for this path', 'botblocker-security'); ?>"></i>
+                                    <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e('Action for this path', 'botblocker-security'); ?>"></i>
                                 </div>
                                 <div class="bbcs_text_input_inner">
                                     <select class="bbcs_select_input_input" id="rule" name="rule" required>
@@ -46,7 +46,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                             <div class="bbcs_text_input">
                                 <div class="bbcs_label_input_box">
                                     <span class="bbcs-label-input"><?php esc_html_e('Path (URL)', 'botblocker-security'); ?></span>
-                                    <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e('Enter the path (substring or pattern) to match', 'botblocker-security'); ?>"></i>
+                                    <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e('Path substring or pattern to match', 'botblocker-security'); ?>"></i>
                                 </div>
                                 <div class="bbcs_text_input_inner">
                                     <textarea class="bbcs_text_input_input" id="search" name="search" rows="3" required></textarea>
@@ -57,7 +57,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                             <div class="bbcs_text_input">
                                 <div class="bbcs_label_input_box">
                                     <span class="bbcs-label-input"><?php esc_html_e('Comment', 'botblocker-security'); ?></span>
-                                    <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e('Add a comment for this path rule', 'botblocker-security'); ?>"></i>
+                                    <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e('Comment for this path rule', 'botblocker-security'); ?>"></i>
                                 </div>
                                 <div class="bbcs_text_input_inner">
                                     <textarea class="bbcs_text_input_input" id="comment" name="comment" rows="3"></textarea>

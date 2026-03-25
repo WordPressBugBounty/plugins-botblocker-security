@@ -182,7 +182,7 @@ trait BotBlockerPostTrait
 
             if ($code_data['allow']) {
                 // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching
                 $wpdb->update(
                     $wpdb->bbcs_hits,
                     ['passed' => 2],
@@ -192,7 +192,7 @@ trait BotBlockerPostTrait
                 );
             } else {
                 // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching
                 $wpdb->update(
                     $wpdb->bbcs_hits_suspicious,
                     ['passed' => 2],
@@ -232,33 +232,21 @@ trait BotBlockerPostTrait
         $ip_from_post   = $ip_sanitized;
         $passed_code    = 8;
         $fromdate       = (int) $fromdate;
-
-        $found = false;
-        if (BOTBLOCKER_CACHE_WP) {
-            $cache_key = 'bbcs_miss_count' . bbcs_get_wp_cache_version() . md5($this->cid);
-            $miss_count = false;
-            $miss_count = wp_cache_get($cache_key, 'botblocker-security', false, $found);
-        }
-        if ($found === false) {
-            // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-            $miss_count = (int) $wpdb->get_var($wpdb->prepare(
-                "
-                SELECT COUNT(*) FROM (
-                    SELECT * FROM `{$wpdb->bbcs_hits}`
-                    UNION ALL
-                    SELECT * FROM `{$wpdb->bbcs_hits_suspicious}`
-                ) AS combined_hits
-                WHERE date >= %d AND ip = %s AND passed = %d
-                ",
-                $fromdate,
-                $ip_from_post,
-                $passed_code
-            ));
-            if (BOTBLOCKER_CACHE_WP) {
-                wp_cache_set($cache_key, $miss_count, 'botblocker-security', BOTBLOCKER_CACHE_RULES_CHECK_TIME);
-            }
-        }
+        // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $miss_count = (int) $wpdb->get_var($wpdb->prepare(
+            "
+            SELECT COUNT(*) FROM (
+                SELECT * FROM `{$wpdb->bbcs_hits}`
+                UNION ALL
+                SELECT * FROM `{$wpdb->bbcs_hits_suspicious}`
+            ) AS combined_hits
+            WHERE date >= %d AND ip = %s AND passed = %d
+            ",
+            $fromdate,
+            $ip_from_post,
+            $passed_code
+        ));
 
         if ($miss_count > 0) {
             $this->settings->time_ban = $this->settings->time_ban_2;
@@ -272,14 +260,14 @@ trait BotBlockerPostTrait
 
         if ($this->ip_version == 4) {
             // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching
             $existing_rule = $wpdb->get_row($wpdb->prepare(
                 "SELECT * FROM `{$wpdb->bbcs_ipv4rules}` WHERE search = %s",
                 $ip
             ));
         } else {
             // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching
             $existing_rule = $wpdb->get_row($wpdb->prepare(
                 "SELECT * FROM `{$wpdb->bbcs_ipv6rules}` WHERE search = %s",
                 $ip
@@ -290,7 +278,7 @@ trait BotBlockerPostTrait
         $expires = $this->time + $this->settings->time_ban;
         if ($existing_rule) {
             // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching
             $wpdb->update(
                 $table_name,
                 array('expires' => $expires),
@@ -308,7 +296,7 @@ trait BotBlockerPostTrait
                 'expires' => $expires
             );
             // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching
             $wpdb->insert($table_name, $data);
         }
 

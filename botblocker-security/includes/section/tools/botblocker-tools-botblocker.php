@@ -9,14 +9,14 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                 // REVIEWER NOTE: This image is a static plugin asset, not a user-uploaded Media Library image.
                 // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage ?>
                 <img src="<?php echo esc_url(BOTBLOCKER_URL . 'public/icons/rocket.svg'); ?>"
-                    alt="<?php esc_attr_e('Traffic & Referrer Settings', 'botblocker-security'); ?>"
+                    alt="<?php esc_attr_e('Traffic and Referrer Settings', 'botblocker-security'); ?>"
                     class="img-fluid bbcs-info-image mb-3">
 
                 <p class="bbcs-info-text">
-                    <?php esc_html_e('BotBlocker provides a comprehensive set of tools to strengthen the security and boost the performance of your WordPress site. These tools allow you to block unwanted bots, filter suspicious traffic, and optimize server resources, helping your website stay secure and efficient.', 'botblocker-security'); ?>
+                    <?php esc_html_e('Tools for blocking bots, filtering suspicious traffic, and optimizing server resources.', 'botblocker-security'); ?>
                 </p>
                 <p class="bbcs-info-text">
-                    <?php esc_html_e('With BotBlocker, you can easily configure advanced protection features and automate the detection of harmful activity. This not only enhances your site’s defenses but also improves loading speed by minimizing unnecessary server load.', 'botblocker-security'); ?>
+                    <?php esc_html_e('Configure protection rules and automate threat detection. Reducing junk traffic also improves load times.', 'botblocker-security'); ?>
                 </p>
                 <hr class="bbcs-info-hr">
                 <div class="bbcs-info-footer">
@@ -36,7 +36,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                 </button>
                 <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"
                     data-bs-placement="top"
-                    data-bs-original-title="<?php esc_html_e('Export your current BotBlocker settings and data.', 'botblocker-security'); ?>"></i>
+                    data-bs-original-title="<?php esc_html_e('Export current settings and data.', 'botblocker-security'); ?>"></i>
             </div>
             <div class="bbcs_settings_button">
                 <button type="button" id="bbcs-import-data-settings" class="mb-1 btn btn-xs btn-default">
@@ -45,7 +45,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                 </button>
                 <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"
                     data-bs-placement="top"
-                    data-bs-original-title="<?php esc_html_e('Import your previously exported BotBlocker settings and data.', 'botblocker-security'); ?>"></i>
+                    data-bs-original-title="<?php esc_html_e('Import settings and data from a backup.', 'botblocker-security'); ?>"></i>
             </div>
         </div>
 

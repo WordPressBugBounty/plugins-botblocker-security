@@ -77,7 +77,7 @@ function bbcs_getDatabaseUpdate() {
         'redirection' => 0,
         'httpversion' => '1.1',
         'headers'     => array(
-            'User-Agent' => defined('BOTBLOCKER_USER_AGENT') ? BOTBLOCKER_USER_AGENT : 'BotBlocker/Stats',
+            'User-Agent' => function_exists('bbcs_current_user_agent') ? bbcs_current_user_agent() : 'BotBlocker/Stats', //BBCS-MULTISITE
         ),
     );
     $response = wp_remote_get($url, $args);
@@ -116,7 +116,7 @@ function bbcs_getDatabaseAll() {
         'redirection' => 0,
         'httpversion' => '1.1',
         'headers'     => array(
-            'User-Agent' => defined('BOTBLOCKER_USER_AGENT') ? BOTBLOCKER_USER_AGENT : 'BotBlocker/Stats',
+            'User-Agent' => function_exists('bbcs_current_user_agent') ? bbcs_current_user_agent() : 'BotBlocker/Stats', //BBCS-MULTISITE
         ),
     );
     $response = wp_remote_get($url, $args);
@@ -129,7 +129,7 @@ function bbcs_getDatabaseAll() {
         return 'Error fetching data';
     }
     $number = intval($body);
-    $output = esc_html__('Bad IP\'s in cloud base:', 'botblocker-security').' <b>' . $number . '</b>';
+    $output = esc_html__('Malicious IPs in cloud database:', 'botblocker-security').' <b>' . $number . '</b>';
     if (BOTBLOCKER_CACHE_SIDEBAR_STATS) {
         set_transient($cache_key, $output, BOTBLOCKER_CACHE_SIDEBAR_STATS_TIME);
     }
@@ -139,7 +139,7 @@ add_shortcode('bbcs_database_total', 'bbcs_getDatabaseAll');
 
 function bbcs_system_status_view()
 {
-    if (!current_user_can('manage_options')) {
+    if (!current_user_can(bbcs_can_manage())) {
         return esc_html__('You do not have permission to view this information.', 'botblocker-security');
     }
     global $wpdb;
@@ -194,6 +194,11 @@ function bbcs_plugins_themes_view() {
     }
     $plugins = get_plugins();
     $active_plugins = get_option('active_plugins', array());
+    //BBCS-MULTISITE
+    if ( is_multisite() ) {
+        $network_plugins = array_keys( (array) get_site_option( 'active_sitewide_plugins', array() ) );
+        $active_plugins  = array_unique( array_merge( $active_plugins, $network_plugins ) );
+    }
 
     $themes = wp_get_themes();
     $current_theme = wp_get_theme();

@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 				<hr class="bbcs-info-hr">
 				<div class="bbcs-info-footer">
 					<i class="fa-regular fa-circle-question"></i>
-					<a href="<?php echo esc_url(BOTBLOCKER_DOCS_URL)?>/interface-caching-in-botblocker-configurable-cache-time-real-time-mode-and-wordpress-transients/" target="_blank" class="bbcs-info-footer-a"><?php esc_html_e('About Wordpress transients in BotBlocker', 'botblocker-security'); ?></a>
+					<a href="<?php echo esc_url(BOTBLOCKER_DOCS_URL)?>/interface-caching-in-botblocker-configurable-cache-time-real-time-mode-and-wordpress-transients/" target="_blank" class="bbcs-info-footer-a"><?php esc_html_e('About WordPress transients in BotBlocker', 'botblocker-security'); ?></a>
 				</div>
 			</div>
 		</div>        

@@ -10,10 +10,10 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                     alt="<?php esc_attr_e('Copyright', 'botblocker-security'); ?>" class="img-fluid bbcs-info-image mb-3">
 
                 <p class="bbcs-info-text">
-                    <?php esc_html_e('BotBlocker uses a range of trusted third-party libraries and technologies to provide advanced protection and reliable performance for your WordPress site. All components are carefully selected to ensure security, compatibility, and compliance with open-source licenses.', 'botblocker-security'); ?>
+                    <?php esc_html_e('BotBlocker uses third-party libraries selected for security, compatibility, and open-source license compliance.', 'botblocker-security'); ?>
                 </p>
                 <p class="bbcs-info-text">
-                    <?php esc_html_e('Below you can find a list of the main libraries and resources used in BotBlocker, along with their licenses and sources. We appreciate the work of the open-source community and always provide proper attribution to all third-party projects.', 'botblocker-security'); ?>
+                    <?php esc_html_e('Libraries and resources used in BotBlocker, with licenses and sources.', 'botblocker-security'); ?>
                 </p>
                 
                 <hr class="bbcs-info-hr">

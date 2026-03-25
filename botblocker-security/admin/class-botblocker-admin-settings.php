@@ -55,17 +55,17 @@ trait BotBlockerAdminSettingsTrait {
     
     private function load_pages(): void
     {
-        $this->pages_dashboard = admin_url('admin.php?page=bbcs_dashboard');
-        $this->pages_settings = admin_url('admin.php?page=bbcs_settings');
-        $this->pages_integrations = admin_url('admin.php?page=bbcs_integrations');
-        $this->pages_reports = admin_url('admin.php?page=bbcs_reports');
-        $this->pages_rules = admin_url('admin.php?page=bbcs_rules');
-        $this->pages_tools = admin_url('admin.php?page=bbcs_tools');
-        $this->pages_cloud_api = admin_url('admin.php?page=bbcs_cloud_api');
-        $this->pages_setup = admin_url('admin.php?page=bbcs_setup_guide');
-        $this->pages_about = admin_url('admin.php?page=bbcs_about');
-        $this->pages_addons = admin_url('admin.php?page=bbcs_addons');
-        $this->pages_wizard = admin_url('admin.php?page=bbcs_setup_wizard');
+        $this->pages_dashboard = bbcs_admin_page_url('bbcs_dashboard');
+        $this->pages_settings = bbcs_admin_page_url('bbcs_settings');
+        $this->pages_integrations = bbcs_admin_page_url('bbcs_integrations');
+        $this->pages_reports = bbcs_admin_page_url('bbcs_reports');
+        $this->pages_rules = bbcs_admin_page_url('bbcs_rules');
+        $this->pages_tools = bbcs_admin_page_url('bbcs_tools');
+        $this->pages_cloud_api = bbcs_admin_page_url('bbcs_cloud_api');
+        $this->pages_setup = bbcs_admin_page_url('bbcs_setup_guide');
+        $this->pages_about = bbcs_admin_page_url('bbcs_about');
+        $this->pages_addons = bbcs_admin_page_url('bbcs_addons');
+        $this->pages_wizard = bbcs_site_admin_page_url('bbcs_setup_wizard');
     } 
     
     private function load_files(): void

@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $bbcs_has_pro = bbcs_isCloudAPIActive();
-$bbcs_wizard_completed = get_option('bbcs_setup_wizard_completed', false);
+$bbcs_wizard_completed = bbcs_get_option('bbcs_setup_wizard_completed', false);
 $bbcs_health_score = bbcs_calculateSiteHealth();
 ?>
 
@@ -53,7 +53,7 @@ $bbcs_health_score = bbcs_calculateSiteHealth();
                     <span><?php esc_html_e('Run the wizard to configure protection', 'botblocker-security'); ?></span>
                 </div>
             </div>
-            <a href="<?php echo esc_url( admin_url('admin.php?page=bbcs_setup_wizard') ); ?>" class="bbcs-setup-alert-btn">
+            <a href="<?php echo esc_url( bbcs_site_admin_page_url('bbcs_setup_wizard') ); ?>" class="bbcs-setup-alert-btn">
                 <i class="fa-solid fa-arrow-right"></i>
             </a>
         </div>
@@ -87,7 +87,7 @@ $bbcs_health_score = bbcs_calculateSiteHealth();
                         <?php esc_html_e( 'PRO Active, Security Incomplete', 'botblocker-security' ); ?>
                     </h4>
                     <p class="bbcs-status-description">
-                        <?php esc_html_e( 'BotBlocker PRO is active, but several security shields are disabled. Activate missing protections to maximize your defense.', 'botblocker-security' ); ?>
+                        <?php esc_html_e( 'BotBlocker PRO is active, but some protections are disabled. Enable them for full defense.', 'botblocker-security' ); ?>
                     </p>
                 </div>
                 <a href="<?php echo esc_url( $BBCSA->pages_setup ); ?>" class="bbcs-status-action-btn">
@@ -127,7 +127,7 @@ $bbcs_health_score = bbcs_calculateSiteHealth();
 
         <div class="bbcs-action-buttons-health"> <!-- bbcs-action-buttons-->
                 <?php if ( $bbcs_wizard_completed ) : ?>
-                <a href="<?php echo esc_url( admin_url('admin.php?page=bbcs_setup_wizard') ); ?>" class="btn btn-sm bbcs-btn-primary-cta">
+                <a href="<?php echo esc_url( bbcs_site_admin_page_url('bbcs_setup_wizard') ); ?>" class="btn btn-sm bbcs-btn-primary-cta">
                     <i class="fa-solid fa-rotate"></i>
                     <?php esc_html_e( 'Setup Wizard', 'botblocker-security' ); ?>
                 </a>

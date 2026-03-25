@@ -49,16 +49,26 @@
     $(document).ready(function () {
         var installed = getParam('bbcs_installed');
         var updated = getParam('bbcs_updated');
+        var updatedAll = getParam('bbcs_updated_all');
         var deleted = getParam('bbcs_deleted');
         var error = getParam('bbcs_error');
         var errorMsg = getParam('bbcs_error_msg');
+        var requiresCore = getParam('bbcs_requires_core');
 
         if (installed) {
             showNotice('success', 'Add-on installed successfully.');
             activateTabById('#bbcs-installed');
         }
-        if (updated) {
+        if (updatedAll) {
+            showNotice('success', 'All add-ons have been updated.');
+            activateTabById('#bbcs-installed');
+        }
+        if (updated && !requiresCore) {
             showNotice('success', 'Add-on updated successfully.');
+            activateTabById('#bbcs-installed');
+        }
+        if (requiresCore) {
+            showNotice('warning', 'Add-on was updated but not reactivated — it requires BotBlocker version ' + requiresCore + ' or higher. Please update the plugin.');
             activateTabById('#bbcs-installed');
         }
         if (deleted) {
@@ -72,16 +82,23 @@
             if (error === 'download') msg = 'Failed to download the add-on package.';
             if (error === 'unzip') msg = 'Failed to unpack the add-on package.';
             if (error === 'fs_unavailable') msg = 'Filesystem API is not available.';
+            if (error === 'url_not_allowed') msg = 'The add-on download URL is not allowed.';
+            if (error === 'requires_core') {
+                msg = 'This add-on requires a newer version of BotBlocker.';
+                if (errorMsg) { msg += ' Required: ' + decodeURIComponent(errorMsg) + '.'; }
+                msg += ' Please update the plugin first.';
+                errorMsg = null;
+            }
             if (errorMsg) { msg += ' ' + decodeURIComponent(errorMsg); }
             showNotice('danger', msg);
         }
 
-        removeParams(['bbcs_installed','bbcs_updated','bbcs_deleted','bbcs_error','bbcs_error_msg']);
+        removeParams(['bbcs_installed','bbcs_updated','bbcs_updated_all','bbcs_deleted','bbcs_error','bbcs_error_msg','bbcs_requires_core']);
 
         $(document).on('submit', 'form[action$="admin-post.php"]', function(){
             var $f = $(this);
             var action = ($f.find('input[name="action"]').val() || '').toString();
-            if (/^bbcs_(install|update|delete|toggle)_addon$/.test(action)) {
+            if (/^bbcs_(install|update|delete|toggle)_addon$/.test(action) || action === 'bbcs_update_all_addons') {
                 attachCardOverlay($f);
             }
         });

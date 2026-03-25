@@ -2,9 +2,9 @@
 Contributors: globusstudio, alukashevych, alexandrkinakh
 Tags: security, firewall, anti-spam, captcha, brute force
 Requires at least: 5.0
-Tested up to: 6.9.2
+Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.6.14
+Stable tag: 1.6.15
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -45,16 +45,17 @@ Every attempt to access your site is thoroughly analyzed and filtered. BotBlocke
 * **Deep Analysis** - User-Agent, Accept-Language, GeoIP, PTR, DNSBL, cookies, browser fingerprint, AdBlock, Incognito detection
 * **Network & Protocol Control** - block obsolete HTTP/1.0 clients and disable IPv6 if not used. Cloudflare-aware protection blocks origin bypass attempts
 
-= 🔒 Login Security & Bot Protection =
+= 🔒 Login Security & 2FA =
 
 All login attempts pass through multi-layer filtering and CAPTCHA verification:
 
-* **Multi-layer CAPTCHA Protection** - color buttons, animal images, floating shapes, floating math, Google reCAPTCHA v2/v3
+* **Two-Factor Authentication Support** - 2FA enhanced login security for admin area. Backup codes for recovery access. Universal 2FA app support – works with Google Authenticator, Authy, etc.
+* **Multi-layer CAPTCHA Protection** - color buttons, animal images, floating shapes, floating math, Google reCAPTCHA v2/v3, and more. Any internal CAPTCHA can be combined with reCAPTCHA v3 for dual-layer protection
+* **Brute Force Protection** - configurable login attempt limits. Failed attempts trigger temporary bans, with escalating penalties for repeated failures
 * **Advanced Anti-bot Challenges** - proprietary CAPTCHA designed to be nearly impossible to bypass, even by AI-based anti-CAPTCHA services
 * **Intelligent Ban System** - failed CAPTCHA results in configurable ban periods. Repeated failures trigger 24-hour bans
 * **Admin Access Simplification** - special mechanism to ease site administrator login while maintaining security
 * **XML-RPC Control** - options including complete disabling
-* **Two-Factor Authentication Support** - 2FA enhanced login security for admin area. Backup codes for recovery access. Universal 2FA app support – works with Google Authenticator, Authy, etc.
 
 = 🛠️ Security Tools =
 
@@ -92,6 +93,18 @@ You don't have to be a security expert to use BotBlocker:
 * **Adjustable Logging** - configurable retention periods with time zone awareness and daylight saving support
 
 **Security first - BotBlocker's on guard!**
+
+= 🔥 PRO Version =
+
+Upgrade to PRO for enhanced protection and performance features:
+
+* Real-time cloud threat intelligence checks against global databases
+* Hide login URL and protect against targeted attacks
+* Early-init (Before WordPress loads) filtering for maximum performance and security
+* Speed optimization features for high-traffic sites
+* Server optimization features for high-traffic sites
+* Priority support and updates
+* Access to premium add-ons 
 
 == Features ==
 
@@ -217,6 +230,14 @@ Use **Allowlist** for admin IPs/services and enable "allow server self-IP" so WP
 
 == Changelog ==
  
+= 1.6.15 =
+Add multisite support
+Add LLM whitelist for trusted crawlers and services
+Add new security rules to block emerging threats
+Add compatibility improvements for WordPress 6.9.4
+Fix minor bugs and UI glitches in admin panel
+Update translation files
+
 = 1.6.14 =
 Add automatic DDoS protection service compatibility (DDoS-Guard, Stormwall, etc.)
 Add docs/DDOS-COMPATIBILITY.md documentation
@@ -279,7 +300,7 @@ Add PHP 8.5 compatibility improvements
 = 1.6.6 =
 Fixed issue with cloud status page description not displaying correctly.
 Fixed minor UI glitches in admin panel.
-Add compatibility improvements for WordPress 6.9.
+Add compatibility improvements for WordPress 6.9
 Improved translation files.
 
 = 1.6.5 =

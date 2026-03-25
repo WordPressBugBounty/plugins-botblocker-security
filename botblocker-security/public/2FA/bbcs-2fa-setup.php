@@ -98,7 +98,7 @@ add_action('template_redirect', function() {
     // enqueue stylesheet for this setup page
     $css_path = BOTBLOCKER_URL . 'public/css/bbcs-2fa-setup.css';
     $css_ver  = defined( 'BOTBLOCKER_VERSION' ) ? BOTBLOCKER_VERSION : filemtime( WP_PLUGIN_DIR . '/botblocker-security/public/css/bbcs-2fa-setup.css' );
-    wp_enqueue_style( 'bbcs-2fa-setup', $css_path, array(), $css_ver );
+    // wp_enqueue_style( 'bbcs-2fa-setup', $css_path, array(), $css_ver );
     
     ?>
     <!DOCTYPE html>
@@ -106,25 +106,27 @@ add_action('template_redirect', function() {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title><?php esc_html_e('Two-Factor Authentication Setup', 'botblocker-security'); ?></title>    
-        <?php wp_head(); ?>
+        <title><?php esc_html_e('Two-Factor Authentication Setup', 'botblocker-security'); ?></title>
+        <?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet ?>
+        <link rel="stylesheet" href="<?php echo esc_url($css_path); ?>?ver=<?php echo esc_attr($css_ver); ?>">
+        <?php //wp_head(); ?>
     </head>
-    <body>
+    <body class="bbcs-2fa-setup">
         <div class="bbcs-2fa-container">
             <div class="bbcs-2fa-header">
                 <?php
                 // REVIEWER NOTE: This image is a static plugin asset, not a user-uploaded Media Library image.
                 // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage ?>
                 <?php echo '<img src="' . esc_url(BOTBLOCKER_URL . 'admin/img/logo-small-transparent.webp'). '" height="50" alt="' . esc_attr(BOTBLOCKER_SHORT_NAME) . '">'; ?>
-                <h1><?php esc_html_e('BotBlocker Security - Firewall & Bot Protection', 'botblocker-security'); ?></h1>
-                <p><?php esc_html_e('Set up protection for your account', 'botblocker-security'); ?></p>
+                <h1><?php esc_html_e('BotBlocker Security', 'botblocker-security'); ?></h1>
+                <p><?php esc_html_e('Set up 2FA for your account', 'botblocker-security'); ?></p>
             </div>
             
             <div class="bbcs-2fa-content">
                 <?php if ($success): ?>
                     <div class="bbcs-2fa-success">
-                        <h3><?php esc_html_e('✅ 2FA successfully set up!', 'botblocker-security'); ?></h3>
-                        <p><?php esc_html_e('Your account is now protected with two-factor authentication.', 'botblocker-security'); ?></p>
+                        <h3><?php esc_html_e('2FA Setup Complete', 'botblocker-security'); ?></h3>
+                        <p><?php esc_html_e('Two-factor authentication is now active on your account.', 'botblocker-security'); ?></p>
                         <div style="margin-top: 20px;">
                             <a href="<?php echo esc_url(get_user_meta($user_id, '_2fa_redirect_to', true) ?: admin_url()); ?>" style="display: inline-block; padding: 12px 24px; background: #48bb78; color: white; text-decoration: none; border-radius: 6px; font-weight: 600;"><?php esc_html_e('Go to Dashboard', 'botblocker-security'); ?></a>
                         </div>
@@ -141,12 +143,12 @@ add_action('template_redirect', function() {
                             <?php echo esc_html($secret); ?>
                         </div>
                         <p>
-                            <?php esc_html_e('Scan the QR code using Google Authenticator or any other TOTP app, or enter the key manually.', 'botblocker-security'); ?>
+                            <?php esc_html_e('Use Google Authenticator or any TOTP app to scan the code, or enter the key manually.', 'botblocker-security'); ?>
                         </p>
                     </div>
                     
                     <div class="bbcs-2fa-backup-codes">
-                        <h3><?php esc_html_e('⚠️ Backup recovery codes', 'botblocker-security'); ?></h3>
+                        <h3><?php esc_html_e('Backup Recovery Codes', 'botblocker-security'); ?></h3>
                         <p style="color: #744210; font-size: 14px; margin-bottom: 10px;">
                             <?php esc_html_e('Save these codes in a safe place. Each code can be used only once.', 'botblocker-security'); ?>
                         </p>
@@ -162,10 +164,10 @@ add_action('template_redirect', function() {
                         <form method="POST">
                             <?php wp_nonce_field('bbcs_2fa_setup', 'bbcs_2fa_nonce'); ?>
                             <div class="bbcs-2fa-form-group">
-                                <label><?php esc_html_e('Enter the 6-digit code from the app:', 'botblocker-security'); ?></label>
-                                <input type="text" name="bbcs_2fa_code" maxlength="6" pattern="[0-9]{6}" required autofocus>
+                                <label class="bbcs-2fa-label"><?php esc_html_e('Enter the 6-digit code from the app:', 'botblocker-security'); ?></label>
+                                <input type="text" class="bbcs-2fa-code" name="bbcs_2fa_code" maxlength="6" pattern="[0-9]{6}" required autofocus>
                             </div>
-                            <button type="submit"><?php esc_html_e('Confirm and activate', 'botblocker-security'); ?></button>
+                            <button type="submit" class="bbcs-2fa-btn-submit"><?php esc_html_e('Confirm and activate', 'botblocker-security'); ?></button>
                         </form>
                     </div>
                     

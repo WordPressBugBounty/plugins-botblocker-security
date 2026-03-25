@@ -224,13 +224,13 @@ function bbcs_getCachePrefix($sub)
     $ip_hash = md5($BBCS->ip);
     
     if (isset($BBCS->settings->memcached_enable) && $BBCS->settings->memcached_enable == 1) {
-        $prefix = $BBCS->settings->memcached_prefix . BOTBLOCKER_SITE_CLEAR . $sub . $ip_hash;
+        $prefix = $BBCS->settings->memcached_prefix . bbcs_current_site_clear() . $sub . $ip_hash; //BBCS-MULTISITE
         bbcs_log_cache_debug('Using Memcached prefix: ' . $prefix);
         return $prefix;
     }
     
     if (isset($BBCS->settings->redis_enable) && $BBCS->settings->redis_enable == 1) {
-        $prefix = $BBCS->settings->redis_prefix . BOTBLOCKER_SITE_CLEAR . $sub . $ip_hash;
+        $prefix = $BBCS->settings->redis_prefix . bbcs_current_site_clear() . $sub . $ip_hash; //BBCS-MULTISITE
         bbcs_log_cache_debug('Using Redis prefix: ' . $prefix);
         return $prefix;
     }
@@ -434,28 +434,5 @@ function bbcs_checkAndFixRedisConnection() {
     } catch (\Exception $e) {
         bbcs_log_cache_debug('Exception in Redis connection check: ' . $e->getMessage());
         return false;
-    }
-}
-
-function bbcs_get_wp_cache_version_raw() {
-    $found = false;
-    $cache_version = wp_cache_get(BOTBLOCKER_WP_CACHE_VERSION, 'botblocker-security', false, $found);
-    if (!$found || !is_numeric($cache_version)) {
-        $cache_version = time();
-    }
-    return (int)$cache_version;
-}
-
-function bbcs_get_wp_cache_version() {
-    $cache_version = bbcs_get_wp_cache_version_raw();
-    return '_' . (string)$cache_version . '_';
-}
-
-function bbcs_invalidate_wp_cache() {
-    if (function_exists('wp_cache_flush_group')) {
-        wp_cache_flush_group('botblocker-security');
-    } elseif (function_exists('wp_cache_set')) {
-        $new_version = bbcs_get_wp_cache_version_raw() + 1;
-        wp_cache_set(BOTBLOCKER_WP_CACHE_VERSION, $new_version, 'botblocker-security');
     }
 }

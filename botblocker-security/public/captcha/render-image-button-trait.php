@@ -98,7 +98,7 @@ trait BBCS_RenderImageButtonTrait {
 				'mode'   => 2,
 				'params' => array(
 					'targetImageData' => base64_encode( $image_data ),
-					'instruction'     => __( 'If you are human, click on the similar image', 'botblocker-security' ),
+					'instruction'     => __( 'Click on the matching image', 'botblocker-security' ),
 					'buttonImages'    => $button_images,
 				),
 			);
@@ -108,7 +108,7 @@ trait BBCS_RenderImageButtonTrait {
 			'mode'   => 2,
 			'params' => array(
 				'targetImageData'   => base64_encode( $image_data ),
-				'instruction'       => __( 'If you are human, click on the similar image', 'botblocker-security' ),
+				'instruction'       => __( 'Click on the matching image', 'botblocker-security' ),
 				'buttons'           => $button_elements,
 				'imageRequests'     => $image_requests,
 				'ajaxUrl'           => admin_url( 'admin-ajax.php' ),

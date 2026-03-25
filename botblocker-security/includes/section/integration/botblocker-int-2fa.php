@@ -57,7 +57,7 @@ if (!$bbcs_2fa_verified) {
                     class="img-fluid bbcs-info-image mb-3">
 
                 <p class="bbcs-info-text">
-                    <?php esc_html_e('Two-Factor Authentication (2FA) adds an extra layer of security to your WordPress admin panel by requiring a second verification step during login. After entering your password, you\'ll need to provide a time-based one-time code from your authenticator app. This significantly reduces the risk of unauthorized access, even if your password is compromised. You can configure which user roles require 2FA and use backup codes in case you lose access to your authentication device.', 'botblocker-security'); ?>
+                    <?php esc_html_e('Two-Factor Authentication (2FA) requires a time-based code from your authenticator app in addition to your password. This prevents unauthorized access even if your password is compromised. You can set which user roles require 2FA and generate backup codes for emergency access.', 'botblocker-security'); ?>
                 </p>
 
                 <hr class="bbcs-info-hr">
@@ -149,7 +149,7 @@ if (!$bbcs_2fa_verified) {
                 </h3>
 
                 <p class="bbcs-info-text"><?php echo wp_kses(
-                                                __('<strong>Note:</strong> After clicking "Reset 2FA", the user will be prompted to set up Two-Factor Authentication again <strong>only if "Enable Two-Factor Authentication" is checked</strong>. They can do this immediately in this window (QR code and input field will appear), or the prompt will appear on their next login. If 2FA is not enabled, the user will not be required to go through Two-Factor Authentication.', 'botblocker-security'),
+                                                __('<strong>Note:</strong> After clicking "Reset 2FA", the user will need to set up 2FA again <strong>only if "Enable Two-Factor Authentication" is checked</strong>. They can do this immediately (QR code will appear) or on their next login.', 'botblocker-security'),
                                                 ['strong' => []]
                                             ); ?></p>
 

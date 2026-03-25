@@ -13,10 +13,10 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 					class="img-fluid bbcs-info-image mb-3">				
 					
 				<p class="bbcs-info-text">
-					<?php esc_html_e('BotBlocker is a comprehensive security plugin designed to protect your WordPress site from bots, spam, and malicious activity. With advanced filtering and blocking technologies, it helps keep your website safe and your data secure.', 'botblocker-security'); ?>
+					<?php esc_html_e('BotBlocker protects your WordPress site from bots, spam, and malicious activity using advanced filtering and blocking.', 'botblocker-security'); ?>
 				</p>
 				<p class="bbcs-info-text">
-					<?php esc_html_e('By using BotBlocker, you can effectively reduce unwanted traffic, prevent automated attacks, and ensure that only real visitors have access to your content. The plugin is easy to configure and works seamlessly with any WordPress site.', 'botblocker-security'); ?>
+					<?php esc_html_e('Reduce unwanted traffic, prevent automated attacks, and restrict access to real visitors only.', 'botblocker-security'); ?>
 				</p>
 
 				<hr class="bbcs-info-hr">

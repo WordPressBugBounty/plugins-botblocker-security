@@ -14,12 +14,12 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 					class="img-fluid bbcs-info-image mb-3">
 
 				<p class="bbcs-info-text">
-					<?php esc_html_e('BotBlocker CAPTCHA provides multiple verification options that balance security with user experience. Choose from simple button clicks, color-based challenges, our unique image recognition system, or integrate with Google reCAPTCHA. Our exclusive Dynamic Shape and Digit CAPTCHAs are specially designed to be easy for humans but extremely difficult for bots to solve automatically. These proprietary verification methods analyze user interaction patterns while requiring minimal effort from legitimate visitors, effectively blocking automated systems without frustrating real users.', 'botblocker-security'); ?>				
+					<?php esc_html_e('Choose from button, color, image, shape, digit, or reCAPTCHA verification methods.', 'botblocker-security'); ?>				
 				</p>
 				<hr class="bbcs-info-hr">
 				<div class="bbcs-info-footer">
 					<i class="fa-regular fa-circle-question"></i>
-					<a href="<?php echo esc_url(BOTBLOCKER_DOCS_URL)?>/all-captcha-types-in-botblocker-maximum-flexibility-and-reliable-protection/" target="_blank" class="bbcs-info-footer-a"><?php esc_html_e('Botblocker Captcha', 'botblocker-security'); ?></a>
+					<a href="<?php echo esc_url(BOTBLOCKER_DOCS_URL)?>/all-captcha-types-in-botblocker-maximum-flexibility-and-reliable-protection/" target="_blank" class="bbcs-info-footer-a"><?php esc_html_e('BotBlocker CAPTCHA', 'botblocker-security'); ?></a>
 					<a href="<?php echo esc_url(BOTBLOCKER_DOCS_URL)?>/recaptcha-v2-in-botblocker-an-additional-user-verification-method-and-how-to-set-up-keys/" target="_blank" class="bbcs-info-footer-a"><?php esc_html_e('reCaptcha v2', 'botblocker-security'); ?></a>
 					<a href="<?php echo esc_url(BOTBLOCKER_DOCS_URL)?>/recaptcha-v3-in-botblocker-user-verification-and-key-setup-guide/" target="_blank" class="bbcs-info-footer-a"><?php esc_html_e('reCaptcha v3', 'botblocker-security'); ?></a>
 					<a href="https://en.wikipedia.org/wiki/CAPTCHA" target="_blank" class="bbcs-info-footer-a"><?php esc_html_e('Captcha', 'botblocker-security'); ?></a>
@@ -34,13 +34,13 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
         			<span class="bbcs-label-input"><?php esc_html_e('Captcha Mode:', 'botblocker-security'); ?></span>
         			<i class="fa-regular fa-circle-question"
             			data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top"
-            			data-bs-original-title="<?php esc_attr_e('Select the captcha type to use for verifying users. Options include simple button clicks, color matching, image captchas, or reCAPTCHA verification.', 'botblocker-security'); ?>">
+            			data-bs-original-title="<?php esc_attr_e('Select CAPTCHA type for visitor verification.', 'botblocker-security'); ?>">
         			</i>
     			</div>    			
 				<div class="bbcs_text_input_inner">
         			<select class="bbcs_select_input_input" name="bbcs_captcha_mode">
             			<option value="0" <?php selected('0', isset($bbcs_settings['bbcs_captcha_mode']) ? $bbcs_settings['bbcs_captcha_mode'] : BOTBLOCKER_CAPTCHA_MODE_DEFAULT); ?>>
-                			<?php esc_html_e('Button - "I am not a robot"', 'botblocker-security'); ?>
+                			<?php esc_html_e('Button — "I am not a robot"', 'botblocker-security'); ?>
             			</option>
             			<option value="1" <?php 
                 			selected('1', isset($bbcs_settings['bbcs_captcha_mode']) ? $bbcs_settings['bbcs_captcha_mode'] : BOTBLOCKER_CAPTCHA_MODE_DEFAULT);
@@ -57,7 +57,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
             			<option value="3" <?php selected('3', isset($bbcs_settings['bbcs_captcha_mode']) ? $bbcs_settings['bbcs_captcha_mode'] : BOTBLOCKER_CAPTCHA_MODE_DEFAULT); 
             			echo (empty($BBCS->settings->recaptcha_key2) || empty($BBCS->settings->recaptcha_secret2) ? 'disabled' : '');
             			?>>
-                			<?php esc_html_e('reCAPTCHA v2 "I am not a robot"', 'botblocker-security'); ?>
+                			<?php esc_html_e('reCAPTCHA v2 — "I am not a robot"', 'botblocker-security'); ?>
             			</option>
             			<option value="4" <?php selected('4', isset($bbcs_settings['bbcs_captcha_mode']) ? $bbcs_settings['bbcs_captcha_mode'] : BOTBLOCKER_CAPTCHA_MODE_DEFAULT); 
             			echo (empty($BBCS->settings->recaptcha_key2) || empty($BBCS->settings->recaptcha_secret2) ? 'disabled' : '');
@@ -94,7 +94,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
         			<span class="bbcs-label-input"><?php esc_html_e('Image Delivery Mode:', 'botblocker-security'); ?></span>
         			<i class="fa-regular fa-circle-question"
         			data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top"
-        			data-bs-original-title="<?php esc_attr_e('Choose how captcha images are delivered to the browser. Inline Base64 embeds all images directly in the page data (faster, more reliable, no extra requests). Separate Requests loads each image via an individual AJAX call (legacy method).', 'botblocker-security'); ?>">
+        			data-bs-original-title="<?php esc_attr_e('Inline: embed images in page (recommended). Separate: load via AJAX (legacy).', 'botblocker-security'); ?>">
         			</i>
     			</div>
     			<div class="bbcs_text_input_inner">
@@ -110,7 +110,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
         			<span class="bbcs-label-input"><?php esc_html_e('Image Captcha Pack:', 'botblocker-security'); ?></span>
         			<i class="fa-regular fa-circle-question"
         			data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top"
-        			data-bs-original-title="<?php esc_attr_e('Choose the set of images displayed in the image captcha. Different packs include animal themes to make verification engaging and unique.', 'botblocker-security'); ?>">
+        			data-bs-original-title="<?php esc_attr_e('Select image theme for CAPTCHA.', 'botblocker-security'); ?>">
         			</i>
     			</div>
     			<div class="bbcs_text_input_inner">
@@ -128,7 +128,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
     			<div class="bbcs_label_input_box">
         			<span class="bbcs-label-input"><?php esc_html_e('Captcha Timeout (seconds):', 'botblocker-security'); ?></span>
         			<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top"
-        			data-bs-original-title="<?php esc_attr_e('Set the time limit for completing the captcha. Users need to verify within this duration to avoid re-verification.', 'botblocker-security'); ?>">
+        			data-bs-original-title="<?php esc_attr_e('Time allowed to complete CAPTCHA verification.', 'botblocker-security'); ?>">
         			</i>
     			</div>
     			<div class="bbcs_number_input_inner">
@@ -145,7 +145,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 					printf(
 						wp_kses_post(
 							// translators: %s is the URL to the reCaptcha v3 integration configuration page.
-							__('Any selected captcha type can be combined with verification using reCaptcha v3. Please <a href="%s">configure integration</a> with reCaptcha.', 'botblocker-security')
+							__('Combine any CAPTCHA type with reCaptcha v3. <a href="%s">Configure keys</a> in Integrations.', 'botblocker-security')
 						),
 						esc_url($BBCSA->pages_integrations) . '#bbcs_recaptchav3'
 					);

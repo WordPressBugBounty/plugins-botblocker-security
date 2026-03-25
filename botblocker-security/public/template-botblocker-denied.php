@@ -18,7 +18,7 @@ $BBCS = BotBlocker::getInstance();
     <meta name="robots" content="noindex" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <link rel="icon" href="data:,">
-    <title><?php echo esc_html('BotBlocker security plugin'); ?></title>
+    <title><?php echo esc_html__('BotBlocker security plugin', 'botblocker-security'); ?></title>
     <style>
         html,
         body {
@@ -206,19 +206,19 @@ $BBCS = BotBlocker::getInstance();
 		<?php
     	// REVIEWER NOTE: This image is a static plugin asset, not a user-uploaded Media Library image.
     	// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage ?>
-        <img src="<?php echo esc_url($BBCS->media_logo_botblocker); ?>" alt="BotBlocker Wordpress Plugin" class="logo">
+        <img src="<?php echo esc_url($BBCS->media_logo_botblocker); ?>" alt="BotBlocker WordPress Plugin" class="logo">
     </header>
 
     <div class="content">
         <noscript>
-            <h1><?php echo esc_html('Please turn JavaScript on and reload the page'); ?></h1>
+            <h1><?php echo esc_html__('Please turn JavaScript on and reload the page', 'botblocker-security'); ?></h1>
         </noscript>
 
         <div class="bbcs-icon">
 		<?php
     	// REVIEWER NOTE: This image is a static plugin asset, not a user-uploaded Media Library image.
     	// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage ?>
-        <img src="<?php echo esc_url($BBCS->media_icon_stop); ?>" alt="Stop Visitor Icon" class="logo">
+        <img src="<?php echo esc_url($BBCS->media_icon_stop); ?>" alt="<?php echo esc_attr__('Stop Visitor Icon', 'botblocker-security'); ?>" class="logo">
         </div>
         <br />
 
@@ -230,13 +230,13 @@ $BBCS = BotBlocker::getInstance();
         </div>
 
         <div class="user-data">
-            <span class=""><?php echo esc_html('Connection info:'); ?> <?php echo esc_html($BBCS->ip); ?></span>
-            <span class="con-center"><?php echo esc_html('Connection ID:'); ?> <?php echo esc_html($BBCS->uid . ' ~ ' . $BBCS->cid); ?></span>
+            <span class=""><?php echo esc_html__('Connection info:', 'botblocker-security'); ?> <?php echo esc_html($BBCS->ip); ?></span>
+            <span class="con-center"><?php echo esc_html__('Connection ID:', 'botblocker-security'); ?> <?php echo esc_html($BBCS->uid . ' ~ ' . $BBCS->cid); ?></span>
         </div>
     </div>
 
     <footer class="footer">
-        <small><a href="https://botblocker.top/" title="BotBlocker plugin for Wordpress" target="_blank">Protected by <b>BotBlocker</b> plugin</a></small>
+        <small><a href="https://botblocker.top/" title="BotBlocker plugin for WordPress" target="_blank">Protected by <b>BotBlocker</b> plugin</a></small>
         <small><a href="https://globus.studio" title="Project by GLOBUS.studio" target="_blank">BotBlocker is <b>GLOBUS.studio</b> project</a></small>
         <?php
         //TODO PRO version motto

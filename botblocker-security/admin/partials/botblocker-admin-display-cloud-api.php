@@ -30,7 +30,7 @@ settings_errors('botblocker_messages');
                             <a class="nav-link active" data-bs-toggle="tab" href="#cloud-plans"><?php esc_html_e('Plans', 'botblocker-security'); ?></a>
                         </li>  -->                       
                         <li class="nav-item">
-                            <a class="nav-link active" data-bs-toggle="tab" href="#cloud-status"><?php esc_html_e('BotBlocker Cloud Protection & PRO status', 'botblocker-security'); ?></a>
+                            <a class="nav-link active" data-bs-toggle="tab" href="#cloud-status"><?php esc_html_e('BotBlocker Cloud Protection and PRO Status', 'botblocker-security'); ?></a>
                         </li>
                         <!--                  
                         <li class="nav-item">

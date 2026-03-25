@@ -12,11 +12,11 @@ $bbcs_has_pro = bbcs_isCloudAPIActive();
                 // REVIEWER NOTE: This image is a static plugin asset, not a user-uploaded Media Library image.
                 // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage ?>
 				<img src="<?php echo esc_url(BOTBLOCKER_URL . 'public/icons/browser-plugins.svg'); ?>" 
-					alt="<?php esc_attr_e('Simple Bot Detection', 'botblocker-security'); ?>" 
+					alt="<?php esc_attr_e('Browser Detection', 'botblocker-security'); ?>" 
 					class="img-fluid bbcs-info-image mb-3">
 
 				<p class="bbcs-info-text">
-					<?php esc_html_e('Browser detection settings allow you to identify and block suspicious visitors based on browser characteristics. These options help detect bots using browser spoofing techniques or privacy modes that legitimate users rarely employ. Incognito mode detection identifies visitors attempting to hide their activity, while plugin detection focuses on tools commonly used to mask bot behavior. Advanced options verify browser consistency and expose falsified environments, providing multiple layers of protection against automated threats.', 'botblocker-security'); ?>				
+					<?php esc_html_e('Browser detection identifies bots using spoofing, anti-detect tools, and privacy modes. Advanced options verify browser engine consistency.', 'botblocker-security'); ?>				
 				</p>
 				<!--
 				<ul class="bbcs-info-list">
@@ -45,7 +45,7 @@ $bbcs_has_pro = bbcs_isCloudAPIActive();
     			<i class="fa-regular fa-circle-question"
         			data-bs-toggle="tooltip" data-bs-html="true" 
         			data-bs-placement="top"
-        			data-bs-original-title="<?php esc_attr_e('Blocks visitors in private-browsing mode. Most real users browse in normal mode.', 'botblocker-security'); ?>">
+        			data-bs-original-title="<?php esc_attr_e('Block visitors using private/incognito browsing mode.', 'botblocker-security'); ?>">
     			</i>
 			</div>
 
@@ -60,7 +60,7 @@ $bbcs_has_pro = bbcs_isCloudAPIActive();
     			<i class="fa-regular fa-circle-question"
         			data-bs-toggle="tooltip" data-bs-html="true" 
         			data-bs-placement="top"
-        			data-bs-original-title="<?php esc_attr_e('Detects active ad blocking (AdBlock, uBlock, etc.) using probe checks. May also affect real users—enable only if appropriate.', 'botblocker-security'); ?>">
+        			data-bs-original-title="<?php esc_attr_e('Detect active ad blockers. May affect legitimate users with ad-blocking extensions.', 'botblocker-security'); ?>">
     			</i>
 			</div>
 
@@ -77,7 +77,7 @@ $bbcs_has_pro = bbcs_isCloudAPIActive();
     			<i class="fa-regular fa-circle-question"
         			data-bs-toggle="tooltip" data-bs-html="true" 
         			data-bs-placement="top"
-        			data-bs-original-title="<?php esc_attr_e('Runs basic JS API checks (e.g. canvas, WebGL) for standard browser behavior.', 'botblocker-security'); ?>">
+        			data-bs-original-title="<?php esc_attr_e('Verify browser API behavior (canvas, WebGL).', 'botblocker-security'); ?>">
     			</i>
 
 			</div>
@@ -97,7 +97,7 @@ $bbcs_has_pro = bbcs_isCloudAPIActive();
     			<i class="fa-regular fa-circle-question"
         			data-bs-toggle="tooltip" data-bs-html="true" 
         			data-bs-placement="top"
-        			data-bs-original-title="<?php esc_attr_e('Detects if built-in JS properties (navigator, plugins) have been overridden.', 'botblocker-security'); ?>">
+        			data-bs-original-title="<?php esc_attr_e('Detect tampered browser properties (navigator, plugins).', 'botblocker-security'); ?>">
     			</i>
 			</div>
 
@@ -116,7 +116,7 @@ $bbcs_has_pro = bbcs_isCloudAPIActive();
     			<i class="fa-regular fa-circle-question"
         			data-bs-toggle="tooltip" data-bs-html="true" 
         			data-bs-placement="top"
-        			data-bs-original-title="<?php esc_attr_e('Verifies internal WebKit/Gecko parameters against real-world browser signatures.', 'botblocker-security'); ?>">
+        			data-bs-original-title="<?php esc_attr_e('Verify browser engine parameters against known browser signatures.', 'botblocker-security'); ?>">
     			</i>
 			</div>
 
@@ -135,7 +135,7 @@ $bbcs_has_pro = bbcs_isCloudAPIActive();
     			<i class="fa-regular fa-circle-question"
         			data-bs-toggle="tooltip" data-bs-html="true" 
         			data-bs-placement="top"
-        			data-bs-original-title="<?php esc_attr_e('Checks for real device APIs (touch, sensors). Bots often lack them.', 'botblocker-security'); ?>">
+        			data-bs-original-title="<?php esc_attr_e('Verify device APIs (touch, motion sensors) to detect headless browsers.', 'botblocker-security'); ?>">
     			</i>
 			</div>
 		</div>

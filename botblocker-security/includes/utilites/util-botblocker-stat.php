@@ -8,11 +8,9 @@ function bbcs_get_statistics($period_days = 7)
 
     if ($BBCS->settings->cache_ui_data == 1) {
         $cache_key = 'bbcs_get_statistics';
-        if (BOTBLOCKER_CACHE_WP) {
-            $bbcs_get_statistics = wp_cache_get($cache_key, 'botblocker-security');
-        } else {
-            $bbcs_get_statistics = get_transient($cache_key);
-        }
+
+        $bbcs_get_statistics = get_transient($cache_key);
+
         if ($bbcs_get_statistics) {
             $BBCS->counters = $bbcs_get_statistics;
             return;
@@ -28,9 +26,9 @@ function bbcs_get_statistics($period_days = 7)
     $today_end   = (clone $current_date)->setTime(23, 59, 59);
     $period_start = (clone $today_start)->modify('-' . ($period_days - 1) . ' days');
     [$ip_not_in_sql, $ip_params] = bbcs_getIPNotLikeSQL();
-    // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed. 
+    // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
     // Exclusion fragment uses only internally controlled self‑IPs and is bound via prepare; no user data flows here.
-    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching
     $today_results = $wpdb->get_row(
         $wpdb->prepare(
             "
@@ -110,7 +108,7 @@ function bbcs_get_statistics($period_days = 7)
             ARRAY_A
         );
     }
-    // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+    // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching
 
     if ($use_summary) {
         $grouped = bbcs_get_all_grouped_counts($today_start, $today_start, $today_end, $gmt_offset_str);
@@ -139,11 +137,9 @@ function bbcs_get_statistics($period_days = 7)
     ];
 
     if ($BBCS->settings->cache_ui_data == 1) {
-        if (BOTBLOCKER_CACHE_WP) {
-            wp_cache_set($cache_key, $BBCS->counters, 'botblocker-security', $BBCS->settings->cache_ui_duration);
-        } else {
-            set_transient($cache_key, $BBCS->counters, $BBCS->settings->cache_ui_duration);
-        }
+
+        set_transient($cache_key, $BBCS->counters, $BBCS->settings->cache_ui_duration);
+
     }
 }
 
@@ -152,7 +148,7 @@ function bbcs_get_all_grouped_counts(\DateTime $period_start, \DateTime $today_s
     global $wpdb;
     [$ip_not_in_sql, $ip_params] = bbcs_getIPNotLikeSQL();
 
-    // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed. 
+    // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
     // Exclusion fragment uses only internally controlled self‑IPs and is bound via prepare; no user data flows here.
     // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
     $rows = $wpdb->get_results(
@@ -267,26 +263,6 @@ function bbcs_get_top_data($type, $limit, $days)
     } else {
         $count_expression = "COUNT(*)";
     }
-
-    $found = false;
-    if (BOTBLOCKER_CACHE_WP) {
-        $cache_key = 'bbcs_get_top_data' . bbcs_get_wp_cache_version() . md5(implode('|', [
-            $type,
-            $limit,
-            $days,
-            $start_date,
-            $end_date,
-            $gmt_offset_str,
-            $uniq_type,
-        ]));
-    
-        $cached = wp_cache_get($cache_key, 'botblocker-security', false, $found);
-    }
-
-    if ($found !== false) {
-        return $cached;
-    }
-
     $today_str = $now->format('Y-m-d');
     $yesterday_str = (clone $now)->modify('-1 day')->format('Y-m-d');
     $start_str = $start_date_obj->format('Y-m-d');
@@ -298,7 +274,7 @@ function bbcs_get_top_data($type, $limit, $days)
         }
         $past = bbcs_summary_get_dimensions($metric, $start_str, $yesterday_str);
 
-        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.DirectDatabaseQuery.NoCaching
         $today_res = $wpdb->get_results(
             $wpdb->prepare("
                 SELECT ch.{$type} AS col_value, {$count_expression} AS count
@@ -321,7 +297,7 @@ function bbcs_get_top_data($type, $limit, $days)
             ),
             ARRAY_A
         );
-        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.DirectDatabaseQuery.NoCaching
 
         $today_map = [];
         foreach ((array) $today_res as $r) {
@@ -355,16 +331,12 @@ function bbcs_get_top_data($type, $limit, $days)
             unset($row['col_value']);
         }
 
-        if (BOTBLOCKER_CACHE_WP) {
-            wp_cache_set($cache_key, $res, 'botblocker-security', 15);
-        }
-
         return $res;
     }
 
-    // REVIEWER NOTE: All query parts are built internally by the plugin. 
+    // REVIEWER NOTE: All query parts are built internally by the plugin.
     // $type is always set by the plugin (allowed: ip, country, device, browser), never from user input.
-    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber 
+    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.DirectDatabaseQuery.NoCaching
     $res = $wpdb->get_results(
         $wpdb->prepare("
             SELECT ch.{$type} AS col_value, {$count_expression} AS count
@@ -387,7 +359,7 @@ function bbcs_get_top_data($type, $limit, $days)
             ...array_merge([$start_date, $gmt_offset_str, $end_date, $gmt_offset_str, BOTBLOCKER_EMPTY, BOTBLOCKER_EMPTY], $ip_params, [$limit])
         ),
     ARRAY_A);
-    // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber 
+    // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.DirectDatabaseQuery.NoCaching
 
     if ($type === 'ip' && $res) {
         array_walk(
@@ -403,10 +375,6 @@ function bbcs_get_top_data($type, $limit, $days)
     foreach ($res as &$row) {
         $row[$type] = $row['col_value'];
         unset($row['col_value']);
-    }
-
-    if (BOTBLOCKER_CACHE_WP) {
-        wp_cache_set($cache_key, $res, 'botblocker-security', 15);
     }
 
     return $res;

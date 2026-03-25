@@ -19,8 +19,8 @@ class BotBlockerWpRequest {
             'httpversion' => '1.1',
             'headers'     => [
                 'Content-Type'  => 'application/json; charset=utf-8',
-                'Referer'       => BOTBLOCKER_SITE_URL,
-                'User-Agent'    => BOTBLOCKER_USER_AGENT,
+                'Referer'       => bbcs_current_site_url(), //BBCS-MULTISITE
+                'User-Agent'    => bbcs_current_user_agent(), //BBCS-MULTISITE
             ],
             'body'        => wp_json_encode($data),
         ];
@@ -59,7 +59,7 @@ class BotBlockerWpRequest {
             'redirection' => 0,
             'httpversion' => '1.1',
             'headers'     => [
-                'User-Agent' => defined('BOTBLOCKER_USER_AGENT') ? BOTBLOCKER_USER_AGENT : 'BotBlocker/IP2C',
+                'User-Agent' => function_exists('bbcs_current_user_agent') ? bbcs_current_user_agent() : 'BotBlocker/IP2C', //BBCS-MULTISITE
             ],
         ];
         $response = wp_remote_get($url, $args);

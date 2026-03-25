@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addIPv4ModalLabel"><?php esc_html_e('Add IPv4 rule', 'botblocker-security'); ?></h5>
+                <h5 class="modal-title" id="addIPv4ModalLabel"><?php esc_html_e('Add IPv4 Rule', 'botblocker-security'); ?></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">

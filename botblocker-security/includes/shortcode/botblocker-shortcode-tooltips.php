@@ -15,7 +15,7 @@ function bbcs_generate_recommendations() {
 
     $recommendations = [];
     
-    $wizard_completed = get_option('bbcs_setup_wizard_completed', false);
+    $wizard_completed = bbcs_get_option('bbcs_setup_wizard_completed', false);
     if (!$wizard_completed) {
         $recommendations[] = [
             'icon' => 'fa-wand-magic-sparkles',

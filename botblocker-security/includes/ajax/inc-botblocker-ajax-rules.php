@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
  */
 function bbcs_get_botblocker_rules_callback() {
     check_ajax_referer( 'botblocker_nonce', 'nonce' );
-    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+    if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
     global $wpdb;
 
@@ -25,24 +25,8 @@ function bbcs_get_botblocker_rules_callback() {
         $search = trim(sanitize_text_field(wp_unslash($_POST['search']['value'])));
     }
 
-    if (BOTBLOCKER_CACHE_WP) {
-        $cache_version = wp_cache_get('bbcs_ajax_rules_cache_version', 'botblocker-security') ?: 1;
-    
-        $cache_key = 'bbcs_rules' . bbcs_get_wp_cache_version() . $cache_version . '_' . md5(wp_json_encode(array(
-            'start' => $start,
-            'length' => $length,
-            'search' => $search
-        )));
-        
-        $cache_data = wp_cache_get($cache_key, 'botblocker-security');
-    
-        if ($cache_data !== false) {
-            wp_send_json($cache_data);
-            return;
-        }
-    }
     // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     $records_total = (int) $wpdb->get_var(
         $wpdb->prepare( "SELECT COUNT(*) FROM `{$wpdb->bbcs_rules}` WHERE 1 = %d", 1 )
     );
@@ -51,7 +35,7 @@ function bbcs_get_botblocker_rules_callback() {
         $like = '%' . $wpdb->esc_like( $search ) . '%';
 
         // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching
         $records_filtered = (int) $wpdb->get_var(
             $wpdb->prepare(
                 "SELECT COUNT(*) FROM `{$wpdb->bbcs_rules}`
@@ -65,7 +49,7 @@ function bbcs_get_botblocker_rules_callback() {
         );
 
         // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching
         $results = $wpdb->get_results(
             $wpdb->prepare(
                 "SELECT id, priority, type, data, expires, disable, `rule`, comment
@@ -85,7 +69,7 @@ function bbcs_get_botblocker_rules_callback() {
         $records_filtered = $records_total;
 
         // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching
         $results = $wpdb->get_results(
             $wpdb->prepare(
                 "SELECT id, priority, type, data, expires, disable, `rule`, comment
@@ -120,14 +104,9 @@ function bbcs_get_botblocker_rules_callback() {
         'data'            => $data,
     );
 
-    if (BOTBLOCKER_CACHE_WP) {
-        wp_cache_set($cache_key, $response_data, 'botblocker-security', HOUR_IN_SECONDS);
-    }
-
     wp_send_json($response_data);
 }
 add_action( 'wp_ajax_bbcs_get_botblocker_rules', 'bbcs_get_botblocker_rules_callback' );
-
 
 /**
  * Retrieves the details of a specific rule via AJAX request.
@@ -141,43 +120,28 @@ add_action( 'wp_ajax_bbcs_get_botblocker_rules', 'bbcs_get_botblocker_rules_call
  */
 function bbcs_get_rule_details_callback() {
     check_ajax_referer( 'botblocker_nonce', 'nonce' );
-    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+    if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
     global $wpdb;
 
     $id = isset( $_POST['id'] ) ? absint(  wp_unslash( $_POST['id'] ) ) : 0;
-
-    $found = false;
-    if (BOTBLOCKER_CACHE_WP) {
-        $cache_version = wp_cache_get('bbcs_ajax_rules_cache_version', 'botblocker-security') ?: 1;
-        $cache_key = 'bbcs_rule_details' . bbcs_get_wp_cache_version() . $cache_version . '_' . $id;
-        $rule = wp_cache_get($cache_key, 'botblocker-security', false, $found);
-    }
-
-    if ($found === false) {
-        // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-        $rule = $wpdb->get_row(
-            $wpdb->prepare(
-                "SELECT * FROM `{$wpdb->bbcs_rules}` WHERE id = %d",
-                $id
-            ),
-            ARRAY_A
-        );
-
-        if (BOTBLOCKER_CACHE_WP) {
-            wp_cache_set($cache_key, $rule, 'botblocker-security', HOUR_IN_SECONDS);
-        }
-    }
+    // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    $rule = $wpdb->get_row(
+        $wpdb->prepare(
+            "SELECT * FROM `{$wpdb->bbcs_rules}` WHERE id = %d",
+            $id
+        ),
+        ARRAY_A
+    );
 
     if ( $rule ) {
         wp_send_json_success( $rule );
     } else {
-        wp_send_json_error( 'Rule not found' );
+        wp_send_json_error( __('Rule not found.', 'botblocker-security') );
     }
 }
 add_action( 'wp_ajax_bbcs_get_rule_details', 'bbcs_get_rule_details_callback' );
-
 
 /**
  * Updates a rule in the database via AJAX request.
@@ -192,13 +156,13 @@ add_action( 'wp_ajax_bbcs_get_rule_details', 'bbcs_get_rule_details_callback' );
 function bbcs_update_rule_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
-    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+    if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
     global $wpdb;
 
     $id = isset($_POST['id']) ? absint( wp_unslash( $_POST['id'] ) ) : null;
     if ($id === null) {
-        wp_send_json_error('Missing or invalid rule ID');
+        wp_send_json_error(__('Missing or invalid rule ID.', 'botblocker-security'));
         return;
     }
 
@@ -212,19 +176,16 @@ function bbcs_update_rule_callback()
     );
 
     // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching
     $result = $wpdb->update($wpdb->bbcs_rules, $data, array('id' => $id));
 
     if ($result !== false) {
         bbcs_renderRulesFromDb();
         bbcs_clearFileCache();
-        if (BOTBLOCKER_CACHE_WP) {
-            wp_cache_set('bbcs_ajax_rules_cache_version', time(), 'botblocker-security');
-        }
-        
-        wp_send_json_success('Rule updated successfully');
+
+        wp_send_json_success(__('Rule updated successfully.', 'botblocker-security'));
     } else {
-        wp_send_json_error('Failed to update rule');
+        wp_send_json_error(__('Failed to update rule.', 'botblocker-security'));
     }
 }
 add_action('wp_ajax_bbcs_update_rule', 'bbcs_update_rule_callback');
@@ -242,30 +203,27 @@ add_action('wp_ajax_bbcs_update_rule', 'bbcs_update_rule_callback');
 function bbcs_delete_rule_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
-    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+    if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
     global $wpdb;
 
     $id = isset($_POST['id']) ? absint( wp_unslash( $_POST['id'] ) ) : null;
     if ($id === null) {
-        wp_send_json_error('Missing or invalid rule ID');
+        wp_send_json_error(__('Missing or invalid rule ID.', 'botblocker-security'));
         return;
     }
 
     // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching
     $result = $wpdb->delete($wpdb->bbcs_rules, array('id' => $id));
 
     if ($result !== false) {
         bbcs_renderRulesFromDb();
         bbcs_clearFileCache();
-        if (BOTBLOCKER_CACHE_WP) {
-            wp_cache_set('bbcs_ajax_rules_cache_version', time(), 'botblocker-security');
-        }
-        
-        wp_send_json_success('Rule deleted successfully');
+
+        wp_send_json_success(__('Rule deleted successfully.', 'botblocker-security'));
     } else {
-        wp_send_json_error('Failed to delete rule');
+        wp_send_json_error(__('Failed to delete rule.', 'botblocker-security'));
     }
 }
 add_action('wp_ajax_bbcs_delete_rule', 'bbcs_delete_rule_callback');
@@ -282,44 +240,30 @@ add_action('wp_ajax_bbcs_delete_rule', 'bbcs_delete_rule_callback');
  */
 function bbcs_toggle_rule_callback() {
     check_ajax_referer( 'botblocker_nonce', 'nonce' );
-    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+    if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
     global $wpdb;
     $id = isset($_POST['id']) ? absint( wp_unslash( $_POST['id'] ) ) : null;
 
     if ($id === null) {
-        wp_send_json_error('Missing or invalid rule ID');
+        wp_send_json_error(__('Missing or invalid rule ID.', 'botblocker-security'));
         return;
     }
-
-    $found = false;
-    if (BOTBLOCKER_CACHE_WP) {
-        $cache_version = wp_cache_get( 'bbcs_ajax_rules_cache_version', 'botblocker-security' ) ?: 1;
-        $disable_cache_key = 'bbcs_rule_disable' . bbcs_get_wp_cache_version() . $cache_version . '_' . $id;
-        $current = wp_cache_get( $disable_cache_key, 'botblocker-security', false, $found);
-    }
-
-    if ( $found === false ) {
-        // REVIEWER NOTE: Custom BotBlocker-Security table. Query is cached. No direct unsanitized SQL is executed.
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-        $current = $wpdb->get_var(
-            $wpdb->prepare("SELECT disable FROM `{$wpdb->bbcs_rules}` WHERE id = %d", $id)
-        );
-
-        if (BOTBLOCKER_CACHE_WP) {
-            wp_cache_set( $disable_cache_key, $current, 'botblocker-security', 15 );
-        }
-    }
+    // REVIEWER NOTE: Custom BotBlocker-Security table. Query is cached. No direct unsanitized SQL is executed.
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    $current = $wpdb->get_var(
+        $wpdb->prepare("SELECT disable FROM `{$wpdb->bbcs_rules}` WHERE id = %d", $id)
+    );
 
     if ( $current === null ) {
-        wp_send_json_error( 'Rule not found' );
+        wp_send_json_error( __('Rule not found.', 'botblocker-security') );
         return;
     }
 
     $new = (int) ! (int) $current;
 
     // REVIEWER NOTE: Custom BotBlocker-Security table. Query is cached. No direct unsanitized SQL is executed.
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching
     $wpdb->update(
         $wpdb->bbcs_rules,
         [ 'disable' => $new ],
@@ -328,16 +272,12 @@ function bbcs_toggle_rule_callback() {
         [ '%d' ]
     );
 
-    if (BOTBLOCKER_CACHE_WP) {
-        wp_cache_set('bbcs_ajax_rules_cache_version', time(), 'botblocker-security');
-    }
     bbcs_renderRulesFromDb();
     bbcs_clearFileCache();
 
-    wp_send_json_success( 'Rule toggled successfully' );
+    wp_send_json_success( __('Rule toggled successfully.', 'botblocker-security') );
 }
 add_action( 'wp_ajax_bbcs_toggle_rule', 'bbcs_toggle_rule_callback' );
-
 
 /**
  * Adds a new rule to the database via AJAX request.
@@ -352,7 +292,7 @@ add_action( 'wp_ajax_bbcs_toggle_rule', 'bbcs_toggle_rule_callback' );
 function bbcs_create_rule_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
-    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+    if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
     global $wpdb;
 
@@ -365,72 +305,42 @@ function bbcs_create_rule_callback()
         'comment' => isset($_POST['comment']) ? sanitize_textarea_field(wp_unslash($_POST['comment'])) : '',
         'disable' => 0
     );
+    // REVIEWER NOTE: Custom BotBlocker-Security table. Query is cached. No direct unsanitized SQL is executed.
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    $exists = $wpdb->get_var($wpdb->prepare(
+        "SELECT COUNT(*) FROM `{$wpdb->bbcs_rules}` WHERE (`type` = %s AND `data` = %s)",
+         $data['type'], $data['data']
+    ));
 
-    $found = false;
-    if (BOTBLOCKER_CACHE_WP) {
-        $cache_version = wp_cache_get('bbcs_ajax_rules_cache_version', 'botblocker-security') ?: 1;
-        $exists_cache_key = 'bbcs_rule_exists' . bbcs_get_wp_cache_version() . $cache_version . '_' . md5(wp_json_encode(array('type' => $data['type'], 'data' => $data['data'])));
-        $exists = wp_cache_get($exists_cache_key, 'botblocker-security', false, $found);
-    }
-    
-    if ($found === false) {
-        // REVIEWER NOTE: Custom BotBlocker-Security table. Query is cached. No direct unsanitized SQL is executed.
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-        $exists = $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM `{$wpdb->bbcs_rules}` WHERE (`type` = %s AND `data` = %s)",
-             $data['type'], $data['data'] 
-        ));
-        if (BOTBLOCKER_CACHE_WP) {
-            wp_cache_set($exists_cache_key, $exists, 'botblocker-security', 15);
-        }
-    }
     if ($exists) {
-        wp_send_json_error('Rule already exists');
+        wp_send_json_error(__('Rule already exists.', 'botblocker-security'));
         return;
     }
 
     // REVIEWER NOTE: Custom BotBlocker-Security table. Query is cached. No direct unsanitized SQL is executed.
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching
     $result = $wpdb->insert($wpdb->bbcs_rules, $data);
 
     if ($result !== false) {
         bbcs_renderRulesFromDb();
         bbcs_clearFileCache();
-        if (BOTBLOCKER_CACHE_WP) {
-            wp_cache_set('bbcs_ajax_rules_cache_version', time(), 'botblocker-security');
-        }
-        
-        wp_send_json_success('Rule created successfully');
+
+        wp_send_json_success(__('Rule created successfully.', 'botblocker-security'));
     } else {
-        wp_send_json_error('Failed to create rule');
+        wp_send_json_error(__('Failed to create rule.', 'botblocker-security'));
     }
 }
 add_action('wp_ajax_bbcs_create_rule', 'bbcs_create_rule_callback');
 
-
 function bbcs_export_rules_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
-    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+    if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
     global $wpdb;
-
-    $found = false;
-    if (BOTBLOCKER_CACHE_WP) {
-        $cache_version = wp_cache_get('bbcs_ajax_rules_cache_version', 'botblocker-security') ?: 1;
-        $cache_key = 'bbcs_export_rules' . bbcs_get_wp_cache_version() . $cache_version;
-        $rules = wp_cache_get($cache_key, 'botblocker-security', false, $found);
-    }
-
-    if ($found === false) {
-        // REVIEWER NOTE: Custom BotBlocker-Security table. Query is cached. No direct unsanitized SQL is executed.
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-        $rules = $wpdb->get_results("SELECT * FROM `{$wpdb->bbcs_rules}`", ARRAY_A);
-
-        if (BOTBLOCKER_CACHE_WP) {
-            wp_cache_set($cache_key, $rules, 'botblocker-security', 15);
-        }
-    }
+    // REVIEWER NOTE: Custom BotBlocker-Security table. Query is cached. No direct unsanitized SQL is executed.
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    $rules = $wpdb->get_results("SELECT * FROM `{$wpdb->bbcs_rules}`", ARRAY_A);
 
     wp_send_json_success($rules);
 }
@@ -439,12 +349,12 @@ add_action('wp_ajax_bbcs_export_rules', 'bbcs_export_rules_callback');
 function bbcs_import_rules_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
-    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+    if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
     global $wpdb;
 
     if (!isset($_POST['rules'])) {
-        wp_send_json_error('Missing rules data');
+        wp_send_json_error(__('Missing rules data.', 'botblocker-security'));
         return;
     }
     $rules = json_decode(sanitize_textarea_field(wp_unslash($_POST['rules'])), true);
@@ -454,7 +364,7 @@ function bbcs_import_rules_callback()
         foreach ($rules as $rule) {
             $search = sanitize_text_field($rule['search']);
             // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching
             $existing = $wpdb->get_var(
                 $wpdb->prepare(
                     "SELECT COUNT(*) FROM `{$wpdb->bbcs_rules}` WHERE search = %s",
@@ -472,7 +382,7 @@ function bbcs_import_rules_callback()
                     'comment' => sanitize_textarea_field($rule['comment']),
                 );
                 // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching
                 $result = $wpdb->insert($wpdb->bbcs_rules, $data);
                 if ($result !== false) {
                     $imported++;
@@ -483,16 +393,13 @@ function bbcs_import_rules_callback()
         }
         bbcs_renderRulesFromDb();
         bbcs_clearFileCache();
-        if (BOTBLOCKER_CACHE_WP) {
-            wp_cache_set('bbcs_ajax_rules_cache_version', time(), 'botblocker-security');
-        }
-        
+
         wp_send_json_success(array(
             'imported' => $imported,
             'skipped' => $skipped,
         ));
     } else {
-        wp_send_json_error('Invalid JSON format');
+        wp_send_json_error(__('Invalid JSON format.', 'botblocker-security'));
     }
 }
 add_action('wp_ajax_bbcs_import_rules', 'bbcs_import_rules_callback');
@@ -500,20 +407,17 @@ add_action('wp_ajax_bbcs_import_rules', 'bbcs_import_rules_callback');
 function bbcs_clear_all_rules_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
-    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+    if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
     $result = bbcs_clear_all_rules();
 
     if ($result !== false) {
         bbcs_renderRulesFromDb();
         bbcs_clearFileCache();
-        if (BOTBLOCKER_CACHE_WP) {
-            wp_cache_set('bbcs_ajax_rules_cache_version', time(), 'botblocker-security');
-        }
-        
-        wp_send_json_success('All rules have been cleared');
+
+        wp_send_json_success(__('All rules have been cleared.', 'botblocker-security'));
     } else {
-        wp_send_json_error('Failed to clear rules');
+        wp_send_json_error(__('Failed to clear rules.', 'botblocker-security'));
     }
 }
 add_action('wp_ajax_bbcs_clear_all_rules', 'bbcs_clear_all_rules_callback');
@@ -528,14 +432,11 @@ function bbcs_clear_all_rules()
 function bbcs_rules_to_php_callback(): void
 {
 	check_ajax_referer('botblocker_nonce', 'nonce');
-	if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+	if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 	try {
         bbcs_renderRulesFromDb();
 
-        if (BOTBLOCKER_CACHE_WP) {
-            wp_cache_set('bbcs_ajax_rules_cache_version', time(), 'botblocker-security');
-        }
-		wp_send_json_success('Rules file generated successfully.');
+		wp_send_json_success(__('Rules file generated successfully.', 'botblocker-security'));
 	} catch(\Throwable $e) {
 		// error_log('bbcs_rules_to_php_callback error: ' . $e->getMessage());
 		wp_send_json_error();
@@ -545,10 +446,10 @@ add_action('wp_ajax_bbcs_rules_to_php', 'bbcs_rules_to_php_callback');
 
 function bbcs_create_ip_rule_callback() {
     check_ajax_referer('botblocker_nonce', 'nonce');
-    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+    if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
     if ( ! isset( $_POST['ip'] ) ) {
-        wp_send_json_error( 'Missing IP address' );
+        wp_send_json_error( __('Missing IP address.', 'botblocker-security') );
         return;
     }
 
@@ -560,7 +461,7 @@ function bbcs_create_ip_rule_callback() {
     } elseif (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
         return bbcs_create_ipv6_rule_callback();
     } else {
-        wp_send_json_error('Invalid IP address');
+        wp_send_json_error(__('Invalid IP address.', 'botblocker-security'));
     }
 }
 add_action('wp_ajax_bbcs_create_ip_rule', 'bbcs_create_ip_rule_callback');

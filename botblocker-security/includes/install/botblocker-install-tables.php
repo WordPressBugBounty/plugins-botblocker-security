@@ -37,7 +37,7 @@ function bbcs_createTables()
         `asnum` TEXT NOT NULL,
         `asname` TEXT NOT NULL,
         `result` TEXT NOT NULL,
-        `access` TEXT NOT NULL, 
+        `access` TEXT NOT NULL,
         `http_accept` TEXT NOT NULL,
         `method` TEXT NOT NULL,
         `ym_uid` TEXT NOT NULL,
@@ -54,18 +54,18 @@ function bbcs_createTables()
         `tor` TEXT NOT NULL,
         `vpn` TEXT NOT NULL,
         `carrier` TEXT NOT NULL,
-        `useragent` TEXT NOT NULL default '', 
+        `useragent` TEXT NOT NULL default '',
         `adblock` INTEGER NOT NULL,
         `lat` TEXT NOT NULL,
         `lon` TEXT NOT NULL,
-        `city` TEXT NOT NULL,          
+        `city` TEXT NOT NULL,
         `generation` TEXT NOT NULL,
-        `generation2` TEXT NOT NULL, 
-        `ipv4` TEXT NOT NULL, 
-        `cloud_data` TEXT NOT NULL, 
-        `recaptcha` TEXT NOT NULL, 
-        `wbot` TEXT NOT NULL,   
-        `fp` TEXT NOT NULL,  
+        `generation2` TEXT NOT NULL,
+        `ipv4` TEXT NOT NULL,
+        `cloud_data` TEXT NOT NULL,
+        `recaptcha` TEXT NOT NULL,
+        `wbot` TEXT NOT NULL,
+        `fp` TEXT NOT NULL,
         UNIQUE KEY cid (cid(191)),
         KEY i_ip (ip(191)),
         KEY i_passed (passed),
@@ -86,7 +86,8 @@ function bbcs_createTables()
         `data` TEXT NOT NULL,
         `rule` TEXT NOT NULL,
         `comment` TEXT NOT NULL,
-        `disable` INTEGER NOT NULL
+        `disable` INTEGER NOT NULL,
+        UNIQUE KEY search (search(191))
     ) $charset_collate;";
 
     dbDelta($sql_se);
@@ -130,7 +131,7 @@ function bbcs_createTables()
     ) $charset_collate;";
 
     dbDelta($sql_ipv6rules);
- 
+
     /**
      * Creates the 'bbcs_path' table in the database.
      */
@@ -140,7 +141,8 @@ function bbcs_createTables()
         `search` TEXT NOT NULL,
         `rule` TEXT NOT NULL,
         `comment` TEXT NOT NULL,
-        `disable` INT(1) NOT NULL DEFAULT 0
+        `disable` INT(1) NOT NULL DEFAULT 0,
+        UNIQUE KEY search (search(191))
     ) $charset_collate;";
 
     dbDelta($sql_path);
@@ -178,10 +180,11 @@ function bbcs_createTables()
      */
     $sql_proxy = "CREATE TABLE IF NOT EXISTS `{$wpdb->bbcs_proxy}` (
         `id` INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
-        `key` TEXT NOT NULL default '', 
+        `key` TEXT NOT NULL default '',
         `value` TEXT NOT NULL default '',
-        `comment` TEXT NOT NULL default ''
-        ) $charset_collate;";
+        `comment` TEXT NOT NULL default '',
+        UNIQUE KEY uniq_key (`key`(191))
+    ) $charset_collate;";
 
     dbDelta($sql_proxy);
 
@@ -223,9 +226,10 @@ function bbcs_tablesExist()
 {
     global $wpdb;
 
-    static $memo = null;
-    if ($memo !== null) {
-        return $memo;
+    static $memo = [];
+    $blog_id = get_current_blog_id();
+    if (isset($memo[$blog_id])) {
+        return $memo[$blog_id];
     }
 
     $requiredTables = [
@@ -247,17 +251,6 @@ function bbcs_tablesExist()
     if (!$requiredTables) {
         $memo = true;
         return true;
-    }
-
-    $cache_key = 'bbcs_tables_exist_' . md5(implode('|', $requiredTables));
-    $found = false;
-
-    if (defined('BOTBLOCKER_CACHE_WP') && BOTBLOCKER_CACHE_WP) {
-        $cached = wp_cache_get($cache_key, 'botblocker-security', false, $found);
-        if ($found) {
-            $memo = (bool) $cached;
-            return $memo;
-        }
     }
 
     $ok = null;
@@ -304,43 +297,27 @@ function bbcs_tablesExist()
         }
     }
 
-    $memo = (bool) $ok;
+    $memo[$blog_id] = (bool) $ok;
 
-    if (defined('BOTBLOCKER_CACHE_WP') && BOTBLOCKER_CACHE_WP) {
-        wp_cache_set($cache_key, $memo, 'botblocker-security', 600);
-    }
-
-    return $memo;
+    return $memo[$blog_id];
 }
-
 
 function bbcs_create_page_filters_tables() {
     global $wpdb;
     $charset_collate = $wpdb->get_charset_collate();
-    
+
     $sql = "CREATE TABLE IF NOT EXISTS `{$wpdb->bbcs_page_filters}` (
         `id` INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
         `pattern` VARCHAR(191) NOT NULL,
         `category` VARCHAR(32) NOT NULL,
         UNIQUE KEY `pattern` (`pattern`)
     ) $charset_collate;";
-    
+
     dbDelta($sql);
-    
-    $found = false;
-    if (BOTBLOCKER_CACHE_WP) {
-        $exists_cache_key = 'bbcs_page_filters_exists' . bbcs_get_wp_cache_version();
-        $count = wp_cache_get($exists_cache_key, 'botblocker-security', false, $found);
-    }
-    if ($found === false) {
-        // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-        $count = $wpdb->get_var("SELECT COUNT(*) FROM `{$wpdb->bbcs_page_filters}`");
-        if (BOTBLOCKER_CACHE_WP) {
-            wp_cache_set($exists_cache_key, $count, 'botblocker-security', BOTBLOCKER_CACHE_RULES_CHECK_TIME);
-        }
-    }
-    
+    // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    $count = $wpdb->get_var("SELECT COUNT(*) FROM `{$wpdb->bbcs_page_filters}`");
+
     if ($count == 0) {
        $patterns = [
             ['%/wp-admin/%', 'admin'],
@@ -370,4 +347,3 @@ function bbcs_create_page_filters_tables() {
         }
     }
 }
-

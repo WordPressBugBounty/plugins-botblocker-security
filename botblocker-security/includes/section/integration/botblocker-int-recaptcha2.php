@@ -11,10 +11,10 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 				<img src="<?php echo esc_url(BOTBLOCKER_URL . 'public/icons/google.svg'); ?>"
 					alt="<?php esc_attr_e('Google Recaptcha 2', 'botblocker-security'); ?>"
 					class="img-fluid bbcs-info-image mb-3">				<p class="bbcs-info-text">
-					<?php esc_html_e('Google reCAPTCHA v2 provides visible CAPTCHA challenges to verify human users and prevent automated bot attacks. This integration displays interactive puzzles that users must solve before submitting forms or accessing protected areas of your website.', 'botblocker-security'); ?>
+					<?php esc_html_e('Google reCAPTCHA v2 displays interactive puzzles to verify human users before form submission or page access.', 'botblocker-security'); ?>
 				</p>
 				<p class="bbcs-info-text">
-					<?php esc_html_e('Configure your Google reCAPTCHA v2 site and secret keys to enable this protection layer. The visible challenges help distinguish between legitimate users and malicious bots while maintaining user experience for genuine visitors.', 'botblocker-security'); ?>
+					<?php esc_html_e('Enter your Google reCAPTCHA v2 site and secret keys below.', 'botblocker-security'); ?>
 				</p>
 				<hr class="bbcs-info-hr">
 				<div class="bbcs-info-footer">

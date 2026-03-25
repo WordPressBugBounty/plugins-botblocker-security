@@ -10,12 +10,28 @@ $bbcs_market        = $bbcs_ctx['market'];
 $bbcs_marketBySlug  = $bbcs_ctx['marketBySlug'];
 $bbcs_addons_locked = $bbcs_ctx['addons_locked'];
 $bbcs_has_cloud_api = $bbcs_ctx['has_cloud_api'];
+
+$bbcs_updates_count = $bbcs_ctx['updates_count'];
 ?>
 <section role="main" class="content-body">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-9 сol-lg-9 col-xl-9 col-xxl-10">
             <section class="card">
-                <header class="card-header"><h2 class="card-title"><?php esc_html_e('Add-ons','botblocker-security'); ?></h2></header>
+                <header class="card-header d-flex align-items-center justify-content-between">
+                    <h2 class="card-title m-0"><?php esc_html_e('Add-ons','botblocker-security'); ?></h2>
+                    <?php if ($bbcs_updates_count > 0 && !$bbcs_addons_locked && $bbcs_has_cloud_api) : ?>
+                        <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="bbcs-inline m-0">
+                            <input type="hidden" name="action" value="bbcs_update_all_addons">
+                            <?php wp_nonce_field('bbcs_update_all_addons','bbcs_update_all_addons_nonce'); ?>
+                            <button type="submit" class="btn btn-warning btn-sm">
+                                <i class="fa-solid fa-arrows-rotate me-1"></i><?php
+                                    /* translators: %d: number of add-ons with available updates. */
+                                    echo esc_html(sprintf(__('Update All (%d)', 'botblocker-security'), $bbcs_updates_count));
+                                ?>
+                            </button>
+                        </form>
+                    <?php endif; ?>
+                </header>
                 <div class="card-body bbcs-addon-card-body">
 
             <?php if ( $bbcs_addons_locked || !$bbcs_has_cloud_api) : ?>
@@ -46,7 +62,7 @@ $bbcs_has_cloud_api = $bbcs_ctx['has_cloud_api'];
                             </div>
                             <div class="bbcs-grid-5 bbcs-pb-20">
                                 <?php foreach ( $bbcs_market as $bbcs_item ): ?>
-                                    <?php $bbcs_slug = BotBlockerUI::get_addons_context() ? preg_replace('/\.zip$/','',basename((string)wp_parse_url($bbcs_item['url'],PHP_URL_PATH))) : ''; $bbcs_isInstalled = isset($bbcs_addons[$bbcs_slug]); $bbcs_installedVer = $bbcs_isInstalled ? ($bbcs_addons[$bbcs_slug]['version'] ?? '') : ''; $bbcs_remoteVer = $bbcs_item['version'] ?? ''; $bbcs_updateAvail = $bbcs_isInstalled && $bbcs_installedVer && $bbcs_remoteVer && version_compare($bbcs_remoteVer,$bbcs_installedVer,'>'); $bbcs_isActive = in_array($bbcs_slug,$bbcs_active,true); $bbcs_tools_link = ($bbcs_isActive && isset($BBCSA->pages_tools)? esc_url($BBCSA->pages_tools.'#addon-'.$bbcs_slug):''); ?>
+                                    <?php $bbcs_tools_link = ( $bbcs_item['is_active'] && isset( $BBCSA->pages_tools ) ) ? esc_url( $BBCSA->pages_tools . '#addon-' . $bbcs_item['slug'] ) : ''; ?>
                                     <div class="card bbcs-card-addon">
                                         <div class="card-body bbcs-flex-col">
                                             <div class="bbcs-item-header">
@@ -54,35 +70,55 @@ $bbcs_has_cloud_api = $bbcs_ctx['has_cloud_api'];
                                                     <?php // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage ?>
                                                     <img src="<?php echo esc_url($bbcs_item['icon']); ?>" alt="" class="bbcs-addon-icon">
                                                 <?php else: ?><i class="fa-solid fa-puzzle-piece"></i><?php endif; ?>
-                                                <h5 class="card-title bbcs-card-title-compact"><?php echo esc_html($bbcs_item['name'] ?? $bbcs_slug); ?></h5>
+                                                <h5 class="card-title bbcs-card-title-compact"><?php echo esc_html($bbcs_item['name'] ?? $bbcs_item['slug']); ?></h5>
                                             </div>
-                                            <div class="bbcs-text-muted bbcs-mb-8">Version <?php echo esc_html($bbcs_remoteVer ?: ''); ?><?php if($bbcs_isInstalled && $bbcs_installedVer): ?> • Installed <?php echo esc_html($bbcs_installedVer); ?><?php endif; ?></div>
+                                            <?php /* translators: %s is the add-on version number. */ ?>
+                                            <div class="bbcs-text-muted bbcs-mb-8"><?php echo esc_html(sprintf(__('Version %s', 'botblocker-security'), $bbcs_item['remote_ver'] ?: '')); ?><?php if($bbcs_item['show_installed_ver']): ?> • <?php echo esc_html(sprintf(__('Installed %s', 'botblocker-security'), $bbcs_item['installed_ver'])); ?><?php endif; ?></div>
+                                            <?php if($bbcs_item['is_incompatible']): ?>
+                                                <div class="alert alert-warning p-1 bbcs-mb-8" style="font-size:0.8em;">
+                                                    <?php /* translators: %s is the minimum required BotBlocker version. */ ?>
+                                                    <i class="fa-solid fa-triangle-exclamation me-1"></i><?php echo esc_html(sprintf(__('Requires BotBlocker >= %s', 'botblocker-security'), $bbcs_item['requires_core'])); ?>
+                                                </div>
+                                            <?php elseif($bbcs_item['update_blocked']): ?>
+                                                <div class="alert alert-warning p-1 bbcs-mb-8" style="font-size:0.8em;">
+                                                    <?php /* translators: %s is the minimum required BotBlocker version for the update. */ ?>
+                                                    <i class="fa-solid fa-triangle-exclamation me-1"></i><?php echo esc_html(sprintf(__('Update available, requires BotBlocker >= %s', 'botblocker-security'), $bbcs_item['requires_core'])); ?>
+                                                </div>
+                                            <?php endif; ?>
                                             <p class="card-text bbcs-card-text-flex"><?php echo esc_html($bbcs_item['description'] ?? ''); ?></p>
                                             <div class="d-flex align-items-center flex-wrap gap-1">
-                                                <?php if(!$bbcs_isInstalled): ?>
+                                                <?php if($bbcs_item['is_incompatible']): ?>
+                                                    <?php /* translators: %s is the minimum required BotBlocker version. */ ?>
+                                                    <button class="btn bbcs-btn-addons btn-secondary btn-xs" disabled title="<?php echo esc_attr(sprintf(__('Update BotBlocker to %s to use this add-on', 'botblocker-security'), $bbcs_item['requires_core'])); ?>"><?php esc_html_e('Incompatible','botblocker-security'); ?></button>
+                                                <?php elseif(!$bbcs_item['is_installed']): ?>
                                                     <?php if(!$bbcs_addons_locked && $bbcs_has_cloud_api): ?>
                                                         <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="bbcs-inline m-0">
                                                             <input type="hidden" name="action" value="bbcs_install_addon">
-                                                            <input type="hidden" name="slug" value="<?php echo esc_attr($bbcs_slug); ?>">
+                                                            <input type="hidden" name="slug" value="<?php echo esc_attr($bbcs_item['slug']); ?>">
                                                             <input type="hidden" name="url" value="<?php echo esc_attr($bbcs_item['url']); ?>">
+                                                            <input type="hidden" name="requires_core" value="<?php echo esc_attr($bbcs_item['requires_core']); ?>">
                                                             <?php wp_nonce_field('bbcs_install_addon','bbcs_install_addon_nonce'); ?>
                                                             <button type="submit" class="btn bbcs-btn-addons btn-primary btn-xs"><?php esc_html_e('Install','botblocker-security'); ?></button>
                                                         </form>
                                                     <?php else: ?>
                                                         <button class="btn bbcs-btn-addons btn-primary btn-xs bbcs-btn-blink"><?php esc_html_e('Install','botblocker-security'); ?></button>
                                                     <?php endif; ?>
-                                                <?php elseif($bbcs_updateAvail): ?>
+                                                <?php elseif($bbcs_item['update_avail']): ?>
                                                     <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="bbcs-inline m-0">
                                                         <input type="hidden" name="action" value="bbcs_update_addon">
-                                                        <input type="hidden" name="slug" value="<?php echo esc_attr($bbcs_slug); ?>">
+                                                        <input type="hidden" name="slug" value="<?php echo esc_attr($bbcs_item['slug']); ?>">
                                                         <input type="hidden" name="url" value="<?php echo esc_attr($bbcs_item['url']); ?>">
+                                                        <input type="hidden" name="requires_core" value="<?php echo esc_attr($bbcs_item['requires_core']); ?>">
                                                         <?php wp_nonce_field('bbcs_update_addon','bbcs_update_addon_nonce'); ?>
                                                         <button type="submit" class="btn bbcs-btn-addons btn-warning btn-xs"><?php esc_html_e('Update','botblocker-security'); ?></button>
                                                     </form>
+                                                <?php elseif($bbcs_item['update_blocked']): ?>
+                                                    <?php /* translators: %s is the minimum required BotBlocker version for the update. */ ?>
+                                                    <button class="btn bbcs-btn-addons btn-secondary btn-xs" disabled title="<?php echo esc_attr(sprintf(__('Update requires BotBlocker >= %s', 'botblocker-security'), $bbcs_item['requires_core'])); ?>"><?php esc_html_e('Installed','botblocker-security'); ?></button>
                                                 <?php else: ?>
                                                     <button class="btn bbcs-btn-addons btn-secondary btn-xs" disabled><?php esc_html_e('Installed','botblocker-security'); ?></button>
                                                 <?php endif; ?>
-                                                <?php if($bbcs_tools_link): ?><a href="<?php echo esc_url( $bbcs_tools_link ); ?>" class="btn bbcs-btn-addons btn-outline-secondary btn-xs" title="Addon Settings"><i class="fa-solid fa-gear"></i></a><?php endif; ?>
+                                                <?php if($bbcs_tools_link): ?><a href="<?php echo esc_url( $bbcs_tools_link ); ?>" class="btn bbcs-btn-addons btn-outline-secondary btn-xs" title="<?php esc_attr_e('Addon Settings', 'botblocker-security'); ?>"><i class="fa-solid fa-gear"></i></a><?php endif; ?>
                                             </div>
                                         </div>
                                     </div>
@@ -92,7 +128,7 @@ $bbcs_has_cloud_api = $bbcs_ctx['has_cloud_api'];
                         <div class="tab-pane container fade" id="bbcs-installed">
                             <div class="bbcs-grid-5 bbcs-pb-20">
                                 <?php foreach ( $bbcs_addons as $bbcs_slug => $bbcs_addon ): ?>
-                                    <?php $bbcs_isActive = in_array($bbcs_slug,$bbcs_active,true); $bbcs_broken = !$bbcs_addon['valid']; $bbcs_remote = $bbcs_marketBySlug[$bbcs_slug] ?? null; $bbcs_updateAvail = (!$bbcs_broken && $bbcs_remote && !empty($bbcs_remote['version']) && !empty($bbcs_addon['version']) && version_compare($bbcs_remote['version'],$bbcs_addon['version'],'>')); $bbcs_tools_link = ($bbcs_isActive && isset($BBCSA->pages_tools)? esc_url($BBCSA->pages_tools.'#addon-'.$bbcs_slug):''); ?>
+                                    <?php $bbcs_tools_link = ($bbcs_addon['is_active'] && isset($BBCSA->pages_tools)) ? esc_url($BBCSA->pages_tools.'#addon-'.$bbcs_slug) : ''; ?>
                                     <div class="card bbcs-card-addon-rel">
                                         <div class="card-body bbcs-flex-col">
                                             <div class="bbcs-item-header">
@@ -102,38 +138,68 @@ $bbcs_has_cloud_api = $bbcs_ctx['has_cloud_api'];
                                                 <?php else: ?><i class="fa-solid fa-puzzle-piece"></i><?php endif; ?>
                                                 <h5 class="card-title bbcs-card-title-compact"><?php echo esc_html($bbcs_addon['name'] ?: $bbcs_slug); ?></h5>
                                             </div>
-                                            <div class="bbcs-text-muted bbcs-mb-8">Version <?php echo esc_html($bbcs_addon['version'] ?: ''); ?></div>
+                                            <?php /* translators: %s is the add-on version number. */ ?>
+                                            <div class="bbcs-text-muted bbcs-mb-8"><?php echo esc_html(sprintf(__('Version %s', 'botblocker-security'), $bbcs_addon['version'] ?: '')); ?></div>
+                                            <?php if($bbcs_addon['incompatible']): ?>
+                                                <div class="alert alert-warning p-1 bbcs-mb-8" style="font-size:0.8em;">
+                                                    <?php /* translators: %s is the minimum required BotBlocker version. */ ?>
+                                                    <i class="fa-solid fa-triangle-exclamation me-1"></i><?php echo $bbcs_addon['req_core'] ? esc_html(sprintf(__('Requires BotBlocker >= %s', 'botblocker-security'), $bbcs_addon['req_core'])) : esc_html__('Requires a newer BotBlocker version', 'botblocker-security'); ?>
+                                                </div>
+                                            <?php endif; ?>
                                             <p class="card-text bbcs-card-text-flex">&nbsp;<?php echo esc_html($bbcs_addon['description']); ?></p>
                                             <div class="bbcs-actions-row d-flex align-items-center flex-wrap gap-1">
-                                                <?php if($bbcs_broken): ?>
+                                                <?php if($bbcs_addon['broken']): ?>
                                                     <button class="btn bbcs-btn-addons btn-secondary btn-xs" disabled><?php esc_html_e('Broken','botblocker-security'); ?></button>
+                                                <?php elseif($bbcs_addon['incompatible']): ?>
+                                                    <?php /* translators: %s is the minimum required BotBlocker version. */ ?>
+                                                    <button type="button" class="btn bbcs-btn-addons btn-secondary btn-xs" disabled title="<?php echo esc_attr(sprintf(__('Update BotBlocker to %s to use this add-on', 'botblocker-security'), $bbcs_addon['req_core'])); ?>"><?php esc_html_e('Incompatible','botblocker-security'); ?></button>
+                                                <?php elseif($bbcs_addon['incompatible_remote']): ?>
+                                                    <?php /* translators: %s is the minimum required BotBlocker version. */ ?>
+                                                    <button type="button" class="btn bbcs-btn-addons btn-secondary btn-xs" disabled title="<?php echo esc_attr(sprintf(__('Update BotBlocker to %s to use this add-on', 'botblocker-security'), $bbcs_addon['req_core_remote'])); ?>"><?php esc_html_e('Incompatible','botblocker-security'); ?></button>
+                                                <?php elseif(empty($bbcs_addon['req_core_local'])): ?>
+                                                    <?php // Case 1: local add-on has no Requires-Core - update or delete only ?>
+                                                    <?php if($bbcs_addon['update_repair'] || $bbcs_addon['update_avail']): ?>
+                                                        <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="bbcs-inline m-0">
+                                                            <input type="hidden" name="action" value="bbcs_update_addon">
+                                                            <input type="hidden" name="slug" value="<?php echo esc_attr($bbcs_slug); ?>">
+                                                            <input type="hidden" name="url" value="<?php echo esc_attr($bbcs_addon['update_url']); ?>">
+                                                            <input type="hidden" name="requires_core" value="<?php echo esc_attr($bbcs_addon['update_requires_core']); ?>">
+                                                            <?php wp_nonce_field('bbcs_update_addon','bbcs_update_addon_nonce'); ?>
+                                                            <button type="submit" class="btn bbcs-btn-addons btn-warning btn-xs"><?php esc_html_e('Update','botblocker-security'); ?></button>
+                                                        </form>
+                                                    <?php else: ?>
+                                                        <button type="button" class="btn bbcs-btn-addons btn-secondary btn-xs" disabled><?php esc_html_e('No Update Source','botblocker-security'); ?></button>
+                                                    <?php endif; ?>
                                                 <?php else: ?>
+                                                    <?php // Case 2: local compatible and remote compatible for update ?>
                                                     <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="bbcs-inline m-0">
                                                         <input type="hidden" name="action" value="bbcs_toggle_addon">
                                                         <input type="hidden" name="slug" value="<?php echo esc_attr($bbcs_slug); ?>">
                                                         <?php wp_nonce_field('bbcs_toggle_addon','bbcs_toggle_addon_nonce'); ?>
-                                                        <?php if($bbcs_isActive): ?>
+                                                        <?php if($bbcs_addon['is_active']): ?>
                                                             <button type="submit" class="btn bbcs-btn-addons btn-danger btn-xs"><?php esc_html_e('Deactivate','botblocker-security'); ?></button>
                                                         <?php else: ?>
                                                             <button type="submit" class="btn bbcs-btn-addons btn-primary btn-xs"><?php esc_html_e('Activate','botblocker-security'); ?></button>
                                                         <?php endif; ?>
                                                     </form>
-                                                    <?php if($bbcs_updateAvail && $bbcs_remote): ?>
+                                                    <?php if($bbcs_addon['update_avail']): ?>
                                                         <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="bbcs-inline m-0">
                                                             <input type="hidden" name="action" value="bbcs_update_addon">
                                                             <input type="hidden" name="slug" value="<?php echo esc_attr($bbcs_slug); ?>">
-                                                            <input type="hidden" name="url" value="<?php echo esc_attr($bbcs_remote['url']); ?>">
+                                                            <input type="hidden" name="url" value="<?php echo esc_attr($bbcs_addon['update_url']); ?>">
+                                                            <input type="hidden" name="requires_core" value="<?php echo esc_attr($bbcs_addon['update_requires_core']); ?>">
                                                             <?php wp_nonce_field('bbcs_update_addon','bbcs_update_addon_nonce'); ?>
                                                             <button type="submit" class="btn bbcs-btn-addons btn-warning btn-xs"><?php esc_html_e('Update','botblocker-security'); ?></button>
                                                         </form>
                                                     <?php endif; ?>
                                                 <?php endif; ?>
-                                                <?php if($bbcs_tools_link): ?><a href="<?php echo esc_url( $bbcs_tools_link ); ?>" class="btn bbcs-btn-addons btn-outline-secondary btn-xs" title="Addon Settings"><i class="fa-solid fa-gear"></i></a><?php endif; ?>
+                                                <?php if($bbcs_tools_link): ?><a href="<?php echo esc_url( $bbcs_tools_link ); ?>" class="btn bbcs-btn-addons btn-outline-secondary btn-xs" title="<?php esc_attr_e('Addon Settings', 'botblocker-security'); ?>"><i class="fa-solid fa-gear"></i></a><?php endif; ?>
                                                 <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="bbcs-inline bbcs-ml-auto m-0">
                                                     <input type="hidden" name="action" value="bbcs_delete_addon">
                                                     <input type="hidden" name="slug" value="<?php echo esc_attr($bbcs_slug); ?>">
                                                     <?php wp_nonce_field('bbcs_delete_addon','bbcs_delete_addon_nonce'); ?>
-                                                    <button type="submit" class="btn bbcs-btn-addons btn-light btn-xs" title="Delete" onclick="return confirm('Delete this add-on?');"><i class="fa-regular fa-trash-can"></i></button>
+                                                    <?php $bbcs_delete_confirm = $bbcs_addon['incompatible_remote'] ? __('This add-on is incompatible with your BotBlocker version. Delete anyway?', 'botblocker-security') : __('Delete this add-on?', 'botblocker-security'); ?>
+                                                    <button type="submit" class="btn bbcs-btn-addons btn-light btn-xs" title="<?php esc_attr_e('Delete', 'botblocker-security'); ?>" onclick="return confirm('<?php echo esc_js($bbcs_delete_confirm); ?>');"><i class="fa-regular fa-trash-can"></i></button>
                                                 </form>
                                             </div>
                                         </div>

@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 add_action('admin_post_save_botblocker_integrations', 'bbcs_botblocker_handle_integrations_save');
 function bbcs_botblocker_handle_integrations_save()
 {
-    if ( ! current_user_can( 'manage_options' ) ) {
+    if ( ! current_user_can(bbcs_can_manage()) ) {
         wp_die( esc_html__( 'Insufficient permissions.', 'botblocker-security' ) );
     }
     check_admin_referer( 'save_botblocker_integrations', 'botblocker_integrations_nonce' );
@@ -98,14 +98,14 @@ function bbcs_botblocker_handle_integrations_save()
     set_transient(
         'bbcs_notice_integrations_' . get_current_user_id(),
         [
-            'message' => __( 'Integrations saved successfully', 'botblocker-security' ),
+            'message' => __( 'Integrations saved.', 'botblocker-security' ),
             'type'    => 'updated',
         ],
         60
     );
 
     $anchor = isset($_POST['bbcs_anchor']) ? sanitize_key(wp_unslash( $_POST['bbcs_anchor'])) : '';
-    $url = add_query_arg('settings-updated', 'true', admin_url('admin.php?page=bbcs_integrations'));
+    $url = add_query_arg('settings-updated', 'true', bbcs_admin_page_url('bbcs_integrations'));
     if ($anchor !== '') {
         $url .= '#' . $anchor;
     }
@@ -117,7 +117,7 @@ function bbcs_botblocker_handle_integrations_save()
 add_action('admin_post_save_botblocker_settings', 'bbcs_botblocker_handle_settings_save');
 function bbcs_botblocker_handle_settings_save() 
 {
-    if ( ! current_user_can( 'manage_options' ) ) {
+    if ( ! current_user_can(bbcs_can_manage()) ) {
         wp_die( esc_html__( 'Insufficient permissions.', 'botblocker-security' ) );
     }
     check_admin_referer( 'save_botblocker_settings', 'botblocker_settings_nonce' );
@@ -229,14 +229,14 @@ function bbcs_botblocker_handle_settings_save()
     set_transient(
         'bbcs_notice_settings_' . get_current_user_id(),
         [
-            'message' => __( 'Settings saved successfully', 'botblocker-security' ),
+            'message' => __( 'Settings saved.', 'botblocker-security' ),
             'type'    => 'updated',
         ],
         60
     );    
 
     $anchor = isset($_POST['bbcs_anchor']) ? sanitize_key(wp_unslash($_POST['bbcs_anchor'])) : '';
-    $url = add_query_arg('settings-updated', 'true', admin_url('admin.php?page=bbcs_settings'));
+    $url = add_query_arg('settings-updated', 'true', bbcs_admin_page_url('bbcs_settings'));
     if ($anchor !== '') {
         $url .= '#' . $anchor;
     }

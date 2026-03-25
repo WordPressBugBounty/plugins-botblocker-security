@@ -11,14 +11,14 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                 // REVIEWER NOTE: This image is a static plugin asset, not a user-uploaded Media Library image.
                 // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage ?>
 				<img src="<?php echo esc_url(BOTBLOCKER_URL . 'public/icons/ui.svg'); ?>" 
-					alt="<?php esc_attr_e('Simple Bot Detection', 'botblocker-security'); ?>" 
+					alt="<?php esc_attr_e('Interface Settings', 'botblocker-security'); ?>" 
 					class="img-fluid bbcs-info-image mb-3">
 
 				<p class="bbcs-info-text">
-					<?php esc_html_e('Interface settings control how the BotBlocker admin UI behaves. Enable interface caching for faster loading, choose the cache duration to balance speed and freshness, and manage how statistics are displayed.', 'botblocker-security'); ?>
+					<?php esc_html_e('Control admin interface caching and statistics display settings.', 'botblocker-security'); ?>
 				</p>
 				<p class="bbcs-info-text">
-					<?php esc_html_e('Set the report period to define the time range for analytics, adjust the GMT offset for correct timestamps, and choose between unique visitors (by IP) or all hits for viewing stats.', 'botblocker-security'); ?>
+					<?php esc_html_e('Configure report period, timezone, and how statistics are counted.', 'botblocker-security'); ?>
 				</p>
 				<hr class="bbcs-info-hr">
 				<div class="bbcs-info-footer">
@@ -33,7 +33,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 		<div class="col-xxl-3 col-xl-6 col-lg-6 col-sm-12 col-md-12">
 
-			<h3 class="bbcs_settings_h3"><?php esc_html_e('Caching interface', 'botblocker-security'); ?></h3>
+			<h3 class="bbcs_settings_h3"><?php esc_html_e('Interface Caching', 'botblocker-security'); ?></h3>
 
 			<div class="bbcs_checkbox_input mb-2">
     			<div class="bbcs_label_checkbox_box">
@@ -44,7 +44,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
     			<i class="fa-regular fa-circle-question"
         			data-bs-toggle="tooltip" data-bs-html="true" 
         			data-bs-placement="top"
-        			data-bs-original-title="<?php esc_attr_e('Enable caching of the plugin\'s admin UI for faster loading.', 'botblocker-security'); ?>">
+        			data-bs-original-title="<?php esc_attr_e('Cache the admin interface for faster loading.', 'botblocker-security'); ?>">
     			</i>
 			</div>
 
@@ -54,7 +54,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
         			<i class="fa-regular fa-circle-question"
             			data-bs-toggle="tooltip" data-bs-html="true" 
             			data-bs-placement="top"
-            			data-bs-original-title="<?php esc_attr_e('Select the duration for caching the interface. The value will be saved in seconds.', 'botblocker-security'); ?>">
+            			data-bs-original-title="<?php esc_attr_e('How long to cache the interface (in seconds).', 'botblocker-security'); ?>">
         			</i>
     			</div>
     			<div class="bbcs_text_input_inner">
@@ -69,7 +69,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
     			</div>
 			</div>
 
-			<h3 class="bbcs_settings_h3"><?php esc_html_e('Reports & Stat view settings', 'botblocker-security'); ?></h3>
+			<h3 class="bbcs_settings_h3"><?php esc_html_e('Reports and Statistics', 'botblocker-security'); ?></h3>
 
 			<div class="bbcs_text_input mb-2">
     			<div class="bbcs_label_input_box">        			
@@ -78,7 +78,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 					data-bs-toggle="tooltip" 
 					data-bs-html="true"  
 					data-bs-placement="top" 
-					data-bs-original-title="<?php esc_attr_e('Number of days to include in the statistical report.', 'botblocker-security'); ?>"></i>
+					data-bs-original-title="<?php esc_attr_e('Days to include in reports.', 'botblocker-security'); ?>"></i>
     			</div>
     			<div class="bbcs_text_input_inner">
         			<select class="bbcs_select_input_input" name="admin_report_period">
@@ -100,7 +100,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 					data-bs-toggle="tooltip" 
 					data-bs-html="true"  
 					data-bs-placement="top" 
-					data-bs-original-title="<?php esc_attr_e('Timezone offset applied to report timestamps.', 'botblocker-security'); ?>"></i>
+					data-bs-original-title="<?php esc_attr_e('Timezone for report timestamps.', 'botblocker-security'); ?>"></i>
     			</div>
     			<div class="bbcs_text_input_inner">
         			<select class="bbcs_select_input_input" name="admin_gmt_offset">
@@ -122,13 +122,13 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
     			<div class="bbcs_label_input_box">
         			<span class="bbcs-label-input"><?php esc_html_e('Statistics Display Mode', 'botblocker-security'); ?></span>
         			<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" 
-        			data-bs-original-title="<?php esc_attr_e('Select the mode for displaying statistics: "Unique visitors (by IP)" shows unique visits based on IP addresses, while "All hits" includes every request', 'botblocker-security'); ?>"></i>
+        			data-bs-original-title="<?php esc_attr_e('Show unique visitors (by IP) or all requests.', 'botblocker-security'); ?>"></i>
     			</div>
     			<div class="bbcs_text_input_inner">
         			<select class="bbcs_select_input_input" name="admin_uniq_type">
             			<?php
             			$bbcs_uniq_types = array(
-                			'host' => __('Unique visitors (by IP)', 'botblocker-security'),
+                			'host' => __('Unique Visitors (by IP)', 'botblocker-security'),
                 			'hit' => __('All hits', 'botblocker-security')
             			);
             			foreach ($bbcs_uniq_types as $bbcs_value => $bbcs_label) {

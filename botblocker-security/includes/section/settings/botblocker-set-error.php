@@ -10,14 +10,14 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                 // REVIEWER NOTE: This image is a static plugin asset, not a user-uploaded Media Library image.
                 // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage ?>
 				<img src="<?php echo esc_url(BOTBLOCKER_URL . 'public/icons/error-access.svg'); ?>" 
-					alt="<?php esc_attr_e('Error & Access Settings', 'botblocker-security'); ?>" 
+					alt="<?php esc_attr_e('Error and Access Settings', 'botblocker-security'); ?>" 
 					class="img-fluid bbcs-info-image mb-3">
 
 				<p class="bbcs-info-text">
-					<?php esc_html_e('Error and access settings control how BotBlocker responds to different types of security threats and manages blocked visitors. These configurations determine the HTTP response codes sent to blocked users, ban durations, and search engine directives that help maintain your site\'s SEO while providing robust security protection.', 'botblocker-security'); ?>
+					<?php esc_html_e('Configure HTTP response codes for blocked visitors, ban durations, and search engine directives.', 'botblocker-security'); ?>
 				</p>
 				<p class="bbcs-info-text">
-					<?php esc_html_e('The ban time settings create a progressive deterrent system where repeated violations result in longer blocking periods. X-Robots-Tag directives ensure that search engines properly understand your security policies and don\'t penalize your site for blocking malicious traffic. Proper configuration balances security effectiveness with user experience for legitimate visitors.', 'botblocker-security'); ?>
+					<?php esc_html_e('Repeated violations result in progressively longer bans. X-Robots-Tag directives prevent SEO penalties on blocked pages.', 'botblocker-security'); ?>
 				</p>
 				<hr class="bbcs-info-hr">
 				<div class="bbcs-info-footer">
@@ -33,11 +33,11 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 		</div>
 
 		<div class="col-xxl-3 col-xl-6 col-lg-6 col-sm-12 col-md-12">
-			<h3 class="bbcs_settings_h3"><?php esc_html_e('Error & Access Settings', 'botblocker-security'); ?></h3>
+			<h3 class="bbcs_settings_h3"><?php esc_html_e('Error and Access Settings', 'botblocker-security'); ?></h3>
 
 			<div class="bbcs_text_input mb-2">
     			<div class="bbcs_label_input_box">        			
-					<span class="bbcs-label-input"><?php esc_html_e('Test Header Code:', 'botblocker-security'); ?></span>
+					<span class="bbcs-label-input"><?php esc_html_e('Test Response Code:', 'botblocker-security'); ?></span>
         			<i class="fa-regular fa-circle-question" 
 					data-bs-toggle="tooltip" 
 					data-bs-html="true"  
@@ -58,7 +58,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 			<div class="bbcs_text_input mb-2">
     			<div class="bbcs_label_input_box">        			
-					<span class="bbcs-label-input"><?php esc_html_e('Error Header Code:', 'botblocker-security'); ?></span>
+					<span class="bbcs-label-input"><?php esc_html_e('Block Response Code:', 'botblocker-security'); ?></span>
         			<i class="fa-regular fa-circle-question" 
 					data-bs-toggle="tooltip" 
 					data-bs-html="true"  
@@ -78,12 +78,12 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			</div>
 			<div class="bbcs_text_input mb-2">
     			<div class="bbcs_label_input_box">        			
-					<span class="bbcs-label-input"><?php esc_html_e('Ban Time (seconds):', 'botblocker-security'); ?></span>
+					<span class="bbcs-label-input"><?php esc_html_e('Block Duration (seconds):', 'botblocker-security'); ?></span>
         			<i class="fa-regular fa-circle-question" 
 					data-bs-toggle="tooltip" 
 					data-bs-html="true"  
 					data-bs-placement="top" 
-					data-bs-original-title="<?php esc_attr_e('Duration of initial ban before retry allowed.', 'botblocker-security'); ?>"></i>
+					data-bs-original-title="<?php esc_attr_e('How long to block a visitor before allowing a retry.', 'botblocker-security'); ?>"></i>
     			</div>
     			<div class="bbcs_text_input_inner">
         			<input type="number" 
@@ -94,7 +94,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			</div>
 			<div class="bbcs_text_input mb-2">
     			<div class="bbcs_label_input_box">        			
-					<span class="bbcs-label-input"><?php esc_html_e('Secondary Ban Time (seconds):', 'botblocker-security'); ?></span>
+					<span class="bbcs-label-input"><?php esc_html_e('Repeat Block Duration (seconds):', 'botblocker-security'); ?></span>
         			<i class="fa-regular fa-circle-question" 
 					data-bs-toggle="tooltip" 
 					data-bs-html="true"  

@@ -1,6 +1,5 @@
-<?php 
+<?php
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
-
 
 function bbcs_handleBotblockerCloudAPI()
 {
@@ -49,9 +48,12 @@ function bbcs_handleBotblockerCloudAPI()
                     return;
                 }
 
-                bbcs_clear_transients();
-                bbcs_alerts_set_cloud_api_expired();
-                bbcs_resetCloudAPI();
+                bbcs_foreach_site( function ( $site_id ) {
+                    bbcs_clear_transients();
+                    bbcs_alerts_set_cloud_api_expired();
+                    bbcs_resetCloudAPI();
+                } );
+
                 wp_send_json_success(['message' => 'Cloud API expired alert set.']);
                 return;
             }
@@ -66,65 +68,24 @@ function bbcs_handleBotblockerCloudAPI()
                     return;
                 }
 
-                global $wpdb;
-                // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-                // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-                $wpdb->update(
-                    $wpdb->bbcs_settings,
-                    array('value' => 'cloud_extended'),
-                    array('key' => 'cloud_api_type')
-                );
-
-                $wpdb->update(
-                    $wpdb->bbcs_settings,
-                    array('value' => $email),
-                    array('key' => 'cloud_api_email')
-                );
-
-                $wpdb->update(
-                    $wpdb->bbcs_settings,
-                    array('value' => $api_key),
-                    array('key' => 'cloud_api_key')
-                );
-
-                $wpdb->update(
-                    $wpdb->bbcs_settings,
-                    array('value' => $api_secret),
-                    array('key' => 'cloud_api_secret')
-                );
-
                 $cloud_api_tier = isset($_GET['cloud_api_tier']) ? sanitize_text_field(wp_unslash($_GET['cloud_api_tier'])) : '';
                 if (!bbcs_is_valid_cloud_api_tier($cloud_api_tier)) {
                     $cloud_api_tier = '';
                 }
-                
-                $wpdb->update(
-                    $wpdb->bbcs_settings,
-                    array('value' => $cloud_api_tier),
-                    array('key' => 'cloud_api_tier')
+
+                // BBCS-MULTISITE
+                $bbcs_propagate = array(
+                    'cloud_api_type'   => 'cloud_extended',
+                    'cloud_api_email'  => $email,
+                    'cloud_api_key'    => $api_key,
+                    'cloud_api_secret' => $api_secret,
+                    'cloud_api_tier'   => $cloud_api_tier,
+                    'check'            => 1,
                 );
-
-                if ($cloud_api_tier !== 'ultimate') {
-                    $wpdb->update(
-                        $wpdb->bbcs_settings,
-                        array('value' => 0),
-                        array('key' => 'force_cloud_validation')
-                    );
+                if ( $cloud_api_tier !== 'ultimate' ) {
+                    $bbcs_propagate['force_cloud_validation'] = 0;
                 }
-                // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-
-                if (BOTBLOCKER_CACHE_WP) {
-                    wp_cache_delete('bbcs_cloud_api_type' . bbcs_get_wp_cache_version(), 'botblocker-security');
-                    wp_cache_delete('bbcs_cloud_api_key' . bbcs_get_wp_cache_version(), 'botblocker-security');
-                    wp_cache_delete('bbcs_cloud_api_secret' . bbcs_get_wp_cache_version(), 'botblocker-security');
-                    wp_cache_delete('bbcs_cloud_api_tier' . bbcs_get_wp_cache_version(), 'botblocker-security');
-                }
-
-                bbcs_generateSettingsFileFromDb();
-
-                delete_transient('bbcs_cloud_api_expired_alert');
-                delete_transient('bbcs_cloud_api_hits_exhausted_alert');
-                delete_transient('bbcs_cloud_api_status_transient');
+                bbcs_sync_cloud_settings_network( $bbcs_propagate );
 
                 wp_send_json_success(array('message' => 'Cloud API activated successfully'));
             } else {
@@ -161,7 +122,6 @@ function bbcs_generateCloudAPIKey($series, $email)
 
     return "{$series}-{$key}-{$serial}-{$checksum}";
 };
-
 
 function bbcs_isCloudAPIActive()
 {

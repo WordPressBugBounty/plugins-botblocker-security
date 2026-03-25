@@ -160,9 +160,9 @@ function bbcs_getPTR($ip, $time, $ttl)
     $storage = bbcs_connectToRedisOrMMC();
     if ($storage !== null && $BBCS->settings->ptr_cache_in_db) {
         if ($BBCS->settings->memcached_enable == 1) {
-            $cache_key = $BBCS->settings->memcached_prefix .BOTBLOCKER_SITE_CLEAR.'_PTR_'. md5($ip);
+            $cache_key = $BBCS->settings->memcached_prefix . bbcs_current_site_clear() .'_PTR_'. md5($ip); //BBCS-MULTISITE
         } elseif ($BBCS->settings->redis_enable == 1) {
-            $cache_key = $BBCS->settings->redis_prefix .BOTBLOCKER_SITE_CLEAR.'_PTR_'. md5($ip);
+            $cache_key = $BBCS->settings->redis_prefix . bbcs_current_site_clear() .'_PTR_'. md5($ip); //BBCS-MULTISITE
         }
         $cached_response = $storage->get($cache_key);
         if (is_array($cached_response) && isset($cached_response['ptr'])) {

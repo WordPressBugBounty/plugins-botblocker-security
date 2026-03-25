@@ -177,38 +177,28 @@ trait BotBlockerLocalTrait
     {
         global $wpdb;
         $search = 'timezone=' . $this->post_timezone;
-
-        $found = false;
-        if (BOTBLOCKER_CACHE_WP) {
-            $cache_key = 'bbcs_tz_rules' . bbcs_get_wp_cache_version() . md5($search . '_' . $this->rule_record_id);
-            $BBCSRulesCheck = wp_cache_get($cache_key, 'botblocker-security', false, $found);
-        }
-        if ($found === false) {
-            if ($this->rule_record_id > 0) {
-                // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-                $BBCSRulesCheck = $wpdb->get_results(
-                    $wpdb->prepare(
-                        "SELECT id, * FROM `{$wpdb->bbcs_rules}` WHERE search = %s OR id = %d ORDER BY priority ASC",
-                        $search,
-                        $this->rule_record_id
-                    ),
-                    ARRAY_A
-                );
-            } else {
-                // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery                
-                $BBCSRulesCheck = $wpdb->get_results(
-                    $wpdb->prepare(
-                        "SELECT * FROM `{$wpdb->bbcs_rules}` WHERE search = %s",
-                        $search
-                    ),
-                    ARRAY_A
-                );
-            }
-            if (BOTBLOCKER_CACHE_WP) {
-                wp_cache_set($cache_key, $BBCSRulesCheck, 'botblocker-security', 300);
-            }
+        
+        if ($this->rule_record_id > 0) {
+            // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $BBCSRulesCheck = $wpdb->get_results(
+                $wpdb->prepare(
+                    "SELECT id, * FROM `{$wpdb->bbcs_rules}` WHERE search = %s OR id = %d ORDER BY priority ASC",
+                    $search,
+                    $this->rule_record_id
+                ),
+                ARRAY_A
+            );
+        } else {
+            // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $BBCSRulesCheck = $wpdb->get_results(
+                $wpdb->prepare(
+                    "SELECT * FROM `{$wpdb->bbcs_rules}` WHERE search = %s",
+                    $search
+                ),
+                ARRAY_A
+            );
         }
 
         foreach ($BBCSRulesCheck as $echo) {
@@ -241,7 +231,7 @@ trait BotBlockerLocalTrait
 
         check_ajax_referer('botblocker_nonce', 'nonce');
 
-        if (isset($_POST['error']) &&  sanitize_text_field(wp_unslash($_POST['error'])) == 'detection_failed') { 
+        if (isset($_POST['error']) &&  sanitize_text_field(wp_unslash($_POST['error'])) == 'detection_failed') {
             $this->post_antidetect_scope = BOTBLOCKER_EMPTY;
         } else {
             $detection_booleans = [
@@ -268,7 +258,7 @@ trait BotBlockerLocalTrait
                     $this->post_antidetect_scope[$key] = false;
                 }
             }
-    
+
             if (isset($_POST['browserFingerprint'])) {
                 $this->post_antidetect_scope['browserFingerprint'] = sanitize_text_field(wp_unslash($_POST['browserFingerprint']));
             } else {
@@ -487,7 +477,6 @@ trait BotBlockerLocalTrait
         $parts = wp_parse_url($this->referer);
         $host  = $parts['host'] ?? '';
         $this->refhost = $host ? strtolower(preg_replace('/[^a-z0-9\.\-]/i', '', $host)) : '';
-
 
         if (isset($_SERVER['HTTP_USER_AGENT'])) {
             $this->useragent = trim(wp_strip_all_tags(wp_unslash($_SERVER['HTTP_USER_AGENT'])));
@@ -832,6 +821,6 @@ trait BotBlockerLocalTrait
             $message = 'Cloud API ident visitor as good';
         }
 
-        // TODO processFullCloud (for PRO) 
+        // TODO processFullCloud (for PRO)
     }
 }

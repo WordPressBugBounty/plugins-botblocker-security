@@ -12,10 +12,10 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 					alt="<?php esc_attr_e('Redis', 'botblocker-security'); ?>" 
 					class="img-fluid bbcs-info-image mb-3">				
                     <p class="bbcs-info-text">
-					<?php esc_html_e('Redis cache integration provides high-performance in-memory data storage for security counters, visitor statistics, and threat detection data. This significantly improves response times and reduces database load for high-traffic websites.', 'botblocker-security'); ?>
+					<?php esc_html_e('Redis provides in-memory caching for security counters, visitor statistics, and threat detection data.', 'botblocker-security'); ?>
 				</p>
 				<p class="bbcs-info-text">
-					<?php esc_html_e('Configure Redis connection settings including host, port, authentication, and database selection. Proper cache configuration ensures optimal performance while maintaining data isolation from other applications using the same Redis instance.', 'botblocker-security'); ?>
+					<?php esc_html_e('Configure Redis host, port, authentication, and database number. Use a key prefix to isolate data from other applications.', 'botblocker-security'); ?>
 				</p>
 				<hr class="bbcs-info-hr">
 				<div class="bbcs-info-footer">
@@ -34,7 +34,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                     <input id="bbcs_integrations_switch_redis" type="checkbox" name="redis_enable" value="1" <?php checked(1, isset($bbcs_settings['redis_enable']) ? $bbcs_settings['redis_enable'] : 1); ?> <?php if (!bbcs_isCloudAPIActive()) echo 'disabled'; ?>>
                     <span class="bbcs_label_input_checkbox bbcs-cloud-api-color"><?php esc_html_e('Enable Redis counters', 'botblocker-security'); ?></span>
                 </div>
-                <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e('Enable Redis for caching security counters and visitor statistics. Provides high-performance data storage for real-time threat detection and traffic analysis.', 'botblocker-security'); ?>">
+                <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e('Cache security counters and visitor data in Redis instead of the database.', 'botblocker-security'); ?>">
                 </i>
             </div>
 

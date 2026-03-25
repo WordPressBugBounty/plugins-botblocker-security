@@ -73,7 +73,8 @@ class BotBlockerWpUtility
                 'bbcs_maintenance',
                 'bbcs_setup_guide',
                 'bbcs_addons',
-                'bbcs_cloud_api'
+                'bbcs_cloud_api',
+                'bbcs_about'
             ];
 
             return in_array( sanitize_text_field(wp_unslash($_GET['page'])), $bbcs_pages);
@@ -92,10 +93,21 @@ class BotBlockerWpUtility
                     'botblocker_page_bbcs_tools',
                     'botblocker_page_bbcs_reports',
                     'botblocker_page_bbcs_maintenance',
-                    'botblocker_page_bbcs_cloud_api'
+                    'botblocker_page_bbcs_cloud_api',
+                    'botblocker_page_bbcs_setup_guide',
+                    'botblocker_page_bbcs_addons',
+                    'botblocker_page_bbcs_about'
                 ];
-                
-                return in_array($screen->id, $bbcs_screens);
+
+                $all_screens = $bbcs_screens;
+
+				if (is_multisite()) {
+                	foreach ( $bbcs_screens as $id ) {
+                    	$all_screens[] = $id . '-network';
+                	}
+				}
+
+                return in_array($screen->id, $all_screens);
             }
         }
         

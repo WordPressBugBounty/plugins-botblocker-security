@@ -16,8 +16,6 @@ function bbcs_insertDefaultRules()
     global $wpdb;
 
     $default_rules = [
-        ['priority' => 1, 'type' => 'useragent', 'data' => '', 'search' => 'useragent=', 'rule' => 'block', 'comment' => 'Empty User-Agent'],
-        ['priority' => 2, 'type' => 'lang', 'data' => '', 'search' => 'lang=', 'rule' => 'block', 'comment' => 'Empty Language'],
         ['priority' => 10, 'type' => 'asname', 'data' => 'Biterika', 'search' => 'asname=Biterika', 'rule' => 'block', 'comment' => 'Spam ASN'],
         ['priority' => 10, 'type' => 'asname', 'data' => 'Squitter-Networks', 'search' => 'asname=Squitter-Networks', 'rule' => 'block', 'comment' => 'Known spam network'],
         ['priority' => 10, 'type' => 'asname', 'data' => 'ColocationAmerica', 'search' => 'asname=ColocationAmerica', 'rule' => 'block', 'comment' => 'Network with high bot activity'],
@@ -25,28 +23,17 @@ function bbcs_insertDefaultRules()
         ['priority' => 10, 'type' => 'asname', 'data' => 'Selectel', 'search' => 'asname=Selectel', 'rule' => 'block', 'comment' => 'Hosting with high botnet activity'],
         ['priority' => 10, 'type' => 'asname', 'data' => 'Serverion', 'search' => 'asname=Serverion', 'rule' => 'block', 'comment' => 'Anonymous proxy servers'],
         ['priority' => 10, 'type' => 'asname', 'data' => 'Hostkey', 'search' => 'asname=Hostkey', 'rule' => 'block', 'comment' => 'Hosting known for malicious bots'],
-        ['priority' => 10, 'type' => 'asname', 'data' => '3NT Solutions', 'search' => 'asname=3NT Solutions', 'rule' => 'block', 'comment' => 'Known source of malicious activity'],
-        ['priority' => 3, 'type' => 'referer', 'data' => '', 'search' => 'referer=', 'rule' => 'dark', 'comment' => 'Empty Referer']
+        ['priority' => 10, 'type' => 'asname', 'data' => '3NT Solutions', 'search' => 'asname=3NT Solutions', 'rule' => 'block', 'comment' => 'Known source of malicious activity']
     ];
 
     foreach ($default_rules as $rule) {
-        $found = false;
-        if (BOTBLOCKER_CACHE_WP) {
-            $exists_cache_key = 'bbcs_rule_exists' . bbcs_get_wp_cache_version() . md5($rule['search']);
-            $exists = wp_cache_get($exists_cache_key, 'botblocker-security', false, $found);
-        }
-        if ($found === false) {
-            // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-            $exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM `{$wpdb->bbcs_rules}` WHERE search = %s", $rule['search']));
-            if (BOTBLOCKER_CACHE_WP) {
-                wp_cache_set($exists_cache_key, $exists, 'botblocker-security', BOTBLOCKER_CACHE_RULES_CHECK_TIME);
-            }
-        }
+        // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM `{$wpdb->bbcs_rules}` WHERE search = %s", $rule['search']));
 
         if ($exists == 0) {
             // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $wpdb->query($wpdb->prepare(
                 "INSERT INTO `{$wpdb->bbcs_rules}` (priority, type, data, rule, comment) VALUES (%d, %s, %s, %s, %s)",
                 $rule['priority'],
@@ -70,26 +57,15 @@ function bbcs_insertDefaultCounters()
         'total_blocked' => 0,
         'search_engine_visits' => 0,
     ];
-
-    $found = false;
-    if (BOTBLOCKER_CACHE_WP) {
-        $exists_cache_key = 'bbcs_counters_exists' . bbcs_get_wp_cache_version();
-        $row_count = wp_cache_get($exists_cache_key, 'botblocker-security', false, $found);
-    }
-    if ($found === false) {
-        // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-        $row_count = $wpdb->get_var("SELECT COUNT(*) FROM `{$wpdb->bbcs_counters}`");
-        if (BOTBLOCKER_CACHE_WP) {
-            wp_cache_set($exists_cache_key, $row_count, 'botblocker-security', BOTBLOCKER_CACHE_RULES_CHECK_TIME);
-        }
-    }
+    // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    $row_count = $wpdb->get_var("SELECT COUNT(*) FROM `{$wpdb->bbcs_counters}`");
 
     if ($row_count == 0) {
         // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $wpdb->query($wpdb->prepare(
-            "INSERT INTO `{$wpdb->bbcs_counters}` (today_hits, today_blocked, total_hits, total_blocked, search_engine_visits) 
+            "INSERT INTO `{$wpdb->bbcs_counters}` (today_hits, today_blocked, total_hits, total_blocked, search_engine_visits)
              VALUES (%d, %d, %d, %d, %d)",
             $default_counters['today_hits'],
             $default_counters['today_blocked'],
@@ -100,15 +76,14 @@ function bbcs_insertDefaultCounters()
     }
 }
 
-
 function bbcs_insertDefaultSearchEngines()
 {
     global $wpdb;
-    
+
     $default_search_engines = [
-            ['priority' => 1,  'search' => 'Google-InspectionTool', 'data' => '.googlebot.com', 'rule' => 'allow', 'comment' => 'Search Console', 'disable' => 1],
-            ['priority' => 1,  'search' => 'Chrome-Lighthouse', 'data' => '.google.com', 'rule' => 'allow', 'comment' => 'PageSpeed Insights', 'disable' => 1],
-            ['priority' => 1,  'search' => 'Mediapartners', 'data' => '.googlebot.com .google.com', 'rule' => 'allow', 'comment' => 'AdSense bot', 'disable' => 1],
+            ['priority' => 1,  'search' => 'Google-InspectionTool', 'data' => '.googlebot.com', 'rule' => 'allow', 'comment' => 'Search Console', 'disable' => 0],
+            ['priority' => 1,  'search' => 'Chrome-Lighthouse', 'data' => '.google.com', 'rule' => 'allow', 'comment' => 'PageSpeed Insights', 'disable' => 0],
+            ['priority' => 1,  'search' => 'Mediapartners', 'data' => '.googlebot.com .google.com', 'rule' => 'allow', 'comment' => 'AdSense bot', 'disable' => 0],
 
             ['priority' => 2,  'search' => 'Googlebot-Image', 'data' => '.googlebot.com .google.com', 'rule' => 'allow', 'comment' => 'Google Images', 'disable' => 0],
             ['priority' => 2,  'search' => 'Googlebot-Video', 'data' => '.googlebot.com .google.com', 'rule' => 'allow', 'comment' => 'Google Videos', 'disable' => 0],
@@ -173,23 +148,13 @@ function bbcs_insertDefaultSearchEngines()
     ];
 
     foreach ($default_search_engines as $se) {
-        $found = false;
-        if (BOTBLOCKER_CACHE_WP) {
-            $exists_cache_key = 'bbcs_se_exists' . bbcs_get_wp_cache_version() . md5($se['search']);
-            $exists = wp_cache_get($exists_cache_key, 'botblocker-security', false, $found);
-        }
-        if ($found === false) {
-            // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-            $exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM `{$wpdb->bbcs_se}` WHERE search = %s", $se['search']));
-            if (BOTBLOCKER_CACHE_WP) {
-                wp_cache_set($exists_cache_key, $exists, 'botblocker-security', BOTBLOCKER_CACHE_RULES_CHECK_TIME);
-            }
-        }
+        // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM `{$wpdb->bbcs_se}` WHERE search = %s", $se['search']));
 
         if ($exists == 0) {
             // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $wpdb->query($wpdb->prepare(
                 "INSERT INTO `{$wpdb->bbcs_se}` (priority, search, data, rule, comment, disable) VALUES (%d, %s, %s, %s, %s, %d)",
                 $se['priority'],
@@ -206,7 +171,7 @@ function bbcs_insertDefaultSearchEngines()
 function bbcs_insertDefaultPaths()
 {
     global $wpdb;
-    
+
     $default_paths = [
         ['priority' => 1,  'search' => '/wp-cron.php', 'rule' => 'allow', 'comment' => 'WordPress cron jobs', 'disable' => 1],
         ['priority' => 1,  'search' => '/wp-admin/admin-ajax.php', 'rule' => 'allow', 'comment' => 'WordPress AJAX', 'disable' => 1],
@@ -215,23 +180,13 @@ function bbcs_insertDefaultPaths()
     ];
 
     foreach ($default_paths as $path) {
-        $found = false;
-        if (BOTBLOCKER_CACHE_WP) {
-            $exists_cache_key = 'bbcs_path_exists' . bbcs_get_wp_cache_version() . md5($path['search']);
-            $exists = wp_cache_get($exists_cache_key, 'botblocker-security', false, $found);
-        }
-        if ($found === false) {
-            // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-            $exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM `{$wpdb->bbcs_path}` WHERE search = %s", $path['search']));
-            if (BOTBLOCKER_CACHE_WP) {
-                wp_cache_set($exists_cache_key, $exists, 'botblocker-security', BOTBLOCKER_CACHE_RULES_CHECK_TIME);
-            }
-        }
+        // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM `{$wpdb->bbcs_path}` WHERE search = %s", $path['search']));
 
         if ($exists == 0) {
             // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $wpdb->query($wpdb->prepare(
                 "INSERT INTO `{$wpdb->bbcs_path}` (priority, search, rule, comment, disable) VALUES (%d, %s, %s, %s, %d)",
                 $path['priority'],
@@ -247,7 +202,7 @@ function bbcs_insertDefaultPaths()
 function bbcs_insertExtendedPaths()
 {
     global $wpdb;
-    
+
     $default_paths = [
         ['priority' => 1,  'search' => '/favicon.ico', 'rule' => 'allow', 'comment' => 'WordPress Favicon', 'disable' => 0],
         ['priority' => 10, 'search' => '/wp-admin/post.php', 'rule' => 'allow', 'comment' => 'WordPress post editing', 'disable' => 0],
@@ -275,23 +230,13 @@ function bbcs_insertExtendedPaths()
     ];
 
     foreach ($default_paths as $path) {
-        $found = false;
-        if (BOTBLOCKER_CACHE_WP) {
-            $exists_cache_key = 'bbcs_path_exists' . bbcs_get_wp_cache_version() . md5($path['search']);
-            $exists = wp_cache_get($exists_cache_key, 'botblocker-security', false, $found);
-        }
-        if ($found === false) {
             // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM `{$wpdb->bbcs_path}` WHERE search = %s", $path['search']));
-            if (BOTBLOCKER_CACHE_WP) {
-                wp_cache_set($exists_cache_key, $exists, 'botblocker-security', BOTBLOCKER_CACHE_RULES_CHECK_TIME);
-            }
-        }
 
         if ($exists == 0) {
             // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $wpdb->query($wpdb->prepare(
                 "INSERT INTO `{$wpdb->bbcs_path}` (priority, search, rule, comment, disable) VALUES (%d, %s, %s, %s, %d)",
                 $path['priority'],
@@ -339,7 +284,7 @@ function bbcs_insertDefaultSettings($salt_bb)
 function bbcs_insertDefaultProxies()
 {
     global $wpdb;
-    
+
     $default_proxies = [
         // CloudFlare IPv4
         '173.245.48.0/20'  => ['HTTP_CF_CONNECTING_IP', 'CloudFlare IPv4'],
@@ -357,7 +302,7 @@ function bbcs_insertDefaultProxies()
         '104.24.0.0/14'    => ['HTTP_CF_CONNECTING_IP', 'CloudFlare IPv4'],
         '172.64.0.0/13'    => ['HTTP_CF_CONNECTING_IP', 'CloudFlare IPv4'],
         '131.0.72.0/22'    => ['HTTP_CF_CONNECTING_IP', 'CloudFlare IPv4'],
-        
+
         // CloudFlare IPv6
         '2400:cb00::/32'   => ['HTTP_CF_CONNECTING_IP', 'CloudFlare IPv6'],
         '2606:4700::/32'   => ['HTTP_CF_CONNECTING_IP', 'CloudFlare IPv6'],
@@ -366,13 +311,13 @@ function bbcs_insertDefaultProxies()
         '2405:8100::/32'   => ['HTTP_CF_CONNECTING_IP', 'CloudFlare IPv6'],
         '2a06:98c0::/29'   => ['HTTP_CF_CONNECTING_IP', 'CloudFlare IPv6'],
         '2c0f:f248::/32'   => ['HTTP_CF_CONNECTING_IP', 'CloudFlare IPv6'],
-        
+
         // AWS (Amazon Web Services)
         '54.239.0.0/16'    => ['HTTP_X_FORWARDED_FOR', 'AWS (Amazon Web Services)'],
         '54.240.0.0/12'    => ['HTTP_X_FORWARDED_FOR', 'AWS (Amazon Web Services)'],
         '204.246.164.0/22' => ['HTTP_X_FORWARDED_FOR', 'AWS (Amazon Web Services)'],
         '205.251.192.0/19' => ['HTTP_X_FORWARDED_FOR', 'AWS (Amazon Web Services)'],
-        
+
         // Google Cloud
         '35.190.0.0/17'    => ['HTTP_X_FORWARDED_FOR', 'Google Cloud'],
         '64.233.160.0/19'  => ['HTTP_X_FORWARDED_FOR', 'Google Cloud'],
@@ -381,28 +326,17 @@ function bbcs_insertDefaultProxies()
         '72.14.192.0/18'   => ['HTTP_X_FORWARDED_FOR', 'Google Cloud'],
         '74.125.0.0/16'    => ['HTTP_X_FORWARDED_FOR', 'Google Cloud']
     ];
-    
+
     foreach ($default_proxies as $key => $data) {
         $value = $data[0];
         $comment = $data[1];
-
-        $found = false;
-        if (BOTBLOCKER_CACHE_WP) {
-            $exists_cache_key = 'bbcs_proxy_exists' . bbcs_get_wp_cache_version() . md5($key);
-            $exists = wp_cache_get($exists_cache_key, 'botblocker-security', false, $found);
-        }
-        if ($found === false) {
             // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM `{$wpdb->bbcs_proxy}` WHERE `key` = %s", $key));
-            if (BOTBLOCKER_CACHE_WP) {
-                wp_cache_set($exists_cache_key, $exists, 'botblocker-security', BOTBLOCKER_CACHE_RULES_CHECK_TIME);
-            }
-        }
 
         if ($exists == 0) {
             // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $wpdb->query($wpdb->prepare(
                 "INSERT INTO `{$wpdb->bbcs_proxy}` (`key`, `value`, `comment`) VALUES (%s, %s, %s)",
                 $key,

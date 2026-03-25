@@ -3,6 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 trait BotBlockerMuUtils {
 
+	//BBCS-MULTISITE
 	private function load_directories(): void {
 		$uploads_base = '';
 		if ( function_exists( 'wp_upload_dir' ) ) {
@@ -16,9 +17,17 @@ trait BotBlockerMuUtils {
 			if ( defined( 'WP_CONTENT_DIR' ) ) {
 				$uploads_base = rtrim( WP_CONTENT_DIR, "/\\" ) . '/uploads';
 			} elseif ( defined( 'ABSPATH' ) ) {
-				$uploads_base = rtrim( ABSPATH, "/\\" ) . 'wp-content/uploads';
+				$uploads_base = rtrim( ABSPATH, "/\\" ) . '/wp-content/uploads';
 			} else {
 				$uploads_base = rtrim( dirname( __DIR__, 4 ), "/\\" ) . '/wp-content/uploads';
+			}
+
+			if ( function_exists( 'is_multisite' ) && is_multisite()
+				&& function_exists( 'get_current_blog_id' ) ) {
+				$blog_id = get_current_blog_id();
+				if ( $blog_id > 1 ) {
+					$uploads_base .= '/sites/' . $blog_id;
+				}
 			}
 		}
 		$uploads_base = str_replace( '\\', '/', $uploads_base );
@@ -28,7 +37,7 @@ trait BotBlockerMuUtils {
 			'data' => $bot_data_dir
 		);
 	}
- 
+
 	private function load_settings(): void {
 		$this->settings = [];
 		$settings_file = $this->dirs['data'] . 'settings.php';
@@ -102,15 +111,6 @@ trait BotBlockerMuUtils {
 		$scheme = $https ? 'https' : 'http';
 
 		return $scheme . '://' . $host . rtrim('/' . ltrim($relPath, '/'), '/');
-	}	
-
-	private function bbcs_get_wp_cache_version() {
-		$found = false;
-		$cache_version = wp_cache_get(BOTBLOCKER_WP_CACHE_VERSION, 'botblocker-security', false, $found);
-		if (!$found || !is_numeric($cache_version)) {
-			$cache_version = (int) current_time('timestamp');
-		}
-		return '_' . (string)$cache_version . '_';
 	}
 
 }

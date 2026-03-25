@@ -43,32 +43,21 @@ function bbcs_addAdminIPs() {
         throw new \Exception(esc_html("Invalid IP: $adminIP"));
     }
 }
- 
+
 function bbcs_addIPv4Rule( $ip, $comment ) {
     global $wpdb;
-
-    $found = false;
-    if (BOTBLOCKER_CACHE_WP) {
-        $exists_cache_key = 'bbcs_ipv4rule_exists' . bbcs_get_wp_cache_version() . md5($ip);
-        $exists = wp_cache_get($exists_cache_key, 'botblocker-security', false, $found);
-    }
-    if ($found === false) {
-        // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-        $exists = $wpdb->get_var(
-            $wpdb->prepare(
-                "SELECT COUNT(*) FROM `{$wpdb->bbcs_ipv4rules}` WHERE search = %s",
-                $ip
-            )
-        );
-        if (BOTBLOCKER_CACHE_WP) {
-            wp_cache_set($exists_cache_key, $exists, 'botblocker-security', BOTBLOCKER_CACHE_RULES_CHECK_TIME);
-        }
-    }
+    // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    $exists = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT COUNT(*) FROM `{$wpdb->bbcs_ipv4rules}` WHERE search = %s",
+            $ip
+        )
+    );
 
     if ( 0 == $exists ) {
         // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $wpdb->insert(
             $wpdb->bbcs_ipv4rules,
             array(
@@ -91,29 +80,18 @@ function bbcs_addIPv6Rule( $ip, $comment ) {
 
     $expandedIP = bbcs_expandIPv6( $ip );
     $binIP      = bbcs_ipv6_bin( $expandedIP );
-
-    $found = false;
-    if (BOTBLOCKER_CACHE_WP) {
-        $exists_cache_key = 'bbcs_ipv6rule_exists' . bbcs_get_wp_cache_version() . md5($expandedIP);
-        $exists = wp_cache_get($exists_cache_key, 'botblocker-security', false, $found);
-    }
-    if ($found === false) {
-        // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-        $exists = $wpdb->get_var(
-            $wpdb->prepare(
-                "SELECT COUNT(*) FROM `{$wpdb->bbcs_ipv6rules}` WHERE search = %s",
-                $expandedIP
-            )
-        );
-        if (BOTBLOCKER_CACHE_WP) {
-            wp_cache_set($exists_cache_key, $exists, 'botblocker-security', BOTBLOCKER_CACHE_RULES_CHECK_TIME);
-        }
-    }
+    // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    $exists = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT COUNT(*) FROM `{$wpdb->bbcs_ipv6rules}` WHERE search = %s",
+            $expandedIP
+        )
+    );
 
     if ( 0 == $exists ) {
         // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $wpdb->insert(
             $wpdb->bbcs_ipv6rules,
             array(
@@ -137,7 +115,7 @@ function bbcs_getServerIPv4() {
         'timeout' => 10,
         'redirection' => 0,
         'httpversion' => '1.1',
-        'user-agent' => BOTBLOCKER_USER_AGENT,
+        'user-agent' => bbcs_current_user_agent(), //BBCS-MULTISITE
         'sslverify' => false,
     ]);
 
@@ -161,7 +139,7 @@ function bbcs_getServerIPv6() {
         'timeout' => 10,
         'redirection' => 0,
         'httpversion' => '1.1',
-        'user-agent' => BOTBLOCKER_USER_AGENT,
+        'user-agent' => bbcs_current_user_agent(), //BBCS-MULTISITE
         'sslverify' => false,
         'headers' => [
             'Accept' => 'text/plain',
@@ -181,7 +159,6 @@ function bbcs_getServerIPv6() {
 
     return $serverIPv6;
 }
-
 
 /*
 function bbcs_getServerIPv4() {
@@ -233,9 +210,9 @@ function bbcs_getServerIPFallback($version) {
     if ($version === 'ipv4') {
         if ($os === 'Linux') {
             $commands = [
-                "timeout 2 hostname -I | awk '{print $1}'",    
-                "timeout 2 ip -4 addr show | grep inet | awk '{print $2}' | cut -d/ -f1", 
-                "timeout 2 ifconfig | grep 'inet ' | awk '{print $2}'",                   
+                "timeout 2 hostname -I | awk '{print $1}'",
+                "timeout 2 ip -4 addr show | grep inet | awk '{print $2}' | cut -d/ -f1",
+                "timeout 2 ifconfig | grep 'inet ' | awk '{print $2}'",
             ];
         } elseif ($os === 'Windows') {
             $commands = [
@@ -245,9 +222,9 @@ function bbcs_getServerIPFallback($version) {
     } elseif ($version === 'ipv6') {
         if ($os === 'Linux') {
             $commands = [
-                "timeout 2 hostname -I | awk '{print $2}'",    
-                "timeout 2 ip -6 addr show | grep inet6 | awk '{print $2}' | cut -d/ -f1", 
-                "timeout 2 ifconfig | grep 'inet6 ' | awk '{print $2}'",                   
+                "timeout 2 hostname -I | awk '{print $2}'",
+                "timeout 2 ip -6 addr show | grep inet6 | awk '{print $2}' | cut -d/ -f1",
+                "timeout 2 ifconfig | grep 'inet6 ' | awk '{print $2}'",
             ];
         } elseif ($os === 'Windows') {
             $commands = [
@@ -266,18 +243,18 @@ function bbcs_getServerIPFallback($version) {
         foreach ($ipArray as $ip) {
             $ip = trim($ip);
             if (filter_var($ip, FILTER_VALIDATE_IP, $version === 'ipv6' ? FILTER_FLAG_IPV6 : FILTER_FLAG_IPV4)) {
-                return $ip; 
+                return $ip;
             }
         }
     }
 
-    return null; 
+    return null;
 }
 
 function bbcs_fetchAndStoreParentIPs() {
     $response = wp_remote_get(BOTBLOCKER_PARENT_IPS_URL, array(
         'timeout'    => 10,
-        'user-agent' => BOTBLOCKER_USER_AGENT,
+        'user-agent' => bbcs_current_user_agent(), //BBCS-MULTISITE
         'sslverify'  => false,
     ));
 

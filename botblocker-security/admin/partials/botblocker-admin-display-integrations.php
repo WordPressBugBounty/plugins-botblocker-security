@@ -50,10 +50,10 @@ settings_errors('botblocker_messages');
                     <div class="card-body">
 					<ul class="nav nav-tabs">
                         <li class="nav-item">
-                            <a class="nav-link active" data-bs-toggle="tab" href="#bbcs_recaptchav2"><?php esc_html_e('ReCaptcha v2', 'botblocker-security'); ?></a>
+                            <a class="nav-link active" data-bs-toggle="tab" href="#bbcs_recaptchav2"><?php esc_html_e('reCAPTCHA v2', 'botblocker-security'); ?></a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" data-bs-toggle="tab" href="#bbcs_recaptchav3"><?php esc_html_e('ReCaptcha v3', 'botblocker-security'); ?></a>
+                            <a class="nav-link" data-bs-toggle="tab" href="#bbcs_recaptchav3"><?php esc_html_e('reCAPTCHA v3', 'botblocker-security'); ?></a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="tab" href="#bbcs_transients"><?php esc_html_e('Transients', 'botblocker-security'); ?></a>

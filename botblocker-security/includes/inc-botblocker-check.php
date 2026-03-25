@@ -25,8 +25,9 @@ function bbcs_check_request_method($method)
 
         if (!empty($referer) && !empty($nonce)) {
             $referer_base = untrailingslashit(explode('?', $referer, 2)[0]);
-            $allowed_referer = untrailingslashit(admin_url('admin.php'));
-            if ($referer_base === $allowed_referer) {
+            $allowed_admin = untrailingslashit(admin_url('admin.php'));
+            $allowed_network = is_multisite() ? untrailingslashit(network_admin_url('admin.php')) : '';
+            if ($referer_base === $allowed_admin || ($allowed_network !== '' && $referer_base === $allowed_network)) {
                 return true;
             }
         }

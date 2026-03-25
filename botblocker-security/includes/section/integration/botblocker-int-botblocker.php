@@ -12,10 +12,10 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 					alt="<?php esc_attr_e('GLOBUS.studio / BotBlocker API', 'botblocker-security'); ?>"
 					class="img-fluid bbcs-info-image mb-3">				
                     <p class="bbcs-info-text">
-					<?php esc_html_e('BotBlocker API integration connects your website to external threat intelligence services for enhanced security monitoring and real-time threat data. This provides additional protection layers beyond local security measures.', 'botblocker-security'); ?>
+					<?php esc_html_e('BotBlocker API connects your site to cloud threat intelligence for real-time security data beyond local detection.', 'botblocker-security'); ?>
 				</p>
 				<p class="bbcs-info-text">
-					<?php esc_html_e('Configure API endpoints for BotBlocker and GLOBUS.studio services to access comprehensive threat databases, security analytics, and advanced monitoring capabilities that strengthen your website protection against evolving threats.', 'botblocker-security'); ?>
+					<?php esc_html_e('Configure API endpoints for BotBlocker and GLOBUS.studio services to access threat databases and security analytics.', 'botblocker-security'); ?>
 				</p>
 				<hr class="bbcs-info-hr">
 				<div class="bbcs-info-footer">
@@ -38,7 +38,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                         data-bs-toggle="tooltip"
                         data-bs-html="true"
                         data-bs-placement="top"
-                        data-bs-original-title="<?php esc_attr_e( 'BotBlocker API endpoint URL for enhanced threat intelligence and real-time security updates. This service provides additional protection layers and threat data for PRO.', 'botblocker-security' ); ?>">
+                        data-bs-original-title="<?php esc_attr_e( 'BotBlocker API endpoint for threat intelligence and security updates.', 'botblocker-security' ); ?>">
                     </i>
                 </div>
                 <div class="bbcs_text_input_inner">

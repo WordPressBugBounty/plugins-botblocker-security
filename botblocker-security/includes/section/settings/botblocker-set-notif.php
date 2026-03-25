@@ -14,10 +14,10 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 					class="img-fluid bbcs-info-image mb-3">
 
 				<p class="bbcs-info-text">
-					<?php esc_html_e('Notification settings allow you to customize how and when you receive alerts about bot activity on your site.', 'botblocker-security'); ?>
+					<?php esc_html_e('Configure how and when you receive alerts about bot activity.', 'botblocker-security'); ?>
 				</p>
 				<p class="bbcs-info-text">
-					<?php esc_html_e('Each notification can be customized to include specific information about the bot activity, making them a powerful tool for site management. However, misconfigured notifications can lead to information overload or missed alerts, so it\'s important to monitor and manage them carefully.', 'botblocker-security'); ?>
+					<?php esc_html_e('Choose notification channels, set up load alerts, and configure report frequency.', 'botblocker-security'); ?>
 				</p>
 				<hr class="bbcs-info-hr">
 				<div class="bbcs-info-footer">
@@ -39,7 +39,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 				<i class="fa-regular fa-circle-question"
 					data-bs-toggle="tooltip" data-bs-html="true"
 					data-bs-placement="top"
-					data-bs-original-title="<?php echo esc_attr__('Enable email notifications for security alerts and bot blocking events.', 'botblocker-security'); ?>">
+					data-bs-original-title="<?php echo esc_attr__('Receive security alerts via email.', 'botblocker-security'); ?>">
 				</i>
 			</div>
 
@@ -48,13 +48,13 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 					<input type="checkbox" name="telegram_notifications" class="bbcs_checkbox_input_input" <?php checked(1, isset($bbcs_settings['telegram_notifications']) ? $bbcs_settings['telegram_notifications'] : 0); ?> value="1" disabled>
 					<span class="bbcs_label_input_checkbox"><?php esc_html_e('Telegram', 'botblocker-security'); ?></span>
 					<small class="text-muted bbcs-ps-5">
-                		<?php esc_html_e('Coming soon', 'botblocker-security'); ?> (<a href="<?php echo esc_url($BBCSA->pages_addons); ?>"><?php esc_html_e('Addons', 'botblocker-security'); ?></a>)
+                		<?php esc_html_e('Coming soon', 'botblocker-security'); ?> (<a href="<?php echo esc_url($BBCSA->pages_addons); ?>"><?php esc_html_e('Add-ons', 'botblocker-security'); ?></a>)
             		</small>
 				</div>
 				<i class="fa-regular fa-circle-question"
 					data-bs-toggle="tooltip" data-bs-html="true"
 					data-bs-placement="top"
-					data-bs-original-title="<?php echo esc_attr__('Enable Telegram notifications for security alerts and bot blocking events.', 'botblocker-security'); ?>">
+					data-bs-original-title="<?php echo esc_attr__('Receive security alerts via Telegram.', 'botblocker-security'); ?>">
 				</i>
 			</div>
 
@@ -63,13 +63,13 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 					<input type="checkbox" name="pusher_notifications" class="bbcs_checkbox_input_input" <?php checked(1, isset($bbcs_settings['pusher_notifications']) ? $bbcs_settings['pusher_notifications'] : 0); ?> value="1" disabled>
 					<span class="bbcs_label_input_checkbox"><?php esc_html_e('Pusher', 'botblocker-security'); ?></span>
 					<small class="text-muted bbcs-ps-5">
-                		<?php esc_html_e('Coming soon', 'botblocker-security'); ?> (<a href="<?php echo esc_url($BBCSA->pages_addons); ?>"><?php esc_html_e('Addons', 'botblocker-security'); ?></a>)
+                		<?php esc_html_e('Coming soon', 'botblocker-security'); ?> (<a href="<?php echo esc_url($BBCSA->pages_addons); ?>"><?php esc_html_e('Add-ons', 'botblocker-security'); ?></a>)
             		</small>
 				</div>
 				<i class="fa-regular fa-circle-question"
 					data-bs-toggle="tooltip" data-bs-html="true"
 					data-bs-placement="top"
-					data-bs-original-title="<?php echo esc_attr__('Enable Pusher notifications for real-time security alerts and bot blocking events.', 'botblocker-security'); ?>">
+					data-bs-original-title="<?php echo esc_attr__('Receive real-time security alerts via Pusher.', 'botblocker-security'); ?>">
 				</i>
 			</div>
 
@@ -81,22 +81,22 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			<div class="bbcs_checkbox_input mb-2 mt-2">
 				<div class="bbcs_label_checkbox_box">
 					<input type="checkbox" name="critical_load_notifications" class="bbcs_checkbox_input_input" <?php checked(1, isset($bbcs_settings['critical_load_notifications']) ? $bbcs_settings['critical_load_notifications'] : 0); ?> value="1">
-					<span class="bbcs_label_input_checkbox"><?php esc_html_e('Send notification when critical load', 'botblocker-security'); ?></span>
+					<span class="bbcs_label_input_checkbox"><?php esc_html_e('Notify on Critical Server Load', 'botblocker-security'); ?></span>
 				</div>
 				<i class="fa-regular fa-circle-question"
 					data-bs-toggle="tooltip" data-bs-html="true"
 					data-bs-placement="top"
-					data-bs-original-title="<?php echo esc_attr__('Send notifications when server load reaches critical levels or unusual bot activity is detected.', 'botblocker-security'); ?>">
+					data-bs-original-title="<?php echo esc_attr__('Alert when server load is critical or unusual bot activity is detected.', 'botblocker-security'); ?>">
 				</i>
 			</div>
 
 			<div class="bbcs_select_input mb-2 mt-2">
 				<div class="bbcs_label_input_box">
-					<span class="bbcs-label-input"><?php esc_html_e('Send regular notifications', 'botblocker-security'); ?></span>
+					<span class="bbcs-label-input"><?php esc_html_e('Regular Report Frequency', 'botblocker-security'); ?></span>
 					<i class="fa-regular fa-circle-question"
 						data-bs-toggle="tooltip" data-bs-html="true"
 						data-bs-placement="top"
-						data-bs-original-title="<?php echo esc_attr__('Choose how often to receive regular status reports and summaries.', 'botblocker-security'); ?>">
+						data-bs-original-title="<?php echo esc_attr__('How often to receive status reports.', 'botblocker-security'); ?>">
 					</i>
 				</div>
 				<div class="bbcs_select_input_inner">

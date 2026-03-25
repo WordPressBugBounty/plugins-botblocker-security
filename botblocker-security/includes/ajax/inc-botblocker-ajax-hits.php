@@ -18,7 +18,7 @@ function bbcs_get_botblocker_hits( $where ) {
      * - Suppression is scoped only around those lines.
      */
     check_ajax_referer( 'botblocker_nonce', 'nonce' );
-    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+    if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
     global $wpdb;
     $BBCS = BotBlocker::getInstance();
@@ -59,34 +59,16 @@ function bbcs_get_botblocker_hits( $where ) {
 
     $total_query = "SELECT COUNT(*) FROM ({$union_query}) AS total_count";
     // REVIEWER NOTE: Query string is dynamically built from sanitized input data.
-    // $where is constructed internally by the plugin and all user input is sanitized 
-    // (esc_like, absint, sanitize_text_field) and values are prepared where possible. 
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
+    // $where is constructed internally by the plugin and all user input is sanitized
+    // (esc_like, absint, sanitize_text_field) and values are prepared where possible.
+     // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
     $total       = (int) $wpdb->get_var( $total_query );
-
-    $found = false;
-    if (BOTBLOCKER_CACHE_WP) {
-        $cache_version = wp_cache_get('bbcs_ajax_hits_cache_version', 'botblocker-security') ?: 1;
-        $cache_key = 'bbcs_hits' . bbcs_get_wp_cache_version() . $cache_version . '_' . md5(wp_json_encode([
-            'where' => $where,
-            'start' => $start,
-            'length' => $length,
-            'search' => $search
-        ]));
-        $results = wp_cache_get($cache_key, 'botblocker-security', false, $found);
-    }
-
-    if ($found === false) {
-        $query = "{$union_query} ORDER BY date DESC LIMIT {$start}, {$length}";
-        // REVIEWER NOTE: Query string is dynamically built from sanitized input data.
-        // $where is constructed internally by the plugin and all user input is sanitized 
-        // (esc_like, absint, sanitize_text_field) and values are prepared where possible. 
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-        $results = $wpdb->get_results( $query, ARRAY_A );
-        if (BOTBLOCKER_CACHE_WP) {
-            wp_cache_set($cache_key, $results, 'botblocker-security', 15);
-        }
-    }
+    $query = "{$union_query} ORDER BY date DESC LIMIT {$start}, {$length}";
+    // REVIEWER NOTE: Query string is dynamically built from sanitized input data.
+    // $where is constructed internally by the plugin and all user input is sanitized
+    // (esc_like, absint, sanitize_text_field) and values are prepared where possible.
+     // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
+    $results = $wpdb->get_results( $query, ARRAY_A );
 
     $data = [];
     foreach ( (array) $results as $row ) {
@@ -159,7 +141,7 @@ function bbcs_get_botblocker_hits_callback() {
     [$ip_not_in_sql, $ip_params] = bbcs_getIPNotLikeSQL();
     // REVIEWER NOTE: IP values are sourced from the plugin's own
     // stored rules (not raw user input) and are fully escaped via $wpdb->prepare().
-    // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared 
+    // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared
     $where .= empty($ip_params) ? $ip_not_in_sql : $wpdb->prepare($ip_not_in_sql, ...$ip_params);
     bbcs_get_botblocker_hits($where);
 }
@@ -194,47 +176,33 @@ add_action('wp_ajax_bbcs_get_botblocker_all_hits', 'bbcs_get_botblocker_all_hits
 
 function bbcs_get_botblocker_hits_data_for_modal_callback() {
     check_ajax_referer( 'botblocker_nonce', 'nonce' );
-    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+    if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
     if ( empty( $_POST['cid'] ) ) {
-        wp_send_json_error( 'CID is not set or empty' );
+        wp_send_json_error( __('CID is not set or empty.', 'botblocker-security') );
     }
 
     $cid = sanitize_text_field( wp_unslash( $_POST['cid'] ) );
 
     global $wpdb;
-
-    $found = false;
-    if (BOTBLOCKER_CACHE_WP) {
-        $cache_version = 1;
-        $cache_version = wp_cache_get('bbcs_ajax_hits_cache_version', 'botblocker-security') ?: 1;
-        $cache_key = 'bbcs_hits_modal' . bbcs_get_wp_cache_version() . $cache_version . '_' . md5($cid);
-        $results = false;
-        $results = wp_cache_get($cache_key, 'botblocker-security', false, $found);
-    }
-    if ($found === false) {
-        // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-        $results = $wpdb->get_results(
-            $wpdb->prepare(
-                "
-                SELECT ip, ptr, useragent, asname, asnum, country_name, name_lang, referer
-                FROM (
-                    SELECT * FROM `{$wpdb->bbcs_hits}`
-                    UNION ALL
-                    SELECT * FROM `{$wpdb->bbcs_hits_suspicious}`
-                ) AS combined_hits
-                WHERE cid = %s
-                ORDER BY date DESC
-                ",
-                $cid
-            ),
-            ARRAY_A
-        );
-        if (BOTBLOCKER_CACHE_WP) {
-            wp_cache_set($cache_key, $results, 'botblocker-security', 15);
-        }
-    }
+    // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    $results = $wpdb->get_results(
+        $wpdb->prepare(
+            "
+            SELECT ip, ptr, useragent, asname, asnum, country_name, name_lang, referer
+            FROM (
+                SELECT * FROM `{$wpdb->bbcs_hits}`
+                UNION ALL
+                SELECT * FROM `{$wpdb->bbcs_hits_suspicious}`
+            ) AS combined_hits
+            WHERE cid = %s
+            ORDER BY date DESC
+            ",
+            $cid
+        ),
+        ARRAY_A
+    );
 
     wp_send_json_success( $results );
 }
@@ -253,13 +221,13 @@ function bbcs_detectIPType($ip) {
 function bbcs_hit_to_rule_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
-    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+    if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
     if (
         !isset($_POST['type']) || empty($_POST['type']) ||
         !isset($_POST['data']) || empty($_POST['data'])
     ) {
-        wp_send_json_error('Type or data is not set or empty');
+        wp_send_json_error(__('Type or data is not set or empty.', 'botblocker-security'));
         return;
     }
 
@@ -269,7 +237,7 @@ function bbcs_hit_to_rule_callback()
         $typeIP = bbcs_detectIPType($ip);
 
         if($typeIP === 'invalid') {
-            wp_send_json_error('Invalid IP address provided');
+            wp_send_json_error(__('Invalid IP address provided.', 'botblocker-security'));
             return;
         }
 
@@ -287,6 +255,6 @@ function bbcs_hit_to_rule_callback()
         // For other types
         // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
         do_action('wp_ajax_bbcs_create_rule');
-    }    
+    }
 }
 add_action('wp_ajax_bbcs_hit_to_rule', 'bbcs_hit_to_rule_callback');

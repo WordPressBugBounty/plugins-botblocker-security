@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 function bbcs_createSaltFile($return_salt_bb = false)
 {
-    $saltFilePath = BOTBLOCKER_DATA_DIR . 'salt.php'; 
+    $saltFilePath = bbcs_data_dir() . 'salt.php'; 
 
     if (!file_exists($saltFilePath) || $return_salt_bb === true) {
         $host_key = md5(get_option('siteurl'));
@@ -80,13 +80,39 @@ function bbcs_uninstallMuPlugin() {
 	}
 }
 
+function bbcs_removeWpConfigEarlyInitCode() {
+	$wp_config_file = ABSPATH . 'wp-config.php';
+
+	if ( ! file_exists( $wp_config_file ) ) {
+		return false;
+	}
+
+	$config_contents = file_get_contents( $wp_config_file );
+	$marker_start    = '/* BBCS Start */';
+	$marker_end      = '/* BBCS End */';
+	$start_position  = strpos( $config_contents, $marker_start );
+	$end_position    = strpos( $config_contents, $marker_end );
+
+	if ( $start_position === false || $end_position === false ) {
+		return false;
+	}
+
+	$end_position += strlen( $marker_end );
+
+	$new_config_contents = substr( $config_contents, 0, $start_position ) . substr( $config_contents, $end_position );
+	file_put_contents( $wp_config_file, $new_config_contents );
+	bbcs_clearFileCache();
+
+	return true;
+}
+
 function bbcs_deleteRuleFiles()
 {
     $files = [
-        BOTBLOCKER_DATA_DIR . 'search_engines.php',
-        BOTBLOCKER_DATA_DIR . 'paths.php',
-        BOTBLOCKER_DATA_DIR . 'rules.php',
-        BOTBLOCKER_DATA_DIR . 'ip.php',
+        bbcs_data_dir() . 'search_engines.php',
+        bbcs_data_dir() . 'paths.php',
+        bbcs_data_dir() . 'rules.php',
+        bbcs_data_dir() . 'ip.php',
     ];
     foreach ($files as $file) {
         if (file_exists($file)) {

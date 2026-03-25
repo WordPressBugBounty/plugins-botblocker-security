@@ -6,22 +6,20 @@ define('BOTBLOCKER_SHORT_NAME', 'BotBlocker'); // A shorter version of the plugi
 if(!defined('BOTBLOCKER_TABLE_PREFIX')) define('BOTBLOCKER_TABLE_PREFIX', 'bbcs_'); // The prefix used for database tables
 define('BOTBLOCKER_PREFIX', 'bb_'); // The prefix used for settings and options
 
-define('BOTBLOCKER_VERSION', '1.6.14'); // The version number of the plugin
-define('BOTBLOCKER_DB_VERSION', '2.2.0'); // The database version of the plugin
+define('BOTBLOCKER_VERSION', '1.6.15'); // The version number of the plugin
+define('BOTBLOCKER_DB_VERSION', '2.3.0'); // The database version of the plugin
 define('BOTBLOCKER_WIZARD_ON_UPDATE', false); // Show setup wizard after plugin update
 
-define('BOTBLOCKER_SITE_URL', get_site_url()); // The URL of the site
-define('BOTBLOCKER_SITE_CLEAR', bbcs_full_domain_with_underscores(BOTBLOCKER_SITE_URL)); 
-define('BOTBLOCKER_SITE_NAME', get_bloginfo('name')); // The name of the site
-define('BOTBLOCKER_SITE_EMAIL', get_bloginfo('admin_email')); // The email address of the site
+// BBCS-MULTISITE: Site-specific values moved to dynamic functions in inc-botblocker-multisite.php:
+// bbcs_current_site_url(), bbcs_current_site_clear(), bbcs_current_site_name(),
+// bbcs_current_site_email(), bbcs_current_user_agent()
+
 define('BOTBLOCKER_EXP_INF', 9999999999); // The maximum value for the expires field in the Unix timestamp format
-if(!defined('BOTBLOCKER_EMPTY')) define('BOTBLOCKER_EMPTY', '-'); 
-define('BOTBLOCKER_WP_CRON_ENABLED', defined('DISABLE_WP_CRON') && DISABLE_WP_CRON ? false : true); 
-define('BOTBLOCKER_WP_CACHE_VERSION', 'botblocker-security-cache-version');
+if(!defined('BOTBLOCKER_EMPTY')) define('BOTBLOCKER_EMPTY', '-');
+define('BOTBLOCKER_WP_CRON_ENABLED', defined('DISABLE_WP_CRON') && DISABLE_WP_CRON ? false : true);
 define('BOTBLOCKER_CRON_SCHEDULE', '*/10 * * * *'); // The cron schedule for the plugin, default is every 10 minutes
 
-/* The user agent string used for requests to the BotBlocker API */
-define('BOTBLOCKER_USER_AGENT', 'BotBlocker-Wordpress-Security-Plugin/ ' . BOTBLOCKER_VERSION . ' by https://globus.studio; Client:' . get_bloginfo('url'));
+// BBCS-MULTISITE: User agent moved to bbcs_current_user_agent() in inc-botblocker-multisite.php
 
 define('BOTBLOCKER_SERVER', 'botblocker.top'); //TODO Parent server botblocker.top
 define('BOTBLOCKER_CLOUD_API_ENDPOINT', 'https://' .BOTBLOCKER_SERVER . '/botblocker_cloud_api');
@@ -30,7 +28,11 @@ define('BOTBLOCKER_API_URL', 'https://api.' . BOTBLOCKER_SERVER . '/v2'); // The
 define('BOTBLOCKER_NEWS_URL', 'https://' . BOTBLOCKER_SERVER . '/blog'); // The URL of the BotBlocker BLOG
 define('BOTBLOCKER_DOCS_URL', 'https://' . BOTBLOCKER_SERVER); // The URL of the BotBlocker DOCS /docs/ deprecated
 define('BOTBLOCKER_PRICE_URL', 'https://' . BOTBLOCKER_SERVER . '/botblocker_get_products/'); // The URL of the BotBlocker products
-define('BOTBLOCKER_ADDONS', 'https://' . BOTBLOCKER_SERVER . '/wp-content/plugins/bbcs-addons/master.json'); // The URL of the BotBlocker addons
+define('BOTBLOCKER_MODE_STABLE', 'stable');
+define('BOTBLOCKER_MODE_DEV',    'dev');
+define('BOTBLOCKER_MODE', BOTBLOCKER_MODE_STABLE);
+define('BOTBLOCKER_ADDONS', 'https://' . BOTBLOCKER_SERVER . '/wp-content/plugins/bbcs-addons/master.json'); // The URL of the BotBlocker addons (stable)
+define('BOTBLOCKER_ADDONS_DEV', 'https://' . BOTBLOCKER_SERVER . '/wp-content/plugins/bbcs-addons/dev/master.json'); // The URL of the BotBlocker addons (dev)
 define('BOTBLOCKER_MATERIALS_URL', 'https://' . BOTBLOCKER_SERVER . '/wp-content/plugins/bbcs-materials/'); // The URL of the BotBlocker materials
 define('BOTBLOCKER_JS_ADMIN', true); // Use JS in the admin panel (only for debug)
 
@@ -50,10 +52,8 @@ define('BOTBLOCKER_CACHE_NEWS', true); // Cache news, bot stats, prices
 define('BOTBLOCKER_CACHE_NEWS_TIME', 21600); // 6 hours in seconds
 define('BOTBLOCKER_CACHE_SIDEBAR_STATS', true); // Cache widgets stats
 define('BOTBLOCKER_CACHE_SIDEBAR_STATS_TIME', 7200); // 2 hours in seconds
-define('BOTBLOCKER_CACHE_WP', false); // Cache WP
 define('BOTBLOCKER_CACHE_REMAINING_HITS_TIME', DAY_IN_SECONDS); // Cache remaining hits for 1 day
 define('BOTBLOCKER_CACHE_REMAINING_DAYS_TIME', DAY_IN_SECONDS); // Cache remaining days for 1 day
-define('BOTBLOCKER_CACHE_RULES_CHECK_TIME', BOTBLOCKER_CACHE_WP ? HOUR_IN_SECONDS : 0); // Cache rules check time
 
 define('BOTBLOCKER_WIDGETS', true); // A constant to indicate that the plugin includes dashboard widgets
 

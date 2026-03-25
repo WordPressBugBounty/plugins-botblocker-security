@@ -10,11 +10,9 @@ function bbcs_display_daily_hits_chart($atts)
     if ($BBCS->settings->cache_ui_data == 1) {
         $cache_key = 'bbcs_display_daily_hits_chart';
         $cached = null;
-        if (BOTBLOCKER_CACHE_WP) {
-            $cached = wp_cache_get($cache_key, 'botblocker-security');
-        } else {
-            $cached = get_transient($cache_key);
-        }
+
+        $cached = get_transient($cache_key);
+
         if ($cached) {
             return $cached;
         }
@@ -38,7 +36,7 @@ function bbcs_display_daily_hits_chart($atts)
     $end_of_day   = (clone $current_date)->setTime(23, 59, 59);
 
     // REVIEWER NOTE: Exclusion fragment uses only internally controlled self‑IPs and is bound via prepare; no user data flows here.
-    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
     $results = $wpdb->get_results(
         $wpdb->prepare("
             SELECT HOUR(CONVERT_TZ(FROM_UNIXTIME(date), '+00:00', %s)) AS hour, COUNT(*) AS hits
@@ -65,7 +63,7 @@ function bbcs_display_daily_hits_chart($atts)
             ...$ip_params
         )
     );
-    // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+    // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
     $values = array_fill(0, 24, 0);
     foreach ((array) $results as $row) {
@@ -83,11 +81,9 @@ function bbcs_display_daily_hits_chart($atts)
     $output = ob_get_clean();
 
     if ($BBCS->settings->cache_ui_data == 1) {
-        if (BOTBLOCKER_CACHE_WP) {
-            wp_cache_set($cache_key, $output, 'botblocker-security', $BBCS->settings->cache_ui_duration);
-        } else {
-            set_transient($cache_key, $output, $BBCS->settings->cache_ui_duration);
-        }
+
+        set_transient($cache_key, $output, $BBCS->settings->cache_ui_duration);
+
     }
 
     return $output;

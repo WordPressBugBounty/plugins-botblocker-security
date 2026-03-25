@@ -2,20 +2,21 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 function bbcs_summary_table_ready() {
-    static $ready = null;
-    if ( $ready !== null ) {
-        return $ready;
+    static $ready = [];
+    $blog_id = get_current_blog_id();
+    if (isset($ready[$blog_id])) {
+        return $ready[$blog_id];
     }
     global $wpdb;
     if ( empty( $wpdb->bbcs_daily_summary ) ) {
-        $ready = false;
+        $ready[$blog_id] = false;
         return false;
     }
     // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-    $ready = (bool) $wpdb->get_var(
+    $ready[$blog_id] = (bool) $wpdb->get_var(
         $wpdb->prepare( "SHOW TABLES LIKE %s", $wpdb->bbcs_daily_summary )
     );
-    return $ready;
+    return $ready[$blog_id];
 }
 
 function bbcs_summary_days_complete( string $start, string $end ): bool {
@@ -323,14 +324,14 @@ function bbcs_aggregate_day( string $date_key ): bool {
         if ( count( $batch ) >= 100 ) {
             $vals = implode( ',', $batch );
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-            $wpdb->query( "INSERT INTO `{$table}` (date_key, metric, dim_key, val) VALUES {$vals}" );
+            $wpdb->query( "INSERT INTO `{$table}` (date_key, metric, dim_key, val) VALUES {$vals} ON DUPLICATE KEY UPDATE val = VALUES(val)" );
             $batch = [];
         }
     }
     if ( $batch ) {
         $vals = implode( ',', $batch );
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-        $wpdb->query( "INSERT INTO `{$table}` (date_key, metric, dim_key, val) VALUES {$vals}" );
+        $wpdb->query( "INSERT INTO `{$table}` (date_key, metric, dim_key, val) VALUES {$vals} ON DUPLICATE KEY UPDATE val = VALUES(val)" );
     }
 
     $today = ( new \DateTime( 'now', $tz ) )->format( 'Y-m-d' );

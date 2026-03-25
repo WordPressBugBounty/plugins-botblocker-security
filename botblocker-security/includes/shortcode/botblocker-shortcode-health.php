@@ -28,7 +28,7 @@ function bbcs_healthGaugeShortcode($atts)
     $atts['pointer'] = filter_var($atts['pointer'], FILTER_VALIDATE_BOOLEAN) ? 'true' : 'false';
 
     if (!$userProvidedLabel) {
-        $score = $atts['value']; //function_exists('bbcs_calculateSiteHealth') ? (int) bbcs_calculateSiteHealth() : 0; 
+        $score = $atts['value']; //function_exists('bbcs_calculateSiteHealth') ? (int) bbcs_calculateSiteHealth() : 0;
         if ($score >= 85) {
             $atts['label'] = __('Secure', 'botblocker-security');
         } elseif ($score >= 70) {
@@ -61,10 +61,10 @@ function bbcs_healthGaugeShortcode($atts)
     //       . ' data-bbcs-pointer-stroke-linecap="' . esc_attr($atts['pointer_stroke_linecap']) . '"'
     //       . ' data-bbcs-level-colors=' . "'" . wp_json_encode(json_decode($atts['level_colors'], true)) . "'"
     //       . '></div>';
-    
+
     $html = '<canvas id="bbcs-health_gauge" data-health-value="'. esc_attr($score) . '" data-bbcs-label="'. esc_attr($atts['label']) .'" style="width: 100%; height: auto; padding-left: 10px;
     padding-right: 10px;"></canvas>';
-    
+
     return $html;
 }
 add_shortcode('bbcs_health_gauge', 'bbcs_healthGaugeShortcode');
@@ -81,7 +81,7 @@ function bbcs_generateSiteHealthList()
         }
     }
     if ($BBCS->isDisabled) {
-        return '<div class="bbcs-health-list"><span class="bbcs-health-list-item text-danger"><i class="fa-regular fa-circle-xmark"></i> '. esc_html__('BBCS is disabled', 'botblocker-security') .'</span></div>';
+        return '<div class="bbcs-health-list"><span class="bbcs-health-list-item text-danger"><i class="fa-regular fa-circle-xmark"></i> '. esc_html__('BotBlocker is disabled', 'botblocker-security') .'</span></div>';
     }
 
     $variables_affecting_weight = [
@@ -229,7 +229,7 @@ function bbcs_calculateSiteHealth()
         ];
 
         if (isset($BBCS->settings->check) && $BBCS->settings->check == 1) {
-            $health += 12.5; 
+            $health += 12.5;
         }
 
         $cloud_api_variables_rest = array_slice($cloud_api_variables_affecting_weight, 1);
@@ -252,39 +252,30 @@ function bbcs_calculateSiteHealth()
     } else {
         return 0;
     }
-} 
+}
 
 function bbcs_collect_statistic_data() {
     global $wpdb;
     $BBCS = BotBlocker::getInstance();
-    if (BOTBLOCKER_CACHE_WP) {
-        $cache_key = 'bbcs_statistics_data' . bbcs_get_wp_cache_version();
-        $cached_stats = wp_cache_get($cache_key, 'botblocker-security');
-        if ($cached_stats !== false && is_array($cached_stats)) {
-            $BBCS->statistics = $cached_stats;
-            return;
-        }
-    }
+
     // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     $BBCS->statistics = $wpdb->get_row("SELECT * FROM `{$wpdb->bbcs_counters}` LIMIT 1", ARRAY_A);
-    if (BOTBLOCKER_CACHE_WP) {
-        wp_cache_set($cache_key, $BBCS->statistics, 'botblocker-security', $BBCS->settings->cache_ui_duration);
-    }
+
 }
 
 function bbcs_render_counters_grid() {
     $BBCS = BotBlocker::getInstance();
 
     if (!$BBCS->statistics) {
-        return '<div class="bbcs-counters-grid">' . esc_html_e('No data available.', 'botblocker-security') .'</div>';
+        return '<div class="bbcs-counters-grid">' . esc_html__('No data available.', 'botblocker-security') .'</div>';
     }
     $output = '<div class="bbcs-counters-grid">';
     $output .= '<div><span class="bbcs-h-today">' . esc_html($BBCS->statistics['today_hits']) . '</span><span class="bbcs-h-today-text">'. esc_html__('Today hits', 'botblocker-security') .'</span></div>';
     $output .= '<div><span class="bbcs-h-today-block">' . esc_html($BBCS->statistics['today_blocked']) . '</span><span class="bbcs-h-today-block-text">'. esc_html__('Today blocked', 'botblocker-security') .'</span></div>';
     $output .= '<div><span class="bbcs-h-total">' . esc_html($BBCS->statistics['total_hits']) . '</span><span class="bbcs-h-total-text">'. esc_html__('Total hits', 'botblocker-security') .'</span></div>';
     $output .= '<div><span class="bbcs-h-total-block">' . esc_html($BBCS->statistics['total_blocked']) . '</span><span class="bbcs-h-total-block-text">'. esc_html__('Total blocked', 'botblocker-security') .'</span></div>';
-    $output .= '<div><span class="bbcs-h-se">' . esc_html($BBCS->statistics['search_engine_visits']) . '</span><span class="bbcs-h-se-text">'. esc_html__('Search engines visits', 'botblocker-security') .'</span></div>';
+    $output .= '<div><span class="bbcs-h-se">' . esc_html($BBCS->statistics['search_engine_visits']) . '</span><span class="bbcs-h-se-text">'. esc_html__('Search engine visits', 'botblocker-security') .'</span></div>';
     $output .= '<div><span class="bbcs-h-percent-eff">' . esc_html($BBCS->statistics['percent_requests_blocked']) . '%</span><span class="bbcs-h-percent-eff-text">'. esc_html__('Requests blocked', 'botblocker-security') .'</span></div>';
     $output .= '</div>';
 

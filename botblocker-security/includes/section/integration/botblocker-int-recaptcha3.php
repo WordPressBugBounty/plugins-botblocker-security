@@ -15,10 +15,10 @@ $bbcs_keys_ready = class_exists('BotBlockerUI') ? BotBlockerUI::recaptcha_v3_key
 				<img src="<?php echo esc_url(BOTBLOCKER_URL . 'public/icons/google.svg'); ?>" 
 					alt="<?php esc_attr_e('Google Recaptcha 3', 'botblocker-security'); ?>" 
 					class="img-fluid bbcs-info-image mb-3">              	<p class="bbcs-info-text">
-					<?php esc_html_e('Google reCAPTCHA v3 offers invisible bot protection by analyzing user behavior patterns and generating risk scores without interrupting the user experience. This advanced system continuously monitors interactions to detect suspicious activities.', 'botblocker-security'); ?>
+					<?php esc_html_e('Google reCAPTCHA v3 analyzes user behavior to generate risk scores and block bots invisibly, without interrupting users.', 'botblocker-security'); ?>
 				</p>
 				<p class="bbcs-info-text">
-					<?php esc_html_e('Set your threshold level to determine when to block or allow visitors based on their risk scores. Lower thresholds provide stricter protection while higher values allow more permissive access for borderline cases.', 'botblocker-security'); ?>
+					<?php esc_html_e('Set the score threshold: lower = stricter blocking, higher = more permissive.', 'botblocker-security'); ?>
 				</p>
 				<hr class="bbcs-info-hr">
 				<div class="bbcs-info-footer">
@@ -41,7 +41,7 @@ $bbcs_keys_ready = class_exists('BotBlockerUI') ? BotBlockerUI::recaptcha_v3_key
                 data-bs-toggle="tooltip" 
                 data-bs-html="true" 
                 data-bs-placement="top" 
-                data-bs-original-title="<?php esc_attr_e('Enable invisible reCAPTCHA v3 protection to automatically analyze user behavior and block suspicious bot traffic without user interaction.', 'botblocker-security'); ?>">
+                data-bs-original-title="<?php esc_attr_e('Analyze user behavior and block bots without user interaction.', 'botblocker-security'); ?>">
                 </i>
             </div>
 
@@ -54,7 +54,7 @@ $bbcs_keys_ready = class_exists('BotBlockerUI') ? BotBlockerUI::recaptcha_v3_key
                 data-bs-toggle="tooltip" 
                 data-bs-html="true" 
                 data-bs-placement="top" 
-                data-bs-original-title="<?php esc_attr_e('Enable to automatically block visitors using IPv6 addresses. This can help reduce bot traffic but may affect legitimate users with IPv6 connections.', 'botblocker-security'); ?>">
+                data-bs-original-title="<?php esc_attr_e('Block all IPv6 visitors. May affect legitimate IPv6 users.', 'botblocker-security'); ?>">
                 </i>
             </div>                                    
 
@@ -65,7 +65,7 @@ $bbcs_keys_ready = class_exists('BotBlockerUI') ? BotBlockerUI::recaptcha_v3_key
                     data-bs-toggle="tooltip" 
                     data-bs-html="true" 
                     data-bs-placement="top" 
-                    data-bs-original-title="<?php esc_attr_e('Enter your Google reCAPTCHA v3 site key. This key enables invisible bot protection by analyzing user interactions across your website.', 'botblocker-security'); ?>"></i>
+                    data-bs-original-title="<?php esc_attr_e('Your Google reCAPTCHA v3 site key for invisible bot detection.', 'botblocker-security'); ?>"></i>
                 </div>
                 <div class="bbcs_text_input_inner">
                     <input type="text" class="bbcs_text_input_input" name="recaptcha_key3" 
@@ -105,7 +105,7 @@ $bbcs_keys_ready = class_exists('BotBlockerUI') ? BotBlockerUI::recaptcha_v3_key
             <div class="bbcs_text_input mb-2">
                 <div class="bbcs_label_input_box">
                     <span class="bbcs-label-input">
-                        <?php esc_html_e( 'Set the recaptcha treshold level', 'botblocker-security' ); ?>
+                        <?php esc_html_e( 'reCAPTCHA Threshold Level', 'botblocker-security' ); ?>
                         - <span id="bbcs_recaptcha_tresshold_value">
                             <?php echo isset( $bbcs_settings['recaptcha_tresshold'] ) ? esc_html( $bbcs_settings['recaptcha_tresshold'] ) : '0.5'; ?>
                         </span>
@@ -113,7 +113,7 @@ $bbcs_keys_ready = class_exists('BotBlockerUI') ? BotBlockerUI::recaptcha_v3_key
                     <i class="fa-regular fa-circle-question" 
                         data-bs-toggle="tooltip" 
                         data-bs-placement="top" 
-                        data-bs-original-title="<?php esc_attr_e( 'Set the recaptcha treshold level (0.1 - 1.0)', 'botblocker-security' ); ?>">
+                        data-bs-original-title="<?php esc_attr_e( 'Set the reCAPTCHA threshold level (0.1–1.0)', 'botblocker-security' ); ?>">
                     </i>
                 </div>
                 <div class="bbcs_text_input_inner">

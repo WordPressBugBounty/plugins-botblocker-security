@@ -14,10 +14,10 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                     alt="<?php esc_attr_e('Cookie Settings', 'botblocker-security'); ?>" class="img-fluid bbcs-info-image mb-3">
 
                 <p class="bbcs-info-text">
-                    <?php esc_html_e('Cookie configuration is essential for maintaining secure user sessions and protecting against bot attacks. BotBlocker uses advanced cookie-based verification to distinguish between legitimate users and automated threats. These settings control how the security cookies behave, including their lifetime, security attributes, and encryption parameters.', 'botblocker-security'); ?>
+                    <?php esc_html_e('Control BotBlocker verification cookies: name, lifetime, salt, and security attributes.', 'botblocker-security'); ?>
                 </p>
                 <p class="bbcs-info-text">
-                    <?php esc_html_e('Proper cookie configuration ensures that verified users enjoy seamless browsing while suspicious traffic is continuously monitored. The salt value adds an extra layer of security by making cookie values unpredictable, while SameSite policies protect against cross-site request forgery attacks.', 'botblocker-security'); ?>
+                    <?php esc_html_e('SameSite policy controls cross-site cookie behavior to protect against CSRF attacks.', 'botblocker-security'); ?>
                 </p>
                 <hr class="bbcs-info-hr">
                 <div class="bbcs-info-footer">
@@ -39,7 +39,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                     <span class="bbcs-label-input"><?php esc_html_e('Cookie Name', 'botblocker-security'); ?></span>
                     <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"
                         data-bs-placement="top"
-                        data-bs-original-title="<?php esc_attr_e('Set a unique name for the protection plugin cookie. If you change the cookie name, all previously set cookies will be reset.', 'botblocker-security'); ?>">
+                        data-bs-original-title="<?php esc_attr_e('Cookie name used by BotBlocker. Changing it resets all existing cookies.', 'botblocker-security'); ?>">
                     </i>
                 </div>
                 <div class="bbcs_text_input_inner">
@@ -52,7 +52,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                     <span class="bbcs-label-input"><?php esc_html_e('Cookie SameSite Policy', 'botblocker-security'); ?></span>
                     <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"
                         data-bs-placement="top"
-                        data-bs-original-title="<?php esc_attr_e('Defines SameSite attribute (Lax, Strict, None) for BotBlocker cookie.', 'botblocker-security'); ?>"></i>
+                        data-bs-original-title="<?php esc_attr_e('Set SameSite attribute (Lax, Strict, None).', 'botblocker-security'); ?>"></i>
                 </div>
                 <div class="bbcs_text_input_inner">
                     <select class="bbcs_select_input_input" name="samesite">
@@ -74,7 +74,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                     <span class="bbcs-label-input"><?php esc_html_e('Cookie Lifetime', 'botblocker-security'); ?></span>
                     <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"
                         data-bs-placement="top"
-                        data-bs-original-title="<?php esc_attr_e('Select the duration for the cookie’s lifetime.', 'botblocker-security'); ?>"></i>
+                        data-bs-original-title="<?php esc_attr_e('How long the verification cookie remains valid.', 'botblocker-security'); ?>"></i>
                 </div>
                 <div class="bbcs_text_input_inner">
                     <select class="bbcs_select_input_input" name="cookie_lifetime">
@@ -92,7 +92,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                     <span class="bbcs-label-input"><?php esc_html_e('Salt', 'botblocker-security'); ?></span>
                     <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"
                         data-bs-placement="top"
-                        data-bs-original-title="<?php esc_attr_e('Enter a unique salt value for added security.', 'botblocker-security'); ?>"></i>
+                        data-bs-original-title="<?php esc_attr_e('Random string that makes cookie values unpredictable.', 'botblocker-security'); ?>"></i>
                 </div>
                 <div class="bbcs_text_input_inner">
                     <input type="text" class="bbcs_text_input_input" name="salt"
@@ -106,7 +106,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                     <span class="bbcs-label-input"><?php esc_html_e('Send Vary: Cookie Header', 'botblocker-security'); ?></span>
                     <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"
                         data-bs-placement="top"
-                        data-bs-original-title="<?php esc_attr_e('Adds Vary: Cookie HTTP header to responses for verified visitors. Forces CDN/proxy caches to differentiate responses by cookie set. May reduce cache hit ratio. Enable only if caching issues persist after other measures.', 'botblocker-security'); ?>"></i>
+                        data-bs-original-title="<?php esc_attr_e('Add Vary: Cookie header for CDN compatibility. May reduce cache hit ratio.', 'botblocker-security'); ?>"></i>
                 </div>
                 <div class="bbcs_text_input_inner">
                     <select class="bbcs_select_input_input" name="vary_cookie">

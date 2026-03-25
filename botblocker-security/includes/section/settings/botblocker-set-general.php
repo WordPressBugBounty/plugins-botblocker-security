@@ -14,10 +14,10 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 					class="img-fluid bbcs-info-image mb-3">
 
 				<p class="bbcs-info-text">
-					<?php esc_html_e('General settings control the core operational parameters of BotBlocker\'s security system. These fundamental configurations determine how aggressively the plugin monitors visitor behavior, manages system resources, and applies security rules. The hit limit settings prevent abuse while allowing legitimate users normal access to your site.', 'botblocker-security'); ?>
+					<?php esc_html_e('Control how BotBlocker verifies visitors, applies security rules, and manages hit limits.', 'botblocker-security'); ?>
 				</p>
 				<p class="bbcs-info-text">
-					<?php esc_html_e('PTR cache timing optimizes DNS lookup performance without compromising security accuracy. The last rule setting determines the default action when no specific security rule matches a visitor. Administrator IP auto-saving ensures that site administrators never accidentally block themselves during security configuration changes.', 'botblocker-security'); ?>
+					<?php esc_html_e('PTR cache improves DNS lookup speed. Auto-save admin IPs prevents accidental lockout.', 'botblocker-security'); ?>
 				</p>
 				<hr class="bbcs-info-hr">
 				<div class="bbcs-info-footer">
@@ -40,7 +40,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 					<i class="fa-regular fa-circle-question"
 						data-bs-toggle="tooltip" data-bs-html="true"
 						data-bs-placement="top"
-						data-bs-original-title="<?php esc_attr_e('Full Mode enables request-level inspection across all entry points (public frontend, authenticated/admin endpoints, REST/API, AJAX, and background/cron tasks). It can enforce immediate blocking and terminate execution for detected threats, providing earlier containment of malicious activity. Frontend Mode restricts inspection to public frontend routes and template rendering; it does not intercept or fully inspect admin, authenticated, REST/API, AJAX, or background/internal requests, so attacks that use non-frontend vectors may go unchecked.', 'botblocker-security'); ?>">
+						data-bs-original-title="<?php esc_attr_e('Full Mode: Inspect all requests (frontend, admin, API, AJAX, cron). Frontend Mode: Inspect public-facing requests only.', 'botblocker-security'); ?>">
 					</i>
 				</div>
 				<div class="bbcs_text_input_inner">
@@ -63,7 +63,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
         			<i class="fa-regular fa-circle-question" 
 					data-bs-toggle="tooltip" data-bs-html="true"  
 					data-bs-placement="top" 
-					data-bs-original-title="<?php esc_attr_e('Maximum allowed requests per verified visitor before new verification.', 'botblocker-security'); ?>"></i>
+					data-bs-original-title="<?php esc_attr_e('Requests allowed per verified visitor before re-verification.', 'botblocker-security'); ?>"></i>
     			</div>
     			<div class="bbcs_text_input_inner">
         			<input type="number" class="bbcs_text_input_input" name="hits_per_user" value="<?php echo isset($bbcs_settings['hits_per_user']) ? esc_html($bbcs_settings['hits_per_user']) : 500; ?>">
@@ -75,7 +75,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
         			<i class="fa-regular fa-circle-question"
            data-bs-toggle="tooltip" data-bs-html="true"
            data-bs-placement="top"
-           data-bs-original-title="<?php esc_attr_e('Select how long PTR / reverse DNS lookup results are cached.', 'botblocker-security'); ?>">
+           data-bs-original-title="<?php esc_attr_e('How long to cache DNS lookup results.', 'botblocker-security'); ?>">
         			</i>
     			</div>
     			<div class="bbcs_text_input_inner">
@@ -111,18 +111,18 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			</div>
 			-->
 
-			<h3 class="bbcs_settings_h3"><?php esc_html_e('Administrators settings', 'botblocker-security'); ?></h3>
+			<h3 class="bbcs_settings_h3"><?php esc_html_e('Administrator Settings', 'botblocker-security'); ?></h3>
 
 			<div class="bbcs_checkbox_input mb-2">
     			<div class="bbcs_label_checkbox_box">
         			<input type="checkbox" name="autosave_admin_ip" class="bbcs_checkbox_input_input" value="1"
             			<?php checked(1, isset($bbcs_settings['autosave_admin_ip']) ? $bbcs_settings['autosave_admin_ip'] : 0); ?>>
-        			<span class="bbcs_label_input_checkbox"><?php esc_html_e('Automatic save administrator IPs', 'botblocker-security'); ?></span>
+        			<span class="bbcs_label_input_checkbox"><?php esc_html_e('Auto-save administrator IPs', 'botblocker-security'); ?></span>
     			</div>
     			<i class="fa-regular fa-circle-question"
         			data-bs-toggle="tooltip" data-bs-html="true" 
         			data-bs-placement="top"
-        			data-bs-original-title="<?php esc_attr_e('Automatically save administrator IP addresses to prevent accidental self-blocking during security configuration.', 'botblocker-security'); ?>">
+        			data-bs-original-title="<?php esc_attr_e('Automatically save admin IPs to prevent lockout when changing settings.', 'botblocker-security'); ?>">
     			</i>
 			</div>
 		</div>

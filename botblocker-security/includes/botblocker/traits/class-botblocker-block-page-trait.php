@@ -27,7 +27,7 @@ trait BotBlockerBlockPageTrait {
             'hasCountdown' => ($wait > 0),
             'waitSeconds' => $wait,
             'accessBlocked' => __('Access has been blocked', 'botblocker-security'),
-            'secondsLeft' => __('Seconds left until the unlock:', 'botblocker-security'),
+            'secondsLeft' => __('Seconds remaining until unlock:', 'botblocker-security'),
             'reasonView' => $reason_view,
             'reasonText' => $reason_view ? $this->block_data : '',
         );

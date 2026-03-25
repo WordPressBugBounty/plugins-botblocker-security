@@ -25,15 +25,15 @@ include('botblocker-section-header.php');
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="tab"
-                                href="#bbcs_white_bots"><?php esc_html_e('White bots', 'botblocker-security'); ?></a>
+                                href="#bbcs_white_bots"><?php esc_html_e('White Bots', 'botblocker-security'); ?></a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="tab"
-                                href="#bbcs_IPv4_list"><?php esc_html_e('IPv4 list', 'botblocker-security'); ?></a>
+                                href="#bbcs_IPv4_list"><?php esc_html_e('IPv4 List', 'botblocker-security'); ?></a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="tab"
-                                href="#bbcs_IPv6_list"><?php esc_html_e('IPv6 list', 'botblocker-security'); ?></a>
+                                href="#bbcs_IPv6_list"><?php esc_html_e('IPv6 List', 'botblocker-security'); ?></a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="tab"
@@ -198,31 +198,31 @@ include('botblocker-section-header.php');
                     ?>
                     <?php
                     /* translators: %s: Link to the Paths tab URL. */
-                    $bbcs_i18n_paths_text = __( '<strong>Paths:</strong> If you use acquiring / payment gateways and must ensure their callbacks are never blocked or inspected, add their endpoints under %s.', 'botblocker-security' );
+                    $bbcs_i18n_paths_text = __( '<strong>Paths:</strong> Add payment gateway callback endpoints under %s to prevent them from being blocked.', 'botblocker-security' );
                     ?>
                     <p class="mb-2 bbcs-rules-guide"><?php echo wp_kses_post( sprintf( $bbcs_i18n_paths_text, $bbcs_l_paths ) ); ?></p>
 
                     <?php
                     /* translators: 1: Link to the IPv4 tab URL, 2: Link to the IPv6 tab URL. */
-                    $bbcs_i18n_ipv4v6_text = __( '<strong>IPv4 / IPv6 Lists:</strong> Import bulk allow / block lists on %1$s and %2$s tabs. You can also download sample templates for quick start.', 'botblocker-security' );
+                    $bbcs_i18n_ipv4v6_text = __( '<strong>IPv4 / IPv6 Lists:</strong> Import allow/block lists on the %1$s and %2$s tabs, or download sample templates.', 'botblocker-security' );
                     ?>
                     <p class="mb-2 bbcs-rules-guide"><?php echo wp_kses_post( sprintf( $bbcs_i18n_ipv4v6_text, $bbcs_l_ipv4, $bbcs_l_ipv6 ) ); ?></p>
 
                     <?php
                     /* translators: %s: Link to the Rules tab URL. */
-                    $bbcs_i18n_rules_text = __( '<strong>Rules:</strong> Create granular conditions in %s (IP, User-Agent, ASN, country, referrer, path, cookie, header value, request method, bot score and more).', 'botblocker-security' );
+                    $bbcs_i18n_rules_text = __( '<strong>Rules:</strong> Create rules in %s for IP, User-Agent, ASN, country, referrer, path, cookie, header, request method, or bot score.', 'botblocker-security' );
                     ?>
                     <p class="mb-2 bbcs-rules-guide"><?php echo wp_kses_post( sprintf( $bbcs_i18n_rules_text, $bbcs_l_rules ) ); ?></p>
 
                     <?php
                     /* translators: %s: Link to the White Bots tab URL. */
-                    $bbcs_i18n_white_text = __( '<strong>White Bots:</strong> Maintain trusted crawler domains / signatures (search engines, social networks, uptime services) under %s.', 'botblocker-security' );
+                    $bbcs_i18n_white_text = __( '<strong>White Bots:</strong> Add trusted crawler domains (search engines, social networks, uptime monitors) under %s.', 'botblocker-security' );
                     ?>
                     <p class="mb-2 bbcs-rules-guide"><?php echo wp_kses_post( sprintf( $bbcs_i18n_white_text, $bbcs_l_white ) ); ?></p>
 
                     <?php
                     /* translators: %s: Link to the Proxy tab URL. */
-                    $bbcs_i18n_proxy_text = __( '<strong>Proxy:</strong> Add network masks or header match patterns (e.g. Cloudflare ranges) in %s for tailored handling.', 'botblocker-security' );
+                    $bbcs_i18n_proxy_text = __( '<strong>Proxy:</strong> Add network masks or header patterns (e.g., Cloudflare ranges) in %s.', 'botblocker-security' );
                     ?>
                     <p class="mb-0 bbcs-rules-guide"><?php echo wp_kses_post( sprintf( $bbcs_i18n_proxy_text, $bbcs_l_proxy ) ); ?></p>
                 </div>

@@ -9,7 +9,7 @@ $bbcs_reportTableHeader = '
 <th style="min-width: 85px;">' . esc_html__('Date', 'botblocker-security') .'/'. esc_html__('Time', 'botblocker-security') . '</th>
 <th style="min-width: 100px;">' . esc_html__('IP', 'botblocker-security') .'/'. esc_html__('PTR', 'botblocker-security') .  '</th>
 <th style="min-width: 100px;">' . esc_html__('AS Info', 'botblocker-security') . '</th>
-<th style="min-width: 110px;">' . esc_html__('Lng', 'botblocker-security') . '</th>
+<th style="min-width: 110px;">' . esc_html__('Lang', 'botblocker-security') . '</th>
 <th style="min-width: 200px;">' . esc_html__('User Agent', 'botblocker-security') . '</th>
 <th style="min-width: 300px;">' . esc_html__('Page', 'botblocker-security') . '/' . esc_html__('Referer', 'botblocker-security') . '</th>
 <th style="min-width: 200px;">' . esc_html__('JS Info', 'botblocker-security') . '</th>
@@ -42,11 +42,11 @@ $bbcs_reportTableHeader = '
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="tab"
-                                href="#admin"><?php esc_html_e('Wordpress admin area log', 'botblocker-security'); ?></a>
+                                href="#admin"><?php esc_html_e('WordPress Admin Area Log', 'botblocker-security'); ?></a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="tab"
-                                href="#wordpress"><?php esc_html_e('Wordpress actions', 'botblocker-security'); ?></a>
+                                href="#wordpress"><?php esc_html_e('WordPress Actions', 'botblocker-security'); ?></a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="tab"

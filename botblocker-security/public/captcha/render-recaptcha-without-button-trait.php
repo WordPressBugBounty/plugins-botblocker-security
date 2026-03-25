@@ -10,7 +10,7 @@ trait BBCS_RenderRecaptchaWithoutButtonTrait {
         return [
             'mode' => 4,
             'params' => [
-                'confirmText' => __('Confirm that you are human:', 'botblocker-security'),
+                'confirmText' => __('Confirm that you are human', 'botblocker-security') . ':',
                 'recaptchaKey' => $this->BBCS->settings->recaptcha_key2,
                 'hash' => $hash0
             ]

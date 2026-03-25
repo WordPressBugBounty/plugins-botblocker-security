@@ -16,10 +16,6 @@ function bbcs_database_reinstallation()
 		bbcs_init_db_and_files();
 		bbcs_truncate_daily_summary();
 
-		if (BOTBLOCKER_CACHE_WP) {
-			bbcs_invalidate_wp_cache();
-		}
-		
 		return true;
 	}
 }
@@ -27,21 +23,20 @@ function bbcs_database_reinstallation()
 function bbcs_database_reinstallation_callback()
 {
 	check_ajax_referer('botblocker_nonce', 'nonce');
-	if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+	if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
 	if (bbcs_database_reinstallation()) {
-		wp_send_json_success('Database has been reinstalled successfully.');
+		wp_send_json_success(__('Database has been reinstalled successfully.', 'botblocker-security'));
 	} else {
-		wp_send_json_error('Failed.');
+		wp_send_json_error(__('Operation failed.', 'botblocker-security'));
 	}
 }
 add_action('wp_ajax_bbcs_database_reinstallation', 'bbcs_database_reinstallation_callback');
 
-
 function bbcs_backup_data_settings_callback()
 {
 	check_ajax_referer('botblocker_nonce', 'nonce');
-	if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+	if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
 	global $wpdb;
 
@@ -77,26 +72,15 @@ function bbcs_backup_data_settings_callback()
 	$zip_file = $temp_dir . '/botblocker_backup_' . gmdate('YmdHis') . '.zip';
 	$zip = new \ZipArchive();
 	if ($zip->open($zip_file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
-		wp_send_json_error('Failed to create ZIP archive.');
+		wp_send_json_error(__('Failed to create ZIP archive.', 'botblocker-security'));
 	}
 
 	foreach ($tables as $table => $table_name) {
 		$dump_file = $temp_dir . '/' . $table . '.sql';
-
-		$found = false;
-		if (BOTBLOCKER_CACHE_WP) {
-			$cache_key = 'bbcs_backup_data_settings' . bbcs_get_wp_cache_version() . $table;
-			$result = wp_cache_get($cache_key, 'botblocker-security', false, $found);
-		}
-		if ($found === false) {
-			// REVIEWER NOTE: Table name interpolation is safe here because the $tables array is defined internally and contains only known plugin tables - no user input is involved.
-			// This approach avoids code duplication by programmatically truncating all relevant tables.
-			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
-			$result = $wpdb->get_results("SELECT * FROM `{$table_name}`", ARRAY_A);
-			if (BOTBLOCKER_CACHE_WP) {
-				wp_cache_set($cache_key, $result, 'botblocker-security', 15);
-			}
-		}
+		// REVIEWER NOTE: Table name interpolation is safe here because the $tables array is defined internally and contains only known plugin tables - no user input is involved.
+		// This approach avoids code duplication by programmatically truncating all relevant tables.
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$result = $wpdb->get_results("SELECT * FROM `{$table_name}`", ARRAY_A);
 
 		$dump_content = '';
 		if ($result) {
@@ -128,22 +112,18 @@ function bbcs_backup_data_settings_callback()
 	}
 
 	bbcs_clearFileCache();
-	if (BOTBLOCKER_CACHE_WP) {
-		bbcs_invalidate_wp_cache();
-	}
 
 	wp_send_json_success([
 		'download_url' => $download_url,
-		'message' => 'Backup was successful.',
+		'message' => __('Backup was successful.', 'botblocker-security'),
 	]);
 }
 add_action('wp_ajax_bbcs_backup_data_settings', 'bbcs_backup_data_settings_callback');
 
-
 function bbcs_import_data_settings_callback()
 {
 	check_ajax_referer('botblocker_nonce', 'nonce');
-	if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+	if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
 	global $wpdb;
 
@@ -173,17 +153,17 @@ function bbcs_import_data_settings_callback()
 		$zip_file = sanitize_text_field(wp_unslash($_FILES['zip_file']['tmp_name']));
 	}
 	if ($zip_file === '') {
-		wp_send_json_error('ZIP file not provided.');
+		wp_send_json_error(__('ZIP file not provided.', 'botblocker-security'));
 		return;
 	}
 	if (!is_uploaded_file($zip_file)) {
-		wp_send_json_error('Invalid upload.');
+		wp_send_json_error(__('Invalid upload.', 'botblocker-security'));
 		return;
 	}
 
 	$zip = new \ZipArchive();
 	if ($zip->open($zip_file) !== true) {
-		wp_send_json_error('Failed to open ZIP archive.');
+		wp_send_json_error(__('Failed to open ZIP archive.', 'botblocker-security'));
 	}
 
 	$allowed_files = array_keys($tables);
@@ -192,7 +172,7 @@ function bbcs_import_data_settings_callback()
 		$name  = basename($entry);
 		if ($name !== pathinfo($name, PATHINFO_FILENAME) . '.sql' || !in_array(pathinfo($name, PATHINFO_FILENAME), $allowed_files, true)) {
 			$zip->close();
-			wp_send_json_error('ZIP contains unexpected file: ' . $name);
+			wp_send_json_error(__('ZIP contains unexpected file:', 'botblocker-security') . ' ' . $name);
 			return;
 		}
 	}
@@ -204,7 +184,8 @@ function bbcs_import_data_settings_callback()
 		$dump_file = $temp_dir . '/' . $table . '.sql';
 
 		if (!file_exists($dump_file)) {
-			wp_send_json_error("Dump file for table $table not found.");
+			// translators: %s is the database table name.
+			wp_send_json_error(sprintf(__('Dump file for table %s not found.', 'botblocker-security'), $table));
 		}
 
 		// REVIEWER NOTE: Table name interpolation is safe here because the $tables array is defined internally and contains only known plugin tables - no user input is involved.
@@ -247,12 +228,9 @@ function bbcs_import_data_settings_callback()
 	bbcs_generateSettingsFileFromDb();
 	bbcs_generateAllFilesFromDb();
 	bbcs_truncate_daily_summary();
-	if (BOTBLOCKER_CACHE_WP) {
-		bbcs_invalidate_wp_cache();
-	}
 
 	wp_send_json_success([
-		'message' => 'Import data and settings was successful.',
+		'message' => __('Import was successful.', 'botblocker-security'),
 	]);
 }
 add_action('wp_ajax_bbcs_import_data_settings', 'bbcs_import_data_settings_callback');
@@ -260,12 +238,12 @@ add_action('wp_ajax_bbcs_import_data_settings', 'bbcs_import_data_settings_callb
 function bbcs_toggle_redis_and_memcached_callback()
 {
 	check_ajax_referer('botblocker_nonce', 'nonce');
-	if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+	if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
 	global $wpdb;
 
 	if (!isset($_POST['redis_enable']) || !isset($_POST['memcached_enable'])) {
-		wp_send_json_error('Invalid request');
+		wp_send_json_error(__('Invalid request.', 'botblocker-security'));
 		return;
 	}
 
@@ -281,24 +259,20 @@ function bbcs_toggle_redis_and_memcached_callback()
 
 	//flush store
 	bbcs_flushRedisAndMMC();
-	if (BOTBLOCKER_CACHE_WP) {
-		bbcs_invalidate_wp_cache();
-	}
 
-	wp_send_json_success('Success!');
+	wp_send_json_success(__('Success!', 'botblocker-security'));
 }
 add_action('wp_ajax_bbcs_toggle_redis_and_memcached', 'bbcs_toggle_redis_and_memcached_callback');
-
 
 function bbcs_switch_ptr_cache_in_db_callback()
 {
 	check_ajax_referer('botblocker_nonce', 'nonce');
-	if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+	if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
 	global $wpdb;
 
 	if (!isset($_POST['ptr_cache_in_db'])) {
-		wp_send_json_error('Invalid request');
+		wp_send_json_error(__('Invalid request.', 'botblocker-security'));
 		return;
 	}
 
@@ -312,19 +286,15 @@ function bbcs_switch_ptr_cache_in_db_callback()
 	//flush store
 	bbcs_flushRedisAndMMC();
 
-	if (BOTBLOCKER_CACHE_WP) {
-		bbcs_invalidate_wp_cache();
-	}
-
-	wp_send_json_success('Success!');
+	wp_send_json_success(__('Success!', 'botblocker-security'));
 }
 add_action('wp_ajax_bbcs_switch_ptr_cache_in_db', 'bbcs_switch_ptr_cache_in_db_callback');
-
 
 function bbcs_toggle_early_phase_in_db_callback(): void
 {
 	check_ajax_referer('botblocker_nonce', 'nonce');
-	if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+	//BBCS-MULTISITE
+	if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
 	// Start output buffering to avoid breaking JSON with warnings/notices
 	if (!ob_get_level()) {
@@ -335,7 +305,7 @@ function bbcs_toggle_early_phase_in_db_callback(): void
 		if (ob_get_level()) {
 			ob_end_clean();
 		}
-		wp_send_json_error('Invalid setting');
+		wp_send_json_error(__('Invalid setting.', 'botblocker-security'));
 	}
 
 	$setting_key = sanitize_text_field(wp_unslash($_POST['setting']));
@@ -344,13 +314,12 @@ function bbcs_toggle_early_phase_in_db_callback(): void
 		if (ob_get_level()) {
 			ob_end_clean();
 		}
-		wp_send_json_error('Invalid setting value');
+		wp_send_json_error(__('Invalid setting value.', 'botblocker-security'));
 	}
 
 	$setting_value = intval(wp_unslash($_POST[$setting_key]));
 
 	global $wpdb;
-
 
 	if ($setting_key === 'early_init_enable' && $setting_value === 1) {
 		$cloud_api_active = (function_exists('bbcs_isCloudAPIActive') && bbcs_isCloudAPIActive());
@@ -358,7 +327,7 @@ function bbcs_toggle_early_phase_in_db_callback(): void
 			if (ob_get_level()) {
 				ob_end_clean();
 			}
-			wp_send_json_error('Early Init requires Cloud API and the Early Init addon to be enabled.');
+		wp_send_json_error(__('Early Init requires Cloud API and the Early Init addon to be enabled.', 'botblocker-security'));
 		}
 	}
 	// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared and sanitized. No direct unsanitized SQL is executed.
@@ -383,12 +352,17 @@ function bbcs_toggle_early_phase_in_db_callback(): void
 		}
 	} elseif ($setting_key === 'early_init_enable') {
 		if ($setting_value) {
-
 			bbcs_uninstallMuPlugin();
 			if (function_exists('bbcs_insertCodeToWpConfig')) {
 				bbcs_insertCodeToWpConfig();
 			}
+			if (function_exists('bbcs_generateSitesMapFile')) {
+				bbcs_generateSitesMapFile();
+			}
 		} else {
+			if (function_exists('bbcs_generateSitesMapFile')) {
+				bbcs_generateSitesMapFile();
+			}
 			if (function_exists('bbcs_removeCodeFromWpConfig')) {
 				bbcs_removeCodeFromWpConfig();
 			}
@@ -401,23 +375,23 @@ function bbcs_toggle_early_phase_in_db_callback(): void
 		ob_end_clean();
 	}
 
-	wp_send_json_success('Success!');
+	wp_send_json_success(__('Success!', 'botblocker-security'));
 }
 add_action('wp_ajax_bbcs_toggle_early_phase_in_db', 'bbcs_toggle_early_phase_in_db_callback');
 
 function bbcs_handle_send_email()
 {
 	check_ajax_referer('botblocker_nonce', 'nonce');
-	if (!current_user_can('manage_options')) {
-		wp_send_json_error(['message' => 'Unauthorized']);
+	if (!current_user_can(bbcs_can_manage())) {
+		wp_send_json_error(['message' => __('Unauthorized.', 'botblocker-security')]);
 	}
 
 	$result = bbcs_sendAdminLinksEmail();
 
 	if ($result) {
-		wp_send_json_success(['message' => 'Email sent successfully']);
+		wp_send_json_success(['message' => __('Email sent successfully.', 'botblocker-security')]);
 	} else {
-		wp_send_json_error(['message' => 'Failed to send email']);
+		wp_send_json_error(['message' => __('Failed to send email.', 'botblocker-security')]);
 	}
 }
 add_action('wp_ajax_bbcs_send_email', 'bbcs_handle_send_email');
@@ -425,16 +399,17 @@ add_action('wp_ajax_bbcs_send_email', 'bbcs_handle_send_email');
 function bbcs_create_salt_file_ajax()
 {
 	check_ajax_referer('botblocker_nonce', 'nonce');
-	if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+	//BBCS-MULTISITE
+	if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 	$bbcs_start_files = isset($_POST['bbcs_start_files']) ? filter_var(wp_unslash($_POST['bbcs_start_files']), FILTER_VALIDATE_BOOLEAN) : false;
 	$result = bbcs_createSaltFile($bbcs_start_files);
 
 	if ($result) {
 		bbcs_flushRedisAndMMC();
 
-		wp_send_json_success(['message' => 'Salt file created successfully.']);
+		wp_send_json_success(['message' => __('Salt file created successfully.', 'botblocker-security')]);
 	} else {
-		wp_send_json_error(['message' => 'Not created: file already exists or insufficient permissions.']);
+		wp_send_json_error(['message' => __('Not created: file already exists or insufficient permissions.', 'botblocker-security')]);
 	}
 }
 add_action('wp_ajax_bbcs_create_salt_file', 'bbcs_create_salt_file_ajax');
@@ -443,8 +418,8 @@ function bbcs_clear_wp_debug_log_ajax()
 {
 	check_ajax_referer('botblocker_nonce', 'nonce');
 
-	if (!current_user_can('manage_options')) {
-		wp_send_json_error(['message' => 'Not enough permissions to perform the operation']);
+	if (!current_user_can(bbcs_can_manage())) {
+		wp_send_json_error(['message' => __('Not enough permissions to perform the operation.', 'botblocker-security')]);
 		return;
 	}
 
@@ -457,9 +432,9 @@ function bbcs_clear_wp_debug_log_ajax()
 	}
 
 	if ($result !== false) {
-		wp_send_json_success(['message' => 'Log file cleared successfully']);
+		wp_send_json_success(['message' => __('Log file cleared successfully.', 'botblocker-security')]);
 	} else {
-		wp_send_json_error(['message' => 'Not cleared: log file not found or insufficient permissions.']);
+		wp_send_json_error(['message' => __('Not cleared: log file not found or insufficient permissions.', 'botblocker-security')]);
 	}
 }
 add_action('wp_ajax_bbcs_clear_wp_debug_log', 'bbcs_clear_wp_debug_log_ajax');
@@ -468,8 +443,8 @@ function bbcs_download_wp_debug_log_ajax()
 {
 	check_ajax_referer('botblocker_nonce', 'nonce');
 
-	if (!current_user_can('manage_options')) {
-		wp_send_json_error(['message' => 'Not enough permissions to perform the operation']);
+	if (!current_user_can(bbcs_can_manage())) {
+		wp_send_json_error(['message' => __('Not enough permissions to perform the operation.', 'botblocker-security')]);
 		return;
 	}
 
@@ -503,10 +478,10 @@ function bbcs_download_wp_debug_log_ajax()
 
 		wp_send_json_success([
 			'download_url' => $download_url,
-			'message' => 'Log file is ready for download.',
+			'message' => __('Log file is ready for download.', 'botblocker-security'),
 		]);
 	} else {
-		wp_send_json_error(['message' => 'Log file not found.']);
+		wp_send_json_error(['message' => __('Log file not found.', 'botblocker-security')]);
 	}
 }
 add_action('wp_ajax_bbcs_download_wp_debug_log', 'bbcs_download_wp_debug_log_ajax');
@@ -515,8 +490,9 @@ function bbcs_clear_transients_ajax()
 {
 	check_ajax_referer('botblocker_nonce', 'nonce');
 
-	if (!current_user_can('manage_options')) {
-		wp_send_json_error(['message' => 'Not enough permissions to perform the operation']);
+	//BBCS-MULTISITE
+	if (!current_user_can(bbcs_can_manage())) {
+		wp_send_json_error(['message' => __('Not enough permissions to perform the operation.', 'botblocker-security')]);
 		return;
 	}
 
@@ -525,28 +501,98 @@ function bbcs_clear_transients_ajax()
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	$wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '%\_transient\_%'");
 
-	if (is_multisite()) {
-		// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared and sanitized. No direct unsanitized SQL is executed.
-    	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->query("DELETE FROM {$wpdb->sitemeta} WHERE meta_key LIKE '%\_transient\_%'");
-	}
-
-	wp_send_json_success(['message' => 'All transients have been cleared.']);
+	wp_send_json_success(['message' => __('All transients have been cleared.', 'botblocker-security')]);
 }
 add_action('wp_ajax_bbcs_clear_transients', 'bbcs_clear_transients_ajax');
+
+function bbcs_clear_hits_database()
+{
+	global $wpdb;
+
+	// REVIEWER NOTE: These queries operate only on known internal BotBlocker tables.
+	// No user-provided table or value is interpolated into the SQL.
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+	$suspicious_count = (int) $wpdb->get_var("SELECT COUNT(*) FROM `{$wpdb->bbcs_hits_suspicious}`");
+
+	if ($suspicious_count > 0) {
+		// REVIEWER NOTE: These queries operate only on known internal BotBlocker tables.
+		// No user-provided table or value is interpolated into the SQL.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$cloud_result = $wpdb->query(
+			"INSERT INTO {$wpdb->bbcs_hits_cloud}
+			 SELECT * FROM `{$wpdb->bbcs_hits_suspicious}`"
+		);
+
+		if ($cloud_result === false) {
+			return false;
+		}
+	}
+
+	// REVIEWER NOTE: These are internal plugin tables and contain no user-controlled identifiers.
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+	$hits_result = $wpdb->query("TRUNCATE TABLE `{$wpdb->bbcs_hits}`");
+	if ($hits_result === false) {
+		return false;
+	}
+
+	// REVIEWER NOTE: These are internal plugin tables and contain no user-controlled identifiers.
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+	$suspicious_result = $wpdb->query("TRUNCATE TABLE `{$wpdb->bbcs_hits_suspicious}`");
+	if ($suspicious_result === false) {
+		return false;
+	}
+
+	// REVIEWER NOTE: Counter reset targets the plugin's single counters row.
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+	$counters_result = $wpdb->query(
+		"UPDATE `{$wpdb->bbcs_counters}`
+		 SET `today_hits` = 0,
+		     `today_blocked` = 0,
+		     `total_hits` = 0,
+		     `total_blocked` = 0,
+		     `search_engine_visits` = 0,
+		     `last_update` = NULL"
+	);
+
+	if ($counters_result === false) {
+		return false;
+	}
+
+	bbcs_truncate_daily_summary();
+	bbcs_clear_transients();
+
+	return true;
+}
+
+function bbcs_clear_hits_database_ajax()
+{
+	check_ajax_referer('botblocker_nonce', 'nonce');
+
+	if (!current_user_can(bbcs_can_manage())) {
+		wp_send_json_error(['message' => __('Not enough permissions to perform the operation.', 'botblocker-security')]);
+		return;
+	}
+
+	if (bbcs_clear_hits_database()) {
+		wp_send_json_success(['message' => __('All visitors data has been cleared successfully.', 'botblocker-security')]);
+	}
+
+	wp_send_json_error(['message' => __('Failed to clear visitors data.', 'botblocker-security')]);
+}
+add_action('wp_ajax_bbcs_clear_hits_database', 'bbcs_clear_hits_database_ajax');
 
 function bbcs_flush_rewrite_rules_ajax()
 {
 	check_ajax_referer('botblocker_nonce', 'nonce');
 
-	if (!current_user_can('manage_options')) {
-		wp_send_json_error(['message' => 'Not enough permissions to perform the operation']);
+	if (!current_user_can(bbcs_can_manage())) {
+		wp_send_json_error(['message' => __('Not enough permissions to perform the operation.', 'botblocker-security')]);
 		return;
 	}
 
 	flush_rewrite_rules(true);
 
-	wp_send_json_success(['message' => 'Permalink rules have been flushed successfully.']);
+	wp_send_json_success(['message' => __('Permalink rules have been flushed successfully.', 'botblocker-security')]);
 }
 add_action('wp_ajax_bbcs_flush_rewrite_rules', 'bbcs_flush_rewrite_rules_ajax');
 
@@ -554,30 +600,30 @@ function bbcs_flush_object_cache_ajax()
 {
 	check_ajax_referer('botblocker_nonce', 'nonce');
 
-	if (!current_user_can('manage_options')) {
-		wp_send_json_error(['message' => 'Not enough permissions to perform the operation']);
+	if (!current_user_can(bbcs_can_manage())) {
+		wp_send_json_error(['message' => __('Not enough permissions to perform the operation.', 'botblocker-security')]);
 		return;
 	}
 
 	wp_cache_flush();
 
-	wp_send_json_success(['message' => 'Object cache has been flushed successfully.']);
+	wp_send_json_success(['message' => __('Object cache has been flushed successfully.', 'botblocker-security')]);
 }
 add_action('wp_ajax_bbcs_flush_object_cache', 'bbcs_flush_object_cache_ajax');
 
 function bbcs_apply_security_profile_ajax()
 {
 	check_ajax_referer('botblocker_nonce', 'nonce');
-	if (!current_user_can('manage_options')) {
-		wp_send_json_error(['message' => 'Unauthorized']);
+	if (!current_user_can(bbcs_can_manage())) {
+		wp_send_json_error(['message' => __('Unauthorized.', 'botblocker-security')]);
 	}
 	$mode = isset($_POST['mode']) ? sanitize_key(wp_unslash($_POST['mode'])) : '';
 	if (!in_array($mode, ['light', 'strong', 'full'], true)) {
-		wp_send_json_error(['message' => 'Invalid mode']);
+		wp_send_json_error(['message' => __('Invalid mode.', 'botblocker-security')]);
 	}
 	if ($mode === 'full') {
 		if (!(function_exists('bbcs_isCloudAPIActive') && bbcs_isCloudAPIActive())) {
-			wp_send_json_error(['message' => 'Full profile requires Cloud API connection to be active.']);
+			wp_send_json_error(['message' => __('Full profile requires Cloud API connection to be active.', 'botblocker-security')]);
 		}
 		if (function_exists('bbcs_loadSettingsFull')) {
 			bbcs_loadSettingsFull();
@@ -594,18 +640,14 @@ function bbcs_apply_security_profile_ajax()
 
 	bbcs_resetTransientHealth();
 
-	if (BOTBLOCKER_CACHE_WP) {
-		bbcs_invalidate_wp_cache();
-	}
-
-	wp_send_json_success(['message' => 'Profile applied']);
+	wp_send_json_success(['message' => __('Profile applied.', 'botblocker-security')]);
 }
 add_action('wp_ajax_bbcs_apply_security_profile', 'bbcs_apply_security_profile_ajax');
 
 function bbcs_handle_contact_email() {
 	check_ajax_referer('botblocker_nonce', 'nonce');
-	
-	if (!current_user_can('manage_options')) {
+
+	if (!current_user_can(bbcs_can_manage())) {
 		wp_send_json_error(array('message' => __('Unauthorized', 'botblocker-security')));
 		return;
 	}
@@ -630,10 +672,10 @@ function bbcs_handle_contact_email() {
 		}
 
 		bbcs_send_activation_to_cloud($data);
-		update_option('bbcs_contact_email_collected', 1);
-		wp_send_json_success(array('message' => __('Activation sent successfully!', 'botblocker-security')));
+		bbcs_update_option('bbcs_contact_email_collected', 1);
+		wp_send_json_success(array('message' => __('Activation sent.', 'botblocker-security')));
 	} catch (Exception $e) {
-		wp_send_json_error(array('message' => __('Failed to send activation. Please try again later.', 'botblocker-security')));
+		wp_send_json_error(array('message' => __('Failed to send activation. Try again later.', 'botblocker-security')));
 	}
 }
 add_action('wp_ajax_bbcs_contact_email', 'bbcs_handle_contact_email');

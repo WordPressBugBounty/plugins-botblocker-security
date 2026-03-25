@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                                     <span class="bbcs-label-input"><?php esc_html_e('Type', 'botblocker-security'); ?></span>
                                     <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip"
                                         data-bs-placement="top"
-                                        data-bs-original-title="<?php esc_attr_e('Select the type of rule to apply', 'botblocker-security'); ?>"></i>
+                                        data-bs-original-title="<?php esc_attr_e('Select rule type', 'botblocker-security'); ?>"></i>
                                 </div>
                                 <div class="bbcs_text_input_inner">
                                     <select class="bbcs_select_input_input" id="type" name="type" required>
@@ -49,7 +49,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                                     <span class="bbcs-label-input"><?php esc_html_e('Priority', 'botblocker-security'); ?></span>
                                     <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip"
                                         data-bs-placement="top"
-                                        data-bs-original-title="<?php esc_attr_e('Set the priority of the rule (1-100)', 'botblocker-security'); ?>"></i>
+                                        data-bs-original-title="<?php esc_attr_e('Rule priority (1-100)', 'botblocker-security'); ?>"></i>
                                 </div>
                                 <div class="bbcs_text_input_inner">
                                     <input type="range" class="bbcs_text_input_input" id="priority" name="priority"
@@ -66,7 +66,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                                     <span class="bbcs-label-input"><?php esc_html_e('Data', 'botblocker-security'); ?></span>
                                     <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip"
                                         data-bs-placement="top"
-                                        data-bs-original-title="<?php esc_attr_e('Enter the data for the rule', 'botblocker-security'); ?>"></i>
+                                        data-bs-original-title="<?php esc_attr_e('Rule data', 'botblocker-security'); ?>"></i>
                                 </div>
                                 <div class="bbcs_text_input_inner">
                                     <textarea class="bbcs_text_input_input" id="data" name="data" rows="3"></textarea>
@@ -79,7 +79,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                                     <span class="bbcs-label-input"><?php esc_html_e('Comment', 'botblocker-security'); ?></span>
                                     <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip"
                                         data-bs-placement="top"
-                                        data-bs-original-title="<?php esc_attr_e('Add a comment for this rule', 'botblocker-security'); ?>"></i>
+                                        data-bs-original-title="<?php esc_attr_e('Comment for this rule', 'botblocker-security'); ?>"></i>
                                 </div>
                                 <div class="bbcs_text_input_inner">
                                     <textarea class="bbcs_text_input_input" id="comment" name="comment"
@@ -95,7 +95,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                                     <span class="bbcs-label-input"><?php esc_html_e('Rule', 'botblocker-security'); ?></span>
                                     <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip"
                                         data-bs-placement="top"
-                                        data-bs-original-title="<?php esc_attr_e('Select the action for this rule', 'botblocker-security'); ?>"></i>
+                                        data-bs-original-title="<?php esc_attr_e('Rule action', 'botblocker-security'); ?>"></i>
                                 </div>
                                 <div class="bbcs_text_input_inner">
                                     <select class="bbcs_select_input_input" id="rule" name="rule" required>
@@ -115,7 +115,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                                     <span class="bbcs-label-input"><?php esc_html_e('Expires', 'botblocker-security'); ?></span>
                                     <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip"
                                         data-bs-placement="top"
-                                        data-bs-original-title="<?php esc_attr_e('Set the expiration date and time for this rule', 'botblocker-security'); ?>"></i>
+                                        data-bs-original-title="<?php esc_attr_e('Rule expiration date and time', 'botblocker-security'); ?>"></i>
                                 </div>
                                 <div class="bbcs_text_input_inner">
                                     <input type="datetime-local" class="bbcs_text_input_input" id="expires"

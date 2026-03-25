@@ -25,17 +25,10 @@ class Botblocker_Admin
     {
         $this->register_admin_bar();
     }
-    /**
-     * Register the stylesheets for the admin area.
-     *
-     * @since    1.0.0
-     */
-    public function enqueue_styles()
-    {
-        global $pagenow;
-        $screen = get_current_screen();
 
-        if ($pagenow === 'admin.php' && in_array($screen->id, [
+    private function get_botblocker_screen_ids()
+    {
+        $base_ids = [
             'toplevel_page_bbcs_dashboard',
             'botblocker_page_bbcs_settings',
             'botblocker_page_bbcs_integrations',
@@ -46,7 +39,32 @@ class Botblocker_Admin
             'botblocker_page_bbcs_setup_guide',
             'botblocker_page_bbcs_about',
             'botblocker_page_bbcs_addons'
-        ])) {
+        ];
+
+        $screen_ids = $base_ids;
+        foreach ($base_ids as $id) {
+            $screen_ids[] = $id . '-network';
+        }
+
+        return $screen_ids;
+    }
+
+    private function is_screen($screen_id, $base_id)
+    {
+        return $screen_id === $base_id || $screen_id === $base_id . '-network';
+    }
+
+    /**
+     * Register the stylesheets for the admin area.
+     *
+     * @since    1.0.0
+     */
+    public function enqueue_styles()
+    {
+        global $pagenow;
+        $screen = get_current_screen();
+
+        if ($pagenow === 'admin.php' && in_array($screen->id, $this->get_botblocker_screen_ids())) {
             wp_enqueue_style('google-fonts-poppins', 'https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700&display=swap', [], BOTBLOCKER_VERSION);
             wp_enqueue_style(BOTBLOCKER_SHORT_NAME . '-bootstrap', plugin_dir_url(__FILE__) . 'css/bootstrap/bootstrap.min.css', array(), BOTBLOCKER_VERSION, 'all');
             wp_enqueue_style(BOTBLOCKER_SHORT_NAME . '-theme', plugin_dir_url(__FILE__) . 'css/theme.css', array(), BOTBLOCKER_VERSION, 'all');
@@ -59,7 +77,7 @@ class Botblocker_Admin
 
             wp_enqueue_style(BOTBLOCKER_SHORT_NAME . '-support-component', plugin_dir_url(__FILE__) . 'css/botblocker-support-component.css', array(), BOTBLOCKER_VERSION, 'all');
         }
-        if ($screen->id === 'toplevel_page_bbcs_dashboard') {
+        if ($this->is_screen($screen->id, 'toplevel_page_bbcs_dashboard')) {
             wp_enqueue_style(BOTBLOCKER_SHORT_NAME . '-jsvectormap', plugin_dir_url(__FILE__) . 'css/jsvectormap/jsvectormap.min.css', [], BOTBLOCKER_VERSION);
         }
     }
@@ -75,18 +93,7 @@ class Botblocker_Admin
         $screen = get_current_screen();
         $locale = determine_locale();
 
-        if ($pagenow === 'admin.php' && in_array($screen->id, [
-            'toplevel_page_bbcs_dashboard',
-            'botblocker_page_bbcs_settings',
-            'botblocker_page_bbcs_integrations',
-            'botblocker_page_bbcs_reports',
-            'botblocker_page_bbcs_rules',
-            'botblocker_page_bbcs_tools',
-            'botblocker_page_bbcs_cloud_api',
-            'botblocker_page_bbcs_setup_guide',
-            'botblocker_page_bbcs_about',
-            'botblocker_page_bbcs_addons'
-        ])) {
+        if ($pagenow === 'admin.php' && in_array($screen->id, $this->get_botblocker_screen_ids())) {
             wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-modernizr', plugin_dir_url(__FILE__) . 'js/modernizr/modernizr.min.js', array('jquery'), BOTBLOCKER_VERSION, false);
             wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-bootstrap-js', plugin_dir_url(__FILE__) . 'js/bootstrap/bootstrap.bundle.min.js', array('jquery'), BOTBLOCKER_VERSION, false);
             wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-chartjs', plugin_dir_url(__FILE__) . 'js/chartjs/chart.umd.js', array(), BOTBLOCKER_VERSION, false);
@@ -115,11 +122,11 @@ class Botblocker_Admin
                 )
             ));
 
-            if ($screen->id === 'toplevel_page_bbcs_dashboard' || $screen->id === 'botblocker_page_bbcs_setup_guide') {
+            if ($this->is_screen($screen->id, 'toplevel_page_bbcs_dashboard') || $this->is_screen($screen->id, 'botblocker_page_bbcs_setup_guide')) {
                 wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-health-gauge-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-health-gauge.js', array('jquery', BOTBLOCKER_SHORT_NAME . '-chartjs'), BOTBLOCKER_VERSION, true);
             }
 
-            if ($screen->id === 'botblocker_page_bbcs_reports') {
+            if ($this->is_screen($screen->id, 'botblocker_page_bbcs_reports')) {
                 wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-hits-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-hits.js', array('jquery'), BOTBLOCKER_VERSION, true);
                 wp_localize_script(BOTBLOCKER_SHORT_NAME . '-hits-js', 'botblockerData', array(
                     'ajaxurl' => admin_url('admin-ajax.php'),
@@ -127,7 +134,7 @@ class Botblocker_Admin
                 ));
             }
 
-            if ($screen->id === 'botblocker_page_bbcs_rules') {
+            if ($this->is_screen($screen->id, 'botblocker_page_bbcs_rules')) {
                 wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-rules-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-rules.js', array('jquery'), BOTBLOCKER_VERSION, true);
                 wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-rules-ipv4-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-rules-ipv4.js', array('jquery'), BOTBLOCKER_VERSION, true);
                 wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-rules-ipv6-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-rules-ipv6.js', array('jquery'), BOTBLOCKER_VERSION, true);
@@ -158,15 +165,15 @@ class Botblocker_Admin
                 ));
             }
 
-            if ($screen->id === 'botblocker_page_bbcs_cloud_api') {
+            if ($this->is_screen($screen->id, 'botblocker_page_bbcs_cloud_api')) {
                 wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-cloud-api-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-cloud-api.js', array('jquery'), BOTBLOCKER_VERSION, true);
             }
 
-            if ($screen->id === 'botblocker_page_bbcs_setup_guide') {
+            if ($this->is_screen($screen->id, 'botblocker_page_bbcs_setup_guide')) {
                 wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-chart-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-charts.js', array('jquery'), BOTBLOCKER_VERSION, false);
             }
 
-            if ($screen->id === 'botblocker_page_bbcs_integrations') {
+            if ($this->is_screen($screen->id, 'botblocker_page_bbcs_integrations')) {
                 wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-integrations-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-integrations.js', array('jquery'), BOTBLOCKER_VERSION, true);
                 wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-2fa-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-2fa.js', array('jquery'), BOTBLOCKER_VERSION, true);
                 wp_localize_script(BOTBLOCKER_SHORT_NAME . '-2fa-js', 'botblockerData', array(
@@ -175,25 +182,25 @@ class Botblocker_Admin
                 ));
             }
 
-            if ($screen->id === 'botblocker_page_bbcs_settings') {
+            if ($this->is_screen($screen->id, 'botblocker_page_bbcs_settings')) {
                 wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-settings-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-settings.js', array('jquery'), BOTBLOCKER_VERSION, true);
             }
 
-            if ($screen->id === 'botblocker_page_bbcs_tools') {
+            if ($this->is_screen($screen->id, 'botblocker_page_bbcs_tools')) {
                 wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-tools-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-tools.js', array('jquery'), BOTBLOCKER_VERSION, true);
                 wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-maintenance-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-maintenance.js', array('jquery'), BOTBLOCKER_VERSION, true);
                 wp_localize_script(BOTBLOCKER_SHORT_NAME . '-maintenance-js', 'botblockerData', array(
-                    'adminUrl' => admin_url(),
+                    'adminUrl' => is_network_admin() ? network_admin_url('') : admin_url(''),
                     'ajaxurl' => admin_url('admin-ajax.php'),
                     'nonce' => wp_create_nonce("botblocker_nonce")
                 ));
             }
 
-            if ($screen->id === 'botblocker_page_bbcs_addons') {
+            if ($this->is_screen($screen->id, 'botblocker_page_bbcs_addons')) {
                 wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-addons-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-addons.js', array('jquery'), BOTBLOCKER_VERSION, true);
             }
 
-            if ($screen->id === 'toplevel_page_bbcs_dashboard') {
+            if ($this->is_screen($screen->id, 'toplevel_page_bbcs_dashboard')) {
                 wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-jsvectormap', plugin_dir_url(__FILE__) . 'js/jsvectormap/jsvectormap.js', [], BOTBLOCKER_VERSION, false);
                 wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-jsvectormap-world', plugin_dir_url(__FILE__) . 'js/jsvectormap/maps/world.js', [BOTBLOCKER_SHORT_NAME . '-jsvectormap'], BOTBLOCKER_VERSION, false);
 
@@ -206,7 +213,7 @@ class Botblocker_Admin
                 ));
             }
 
-            if ($screen->id === 'botblocker_page_bbcs_setup_guide') {
+            if ($this->is_screen($screen->id, 'botblocker_page_bbcs_setup_guide')) {
                 wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-setup-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-setup.js', array('jquery'), BOTBLOCKER_VERSION, true);
             }
         }
@@ -214,10 +221,12 @@ class Botblocker_Admin
 
     public function add_admin_menu()
     {
+        $cap = bbcs_can_manage();
+
         add_menu_page(
             'BotBlocker',
             'BotBlocker',
-            'manage_options',
+            $cap,
             'bbcs_dashboard',
             array($this, 'dashboard_page'),
             'dashicons-shield-alt',
@@ -227,9 +236,9 @@ class Botblocker_Admin
         // 1) Dashboard
         add_submenu_page(
             'bbcs_dashboard',
-            'Dashboard',
-            'Dashboard',
-            'manage_options',
+            __('Dashboard', 'botblocker-security'),
+            __('Dashboard', 'botblocker-security'),
+            $cap,
             'bbcs_dashboard',
             array($this, 'dashboard_page')
         );
@@ -237,9 +246,9 @@ class Botblocker_Admin
         // 2) Health Status
         add_submenu_page(
             'bbcs_dashboard',
-            'Health Status',
-            'Health Status',
-            'manage_options',
+            __('Health Status', 'botblocker-security'),
+            __('Health Status', 'botblocker-security'),
+            $cap,
             'bbcs_setup_guide',
             array($this, 'setup_guide_page')
         );
@@ -247,9 +256,9 @@ class Botblocker_Admin
         // 3) Settings
         add_submenu_page(
             'bbcs_dashboard',
-            'Settings',
-            'Settings',
-            'manage_options',
+            __('Settings', 'botblocker-security'),
+            __('Settings', 'botblocker-security'),
+            $cap,
             'bbcs_settings',
             array($this, 'settings_page')
         );
@@ -257,9 +266,9 @@ class Botblocker_Admin
         // 4) Rules
         add_submenu_page(
             'bbcs_dashboard',
-            'Rules',
-            'Rules',
-            'manage_options',
+            __('Rules', 'botblocker-security'),
+            __('Rules', 'botblocker-security'),
+            $cap,
             'bbcs_rules',
             array($this, 'rules_page')
         );
@@ -267,9 +276,9 @@ class Botblocker_Admin
         // 5) Integrations
         add_submenu_page(
             'bbcs_dashboard',
-            'Integrations',
-            'Integrations',
-            'manage_options',
+            __('Integrations', 'botblocker-security'),
+            __('Integrations', 'botblocker-security'),
+            $cap,
             'bbcs_integrations',
             array($this, 'integrations_page')
         );
@@ -277,9 +286,9 @@ class Botblocker_Admin
         // 6) Tools
         add_submenu_page(
             'bbcs_dashboard',
-            'Tools',
-            'Tools',
-            'manage_options',
+            __('Tools', 'botblocker-security'),
+            __('Tools', 'botblocker-security'),
+            $cap,
             'bbcs_tools',
             array($this, 'tools_page')
         );
@@ -287,19 +296,19 @@ class Botblocker_Admin
         // 7) Reports
         add_submenu_page(
             'bbcs_dashboard',
-            'Reports',
-            'Reports',
-            'manage_options',
+            __('Reports', 'botblocker-security'),
+            __('Reports', 'botblocker-security'),
+            $cap,
             'bbcs_reports',
             array($this, 'reports_page')
         );
 
-        // 8) Addons
+        // 8) Add-ons
         add_submenu_page(
             'bbcs_dashboard',
-            'Addons',
-            'Addons',
-            'manage_options',
+            __('Add-ons', 'botblocker-security'),
+            __('Add-ons', 'botblocker-security'),
+            $cap,
             'bbcs_addons',
             array($this, 'addons_page')
         );
@@ -307,9 +316,9 @@ class Botblocker_Admin
         // 9) PRO
         add_submenu_page(
             'bbcs_dashboard',
-            'PRO',
-            'PRO',
-            'manage_options',
+            __('PRO', 'botblocker-security'),
+            __('PRO', 'botblocker-security'),
+            $cap,
             'bbcs_cloud_api',
             array($this, 'cloud_api_page')
         );
@@ -317,9 +326,9 @@ class Botblocker_Admin
         // 10) About
         add_submenu_page(
             'bbcs_dashboard',
-            'About',
-            'About',
-            'manage_options',
+            __('About', 'botblocker-security'),
+            __('About', 'botblocker-security'),
+            $cap,
             'bbcs_about',
             array($this, 'about_page')
         );
@@ -337,7 +346,7 @@ class Botblocker_Admin
         add_menu_page(
             __('Setup Wizard', 'botblocker-security'),
             __('Setup Wizard', 'botblocker-security'),
-            'manage_options',
+            $cap,
             'bbcs_setup_wizard',
             'bbcs_render_setup_wizard',
             '',
@@ -409,10 +418,14 @@ class Botblocker_Admin
 
     public function add_to_admin_bar($wp_admin_bar)
     {
+        if ( is_network_admin() ) {
+            return;
+        }
+
         $wp_admin_bar->add_node([
             'id'    => 'bbcs_admin_bar',
             'title' => '<span class="ab-icon dashicons-shield-alt"></span> BotBlocker',
-            'href'  => admin_url('admin.php?page=bbcs_dashboard'),
+            'href'  => bbcs_admin_page_url('bbcs_dashboard'),
             'meta'  => [
                 'title' => __('Go to BotBlocker Dashboard', 'botblocker-security'),
             ],
@@ -422,14 +435,14 @@ class Botblocker_Admin
             'id'     => 'bbcs_admin_bar_dashboard',
             'parent' => 'bbcs_admin_bar',
             'title'  => __('Dashboard', 'botblocker-security'),
-            'href'   => admin_url('admin.php?page=bbcs_dashboard'),
+            'href'   => bbcs_admin_page_url('bbcs_dashboard'),
         ]);
 
         $wp_admin_bar->add_node([
             'id'     => 'bbcs_admin_bar_settings',
             'parent' => 'bbcs_admin_bar',
             'title'  => __('Settings', 'botblocker-security'),
-            'href'   => admin_url('admin.php?page=bbcs_settings'),
+            'href'   => bbcs_admin_page_url('bbcs_settings'),
         ]);
     }
 
@@ -440,7 +453,7 @@ class Botblocker_Admin
 
     public function plugin_action_links($links)
     {
-        $dashboard_link = '<a href="' . esc_url(admin_url('admin.php?page=bbcs_dashboard')) . '" style="color: #2271b1; font-weight: 600;">' . esc_html__('Dashboard', 'botblocker-security') . '</a>';
+        $dashboard_link = '<a href="' . esc_url(bbcs_admin_page_url('bbcs_dashboard')) . '" style="color: #2271b1; font-weight: 600;">' . esc_html__('Dashboard', 'botblocker-security') . '</a>';
         array_unshift($links, $dashboard_link);
         return $links;
     }

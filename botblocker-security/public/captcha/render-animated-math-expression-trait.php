@@ -62,7 +62,7 @@ trait BBCS_RenderAnimatedMathExpressionTrait {
         return [
             'mode' => 6,
             'params' => [
-                'instructionText' => __("Solve the following:", 'botblocker-security'),
+                'instructionText' => __('Solve the expression:', 'botblocker-security'),
                 'expressionData' => $expressionData,
                 'answers' => $answerButtons
             ]

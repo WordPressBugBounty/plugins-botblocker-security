@@ -22,7 +22,7 @@ $BBCS = BotBlocker::getInstance();
 
 <body>
   <header class="header">
-    <img src="<?php echo esc_url($BBCS->media_logo_botblocker); ?>" alt="BotBlocker Wordpress Plugin" class="logo">
+    <img src="<?php echo esc_url($BBCS->media_logo_botblocker); ?>" alt="BotBlocker WordPress Plugin" class="logo">
   </header>
 
   <div class="content">
@@ -47,7 +47,7 @@ $BBCS = BotBlocker::getInstance();
   </div>
 
   <footer class="footer">
-    <small><a href="https://botblocker.top/" title="BotBlocker plugin for Wordpress" target="_blank">Protected by <b>BotBlocker</b> plugin</a></small>
+    <small><a href="https://botblocker.top/" title="BotBlocker plugin for WordPress" target="_blank">Protected by <b>BotBlocker</b> plugin</a></small>
     <small><a href="https://globus.studio" title="Project by GLOBUS.studio" target="_blank">BotBlocker is <b>GLOBUS.studio</b> project</a></small>
     <small><?php echo esc_html(gmdate('Y')); ?></small>
   </footer>

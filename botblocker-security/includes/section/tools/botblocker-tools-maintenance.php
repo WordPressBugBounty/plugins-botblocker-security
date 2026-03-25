@@ -13,10 +13,10 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 					class="img-fluid bbcs-info-image mb-3">
 
                 <p class="bbcs-info-text">
-                    <?php esc_html_e('The BotBlocker maintenance section provides tools to manage the plugin’s database, temporary files, logs, and other service data. These features help you keep your WordPress site clean, organized, and running efficiently.', 'botblocker-security'); ?>
+                    <?php esc_html_e('Manage the plugin database, temporary files, logs, and service data to keep your site running efficiently.', 'botblocker-security'); ?>
                 </p>
                 <p class="bbcs-info-text">
-                    <?php esc_html_e('You can easily clear outdated logs, remove unnecessary temporary files, and optimize the BotBlocker database. Regular maintenance ensures stable plugin operation and helps prevent potential issues related to data storage.', 'botblocker-security'); ?>
+                    <?php esc_html_e('Clear outdated logs, remove temporary files, and optimize the database. Regular maintenance prevents storage-related issues.', 'botblocker-security'); ?>
                 </p>
 				
 				<hr class="bbcs-info-hr">
@@ -32,38 +32,38 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			<div class="bbcs_settings_button">
 				<button type="button" id="bbcs-reinstall-database" class="mb-1 btn btn-xs btn-danger">
 					<i class="fas fa-sync"></i>
-					<?php esc_html_e('Re-install Database', 'botblocker-security'); ?>
+					<?php esc_html_e('Reinstall Database', 'botblocker-security'); ?>
 				</button>
 				<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"
 					data-bs-placement="top"
-					data-bs-original-title="<?php esc_html_e('Clear all tables of BotBlocker and install initial settings', 'botblocker-security'); ?>"></i>
+					data-bs-original-title="<?php esc_html_e('Reset all BotBlocker tables to default settings', 'botblocker-security'); ?>"></i>
 			</div>
 			<div class="bbcs_settings_button">
 				<button type="button" id="bbcs-db-repair-info" class="mb-1 btn btn-xs btn-default">
 					<i class="fa-solid fa-screwdriver-wrench"></i>
-					<?php esc_html_e('Database repair and optimization', 'botblocker-security'); ?>
+					<?php esc_html_e('Repair and Optimize Database', 'botblocker-security'); ?>
 				</button>
 				<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"
 					data-bs-placement="top"
-					data-bs-original-title="<?php esc_attr_e('Access to the built-in WordPress database repair and optimization feature', 'botblocker-security'); ?>"></i>
+					data-bs-original-title="<?php esc_attr_e('Open WordPress database repair and optimization tool', 'botblocker-security'); ?>"></i>
 			</div>
 			<div class="bbcs_settings_button">
 				<button type="button" id="bbcs-clear-hits-database" class="mb-1 btn btn-xs btn-default">
 					<i class="fa-regular fa-trash-can"></i>
-					<?php esc_html_e('Clear all visitors data', 'botblocker-security'); ?>
+					<?php esc_html_e('Clear All Visitor Data', 'botblocker-security'); ?>
 				</button>
 				<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"
 					data-bs-placement="top"
-					data-bs-original-title="<?php esc_html_e('Clear all visitors and statistics from DB', 'botblocker-security'); ?>"></i>
+					data-bs-original-title="<?php esc_html_e('Delete all visitor records and statistics', 'botblocker-security'); ?>"></i>
 			</div>
 			<div class="bbcs_settings_button">
 				<button type="button" id="bbcs-clear-transients" class="mb-1 btn btn-xs btn-default">
 					<i class="fa-solid fa-broom"></i>
-					<?php esc_html_e('Cleanup of transients', 'botblocker-security'); ?>
+					<?php esc_html_e('Clear transients', 'botblocker-security'); ?>
 				</button>
 				<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"
 					data-bs-placement="top"
-					data-bs-original-title="<?php esc_attr_e('Cleanup of temporary data in the database accumulated during WordPress operation', 'botblocker-security'); ?>"></i>
+					data-bs-original-title="<?php esc_attr_e('Clear expired transients from the database', 'botblocker-security'); ?>"></i>
 			</div>
 			
 			<h3 class="bbcs_settings_h3"><?php esc_html_e('Features', 'botblocker-security'); ?></h3>
@@ -75,7 +75,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 				</button>
 				<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"
 					data-bs-placement="top"
-					data-bs-original-title="<?php esc_attr_e('Resets all visitor cookies — all users will be required to go through verification again', 'botblocker-security'); ?>"></i>
+					data-bs-original-title="<?php esc_attr_e('Resets all visitor cookies — visitors must re-verify', 'botblocker-security'); ?>"></i>
 			</div>
 
 			<div class="bbcs_settings_button">
@@ -91,7 +91,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			<div class="bbcs_settings_button">
 				<button type="button" id="bbcs-flush-object-cache" class="mb-1 btn btn-xs btn-default">
 					<i class="fa-solid fa-memory"></i>
-					<?php esc_html_e('Object cache cleanup', 'botblocker-security'); ?>
+					<?php esc_html_e('Clear Object Cache', 'botblocker-security'); ?>
 				</button>
 				<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"
 					data-bs-placement="top"

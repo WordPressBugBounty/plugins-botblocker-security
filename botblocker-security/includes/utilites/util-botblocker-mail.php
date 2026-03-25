@@ -14,19 +14,19 @@ function bbcs_get_email($user_id)
 function bbcs_getDisableURL()
 {
     $BBCS = BotBlocker::getInstance();
-    return BOTBLOCKER_SITE_URL . '/?' . $BBCS->settings->secret_botblocker_get_param . '=' . $BBCS->action_disable;
+    return bbcs_current_site_url() . '/?' . $BBCS->settings->secret_botblocker_get_param . '=' . $BBCS->action_disable; //BBCS-MULTISITE
 }
 
 function bbcs_getOffURL()
 {
     $BBCS = BotBlocker::getInstance();
-    return BOTBLOCKER_SITE_URL . '/?' . $BBCS->settings->secret_botblocker_get_param . '=' . $BBCS->action_off;
+    return bbcs_current_site_url() . '/?' . $BBCS->settings->secret_botblocker_get_param . '=' . $BBCS->action_off; //BBCS-MULTISITE
 }
 
 function bbcs_getOnURL()
 {
     $BBCS = BotBlocker::getInstance();
-    return BOTBLOCKER_SITE_URL . '/?' . $BBCS->settings->secret_botblocker_get_param . '=' . $BBCS->action_on;
+    return bbcs_current_site_url() . '/?' . $BBCS->settings->secret_botblocker_get_param . '=' . $BBCS->action_on; //BBCS-MULTISITE
 }
 
 function bbcs_sendAdminLinksEmail()
@@ -66,7 +66,7 @@ function bbcs_sendAdminLinksEmail()
 
     $headers = [
         'Content-Type: text/html; charset=UTF-8',
-        'From: BotBlocker <no-reply@' . wp_parse_url(BOTBLOCKER_SITE_URL, PHP_URL_HOST) . '>'
+        'From: BotBlocker <no-reply@' . wp_parse_url(bbcs_current_site_url(), PHP_URL_HOST) . '>' //BBCS-MULTISITE
     ];
 
     return wp_mail($admin_email, $subject, $message, $headers);
@@ -101,7 +101,7 @@ function bbcs_send_expiration_email($message, $expired = false) {
 
     $headers = [
         'Content-Type: text/html; charset=UTF-8',
-        'From: BotBlocker <no-reply@' . wp_parse_url(BOTBLOCKER_SITE_URL, PHP_URL_HOST) . '>'
+        'From: BotBlocker <no-reply@' . wp_parse_url(bbcs_current_site_url(), PHP_URL_HOST) . '>' //BBCS-MULTISITE
     ];
 
     $email_sent = wp_mail($admin_email, $subject, $message, $headers);

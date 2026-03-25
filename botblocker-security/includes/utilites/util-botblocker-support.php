@@ -46,7 +46,7 @@ class BBCS_Support_Button {
                         
                         <div class="bbcs-form-group">
                             <label for="bbcs-question"><?php echo esc_html__('Question', 'botblocker-security'); ?></label>
-                            <textarea id="bbcs-question" name="question" rows="4" required placeholder="<?php echo esc_attr__('Describe your question', 'botblocker-security'); ?>"></textarea>
+                            <textarea id="bbcs-question" name="question" rows="4" required placeholder="<?php echo esc_attr__('Describe your issue', 'botblocker-security'); ?>"></textarea>
                         </div>
 
                         <button type="submit" class="bbcs-submit-btn"><?php echo esc_html__('Send', 'botblocker-security'); ?></button>
@@ -111,11 +111,11 @@ class BBCS_Support_Button {
         $question = isset( $_POST['question'] ) ? sanitize_textarea_field( wp_unslash( $_POST['question'] ) ) : '';
         
         if (empty($name) || empty($email) || empty($question)) {
-            wp_send_json_error(array('message' => __('All fields are required', 'botblocker-security')));
+            wp_send_json_error(array('message' => __('All fields are required.', 'botblocker-security')));
         }
 
         if (!is_email($email)) {
-            wp_send_json_error(array('message' => __('Invalid email address', 'botblocker-security')));
+            wp_send_json_error(array('message' => __('Invalid email address.', 'botblocker-security')));
         }
 
         $data = array(
@@ -134,7 +134,7 @@ class BBCS_Support_Button {
             wp_send_json_error( array( 'message' => __( 'Sending failed. Please try again later.', 'botblocker-security' ) ) );
         }
 
-        wp_send_json_success( array( 'message' => __( 'Your request has been sent successfully!', 'botblocker-security' ) ) );
+        wp_send_json_success( array( 'message' => __( 'Your message has been sent.', 'botblocker-security' ) ) );
     }
 }
 

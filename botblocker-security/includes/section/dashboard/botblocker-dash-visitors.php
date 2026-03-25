@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
         <div class="card-actions">
             <a href="<?php echo esc_url($BBCSA->pages_reports); ?>#full" class="bbcs-icon-button bbcs-card-action"
                 data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top"
-                data-bs-original-title="Full events report">
+                data-bs-original-title="<?php esc_attr_e('Full events report', 'botblocker-security'); ?>">
                 <i class="fa-solid fa-chart-line"></i>
             </a>
         </div>

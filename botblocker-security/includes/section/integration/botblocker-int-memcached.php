@@ -12,10 +12,10 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 					alt="<?php esc_attr_e('Memcached', 'botblocker-security'); ?>"
 					class="img-fluid bbcs-info-image mb-3">				
                     <p class="bbcs-info-text">
-					<?php esc_html_e('Memcached integration offers distributed memory caching for security data and visitor analytics. This high-performance caching system reduces database queries and improves overall plugin performance on busy websites.', 'botblocker-security'); ?>
+					<?php esc_html_e('Memcached provides distributed memory caching for security data and visitor analytics, reducing database queries on busy sites.', 'botblocker-security'); ?>
 				</p>
 				<p class="bbcs-info-text">
-					<?php esc_html_e('Set up your Memcached server connection details and cache key prefixes to ensure proper data organization. Effective caching strategies help maintain fast response times even during traffic spikes and security events.', 'botblocker-security'); ?>
+					<?php esc_html_e('Configure Memcached server details and cache key prefixes for proper data organization.', 'botblocker-security'); ?>
 				</p>
 				<hr class="bbcs-info-hr">
 				<div class="bbcs-info-footer">
@@ -35,7 +35,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                     <?php checked(1, isset($bbcs_settings['memcached_enable']) ? $bbcs_settings['memcached_enable'] : 1); ?>>
                     <span class="bbcs_label_input_checkbox"><?php esc_html_e('Enable Memcached counters', 'botblocker-security'); ?></span>
                 </div>
-                <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e('Enable Memcached for caching security counters and visitor data. Improves performance by reducing database queries for high-traffic websites.', 'botblocker-security'); ?>">
+                <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e('Cache security counters and visitor data in Memcached instead of the database.', 'botblocker-security'); ?>">
                 </i>
             </div>
 

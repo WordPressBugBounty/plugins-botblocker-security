@@ -13,10 +13,10 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 					class="img-fluid bbcs-info-image mb-3">				
 					
 				<p class="bbcs-info-text">
-					<?php esc_html_e('Our technical support team is always ready to help you with the installation and configuration of the BotBlocker plugin. Whether you are setting up the plugin for the first time or need assistance with advanced features, our experts will guide you through every step and answer all your questions.', 'botblocker-security'); ?>
+					<?php esc_html_e('Our support team can help with BotBlocker installation and configuration.', 'botblocker-security'); ?>
 				</p>
 				<p class="bbcs-info-text">
-					<?php esc_html_e('In addition to standard support, our managers and developers are available to assist you with any issues related to PHP development and WordPress integration. We are committed to providing fast and effective solutions, so you can focus on growing your website with confidence.', 'botblocker-security'); ?>
+					<?php esc_html_e('Our developers can also help with PHP development and WordPress integration issues.', 'botblocker-security'); ?>
 				</p>
 
 				<hr class="bbcs-info-hr">

@@ -57,7 +57,6 @@ public function check_secret_parameter() : bool
     return false;
 }
 
-
     public function check_path_rules() : bool
     {
         foreach ($this->bbcs_path as $bbcs_line => $bbcs_sign) {
@@ -84,6 +83,7 @@ public function check_secret_parameter() : bool
         return false;
     }
 
+    /*
     public function check_white_bot() : bool
     {
         foreach ($this->bbcs_se as $bbcs_line => $bbcs_sign) {
@@ -122,6 +122,49 @@ public function check_secret_parameter() : bool
         }
         return false;
     }
+    */
+
+    public function check_white_bot() : bool
+    {
+        foreach ($this->bbcs_se as $bbcs_line => $bbcs_sign) {
+            if (stripos($this->useragent, $bbcs_line) === false) {
+                continue;
+            }
+
+            $escaped_line = esc_sql($bbcs_line);
+            $rule = $this->bbcs_rule[$bbcs_line];
+
+            if ($rule === 'block') {
+                $this->redirect_to_block(6, "1 - <b>block</b> by user-agent: {$escaped_line}");
+                break;
+            } elseif ($rule === 'dark') {
+                $this->redirect_to_dark("1 - <b>dark</b> by user-agent: {$escaped_line}");
+                break;
+            } elseif ($rule === 'gray') {
+                $this->set_gray_status("1 - <b>gray</b> by user-agent: {$escaped_line}");
+                break;
+            } elseif ($rule === 'allow') {
+                if (bbcs_testWhiteBot($this->ip, $bbcs_sign, $this->time, $this->settings->ptrcache_time) === true) {
+                    if (!in_array('.', $bbcs_sign, true)) {
+                        bbcs_storePTRrule();
+                    }
+                    $this->result_of_action = "Legal bot detected: {$escaped_line}";
+                    $this->white_bot = $escaped_line;
+                    $this->visitorType = self::VISITOR_LEGALBOT;
+                } else {
+                    $this->redirect_to_denied(7, "Fake bot detected: {$escaped_line}");
+                }
+                break;
+            }
+        }
+
+        if ($this->visitorType == self::VISITOR_LEGALBOT) {
+            bbcs_storeData(null, 5);
+            bbcs_process_hit(5);
+            return true;
+        }
+        return false;
+    }
 
     public function check_rules_database() : bool
     {
@@ -129,99 +172,84 @@ public function check_secret_parameter() : bool
         $rule = null;
         $search = null;
         $rule_data = null;
+        $bbcs_search = array();
+        if (!empty($this->useragent)) {
+            $bbcs_search[] = $wpdb->prepare("search LIKE %s", '%' . $wpdb->esc_like('useragent=' . $this->useragent) . '%');
+        }
+        if (!empty($this->country)) {
+            $bbcs_search[] = $wpdb->prepare("search LIKE %s", '%' . $wpdb->esc_like('country=' . $this->country) . '%');
+        }
+        if (!empty($this->lang)) {
+            $bbcs_search[] = $wpdb->prepare("search LIKE %s", '%' . $wpdb->esc_like('lang=' . $this->lang) . '%');
+        }
+        if (!empty($this->page)) {
+            $bbcs_search[] = $wpdb->prepare("search LIKE %s", '%' . $wpdb->esc_like('page=' . $this->page) . '%');
+        }
+        if (!empty($this->refhost)) {
+            $bbcs_search[] = $wpdb->prepare("search LIKE %s", '%' . $wpdb->esc_like('referer=' . $this->refhost) . '%');
+        }
+        if (!empty($this->ym_uid)) {
+            $bbcs_search[] = $wpdb->prepare("search LIKE %s", '%' . $wpdb->esc_like('ym_uid=' . $this->ym_uid) . '%');
+        }
+        if (!empty($this->ga_uid)) {
+            $bbcs_search[] = $wpdb->prepare("search LIKE %s", '%' . $wpdb->esc_like('ga_uid=' . $this->ga_uid) . '%');
+        }
+        $this->ptr_arr = explode('.', $this->ptr);
+        $this->ptr_arr = array_reverse($this->ptr_arr, false);
+        if (isset($this->ptr_arr[1])) {
+            $bbcs_search[] = $wpdb->prepare("search LIKE %s", '%' . $wpdb->esc_like('ptr=' . $this->ptr_arr[1] . '.' . $this->ptr_arr[0]) . '%');
+        }
+        if (isset($this->ptr_arr[2])) {
+            $bbcs_search[] = $wpdb->prepare("search LIKE %s", '%' . $wpdb->esc_like('ptr=' . $this->ptr_arr[2] . '.' . $this->ptr_arr[1] . '.' . $this->ptr_arr[0]) . '%');
+        }
+        if (!empty($this->asname)) {
+            $bbcs_search[] = $wpdb->prepare("search LIKE %s", '%' . $wpdb->esc_like('asname=' . $this->asname) . '%');
+        }
+        if (!empty($this->asnum)) {
+            $bbcs_search[] = $wpdb->prepare("search LIKE %s", '%' . $wpdb->esc_like('asnum=' . $this->asnum) . '%');
+        }
+        if (!empty($this->uri)) {
+            $bbcs_search[] = $wpdb->prepare("search LIKE %s", '%' . $wpdb->esc_like('uri=' . $this->uri) . '%');
+        }
+        if (!empty($_SERVER['SCRIPT_NAME'])) {
+            $bbcs_search[] = $wpdb->prepare(
+                "search LIKE %s",
+                '%' . $wpdb->esc_like('scriptname=' . trim(wp_strip_all_tags(wp_unslash($_SERVER['SCRIPT_NAME'])))) . '%'
+            );
+        }
+        if (!empty($this->http_accept)) {
+            $bbcs_search[] = $wpdb->prepare("search LIKE %s", '%' . $wpdb->esc_like('httpaccept=' . trim(wp_strip_all_tags($this->http_accept))) . '%');
+        }
 
-        $found = false;
-        if (BOTBLOCKER_CACHE_WP) {
-            $cache_key = 'bbcs_rules' . bbcs_get_wp_cache_version() . md5($this->cid);
-    
-            $cached_result = wp_cache_get($cache_key, 'botblocker-security', false, $found);
-            if ($cached_result !== false && is_array($cached_result)) {
-                $rule = $cached_result['rule'];
-                $search = isset($cached_result['search']) ? $cached_result['search'] : null;
-                $rule_data = $cached_result;
-            } else if ($cached_result === 'no_match') {
-                return false;
+        $bbcs_test_visitor = [];
+        if (!empty($bbcs_search)) {
+            $query = "SELECT * FROM `{$wpdb->bbcs_rules}` WHERE " . implode(' OR ', $bbcs_search) . " ORDER BY priority ASC";
+            // REVIEWER NOTE: Dynamic WHERE clause is built using $wpdb->prepare() for each filter to ensure all values are properly escaped.
+            // The final query string is assembled from individually prepared clauses. This pattern is secure and prevents SQL injection.
+            // Suppressing the warning with phpcs:ignore is required for dynamic filtering in WordPress plugins.
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter
+            $bbcs_test_visitor = $wpdb->get_results($query, ARRAY_A);
+
+            // DEBUG: временная диагностика — раскомментировать для отладки check_rules_database
+            // error_log('[BBCS DEBUG check_rules_database] SQL: ' . $query);
+            // error_log('[BBCS DEBUG check_rules_database] Rows found: ' . count($bbcs_test_visitor));
+            // error_log('[BBCS DEBUG check_rules_database] DB error: ' . $wpdb->last_error);
+            // if (!empty($bbcs_test_visitor)) { error_log('[BBCS DEBUG check_rules_database] First row: ' . wp_json_encode($bbcs_test_visitor[0])); }
+        }
+
+        foreach ($bbcs_test_visitor as $echo) {
+            if ($echo['disable'] == '0') {
+                $rule = $echo['rule'];
+                $search = isset($echo['search']) ? $echo['search'] : null;
+                $rule_data = $echo;
+
+                break;
             }
         }
 
-        if ($found === null) {
-            $bbcs_search = array();
-            if (!empty($this->useragent)) {
-                $bbcs_search[] = $wpdb->prepare("search LIKE %s", '%useragent=' . $this->useragent . '%');
-            }
-            if (!empty($this->country)) {
-                $bbcs_search[] = $wpdb->prepare("search LIKE %s", '%country=' . $this->country . '%');
-            }
-            if (!empty($this->lang)) {
-                $bbcs_search[] = $wpdb->prepare("search LIKE %s", '%lang=' . $this->lang . '%');
-            }
-            if (!empty($this->page)) {
-                $bbcs_search[] = $wpdb->prepare("search LIKE %s", '%page=' . $this->page . '%');
-            }
-            if (!empty($this->refhost)) {
-                $bbcs_search[] = $wpdb->prepare("search LIKE %s", '%referer=' . $this->refhost . '%');
-            }
-            if (!empty($this->ym_uid)) {
-                $bbcs_search[] = $wpdb->prepare("search LIKE %s", '%ym_uid=' . $this->ym_uid . '%');
-            }
-            if (!empty($this->ga_uid)) {
-                $bbcs_search[] = $wpdb->prepare("search LIKE %s", '%ga_uid=' . $this->ga_uid . '%');
-            }
-            $this->ptr_arr = explode('.', $this->ptr);
-            $this->ptr_arr = array_reverse($this->ptr_arr, false);
-            if (isset($this->ptr_arr[1])) {
-                $bbcs_search[] = $wpdb->prepare("search LIKE %s", '%ptr=' . $this->ptr_arr[1] . '.' . $this->ptr_arr[0] . '%');
-            }
-            if (isset($this->ptr_arr[2])) {
-                $bbcs_search[] = $wpdb->prepare("search LIKE %s", '%ptr=' . $this->ptr_arr[2] . '.' . $this->ptr_arr[1] . '.' . $this->ptr_arr[0] . '%');
-            }
-            if (!empty($this->asname)) {
-                $bbcs_search[] = $wpdb->prepare("search LIKE %s", '%asname=' . $this->asname . '%');
-            }
-            if (!empty($this->asnum)) {
-                $bbcs_search[] = $wpdb->prepare("search LIKE %s", '%asnum=' . $this->asnum . '%');
-            }
-            if (!empty($this->uri)) {
-                $bbcs_search[] = $wpdb->prepare("search LIKE %s", '%uri=' . $this->uri . '%');
-            }
-            if (!empty($_SERVER['SCRIPT_NAME'])) { 
-                $bbcs_search[] = $wpdb->prepare(
-                    "search LIKE %s",
-                    '%scriptname=' . trim(wp_strip_all_tags(wp_unslash($_SERVER['SCRIPT_NAME']))) . '%'
-                );
-            }
-            if (!empty($this->http_accept)) {
-                $bbcs_search[] = $wpdb->prepare("search LIKE %s", '%httpaccept=' . trim(wp_strip_all_tags($this->http_accept)) . '%');
-            }
+        if ($rule === null) {
 
-            $bbcs_test_visitor = [];
-            if (!empty($bbcs_search)) {
-                $query = "SELECT * FROM `{$wpdb->bbcs_rules}` WHERE " . implode(' OR ', $bbcs_search) . " ORDER BY priority ASC";
-                // REVIEWER NOTE: Dynamic WHERE clause is built using $wpdb->prepare() for each filter to ensure all values are properly escaped.
-                // The final query string is assembled from individually prepared clauses. This pattern is secure and prevents SQL injection.
-                // Suppressing the warning with phpcs:ignore is required for dynamic filtering in WordPress plugins.
-                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
-                $bbcs_test_visitor = $wpdb->get_results($query, ARRAY_A);
-            }
-
-            foreach ($bbcs_test_visitor as $echo) {
-                if ($echo['disable'] == '0') {
-                    $rule = $echo['rule'];
-                    $search = isset($echo['search']) ? $echo['search'] : null;
-                    $rule_data = $echo;
-                    if (BOTBLOCKER_CACHE_WP) {
-                        wp_cache_set($cache_key, $echo, 'botblocker-security', BOTBLOCKER_CACHE_RULES_CHECK_TIME);
-                    }
-                    break;
-                }
-            }
-
-            if ($rule === null) {
-                if (BOTBLOCKER_CACHE_WP) {
-                    wp_cache_set($cache_key, 'no_match', 'botblocker-security', BOTBLOCKER_CACHE_RULES_CHECK_TIME);
-                }
-                return false;
-            }
+            return false;
         }
 
         if ($rule == 'allow') {
@@ -241,21 +269,13 @@ public function check_secret_parameter() : bool
 
     public function check_ip_rules() : bool {
         global $wpdb;
+        $table_name = $this->ip_version == 4 ? $wpdb->bbcs_ipv4rules : $wpdb->bbcs_ipv6rules;
 
-        $found = false;
-        if (BOTBLOCKER_CACHE_WP) {
-            $cache_key = 'bbcs_ip_rules' . bbcs_get_wp_cache_version() . md5($this->cid);
-            $bbcs_ip_test = wp_cache_get($cache_key, 'botblocker-security', false, $found);
-        }
-        
-        if ($found === false) {
-            $table_name = $this->ip_version == 4 ? $wpdb->bbcs_ipv4rules : $wpdb->bbcs_ipv6rules;
-    
-            if( $this->ip_version == 4 ) {
-                // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-                $bbcs_ip_test = $wpdb->get_row(
-                    $wpdb->prepare(
+        if( $this->ip_version == 4 ) {
+            // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $bbcs_ip_test = $wpdb->get_row(
+                $wpdb->prepare(
                         "SELECT * FROM `{$wpdb->bbcs_ipv4rules}` WHERE disable = %d AND ip1 <= %s AND ip2 >= %s ORDER BY priority ASC",
                         0,
                         $this->ipnum,
@@ -263,11 +283,11 @@ public function check_secret_parameter() : bool
                     ),
                     ARRAY_A
                 );
-            } else {
-                // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-                $bbcs_ip_test = $wpdb->get_row(
-                    $wpdb->prepare(
+        } else {
+            // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $bbcs_ip_test = $wpdb->get_row(
+                $wpdb->prepare(
                         "SELECT * FROM `{$wpdb->bbcs_ipv6rules}` WHERE disable = %d AND ip1 <= %s AND ip2 >= %s ORDER BY priority ASC",
                         0,
                         $this->ipnum,
@@ -275,24 +295,15 @@ public function check_secret_parameter() : bool
                     ),
                     ARRAY_A
                 );
-            }
-
-            if (BOTBLOCKER_CACHE_WP && $bbcs_ip_test !== null) {
-                wp_cache_set($cache_key, $bbcs_ip_test, 'botblocker-security', BOTBLOCKER_CACHE_RULES_CHECK_TIME);
-            }
         }
 
         if ( $bbcs_ip_test ) {
             if ( $bbcs_ip_test['expires'] < $this->time ) {
                 // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching
                 $wpdb->delete( $table_name, array( 'id' => $bbcs_ip_test['id'] ) );
                 $bbcs_ip_test['rule'] = 'gray';
-                
-                if (BOTBLOCKER_CACHE_WP) {
-                    $cache_key = 'bbcs_ip_rules' . bbcs_get_wp_cache_version() . md5($this->cid);
-                    wp_cache_delete($cache_key, 'botblocker-security');
-                }
+
             }
             if ( $bbcs_ip_test['rule'] == 'allow' ) {
                 $this->visitorType     = self::VISITOR_HUMAN;
@@ -322,30 +333,15 @@ public function check_secret_parameter() : bool
 
         return false;
     }
-    
+
     public function check_last_rule() : bool
-    { 
-        $cache_key = 'bbcs_last_rule' . bbcs_get_wp_cache_version() . md5($this->cid);
+    {
         $rule = null;
         $search = null;
 
-        $found = false;
-        if (BOTBLOCKER_CACHE_WP) {
-            $cached_result = wp_cache_get($cache_key, 'botblocker-security', false, $found);
-            if ($cached_result !== false && is_array($cached_result)) {
-                $rule = $cached_result['rule'];
-                $search = isset($cached_result['search']) ? $cached_result['search'] : 'LAST RULE';
-            }
-        }
-
-        if ($found === false) {
-            if ($this->settings->last_rule != '') {
-                $rule = $this->settings->last_rule;
-                $search = 'LAST RULE';
-                if (BOTBLOCKER_CACHE_WP) {
-                    wp_cache_set($cache_key, ['rule' => $rule, 'search' => $search], 'botblocker-security', BOTBLOCKER_CACHE_RULES_CHECK_TIME);
-                }
-            }
+        if ($this->settings->last_rule != '') {
+            $rule = $this->settings->last_rule;
+            $search = 'LAST RULE';
         }
 
         if ($rule == 'allow') {
@@ -364,7 +360,10 @@ public function check_secret_parameter() : bool
 
     public function allow_access($echo) : bool
     {
-        $this->set_allow_cookie_uid(); 
+        if (empty($this->uid)) {
+            $this->uid = $this->generate_uid();
+        }
+        $this->set_allow_cookie_uid();
         $this->visitorType = self::VISITOR_HUMAN;
         if ($this->settings->botblocker_log_allow == 1) {
             $search = isset($echo['search']) ? esc_sql($echo['search']) : BOTBLOCKER_EMPTY;
@@ -376,19 +375,12 @@ public function check_secret_parameter() : bool
 
     public function is_whitelisted_ip() : bool {
         global $wpdb;
-
-        $found = false;
-        if (BOTBLOCKER_CACHE_WP) {
-            $cache_key = 'bbcs_whitelist' . bbcs_get_wp_cache_version() . md5($this->cid . '_' . $this->ip_version);
-            $bbcs_ip_test = wp_cache_get($cache_key, 'botblocker-security', false, $found);
-        }
-
-        if ($found === false) {
-            if($this->ip_version == 4) {
-                // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-                $bbcs_ip_test = $wpdb->get_row(
-                    $wpdb->prepare(
+        
+        if($this->ip_version == 4) {
+            // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $bbcs_ip_test = $wpdb->get_row(
+                $wpdb->prepare(
                         "SELECT * FROM `{$wpdb->bbcs_ipv4rules}` WHERE disable = %d AND ip1 <= %s AND ip2 >= %s ORDER BY priority ASC",
                         0,
                         $this->ipnum,
@@ -396,11 +388,11 @@ public function check_secret_parameter() : bool
                     ),
                     ARRAY_A
                 );
-            } else {
-                // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-                $bbcs_ip_test = $wpdb->get_row(
-                    $wpdb->prepare(
+        } else {
+            // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $bbcs_ip_test = $wpdb->get_row(
+                $wpdb->prepare(
                         "SELECT * FROM `{$wpdb->bbcs_ipv6rules}` WHERE disable = %d AND ip1 <= %s AND ip2 >= %s ORDER BY priority ASC",
                         0,
                         $this->ipnum,
@@ -408,10 +400,6 @@ public function check_secret_parameter() : bool
                     ),
                     ARRAY_A
                 );
-            }
-            if (BOTBLOCKER_CACHE_WP) {
-                wp_cache_set($cache_key, $bbcs_ip_test, 'botblocker-security', BOTBLOCKER_CACHE_RULES_CHECK_TIME);
-            }
         }
 
         if (

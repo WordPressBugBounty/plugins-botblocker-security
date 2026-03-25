@@ -5,7 +5,7 @@ $bbcs_has_cloud_api = function_exists('bbcs_isCloudAPIActive') && bbcs_isCloudAP
 $bbcs_cloud_api_url = isset($BBCSA) && !empty($BBCSA->pages_cloud_api ?? '') ? esc_url($BBCSA->pages_cloud_api) : 'https://botblocker.top/pricing/';
 
 ?>
-<h3 class="bbcs_guide_h3"><?php esc_html_e('Pro features','botblocker-security'); ?></h3>
+<h3 class="bbcs_guide_h3"><?php esc_html_e('PRO Features','botblocker-security'); ?></h3>
 <hr class="bbcs-guide-hr">
 <div class="bbcs-guide-row row g-3 align-items-stretch mb-4">
   <div class="col-md-6 "> <!--mx-auto -->
@@ -23,18 +23,18 @@ $bbcs_cloud_api_url = isset($BBCSA) && !empty($BBCSA->pages_cloud_api ?? '') ? e
           <?php echo $bbcs_has_cloud_api ? esc_html__('Active','botblocker-security') : esc_html__('Not Active','botblocker-security'); ?>
         </span>
       </div>
-      <p class="small mb-3"><?php esc_html_e('Monthly / annual subscription. Continuous access to cloud intelligence & premium ecosystem','botblocker-security'); ?></p>
+      <p class="small mb-3"><?php esc_html_e('Monthly or annual subscription with cloud intelligence and premium features.','botblocker-security'); ?></p>
         <ul class="bbcs-guide-ul small ps-3 mb-3 bbcs-feature-list">
-          <li class="bbcs-guide-li"><?php esc_html_e('Real-time cloud threat verification (bots, bad ASN, dynamic proxies)','botblocker-security'); ?></li>
-          <li class="bbcs-guide-li"><?php esc_html_e('Advanced proxy / VPN / TOR network analysis','botblocker-security'); ?></li>
-          <li class="bbcs-guide-li"><?php esc_html_e('Extended heuristic & behavioral fingerprint rules','botblocker-security'); ?></li>
-          <li class="bbcs-guide-li"><?php esc_html_e('Hide admin login URL (critical security feature)','botblocker-security'); ?></li>
-          <li class="bbcs-guide-li"><?php esc_html_e('Early initialization for filtering before WordPress loads','botblocker-security'); ?></li>
-          <li class="bbcs-guide-li"><?php esc_html_e('WordPress optimization & speedup features','botblocker-security'); ?></li>
-          <li class="bbcs-guide-li"><?php esc_html_e('Continuous signature & AI model updates','botblocker-security'); ?></li>
-          <li class="bbcs-guide-li"><?php esc_html_e('Priority & faster support SLA','botblocker-security'); ?></li>
-          <li class="bbcs-guide-li"><?php esc_html_e('Access to all official BotBlocker add-ons','botblocker-security'); ?></li>
-          <li class="bbcs-guide-li"><?php esc_html_e('And much more...','botblocker-security'); ?></li>
+          <li class="bbcs-guide-li"><?php esc_html_e('Real-time cloud threat checks (bots, bad ASN, dynamic proxies)','botblocker-security'); ?></li>
+          <li class="bbcs-guide-li"><?php esc_html_e('Proxy, VPN, and Tor detection','botblocker-security'); ?></li>
+          <li class="bbcs-guide-li"><?php esc_html_e('Extended heuristic and behavioral rules','botblocker-security'); ?></li>
+          <li class="bbcs-guide-li"><?php esc_html_e('Hide admin login URL','botblocker-security'); ?></li>
+          <li class="bbcs-guide-li"><?php esc_html_e('Early init: filtering before WordPress loads','botblocker-security'); ?></li>
+          <li class="bbcs-guide-li"><?php esc_html_e('WordPress speed optimization','botblocker-security'); ?></li>
+          <li class="bbcs-guide-li"><?php esc_html_e('Automatic signature and AI model updates','botblocker-security'); ?></li>
+          <li class="bbcs-guide-li"><?php esc_html_e('Priority support SLA','botblocker-security'); ?></li>
+          <li class="bbcs-guide-li"><?php esc_html_e('All official BotBlocker add-ons','botblocker-security'); ?></li>
+          <li class="bbcs-guide-li"><?php esc_html_e('And more','botblocker-security'); ?></li>
         </ul>
       <div class="mt-auto d-flex flex-column gap-2">
         <?php if ( ! $bbcs_has_cloud_api ) : ?>
@@ -49,14 +49,14 @@ $bbcs_cloud_api_url = isset($BBCSA) && !empty($BBCSA->pages_cloud_api ?? '') ? e
                 </a>
           </div>
         <?php else : ?>
-          <div class="alert alert-success py-2 px-3 small mb-0"><i class="fa-solid fa-circle-check me-1"></i><?php esc_html_e('Your Cloud API is active. Enjoy full protection.','botblocker-security'); ?></div>
+          <div class="alert alert-success py-2 px-3 small mb-0"><i class="fa-solid fa-circle-check me-1"></i><?php esc_html_e('Cloud API is active. Full protection enabled.','botblocker-security'); ?></div>
         <?php endif; ?>
       </div>
     </div>
   </div>
   <div class="col-12 mt-2">
     <div class="small text-muted fst-italic px-1">
-      <i class="fa-regular fa-circle-question me-1"></i><?php esc_html_e('Experience extended protection: Cloud API keeps your site secure with continuous intelligence and automation.','botblocker-security'); ?>
+      <i class="fa-regular fa-circle-question me-1"></i><?php esc_html_e('Cloud API provides extended protection with continuous threat intelligence and automation.','botblocker-security'); ?>
     </div>
   </div>
 </div>

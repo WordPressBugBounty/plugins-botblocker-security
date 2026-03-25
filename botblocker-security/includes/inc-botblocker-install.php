@@ -9,23 +9,12 @@ include_once BOTBLOCKER_DIR . 'includes/install/botblocker-install-migration.php
 
 function bbcs_check_install()
 {
-	$upload_dir = bbcs_get_protected_upload_dir();
-	if ($upload_dir === null) {
-		$upload_dir = bbcs_create_protected_upload_dir();
-	}
+	$upload_dir = bbcs_uploads_dir();
 
-	if (!defined('BOTBLOCKER_UPLOADS_DIR')) {
-		define('BOTBLOCKER_UPLOADS_DIR', $upload_dir);
-	}
-	if (!defined('BOTBLOCKER_DATA_DIR')) {
-		define('BOTBLOCKER_DATA_DIR', BOTBLOCKER_UPLOADS_DIR . 'data/');
-	}
-	if (!defined('BOTBLOCKER_ADDONS_DIR')) {
-		define('BOTBLOCKER_ADDONS_DIR', BOTBLOCKER_UPLOADS_DIR . 'addons/');
-	}
-	if (!defined('BOTBLOCKER_ADDONS_URL')) {
-		define('BOTBLOCKER_ADDONS_URL', bbcs_get_protected_upload_dir(true) . 'addons/');
-	}	
+	// Deprecated backward-compat constants — do NOT use in new code.
+	// Use bbcs_uploads_dir(), bbcs_data_dir(), bbcs_addons_dir(), bbcs_addons_url() instead.
+	// These constants are intentionally NOT defined in multisite to prevent
+	// stale values when iterating sites via switch_to_blog().
 
     if (!bbcs_tablesExist()) {
         bbcs_createTables();
@@ -42,7 +31,6 @@ function bbcs_init_db_and_files(){
     bbcs_insertInitialData(bbcs_createSaltFile(true));
     bbcs_generateAllFilesFromDb();
     bbcs_generateSettingsFileFromDb();
-    bbcs_invalidate_wp_cache();
 }
 
 /*
@@ -104,9 +92,10 @@ function bbcs_getCloudAPIEmail(): string {
 }
 
 function bbcs_send_activation_to_cloud($support_data = ''): void {
+	//BBCS-MULTISITE
 	$data = [
 		'data'     =>  $support_data ?: bbcs_getsupportData(),
-		'site_url'  => BOTBLOCKER_SITE_URL,
+		'site_url'  => bbcs_current_site_url(),
 	];
 
 	$cloud = BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_GS_URL, 'activation' );
@@ -117,7 +106,7 @@ function bbcs_send_activation_to_cloud($support_data = ''): void {
 
 function bbcs_saveSettingsToFile($settings)
 {
-    $settingsFile = BOTBLOCKER_DATA_DIR . 'settings.php';
+    $settingsFile = bbcs_data_dir() . 'settings.php';
     $settingsContent = BBCS_STOP_DIRECT . "\nreturn " . bbcs_php_export( $settings, 0, true ) . ";\n";
     file_put_contents($settingsFile, $settingsContent);
     bbcs_clearFileCache();
@@ -194,7 +183,7 @@ function bbcs_php_export( $value, int $indent = 0, bool $top_array_keyword = fal
 
 		$is_list = array_keys( $value ) === range( 0, count( $value ) - 1 );
 
-		$out = $top_array_keyword ? "array (\n" : "[\n"; 
+		$out = $top_array_keyword ? "array (\n" : "[\n";
 		foreach ( $value as $k => $v ) {
 			if ( $is_list ) {
 				$out .= $pad2 . bbcs_php_export( $v, $indent + 1, false ) . ",\n";

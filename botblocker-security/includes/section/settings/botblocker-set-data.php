@@ -11,14 +11,14 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                 // REVIEWER NOTE: This image is a static plugin asset, not a user-uploaded Media Library image.
                 // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage ?>
 				<img src="<?php echo esc_url(BOTBLOCKER_URL . 'public/icons/data-log-processing.svg'); ?>" 
-					alt="<?php esc_attr_e('Simple Bot Detection', 'botblocker-security'); ?>" 
+					alt="<?php esc_attr_e('Data Log and Processing', 'botblocker-security'); ?>" 
 					class="img-fluid bbcs-info-image mb-3">
 
 				<p class="bbcs-info-text">
-					<?php esc_html_e('Data logging and processing settings define what BotBlocker records about each visit to detect automated threats. Enable collection of browser, operating system, and device type to improve detection accuracy and diagnostics.', 'botblocker-security'); ?>
+					<?php esc_html_e('Configure what visitor data BotBlocker records for threat detection and analytics.', 'botblocker-security'); ?>
 				</p>
 				<p class="bbcs-info-text">
-					<?php esc_html_e('Use Store Period to control how long raw logs are kept. If your site observes daylight saving time, enable automatic time adjustment for accurate timestamps.', 'botblocker-security'); ?>
+					<?php esc_html_e('Set the log retention period and enable daylight saving time adjustment if needed.', 'botblocker-security'); ?>
 				</p>
 				<hr class="bbcs-info-hr">
 				<div class="bbcs-info-footer">
@@ -30,7 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 		</div>
 
 		<div class="col-xxl-3 col-xl-6 col-lg-6 col-sm-12 col-md-12">
-			<h3 class="bbcs_settings_h3"><?php esc_html_e('Data Log & Processing', 'botblocker-security'); ?></h3>
+			<h3 class="bbcs_settings_h3"><?php esc_html_e('Data Log and Processing', 'botblocker-security'); ?></h3>
 
 			<div class="bbcs_checkbox_input mb-2">
     			<div class="bbcs_label_checkbox_box">
@@ -41,7 +41,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
     			<i class="fa-regular fa-circle-question"
         		data-bs-toggle="tooltip" data-bs-html="true" 
         		data-bs-placement="top"
-        		data-bs-original-title="<?php esc_attr_e('Collects visitor\'s browser type for analytics and troubleshooting.', 'botblocker-security'); ?>">
+        		data-bs-original-title="<?php esc_attr_e('Record visitor browser type.', 'botblocker-security'); ?>">
     			</i>
 			</div>
 
@@ -54,7 +54,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
     			<i class="fa-regular fa-circle-question"
         			data-bs-toggle="tooltip" data-bs-html="true" 
         			data-bs-placement="top"
-        			data-bs-original-title="<?php esc_attr_e('Collects visitor\'s operating system for analytics and troubleshooting.', 'botblocker-security'); ?>">
+        			data-bs-original-title="<?php esc_attr_e('Record visitor operating system.', 'botblocker-security'); ?>">
     			</i>
 			</div>
 
@@ -67,7 +67,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
     			<i class="fa-regular fa-circle-question"
         			data-bs-toggle="tooltip" data-bs-html="true" 
         			data-bs-placement="top"
-        			data-bs-original-title="<?php esc_attr_e('Collects visitor\'s device type (mobile/desktop/tablet).', 'botblocker-security'); ?>">
+        			data-bs-original-title="<?php esc_attr_e('Record visitor device type (mobile, desktop, tablet).', 'botblocker-security'); ?>">
     			</i>
 			</div>
 
@@ -75,7 +75,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
     			<div class="bbcs_label_input_box">        			
 					<span class="bbcs-label-input"><?php esc_html_e('Store Period:', 'botblocker-security'); ?></span>
         			<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top" 
-					data-bs-original-title="<?php esc_attr_e('Duration to store raw data before purging.', 'botblocker-security'); ?>"></i>
+					data-bs-original-title="<?php esc_attr_e('How long to keep raw log data.', 'botblocker-security'); ?>"></i>
     			</div>
     			<div class="bbcs_text_input_inner">
         			<select class="bbcs_select_input_input" name="admin_store_period">
@@ -99,7 +99,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
     			<i class="fa-regular fa-circle-question"
         			data-bs-toggle="tooltip" data-bs-html="true" 
         			data-bs-placement="top"
-        			data-bs-original-title="<?php esc_attr_e('During daylight saving time, the time is adjusted by one hour. If this option is enabled, the plugin will automatically adjust the time based on the current date.', 'botblocker-security'); ?>">
+        			data-bs-original-title="<?php esc_attr_e('Adjust timestamps for daylight saving time.', 'botblocker-security'); ?>">
     			</i>
 			</div>
 

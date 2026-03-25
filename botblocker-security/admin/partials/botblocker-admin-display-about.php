@@ -10,7 +10,7 @@ include('botblocker-section-header.php');
                 <div class="col-md-6">
                     <section class="card bbcs-fill-height">
                         <header class="card-header">
-                            <h2 class="card-title"><?php esc_html_e( 'Contacts & Support', 'botblocker-security'); ?></h2>
+                            <h2 class="card-title"><?php esc_html_e( 'Contacts and Support', 'botblocker-security'); ?></h2>
                         </header>
                         <div class="card-body">
 							<?php
@@ -22,7 +22,7 @@ include('botblocker-section-header.php');
                 <div class="col-md-6">
                     <section class="card bbcs-fill-height">
                         <header class="card-header">
-                            <h2 class="card-title"><?php esc_html_e( 'Legal information', 'botblocker-security'); ?></h2>
+                            <h2 class="card-title"><?php esc_html_e( 'Legal Information', 'botblocker-security'); ?></h2>
                         </header>
                         <div class="card-body">
 							<?php

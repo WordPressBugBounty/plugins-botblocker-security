@@ -269,7 +269,7 @@ class BotBlockerMuPhase
 </head>
 <body>
   <header class="header">
-    <img src="' . esc_url($plugin_url . '/admin/img/logo-small-transparent.webp') . '" alt="BotBlocker Wordpress Plugin" class="logo">
+    <img src="' . esc_url($plugin_url . '/admin/img/logo-small-transparent.webp') . '" alt="BotBlocker WordPress Plugin" class="logo">
   </header>
 
   <div class="content">
@@ -278,7 +278,7 @@ class BotBlockerMuPhase
     </noscript>
 
     <div class="bbcs-icon">
-      <img src="' . esc_url($plugin_url . '/public/icons/security.svg') . '" alt="BotBlocker Wordpress Plugin" class="logo">
+      <img src="' . esc_url($plugin_url . '/public/icons/security.svg') . '" alt="BotBlocker WordPress Plugin" class="logo">
     </div>
     <br />
 
@@ -293,7 +293,7 @@ class BotBlockerMuPhase
   </div>
 
   <footer class="footer">
-    <small><a href="https://botblocker.top/" title="BotBlocker plugin for Wordpress" target="_blank">Protected by <b>BotBlocker</b> plugin</a></small>
+    <small><a href="https://botblocker.top/" title="BotBlocker plugin for WordPress" target="_blank">Protected by <b>BotBlocker</b> plugin</a></small>
     <small><a href="https://globus.studio" title="Project by GLOBUS.studio" target="_blank">BotBlocker is <b>GLOBUS.studio</b> project</a></small>
   </footer>
 </body>

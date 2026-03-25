@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
         <div class="card-actions">
             <a href="<?php echo esc_url($BBCSA->pages_reports); ?>#full" class="bbcs-icon-button bbcs-card-action"
                 data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top"
-                data-bs-original-title="Full report">
+                data-bs-original-title="<?php esc_attr_e('Full report', 'botblocker-security'); ?>">
                 <i class="fa-solid fa-chart-line"></i>
             </a>
             <a href="<?php echo esc_url($BBCSA->pages_settings); ?>" class="bbcs-icon-button" data-bs-toggle="tooltip"
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
         <h2 class="card-title"> <?php esc_html_e('Traffic geo data', 'botblocker-security'); echo wp_kses_post(BotBlockerUI::is_realtime());?>
         </h2>
         <p class="card-subtitle">
-            <?php esc_html_e('Real-time website visitor geo statistics. View period - ', 'botblocker-security'); ?><?php echo esc_html($BBCS->settings->admin_report_period); ?>
+            <?php esc_html_e('Real-time visitor geo statistics. View period:', 'botblocker-security'); ?><?php echo esc_html($BBCS->settings->admin_report_period); ?>
             <?php esc_html_e('days', 'botblocker-security'); ?> (<a
                 href="<?php echo esc_url($BBCSA->pages_settings); ?>#settings_ui"><?php esc_html_e('Change', 'botblocker-security'); ?></a>).</p>
     </header>

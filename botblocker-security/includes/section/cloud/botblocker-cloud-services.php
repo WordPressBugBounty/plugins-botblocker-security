@@ -13,10 +13,10 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 					class="img-fluid bbcs-info-image mb-3">				
 					
 				<p class="bbcs-info-text">
-					<?php esc_html_e('Our team is ready to assist you with any WordPress development needs, including optimization, plugin and theme customization, and system administration. We offer professional support to help your website run smoothly and efficiently.', 'botblocker-security'); ?>
+					<?php esc_html_e('We offer WordPress development services: optimization, plugin and theme customization, and server administration.', 'botblocker-security'); ?>
 				</p>
 				<p class="bbcs-info-text">
-					<?php esc_html_e('We also provide custom PHP development and automation services tailored to your specific requirements. Whether you need unique features, integration with third-party services, or advanced automation, our experts are here to deliver effective solutions.', 'botblocker-security'); ?>
+					<?php esc_html_e('We also provide custom PHP development and automation services tailored to your needs.', 'botblocker-security'); ?>
 				</p>
 				<hr class="bbcs-info-hr">
 				<div class="bbcs-info-footer">

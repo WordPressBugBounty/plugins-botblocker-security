@@ -4,15 +4,15 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 <div class="modal-dialog">
     <div class="modal-content">
         <div class="modal-header">
-            <h5 class="modal-title" id="confirmRewriteRulesModalLabel"><?php esc_html_e('Confirmation of resetting rewrite rules', 'botblocker-security'); ?></h5>
+            <h5 class="modal-title" id="confirmRewriteRulesModalLabel"><?php esc_html_e('Reset Rewrite Rules', 'botblocker-security'); ?></h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-            <p class="bbcs-black"><strong><?php esc_html_e('Attention!', 'botblocker-security'); ?></strong> <?php esc_html_e('You are about to reset the URL rewrite rules:', 'botblocker-security'); ?></p>
+            <p class="bbcs-black"><strong><?php esc_html_e('Attention!', 'botblocker-security'); ?></strong> <?php esc_html_e('URL rewrite rules will be reset:', 'botblocker-security'); ?></p>
             <ul class="bbcs-black bbcs-modal-ul">
-                <li class="bbcs-modal-li"><?php esc_html_e('Resetting will help fix 404 errors after changing the permalink structure.', 'botblocker-security'); ?></li>
-                <li class="bbcs-modal-li"><?php esc_html_e('All rules will be automatically regenerated.', 'botblocker-security'); ?></li>
-                <li class="bbcs-modal-li"><?php esc_html_e('A page reload may be required after the operation.', 'botblocker-security'); ?></li>
+                <li class="bbcs-modal-li"><?php esc_html_e('Fixes 404 errors after permalink structure changes.', 'botblocker-security'); ?></li>
+                <li class="bbcs-modal-li"><?php esc_html_e('Rules will be regenerated automatically.', 'botblocker-security'); ?></li>
+                <li class="bbcs-modal-li"><?php esc_html_e('A page reload may be required.', 'botblocker-security'); ?></li>
             </ul>
             <p class="bbcs-black"><?php esc_html_e('Continue resetting the rewrite rules?', 'botblocker-security'); ?></p>
         </div>

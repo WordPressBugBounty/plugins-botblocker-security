@@ -16,7 +16,7 @@ $bbcs_is_ultimate = bbcs_isCloudAPIUltimate();
 					class="img-fluid bbcs-info-image mb-3">
 
 				<p class="bbcs-info-text">
-					<?php esc_html_e('Advanced Protection provides enhanced security against sophisticated bots by using cloud-based validation and intelligent verification techniques. These settings enable multi-layered protection that can detect even the most advanced automated threats. Cloud validation analyzes suspicious traffic patterns in real-time, while verification settings enforce security measures appropriate to your site\'s needs. Together, these tools create a comprehensive defense system that adapts to emerging threats while minimizing impact on legitimate users.', 'botblocker-security'); ?>				
+					<?php esc_html_e('Advanced protection uses cloud-based real-time analysis and smart verification to detect sophisticated bots.', 'botblocker-security'); ?>				
 				</p>
 				<hr class="bbcs-info-hr">
 				<div class="bbcs-info-footer">
@@ -43,7 +43,7 @@ $bbcs_is_ultimate = bbcs_isCloudAPIUltimate();
     			<i class="fa-regular fa-circle-question"
         			data-bs-toggle="tooltip" data-bs-html="true" 
         			data-bs-placement="top"
-        			data-bs-original-title="<?php esc_attr_e('Sends suspicious requests to BotBlocker Cloud for in-depth analysis.', 'botblocker-security'); ?>">
+        			data-bs-original-title="<?php esc_attr_e('Send suspicious requests to BotBlocker Cloud for verification.', 'botblocker-security'); ?>">
     			</i>
 			</div>
 
@@ -51,14 +51,14 @@ $bbcs_is_ultimate = bbcs_isCloudAPIUltimate();
     			<div class="bbcs_label_checkbox_box">
         			<input type="checkbox" name="unresponsive" value="1" <?php checked(1, isset($bbcs_settings['unresponsive']) ? $bbcs_settings['unresponsive'] : 1); ?> <?php if (!$bbcs_has_pro) echo 'disabled'; ?>>
         			<span class="bbcs-cloud-api-column">
-        			<span class="bbcs_label_input_checkbox bbcs-cloud-api-color"><?php esc_html_e('Ban Unresponsive Clients', 'botblocker-security'); ?></span>
+        			<span class="bbcs_label_input_checkbox bbcs-cloud-api-color"><?php esc_html_e('Block Unresponsive Clients', 'botblocker-security'); ?></span>
         			<small class="text-muted bbcs-ps-5" <?php echo $bbcs_has_pro ? 'hidden' : ''; ?>>
                 			<?php esc_html_e('PRO option', 'botblocker-security'); ?> (<a href="<?php echo esc_url($BBCSA->pages_cloud_api); ?>"><?php esc_html_e('Connect now!', 'botblocker-security'); ?></a>)
             			</small>
         			</span>
     			</div>
     			<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top"
-        			data-bs-original-title="<?php esc_attr_e('Instantly blocks clients that fail to respond to cloud validation.', 'botblocker-security'); ?>">
+        			data-bs-original-title="<?php esc_attr_e('Block clients that don&#39;t respond to verification checks.', 'botblocker-security'); ?>">
     			</i>
 			</div>
 
@@ -68,7 +68,7 @@ $bbcs_is_ultimate = bbcs_isCloudAPIUltimate();
         			<span class="bbcs_label_input_checkbox"><?php esc_html_e('Force Verification for All', 'botblocker-security'); ?></span>
     			</div>
     			<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top"
-        			data-bs-original-title="<?php esc_attr_e('Always present captcha, regardless of other checks.', 'botblocker-security'); ?>">
+        			data-bs-original-title="<?php esc_attr_e('Show CAPTCHA to all visitors, bypassing other checks.', 'botblocker-security'); ?>">
     			</i>
 			</div>
 
@@ -83,7 +83,7 @@ $bbcs_is_ultimate = bbcs_isCloudAPIUltimate();
         			</span>
     			</div>
     			<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top"
-        			data-bs-original-title="<?php esc_attr_e('Forces cloud validation for every visitor, regardless of other checks. Available only for Ultimate tier licenses.', 'botblocker-security'); ?>">
+        			data-bs-original-title="<?php esc_attr_e('Verify every visitor via cloud database. Ultimate tier only.', 'botblocker-security'); ?>">
     			</i>
 			</div>
 		</div>

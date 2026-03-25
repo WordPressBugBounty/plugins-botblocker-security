@@ -8,7 +8,7 @@ trait BotBlockerDeniedPageTrait {
             $title_string   = $this->ip . ' ' . gmdate('d.m.Y H:i:s', $this->time);
             $this->template_data_denied = array(
                 'extra_data' => $this->ip,
-                'h1_title' => __('Please turn JavaScript on and reload the page', 'botblocker-security'),
+                'h1_title' => __('Please enable JavaScript and reload the page', 'botblocker-security'),
                 'message' => __('Sorry, your request has been denied', 'botblocker-security'),
                 'denied_title' => __('BotBlocker security plugin', 'botblocker-security') . $title_string,
                 'denied_data' => $this->denied_data

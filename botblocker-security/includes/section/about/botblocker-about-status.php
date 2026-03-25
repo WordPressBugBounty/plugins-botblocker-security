@@ -12,10 +12,10 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 					class="img-fluid bbcs-info-image mb-3">
 
                 <p class="bbcs-info-text">
-                    <?php esc_html_e('The status page provides a complete overview of your WordPress environment and the BotBlocker core. Here you can check the current state of the plugin, installed themes, active plugins, and key server parameters.', 'botblocker-security'); ?>
+                    <?php esc_html_e('Overview of your WordPress environment and BotBlocker core: plugin state, themes, plugins, and server parameters.', 'botblocker-security'); ?>
                 </p>
 				<p class="bbcs-info-text">
-                    <?php esc_html_e('This information helps you quickly identify configuration issues, monitor software versions, and ensure that your website is running smoothly and securely.', 'botblocker-security'); ?>
+                    <?php esc_html_e('Identify configuration issues, check software versions, and verify your site runs smoothly.', 'botblocker-security'); ?>
                 </p>
 				<hr class="bbcs-info-hr">
 				<div class="bbcs-info-footer">
@@ -27,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 					class="bbcs-info-footer-a"><?php esc_html_e('Nginx', 'botblocker-security'); ?></a>
 
 					<a href="<?php echo esc_url(BOTBLOCKER_DOCS_URL)?>/nginx-vs-apache-and-php-fpm-for-wordpress-concise-comparison/" target="_blank" 
-					class="bbcs-info-footer-a"><?php esc_html_e('Nginx VS Apache', 'botblocker-security'); ?></a>
+					class="bbcs-info-footer-a"><?php esc_html_e('Nginx vs Apache', 'botblocker-security'); ?></a>
 
 					<a href="<?php echo esc_url(BOTBLOCKER_DOCS_URL)?>/server-operating-systems-types-features-and-their-role-in-web-hosting/" target="_blank" 
 					class="bbcs-info-footer-a"><?php esc_html_e('Server OS', 'botblocker-security'); ?></a>
@@ -36,7 +36,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 					class="bbcs-info-footer-a"><?php esc_html_e('PHP versions', 'botblocker-security'); ?></a>
 
 					<a href="<?php echo esc_url(BOTBLOCKER_DOCS_URL)?>/servers-clouds-and-hosting-for-wordpress-operating-systems-requirements-and-key-choices/" target="_blank" 
-					class="bbcs-info-footer-a"><?php esc_html_e('Hosting and systems requirements', 'botblocker-security'); ?></a>
+					class="bbcs-info-footer-a"><?php esc_html_e('Hosting and system requirements', 'botblocker-security'); ?></a>
 				</div>
 			</div>
 		</div>
@@ -46,7 +46,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 			<h3 class="bbcs_settings_h3"><?php esc_html_e('Software versions', 'botblocker-security'); ?></h3>
 				<?php echo do_shortcode('[bbcs_plugins_themes]'); ?>
 			<?php if ( defined('BBCS_DEBUG') && BBCS_DEBUG ) : ?>
-            <h3 class="bbcs_settings_h3"><?php esc_html_e('BotBlocker simple hive snapshot', 'botblocker-security'); ?></h3>
+            <h3 class="bbcs_settings_h3"><?php esc_html_e('BotBlocker Hive Snapshot', 'botblocker-security'); ?></h3>
                 <?php $BBCS->print_hive(); ?>
             <?php endif; ?>
         </div>

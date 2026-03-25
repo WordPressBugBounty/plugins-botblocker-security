@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
  */
 function bbcs_get_botblocker_proxies_callback() {
     check_ajax_referer( 'botblocker_nonce', 'nonce' );
-    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+    if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
     global $wpdb;
 
@@ -96,7 +96,7 @@ add_action( 'wp_ajax_bbcs_get_botblocker_proxies', 'bbcs_get_botblocker_proxies_
  */
 function bbcs_get_proxy_details_callback() {
     check_ajax_referer( 'botblocker_nonce', 'nonce' );
-    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+    if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
     global $wpdb;
 
@@ -115,7 +115,7 @@ function bbcs_get_proxy_details_callback() {
     if ( $proxy ) {
         wp_send_json_success( $proxy );
     } else {
-        wp_send_json_error( 'Proxy not found' );
+        wp_send_json_error( __('Proxy not found.', 'botblocker-security') );
     }
 }
 add_action( 'wp_ajax_bbcs_get_proxy_details', 'bbcs_get_proxy_details_callback' );
@@ -130,7 +130,7 @@ add_action( 'wp_ajax_bbcs_get_proxy_details', 'bbcs_get_proxy_details_callback' 
 function bbcs_update_proxy_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
-    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+    if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
     /**
      * REVIEWER NOTE:
@@ -143,7 +143,8 @@ function bbcs_update_proxy_callback()
     $required_fields = ['id', 'key', 'value'];
     foreach ($required_fields as $field) {
         if (!isset($_POST[$field]) || empty($_POST[$field])) {
-            wp_send_json_error("Missing required field: $field");
+            // translators: %s is the name of the required field.
+            wp_send_json_error(sprintf(__('Missing required field: %s.', 'botblocker-security'), $field));
             return;
         }
     }
@@ -165,9 +166,9 @@ function bbcs_update_proxy_callback()
     if ($result !== false) {
         bbcs_renderProxyFromDb();
         bbcs_clearFileCache();
-        wp_send_json_success('Proxy updated successfully');
+        wp_send_json_success(__('Proxy updated successfully.', 'botblocker-security'));
     } else {
-        wp_send_json_error('Failed to update proxy');
+        wp_send_json_error(__('Failed to update proxy.', 'botblocker-security'));
     }
 }
 add_action('wp_ajax_bbcs_update_proxy', 'bbcs_update_proxy_callback');
@@ -182,10 +183,10 @@ add_action('wp_ajax_bbcs_update_proxy', 'bbcs_update_proxy_callback');
 function bbcs_delete_proxy_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
-    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+    if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
     if (!isset($_POST['id']) || empty($_POST['id'])) {
-        wp_send_json_error('Missing required field: id');
+        wp_send_json_error(__('Missing required field: id.', 'botblocker-security'));
         return;
     }
 
@@ -200,9 +201,9 @@ function bbcs_delete_proxy_callback()
     if ($result !== false) {
         bbcs_renderProxyFromDb();
         bbcs_clearFileCache();
-        wp_send_json_success('Proxy deleted successfully');
+        wp_send_json_success(__('Proxy deleted successfully.', 'botblocker-security'));
     } else {
-        wp_send_json_error('Failed to delete proxy');
+        wp_send_json_error(__('Failed to delete proxy.', 'botblocker-security'));
     }
 }
 add_action('wp_ajax_bbcs_delete_proxy', 'bbcs_delete_proxy_callback');
@@ -217,7 +218,7 @@ add_action('wp_ajax_bbcs_delete_proxy', 'bbcs_delete_proxy_callback');
 function bbcs_create_proxy_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
-    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+    if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
     /**
      * REVIEWER NOTE:
@@ -230,7 +231,8 @@ function bbcs_create_proxy_callback()
     $required_fields = ['key', 'value'];
     foreach ($required_fields as $field) {
         if (!isset($_POST[$field]) || empty($_POST[$field])) {
-            wp_send_json_error("Missing required field: $field");
+            // translators: %s is the name of the required field.
+            wp_send_json_error(sprintf(__('Missing required field: %s.', 'botblocker-security'), $field));
             return;
         }
     }
@@ -245,7 +247,7 @@ function bbcs_create_proxy_callback()
         $key
     ));
     if ($exists) {
-        wp_send_json_error('Proxy already exists');
+        wp_send_json_error(__('Proxy already exists.', 'botblocker-security'));
         return;
     }
 
@@ -263,9 +265,9 @@ function bbcs_create_proxy_callback()
     if ($result !== false) {
         bbcs_renderProxyFromDb();
         bbcs_clearFileCache();
-        wp_send_json_success('Proxy created successfully');
+        wp_send_json_success(__('Proxy created successfully.', 'botblocker-security'));
     } else {
-        wp_send_json_error('Failed to create proxy');
+        wp_send_json_error(__('Failed to create proxy.', 'botblocker-security'));
     }
 }
 add_action('wp_ajax_bbcs_create_proxy', 'bbcs_create_proxy_callback');
@@ -280,7 +282,7 @@ add_action('wp_ajax_bbcs_create_proxy', 'bbcs_create_proxy_callback');
 function bbcs_export_proxies_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
-    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+    if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
     global $wpdb;
 
@@ -302,10 +304,10 @@ add_action('wp_ajax_bbcs_export_proxies', 'bbcs_export_proxies_callback');
 function bbcs_import_proxies_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
-    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+    if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
     if (!isset($_POST['proxies']) || empty($_POST['proxies'])) {
-        wp_send_json_error('Missing required field: proxies');
+        wp_send_json_error(__('Missing required field: proxies.', 'botblocker-security'));
         return;
     }
 
@@ -343,7 +345,7 @@ function bbcs_import_proxies_callback()
             'skipped' => $skipped,
         ));
     } else {
-        wp_send_json_error('Invalid JSON format');
+        wp_send_json_error(__('Invalid JSON format.', 'botblocker-security'));
     }
 }
 add_action('wp_ajax_bbcs_import_proxies', 'bbcs_import_proxies_callback');
@@ -358,7 +360,7 @@ add_action('wp_ajax_bbcs_import_proxies', 'bbcs_import_proxies_callback');
 function bbcs_clear_all_proxies_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
-    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+    if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
 
     global $wpdb;
 
@@ -367,9 +369,9 @@ function bbcs_clear_all_proxies_callback()
     if ($result !== false) {
         bbcs_renderProxyFromDb();
         bbcs_clearFileCache();
-        wp_send_json_success('All proxies have been cleared');
+        wp_send_json_success(__('All proxies have been cleared.', 'botblocker-security'));
     } else {
-        wp_send_json_error('Failed to clear proxies');
+        wp_send_json_error(__('Failed to clear proxies.', 'botblocker-security'));
     }
 }
 add_action('wp_ajax_bbcs_clear_all_proxies', 'bbcs_clear_all_proxies_callback');
@@ -384,11 +386,11 @@ add_action('wp_ajax_bbcs_clear_all_proxies', 'bbcs_clear_all_proxies_callback');
 function bbcs_render_proxy_file_callback()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
-    if (!current_user_can('manage_options')) { wp_send_json_error('Unauthorized'); }
+    if (!current_user_can(bbcs_can_manage())) { wp_send_json_error(__('Unauthorized.', 'botblocker-security')); }
     
     bbcs_renderProxyFromDb();
     bbcs_clearFileCache();
     
-    wp_send_json_success('Proxy file rendered successfully');
+    wp_send_json_success(__('Proxy file rendered successfully.', 'botblocker-security'));
 }
 add_action('wp_ajax_bbcs_render_proxy_file', 'bbcs_render_proxy_file_callback');

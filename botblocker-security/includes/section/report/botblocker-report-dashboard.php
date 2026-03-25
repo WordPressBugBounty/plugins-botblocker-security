@@ -13,10 +13,10 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                     alt="<?php esc_attr_e('Report dashboard', 'botblocker-security'); ?>" class="img-fluid bbcs-info-image mb-3">
 
                 <p class="bbcs-info-text">
-                    <?php esc_html_e('BotBlocker provides detailed reports about every visitor to your website, including parameters such as IP address, country, browser, operating system, and more. This information helps you better understand user behavior and quickly identify suspicious activity related to bots or malicious requests.', 'botblocker-security'); ?>
+                    <?php esc_html_e('Detailed reports on every visitor: IP address, country, browser, OS, and more. Use them to spot suspicious bot activity and malicious requests.', 'botblocker-security'); ?>
                 </p>
                 <p class="bbcs-info-text">
-                    <?php esc_html_e('You can create custom blocking rules based on any property shown in the report. For example, you can block a specific IP address, country, or device type if they appear suspicious. This gives you flexibility and full control over your website’s security, allowing you to respond promptly to new threats.', 'botblocker-security'); ?>
+                    <?php esc_html_e('Create blocking rules from any report property — IP, country, device type, and more. React to new threats instantly with full control over what gets blocked.', 'botblocker-security'); ?>
                 </p>
                 <hr class="bbcs-info-hr">
                 <div class="bbcs-info-footer">
@@ -37,7 +37,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
             <div class="bbcs-report-links d-flex flex-column gap-2 mb-3">
                 <a href="<?php echo esc_url($BBCSA->pages_reports); ?>#frontend" class="btn btn-default btn-sm text-start">
                     <strong><?php esc_html_e('Site visitors','botblocker-security'); ?></strong><br>
-                    <span class="small bbcs-wizard-muted"><?php esc_html_e('Live & historical traffic (IP, country, device, behavior markers).','botblocker-security'); ?></span>
+                    <span class="small bbcs-wizard-muted"><?php esc_html_e('Live and historical traffic (IP, country, device, behavior markers).','botblocker-security'); ?></span>
                 </a>
                 <a href="<?php echo esc_url($BBCSA->pages_reports); ?>#admin" class="btn btn-default btn-sm text-start">
                     <strong><?php esc_html_e('WordPress admin area log','botblocker-security'); ?></strong><br>
@@ -45,15 +45,15 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                 </a>
                 <a href="<?php echo esc_url($BBCSA->pages_reports); ?>#wordpress" class="btn btn-default btn-sm text-start">
                     <strong><?php esc_html_e('WordPress actions','botblocker-security'); ?></strong><br>
-                    <span class="small bbcs-wizard-muted"><?php esc_html_e('Core / plugin / theme level events relevant to security posture.','botblocker-security'); ?></span>
+                    <span class="small bbcs-wizard-muted"><?php esc_html_e('Core, plugin, and theme security events.','botblocker-security'); ?></span>
                 </a>
                 <a href="<?php echo esc_url($BBCSA->pages_reports); ?>#full" class="btn btn-default btn-sm text-start">
                     <strong><?php esc_html_e('Full log','botblocker-security'); ?></strong><br>
-                    <span class="small bbcs-wizard-muted"><?php esc_html_e('Unified raw event stream for deep forensics & rule tuning.','botblocker-security'); ?></span>
+                    <span class="small bbcs-wizard-muted"><?php esc_html_e('Raw event log for forensics and rule tuning.','botblocker-security'); ?></span>
                 </a>
             </div>
             <p class="bbcs-info-text mb-0 small">
-                <?php esc_html_e('Open any report to drill down and create instant block / allow rules based on real traffic attributes.','botblocker-security'); ?>
+                <?php esc_html_e('Open any report to drill down and create block/allow rules from real traffic data.','botblocker-security'); ?>
             </p>
         </div>
 
@@ -68,7 +68,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                 </video>
             </div>
             <p class="small bbcs-wizard-muted mb-0">
-                <?php esc_html_e('Short demo: open a log entry, inspect parameters, generate a precise rule (IP / country / UA / signature) and apply instantly.','botblocker-security'); ?>
+                <?php esc_html_e('Demo: open a log entry, inspect parameters, generate a rule (IP / country / UA / signature) and apply it.','botblocker-security'); ?>
             </p>
         </div>        
 

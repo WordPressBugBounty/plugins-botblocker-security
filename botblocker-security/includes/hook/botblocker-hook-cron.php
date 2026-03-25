@@ -102,22 +102,25 @@ function bbcs_one_time_task_handler()
 
 
 add_action('wp_ajax_bbcs_get_cron_tasks', 'bbcs_get_cron_tasks');
-add_action('wp_ajax_nopriv_bbcs_get_cron_tasks', 'bbcs_get_cron_tasks');
 function bbcs_get_cron_tasks()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
+
+    if ( ! current_user_can( bbcs_can_manage() ) ) {
+        wp_send_json_error( __('No permission.', 'botblocker-security') );
+    }
 
     $one_time_event = wp_get_scheduled_event('bbcs_one_time_task'); // Check if the event is scheduled
 
     $cron_jobs      = _get_cron_array();
     $current_time   = time();
     $plugin_tasks   = [
-        'bbcs_daily_task'       => 'History clear',
-        'bbcs_hourly_task'      => 'Update statistics',
-        'bbcs_weekly_task'      => 'Weekly maintenance',
-        'bbcs_five_days_task'   => 'Send all DB to analyze',
-        'bbcs_two_hours_task'   => 'Extend IP data',
-        'bbcs_one_time_task'    => 'Early and MU to DB',
+        'bbcs_daily_task'       => __('Clear History', 'botblocker-security'),
+        'bbcs_hourly_task'      => __('Update Statistics', 'botblocker-security'),
+        'bbcs_weekly_task'      => __('Weekly Maintenance', 'botblocker-security'),
+        'bbcs_five_days_task'   => __('Cloud Data Sync', 'botblocker-security'),
+        'bbcs_two_hours_task'   => __('Update IP Geolocation', 'botblocker-security'),
+        'bbcs_one_time_task'    => __('Sync Early Init Data', 'botblocker-security'),
     ];
 
     $tasks = [];

@@ -41,7 +41,7 @@ trait BotBlockerCoreTrait {
 
     	$is_any_missing = false;
     	foreach ( $files as $filename => $callback ) {
-        	$filepath = BOTBLOCKER_DATA_DIR . $filename;
+        	$filepath = bbcs_data_dir() . $filename;
         	if ( ! file_exists( $filepath ) ) {
             	$is_any_missing = true;
             	$callback();
@@ -55,36 +55,36 @@ trait BotBlockerCoreTrait {
 
     public function load_data()
     {
-        if (file_exists(BOTBLOCKER_DATA_DIR . 'search_engines.php')) {
-            $rules = include(BOTBLOCKER_DATA_DIR . 'search_engines.php');
+        if (file_exists(bbcs_data_dir() . 'search_engines.php')) {
+            $rules = include(bbcs_data_dir() . 'search_engines.php');
             $this->bbcs_rule = $rules['bbcs_rule'] ?? [];
             $this->bbcs_se = $rules['bbcs_se'] ?? [];
         } else {
             $this->bbcs_rule = [];
             $this->bbcs_se = [];
         }
-        if (file_exists(BOTBLOCKER_DATA_DIR . 'ip.php')) {
-            $self_ip_rules = include(BOTBLOCKER_DATA_DIR . 'ip.php');
+        if (file_exists(bbcs_data_dir() . 'ip.php')) {
+            $self_ip_rules = include(bbcs_data_dir() . 'ip.php');
             $this->self_ips = $self_ip_rules['self_ips'] ?? [];
             $this->admin_ips = $self_ip_rules['admin'] ?? [];
         } else {
             $this->self_ips = [];
             $this->admin_ips = [];
         }
-        if (file_exists(BOTBLOCKER_DATA_DIR . 'base/good_bots.php')) {
-            $data = include(BOTBLOCKER_DATA_DIR . 'base/good_bots.php');
+        if (file_exists(bbcs_data_dir() . 'base/good_bots.php')) {
+            $data = include(bbcs_data_dir() . 'base/good_bots.php');
             $this->bbcs_good_bots = $data['bbcs_good_bots'] ?? [];
         } else {
             $this->bbcs_good_bots = [];
         }
-        if (file_exists(BOTBLOCKER_DATA_DIR . 'proxy.php')) {
-            $proxy = include(BOTBLOCKER_DATA_DIR . 'proxy.php');
+        if (file_exists(bbcs_data_dir() . 'proxy.php')) {
+            $proxy = include(bbcs_data_dir() . 'proxy.php');
             $this->bbcs_proxy = $proxy['bbcs_proxy'] ?? [];
         } else {
             $this->bbcs_proxy = [];
         }
-        if (file_exists(BOTBLOCKER_DATA_DIR . 'paths.php')) {
-            $path = include(BOTBLOCKER_DATA_DIR . 'paths.php');
+        if (file_exists(bbcs_data_dir() . 'paths.php')) {
+            $path = include(bbcs_data_dir() . 'paths.php');
             $this->bbcs_path = $path['bbcs_path'] ?? []; 
         } else {
             $this->bbcs_path = [];
@@ -116,7 +116,7 @@ trait BotBlockerCoreTrait {
  
     public function load_settings() : bool
     { 
-        $settingsFile = BOTBLOCKER_DATA_DIR . 'settings.php';
+        $settingsFile = bbcs_data_dir() . 'settings.php';
 
         $this->settings = new BotBlockerSettings();
         $this->settings->load($settingsFile);
@@ -198,7 +198,7 @@ trait BotBlockerCoreTrait {
 
     public function load_salt_settings() : void
     {
-        $salt_file = BOTBLOCKER_DATA_DIR . 'salt.php';
+        $salt_file = bbcs_data_dir() . 'salt.php';
         if (!file_exists($salt_file)) {
             bbcs_createSaltFile(true);
         }
@@ -272,8 +272,9 @@ trait BotBlockerCoreTrait {
 
         if ($cloud !== null && $cloud !== false) {
             bbcs_cacheCloudData($cache_key, $cloud, $cache_ttl);
+            return $cloud;
         }
-        return $cloud;
+        return [];
     }
 
 

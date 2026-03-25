@@ -132,7 +132,7 @@ add_action('template_redirect', function () {
     // enqueue stylesheet for this setup page
     $css_path = BOTBLOCKER_URL . 'public/css/bbcs-2fa.css';
     $css_ver  = defined('BOTBLOCKER_VERSION') ? BOTBLOCKER_VERSION : filemtime(WP_PLUGIN_DIR . '/botblocker-security/public/css/bbcs-2fa.css');
-    wp_enqueue_style('bbcs-2fa', $css_path, array(), $css_ver);
+    // wp_enqueue_style('bbcs-2fa', $css_path, array(), $css_ver);
 
 ?>
     <!DOCTYPE html>
@@ -142,10 +142,12 @@ add_action('template_redirect', function () {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title><?php esc_html_e('Two-Factor Authentication', 'botblocker-security'); ?></title>
-        <?php wp_head(); ?>
+        <?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet ?>
+        <link rel="stylesheet" href="<?php echo esc_url($css_path); ?>?ver=<?php echo esc_attr($css_ver); ?>">
+        <?php //wp_head(); ?>
     </head>
 
-    <body>
+    <body class="bbcs-2fa">
         <div class="bbcs-2fa-container">
             <div class="bbcs-2fa-header">
                 <?php
@@ -154,7 +156,7 @@ add_action('template_redirect', function () {
                 ?>
                 <?php echo '<img src="' . esc_url(BOTBLOCKER_URL . 'admin/img/logo-small-transparent.webp') . '" height="50" alt="' . esc_attr(BOTBLOCKER_SHORT_NAME) . '">'; ?>
                 <h1><?php esc_html_e('BotBlocker Security', 'botblocker-security'); ?></h1>
-                <h3><?php esc_html_e('🔐 Two-Factor Authentication', 'botblocker-security'); ?></h3>
+                <h3>&#x1F512; <?php esc_html_e('Two-Factor Authentication', 'botblocker-security'); ?></h3>
                 <p><?php esc_html_e('Enter the code to confirm login', 'botblocker-security'); ?></p>
             </div>
 
@@ -169,7 +171,7 @@ add_action('template_redirect', function () {
                     <?php if ($attempts_left < 5 && $attempts_left > 0): ?>
                         <div class="bbcs-2fa-rate-limit-warning">
                             <?php /* translators: %s: number of remaining verification attempts */ ?>
-                            <?php printf(esc_html__('⚠️ Attempts left: %s', 'botblocker-security'), esc_html((string) $attempts_left)); ?>
+                            <?php printf(esc_html__('Attempts left: %s', 'botblocker-security'), esc_html((string) $attempts_left)); ?>
                         </div>
                     <?php endif; ?>
                 <?php endif; ?>
@@ -185,7 +187,7 @@ add_action('template_redirect', function () {
                         </p>
                     <?php else: ?>
                         <p style="color: #dc2626; font-weight: 600;">
-                            <?php esc_html_e('⚠️ You have no backup codes left!', 'botblocker-security'); ?>
+                            <?php esc_html_e('No backup codes remaining.', 'botblocker-security'); ?>
                         </p>
                     <?php endif; ?>
                 </div>
@@ -193,17 +195,18 @@ add_action('template_redirect', function () {
                 <form method="POST">
                     <?php wp_nonce_field('bbcs_2fa_verify', 'bbcs_2fa_nonce'); ?>
                     <div class="bbcs-2fa-form-group">
-                        <label><?php esc_html_e('Verification Code', 'botblocker-security'); ?></label>
+                        <label class="bbcs-2fa-label"><?php esc_html_e('Verification Code', 'botblocker-security'); ?></label>
                         <input
                             type="text"
                             name="code"
+                            class="bbcs-2fa-code"
                             maxlength="16"
                             required
                             autofocus
                             placeholder="000000"
                             <?php echo $rate_limited ? 'disabled' : ''; ?>>
                     </div>
-                    <button type="submit" <?php echo $rate_limited ? 'disabled' : ''; ?>>
+                    <button type="submit" class="bbcs-2fa-btn-submit" <?php echo $rate_limited ? 'disabled' : ''; ?>>
                         <?php esc_html_e('Verify', 'botblocker-security'); ?>
                     </button>
                 </form>

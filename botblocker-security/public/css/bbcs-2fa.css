@@ -54,7 +54,7 @@
     }
 }
 
-body {
+html body.bbcs-2fa {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
     background: linear-gradient(-45deg, #eab308, #22c55e, #06b6d4, #3b82f6, #94a3b8, #84cc16);
     background-size: 400% 400%;
@@ -69,7 +69,7 @@ body {
     margin: auto 0;
 }
 
-body::before {
+html body.bbcs-2fa::before {
     content: '';
     position: fixed;
     top: -50%;
@@ -191,7 +191,7 @@ body::before {
     margin-bottom: 28px;
 }
 
-label {
+label.bbcs-2fa-label {
     display: block;
     margin-bottom: 12px;
     color: #2d3748;
@@ -199,7 +199,7 @@ label {
     font-weight: 600;
 }
 
-input[type="text"] {
+input.bbcs-2fa-code {
     width: 100%;
     padding: 18px;
     border: 2px solid #e2e8f0;
@@ -212,14 +212,14 @@ input[type="text"] {
     background: white;
 }
 
-input[type="text"]:focus {
+input.bbcs-2fa-code:focus {
     outline: none;
     border-color: #06b6d4;
     box-shadow: 0 0 0 5px rgba(6, 182, 212, 0.15);
     transform: translateY(-2px);
 }
 
-button {
+button.bbcs-2fa-btn-submit {
     width: 100%;
     padding: 18px;
     background: linear-gradient(135deg, #22c55e 0%, #06b6d4 100%);
@@ -237,7 +237,7 @@ button {
     overflow: hidden;
 }
 
-button::before {
+button.bbcs-2fa-btn-submit::before {
     content: '';
     position: absolute;
     top: 0;
@@ -248,20 +248,20 @@ button::before {
     transition: left 0.5s;
 }
 
-button:hover:not(:disabled)::before {
+button.bbcs-2fa-btn-submit:hover:not(:disabled)::before {
     left: 100%;
 }
 
-button:hover:not(:disabled) {
+button.bbcs-2fa-btn-submit:hover:not(:disabled) {
     transform: translateY(-3px);
     box-shadow: 0 12px 28px rgba(34, 197, 94, 0.5);
 }
 
-button:active:not(:disabled) {
+button.bbcs-2fa-btn-submit:active:not(:disabled) {
     transform: translateY(-1px);
 }
 
-button:disabled {
+button.bbcs-2fa-btn-submit:disabled {
     opacity: 0.5;
     cursor: not-allowed;
     box-shadow: none;

@@ -11,11 +11,7 @@ function bbcs_display_visitors_jsvectormap($atts)
         $cache_key = 'bbcs_display_visitors_jsvectormap';
         $cached = null;
 
-        if (BOTBLOCKER_CACHE_WP) {
-            $cached = wp_cache_get($cache_key, 'botblocker-security');
-        } else {
-            $cached = get_transient($cache_key);
-        }
+        $cached = get_transient($cache_key);
 
         if ($cached) {
             return $cached;
@@ -58,7 +54,7 @@ function bbcs_display_visitors_jsvectormap($atts)
         $today_start_ts = (int) (clone (new \DateTime($today_str . ' 00:00:00', $tz)))->setTimezone($utc)->getTimestamp();
         $today_end_ts   = (int) (clone (new \DateTime($today_str . ' 23:59:59', $tz)))->setTimezone($utc)->getTimestamp();
 
-        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $today_sql = $wpdb->prepare("
             SELECT u.country, COUNT(*) AS unique_visitors
             FROM (
@@ -87,7 +83,7 @@ function bbcs_display_visitors_jsvectormap($atts)
         ", ...array_merge([$today_start_ts, $today_end_ts, BOTBLOCKER_EMPTY], $ip_params, [$today_start_ts, $today_end_ts, BOTBLOCKER_EMPTY], $ip_params));
 
         $today_results = $wpdb->get_results($today_sql);
-        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
         $today_countries = [];
         foreach ((array) $today_results as $row) {
@@ -96,7 +92,7 @@ function bbcs_display_visitors_jsvectormap($atts)
 
         $chart_data = bbcs_summary_merge_arrays($past_countries, $today_countries);
     } else {
-        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared 
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $sql = $wpdb->prepare("
             SELECT u.country, COUNT(*) AS unique_visitors
             FROM (
@@ -125,7 +121,7 @@ function bbcs_display_visitors_jsvectormap($atts)
         ", ...array_merge([$start_ts, $end_ts, BOTBLOCKER_EMPTY], $ip_params, [$start_ts, $end_ts, BOTBLOCKER_EMPTY], $ip_params));
 
         $results = $wpdb->get_results($sql);
-        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared 
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
         foreach ((array) $results as $row) {
             $chart_data[$row->country] = (int) $row->unique_visitors;
@@ -142,11 +138,9 @@ function bbcs_display_visitors_jsvectormap($atts)
     $output = ob_get_clean();
 
     if ($BBCS->settings->cache_ui_data == 1) {
-        if (BOTBLOCKER_CACHE_WP) {
-            wp_cache_set($cache_key, $output, 'botblocker-security', (int) $BBCS->settings->cache_ui_duration);
-        } else {
-            set_transient($cache_key, $output, (int) $BBCS->settings->cache_ui_duration);
-        }
+
+        set_transient($cache_key, $output, (int) $BBCS->settings->cache_ui_duration);
+
     }
 
     return $output;

@@ -59,7 +59,7 @@ settings_errors('botblocker_messages');
 								<a class="nav-link" data-bs-toggle="tab" href="#browser_plugins"><?php esc_html_e('Browser Plugins', 'botblocker-security'); ?></a>
 							</li>
 							<li class="nav-item">
-								<a class="nav-link" data-bs-toggle="tab" href="#data_log_and_processing"><?php esc_html_e('Data Log & Processing', 'botblocker-security'); ?></a>
+								<a class="nav-link" data-bs-toggle="tab" href="#data_log_and_processing"><?php esc_html_e('Data Log and Processing', 'botblocker-security'); ?></a>
 							</li>						
 							<li class="nav-item">
 								<a class="nav-link bbcs-cloud-api-color" data-bs-toggle="tab" href="#advanced_protection"><?php esc_html_e('Advanced Protection', 'botblocker-security'); ?></a>
@@ -89,22 +89,22 @@ settings_errors('botblocker_messages');
                     <div class="card-body">						
                         <ul class="nav nav-tabs">
 							<li class="nav-item">
-								<a class="nav-link active" data-bs-toggle="tab" href="#cookie"><?php esc_html_e('Cookies Settings', 'botblocker-security'); ?></a>
+								<a class="nav-link active" data-bs-toggle="tab" href="#cookie"><?php esc_html_e('Cookie Settings', 'botblocker-security'); ?></a>
 							</li>						
 							<li class="nav-item">
 								<a class="nav-link" data-bs-toggle="tab" href="#general"><?php esc_html_e('General', 'botblocker-security'); ?></a>
 							</li>
 							<li class="nav-item">
-								<a class="nav-link" data-bs-toggle="tab" href="#error"><?php esc_html_e('Error & Access Settings', 'botblocker-security'); ?></a>
+								<a class="nav-link" data-bs-toggle="tab" href="#error"><?php esc_html_e('Error and Access Settings', 'botblocker-security'); ?></a>
 							</li>
 							<li class="nav-item">
-								<a class="nav-link" data-bs-toggle="tab" href="#login_brutforce"><?php esc_html_e('Login Brutforce', 'botblocker-security'); ?></a>
+								<a class="nav-link" data-bs-toggle="tab" href="#login_brutforce"><?php esc_html_e('Login Brute-Force', 'botblocker-security'); ?></a>
 							</li>
 							<li class="nav-item">
 								<a class="nav-link" data-bs-toggle="tab" href="#captcha"><?php esc_html_e('BotBlocker Captcha', 'botblocker-security'); ?></a>
 							</li>						
 							<li class="nav-item">
-								<a class="nav-link" data-bs-toggle="tab" href="#traffic"><?php esc_html_e('Traffic & Referrer Settings', 'botblocker-security'); ?></a>
+								<a class="nav-link" data-bs-toggle="tab" href="#traffic"><?php esc_html_e('Traffic and Referrer Settings', 'botblocker-security'); ?></a>
 							</li>						
 							<li class="nav-item">
 								<a class="nav-link" data-bs-toggle="tab" href="#log"><?php esc_html_e('Logging Settings', 'botblocker-security'); ?></a>
@@ -113,7 +113,7 @@ settings_errors('botblocker_messages');
 								<a class="nav-link" data-bs-toggle="tab" href="#cron"><?php esc_html_e('Cron Jobs', 'botblocker-security'); ?></a>
 							</li>
 							<li class="nav-item">
-								<a class="nav-link" data-bs-toggle="tab" href="#settings_ui"><?php esc_html_e('UI settings', 'botblocker-security'); ?></a>
+								<a class="nav-link" data-bs-toggle="tab" href="#settings_ui"><?php esc_html_e('UI Settings', 'botblocker-security'); ?></a>
 							</li>                              
                             <li class="nav-item">
 								<a class="nav-link" data-bs-toggle="tab" href="#notifications"><?php esc_html_e('Notifications', 'botblocker-security'); ?></a>
