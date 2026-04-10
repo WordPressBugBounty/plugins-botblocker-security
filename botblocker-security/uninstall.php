@@ -53,6 +53,7 @@ $bbcs_option_keys = [
 	'botblocker_active_addons',
 	'botblocker_tools_core_settings',
 	'botblocker_tools_login_settings',
+	'botblocker_tools_headers_settings',				// <---------- ДОБАВЛЕНО !!!!!!!!!!
 ];
 
 /**
@@ -85,7 +86,7 @@ function bbcs_uninstall_site_data( $cron_hooks, $option_keys ) {
 	];
 
 	/** REVIEWER NOTE:
-	 * Direct DROP TABLE statements are necessary in uninstall — wpdb::prepare()
+	 * Direct DROP TABLE statements are necessary in uninstall - wpdb::prepare()
 	 * cannot bind identifiers. Suppressing Sniffs for schema-level queries.
 	 */
 	foreach ( $bbcs_tables as $bbcs_table ) {
@@ -150,4 +151,9 @@ if ( is_multisite() ) {
 $bbcs_mu_plugin_file = trailingslashit( WPMU_PLUGIN_DIR ) . 'botblocker-mu-plugin.php';
 if ( file_exists( $bbcs_mu_plugin_file ) ) {
 	wp_delete_file( $bbcs_mu_plugin_file );
+}
+
+$bbcs_sec_headers_mu = trailingslashit( WPMU_PLUGIN_DIR ) . 'botblocker-security-headers.php';
+if ( file_exists( $bbcs_sec_headers_mu ) ) {
+	wp_delete_file( $bbcs_sec_headers_mu );
 }

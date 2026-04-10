@@ -132,11 +132,11 @@ class BotBlocker_SetupWizard
 			<title><?php esc_html_e( 'BotBlocker Security &rsaquo; Setup Wizard', 'botblocker-security' ); ?></title>
 			
 			<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700&display=swap">
-			<link rel="stylesheet" href="<?php echo esc_url(plugin_dir_url(__FILE__) . 'css/bootstrap/bootstrap.min.css'); ?>?ver=<?php echo BOTBLOCKER_VERSION; ?>">
-			<link rel="stylesheet" href="<?php echo esc_url(plugin_dir_url(__FILE__) . 'css/theme.css'); ?>?ver=<?php echo BOTBLOCKER_VERSION; ?>">
-			<link rel="stylesheet" href="<?php echo esc_url(plugin_dir_url(__FILE__) . 'css/default.css'); ?>?ver=<?php echo BOTBLOCKER_VERSION; ?>">
-			<link rel="stylesheet" href="<?php echo esc_url(plugin_dir_url(__FILE__) . 'css/all.min.css'); ?>?ver=<?php echo BOTBLOCKER_VERSION; ?>">
-			<link rel="stylesheet" href="<?php echo esc_url(plugin_dir_url(__FILE__) . 'css/botblocker-setup-wizard.css'); ?>?ver=<?php echo BOTBLOCKER_VERSION; ?>">
+			<link rel="stylesheet" href="<?php echo esc_url(add_query_arg('ver', BOTBLOCKER_VERSION, plugin_dir_url(__FILE__) . 'css/bootstrap/bootstrap.min.css')); ?>">
+			<link rel="stylesheet" href="<?php echo esc_url(add_query_arg('ver', BOTBLOCKER_VERSION, plugin_dir_url(__FILE__) . 'css/theme.css')); ?>">
+			<link rel="stylesheet" href="<?php echo esc_url(add_query_arg('ver', BOTBLOCKER_VERSION, plugin_dir_url(__FILE__) . 'css/default.css')); ?>">
+			<link rel="stylesheet" href="<?php echo esc_url(add_query_arg('ver', BOTBLOCKER_VERSION, plugin_dir_url(__FILE__) . 'css/all.min.css')); ?>">
+			<link rel="stylesheet" href="<?php echo esc_url(add_query_arg('ver', BOTBLOCKER_VERSION, plugin_dir_url(__FILE__) . 'css/botblocker-setup-wizard.css')); ?>">
 			
 			<script src="<?php echo esc_url(includes_url('js/jquery/jquery.min.js')); ?>"></script>
 			<script>
@@ -152,8 +152,8 @@ class BotBlocker_SetupWizard
 					'site_url'           => home_url('/'),
 				]); ?>;
 			</script>
-			<script src="<?php echo esc_url(plugin_dir_url(__FILE__) . 'js/bootstrap/bootstrap.bundle.min.js'); ?>?ver=<?php echo BOTBLOCKER_VERSION; ?>"></script>
-			<script src="<?php echo esc_url(plugin_dir_url(__FILE__) . 'js/botblocker-setup-wizard.js'); ?>?ver=<?php echo BOTBLOCKER_VERSION; ?>"></script>
+			<script src="<?php echo esc_url(add_query_arg('ver', BOTBLOCKER_VERSION, plugin_dir_url(__FILE__) . 'js/bootstrap/bootstrap.bundle.min.js')); ?>"></script>
+			<script src="<?php echo esc_url(add_query_arg('ver', BOTBLOCKER_VERSION, plugin_dir_url(__FILE__) . 'js/botblocker-setup-wizard.js')); ?>"></script>
 		</head>
 		<body class="botblocker-security-setup-wizard">
 		<?php
@@ -449,7 +449,7 @@ private function render_wizard_content() {
 								</h3>
 								<p class="bbcs-preset-tagline"><?php esc_html_e('Maximum protection with PRO features', 'botblocker-security'); ?></p>
 								<ul class="bbcs-preset-features">
-									<li><?php esc_html_e('Early init — blocks before WP loads', 'botblocker-security'); ?></li>
+									<li><?php esc_html_e('Early init - blocks before WP loads', 'botblocker-security'); ?></li>
 									<li><?php esc_html_e('Zero-day botnet updates', 'botblocker-security'); ?></li>
 									<li><?php esc_html_e('WordPress acceleration and optimization', 'botblocker-security'); ?></li>
 									<li><?php esc_html_e('All add-ons included (tools, security, notifications, etc.)', 'botblocker-security'); ?></li>
@@ -645,6 +645,21 @@ private function render_wizard_content() {
 						</div>
 						*/ ?>
 
+					<!-- Silent Auto-Verify (Default Selected) -->
+					<div class="bbcs-captcha-card selected" data-captcha="8">
+						<div class="bbcs-captcha-video-wrapper">
+							<img src="https://botblocker.top/wp-content/plugins/bbcs-materials/image/silent-mode.webp"
+								alt="<?php esc_attr_e('Silent Auto-Verify', 'botblocker-security'); ?>"
+								class="bbcs-captcha-video" style="object-fit: cover;">
+						</div>
+						<div class="bbcs-captcha-content">
+							<h4><i class="fa-solid fa-user-shield me-2"></i><?php esc_html_e('Silent Auto-Verify', 'botblocker-security'); ?>
+								<span class="bbcs-wizard-recommended"><?php esc_html_e('Recommended', 'botblocker-security'); ?></span>
+							</h4>
+							<p class="small text-muted mb-0"><?php esc_html_e('No manual verification. Access decisions are based entirely on IP databases, blacklists, and threat intelligence.', 'botblocker-security'); ?></p>
+						</div>
+					</div>
+
 						<!-- Color Circles -->
 						<div class="bbcs-captcha-card" data-captcha="1">
 							<div class="bbcs-captcha-video-wrapper">
@@ -662,8 +677,8 @@ private function render_wizard_content() {
 							</div>
 						</div>
 
-						<!-- Image Recognition (Default Selected) -->
-						<div class="bbcs-captcha-card selected" data-captcha="2">
+						<!-- Image Recognition -->
+						<div class="bbcs-captcha-card" data-captcha="2">
 							<div class="bbcs-captcha-video-wrapper">
 								<video class="bbcs-captcha-video" loop muted playsinline preload="metadata">
 									<source src="<?php echo esc_url(BOTBLOCKER_MATERIALS_URL . 'video/captcha/images.mp4'); ?>" type="video/mp4">
@@ -674,9 +689,7 @@ private function render_wizard_content() {
 								</div>
 							</div>
 							<div class="bbcs-captcha-content">
-								<h4><i class="fa-solid fa-images me-2"></i><?php esc_html_e('Image Recognition', 'botblocker-security'); ?> 
-									<span class="bbcs-wizard-recommended"><?php esc_html_e('Recommended', 'botblocker-security'); ?></span>
-								</h4>
+								<h4><i class="fa-solid fa-images me-2"></i><?php esc_html_e('Image Recognition', 'botblocker-security'); ?></h4>
 								<p class="small text-muted mb-0"><?php esc_html_e('Select matching images. Best balance of security and UX.', 'botblocker-security'); ?></p>
 							</div>
 						</div>
@@ -714,6 +727,24 @@ private function render_wizard_content() {
 								<p class="small text-muted mb-0"><?php esc_html_e('Simple math with moving numbers. Easy and effective.', 'botblocker-security'); ?></p>
 							</div>
 						</div>
+
+						<!-- Hold Button -->
+						<div class="bbcs-captcha-card" data-captcha="7">
+							<div class="bbcs-captcha-video-wrapper">
+								<video class="bbcs-captcha-video" loop muted playsinline preload="metadata">
+									<source src="<?php echo esc_url(BOTBLOCKER_MATERIALS_URL . 'video/captcha/hold_button.mp4'); ?>" type="video/mp4">
+									<?php esc_html_e('Your browser does not support the video tag.', 'botblocker-security'); ?>
+								</video>
+								<div class="bbcs-captcha-play-icon">
+									<i class="fa-solid fa-circle-play"></i>
+								</div>
+							</div>
+							<div class="bbcs-captcha-content">
+								<h4><i class="fa-solid fa-hand me-2"></i><?php esc_html_e('Hold Button', 'botblocker-security'); ?></h4>
+								<p class="small text-muted mb-0"><?php esc_html_e('Press and hold to verify. No images or math required.', 'botblocker-security'); ?></p>
+							</div>
+						</div>
+
 					</div>
 
 					<div class="alert alert-warning mt-3 mb-3" style="font-size: 13px;">
@@ -1000,7 +1031,7 @@ private function render_wizard_content() {
 							<div class="row mb-3">
 								<div class="col-6">
 									<ul class="bbcs-pro-features-compact">
-										<li><i class="fa-solid fa-check"></i> <?php esc_html_e('Early init — blocks before WP loads', 'botblocker-security'); ?></li>
+										<li><i class="fa-solid fa-check"></i> <?php esc_html_e('Early init - blocks before WP loads', 'botblocker-security'); ?></li>
 										<li><i class="fa-solid fa-check"></i> <?php esc_html_e('WordPress Acceleration', 'botblocker-security'); ?></li>
 										<li><i class="fa-solid fa-check"></i> <?php esc_html_e('Hide Login URL + add-ons', 'botblocker-security'); ?></li>
 										<li><i class="fa-solid fa-check"></i> <?php esc_html_e('VPN and Tor Blocking', 'botblocker-security'); ?></li>
@@ -1180,8 +1211,8 @@ private function render_wizard_content() {
 		
 		$captcha_mode = isset($_POST['captcha_mode']) ? intval($_POST['captcha_mode']) : 2;
 		
-		// Valid CAPTCHA modes: 0-6 (based on botblocker-set-captcha.php)
-		if (!in_array($captcha_mode, [0, 1, 2, 3, 4, 5, 6])) {
+		// Valid CAPTCHA modes: 0-8 (based on botblocker-set-captcha.php)
+		if (!in_array($captcha_mode, [0, 1, 2, 3, 4, 5, 6, 7, 8])) {
 			wp_send_json_error(__('Invalid CAPTCHA mode.', 'botblocker-security'));
 		}
 		

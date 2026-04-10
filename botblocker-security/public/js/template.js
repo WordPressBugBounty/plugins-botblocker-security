@@ -286,8 +286,14 @@ window[bbcsJsData.checkFunctionName] = function(s, d, x) {
                         var expires = "expires=" + d.toUTCString();
                         document.cookie = bbcsJsData.uid + "=" + obj.cookie + "-" + bbcsJsData.time + "; SameSite=" + bbcsJsData.samesite + ";" + 
                             (bbcsJsData.samesite == 'None' ? ' Secure' : '') + "; " + expires + "; path=/;";
-                        document.getElementById("content").innerHTML = bbcsJsData.loadingText;
-                        window.location.href = bbcsJsData.redirectUrl;
+                        if (bbcsJsData.silentMode) {
+                            try { sessionStorage.removeItem('bbcsMode8Retries'); } catch(e) {}
+                            document.getElementById("content").innerHTML = bbcsJsData.approvedText;
+                            setTimeout(function() { window.location.href = bbcsJsData.redirectUrl; }, 0);
+                        } else {
+                            document.getElementById("content").innerHTML = bbcsJsData.loadingText;
+                            window.location.href = bbcsJsData.redirectUrl;
+                        }
                     } else {
                         botblocker_captcha_render();
                         bbcsDebugLog('Bad bot detected');
@@ -315,6 +321,15 @@ window[bbcsJsData.checkFunctionName] = function(s, d, x) {
                             }
                         }
                         if (obj.error == "timeout" || obj.error == "Wrong Click") {
+                            if (bbcsJsData.silentMode) {
+                                var r = 0;
+                                try { r = parseInt(sessionStorage.getItem('bbcsMode8Retries') || '0', 10); } catch(e) {}
+                                if (r < 2) {
+                                    try { sessionStorage.setItem('bbcsMode8Retries', String(r + 1)); } catch(e) {}
+                                    window.location.reload();
+                                    return;
+                                }
+                            }
                             document.getElementById("content").innerHTML = bbcsJsData.loadingText;
                             window.location.href = bbcsJsData.redirectUrl;
                         }

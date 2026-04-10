@@ -126,6 +126,36 @@ public function check_secret_parameter() : bool
 
     public function check_white_bot() : bool
     {
+        // Pass 1: ASN-only match (no UA required, no PTR lookup).
+        // Handles bots that arrive without their known UA or without rDNS
+        // (e.g. Google IPv6 crawlers, TelegramBot).
+        // Only fires when the cloud API has populated $this->asnum.
+        if ( ! empty( $this->asnum ) && $this->asnum !== BOTBLOCKER_EMPTY ) {
+            foreach ( $this->bbcs_se as $bbcs_line => $bbcs_sign ) {
+                if ( isset( $this->bbcs_rule[ $bbcs_line ] ) && $this->bbcs_rule[ $bbcs_line ] === 'allow' ) {
+                    foreach ( $bbcs_sign as $token ) {
+                        if (
+                            is_string( $token ) &&
+                            strncmp( $token, 'asn:', 4 ) === 0 &&
+                            substr( $token, 4 ) === (string) $this->asnum
+                        ) {
+                            $this->result_of_action = 'Legal bot by ASN: ' . esc_sql( $bbcs_line ) . ' (' . esc_sql( $token ) . ')';
+                            $this->white_bot        = $bbcs_line;
+                            $this->visitorType      = self::VISITOR_LEGALBOT;
+                            break 2;
+                        }
+                    }
+                }
+            }
+        }
+
+        if ( $this->visitorType === self::VISITOR_LEGALBOT ) {
+            bbcs_storeData( null, 5 );
+            bbcs_process_hit( 5 );
+            return true;
+        }
+
+        // Pass 2: UA match + PTR verification (existing logic).
         foreach ($this->bbcs_se as $bbcs_line => $bbcs_sign) {
             if (stripos($this->useragent, $bbcs_line) === false) {
                 continue;
@@ -144,8 +174,22 @@ public function check_secret_parameter() : bool
                 $this->set_gray_status("1 - <b>gray</b> by user-agent: {$escaped_line}");
                 break;
             } elseif ($rule === 'allow') {
-                if (bbcs_testWhiteBot($this->ip, $bbcs_sign, $this->time, $this->settings->ptrcache_time) === true) {
-                    if (!in_array('.', $bbcs_sign, true)) {
+                // Strip asn: tokens - PTR verification only works with domain suffixes.
+                $ptr_tokens = array();
+                foreach ( $bbcs_sign as $token ) {
+                    if ( ! is_string( $token ) || strncmp( $token, 'asn:', 4 ) !== 0 ) {
+                        $ptr_tokens[] = $token;
+                    }
+                }
+                if ( empty( $ptr_tokens ) ) {
+                    // Entry has only asn: tokens; UA matched but no PTR domains defined.
+                    // Treat as verified because ASN ownership was already established by
+                    // the cloud API - the matching UA is an additional positive signal.
+                    $this->result_of_action = "Legal bot detected (ASN-only entry): {$escaped_line}";
+                    $this->white_bot        = $escaped_line;
+                    $this->visitorType      = self::VISITOR_LEGALBOT;
+                } elseif (bbcs_testWhiteBot($this->ip, $ptr_tokens, $this->time, $this->settings->ptrcache_time) === true) {
+                    if (!in_array('.', $ptr_tokens, true)) {
                         bbcs_storePTRrule();
                     }
                     $this->result_of_action = "Legal bot detected: {$escaped_line}";
@@ -230,7 +274,7 @@ public function check_secret_parameter() : bool
             // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter
             $bbcs_test_visitor = $wpdb->get_results($query, ARRAY_A);
 
-            // DEBUG: временная диагностика — раскомментировать для отладки check_rules_database
+            // DEBUG: временная диагностика - раскомментировать для отладки check_rules_database
             // error_log('[BBCS DEBUG check_rules_database] SQL: ' . $query);
             // error_log('[BBCS DEBUG check_rules_database] Rows found: ' . count($bbcs_test_visitor));
             // error_log('[BBCS DEBUG check_rules_database] DB error: ' . $wpdb->last_error);

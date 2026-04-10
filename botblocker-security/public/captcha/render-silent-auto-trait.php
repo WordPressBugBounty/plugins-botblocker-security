@@ -1,0 +1,20 @@
+<?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+trait BBCS_RenderSilentAutoTrait {
+
+	private function getSilentAutoData() {
+		$nonce = $this->createChallenge( 'silent_auto', 8 );
+		$hash  = $this->answerHash( $nonce, 'silent_auto' );
+
+		return array(
+			'mode'   => 8,
+			'params' => array(
+				'deniedText'  => __( 'Access denied. Please enable JavaScript and cookies.', 'botblocker-security' ),
+				'silentHash'  => $hash,
+			),
+		);
+	}
+}

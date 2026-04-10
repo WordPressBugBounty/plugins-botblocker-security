@@ -34,7 +34,14 @@ add_action('template_redirect', function () {
 
     // Rate limiting check.
     $rate_limited = false;
-    $attempts_left = 5 - (int)get_transient('bbcs_2fa_attempts_' . $user_id);
+    $_2fa_data    = get_transient( 'bbcs_2fa_attempts_' . $user_id );
+    if ( $_2fa_data === false ) {
+        $attempts_left = 5;
+    } elseif ( is_array( $_2fa_data ) ) {
+        $attempts_left = max( 0, 5 - (int) $_2fa_data['count'] );
+    } else {
+        $attempts_left = max( 0, 5 - (int) $_2fa_data );
+    }
 
     $request_method = isset($_SERVER['REQUEST_METHOD']) ? sanitize_text_field(wp_unslash($_SERVER['REQUEST_METHOD'])) : '';
 

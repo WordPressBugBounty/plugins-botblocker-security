@@ -1,5 +1,5 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if (! defined('ABSPATH')) exit; // Exit if accessed directly
 /**
  * The BotBlocker Security bootstrap file
  *
@@ -10,13 +10,13 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
  *
  * @link              https://globus.studio
  * @package           botblocker-security
- * @version           1.6.15
+ * @version           1.6.16
  *
  * @wordpress-plugin
  * Plugin Name:       BotBlocker Security - Firewall & Bot Protection
  * Plugin URI:        https://botblocker.top/
- * Description:       Blocks bots, scrapers and automated threats in real time. CAPTCHA, IP rules, proxy detection, login protection, reCAPTCHA, cloud API and customizable security rules — all in one plugin.
- * Version:           1.6.15
+ * Description:       Blocks bots, scrapers and automated threats in real time. CAPTCHA, IP rules, proxy detection, login protection, reCAPTCHA, cloud API and customizable security rules - all in one plugin.
+ * Version:           1.6.16
  * Author:            Yevhen Leonidov
  * Author URI:        https://leonidov.dev/
  * License:           GPL-2.0+
@@ -30,32 +30,34 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 
 // Check minimum requirements (PHP)
-if ( version_compare( phpversion(), '7.4.0', '<' ) ) {
-	function bbcs_minimum_php_version_notice() {
-		echo '<div class="notice notice-error"><p>' . esc_html__( 'BotBlocker requires PHP 7.4 or higher.', 'botblocker-security') . '</p></div>';
-	}
-	add_action( 'admin_notices', 'bbcs_minimum_php_version_notice' );
-	return;
+if (version_compare(phpversion(), '7.4.0', '<')) {
+    function bbcs_minimum_php_version_notice()
+    {
+        echo '<div class="notice notice-error"><p>' . esc_html__('BotBlocker requires PHP 7.4 or higher.', 'botblocker-security') . '</p></div>';
+    }
+    add_action('admin_notices', 'bbcs_minimum_php_version_notice');
+    return;
 }
 
 // Check minimum requirements (WordPress)
-if ( version_compare( $GLOBALS['wp_version'], '5.0', '<' ) ) {
-	function bbcs_minimum_wp_version_notice() {
-		echo '<div class="notice notice-error"><p>' . esc_html__( 'BotBlocker requires WordPress 5.0 or later.', 'botblocker-security') . '</p></div>';
-	}
-	add_action( 'admin_notices', 'bbcs_minimum_wp_version_notice' );
-	return;
+if (version_compare($GLOBALS['wp_version'], '5.0', '<')) {
+    function bbcs_minimum_wp_version_notice()
+    {
+        echo '<div class="notice notice-error"><p>' . esc_html__('BotBlocker requires WordPress 5.0 or later.', 'botblocker-security') . '</p></div>';
+    }
+    add_action('admin_notices', 'bbcs_minimum_wp_version_notice');
+    return;
 }
 
 /**
  * Constants for the BotBlocker plugin.
  * These constants define various settings and values used throughout the plugin.
  */
-if(!defined('BOTBLOCKER')) {
-	define('BOTBLOCKER', true); 
+if (!defined('BOTBLOCKER')) {
+    define('BOTBLOCKER', true);
 }
-define('BOTBLOCKER_DIR',        plugin_dir_path(__FILE__)); 
-define('BOTBLOCKER_URL',        plugin_dir_url(__FILE__)); 
+define('BOTBLOCKER_DIR',        plugin_dir_path(__FILE__));
+define('BOTBLOCKER_URL',        plugin_dir_url(__FILE__));
 define('BOTBLOCKER_BASENAME',   plugin_basename(__FILE__));
 
 // Include the defines file
@@ -108,10 +110,10 @@ add_action('wp_ajax_nopriv_bbcs_botblocker_check', 'bbcs_botblocker_ajax_check')
  *
  * @return void
  */
-function bbcs_activate_botblocker( $network_wide = false )
+function bbcs_activate_botblocker($network_wide = false)
 {
     //BBCS-MULTISITE
-    if ( is_multisite() && $network_wide ) {
+    if (is_multisite() && $network_wide) {
         bbcs_activate_network_wide();
         return;
     }
@@ -155,14 +157,15 @@ function bbcs_activate_botblocker( $network_wide = false )
 register_activation_hook(__FILE__, 'bbcs_activate_botblocker');
 
 //BBCS-MULTISITE
-function bbcs_activate_network_wide() {
-    if ( ! is_multisite() ) {
+function bbcs_activate_network_wide()
+{
+    if (! is_multisite()) {
         return;
     }
     ob_start();
-    $site_ids = get_sites( array( 'fields' => 'ids', 'number' => 0 ) );
-    foreach ( $site_ids as $site_id ) {
-        switch_to_blog( $site_id );
+    $site_ids = get_sites(array('fields' => 'ids', 'number' => 0));
+    foreach ($site_ids as $site_id) {
+        switch_to_blog($site_id);
         require BOTBLOCKER_DIR . 'includes/inc-botblocker-tables.php';
         $is_fresh_install = !bbcs_tablesExist();
         bbcs_check_install();
@@ -170,10 +173,10 @@ function bbcs_activate_network_wide() {
         Botblocker_Activator::activate();
         bbcs_register_cron_tasks();
         bbcs_rewrite_rules();
-        if ( function_exists( 'bbcs_register_2fa_rewrite_rules' ) ) {
+        if (function_exists('bbcs_register_2fa_rewrite_rules')) {
             bbcs_register_2fa_rewrite_rules();
         }
-        flush_rewrite_rules( true );
+        flush_rewrite_rules(true);
         if ($is_fresh_install) {
             set_transient('bbcs_just_activated', true, 60);
             bbcs_update_option('bbcs_activation_redirect', true);
@@ -181,7 +184,7 @@ function bbcs_activate_network_wide() {
         restore_current_blog();
     }
     require BOTBLOCKER_DIR . 'includes/inc-botblocker-tables.php';
-    if ( defined( 'BOTBLOCKER_INTEGRATE_MU_PLUGINS' ) && BOTBLOCKER_INTEGRATE_MU_PLUGINS ) {
+    if (defined('BOTBLOCKER_INTEGRATE_MU_PLUGINS') && BOTBLOCKER_INTEGRATE_MU_PLUGINS) {
         bbcs_installMuPlugin();
     }
     ob_end_clean();
@@ -195,10 +198,10 @@ function bbcs_activate_network_wide() {
  *
  * @return void
  */
-function bbcs_deactivate_botblocker( $network_wide = false )
+function bbcs_deactivate_botblocker($network_wide = false)
 {
     //BBCS-MULTISITE
-    if ( is_multisite() && $network_wide ) {
+    if (is_multisite() && $network_wide) {
         bbcs_deactivate_network_wide();
         return;
     }
@@ -211,7 +214,13 @@ function bbcs_deactivate_botblocker( $network_wide = false )
         bbcs_uninstallMuPlugin();
     }
 
-    if ( ! is_multisite() && function_exists( 'bbcs_removeWpConfigEarlyInitCode' ) ) {
+    $sec_headers_mu = trailingslashit(WPMU_PLUGIN_DIR) . 'botblocker-security-headers.php';
+    if (file_exists($sec_headers_mu)) {
+        wp_delete_file($sec_headers_mu);
+        clearstatcache(true);
+    }
+
+    if (! is_multisite() && function_exists('bbcs_removeWpConfigEarlyInitCode')) {
         bbcs_removeWpConfigEarlyInitCode();
     }
 
@@ -222,25 +231,31 @@ function bbcs_deactivate_botblocker( $network_wide = false )
 register_deactivation_hook(__FILE__, 'bbcs_deactivate_botblocker');
 
 //BBCS-MULTISITE
-function bbcs_deactivate_network_wide() {
-    if ( ! is_multisite() ) {
+function bbcs_deactivate_network_wide()
+{
+    if (! is_multisite()) {
         return;
     }
-    $site_ids = get_sites( array( 'fields' => 'ids', 'number' => 0 ) );
-    foreach ( $site_ids as $site_id ) {
-        switch_to_blog( $site_id );
+    $site_ids = get_sites(array('fields' => 'ids', 'number' => 0));
+    foreach ($site_ids as $site_id) {
+        switch_to_blog($site_id);
         require BOTBLOCKER_DIR . 'includes/inc-botblocker-tables.php';
         require_once BOTBLOCKER_DIR . 'includes/class-botblocker-deactivator.php';
         Botblocker_Deactivator::deactivate();
         bbcs_remove_cron_tasks();
-        flush_rewrite_rules( true );
+        flush_rewrite_rules(true);
         restore_current_blog();
     }
     require BOTBLOCKER_DIR . 'includes/inc-botblocker-tables.php';
-    if ( defined( 'BOTBLOCKER_INTEGRATE_MU_PLUGINS' ) && BOTBLOCKER_INTEGRATE_MU_PLUGINS ) {
+    if (defined('BOTBLOCKER_INTEGRATE_MU_PLUGINS') && BOTBLOCKER_INTEGRATE_MU_PLUGINS) {
         bbcs_uninstallMuPlugin();
     }
-    if ( function_exists( 'bbcs_removeWpConfigEarlyInitCode' ) ) {
+    $sec_headers_mu = trailingslashit(WPMU_PLUGIN_DIR) . 'botblocker-security-headers.php';
+    if (file_exists($sec_headers_mu)) {
+        wp_delete_file($sec_headers_mu);
+        clearstatcache(true);
+    }
+    if (function_exists('bbcs_removeWpConfigEarlyInitCode')) {
         bbcs_removeWpConfigEarlyInitCode();
     }
 }
@@ -273,7 +288,7 @@ function bbcs_run_botblocker_shield()
     $bbcs_admin = Botblocker_Admin::getInstance();
     add_action('admin_menu', array($bbcs_admin, 'add_admin_menu'));
     $bbcs_admin->run();
-    
+
     // Initialize Setup Wizard (only in admin)
     if (is_admin()) {
         require_once BOTBLOCKER_DIR . 'admin/class-botblocker-setup-wizard.php';
@@ -285,63 +300,65 @@ function bbcs_run_botblocker_shield()
 add_action('plugins_loaded', 'bbcs_run_botblocker_shield', -9998);
 
 //BBCS-MULTISITE
-function bbcs_on_wp_initialize_site( $new_site ) {
-	if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
-		require_once ABSPATH . 'wp-admin/includes/plugin.php';
-	}
-	if ( ! is_plugin_active_for_network( BOTBLOCKER_BASENAME ) ) {
-		return;
-	}
-	switch_to_blog( (int) $new_site->blog_id );
-	require BOTBLOCKER_DIR . 'includes/inc-botblocker-tables.php';
-	bbcs_check_install();
-	require_once BOTBLOCKER_DIR . 'includes/class-botblocker-activator.php';
-	Botblocker_Activator::activate();
-	bbcs_register_cron_tasks();
-	bbcs_rewrite_rules();
-	if ( function_exists( 'bbcs_register_2fa_rewrite_rules' ) ) {
-		bbcs_register_2fa_rewrite_rules();
-	}
-	flush_rewrite_rules( true );
-	set_transient( 'bbcs_just_activated', true, 60 );
-	bbcs_update_option( 'bbcs_activation_redirect', true );
-	restore_current_blog();
-	require BOTBLOCKER_DIR . 'includes/inc-botblocker-tables.php';
+function bbcs_on_wp_initialize_site($new_site)
+{
+    if (! function_exists('is_plugin_active_for_network')) {
+        require_once ABSPATH . 'wp-admin/includes/plugin.php';
+    }
+    if (! is_plugin_active_for_network(BOTBLOCKER_BASENAME)) {
+        return;
+    }
+    switch_to_blog((int) $new_site->blog_id);
+    require BOTBLOCKER_DIR . 'includes/inc-botblocker-tables.php';
+    bbcs_check_install();
+    require_once BOTBLOCKER_DIR . 'includes/class-botblocker-activator.php';
+    Botblocker_Activator::activate();
+    bbcs_register_cron_tasks();
+    bbcs_rewrite_rules();
+    if (function_exists('bbcs_register_2fa_rewrite_rules')) {
+        bbcs_register_2fa_rewrite_rules();
+    }
+    flush_rewrite_rules(true);
+    set_transient('bbcs_just_activated', true, 60);
+    bbcs_update_option('bbcs_activation_redirect', true);
+    restore_current_blog();
+    require BOTBLOCKER_DIR . 'includes/inc-botblocker-tables.php';
 }
-add_action( 'wp_initialize_site', 'bbcs_on_wp_initialize_site', 200 );
+add_action('wp_initialize_site', 'bbcs_on_wp_initialize_site', 200);
 
 //BBCS-MULTISITE
-function bbcs_on_wp_uninitialize_site( $old_site ) {
-	if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
-		require_once ABSPATH . 'wp-admin/includes/plugin.php';
-	}
-	if ( ! is_plugin_active_for_network( BOTBLOCKER_BASENAME ) ) {
-		return;
-	}
+function bbcs_on_wp_uninitialize_site($old_site)
+{
+    if (! function_exists('is_plugin_active_for_network')) {
+        require_once ABSPATH . 'wp-admin/includes/plugin.php';
+    }
+    if (! is_plugin_active_for_network(BOTBLOCKER_BASENAME)) {
+        return;
+    }
 
-	switch_to_blog( (int) $old_site->blog_id );
-	require BOTBLOCKER_DIR . 'includes/inc-botblocker-tables.php';
-	require_once BOTBLOCKER_DIR . 'includes/class-botblocker-deactivator.php';
-	Botblocker_Deactivator::deactivate();
-	bbcs_remove_cron_tasks();
-	restore_current_blog();
-	require BOTBLOCKER_DIR . 'includes/inc-botblocker-tables.php';
+    switch_to_blog((int) $old_site->blog_id);
+    require BOTBLOCKER_DIR . 'includes/inc-botblocker-tables.php';
+    require_once BOTBLOCKER_DIR . 'includes/class-botblocker-deactivator.php';
+    Botblocker_Deactivator::deactivate();
+    bbcs_remove_cron_tasks();
+    restore_current_blog();
+    require BOTBLOCKER_DIR . 'includes/inc-botblocker-tables.php';
 
-	update_site_option( 'bbcs_early_sites_map_dirty', 1 );
+    update_site_option('bbcs_early_sites_map_dirty', 1);
 }
-add_action( 'wp_uninitialize_site', 'bbcs_on_wp_uninitialize_site', 1 );
+add_action('wp_uninitialize_site', 'bbcs_on_wp_uninitialize_site', 1);
 
 // Multisite: flag sites map for regeneration when site URLs change.
-if ( is_multisite() ) {
-	add_action( 'update_option_siteurl', function () {
-		update_site_option( 'bbcs_early_sites_map_dirty', 1 );
-	} );
+if (is_multisite()) {
+    add_action('update_option_siteurl', function () {
+        update_site_option('bbcs_early_sites_map_dirty', 1);
+    });
 
-	add_action( 'wp_update_site', function ( $new_site, $old_site ) {
-		if ( $new_site->domain !== $old_site->domain || $new_site->path !== $old_site->path ) {
-			update_site_option( 'bbcs_early_sites_map_dirty', 1 );
-		}
-	}, 10, 2 );
+    add_action('wp_update_site', function ($new_site, $old_site) {
+        if ($new_site->domain !== $old_site->domain || $new_site->path !== $old_site->path) {
+            update_site_option('bbcs_early_sites_map_dirty', 1);
+        }
+    }, 10, 2);
 }
 
 /* Add preconnect for Google Fonts and Google Charts*/
@@ -355,11 +372,12 @@ add_action('wp_head', 'bbcs_add_google_fonts_preconnect');
 /**
  * Add custom links to plugin meta row
  */
-function bbcs_plugin_row_meta($links, $file) {
+function bbcs_plugin_row_meta($links, $file)
+{
     if (BOTBLOCKER_BASENAME === $file) {
         $row_meta = array(
             'docs'    => '<a href="https://botblocker.top/docs/" target="_blank">' . esc_html__('Docs and FAQs', 'botblocker-security') . '</a>',
-            'video'   => '<a href="https://globus.studio/contacts/" target="_blank">' . esc_html__('Hire Developers', 'botblocker-security') . '</a>',
+            'video'   => '<a href="https://globus.studio/contact-us-to-develop-agency-solutions/" target="_blank">' . esc_html__('Hire Developers', 'botblocker-security') . '</a>',
         );
         return array_merge($links, $row_meta);
     }

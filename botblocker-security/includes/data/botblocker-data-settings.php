@@ -255,7 +255,7 @@ function bbcs_loadLightSecurity(){
         'disable' => 0,
         'bbcs_captcha_img_inline' => 1,
         'bbcs_captcha_img_pack' => 1,
-        'bbcs_captcha_mode' => BOTBLOCKER_CAPTCHA_MODE_DEFAULT,
+        'bbcs_captcha_mode' => 0,
         'bbcs_captcha_wait' => 30,
 
         'block_empty_ua' => 1,
@@ -296,7 +296,7 @@ function bbcs_loadLightSecurity(){
  
         'autosave_admin_ip' => 0,
         'ptr_cache_in_db' => 1,
-        'botblocker_force_check' => 1,
+        'botblocker_force_check' => 0,
         'cookie_lifetime' => 604800,
         'vary_cookie' => 0,
 
@@ -305,6 +305,7 @@ function bbcs_loadLightSecurity(){
         'login_brutforce_period' => 900,
         'login_brutforce_primary_block_time' => 900,
         'login_brutforce_secondary_block_time' => 1800,
+        'force_cloud_validation' => 0,
 
         // pro
         'check' => 0,
@@ -333,7 +334,7 @@ function bbcs_loadStrongSecurity(){
         'block_ipv6_users' => 1,
         'block_adblocker_users' => 1,
         'block_http10_users' => 1,
-        'block_incognito_users' => 1,
+        'block_incognito_users' => 0,
         'block_simple_antidetect' => 1,
         'block_ip_ptr_match' => 1,
         'block_cf_users' => 1,
@@ -364,7 +365,7 @@ function bbcs_loadStrongSecurity(){
  
         'autosave_admin_ip' => 0,
         'ptr_cache_in_db' => 1,
-        'botblocker_force_check' => 1,
+        'botblocker_force_check' => 0,
         'cookie_lifetime' => 604800,
         'vary_cookie' => 0,
 
@@ -373,6 +374,8 @@ function bbcs_loadStrongSecurity(){
         'login_brutforce_period' => 900,
         'login_brutforce_primary_block_time' => 900,
         'login_brutforce_secondary_block_time' => 1800,
+
+        'force_cloud_validation' => 0,
 
         // pro
         'check' => 0,
@@ -432,7 +435,7 @@ function bbcs_loadFullSecurity(){
  
         'autosave_admin_ip' => 0,
         'ptr_cache_in_db' => 1,
-        'botblocker_force_check' => 1,
+        'botblocker_force_check' => 0,
         'cookie_lifetime' => 604800,
         'vary_cookie' => 0,
 
@@ -441,6 +444,8 @@ function bbcs_loadFullSecurity(){
         'login_brutforce_period' => 900,
         'login_brutforce_primary_block_time' => 900,
         'login_brutforce_secondary_block_time' => 1800,
+
+        'force_cloud_validation' => 0,
 
         // pro
         'check' => 1,

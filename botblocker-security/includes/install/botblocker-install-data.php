@@ -94,11 +94,11 @@ function bbcs_insertDefaultSearchEngines()
             ['priority' => 5,  'search' => 'GoogleOther-Video', 'data' => '.google.com', 'rule' => 'allow', 'comment' => 'GoogleOther Videos', 'disable' => 0],
             ['priority' => 5,  'search' => 'Google-CloudVertexBot', 'data' => '.google.com .googleusercontent.com', 'rule' => 'allow', 'comment' => 'Vertex AI', 'disable' => 0],
 
-            ['priority' => 10, 'search' => 'Googlebot', 'data' => '.googlebot.com', 'rule' => 'allow', 'comment' => 'GoogleBot (Catch-all)', 'disable' => 0],
+            ['priority' => 10, 'search' => 'Googlebot', 'data' => '.googlebot.com asn:15169', 'rule' => 'allow', 'comment' => 'GoogleBot (Catch-all)', 'disable' => 0],
             ['priority' => 10, 'search' => 'GoogleOther', 'data' => '.google.com', 'rule' => 'allow', 'comment' => 'GoogleOther (Catch-all)', 'disable' => 0],
 
-            ['priority' => 2,  'search' => 'bingbot', 'data' => 'search.msn.com', 'rule' => 'allow', 'comment' => 'Microsoft Bing search bot', 'disable' => 0],
-            ['priority' => 3,  'search' => 'yandex.com', 'data' => '.yandex.ru .yandex.net .yandex.com', 'rule' => 'allow', 'comment' => 'Yandex search bots and services', 'disable' => 0],
+            ['priority' => 2,  'search' => 'bingbot', 'data' => 'search.msn.com asn:8075', 'rule' => 'allow', 'comment' => 'Microsoft Bing search bot', 'disable' => 0],
+            ['priority' => 3,  'search' => 'yandex.com', 'data' => '.yandex.ru .yandex.net .yandex.com asn:13238', 'rule' => 'allow', 'comment' => 'Yandex search bots and services', 'disable' => 0],
             ['priority' => 4,  'search' => 'Applebot', 'data' => '.applebot.apple.com', 'rule' => 'allow', 'comment' => 'Applebot crawler', 'disable' => 0],
             ['priority' => 5,  'search' => 'Google-Site-Verification', 'data' => '.googlebot.com .google.com', 'rule' => 'allow', 'comment' => 'Verification bot for Google Search Console', 'disable' => 0],
             ['priority' => 6,  'search' => 'DuckDuckBot', 'data' => '.duckduckgo.com', 'rule' => 'allow', 'comment' => 'DuckDuckGo search engine bot', 'disable' => 0],
@@ -124,6 +124,12 @@ function bbcs_insertDefaultSearchEngines()
             ['priority' => 19, 'search' => 'vkShare', 'data' => '.vk.com .vkontakte.ru .userapi.ru', 'rule' => 'allow', 'comment' => 'VK link preview', 'disable' => 0],
             ['priority' => 24, 'search' => 'LinkedInBot', 'data' => '.linkedin.com .ads.linkedin.com', 'rule' => 'allow', 'comment' => 'LinkedIn bot for link preview and ads', 'disable' => 0],
             ['priority' => 26, 'search' => 'Pinterestbot', 'data' => '.pinterest.com', 'rule' => 'allow', 'comment' => 'Pinterest link preview bot', 'disable' => 0],
+            ['priority' => 25, 'search' => 'Mail.RU_Bot',     'data' => '.mail.ru .smailru.net',       'rule' => 'allow', 'comment' => 'Mail.ru crawler',        'disable' => 0],
+            ['priority' => 27, 'search' => 'TelegramBot',     'data' => 'asn:62041 asn:59930 asn:62014 asn:44907', 'rule' => 'allow', 'comment' => 'Telegram link preview (ASN-verified)', 'disable' => 0],
+            ['priority' => 29, 'search' => 'Twitterbot',      'data' => '.twttr.com',                  'rule' => 'allow', 'comment' => 'Twitter/X link preview',   'disable' => 0],
+            ['priority' => 40, 'search' => 'Slackbot',        'data' => '.slack.com',                  'rule' => 'allow', 'comment' => 'Slack link expander',       'disable' => 0],
+            ['priority' => 42, 'search' => 'WhatsApp',        'data' => '.whatsapp.net .whatsapp.com', 'rule' => 'allow', 'comment' => 'WhatsApp link preview',     'disable' => 0],
+            ['priority' => 44, 'search' => 'SkypeUriPreview', 'data' => '.skype.com',                  'rule' => 'allow', 'comment' => 'Skype link preview',         'disable' => 0],
             ['priority' => 45, 'search' => 'Discordbot', 'data' => '.discordapp.com .discord.com', 'rule' => 'allow', 'comment' => 'Discord link expander', 'disable' => 0],
             ['priority' => 48, 'search' => 'OdklBot', 'data' => '.odnoklassniki.ru', 'rule' => 'allow', 'comment' => 'Odnoklassniki link preview', 'disable' => 0],
 

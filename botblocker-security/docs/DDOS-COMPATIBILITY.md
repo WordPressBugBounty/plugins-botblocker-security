@@ -1,4 +1,4 @@
-# BotBlocker — DDoS Protection Service Compatibility
+# BotBlocker - DDoS Protection Service Compatibility
 
 When BotBlocker runs behind an external DDoS protection service (DDoS-Guard,
 Stormwall, Cloudflare Under Attack Mode, Qrator, etc.), the two systems may
@@ -11,7 +11,7 @@ the recommended server-side configuration.
 
 BotBlocker's verification page sends an AJAX `POST` request to
 `wp-admin/admin-ajax.php`. External DDoS protection services intercept **all**
-requests — including this internal AJAX call — and may return their own
+requests - including this internal AJAX call - and may return their own
 JavaScript challenge instead of the real WordPress response.
 
 A typical DDoS-Guard response looks like:
@@ -43,7 +43,7 @@ from external DDoS protection services. When detected:
 3. Up to **3 retries** are attempted.
 4. If all retries fail, BotBlocker **redirects to the original page** instead
    of showing CAPTCHA again. This mirrors the "manual refresh" that would
-   otherwise be needed — the DDoS service cookie is already set, and the
+   otherwise be needed - the DDoS service cookie is already set, and the
    BotBlocker cookie may already be valid from a partial success.
 5. During retries, the XHR timeout is increased from 5s to 10s to accommodate
    slower DDoS service round-trips.
@@ -58,11 +58,11 @@ SShield, DDoS-Guard, Stormwall, and similar services.
 Complex challenges that require:
 
 - **Proof-of-Work computation** (e.g., Cloudflare Turnstile, DDoS-Guard
-  advanced mode) — the response contains JavaScript that computes a hash
+  advanced mode) - the response contains JavaScript that computes a hash
   before setting the cookie.
 - **Interactive CAPTCHA** from the DDoS service itself (e.g., hCaptcha
   presented by Cloudflare).
-- **302 redirects** to an external challenge page — the AJAX request never
+- **302 redirects** to an external challenge page - the AJAX request never
   reaches WordPress at all.
 
 For these cases, server-side configuration is **required**.
@@ -123,7 +123,7 @@ Bypassing the DDoS challenge for `admin-ajax.php` is safe because:
 
 1. **BotBlocker validates every AJAX request** via WordPress nonce
    (`check_ajax_referer`), IP binding, User-Agent hash, and timestamp.
-2. The AJAX endpoint **does not expose admin functionality** — it only
+2. The AJAX endpoint **does not expose admin functionality** - it only
    processes BotBlocker's visitor verification flow.
 3. The nonce is single-use and time-limited, preventing replay attacks.
 

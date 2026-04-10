@@ -11,11 +11,11 @@
     var switchDebounceMs = 200; // minimum interval between switches
     var _lastSwitchTs = 0;
 
-    // Global interception before switching (show.bs.tab) — can be canceled
+    // Global interception before switching (show.bs.tab) - can be canceled
     $(document).on('show.bs.tab', 'a[data-bs-toggle="tab"]', function(e){
       var now = Date.now();
       if (now - _lastSwitchTs < switchDebounceMs) {
-        // Too fast — cancel it
+        // Too fast - cancel it
         e.preventDefault();
         return;
       }
@@ -23,7 +23,7 @@
       var loading = Object.keys(tables).some(function(k){ return !!tables[k].isLoading; });
       if (loading) {
         e.preventDefault();
-        // You may briefly show a tooltip or indicator — prevent switching
+        // You may briefly show a tooltip or indicator - prevent switching
         // Example: quickly highlight the active tab so the user understands what we’re waiting for
         var activeTab = $('a[data-bs-toggle="tab"].active');
         activeTab && activeTab.addClass('bbcs-tab-wait');

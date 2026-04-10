@@ -154,6 +154,12 @@ function bbcs_IpRange($cidr)
 
 function bbcs_getPTR($ip, $time, $ttl)
 {
+    // Allow tests (or integrations) to short-circuit the full DB / cache lookup.
+    $override = apply_filters( 'bbcs_get_ptr_override', null, $ip );
+    if ( $override !== null ) {
+        return $override;
+    }
+
     $BBCS = BotBlocker::getInstance();
     global $wpdb;
 
@@ -211,14 +217,29 @@ function bbcs_clearExpiredPTRCache()
 
 function bbcs_testWhiteBot($ip, $ptr_ok, $time, $ttl)
 {
-    if (in_array('.', $ptr_ok)) {
+    // Strip asn: tokens - they are handled upstream in check_white_bot().
+    // Keeping them here would break PTR suffix matching (stripos would never
+    // match "asn:15169" against a hostname).
+    $ptr_domains = array();
+    foreach ( (array) $ptr_ok as $token ) {
+        if ( is_string( $token ) && strncmp( $token, 'asn:', 4 ) !== 0 ) {
+            $ptr_domains[] = $token;
+        }
+    }
+
+    if ( empty( $ptr_domains ) ) {
+        // Only asn: tokens were present - PTR check is not applicable.
+        return false;
+    }
+
+    if (in_array('.', $ptr_domains)) {
         return true;
     } else {
         $ptr = bbcs_getPTR($ip, $time, $ttl); 
         if ($ptr === false) {
             $result = array();
         } else {
-            $result = @dns_get_record($ptr, DNS_A + DNS_AAAA);
+            $result = apply_filters( 'bbcs_dns_get_record', @dns_get_record($ptr, DNS_A + DNS_AAAA), $ptr );
             if (!is_array($result)) {
                 $result = array();
             }
@@ -234,7 +255,7 @@ function bbcs_testWhiteBot($ip, $ptr_ok, $time, $ttl)
             }
         }
         $test_ptr = 0;
-        foreach ($ptr_ok as $ptr_line) {
+        foreach ($ptr_domains as $ptr_line) {
             if ($ptr_line == '.') {
                 $test_ptr = 1;
                 break;

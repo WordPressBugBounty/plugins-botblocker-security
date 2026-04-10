@@ -6,9 +6,11 @@ define('BOTBLOCKER_SHORT_NAME', 'BotBlocker'); // A shorter version of the plugi
 if(!defined('BOTBLOCKER_TABLE_PREFIX')) define('BOTBLOCKER_TABLE_PREFIX', 'bbcs_'); // The prefix used for database tables
 define('BOTBLOCKER_PREFIX', 'bb_'); // The prefix used for settings and options
 
-define('BOTBLOCKER_VERSION', '1.6.15'); // The version number of the plugin
-define('BOTBLOCKER_DB_VERSION', '2.3.0'); // The database version of the plugin
+define('BOTBLOCKER_VERSION', '1.6.16'); // The version number of the plugin
+define('BOTBLOCKER_DB_VERSION', '2.4.0'); // The database version of the plugin
 define('BOTBLOCKER_WIZARD_ON_UPDATE', false); // Show setup wizard after plugin update
+define('BOTBLOCKER_MODE_STABLE', 'stable');
+define('BOTBLOCKER_MODE_DEV',    'dev');
 
 // BBCS-MULTISITE: Site-specific values moved to dynamic functions in inc-botblocker-multisite.php:
 // bbcs_current_site_url(), bbcs_current_site_clear(), bbcs_current_site_name(),
@@ -28,9 +30,6 @@ define('BOTBLOCKER_API_URL', 'https://api.' . BOTBLOCKER_SERVER . '/v2'); // The
 define('BOTBLOCKER_NEWS_URL', 'https://' . BOTBLOCKER_SERVER . '/blog'); // The URL of the BotBlocker BLOG
 define('BOTBLOCKER_DOCS_URL', 'https://' . BOTBLOCKER_SERVER); // The URL of the BotBlocker DOCS /docs/ deprecated
 define('BOTBLOCKER_PRICE_URL', 'https://' . BOTBLOCKER_SERVER . '/botblocker_get_products/'); // The URL of the BotBlocker products
-define('BOTBLOCKER_MODE_STABLE', 'stable');
-define('BOTBLOCKER_MODE_DEV',    'dev');
-define('BOTBLOCKER_MODE', BOTBLOCKER_MODE_STABLE);
 define('BOTBLOCKER_ADDONS', 'https://' . BOTBLOCKER_SERVER . '/wp-content/plugins/bbcs-addons/master.json'); // The URL of the BotBlocker addons (stable)
 define('BOTBLOCKER_ADDONS_DEV', 'https://' . BOTBLOCKER_SERVER . '/wp-content/plugins/bbcs-addons/dev/master.json'); // The URL of the BotBlocker addons (dev)
 define('BOTBLOCKER_MATERIALS_URL', 'https://' . BOTBLOCKER_SERVER . '/wp-content/plugins/bbcs-materials/'); // The URL of the BotBlocker materials
@@ -57,7 +56,8 @@ define('BOTBLOCKER_CACHE_REMAINING_DAYS_TIME', DAY_IN_SECONDS); // Cache remaini
 
 define('BOTBLOCKER_WIDGETS', true); // A constant to indicate that the plugin includes dashboard widgets
 
-define('BOTBLOCKER_CAPTCHA_MODE_DEFAULT', 1); // Color Buttons
+define('BOTBLOCKER_CAPTCHA_MODE_DEFAULT', 8); // Silent Auto-Verify (no user interaction)
+define('BOTBLOCKER_CAPTCHA_MODE_SILENT', 8);  // Silent Auto-Verify (no user interaction)
 
 define('BOTBLOCKER_ENVATO_URL', 'https://codecanyon.net/item/botblocker/99999999'); 				// The URL of the Envato page for BotBlocker
 define('BOTBLOCKER_WORDPRESS_URL', 'https://wordpress.org/plugins/botblocker-security/'); 			// The URL of the WordPress page for BotBlocker
@@ -79,6 +79,8 @@ define('BBCS_FATAL_ERROR_HIVE', true);
 define('BBCS_LOG_TO_DEBUG', true);
 // Stop execution on fatal errors
 define('BBCS_ERROR_EXIT', false);
+// 
+define('BOTBLOCKER_MODE', BOTBLOCKER_MODE_STABLE); 
 
 define('BBCS_STOP_DIRECT','<?php
 // If this file is called directly, abort.

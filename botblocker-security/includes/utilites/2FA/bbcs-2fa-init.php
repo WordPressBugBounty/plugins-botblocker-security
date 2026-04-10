@@ -173,18 +173,31 @@ function bbcs_verify_backup_code($code, $stored_codes) {
 }
 
 function bbcs_check_rate_limit($user_id) {
-    $attempts = get_transient('bbcs_2fa_attempts_' . $user_id);
-    
-    if ($attempts === false) {
-        set_transient('bbcs_2fa_attempts_' . $user_id, 1, 300); // 5 minutes
+    $data = get_transient( 'bbcs_2fa_attempts_' . $user_id );
+
+    // No record - first attempt in this window.
+    if ( $data === false ) {
+        set_transient( 'bbcs_2fa_attempts_' . $user_id, [ 'count' => 1, 'since' => time() ], 300 ); // 5 minutes
         return true;
     }
-    
-    if ($attempts >= 5) {
+
+    // Backwards compat: old format stored a plain integer.
+    if ( ! is_array( $data ) ) {
+        $data = [ 'count' => (int) $data, 'since' => time() - 300 ];
+    }
+
+    // Fallback TTL check: persistent object cache may ignore TTL.
+    // If 5+ minutes have passed since the window started, reset the counter.
+    if ( time() - $data['since'] >= 300 ) {
+        set_transient( 'bbcs_2fa_attempts_' . $user_id, [ 'count' => 1, 'since' => time() ], 300 );
+        return true;
+    }
+
+    if ( $data['count'] >= 5 ) {
         return false;
     }
-    
-    set_transient('bbcs_2fa_attempts_' . $user_id, $attempts + 1, 300);
+
+    set_transient( 'bbcs_2fa_attempts_' . $user_id, [ 'count' => $data['count'] + 1, 'since' => $data['since'] ], 300 );
     return true;
 }
 

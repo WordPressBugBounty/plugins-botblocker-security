@@ -13,8 +13,9 @@ if ( isset( $_POST['save_settings'] ) ) {
     }
     check_admin_referer( 'save_botblocker_settings', 'botblocker_settings_nonce' );
 
-    $bbcs_core_settings  = [];
-    $bbcs_login_settings = [];
+    $bbcs_core_settings  	= [];
+    $bbcs_login_settings 	= [];
+	$bbcs_headers_settings 	= [];
     $bbcs_existing_login_settings = get_option( 'botblocker_tools_login_settings', [] );
 
     if ( function_exists( 'bbcs_get_tools_core_options' ) ) {
@@ -61,9 +62,26 @@ if ( isset( $_POST['save_settings'] ) ) {
         }
     }
 
+
+    if ( function_exists( 'bbcs_get_tools_headers_options' ) ) {        
+		foreach ( bbcs_get_tools_headers_options() as $bbcs_field ) {
+			if ( $bbcs_field === 'security_headers_csp_domains' ) {
+				$bbcs_headers_settings[ $bbcs_field ] = isset( $_POST[ $bbcs_field ] )
+					? sanitize_textarea_field( wp_unslash( $_POST[ $bbcs_field ] ) )
+					: '';
+				continue;
+			}
+            $bbcs_headers_settings[ $bbcs_field ] = isset( $_POST[ $bbcs_field ] ) 
+													&& sanitize_text_field( wp_unslash( $_POST[ $bbcs_field ] ) )
+													? 1 : 0;
+		}
+    }
+
+
 	if ( null === $bbcs_tools_notice ) {
 		update_option( 'botblocker_tools_core_settings', $bbcs_core_settings );
 		update_option( 'botblocker_tools_login_settings', $bbcs_login_settings );
+		update_option( 'botblocker_tools_headers_settings', $bbcs_headers_settings );
 	}
 }
 
@@ -122,6 +140,7 @@ settings_errors('botblocker_messages');
 							include_once BOTBLOCKER_DIR . 'includes/section/tools/botblocker-tools-wordpress.php';
 							include_once BOTBLOCKER_DIR . 'includes/section/tools/botblocker-tools-botblocker.php';
 							include_once BOTBLOCKER_DIR . 'includes/section/tools/botblocker-tools-maintenance.php';
+							
 							foreach ($bbcs_active as $bbcs_slug) {
 								if (!isset($bbcs_addons[$bbcs_slug]) || !$bbcs_addons[$bbcs_slug]['valid']) continue;
 								echo '<div class="tab-pane container fade" id="addon-' . esc_attr($bbcs_slug) . '">';

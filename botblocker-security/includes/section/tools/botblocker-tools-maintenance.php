@@ -75,7 +75,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 				</button>
 				<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"
 					data-bs-placement="top"
-					data-bs-original-title="<?php esc_attr_e('Resets all visitor cookies — visitors must re-verify', 'botblocker-security'); ?>"></i>
+					data-bs-original-title="<?php esc_attr_e('Resets all visitor cookies - visitors must re-verify', 'botblocker-security'); ?>"></i>
 			</div>
 
 			<div class="bbcs_settings_button">

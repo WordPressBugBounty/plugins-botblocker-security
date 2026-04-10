@@ -10,7 +10,7 @@
 
 BotBlocker **does not** collect, store, or transmit any personally identifiable information (PII) about your website's visitors.
 
-During request analysis the plugin processes only **technical parameters** — IP address, HTTP headers, User-Agent string, and protocol metadata. This data is evaluated locally on your server and is never sent to external services except when the optional Cloud Threat Intelligence feature is explicitly enabled by the site administrator (see Section 3).
+During request analysis the plugin processes only **technical parameters** - IP address, HTTP headers, User-Agent string, and protocol metadata. This data is evaluated locally on your server and is never sent to external services except when the optional Cloud Threat Intelligence feature is explicitly enabled by the site administrator (see Section 3).
 
 ## 2. Site Administrator Data
 
@@ -33,8 +33,8 @@ When Cloud Threat Intelligence is enabled, request fingerprints (IP address, Use
 
 BotBlocker may integrate with the following external services when explicitly configured by the administrator:
 
-* **Google reCAPTCHA** (v2 / v3) — subject to the [Google Privacy Policy](https://policies.google.com/privacy)
-* **BotBlocker Cloud API** (`botblocker.top`, `globus.studio`) — operated by the plugin author
+* **Google reCAPTCHA** (v2 / v3) - subject to the [Google Privacy Policy](https://policies.google.com/privacy)
+* **BotBlocker Cloud API** (`botblocker.top`, `globus.studio`) - operated by the plugin author
 
 No data is shared with any other third party.
 
@@ -46,7 +46,7 @@ No data is shared with any other third party.
 ## 6. Opt-Out & Data Removal
 
 * The administrator may opt out of security notifications at any time by contacting **support@botblocker.top**.
-* Upon plugin uninstallation (deletion via WordPress), all locally stored data — including logs, settings, and activation flags — is permanently removed.
+* Upon plugin uninstallation (deletion via WordPress), all locally stored data - including logs, settings, and activation flags - is permanently removed.
 
 ## 7. Legal Basis (GDPR)
 

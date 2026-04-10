@@ -54,7 +54,7 @@ $SxGeo = new SxGeo('SxGeo.dat', SXGEO_MEMORY | SXGEO_BATCH);
 - Keep the database up to date. See the official SypexGeo resources for the latest databases.
 
 ## License
-MIT License — see the LICENSE file.
+MIT License - see the LICENSE file.
 
 ## Authors & maintenance
 - GLOBUS.studio

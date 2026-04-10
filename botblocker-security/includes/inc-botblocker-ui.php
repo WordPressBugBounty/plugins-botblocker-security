@@ -177,7 +177,8 @@ class BotBlockerUI {
             }
         }
         if ( empty( $market ) ) {
-            $local = BOTBLOCKER_DIR . 'wp-content/plugins/bbcs-addons/master.json';
+            // $local = BOTBLOCKER_DIR . 'wp-content/plugins/bbcs-addons/master.json';
+            $local = WP_CONTENT_DIR . '/plugins/bbcs-addons/master.json';
             if ( file_exists( $local ) ) {
                 $json = json_decode( file_get_contents( $local ), true );
                 if ( is_array( $json ) && isset( $json['addons'] ) && is_array( $json['addons'] ) ) { $market = $json['addons']; }

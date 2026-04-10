@@ -186,9 +186,14 @@ trait BotBlockerCoreTrait {
 
     public function set_recaptcha_fallback() : void
     {
-        if (isset($this->prefly['gd']) && $this->prefly['gd'] === 0) {
+        // Only apply fallback when GD is unavailable AND the current mode actually requires GD (modes 1 and 2).
+        // Modes 0, 3-8 do not use GD and must not be overridden.
+        $gd_modes = [1, 2];
+        if (isset($this->prefly['gd']) && $this->prefly['gd'] === 0
+            && in_array((int) $this->settings->bbcs_captcha_mode, $gd_modes, true)
+        ) {
             if (empty($this->settings->recaptcha_key2) || empty($this->settings->recaptcha_secret2)) {
-                $this->settings->bbcs_captcha_mode = '1';
+                $this->settings->bbcs_captcha_mode = '0';
             } else {
                 $this->settings->bbcs_captcha_mode = '4';
             }

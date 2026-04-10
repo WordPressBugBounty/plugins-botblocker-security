@@ -12,7 +12,7 @@ function bbcs_getBrowserType($userAgent)
     // Order matters: specific browsers MUST come before generic engines they contain.
     // Chromium-based → before Chrome; Firefox-based → before Firefox; ELinks → before Links.
     $browsers = [
-        // Chromium-based (contain "Chrome" and/or "Safari" in UA) — must be first
+        // Chromium-based (contain "Chrome" and/or "Safari" in UA) - must be first
         'Opera' => 'Opera',
         'OPR' => 'Opera',
         'Edg' => 'Microsoft Edge',          // Chromium Edge (Edg/ covers Edge/ too)
@@ -71,12 +71,12 @@ function bbcs_getBrowserType($userAgent)
         'Dooble' => 'Dooble',
         'BrowseX' => 'BrowseX',
 
-        // Text-mode (ELinks before Links — "ELinks" contains "Links")
+        // Text-mode (ELinks before Links - "ELinks" contains "Links")
         'Lynx' => 'Lynx',
         'ELinks' => 'ELinks',
         'Links' => 'Links',
 
-        // Generic engines — last resort fallback
+        // Generic engines - last resort fallback
         'AppleWebKit' => 'Webkit-based browser',
         'Gecko' => 'Gecko-based browser',
         'KHTML' => 'KHTML-based browser',

@@ -114,8 +114,59 @@ function bbcs_toggle_addon_handler()
         $active = array_values(array_unique($active));
     }
     update_option('botblocker_active_addons', $active);
+
+    $is_now_active = in_array($slug, $active, true);
+    if ($is_now_active && isset($addons[$slug]['core']) && file_exists($addons[$slug]['core'])) {
+        include_once $addons[$slug]['core'];
+    }
+
+    do_action('bbcs_addon_toggled', $slug, $is_now_active);
+
+    if ($slug === 'bbcs-security-headers') {
+        bbcs_security_headers_mu_fallback($is_now_active, $addons[$slug] ?? []);
+    }
+
     wp_safe_redirect(bbcs_admin_page_url('bbcs_addons') . '&bbcs_updated=1');
     exit;
+}
+
+function bbcs_security_headers_mu_fallback(bool $is_active, array $addon): void {
+    if (defined('DISALLOW_FILE_MODS') && DISALLOW_FILE_MODS) {
+        return;
+    }
+    $mu_file = trailingslashit(WPMU_PLUGIN_DIR) . 'botblocker-security-headers.php';
+    if ($is_active) {
+        if (file_exists($mu_file)) {
+            return;
+        }
+        $src = isset($addon['core']) ? dirname($addon['core']) . '/../mu/botblocker-security-headers.php' : '';
+        if ($src === '' || !file_exists($src)) {
+            return;
+        }
+        if (!is_dir(WPMU_PLUGIN_DIR)) {
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_mkdir
+            if (!@mkdir(WPMU_PLUGIN_DIR, 0755, true) && !is_dir(WPMU_PLUGIN_DIR)) {
+                return;
+            }
+        }
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_get_contents
+        $content = file_get_contents($src);
+        if (false === $content || $content === '') {
+            return;
+        }
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+        @file_put_contents($mu_file, $content, LOCK_EX);
+    } else {
+        if (!file_exists($mu_file)) {
+            return;
+        }
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+        @unlink($mu_file);
+    }
+    if (function_exists('bbcs_clearFileCache')) {
+        bbcs_clearFileCache();
+    }
+    clearstatcache(true, $mu_file);
 }
 
 function bbcs_is_allowed_addon_url( $url ) {
@@ -352,7 +403,7 @@ function bbcs_update_addon_handler()
     $skipped_requires_core = '';
 
     if (!empty($actual_req) && version_compare(BOTBLOCKER_VERSION, $actual_req, '<')) {
-        // New version incompatible — restore previous version
+        // New version incompatible - restore previous version
         if (is_dir($folder)) bbcs_rrmdir($folder);
         if ($backed_up) {
             // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.rename_rename
@@ -368,7 +419,7 @@ function bbcs_update_addon_handler()
         }
         $skipped_requires_core = $actual_req;
     } else {
-        // Success — remove backup
+        // Success - remove backup
         if ($backed_up && is_dir($backup)) {
             bbcs_rrmdir($backup);
         }

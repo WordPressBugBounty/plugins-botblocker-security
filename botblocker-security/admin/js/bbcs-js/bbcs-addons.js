@@ -68,7 +68,7 @@
             activateTabById('#bbcs-installed');
         }
         if (requiresCore) {
-            showNotice('warning', 'Add-on was updated but not reactivated — it requires BotBlocker version ' + requiresCore + ' or higher. Please update the plugin.');
+            showNotice('warning', 'Add-on was updated but not reactivated - it requires BotBlocker version ' + requiresCore + ' or higher. Please update the plugin.');
             activateTabById('#bbcs-installed');
         }
         if (deleted) {

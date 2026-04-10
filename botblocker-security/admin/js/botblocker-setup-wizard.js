@@ -6,7 +6,7 @@
             currentStep: 0,
             totalSteps: 8,
             selectedPreset: null,
-            selectedCaptchaMode: 2, // Default to Image Recognition (recommended)
+            selectedCaptchaMode: 8, // Default to Silent Auto-Verify (recommended)
             selectedInitMode: 'regular', // Default to regular plugin mode
             selectedCache: null,
             
@@ -97,10 +97,12 @@
                     
                     $('.bbcs-captcha-card').removeClass('selected playing');
                     $('.bbcs-captcha-video').each(function() {
-                        if (!this.paused) {
-                            this.pause();
+                        if (typeof this.pause === 'function') {
+                            if (!this.paused) {
+                                this.pause();
+                            }
+                            this.currentTime = 0;
                         }
-                        this.currentTime = 0;
                     });
                     
                     $card.addClass('selected');
@@ -109,7 +111,7 @@
                     $('.bbcs-wizard-save-captcha').prop('disabled', false);
                     
                     const video = $card.find('.bbcs-captcha-video')[0];
-                    if (video) {
+                    if (video && typeof video.play === 'function') {
                         $card.addClass('playing');
                         const playPromise = video.play();
                         if (playPromise !== undefined) {
@@ -141,7 +143,7 @@
                     const $card = $(this);
                     if (!$card.hasClass('selected')) {
                         const video = $card.find('.bbcs-captcha-video')[0];
-                        if (video && !video.paused) {
+                        if (video && typeof video.pause === 'function' && !video.paused) {
                             $card.removeClass('playing');
                             video.pause();
                             video.currentTime = 0;
@@ -232,7 +234,7 @@
                     const state = JSON.parse(saved);
                     this.currentStep = state.currentStep || 0;
                     this.selectedPreset = state.selectedPreset || null;
-                    this.selectedCaptchaMode = state.selectedCaptchaMode || 2;
+                    this.selectedCaptchaMode = state.selectedCaptchaMode || 8;
                     this.selectedInitMode = state.selectedInitMode || 'regular';
                     this.selectedCache = state.selectedCache || null;
                     
@@ -299,10 +301,12 @@
                     // Reset videos safely
                     $('.bbcs-captcha-card').removeClass('playing');
                     $('.bbcs-captcha-video').each(function() {
-                        if (!this.paused) {
-                            this.pause();
+                        if (typeof this.pause === 'function') {
+                            if (!this.paused) {
+                                this.pause();
+                            }
+                            this.currentTime = 0;
                         }
-                        this.currentTime = 0;
                     });
                 } else if (step === 5) {
                     // Step 5: Initialization Mode - восстановить кнопку
@@ -347,10 +351,12 @@
                     
                     $('.bbcs-captcha-card').removeClass('playing');
                     $('.bbcs-captcha-video').each(function() {
-                        if (!this.paused) {
-                            this.pause();
+                        if (typeof this.pause === 'function') {
+                            if (!this.paused) {
+                                this.pause();
+                            }
+                            this.currentTime = 0;
                         }
-                        this.currentTime = 0;
                     });
                 } else if (step === 5) {
                     const $btn = $('.bbcs-wizard-save-init-mode');
@@ -678,9 +684,11 @@
                                 '1': 'Color Circles',
                                 '2': 'Image Recognition',
                                 '5': 'Dynamic Shapes',
-                                '6': 'Dynamic Digits'
+                                '6': 'Dynamic Digits',
+                                '7': 'Hold Button',
+                                '8': 'Silent Auto-Verify'
                             };
-                            $('.bbcs-wizard-final-captcha').text(captchaNames[this.selectedCaptchaMode] || 'Image Recognition');
+                            $('.bbcs-wizard-final-captcha').text(captchaNames[this.selectedCaptchaMode] || 'Silent Auto-Verify');
                             
                             const initNames = {
                                 'regular': 'Regular Plugin',

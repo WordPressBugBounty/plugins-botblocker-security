@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 | (c)2025 Yevhen Leonidov                                                   |
 |---------------------------------------------------------------------------|
 | Maintained PHP 8.x port of the original Sypex Geo library.                |
-| Original work by zapimir & BINOVATOR — see original header below.         |
+| Original work by zapimir & BINOVATOR - see original header below.         |
 |---------------------------------------------------------------------------|
 | This port is released under the MIT License (see LICENSE).                |
 \***************************************************************************/

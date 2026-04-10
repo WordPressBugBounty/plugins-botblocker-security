@@ -188,7 +188,7 @@ function bbcs_auto_update_addons(string $core_version = ''): array {
         // Verify actual requires_core from extracted files
         $actual_req = bbcs_addon_file_requires_core($slug);
         if (!empty($actual_req) && version_compare($version, $actual_req, '<')) {
-            // New version incompatible — restore old version
+            // New version incompatible - restore old version
             if (is_dir($folder)) bbcs_rrmdir($folder);
             if ($backed_up) {
                 // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.rename_rename
@@ -198,7 +198,7 @@ function bbcs_auto_update_addons(string $core_version = ''): array {
             continue;
         }
 
-        // Success — remove backup
+        // Success - remove backup
         if ($backed_up && is_dir($backup)) {
             bbcs_rrmdir($backup);
         }

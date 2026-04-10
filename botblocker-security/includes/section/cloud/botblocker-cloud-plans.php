@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                     class="img-fluid bbcs-info-image mb-3">
 
                 <p class="bbcs-info-text">
-                    <?php esc_html_e('BotBlocker offers subscription plans for sites of any size — from personal blogs to large corporate websites.', 'botblocker-security'); ?>
+                    <?php esc_html_e('BotBlocker offers subscription plans for sites of any size - from personal blogs to large corporate websites.', 'botblocker-security'); ?>
                 </p>
                 <p class="bbcs-info-text">
                     <?php esc_html_e('Each plan includes a specific set of features and protection levels. Choose the one that matches your requirements.', 'botblocker-security'); ?>

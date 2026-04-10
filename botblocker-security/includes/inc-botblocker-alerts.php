@@ -111,7 +111,7 @@ function bbcs_alerts_detect_cache_incompatibility(): ?array
 
 	$warnings = [];
 
-	// WP Super Cache — Expert (mod_rewrite) mode bypasses PHP entirely
+	// WP Super Cache - Expert (mod_rewrite) mode bypasses PHP entirely
 	if (defined('WPCACHEHOME') || is_plugin_active('wp-super-cache/wp-cache.php') || (is_multisite() && is_plugin_active_for_network('wp-super-cache/wp-cache.php'))) {
 		$wpsc_config = defined('WPCACHEHOME') ? rtrim(WPCACHEHOME, '/') . '/wp-cache-config.php' : '';
 		$is_mod_rewrite = false;
@@ -126,7 +126,7 @@ function bbcs_alerts_detect_cache_incompatibility(): ?array
 		}
 	}
 
-	// W3 Total Cache — Disk Enhanced with rewrite rules
+	// W3 Total Cache - Disk Enhanced with rewrite rules
 	if (is_plugin_active('w3-total-cache/w3-total-cache.php') || (is_multisite() && is_plugin_active_for_network('w3-total-cache/w3-total-cache.php'))) {
 		if (defined('W3TC_DIR')) {
 			$warnings[] = __( 'W3 Total Cache detected. If using Disk Enhanced mode with rewrite rules, add a cookie-based server exception. See CACHE-COMPATIBILITY.md.', 'botblocker-security' );
@@ -142,7 +142,7 @@ function bbcs_alerts_detect_cache_incompatibility(): ?array
 
 	// LiteSpeed server with LSCache
 	if (is_plugin_active('litespeed-cache/litespeed-cache.php') || (is_multisite() && is_plugin_active_for_network('litespeed-cache/litespeed-cache.php'))) {
-		// LSCWP respects X-LiteSpeed-Cache-Control: no-cache — auto-compatible
+		// LSCWP respects X-LiteSpeed-Cache-Control: no-cache - auto-compatible
 		// but still worth noting for users
 	}
 

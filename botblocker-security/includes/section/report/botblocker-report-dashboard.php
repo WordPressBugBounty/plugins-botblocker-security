@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
                     <?php esc_html_e('Detailed reports on every visitor: IP address, country, browser, OS, and more. Use them to spot suspicious bot activity and malicious requests.', 'botblocker-security'); ?>
                 </p>
                 <p class="bbcs-info-text">
-                    <?php esc_html_e('Create blocking rules from any report property — IP, country, device type, and more. React to new threats instantly with full control over what gets blocked.', 'botblocker-security'); ?>
+                    <?php esc_html_e('Create blocking rules from any report property - IP, country, device type, and more. React to new threats instantly with full control over what gets blocked.', 'botblocker-security'); ?>
                 </p>
                 <hr class="bbcs-info-hr">
                 <div class="bbcs-info-footer">

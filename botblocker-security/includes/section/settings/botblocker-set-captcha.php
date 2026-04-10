@@ -39,8 +39,11 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
     			</div>    			
 				<div class="bbcs_text_input_inner">
         			<select class="bbcs_select_input_input" name="bbcs_captcha_mode">
+            			<option value="8" <?php selected('8', isset($bbcs_settings['bbcs_captcha_mode']) ? $bbcs_settings['bbcs_captcha_mode'] : BOTBLOCKER_CAPTCHA_MODE_DEFAULT); ?>>
+                			<?php esc_html_e('Silent Auto-Verify (No CAPTCHA)', 'botblocker-security'); ?>
+            			</option>
             			<option value="0" <?php selected('0', isset($bbcs_settings['bbcs_captcha_mode']) ? $bbcs_settings['bbcs_captcha_mode'] : BOTBLOCKER_CAPTCHA_MODE_DEFAULT); ?>>
-                			<?php esc_html_e('Button — "I am not a robot"', 'botblocker-security'); ?>
+                			<?php esc_html_e('Button - "I am not a robot"', 'botblocker-security'); ?>
             			</option>
             			<option value="1" <?php 
                 			selected('1', isset($bbcs_settings['bbcs_captcha_mode']) ? $bbcs_settings['bbcs_captcha_mode'] : BOTBLOCKER_CAPTCHA_MODE_DEFAULT);
@@ -57,7 +60,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
             			<option value="3" <?php selected('3', isset($bbcs_settings['bbcs_captcha_mode']) ? $bbcs_settings['bbcs_captcha_mode'] : BOTBLOCKER_CAPTCHA_MODE_DEFAULT); 
             			echo (empty($BBCS->settings->recaptcha_key2) || empty($BBCS->settings->recaptcha_secret2) ? 'disabled' : '');
             			?>>
-                			<?php esc_html_e('reCAPTCHA v2 — "I am not a robot"', 'botblocker-security'); ?>
+                			<?php esc_html_e('reCAPTCHA v2 - "I am not a robot"', 'botblocker-security'); ?>
             			</option>
             			<option value="4" <?php selected('4', isset($bbcs_settings['bbcs_captcha_mode']) ? $bbcs_settings['bbcs_captcha_mode'] : BOTBLOCKER_CAPTCHA_MODE_DEFAULT); 
             			echo (empty($BBCS->settings->recaptcha_key2) || empty($BBCS->settings->recaptcha_secret2) ? 'disabled' : '');

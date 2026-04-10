@@ -116,6 +116,8 @@ trait BotBlockerCheckPageTrait {
             'detectionUtilsUrl' => esc_url($this->botblockerUrl . 'public/js/detection-utils.js?ver=' . $this->time),
             'bbidentfuncUrl' => esc_url($this->botblockerUrl . 'public/js/bbidentfunc.js?ver=' . $this->time),
             'captchaURL' => 'https://www.google.com/recaptcha/api.js?render=' . esc_html($this->settings->recaptcha_key3),
+            'silentMode' => ( (int) $this->settings->bbcs_captcha_mode === BOTBLOCKER_CAPTCHA_MODE_SILENT ),
+            'approvedText' => __( 'Access approved. Redirecting...', 'botblocker-security' ),
         );
     }
 

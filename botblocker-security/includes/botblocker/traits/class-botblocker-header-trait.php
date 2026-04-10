@@ -2,11 +2,41 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
  
 trait BotBlockerHeaderTrait {
-    
+    protected function start_output_guard(): int {
+        $level = ob_get_level();
+        ob_start();
+        return $level;
+    }
+
+    protected function end_output_guard(int $guard_level): void {
+        while (ob_get_level() > $guard_level) {
+            ob_end_flush();
+        }
+    }
+
+    protected function dispatch_security_headers_addon(): void {
+        if (class_exists('Botblocker_Security_Headers')) {
+            Botblocker_Security_Headers::get_instance()->dispatch_headers();
+        }
+    }
+
     public function set_iframe_headers() {
-        if ($this->settings->iframe_stop == 1) {
+        if ($this->settings->iframe_stop == 1 && !headers_sent()) {
+            if (class_exists('Botblocker_Security_Headers') && $this->is_addon_basic_headers_active()) {
+                return;
+            }
             header('X-Frame-Options: SAMEORIGIN');
-        }    
+        }
+    }
+
+    private function is_addon_basic_headers_active(): bool {
+        $settings = get_option('botblocker_tools_headers_settings', []);
+        if (!is_array($settings)) {
+            return false;
+        }
+        $enabled = isset($settings['security_headers_enable']) && in_array($settings['security_headers_enable'], [1, '1'], true);
+        $basic   = !array_key_exists('security_headers_basic', $settings) || in_array($settings['security_headers_basic'], [1, '1'], true);
+        return $enabled && $basic;
     }
 
     /**
@@ -35,32 +65,39 @@ trait BotBlockerHeaderTrait {
     }
 
     public function set_work_headers() {
+        if (headers_sent()) return;
         $this->send_no_cache_headers();
         header('Content-Type: text/html; charset=UTF-8');
         header('Access-Control-Allow-Methods: POST');
-        //header('Access-Control-Allow-Origin: *'); // TEST!
         header('Access-Control-Allow-Headers: *');
         header('X-Robots-Tag: noindex');
+        $this->dispatch_security_headers_addon();
     }
 
     public function set_check_headers() {
+        if (headers_sent()) return;
         $this->send_no_cache_headers();
         header('Content-Type: text/html; charset=UTF-8');
         header('X-Robots-Tag: noindex');
         header($this->protocol . ' ' . $this->error_headers[$this->settings->header_test_code]);
         header('Status: ' . $this->error_headers[$this->settings->header_test_code]);
+        $this->dispatch_security_headers_addon();
     }
 
     public function set_denied_headers() {
+        if (headers_sent()) return;
         $this->send_no_cache_headers();
         header('X-Robots-Tag: noindex, noarchive');
         header($this->protocol . ' ' . $this->error_headers[$this->settings->header_error_code]);
         header('Status: ' . $this->error_headers[$this->settings->header_error_code]);
+        $this->dispatch_security_headers_addon();
     }
 
     public function reset_post_headers() {
         if ($this->request_method == 'POST') {
-            header('Location: ' . $this->uri);
+            if (!headers_sent()) {
+                header('Location: ' . $this->uri);
+            }
             $this->process_die();
         }    
     }
@@ -114,7 +151,7 @@ trait BotBlockerHeaderTrait {
             }
         }
 
-        if (count($this->x_robots_tag) > 0) {
+        if (count($this->x_robots_tag) > 0 && !headers_sent()) {
             header('X-Robots-Tag: ' . implode(', ', $this->x_robots_tag));
         }
     }

@@ -40,12 +40,13 @@ class Cyber_Secure_Botblocker
 					'botblocker-security',
 					BOTBLOCKER_DIR . 'languages/botblocker-security-' . sanitize_text_field(wp_unslash($_COOKIE['bbcs_preferred_language'])) . '.mo'
 				);
+
 			} else{
 				load_textdomain(
 					'botblocker-security',
 					BOTBLOCKER_DIR . 'languages/botblocker-security-en_US.mo'
 				);
-			}			
+			}
 		} else {
 			$this->loader->add_action('plugins_loaded', $plugin_i18n, 'load_plugin_textdomain');
 		}

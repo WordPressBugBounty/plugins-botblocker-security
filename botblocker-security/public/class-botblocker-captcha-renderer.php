@@ -9,6 +9,7 @@ require_once __DIR__ . '/captcha/render-recaptcha-without-button-trait.php';
 require_once __DIR__ . '/captcha/render-moving-shapes-button-trait.php';
 require_once __DIR__ . '/captcha/render-animated-math-expression-trait.php';
 require_once __DIR__ . '/captcha/render-hold-button-trait.php';
+require_once __DIR__ . '/captcha/render-silent-auto-trait.php';
 
 class BotBlockerCaptchaRenderer {
 
@@ -20,6 +21,7 @@ class BotBlockerCaptchaRenderer {
     use BBCS_RenderMovingShapesButtonTrait;
     use BBCS_RenderAnimatedMathExpressionTrait;
     use BBCS_RenderHoldButtonTrait;
+    use BBCS_RenderSilentAutoTrait;
 
     private $BBCS;
     private $botblocker_check_function_name;
@@ -43,7 +45,8 @@ class BotBlockerCaptchaRenderer {
         ]);
         $encrypted = openssl_encrypt($payload, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
         $this->challengeToken = base64_encode($iv . $encrypted);
-        set_transient('bbcs_ct_' . $nonce, 1, 600);
+        $ttl = ($mode === 8) ? 3600 : 600;
+        set_transient('bbcs_ct_' . $nonce, 1, $ttl);
         return $nonce;
     }
 
@@ -94,6 +97,8 @@ class BotBlockerCaptchaRenderer {
                 return $this->getAnimatedMathExpressionData();
             case 7:
                 return $this->getHoldButtonData();
+            case 8:
+                return $this->getSilentAutoData();
             default:
                 return $this->getSimpleButtonData();
         }

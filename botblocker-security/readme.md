@@ -4,7 +4,7 @@ Tags: security, firewall, anti-spam, captcha, brute force
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.6.15
+Stable tag: 1.6.16
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -99,12 +99,15 @@ You don't have to be a security expert to use BotBlocker:
 Upgrade to PRO for enhanced protection and performance features:
 
 * Real-time cloud threat intelligence checks against global databases
+* Zero-day threat detection - behavioral analysis and heuristic rules catch unknown attack patterns before signatures are available
 * Hide login URL and protect against targeted attacks
+* Security Headers - automatic HSTS, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy, and Content-Security-Policy (CSP) configuration
 * Early-init (Before WordPress loads) filtering for maximum performance and security
+* WordPress Acceleration - frontend optimization
 * Speed optimization features for high-traffic sites
 * Server optimization features for high-traffic sites
 * Priority support and updates
-* Access to premium add-ons 
+* Access to premium add-ons
 
 == Features ==
 
@@ -141,6 +144,8 @@ Choose from various CAPTCHA types to protect your site:
 * **BotBlocker Digits CAPTCHA** - floating math challenge
 * **BotBlocker Images CAPTCHA** - animal image selection
 * **BotBlocker Shapes CAPTCHA** - floating shapes challenge
+* **BotBlocker Hold Button** - press and hold to verify, no images or math required
+* **Silent Auto-Verify** - no CAPTCHA shown. Real users pass automatically via JS fingerprint checks; bots see "Access denied"
 * **Hybrid Mode** - combine any CAPTCHA with reCAPTCHA v3 for dual-layer protection
 
 = Additional Capabilities =
@@ -150,7 +155,7 @@ Choose from various CAPTCHA types to protect your site:
 * Dynamic and graphical anti-bot challenges
 * Automatic logging with adjustable retention
 * Session tracking and verification
-* No visitor data collected — GDPR/CCPA-compliant (see FAQ for admin notification details)
+* No visitor data collected - GDPR/CCPA-compliant (see FAQ for admin notification details)
 
 == Installation ==
 
@@ -197,7 +202,7 @@ Yes. XML-RPC and REST API endpoints are blocked by default. You can create acces
 
 = What CAPTCHA types are available? =
 
-One-click button, color buttons, animal images, floating shapes, floating math, plus Google reCAPTCHA v2/v3. Any internal CAPTCHA can be combined with reCAPTCHA v3. Our proprietary CAPTCHAs are designed to be nearly impossible to bypass with AI-based anti-CAPTCHA services.
+One-click button, color buttons, animal images, floating shapes, floating math, hold button, silent auto-verify, plus Google reCAPTCHA v2/v3. Silent Auto-Verify is the recommended default - real users pass automatically with zero interaction. Any internal CAPTCHA can be combined with reCAPTCHA v3. Our proprietary CAPTCHAs are designed to be nearly impossible to bypass with AI-based anti-CAPTCHA services.
 
 = Does BotBlocker Security support IPv6? =
 
@@ -230,6 +235,23 @@ Use **Allowlist** for admin IPs/services and enable "allow server self-IP" so WP
 
 == Changelog ==
  
+= 1.6.16 =
+Add new CAPTCHA mode: Silent Auto-Verify - real users pass automatically with zero interaction, bots see "Access denied"
+Add Silent Auto-Verify as the new recommended default in the setup wizard
+Add Security Headers addon support (HSTS, CSP, X-Frame-Options, Permissions-Policy - coming soon to the addon marketplace)
+Add updated LLM and AI bot whitelist
+Add improved ASN validation with extended provider database and stricter hosting/VPN detection
+Add improved PTR record verification with multi-resolver fallback for more accurate fake-crawler detection
+Add cache compatibility for Swift Performance, Cache Enabler, and Starter Templates caching
+Fix CAPTCHA challenge token race condition in extended secure mode (SECURE_MODE_FULL)
+Fix GD library fallback - now correctly falls back to Simple Button (mode 0) instead of Color Buttons when GD and reCAPTCHA are both unavailable
+Fix CAPTCHA timeout handling for Silent Auto-Verify mode to prevent potential redirect loops
+Fix 2FA backup code validation edge case on PHP 8.5
+Improve challenge token security with mode-specific transient TTL (1 hour for Silent Auto-Verify)
+Improve silent mode retry logic with sessionStorage-based counter surviving page reloads
+Improve setup wizard UI - removed duplicate "Recommended" badge from Image Recognition
+Update translation files
+
 = 1.6.15 =
 Add multisite support
 Add LLM whitelist for trusted crawlers and services

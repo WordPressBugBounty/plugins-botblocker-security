@@ -55,7 +55,8 @@ class BotBlockerCaptchaRendererFull {
         ]);
         $encrypted = openssl_encrypt($payload, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
         $this->challengeToken = base64_encode($iv . $encrypted);
-        set_transient('bbcs_ct_' . $nonce, 1, 600);
+        $ttl = ($mode === 8) ? 3600 : 600;
+        set_transient('bbcs_ct_' . $nonce, 1, $ttl);
         return $nonce;
     }
 
@@ -92,6 +93,8 @@ class BotBlockerCaptchaRendererFull {
                 return $this->renderAnimatedMathExpression();
             case 7:
                 return $this->renderHoldButton();
+            case 8:
+                return $this->renderSilentAuto();
             default:
                 return $this->renderSimpleButton();
         }
@@ -974,5 +977,16 @@ class BotBlockerCaptchaRendererFull {
             track.addEventListener("contextmenu", function(e) { e.preventDefault(); });
         })();
         ';
+    }
+
+    private function renderSilentAuto() {
+        $nonce = $this->createChallenge( 'silent_auto', 8 );
+        $hash  = $this->answerHash( $nonce, 'silent_auto' );
+
+        // Set challenge_token BEFORE the check-function call to avoid race condition:
+        // the check-function fires an XHR synchronously inside botblocker_captcha_render(),
+        // so bbcs_challenge_token must already be defined when it reads the variable.
+        return 'window.bbcs_challenge_token = "' . esc_js( $this->getChallengeToken() ) . '";'
+             . "\n    " . $this->botblocker_check_function_name . '("post", data, "' . esc_js( $hash ) . '");';
     }
 }

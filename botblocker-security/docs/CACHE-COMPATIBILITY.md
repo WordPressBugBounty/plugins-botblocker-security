@@ -1,4 +1,4 @@
-# BotBlocker — Cache Compatibility Guide
+# BotBlocker - Cache Compatibility Guide
 
 BotBlocker's verification page uses per-request tokens (nonce, challenge, hashes
 bound to IP + timestamp). **This page must never be cached.** The plugin sets
@@ -23,12 +23,12 @@ the snippets below.
 
 ## WordPress Cache Plugins
 
-### WP Super Cache — PHP / Legacy mode
+### WP Super Cache - PHP / Legacy mode
 
 Works automatically. BotBlocker defines `DONOTCACHEPAGE` before the output
 buffer callback runs.
 
-### WP Super Cache — Expert (mod_rewrite) mode
+### WP Super Cache - Expert (mod_rewrite) mode
 
 **Not compatible with MU-phase protection.** In this mode, `.htaccess` rules
 serve static files before PHP is loaded. Add a cookie-based exception:
@@ -41,12 +41,12 @@ RewriteRule .* - [E=CACHE_MISS:1]
 
 Replace `BotBlocker` with your actual cookie name if changed in settings.
 
-### W3 Total Cache — Disk (Basic / Enhanced)
+### W3 Total Cache - Disk (Basic / Enhanced)
 
 Works automatically via `DONOTCACHEPAGE`. If using **Disk: Enhanced** with
 rewrite rules, add the same `.htaccess` exception as above.
 
-### W3 Total Cache — Disk (Enhanced) with Nginx rules
+### W3 Total Cache - Disk (Enhanced) with Nginx rules
 
 See the Nginx section below.
 
@@ -61,7 +61,7 @@ Works automatically. BotBlocker sends both `DONOTCACHEPAGE` and
 
 ### Hummingbird / WP Fastest Cache / Cache Enabler
 
-All check `DONOTCACHEPAGE` — works automatically.
+All check `DONOTCACHEPAGE` - works automatically.
 
 ---
 
@@ -72,7 +72,7 @@ All check `DONOTCACHEPAGE` — works automatically.
 ```nginx
 # /etc/nginx/conf.d/botblocker-cache.conf  (or inside your server block)
 
-# Read cookie name — default "BotBlocker"
+# Read cookie name - default "BotBlocker"
 set $skip_cache 0;
 
 # Skip cache when BotBlocker cookie is absent
@@ -208,7 +208,7 @@ async function handleRequest(request) {
 ## Redis / Nginx Helper / Jenga Page Cache
 
 Redis-based full-page caches (e.g., Jenga, Jenga Page Cache, Jenga Starter)
-typically check `DONOTCACHEPAGE` — works automatically.
+typically check `DONOTCACHEPAGE` - works automatically.
 
 If using **Jenga Pay-as-you-go** or a custom Redis page cache with Nginx
 rules, use the Nginx FastCGI config from above.
@@ -222,6 +222,6 @@ rules, use the Nginx FastCGI config from above.
 | Verification page shown once, then cached and broken | Cache stores check page HTML | Ensure `DONOTCACHEPAGE` is respected or add server-level bypass |
 | Visitors skip verification entirely | Cache serves the normal page | Add cookie-based bypass rule at server level |
 | Verified visitors see verification again | Cookie not sent back (CDN strips cookies) | Whitelist BotBlocker cookie in CDN settings |
-| `403` page is cached and shown to everyone | Server caches the denied page | BotBlocker sends `Cache-Control: no-store` — check CDN settings |
+| `403` page is cached and shown to everyone | Server caches the denied page | BotBlocker sends `Cache-Control: no-store` - check CDN settings |
 
 ---

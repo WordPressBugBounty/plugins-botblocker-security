@@ -50,6 +50,11 @@ function renderCaptcha() {
         renderMode7Captcha(params);
       }
       break;
+    case 8:
+      if (typeof renderMode8Captcha === "function") {
+        renderMode8Captcha(params);
+      }
+      break;
     default:
       console.error("Unknown CAPTCHA mode:", mode);
       break;

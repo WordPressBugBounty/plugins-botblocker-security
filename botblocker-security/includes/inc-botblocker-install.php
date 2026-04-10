@@ -11,7 +11,7 @@ function bbcs_check_install()
 {
 	$upload_dir = bbcs_uploads_dir();
 
-	// Deprecated backward-compat constants — do NOT use in new code.
+	// Deprecated backward-compat constants - do NOT use in new code.
 	// Use bbcs_uploads_dir(), bbcs_data_dir(), bbcs_addons_dir(), bbcs_addons_url() instead.
 	// These constants are intentionally NOT defined in multisite to prevent
 	// stale values when iterating sites via switch_to_blog().

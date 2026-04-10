@@ -79,8 +79,11 @@ function bbcs_send_expiration_email($message, $expired = false) {
     }
 
     $transient_key = 'bbcs_email_sent_' . md5($message . ($expired ? '1' : '0'));
-    
-    if (get_transient($transient_key)) {
+
+    // Store a Unix timestamp so we can manually verify the 24-hour window even
+    // when a persistent object cache (Redis/Memcached) ignores the transient TTL.
+    $cached_at = get_transient( $transient_key );
+    if ( $cached_at !== false && ( time() - (int) $cached_at ) < DAY_IN_SECONDS ) {
         return false;
     }
 
@@ -107,7 +110,7 @@ function bbcs_send_expiration_email($message, $expired = false) {
     $email_sent = wp_mail($admin_email, $subject, $message, $headers);
     
     if ($email_sent) {
-        set_transient($transient_key, 1, DAY_IN_SECONDS);
+        set_transient( $transient_key, time(), DAY_IN_SECONDS );
     }
 
     return $email_sent;

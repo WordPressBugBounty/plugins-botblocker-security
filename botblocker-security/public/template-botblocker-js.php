@@ -28,18 +28,18 @@ $BBCS = BotBlocker::getInstance();
 $wp_scripts = wp_scripts();
 $wp_scripts->add('bbcs-inline', '', [], BOTBLOCKER_VERSION, true);
 $wp_scripts->add_inline_script('bbcs-inline', 'var adb_var = 1;');
-$wp_scripts->add('adblock-blocker', esc_url($BBCS->botblockerUrl . 'public/js/rails.js?bannerid=' . $BBCS->time), [], null, true);
-$wp_scripts->add('bbcs-detection-utils', esc_url($BBCS->botblockerUrl . 'public/js/detection-utils.js?ver=' . $BBCS->time), ['adblock-blocker'], $BBCS->time, true);
-$wp_scripts->add('bbcs-bbidentfunc', esc_url($BBCS->botblockerUrl . 'public/js/bbidentfunc.js?ver=' . $BBCS->time), ['bbcs-detection-utils'], $BBCS->time, true);
-if ($BBCS->settings->recaptcha_check == 1 && !empty($BBCS->settings->recaptcha_key3)) {
-    $wp_scripts->add('bbcs-google-recaptcha', 'https://www.google.com/recaptcha/api.js?render=' . esc_html($BBCS->settings->recaptcha_key3), [], null, true);
-}
+$wp_scripts->add('adblock-blocker', esc_url_raw($BBCS->botblockerUrl . 'public/js/rails.js?bannerid=' . $BBCS->time), [], null, true);
+$wp_scripts->add('bbcs-detection-utils', esc_url_raw($BBCS->botblockerUrl . 'public/js/detection-utils.js?ver=' . $BBCS->time), ['adblock-blocker'], $BBCS->time, true);
+$wp_scripts->add('bbcs-bbidentfunc', esc_url_raw($BBCS->botblockerUrl . 'public/js/bbidentfunc.js?ver=' . $BBCS->time), ['bbcs-detection-utils'], $BBCS->time, true);
 
 $wp_scripts->enqueue('bbcs-inline');
 $wp_scripts->enqueue('adblock-blocker');
 $wp_scripts->enqueue('bbcs-detection-utils');
 $wp_scripts->enqueue('bbcs-bbidentfunc');
-$wp_scripts->enqueue('bbcs-google-recaptcha');
+if ($BBCS->settings->recaptcha_check == 1 && !empty($BBCS->settings->recaptcha_key3)) {
+    $wp_scripts->add('bbcs-google-recaptcha', 'https://www.google.com/recaptcha/api.js?render=' . esc_html($BBCS->settings->recaptcha_key3), [], null, true);
+    $wp_scripts->enqueue('bbcs-google-recaptcha');
+}
 
 $wp_scripts->do_items($wp_scripts->queue);
 
@@ -165,21 +165,25 @@ if ($BBCS->settings->utm_referrer == 1 and $BBCS->referer != '') {
 
     function bbcs_getDetectionParam() {
         const startTime = Date.now();
-        const timeoutLimit = 1000; 
-        
+        const timeoutLimit = 1000;
+
         try {
             const detectionResult = bbcs_detectAll();
 
             if (Date.now() - startTime > timeoutLimit) {
                 bbcsDebugWarn('Detection methods took too long, returning partial results');
             }
-            
-            const jsonString = JSON.stringify(detectionResult);
-            const base64Encoded = btoa(jsonString); 
-            return encodeURIComponent(base64Encoded);
+
+            detectionResult.browserFingerprint = detectionResult.browserFingerprint.fingerprint;
+
+            let detectionParams = '';
+            for (const [key, value] of Object.entries(detectionResult)) {
+                detectionParams += '&' + key + '=' + encodeURIComponent(value);
+            }
+            return detectionParams;
         } catch (e) {
             bbcsDebugError('Error during detection:', e);
-            return encodeURIComponent(btoa('{"error":"detection_failed"}'));
+            return '&error=detection_failed';
         }
     }
 
@@ -276,7 +280,7 @@ if ($BBCS->settings->utm_referrer == 1 and $BBCS->referer != '') {
     ?>&a=' + adb_var + '&country=<?php echo esc_js($BBCS->country); 
     ?>&ip=<?php echo esc_js($BBCS->ip); ?>&version=<?php echo esc_js($BBCS->version); 
     ?>&cid=<?php echo esc_js($BBCS->cid); ?>&ptr=<?php echo esc_js($BBCS->ptr); 
-    ?>&w=' + screen.width + '&h=' + screen.height + '&cw=' + document.documentElement.clientWidth + '&ch=' + document.documentElement.clientHeight + '&co=' + screen.colorDepth + '&pi=' + screen.pixelDepth + '&ref=' + encodeURIComponent(document.referrer) + '&accept=<?php echo urlencode($BBCS->http_accept); ?>&tz=' + Intl.DateTimeFormat().resolvedOptions().timeZone + '&ipdbc=' + ipdbc + '&ipv4=' + ipv4 + '&rct=' + rct + '&cookieoff=' + cookieoff +'&bbdet=' + bbcs_detectionParam;
+    ?>&w=' + screen.width + '&h=' + screen.height + '&cw=' + document.documentElement.clientWidth + '&ch=' + document.documentElement.clientHeight + '&co=' + screen.colorDepth + '&pi=' + screen.pixelDepth + '&ref=' + encodeURIComponent(document.referrer) + '&accept=<?php echo urlencode($BBCS->http_accept); ?>&tz=' + Intl.DateTimeFormat().resolvedOptions().timeZone + '&ipdbc=' + ipdbc + '&ipv4=' + ipv4 + '&rct=' + rct + '&cookieoff=' + cookieoff + bbcs_detectionParam;
     <?php echo esc_js($botblocker_check_function_name); ?>('botblocker-security', data, '');
     bbcsDebugLog('initProcessHandler -> ', result1, result2);
   }

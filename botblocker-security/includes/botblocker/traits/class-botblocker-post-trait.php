@@ -84,7 +84,11 @@ trait BotBlockerPostTrait
         * if country base 1 != country base 5 - FAKE
         */
 
-        if ($this->time - $_POST['date'] > $this->settings->bbcs_captcha_wait) $this->process_die('{"error":"timeout"}');
+        if ($this->time - $_POST['date'] > $this->settings->bbcs_captcha_wait
+            && (int) $this->settings->bbcs_captcha_mode !== BOTBLOCKER_CAPTCHA_MODE_SILENT
+        ) {
+            $this->process_die('{"error":"timeout"}');
+        }
 
         if ($this->settings->bbcs_captcha_mode == 3 || $this->settings->bbcs_captcha_mode == 4) {
 
