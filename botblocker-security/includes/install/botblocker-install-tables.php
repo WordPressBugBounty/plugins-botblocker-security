@@ -92,6 +92,8 @@ function bbcs_createTables()
 
     dbDelta($sql_se);
 
+    bbcs_create_asn_table();
+
     /**
      * Creates the 'bbcs_ipv4rules' table in the database.
      */
@@ -346,4 +348,23 @@ function bbcs_create_page_filters_tables() {
             );
         }
     }
+}
+
+function bbcs_create_asn_table() {
+    global $wpdb;
+    $charset_collate = $wpdb->get_charset_collate();
+    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+
+    $sql = "CREATE TABLE IF NOT EXISTS `{$wpdb->bbcs_asn}` (
+        `id` INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        `priority` INTEGER NOT NULL DEFAULT 50,
+        `asnum` INTEGER NOT NULL,
+        `asname` VARCHAR(255) NOT NULL DEFAULT '',
+        `rule` VARCHAR(10) NOT NULL DEFAULT 'block',
+        `comment` VARCHAR(255) NOT NULL DEFAULT '',
+        `disable` TINYINT(1) NOT NULL DEFAULT 0,
+        UNIQUE KEY `asnum` (`asnum`)
+    ) $charset_collate;";
+
+    dbDelta($sql);
 }

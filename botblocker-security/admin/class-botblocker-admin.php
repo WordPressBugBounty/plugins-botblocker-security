@@ -141,6 +141,7 @@ class Botblocker_Admin
                 wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-rules-white-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-white.js', array('jquery'), BOTBLOCKER_VERSION, true);
                 wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-rules-path-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-path.js', array('jquery'), BOTBLOCKER_VERSION, true);
                 wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-proxy-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-proxy.js', array('jquery'), BOTBLOCKER_VERSION, true);
+                wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-asn-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-asn.js', array('jquery'), BOTBLOCKER_VERSION, true);
                 wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-chart-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-charts.js', array('jquery'), BOTBLOCKER_VERSION, false);
 
                 wp_localize_script(BOTBLOCKER_SHORT_NAME . '-rules-js', 'botblockerData', array(
@@ -160,6 +161,10 @@ class Botblocker_Admin
                     'nonce' => wp_create_nonce("botblocker_nonce")
                 ));
                 wp_localize_script(BOTBLOCKER_SHORT_NAME . '-rules-path-js', 'botblockerData', array(
+                    'ajaxurl' => admin_url('admin-ajax.php'),
+                    'nonce' => wp_create_nonce("botblocker_nonce")
+                ));
+                wp_localize_script(BOTBLOCKER_SHORT_NAME . '-asn-js', 'botblockerData', array(
                     'ajaxurl' => admin_url('admin-ajax.php'),
                     'nonce' => wp_create_nonce("botblocker_nonce")
                 ));

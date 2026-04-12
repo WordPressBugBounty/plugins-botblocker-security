@@ -18,6 +18,7 @@ $bbcs_tables = [
     'bbcs_ipv6rules'       => 'ipv6rules',
     'bbcs_page_filters'    => 'page_filters',
     'bbcs_daily_summary'   => 'daily_summary',
+    'bbcs_asn'             => 'asn',
     'bbcs_self_ips'        => 'self_ips', //! Deprecated in 2.2.0, only used to drop in migrations
 ];
 

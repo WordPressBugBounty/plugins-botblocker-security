@@ -18,6 +18,21 @@ function bbcs_createSaltFile($return_salt_bb = false)
             'salt_pz' => $salt_pz
         ];
 
+        $dir = dirname($saltFilePath);
+        if (!is_dir($dir)) {
+            if (!wp_mkdir_p($dir)) {
+                update_option('bbcs_salt_fallback', $salt_data);
+                set_transient('bbcs_salt_write_error', true, DAY_IN_SECONDS);
+                return $salt_bb;
+            }
+        }
+
+        if (!is_writable($dir)) {
+            update_option('bbcs_salt_fallback', $salt_data);
+            set_transient('bbcs_salt_write_error', true, DAY_IN_SECONDS);
+            return $salt_bb;
+        }
+
         /**
          * REVIEWER NOTE: This operation is not intended for debugging purposes. The following code generates a salt.php file
          * to cache plugin salt data, thereby reducing the frequency of database queries and enhancing overall performance.
@@ -26,7 +41,14 @@ function bbcs_createSaltFile($return_salt_bb = false)
          /* phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export */
         $fileContent = "<?php\nreturn " . var_export($salt_data, true) . ";\n";
 
-        file_put_contents($saltFilePath, $fileContent);
+        $result = file_put_contents($saltFilePath, $fileContent);
+
+        if ($result === false) {
+            update_option('bbcs_salt_fallback', $salt_data);
+            set_transient('bbcs_salt_write_error', true, DAY_IN_SECONDS);
+            return $salt_bb;
+        }
+
         bbcs_clearFileCache();
         
         return $salt_bb;
@@ -110,6 +132,7 @@ function bbcs_deleteRuleFiles()
 {
     $files = [
         bbcs_data_dir() . 'search_engines.php',
+        bbcs_data_dir() . 'asn_rules.php',
         bbcs_data_dir() . 'paths.php',
         bbcs_data_dir() . 'rules.php',
         bbcs_data_dir() . 'ip.php',

@@ -7,19 +7,19 @@ namespace Composer\Autoload;
 class ComposerStaticInit2e10bc75aad6b722f8d5007e54ef4117
 {
     public static $prefixLengthsPsr4 = array (
-        'P' => 
+        'B' => 
         array (
-            'PragmaRX\\Google2FA\\' => 19,
-            'ParagonIE\\ConstantTime\\' => 23,
+            'BotBlocker\\Vendor\\PragmaRX\\Google2FA\\' => 37,
+            'BotBlocker\\Vendor\\ParagonIE\\ConstantTime\\' => 41,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'PragmaRX\\Google2FA\\' => 
+        'BotBlocker\\Vendor\\PragmaRX\\Google2FA\\' => 
         array (
             0 => __DIR__ . '/..' . '/pragmarx/google2fa/src',
         ),
-        'ParagonIE\\ConstantTime\\' => 
+        'BotBlocker\\Vendor\\ParagonIE\\ConstantTime\\' => 
         array (
             0 => __DIR__ . '/..' . '/paragonie/constant_time_encoding/src',
         ),

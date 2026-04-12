@@ -1,9 +1,9 @@
 <?php
-declare(strict_types=1);
-namespace ParagonIE\ConstantTime;
+
+declare (strict_types=1);
+namespace BotBlocker\Vendor\ParagonIE\ConstantTime;
 
 use SensitiveParameter;
-
 /**
  *  Copyright (c) 2016 - 2022 Paragon Initiative Enterprises.
  *  Copyright (c) 2014 Steve "Sc00bz" Thomas (steve at tobtu dot com)
@@ -26,7 +26,6 @@ use SensitiveParameter;
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  */
-
 /**
  * Interface EncoderInterface
  * @package ParagonIE\ConstantTime
@@ -44,7 +43,6 @@ interface EncoderInterface
         #[SensitiveParameter]
         string $binString
     ): string;
-
     /**
      * Convert a binary string into a hexadecimal string without cache-timing
      * leaks
@@ -56,6 +54,6 @@ interface EncoderInterface
     public static function decode(
         #[SensitiveParameter]
         string $encodedString,
-        bool $strictPadding = false
+        bool $strictPadding = \false
     ): string;
 }

@@ -110,7 +110,7 @@ function bbcs_isIpOrCidr($input) {
 function bbcs_IpRange($cidr)
 {
     $range = array();
-    $cidr = explode('/', trim($cidr));
+    $cidr = explode('/', trim($cidr ?? ''));
     if (!isset($cidr[1])) {
         $range = array(0, 0, 0); 
     } elseif (filter_var($cidr[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {

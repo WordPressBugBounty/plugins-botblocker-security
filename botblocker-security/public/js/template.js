@@ -245,7 +245,8 @@ function botblocker_captcha_render() {
     }
 }
 
-window[bbcsJsData.checkFunctionName] = function(s, d, x) {
+window[bbcsJsData.checkFunctionName] = function(s, d, x, ajaxEndpoint) {
+    if (!ajaxEndpoint) ajaxEndpoint = bbcsJsData.ajaxUrl;
     document.getElementById("content").innerHTML = bbcsJsData.loadingText;
     
     var data = new FormData();
@@ -267,7 +268,7 @@ window[bbcsJsData.checkFunctionName] = function(s, d, x) {
     }
 
     var xhr = new XMLHttpRequest();
-    xhr.open('POST', bbcsJsData.ajaxUrl, true);
+    xhr.open('POST', ajaxEndpoint, true);
     xhr.timeout = bbcsDdosRetryCount > 0 ? 10000 : 5000;
 
     xhr.onload = function() {
@@ -282,10 +283,12 @@ window[bbcsJsData.checkFunctionName] = function(s, d, x) {
 
                     if (typeof(obj.cookie) == "string") {
                         var d = new Date();
-                        d.setTime(d.getTime() + (7 * 24 * 60 * 60 * 1000)); 
+                        d.setTime(d.getTime() + ((bbcsJsData.cookieLifetime || 604800) * 1000)); 
                         var expires = "expires=" + d.toUTCString();
-                        document.cookie = bbcsJsData.uid + "=" + obj.cookie + "-" + bbcsJsData.time + "; SameSite=" + bbcsJsData.samesite + ";" + 
-                            (bbcsJsData.samesite == 'None' ? ' Secure' : '') + "; " + expires + "; path=/;";
+                        var bbcsSS = bbcsJsData.samesite;
+                        if (bbcsSS === 'None' && window.location.protocol !== 'https:') { bbcsSS = 'Lax'; }
+                        document.cookie = bbcsJsData.uid + "=" + obj.cookie + "-" + bbcsJsData.time + "; SameSite=" + bbcsSS + ";" + 
+                            (bbcsSS === 'None' ? ' Secure' : '') + "; " + expires + "; path=/;";
                         if (bbcsJsData.silentMode) {
                             try { sessionStorage.removeItem('bbcsMode8Retries'); } catch(e) {}
                             document.getElementById("content").innerHTML = bbcsJsData.approvedText;
@@ -349,6 +352,11 @@ window[bbcsJsData.checkFunctionName] = function(s, d, x) {
 
         } else {
             bbcsDebugLog('Error: ' + xhr.status);
+            if (ajaxEndpoint !== bbcsJsData.verifyUrl && bbcsJsData.verifyUrl) {
+                bbcsDebugLog('admin-ajax.php returned ' + xhr.status + ', trying verify endpoint');
+                window[bbcsJsData.checkFunctionName](s, d, x, bbcsJsData.verifyUrl);
+                return;
+            }
             if (bbcs_isDdosResponse(xhr.responseText)) {
                 var checkFn = window[bbcsJsData.checkFunctionName];
                 if (bbcs_handleDdosResponse(xhr.responseText, s, d, x, checkFn)) return;
@@ -359,6 +367,11 @@ window[bbcsJsData.checkFunctionName] = function(s, d, x) {
 
     xhr.ontimeout = function() {
         bbcsDebugLog('timeout');
+        if (ajaxEndpoint !== bbcsJsData.verifyUrl && bbcsJsData.verifyUrl) {
+            bbcsDebugLog('admin-ajax.php timeout, trying verify endpoint');
+            window[bbcsJsData.checkFunctionName](s, d, x, bbcsJsData.verifyUrl);
+            return;
+        }
         if (bbcsDdosRetryCount > 0) {
             bbcsDebugLog('Timeout during DDoS retry, redirecting');
             window.location.href = bbcsJsData.redirectUrl;
@@ -369,6 +382,11 @@ window[bbcsJsData.checkFunctionName] = function(s, d, x) {
 
     xhr.onerror = function() {
         bbcsDebugLog('error');
+        if (ajaxEndpoint !== bbcsJsData.verifyUrl && bbcsJsData.verifyUrl) {
+            bbcsDebugLog('admin-ajax.php error, trying verify endpoint');
+            window[bbcsJsData.checkFunctionName](s, d, x, bbcsJsData.verifyUrl);
+            return;
+        }
         if (bbcsDdosRetryCount > 0) {
             bbcsDebugLog('Error during DDoS retry, redirecting');
             window.location.href = bbcsJsData.redirectUrl;

@@ -1,7 +1,7 @@
 /*
  * BotBlocker Detection Utilities
- * Version: 1.0.0
- * Copyright (c) 2025 BotBlocker
+ * Version: 2.0.0
+ * Copyright (c) 2026 BotBlocker
  * 
  */
 
@@ -269,7 +269,31 @@ function bbcs_computeFingerprint() {
         timeWarpDetection = 'error';
     }
     addComponent('time_warp', timeWarpDetection);
-    
+
+    try {
+        const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        if (conn) {
+            const connData = [conn.effectiveType, conn.type, conn.downlink, conn.rtt, conn.saveData]
+                .filter(v => v !== undefined).join('|');
+            addComponent('conn', simpleHash(connData));
+        }
+    } catch(e) {}
+
+    try {
+        if (typeof CSS !== 'undefined' && CSS.supports) {
+            const cssFeatures = [
+                CSS.supports('-webkit-appearance', 'none'),
+                CSS.supports('-moz-appearance', 'none'),
+                CSS.supports('accent-color', 'auto'),
+                CSS.supports('container-type', 'inline-size'),
+                CSS.supports('color', 'oklch(0.5 0.2 240)'),
+                CSS.supports('view-transition-name', 'root'),
+                CSS.supports('anchor-name', '--a')
+            ].map((v, i) => v ? i.toString(36) : '').join('');
+            addComponent('css', simpleHash(cssFeatures));
+        }
+    } catch(e) {}
+
     function simpleHash(str) {
         if (!str) return 'empty';
         
@@ -293,7 +317,7 @@ function bbcs_computeFingerprint() {
 
     return {
         fingerprint: fingerprint,
-        //fingerprintDetails: allComponents // Uncomment to see the details and debug
+        //fingerprintDetails: allComponents // Uncomment to see the details and debug 
     };
 }
 

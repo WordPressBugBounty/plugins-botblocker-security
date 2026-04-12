@@ -49,6 +49,7 @@ trait BotBlockerHeaderTrait {
             header('Pragma: no-cache');
             header('Expires: Thu, 10 Aug 2000 06:00:00 GMT');
             header('X-LiteSpeed-Cache-Control: no-cache');
+            header('X-Accel-Expires: 0');
         }
     }
 
@@ -68,6 +69,16 @@ trait BotBlockerHeaderTrait {
         if (headers_sent()) return;
         $this->send_no_cache_headers();
         header('Content-Type: text/html; charset=UTF-8');
+        if (isset($_SERVER['HTTP_ORIGIN'])) {
+            $request_origin = esc_url_raw(wp_unslash($_SERVER['HTTP_ORIGIN']));
+            $site_host = wp_parse_url(home_url(), PHP_URL_HOST);
+            $origin_host = wp_parse_url($request_origin, PHP_URL_HOST);
+            if ($site_host && $origin_host === $site_host) {
+                header('Access-Control-Allow-Origin: ' . $request_origin);
+                header('Access-Control-Allow-Credentials: true');
+                header('Vary: Origin', false);
+            }
+        }
         header('Access-Control-Allow-Methods: POST');
         header('Access-Control-Allow-Headers: *');
         header('X-Robots-Tag: noindex');
@@ -81,6 +92,14 @@ trait BotBlockerHeaderTrait {
         header('X-Robots-Tag: noindex');
         header($this->protocol . ' ' . $this->error_headers[$this->settings->header_test_code]);
         header('Status: ' . $this->error_headers[$this->settings->header_test_code]);
+        if (!empty($this->csp_nonce)) {
+            add_filter('botblocker_csp_directives', function ($directives) {
+                if (isset($directives['script-src'])) {
+                    $directives['script-src'] .= " 'nonce-" . $this->csp_nonce . "'";
+                }
+                return $directives;
+            });
+        }
         $this->dispatch_security_headers_addon();
     }
 

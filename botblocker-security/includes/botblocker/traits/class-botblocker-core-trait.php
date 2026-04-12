@@ -33,6 +33,7 @@ trait BotBlockerCoreTrait {
 	{
     	$files = [
         	'search_engines.php' => 'bbcs_renderSearchEnginesFromDb',
+        	'asn_rules.php'      => 'bbcs_renderAsnFromDb',
         	'ip.php'             => 'bbcs_renderIpsFromDb',
         	'proxy.php'          => 'bbcs_renderProxyFromDb',
         	'paths.php'          => 'bbcs_renderPathsFromDb',

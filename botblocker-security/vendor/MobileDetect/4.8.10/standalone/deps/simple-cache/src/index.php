@@ -1,1 +1,2 @@
-<?php // Security first - BotBlocker’s on guard
+<?php
+// Security first - BotBlocker's on guard

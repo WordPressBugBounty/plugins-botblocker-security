@@ -52,8 +52,8 @@ trait BotBlockerVisitorTrait {
         }
         if (isset($_COOKIE[$this->settings->cookie . '_hits'])) {
             $current_value = (int)trim(preg_replace("/[^0-9]/", "", sanitize_text_field(wp_unslash($_COOKIE[$this->settings->cookie . '_hits']))));
-            $is_asset_request = preg_match('/\.(js|css|map|jpe?g|png|gif|svg|ico|woff2?|ttf|eot)$/i', $this->uri);
-            $this->cookie_hits_counter = $is_asset_request ? $current_value : $current_value + 1;
+            $this->is_asset_request = (bool) preg_match('/\.(js|css|map|jpe?g|png|gif|svg|webp|ico|woff2?|ttf|otf|eot|mp[34]|webm|ogg|wav|pdf)$/i', $this->uri);
+            $this->cookie_hits_counter = $this->is_asset_request ? $current_value : $current_value + 1;
         } else {
             $this->cookie_hits_counter = 1;
         }
@@ -123,6 +123,10 @@ trait BotBlockerVisitorTrait {
 
     public function update_cookie_counter() : void
     {
+        if ($this->is_asset_request) {
+            $this->visitorType = self::VISITOR_HUMAN;
+            return;
+        }
         if ($this->cookie_hits_counter > $this->settings->hits_per_user) {
             $this->reset_cookies_by_overflow(); 
             if ($this->settings->botblocker_log_local == 1) {
@@ -248,10 +252,10 @@ trait BotBlockerVisitorTrait {
         if (version_compare(phpversion(), '8.0', '>=')) {
             require_once BOTBLOCKER_DIR . 'vendor/MobileDetect/4.8.10/standalone/autoloader.php';
             require_once BOTBLOCKER_DIR . 'vendor/MobileDetect/4.8.10/src/MobileDetectStandalone.php';
-            $detect = new \Detection\MobileDetectStandalone();
+            $detect = new \BotBlocker\Vendor\Detection\MobileDetectStandalone();
         } else {
             require_once BOTBLOCKER_DIR . 'vendor/MobileDetect/3.74.3/MobileDetect.php';
-            $detect = new \Detection\MobileDetect();
+            $detect = new \BotBlocker\Vendor\Detection\MobileDetect();
         }
         $detect->setUserAgent($userAgent);
         if ($detect->isTablet()) {

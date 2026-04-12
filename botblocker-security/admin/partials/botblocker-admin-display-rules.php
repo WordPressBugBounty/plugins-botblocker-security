@@ -39,6 +39,10 @@ include('botblocker-section-header.php');
                             <a class="nav-link" data-bs-toggle="tab"
                                 href="#bbcs_proxy_list"><?php esc_html_e('Proxy', 'botblocker-security'); ?></a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab"
+                                href="#bbcs_asn_list"><?php esc_html_e('ASN', 'botblocker-security'); ?></a>
+                        </li>
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane container active" id="bbcs_rules">
@@ -154,6 +158,25 @@ include('botblocker-section-header.php');
                                 </thead>
                             </table>
                         </div>
+                        <div class="tab-pane container fade" id="bbcs_asn_list">
+                            <div class="bbcs_control_panel">
+                                <?php include_once BOTBLOCKER_DIR . 'includes/section/controls/botblocker-asn-controls.php'; ?>
+                            </div>
+                            <table class="table table-bordered table-striped compact mb-0" id="botblocker-asn-rules"
+                                style="width:100%; font-size: 11px;">
+                                <thead>
+                                    <tr>
+                                        <th style="min-width: 50px;"><?php esc_html_e('ID', 'botblocker-security'); ?></th>
+                                        <th style="min-width: 80px;"><?php esc_html_e('Priority', 'botblocker-security'); ?></th>
+                                        <th style="min-width: 80px;"><?php esc_html_e('ASN', 'botblocker-security'); ?></th>
+                                        <th style="min-width: 100px;"><?php esc_html_e('Name', 'botblocker-security'); ?></th>
+                                        <th style="min-width: 80px;"><?php esc_html_e('Rule', 'botblocker-security'); ?></th>
+                                        <th style="min-width: 100px;"><?php esc_html_e('Comment', 'botblocker-security'); ?></th>
+                                        <th style="min-width: 100px;"><?php esc_html_e('Actions', 'botblocker-security'); ?></th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -258,4 +281,6 @@ include('botblocker-section-header.php');
 	include_once BOTBLOCKER_DIR . 'includes/modal/modal-botblocker-white-add.php';
 	include_once BOTBLOCKER_DIR . 'includes/modal/modal-botblocker-proxy-edit.php';
 	include_once BOTBLOCKER_DIR . 'includes/modal/modal-botblocker-proxy-add.php';
+	include_once BOTBLOCKER_DIR . 'includes/modal/modal-botblocker-asn-edit.php';
+	include_once BOTBLOCKER_DIR . 'includes/modal/modal-botblocker-asn-add.php';
 	?>

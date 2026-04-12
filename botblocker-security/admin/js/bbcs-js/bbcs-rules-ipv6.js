@@ -85,7 +85,7 @@
                     { data: "ip", width: "80px" },
                     { data: "rule", width: "80px" },
                     { data: "expires", width: "100px" },
-                    { data: "comment", width: "100px" },
+                    { data: "comment", width: "100px", render: function(data) { return bbcsRenderReasonComment(data); } },
                     {
                         data: null,
                         width: "100px",

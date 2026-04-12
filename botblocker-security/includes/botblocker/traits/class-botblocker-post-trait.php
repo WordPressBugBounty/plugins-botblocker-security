@@ -9,6 +9,9 @@ trait BotBlockerPostTrait
         check_ajax_referer('botblocker_nonce', 'nonce');
         global $wpdb;
         ignore_user_abort(true);
+        if (function_exists('set_time_limit')) {
+            @set_time_limit(30);
+        }
 
         if (!isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->process_die('{"error": "Error NoPost"}');
@@ -131,27 +134,44 @@ trait BotBlockerPostTrait
         $challenge_token_raw = isset($_POST['challenge_token']) ? sanitize_text_field(wp_unslash($_POST['challenge_token'])) : '';
         if (!empty($challenge_token_raw)) {
             require_once(dirname(__DIR__, 3) . '/public/class-botblocker-captcha-renderer.php');
-            $ct_result = BotBlockerCaptchaRenderer::verifyChallengeToken(
-                $this->settings->salt,
-                $challenge_token_raw,
-                sanitize_text_field(wp_unslash($_POST['xxx'])),
-                sanitize_text_field(wp_unslash($_POST['date'])),
-                sanitize_text_field(wp_unslash($_POST['ip']))
-            );
-            if ($ct_result === false) {
-                $this->process_wrong_click();
+            if (defined('BBCS_CAPTCHA_DIAG') && BBCS_CAPTCHA_DIAG) {
+                $ct_diag = BotBlockerCaptchaRenderer::verifyChallengeTokenDiag(
+                    $this->settings->salt,
+                    $challenge_token_raw,
+                    sanitize_text_field(wp_unslash($_POST['xxx'])),
+                    sanitize_text_field(wp_unslash($_POST['date'])),
+                    sanitize_text_field(wp_unslash($_POST['ip']))
+                );
+                if ($ct_diag['ok'] === false) {
+                    $this->process_wrong_click($ct_diag['reason']);
+                }
+                $ct_result = $ct_diag['data'];
+            } else {
+                $ct_result = BotBlockerCaptchaRenderer::verifyChallengeToken(
+                    $this->settings->salt,
+                    $challenge_token_raw,
+                    sanitize_text_field(wp_unslash($_POST['xxx'])),
+                    sanitize_text_field(wp_unslash($_POST['date'])),
+                    sanitize_text_field(wp_unslash($_POST['ip']))
+                );
+                if ($ct_result === false) {
+                    $this->process_wrong_click();
+                }
             }
             // If reCAPTCHA verification changed the mode (failed), reject
             $token_mode = isset($ct_result['m']) ? (int) $ct_result['m'] : -1;
             if (in_array($token_mode, [3, 4]) && (int) $this->settings->bbcs_captcha_mode !== $token_mode) {
-                $this->process_wrong_click();
+                $this->process_wrong_click(defined('BBCS_CAPTCHA_DIAG') && BBCS_CAPTCHA_DIAG ? 'RM' : '');
             }
+        } elseif ((int) $this->settings->bbcs_captcha_mode === BOTBLOCKER_CAPTCHA_MODE_SILENT) {
+            // Silent mode but challenge_token is missing (WAF/CDN stripped it, or cached page)
+            $this->process_die('{"error":"timeout"}');
         } elseif ($this->settings->bbcs_captcha_mode == 3 || $this->settings->bbcs_captcha_mode == 4) {
             $date_from_post = isset($_POST['date']) ? sanitize_text_field(wp_unslash($_POST['date'])) : '';
             $xxx_from_post = isset($_POST['xxx']) ? sanitize_text_field(wp_unslash($_POST['xxx'])) : '';
             $hash0 = '1|' . hash('sha256', $this->settings->salt . $date_from_post . $this->settings->cloud_api_pass);
             if (!hash_equals($hash0, $xxx_from_post)) {
-                $this->process_wrong_click();
+                $this->process_wrong_click(defined('BBCS_CAPTCHA_DIAG') && BBCS_CAPTCHA_DIAG ? 'HM' : '');
             }
         } elseif ($this->settings->bbcs_captcha_mode == 2) {
             $xxx2 = explode('|', sanitize_text_field(wp_unslash($_POST['xxx'])));
@@ -171,10 +191,10 @@ trait BotBlockerPostTrait
                     sanitize_text_field(wp_unslash($_POST['ip']))
             );
             if (!hash_equals($expected_hash, $submitted_hash)) {
-                $this->process_wrong_click();
+                $this->process_wrong_click(defined('BBCS_CAPTCHA_DIAG') && BBCS_CAPTCHA_DIAG ? 'HM' : '');
             }
         } else {
-            $this->process_wrong_click();
+            $this->process_wrong_click(defined('BBCS_CAPTCHA_DIAG') && BBCS_CAPTCHA_DIAG ? 'NM' : '');
         }
 
         if ($this->settings->botblocker_log_tests == 1) {
@@ -208,11 +228,17 @@ trait BotBlockerPostTrait
             // bbcs_process_hit('2');
         }
 
-        $hash = md5($this->settings->salt . $this->settings->cloud_api_pass . $refhost . $this->useragent . sanitize_text_field(wp_unslash($_POST['ip'])) . $this->time) . '-' . $this->time;
+        $hash = md5($this->settings->salt . $this->settings->cloud_api_pass . $this->host . $this->useragent . $this->ip . $this->time) . '-' . $this->time;
         wp_send_json(['cookie' => $hash]); // Experimental: Use wp_send_json for better JSON handling
     }
 
-    public function process_wrong_click()
+    /**
+     * @param string $reason Diagnostic reason code:
+     *   TD = token decrypt failed, TT = transient missing/expired,
+     *   DM = date mismatch, HM = hash mismatch, RM = reCAPTCHA mode mismatch,
+     *   NM = no matching CAPTCHA mode (fallback)
+     */
+    public function process_wrong_click(string $reason = '')
     {
         check_ajax_referer('botblocker_nonce', 'nonce');
 
@@ -296,7 +322,7 @@ trait BotBlockerPostTrait
                 'ip1' => $ip2ban,
                 'ip2' => $ip2ban,
                 'rule' => 'block',
-                'comment' => 'Wrong Math ' . (isset($_POST['country']) ? sanitize_text_field(wp_unslash($_POST['country'])) : ''),
+                'comment' => 'CAPTCHA fail' . ($reason !== '' ? ' [R:' . $reason . ']' : '') . ' ' . (isset($_POST['country']) ? sanitize_text_field(wp_unslash($_POST['country'])) : ''),
                 'expires' => $expires
             );
             // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.

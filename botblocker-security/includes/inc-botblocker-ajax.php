@@ -19,7 +19,8 @@ include_once BOTBLOCKER_DIR . 'includes/ajax/inc-botblocker-ajax-path.php';
 // Include the file for handling white bots.
 include_once BOTBLOCKER_DIR . 'includes/ajax/inc-botblocker-ajax-white-bots.php';
 
-// Include the file for handling proxies.
+include_once BOTBLOCKER_DIR . 'includes/ajax/inc-botblocker-ajax-asn.php';
+
 include_once BOTBLOCKER_DIR . 'includes/ajax/inc-botblocker-ajax-proxy.php';
 
 // Include the file with common ajax functions.

@@ -36,7 +36,7 @@ function bbcs_increment_search_engine_visits() {
     $wpdb->query("UPDATE `{$wpdb->bbcs_counters}` SET search_engine_visits = search_engine_visits + 1 WHERE id = 1");
 }
 
-function bbcs_increment_hit() {
+function bbcs_increment_hit($searchbot = false) {
     global $wpdb;
     $BBCS = BotBlocker::getInstance();
     $gmt_offset = isset($BBCS->settings->admin_gmt_offset) ? floatval($BBCS->settings->admin_gmt_offset) : 0;
@@ -59,8 +59,9 @@ function bbcs_increment_hit() {
     }
     // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached, and sanitized. No direct unsanitized SQL is executed.
     // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
+    $search_engine_sql = $searchbot ? ', search_engine_visits = search_engine_visits + 1' : '';
     $wpdb->query("UPDATE `{$wpdb->bbcs_counters}`
-        SET today_hits = today_hits + 1, total_hits = total_hits + 1,
+        SET today_hits = today_hits + 1, total_hits = total_hits + 1{$search_engine_sql},
         last_update = CONVERT_TZ(NOW(), '+00:00', '{$gmt_offset_str}')
         WHERE id = 1");
     // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
@@ -105,10 +106,7 @@ function bbcs_process_hit($reason) {
     }
 
     if ($code['allow']) {
-        bbcs_increment_hit();
-        if ($code['searchbot']) {
-            bbcs_increment_search_engine_visits();
-        }
+        bbcs_increment_hit(!empty($code['searchbot']));
     } else {
         bbcs_increment_blocked_hit();
     }

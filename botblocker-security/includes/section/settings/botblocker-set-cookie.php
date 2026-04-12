@@ -103,6 +103,27 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
             <h3 class="bbcs_settings_h3"><?php esc_html_e('Cache Compatibility', 'botblocker-security'); ?></h3>
             <div class="bbcs_text_input mb-2">
                 <div class="bbcs_label_input_box">
+                    <span class="bbcs-label-input"><?php esc_html_e('Cloud API Timeout', 'botblocker-security'); ?></span>
+                    <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"
+                        data-bs-placement="top"
+                        data-bs-original-title="<?php esc_attr_e('Timeout in seconds for cloud API requests. Increase if your server has slow outbound connections.', 'botblocker-security'); ?>"></i>
+                </div>
+                <div class="bbcs_text_input_inner">
+                    <select class="bbcs_select_input_input" name="cloud_api_timeout">
+                        <?php
+                        $timeout_options = [2 => '2s', 3 => '3s', 5 => '5s (default)', 7 => '7s', 10 => '10s', 15 => '15s'];
+                        $current_timeout = isset($bbcs_settings['cloud_api_timeout']) ? (int) $bbcs_settings['cloud_api_timeout'] : 5;
+                        foreach ($timeout_options as $val => $label) : ?>
+                        <option value="<?php echo esc_attr($val); ?>"
+                            <?php selected($val, $current_timeout); ?>>
+                            <?php echo esc_html($label); ?>
+                        </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
+            <div class="bbcs_text_input mb-2">
+                <div class="bbcs_label_input_box">
                     <span class="bbcs-label-input"><?php esc_html_e('Send Vary: Cookie Header', 'botblocker-security'); ?></span>
                     <i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"
                         data-bs-placement="top"

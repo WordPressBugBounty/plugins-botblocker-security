@@ -46,6 +46,7 @@ trait BotBlockerResponseTrait {
                 if (file_exists($imagePath)) {
                     header('Content-Type: image/jpeg');
                     header('Content-Length: ' . filesize($imagePath));
+                    header('X-Content-Type-Options: nosniff');
                     // REVIEWER NOTE: Direct file output used intentionally for performance; WP_Filesystem not suitable for real-time image delivery.
                     // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile
                     readfile($imagePath);
@@ -74,6 +75,7 @@ trait BotBlockerResponseTrait {
         // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
 
         $this->register_wpfc_no_cache_filter();
+        $this->register_wp_rocket_no_cache_filter();
     }
 
     /**
@@ -91,13 +93,31 @@ trait BotBlockerResponseTrait {
         }, 1);
     }
 
+    /**
+     * Prevent WP Rocket from caching BotBlocker security pages.
+     */
+    private function register_wp_rocket_no_cache_filter(): void {
+        if (defined('BBCS_WPROCKET_COMPAT')) return;
+        define('BBCS_WPROCKET_COMPAT', true);
+
+        add_filter('do_rocket_generate_caching_files', '__return_false', PHP_INT_MAX);
+    }
+
     public function perform_check() : void
     {
+        $guard = null;
+        if ((int) $this->settings->secure_mode === self::SECURE_MODE_FULL) {
+            $this->csp_nonce = base64_encode(random_bytes(16));
+            $guard = $this->start_output_guard();
+        }
         $this->define_no_cache_constants();
         $this->reset_post_headers();
         $this->set_iframe_headers(); 
         $this->set_check_headers();
         $this->set_check_page();
+        if ($guard !== null) {
+            $this->end_output_guard($guard);
+        }
         if ($this->settings->botblocker_log_tests == 1) {
             bbcs_storeData('Check page for visitor', 0);
         }
@@ -116,8 +136,15 @@ trait BotBlockerResponseTrait {
     public function show_denied_page($message = null) : void
     {
         $this->define_no_cache_constants();
+        $guard = null;
+        if ((int) $this->settings->secure_mode === self::SECURE_MODE_FULL) {
+            $guard = $this->start_output_guard();
+        }
         $this->set_denied_headers();
         $this->set_denied_page($message); 
+        if ($guard !== null) {
+            $this->end_output_guard($guard);
+        }
         if ($this->settings->secure_mode == self::SECURE_MODE_FULL) $this->process_die();
     }
 
@@ -134,9 +161,16 @@ trait BotBlockerResponseTrait {
     public function show_block_page($bbcs_ip_test = null) : void
     {
         $this->define_no_cache_constants();
+        $guard = null;
+        if ((int) $this->settings->secure_mode === self::SECURE_MODE_FULL) {
+            $guard = $this->start_output_guard();
+        }
         $this->set_iframe_headers();
         $this->set_denied_headers();
         $this->set_block_page($bbcs_ip_test);
+        if ($guard !== null) {
+            $this->end_output_guard($guard);
+        }
     }
 
     public function set_gray_status($result) : void

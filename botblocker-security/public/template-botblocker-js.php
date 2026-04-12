@@ -16,6 +16,7 @@ if (!defined('WPINC') || !defined('BOTBLOCKER')) {
 
 global $wpdb;
 $BBCS = BotBlocker::getInstance();
+$bbcs_effective_samesite = BotBlocker::effective_samesite( $BBCS->settings->samesite );
 
 /**
  * REVIEWER NOTE:
@@ -73,7 +74,7 @@ if ($BBCS->settings->utm_referrer == 1 and $BBCS->referer != '') {
   $botblocker_redirect_url = $BBCS->uri;
 }
 
-?><script>
+?><script nonce="<?php echo esc_attr($BBCS->csp_nonce); ?>">
 
     var bbcsDebugEnabled = <?php echo (defined('BBCS_DEBUG') && BBCS_DEBUG === true) ? 'true' : 'false'; ?>;
 
@@ -323,7 +324,11 @@ if ($BBCS->settings->utm_referrer == 1 and $BBCS->referer != '') {
     <?php endif; ?>
   }
 
-  function <?php echo esc_js($botblocker_check_function_name); ?>(s, d, x) {
+  var bbcsVerifyUrl = '<?php echo esc_url(home_url('/bbcs-verify/')); ?>';
+  var bbcsAjaxUrl = '<?php echo esc_url(admin_url('admin-ajax.php')); ?>';
+
+  function <?php echo esc_js($botblocker_check_function_name); ?>(s, d, x, ajaxEndpoint) {
+    if (!ajaxEndpoint) ajaxEndpoint = bbcsAjaxUrl;
     document.getElementById("content").innerHTML = "<?php echo esc_js(__('Loading...', 'botblocker-security')); ?>";
     
     var data = new FormData();
@@ -346,7 +351,7 @@ if ($BBCS->settings->utm_referrer == 1 and $BBCS->referer != '') {
     }
 
     var xhr = new XMLHttpRequest();
-    xhr.open('POST', '<?php echo esc_url(admin_url('admin-ajax.php')); ?>', true);
+    xhr.open('POST', ajaxEndpoint, true);
     xhr.timeout = bbcsDdosRetryCount > 0 ? 10000 : 5000;
 
     xhr.onload = function() {
@@ -361,9 +366,10 @@ if ($BBCS->settings->utm_referrer == 1 and $BBCS->referer != '') {
 
                     if (typeof(obj.cookie) == "string") {
                         var d = new Date();
-                        d.setTime(d.getTime() + (7 * 24 * 60 * 60 * 1000)); 
+                        d.setTime(d.getTime() + (<?php echo (int) $BBCS->settings->cookie_lifetime; ?> * 1000)); 
                         var expires = "expires=" + d.toUTCString();
-                        document.cookie = "<?php echo esc_js($BBCS->uid); ?>=" + obj.cookie + "-<?php echo esc_js($BBCS->time); ?>; SameSite=<?php echo esc_js($BBCS->settings->samesite); ?>;<?php echo (($BBCS->settings->samesite == 'None') ? ' Secure' : ''); ?>; " + expires + "; path=/;";
+                        try { sessionStorage.removeItem('bbcsMode8Retries'); } catch(e) {}
+                        document.cookie = "<?php echo esc_js($BBCS->uid); ?>=" + obj.cookie + "-<?php echo esc_js($BBCS->time); ?>; SameSite=<?php echo esc_js($bbcs_effective_samesite); ?>;<?php echo (($bbcs_effective_samesite === 'None') ? ' Secure' : ''); ?>; " + expires + "; path=/;";
                         document.getElementById("content").innerHTML = "<?php echo esc_js(__('Loading...', 'botblocker-security')); ?>";
                         window.location.href = "<?php echo esc_js(esc_url_raw($botblocker_redirect_url)); ?>";
                     } else {
@@ -409,6 +415,11 @@ if ($BBCS->settings->utm_referrer == 1 and $BBCS->referer != '') {
 
         } else {
             bbcsDebugLog('Error: ' + xhr.status);
+            if (ajaxEndpoint !== bbcsVerifyUrl && bbcsVerifyUrl) {
+                bbcsDebugLog('admin-ajax.php returned ' + xhr.status + ', trying verify endpoint');
+                <?php echo esc_js($botblocker_check_function_name); ?>(s, d, x, bbcsVerifyUrl);
+                return;
+            }
             if (bbcs_isDdosResponse(xhr.responseText)) {
                 if (bbcs_handleDdosResponse(xhr.responseText, s, d, x)) return;
             }
@@ -418,6 +429,11 @@ if ($BBCS->settings->utm_referrer == 1 and $BBCS->referer != '') {
 
     xhr.ontimeout = function() {
         bbcsDebugLog('timeout');
+        if (ajaxEndpoint !== bbcsVerifyUrl && bbcsVerifyUrl) {
+            bbcsDebugLog('admin-ajax.php timeout, trying verify endpoint');
+            <?php echo esc_js($botblocker_check_function_name); ?>(s, d, x, bbcsVerifyUrl);
+            return;
+        }
         if (bbcsDdosRetryCount > 0) {
             bbcsDebugLog('Timeout during DDoS retry, redirecting');
             window.location.href = "<?php echo esc_js(esc_url_raw($botblocker_redirect_url)); ?>";
@@ -428,6 +444,11 @@ if ($BBCS->settings->utm_referrer == 1 and $BBCS->referer != '') {
 
     xhr.onerror = function() {
         bbcsDebugLog('error');
+        if (ajaxEndpoint !== bbcsVerifyUrl && bbcsVerifyUrl) {
+            bbcsDebugLog('admin-ajax.php error, trying verify endpoint');
+            <?php echo esc_js($botblocker_check_function_name); ?>(s, d, x, bbcsVerifyUrl);
+            return;
+        }
         if (bbcsDdosRetryCount > 0) {
             bbcsDebugLog('Error during DDoS retry, redirecting');
             window.location.href = "<?php echo esc_js(esc_url_raw($botblocker_redirect_url)); ?>";

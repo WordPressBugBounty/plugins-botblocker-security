@@ -350,8 +350,6 @@ public function check_secret_parameter() : bool
 
             }
             if ( $bbcs_ip_test['rule'] == 'allow' ) {
-                $this->visitorType     = self::VISITOR_HUMAN;
-                $this->result_of_action = esc_sql( '<b>Allow</b> by IP rule: ' . $bbcs_ip_test['search'] );
 
                 if ( $bbcs_ip_test['readonly'] == 1 && ( $bbcs_ip_test['comment'] === 'IPv4 BotBlocker Server' || $bbcs_ip_test['comment'] === 'IPv6 BotBlocker Server' ) ) {
                     $this->visitorType = self::VISITOR_BOTBLOCKER;
@@ -360,6 +358,9 @@ public function check_secret_parameter() : bool
                     bbcs_process_hit( 99 );
                     return true; // BotBlocker Server activating cloud API or update bot database
                 }
+
+                $this->result_of_action = esc_sql( '<b>Allow</b> by IP rule: ' . $bbcs_ip_test['search'] );
+                return $this->allow_access( $bbcs_ip_test );
             } elseif ( $bbcs_ip_test['rule'] == 'block' ) {
                 $this->redirect_to_block( 6, esc_sql( 'BLOCK by IP rule: ' . $bbcs_ip_test['search'] ), $bbcs_ip_test );
             } elseif ( $bbcs_ip_test['rule'] == 'dark' ) {
@@ -404,10 +405,18 @@ public function check_secret_parameter() : bool
 
     public function allow_access($echo) : bool
     {
-        if (empty($this->uid)) {
-            $this->uid = $this->generate_uid();
+        // Read main cookie to get existing uid (process_cookies may not have run yet)
+        if ( empty( $this->uid ) && isset( $_COOKIE[ $this->settings->cookie ] ) ) {
+            $this->uid = preg_replace( '/[^a-zA-Z0-9]/', '', sanitize_text_field( wp_unslash( $_COOKIE[ $this->settings->cookie ] ) ) );
         }
-        $this->set_allow_cookie_uid();
+        if ( empty( $this->uid ) ) {
+            $this->uid = $this->generate_uid();
+            $this->set_bot_blocker_cookie();
+        }
+        // Set data cookie only if not already present
+        if ( ! isset( $_COOKIE[ $this->uid ] ) ) {
+            $this->set_allow_cookie_uid();
+        }
         $this->visitorType = self::VISITOR_HUMAN;
         if ($this->settings->botblocker_log_allow == 1) {
             $search = isset($echo['search']) ? esc_sql($echo['search']) : BOTBLOCKER_EMPTY;

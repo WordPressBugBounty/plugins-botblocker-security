@@ -75,6 +75,11 @@ class BotBlockerEnv
         return function_exists('json_encode') ? 1 : 0;
     }
 
+    public static function check_openssl()
+    {
+        return (extension_loaded('openssl') && function_exists('openssl_encrypt') && function_exists('openssl_decrypt')) ? 1 : 0;
+    }
+
     public static function prefly_check()
     {
         return [
@@ -87,7 +92,8 @@ class BotBlockerEnv
             'iconv' => self::check_iconv(),
             'xml' => self::check_xml(),
             'gd_func' => self::check_gd_func(),
-            'json' => self::check_json()
+            'json' => self::check_json(),
+            'openssl' => self::check_openssl()
         ];
     }
 

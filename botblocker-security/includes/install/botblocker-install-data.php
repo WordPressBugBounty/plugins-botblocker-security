@@ -5,6 +5,7 @@ function bbcs_insertInitialData($salt_bb = '')
 {
     bbcs_insertDefaultRules();
     bbcs_insertDefaultSearchEngines();
+    bbcs_insertDefaultAsn();
     bbcs_insertDefaultPaths();
     bbcs_insertDefaultSettings($salt_bb);
     bbcs_insertDefaultProxies();
@@ -97,7 +98,7 @@ function bbcs_insertDefaultSearchEngines()
             ['priority' => 10, 'search' => 'Googlebot', 'data' => '.googlebot.com asn:15169', 'rule' => 'allow', 'comment' => 'GoogleBot (Catch-all)', 'disable' => 0],
             ['priority' => 10, 'search' => 'GoogleOther', 'data' => '.google.com', 'rule' => 'allow', 'comment' => 'GoogleOther (Catch-all)', 'disable' => 0],
 
-            ['priority' => 2,  'search' => 'bingbot', 'data' => 'search.msn.com asn:8075', 'rule' => 'allow', 'comment' => 'Microsoft Bing search bot', 'disable' => 0],
+            ['priority' => 2,  'search' => 'bingbot', 'data' => 'search.msn.com', 'rule' => 'allow', 'comment' => 'Microsoft Bing search bot', 'disable' => 0],
             ['priority' => 3,  'search' => 'yandex.com', 'data' => '.yandex.ru .yandex.net .yandex.com asn:13238', 'rule' => 'allow', 'comment' => 'Yandex search bots and services', 'disable' => 0],
             ['priority' => 4,  'search' => 'Applebot', 'data' => '.applebot.apple.com', 'rule' => 'allow', 'comment' => 'Applebot crawler', 'disable' => 0],
             ['priority' => 5,  'search' => 'Google-Site-Verification', 'data' => '.googlebot.com .google.com', 'rule' => 'allow', 'comment' => 'Verification bot for Google Search Console', 'disable' => 0],
@@ -170,6 +171,88 @@ function bbcs_insertDefaultSearchEngines()
                 $se['comment'],
                 $se['disable']
             ));
+        }
+    }
+}
+
+function bbcs_insertDefaultAsn()
+{
+    global $wpdb;
+
+    $default_asn = [
+
+        ['priority' => 1,  'asnum' => 15169,  'asname' => 'Google LLC',                     'rule' => 'allow', 'comment' => 'Googlebot, Google crawlers',            'disable' => 0],
+        ['priority' => 2,  'asnum' => 13238,  'asname' => 'Yandex LLC',                     'rule' => 'allow', 'comment' => 'YandexBot',                             'disable' => 0],
+        ['priority' => 3,  'asnum' => 714,    'asname' => 'Apple Inc',                      'rule' => 'allow', 'comment' => 'Applebot',                              'disable' => 0],
+        ['priority' => 3,  'asnum' => 6185,   'asname' => 'Apple Inc',                      'rule' => 'allow', 'comment' => 'Applebot (additional)',                 'disable' => 0],
+        ['priority' => 4,  'asnum' => 55967,  'asname' => 'Beijing Baidu Netcom',           'rule' => 'allow', 'comment' => 'Baiduspider',                           'disable' => 0],
+        ['priority' => 5,  'asnum' => 36647,  'asname' => 'Yahoo Inc',                      'rule' => 'allow', 'comment' => 'Yahoo Slurp',                           'disable' => 0],
+
+        ['priority' => 10, 'asnum' => 32934,  'asname' => 'Meta Platforms Inc',             'rule' => 'allow', 'comment' => 'Facebook, Instagram, WhatsApp crawler', 'disable' => 0],
+        ['priority' => 11, 'asnum' => 13414,  'asname' => 'X Corp',                         'rule' => 'allow', 'comment' => 'Twitterbot',                            'disable' => 0],
+        ['priority' => 12, 'asnum' => 62041,  'asname' => 'Telegram Messenger Inc',         'rule' => 'allow', 'comment' => 'Telegram link preview',                 'disable' => 0],
+        ['priority' => 12, 'asnum' => 59930,  'asname' => 'Telegram Messenger LLP',         'rule' => 'allow', 'comment' => 'Telegram link preview',                 'disable' => 0],
+        ['priority' => 12, 'asnum' => 62014,  'asname' => 'Telegram Messenger Inc',         'rule' => 'allow', 'comment' => 'Telegram link preview',                 'disable' => 0],
+        ['priority' => 12, 'asnum' => 44907,  'asname' => 'Telegram Messenger LLP',         'rule' => 'allow', 'comment' => 'Telegram link preview',                 'disable' => 0],
+
+        ['priority' => 15, 'asnum' => 23576,  'asname' => 'NAVER Cloud Corp',                'rule' => 'allow', 'comment' => 'NaverBot (Korean search)',               'disable' => 0],
+        ['priority' => 15, 'asnum' => 43037,  'asname' => 'Seznam.cz a.s.',                 'rule' => 'allow', 'comment' => 'SeznamBot (Czech search)',               'disable' => 0],
+        ['priority' => 15, 'asnum' => 10158,  'asname' => 'Kakao Corp',                     'rule' => 'allow', 'comment' => 'DaumBot (Korean search)',                'disable' => 0],
+        ['priority' => 15, 'asnum' => 199064, 'asname' => 'QWANT SAS',                      'rule' => 'allow', 'comment' => 'Qwantify (French search)',              'disable' => 0],
+        ['priority' => 15, 'asnum' => 63046,  'asname' => 'Brave Software Inc',             'rule' => 'allow', 'comment' => 'Brave SearchBot',                       'disable' => 0],
+
+        ['priority' => 20, 'asnum' => 40428,  'asname' => 'LinkedIn Corporation',           'rule' => 'allow', 'comment' => 'LinkedInBot',                           'disable' => 0],
+        ['priority' => 21, 'asnum' => 54115,  'asname' => 'Pinterest Inc',                  'rule' => 'allow', 'comment' => 'Pinterest crawler',                     'disable' => 0],
+        ['priority' => 22, 'asnum' => 396986, 'asname' => 'ByteDance Ltd',                  'rule' => 'allow', 'comment' => 'TikTok crawler',                        'disable' => 0],
+        ['priority' => 22, 'asnum' => 395291, 'asname' => 'Snapchat Inc',                   'rule' => 'allow', 'comment' => 'Snapchat link preview',                 'disable' => 0],
+        ['priority' => 23, 'asnum' => 47541,  'asname' => 'VK LLC',                         'rule' => 'allow', 'comment' => 'Mail.RU_Bot',                           'disable' => 0],
+        ['priority' => 24, 'asnum' => 2635,   'asname' => 'Automattic Inc',                 'rule' => 'allow', 'comment' => 'WordPress.com, Jetpack',                'disable' => 0],
+
+        ['priority' => 30, 'asnum' => 14907,  'asname' => 'Wikimedia Foundation Inc',       'rule' => 'allow', 'comment' => 'Wikipedia bots',                        'disable' => 0],
+        ['priority' => 30, 'asnum' => 7941,   'asname' => 'Internet Archive',               'rule' => 'allow', 'comment' => 'Wayback Machine',                       'disable' => 0],
+
+        ['priority' => 50, 'asnum' => 13335,  'asname' => 'Cloudflare Inc',                 'rule' => 'gray',  'comment' => 'Cloudflare CDN + Workers',              'disable' => 0],
+        ['priority' => 50, 'asnum' => 16509,  'asname' => 'Amazon.com Inc',                 'rule' => 'gray',  'comment' => 'AWS',                                   'disable' => 0],
+        ['priority' => 50, 'asnum' => 14618,  'asname' => 'Amazon.com Inc',                 'rule' => 'gray',  'comment' => 'AWS',                                   'disable' => 0],
+        ['priority' => 50, 'asnum' => 8075,   'asname' => 'Microsoft Corporation',          'rule' => 'gray',  'comment' => 'Azure',                                 'disable' => 0],
+        ['priority' => 50, 'asnum' => 396982, 'asname' => 'Google LLC',                     'rule' => 'gray',  'comment' => 'Google Cloud Platform',                 'disable' => 0],
+        ['priority' => 50, 'asnum' => 45102,  'asname' => 'Alibaba Cloud Computing Ltd',    'rule' => 'gray',  'comment' => 'Alibaba Cloud',                         'disable' => 0],
+        ['priority' => 50, 'asnum' => 31898,  'asname' => 'Oracle Corporation',             'rule' => 'gray',  'comment' => 'Oracle Cloud',                          'disable' => 0],
+
+        ['priority' => 50, 'asnum' => 16276,  'asname' => 'OVH SAS',                        'rule' => 'gray',  'comment' => 'OVHcloud',                              'disable' => 0],
+        ['priority' => 50, 'asnum' => 24940,  'asname' => 'Hetzner Online GmbH',            'rule' => 'gray',  'comment' => 'Hetzner',                               'disable' => 0],
+        ['priority' => 50, 'asnum' => 14061,  'asname' => 'DigitalOcean LLC',               'rule' => 'gray',  'comment' => 'DigitalOcean',                          'disable' => 0],
+        ['priority' => 50, 'asnum' => 63949,  'asname' => 'Akamai Connected Cloud',         'rule' => 'gray',  'comment' => 'Linode',                                'disable' => 0],
+        ['priority' => 50, 'asnum' => 20473,  'asname' => 'The Constant Company LLC',       'rule' => 'gray',  'comment' => 'Vultr',                                 'disable' => 0],
+        ['priority' => 50, 'asnum' => 36351,  'asname' => 'SoftLayer Technologies Inc',     'rule' => 'gray',  'comment' => 'IBM Cloud',                             'disable' => 0],
+        ['priority' => 50, 'asnum' => 8560,   'asname' => 'IONOS SE',                       'rule' => 'gray',  'comment' => '1&1 IONOS',                             'disable' => 0],
+        ['priority' => 50, 'asnum' => 51167,  'asname' => 'Contabo GmbH',                   'rule' => 'gray',  'comment' => 'Contabo',                               'disable' => 0],
+        ['priority' => 50, 'asnum' => 197540, 'asname' => 'Netcup GmbH',                    'rule' => 'gray',  'comment' => 'Netcup',                                'disable' => 0],
+        ['priority' => 50, 'asnum' => 9009,   'asname' => 'M247 Europe SRL',                'rule' => 'gray',  'comment' => 'M247 / VPN hosting',                    'disable' => 0],
+        ['priority' => 50, 'asnum' => 12876,  'asname' => 'SCALEWAY S.A.S.',                'rule' => 'gray',  'comment' => 'Scaleway',                              'disable' => 0],
+        ['priority' => 50, 'asnum' => 33070,  'asname' => 'Rackspace Hosting',              'rule' => 'gray',  'comment' => 'Rackspace',                             'disable' => 0],
+        ['priority' => 50, 'asnum' => 30633,  'asname' => 'Leaseweb USA Inc',               'rule' => 'gray',  'comment' => 'Leaseweb US',                           'disable' => 0],
+        ['priority' => 50, 'asnum' => 60781,  'asname' => 'Leaseweb Netherlands B.V.',      'rule' => 'gray',  'comment' => 'Leaseweb NL',                           'disable' => 0],
+    ];
+
+    foreach ( $default_asn as $asn ) {
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $exists = $wpdb->get_var( $wpdb->prepare(
+            "SELECT COUNT(*) FROM `{$wpdb->bbcs_asn}` WHERE asnum = %d",
+            $asn['asnum']
+        ) );
+
+        if ( $exists == 0 ) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $wpdb->query( $wpdb->prepare(
+                "INSERT INTO `{$wpdb->bbcs_asn}` (priority, asnum, asname, rule, comment, disable) VALUES (%d, %d, %s, %s, %s, %d)",
+                $asn['priority'],
+                $asn['asnum'],
+                $asn['asname'],
+                $asn['rule'],
+                $asn['comment'],
+                $asn['disable']
+            ) );
         }
     }
 }

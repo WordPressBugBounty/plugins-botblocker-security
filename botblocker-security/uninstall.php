@@ -83,6 +83,7 @@ function bbcs_uninstall_site_data( $cron_hooks, $option_keys ) {
 		$wpdb->bbcs_counters,
 		$wpdb->bbcs_page_filters,
 		$wpdb->bbcs_daily_summary,
+		$wpdb->bbcs_asn,
 	];
 
 	/** REVIEWER NOTE:

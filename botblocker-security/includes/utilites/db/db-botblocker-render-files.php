@@ -190,6 +190,29 @@ function bbcs_renderSearchEnginesFromDb()
     bbcs_atomic_file_write(bbcs_data_dir() . 'search_engines.php', $se_data);
 }
 
+function bbcs_renderAsnFromDb()
+{
+    global $wpdb;
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    $results = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT `asnum`, `rule` FROM `{$wpdb->bbcs_asn}` WHERE disable = %d ORDER BY priority ASC",
+            0
+        ),
+        ARRAY_A
+    );
+
+    $asn_data  = BBCS_STOP_DIRECT . "\nreturn [\n";
+    $asn_data .= "    'bbcs_asn' => [\n";
+    foreach ( (array) $results as $row ) {
+        $asn_data .= "        " . intval( $row['asnum'] ) . " => '" . addslashes( $row['rule'] ) . "',\n";
+    }
+    $asn_data .= "    ]\n";
+    $asn_data .= "];\n";
+
+    bbcs_atomic_file_write( bbcs_data_dir() . 'asn_rules.php', $asn_data );
+}
+
 function bbcs_renderIpsFromDb()
 {
     global $wpdb;

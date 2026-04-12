@@ -76,6 +76,7 @@ trait BotBlockerCheckPageTrait {
         
         $this->js_data = array(
             'ajaxUrl' => admin_url('admin-ajax.php'),
+            'verifyUrl' => home_url('/bbcs-verify/'),
             'nonce' => wp_create_nonce('botblocker_nonce'),           
             'debugEnabled' => (defined('BBCS_DEBUG') && BBCS_DEBUG === true),
             'version' => $this->version,
@@ -110,7 +111,8 @@ trait BotBlockerCheckPageTrait {
             'reasonForAction' => $this->reason_for_action,
             'resultOfAction' => $this->result_of_action,
             'uid' => $this->uid,
-            'samesite' => $this->settings->samesite,
+            'samesite' => self::effective_samesite( $this->settings->samesite ),
+            'cookieLifetime' => (int) $this->settings->cookie_lifetime,
             'botblockerUrl' => $this->botblockerUrl,
             'railsJsUrl' => esc_url($this->botblockerUrl . 'public/js/rails.js?bannerid=' . $this->time),
             'detectionUtilsUrl' => esc_url($this->botblockerUrl . 'public/js/detection-utils.js?ver=' . $this->time),

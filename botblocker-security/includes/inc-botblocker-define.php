@@ -6,8 +6,8 @@ define('BOTBLOCKER_SHORT_NAME', 'BotBlocker'); // A shorter version of the plugi
 if(!defined('BOTBLOCKER_TABLE_PREFIX')) define('BOTBLOCKER_TABLE_PREFIX', 'bbcs_'); // The prefix used for database tables
 define('BOTBLOCKER_PREFIX', 'bb_'); // The prefix used for settings and options
 
-define('BOTBLOCKER_VERSION', '1.6.16'); // The version number of the plugin
-define('BOTBLOCKER_DB_VERSION', '2.4.0'); // The database version of the plugin
+define('BOTBLOCKER_VERSION', '1.6.17'); // The version number of the plugin
+define('BOTBLOCKER_DB_VERSION', '2.5.0'); // The database version of the plugin
 define('BOTBLOCKER_WIZARD_ON_UPDATE', false); // Show setup wizard after plugin update
 define('BOTBLOCKER_MODE_STABLE', 'stable');
 define('BOTBLOCKER_MODE_DEV',    'dev');
@@ -65,6 +65,9 @@ define('BOTBLOCKER_MAILTO_LINK', 'mailto:admin@botblocker.top'); 									// The
 define('BOTBLOCKER_TELEGRAM_SUPPORT', 'https://t.me/GLOBUSstudio'); 								// Support in Telegram
 define('BOTBLOCKER_SUPPORT_FORUM', 'https://wordpress.org/support/plugin/botblocker-security/');	// Support Forum in wordpress.org
 
+// Enable CAPTCHA diagnostic reason codes in ban comments (TD, TT, DM, HM, RM, NM)
+define('BBCS_CAPTCHA_DIAG', false);
+
 // USE logger for requests
 define('BBCS_DEBUG', false);  
 // Enable logging for Redis and Memcached caches (only works when BBCS_DEBUG is true)
@@ -80,7 +83,7 @@ define('BBCS_LOG_TO_DEBUG', true);
 // Stop execution on fatal errors
 define('BBCS_ERROR_EXIT', false);
 // 
-define('BOTBLOCKER_MODE', BOTBLOCKER_MODE_STABLE); 
+define('BOTBLOCKER_MODE', BOTBLOCKER_MODE_DEV); 
 
 define('BBCS_STOP_DIRECT','<?php
 // If this file is called directly, abort.

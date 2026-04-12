@@ -44,19 +44,34 @@ class BotBlockerCaptchaRendererFull {
 
     private function createChallenge($correctAnswer, $mode) {
         $nonce = bin2hex(random_bytes(16));
-        $key = hash('sha256', $this->BBCS->settings->salt, true);
-        $iv = random_bytes(16);
-        $payload = wp_json_encode([
-            'n' => $nonce,
-            'a' => (string) $correctAnswer,
-            't' => (string) $this->BBCS->time,
-            'i' => $this->BBCS->ip,
-            'm' => $mode
-        ]);
-        $encrypted = openssl_encrypt($payload, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
-        $this->challengeToken = base64_encode($iv . $encrypted);
         $ttl = ($mode === 8) ? 3600 : 600;
-        set_transient('bbcs_ct_' . $nonce, 1, $ttl);
+
+        if (function_exists('openssl_encrypt')) {
+            $key = hash('sha256', $this->BBCS->settings->salt, true);
+            $iv = random_bytes(16);
+            $payload = wp_json_encode([
+                'n' => $nonce,
+                'a' => (string) $correctAnswer,
+                't' => (string) $this->BBCS->time,
+                'i' => $this->BBCS->ip,
+                'm' => $mode
+            ]);
+            $encrypted = openssl_encrypt($payload, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
+            $this->challengeToken = base64_encode($iv . $encrypted);
+            set_transient('bbcs_ct_' . $nonce, 1, $ttl);
+        } else {
+            $payload = wp_json_encode([
+                'n' => $nonce,
+                't' => (string) $this->BBCS->time,
+                'i' => $this->BBCS->ip,
+                'm' => $mode
+            ]);
+            $data = base64_encode($payload);
+            $hmac = hash_hmac('sha256', $data, $this->BBCS->settings->salt);
+            $this->challengeToken = $data . '.' . $hmac;
+            set_transient('bbcs_ct_' . $nonce, ['a' => (string) $correctAnswer], $ttl);
+        }
+
         return $nonce;
     }
 
@@ -983,10 +998,21 @@ class BotBlockerCaptchaRendererFull {
         $nonce = $this->createChallenge( 'silent_auto', 8 );
         $hash  = $this->answerHash( $nonce, 'silent_auto' );
 
-        // Set challenge_token BEFORE the check-function call to avoid race condition:
-        // the check-function fires an XHR synchronously inside botblocker_captcha_render(),
-        // so bbcs_challenge_token must already be defined when it reads the variable.
-        return 'window.bbcs_challenge_token = "' . esc_js( $this->getChallengeToken() ) . '";'
-             . "\n    " . $this->botblocker_check_function_name . '("post", data, "' . esc_js( $hash ) . '");';
+        $denied_text = esc_js( __( 'Access denied. Please enable JavaScript and cookies.', 'botblocker-security' ) );
+        $challenge   = 'window.bbcs_challenge_token = "' . esc_js( $this->getChallengeToken() ) . '";';
+
+        // Retry limit (max 2 attempts) to prevent infinite loop when silent auto-submit fails.
+        // Mirrors the same logic used in FRONTEND mode (mode8.js).
+        return $challenge . '
+    var bbcsM8r = 0;
+    try { bbcsM8r = parseInt(sessionStorage.getItem("bbcsMode8Retries") || "0", 10); } catch(e) {}
+    if (bbcsM8r < 2) {
+        try { sessionStorage.setItem("bbcsMode8Retries", String(bbcsM8r + 1)); } catch(e) {}
+        ' . $this->botblocker_check_function_name . '("post", data, "' . esc_js( $hash ) . '");
+    } else {
+        try { sessionStorage.removeItem("bbcsMode8Retries"); } catch(e) {}
+        var bbcsM8c = document.getElementById("content");
+        if (bbcsM8c) { bbcsM8c.innerHTML = \'<p style="text-align:center;color:#c0392b;">' . $denied_text . '</p>\'; }
+    }';
     }
 }

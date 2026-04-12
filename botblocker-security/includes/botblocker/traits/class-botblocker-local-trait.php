@@ -73,7 +73,7 @@ trait BotBlockerLocalTrait
             $this->process_die();
         }
 
-        $this->post_hash_cookie = md5($this->settings->salt . $this->settings->cloud_api_pass . $this->refhost . $this->useragent . $this->ip . $this->time) . '-' . $this->time;
+        $this->post_hash_cookie = md5($this->settings->salt . $this->settings->cloud_api_pass . $this->host . $this->useragent . $this->ip . $this->time) . '-' . $this->time;
         $payload = bbcs_local_check_result('cookie', $message, $this->post_hash_cookie);
         wp_send_json($payload);
     }
@@ -213,7 +213,7 @@ trait BotBlockerLocalTrait
                         wp_send_json($payload);
                         $this->process_die();
                     } elseif ($echo['rule'] == 'allow') {
-                        $this->post_hash_cookie = md5($this->settings->salt . $this->settings->cloud_api_pass . $this->refhost . $this->useragent . $this->ip . $this->time) . '-' . $this->time;
+                        $this->post_hash_cookie = md5($this->settings->salt . $this->settings->cloud_api_pass . $this->host . $this->useragent . $this->ip . $this->time) . '-' . $this->time;
                         $payload = bbcs_local_check_result('cookie', 'ALLOW By rule: timezone=' . $this->post_timezone, $this->post_hash_cookie);
                         wp_send_json($payload);
                         $this->process_die();
@@ -671,7 +671,7 @@ trait BotBlockerLocalTrait
 
     private function processReCaptchaV3()
     {
-        if ($this->settings->recaptcha_check == 1 && ! ($this->settings->recaptcha_v3_ipv6_block == 1 && $this->ip_version == 6)) {
+        if ($this->settings->recaptcha_check == 1 && !empty($this->settings->recaptcha_secret3) && ! ($this->settings->recaptcha_v3_ipv6_block == 1 && $this->ip_version == 6)) {
 
             $args = [
                 'body'      => [

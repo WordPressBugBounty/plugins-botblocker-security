@@ -4,7 +4,7 @@ Tags: security, firewall, anti-spam, captcha, brute force
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.6.16
+Stable tag: 1.6.17
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -235,6 +235,19 @@ Use **Allowlist** for admin IPs/services and enable "allow server self-IP" so WP
 
 == Changelog ==
  
+= 1.6.17 =
+Fix third-party library compatibility issues affecting some hosting environments
+Fix minor bugs and plugin incompatibilities with popular WordPress plugins
+Improve legacy browser support
+Improve Security Headers addon with stricter defaults and additional directives
+Improve shared hosting compatibility with enhanced environment detection and fallback logic
+Improve statistics and reporting 
+Add updated ASN tables
+Add cookie diagnostics tool
+Add cache compatibility
+Update vulnerability signature database
+Update translation files
+
 = 1.6.16 =
 Add new CAPTCHA mode: Silent Auto-Verify - real users pass automatically with zero interaction, bots see "Access denied"
 Add Silent Auto-Verify as the new recommended default in the setup wizard

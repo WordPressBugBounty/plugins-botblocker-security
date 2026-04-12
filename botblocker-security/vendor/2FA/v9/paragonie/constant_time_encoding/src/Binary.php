@@ -1,12 +1,12 @@
 <?php
-declare(strict_types=1);
-namespace ParagonIE\ConstantTime;
+
+declare (strict_types=1);
+namespace BotBlocker\Vendor\ParagonIE\ConstantTime;
 
 use SensitiveParameter;
 use TypeError;
 use function strlen;
 use function substr;
-
 /**
  *  Copyright (c) 2016 - 2022 Paragon Initiative Enterprises.
  *  Copyright (c) 2014 Steve "Sc00bz" Thomas (steve at tobtu dot com)
@@ -29,7 +29,6 @@ use function substr;
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  */
-
 /**
  * Class Binary
  *
@@ -51,10 +50,10 @@ abstract class Binary
     public static function safeStrlen(
         #[SensitiveParameter]
         string $str
-    ): int {
+    ): int
+    {
         return strlen($str);
     }
-
     /**
      * Safe substring
      *
@@ -73,7 +72,8 @@ abstract class Binary
         string $str,
         int $start = 0,
         ?int $length = null
-    ): string {
+    ): string
+    {
         if ($length === 0) {
             return '';
         }

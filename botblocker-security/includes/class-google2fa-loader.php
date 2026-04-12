@@ -112,7 +112,7 @@ class Google2FA_Loader {
             return self::$google2fa_instance;
         }
         
-        $class = 'PragmaRX\Google2FA\Google2FA';
+        $class = 'BotBlocker\Vendor\PragmaRX\Google2FA\Google2FA';
         
         if (!class_exists($class)) {
             // error_log('BotBlocker: Google2FA class not found: ' . $class);

@@ -1,5 +1,30 @@
 (function ($) {
     "use strict";
+
+    /**
+     * Render diagnostic reason codes in rule comment column.
+     * Stored as "CAPTCHA fail [R:TD] PH" → displayed with expanded reason.
+     * Codes: TD=Token decrypt fail, TT=Transient expired, DM=Date mismatch,
+     * HM=Hash mismatch, RM=reCAPTCHA mode mismatch, NM=No matching mode.
+     */
+    window.bbcsRenderReasonComment = function(comment) {
+        if (!comment || typeof comment !== 'string') return comment || '';
+        var reasonMap = {
+            'TD': 'Token decrypt fail',
+            'TT': 'Transient expired',
+            'DM': 'Date mismatch',
+            'HM': 'Hash mismatch',
+            'RM': 'reCAPTCHA mode mismatch',
+            'NM': 'No matching mode'
+        };
+        return comment.replace(/\[R:([A-Z,]+)\]/g, function(match, codes) {
+            var parts = codes.split(',');
+            var expanded = parts.map(function(c) {
+                return reasonMap[c.trim()] || c.trim();
+            }).join(', ');
+            return '<span title="' + expanded + '" style="cursor:help;border-bottom:1px dotted #888">[' + expanded + ']</span>';
+        });
+    };
  
     var isProcessingRule = false;
     // local flag for loading the rules table

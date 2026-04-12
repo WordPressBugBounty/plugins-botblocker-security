@@ -44,8 +44,8 @@ class BotBlockerSettings {
     public $botblocker_force_check = 0;
     public $force_cloud_validation = 0;
 
-    public $botblocker_log_error = 0; 
-    public $botblocker_log_admin = 1; 
+    public $botblocker_log_error = 1; 
+    public $botblocker_log_admin = 0; 
     public $botblocker_log_allow = 1; 
     public $botblocker_log_bbcs = 0; 
     public $botblocker_log_block = 1; 
@@ -55,12 +55,14 @@ class BotBlockerSettings {
     public $botblocker_log_goodip = 1; 
     public $botblocker_log_local = 1; 
     public $botblocker_log_tests = 1; 
-    public $botblocker_log_wp = 1; 
+    public $botblocker_log_wp = 0; 
 
     public $cache_ui_data = 0; 
     public $cache_ui_duration = 3600; 
     public $check = 0; 
     public $check_get_ref = 1;
+
+    public $cloud_api_timeout = 5;
 
     public $cookie = 'BotBlocker';
     public $cookie_lifetime = 604800;

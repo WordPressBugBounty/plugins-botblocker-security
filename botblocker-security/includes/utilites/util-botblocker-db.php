@@ -128,6 +128,7 @@ function bbcs_generateAllFilesFromDb(): bool
     bbcs_renderRulesFromDb();
     bbcs_renderPathsFromDb();
     bbcs_renderSearchEnginesFromDb();
+    bbcs_renderAsnFromDb();
     bbcs_renderIpsFromDb();
     bbcs_renderProxyFromDb(); 
 

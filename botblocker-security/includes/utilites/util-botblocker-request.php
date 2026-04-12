@@ -12,9 +12,17 @@ class BotBlockerWpRequest {
         }
         $fullURL = $base . '/' . $path;
 
+        $timeout = 5;
+        if (class_exists('BotBlocker') && method_exists('BotBlocker', 'getInstance')) {
+            $inst = BotBlocker::getInstance();
+            if (isset($inst->settings->cloud_api_timeout)) {
+                $timeout = max(1, min(30, (int) $inst->settings->cloud_api_timeout));
+            }
+        }
+
         $args = [
             'method'      => 'POST',
-            'timeout'     => 2,
+            'timeout'     => $timeout,
             'redirection' => 0,
             'httpversion' => '1.1',
             'headers'     => [

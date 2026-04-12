@@ -21,7 +21,8 @@ trait BotBlockerCookieTrait {
             md5($this->settings->salt . $this->settings->cloud_api_pass . $this->host . $this->useragent . $this->ip . $this->time) . '-' . $this->time,
             $this->time + $this->settings->cookie_lifetime, 
             false,
-            $this->settings->samesite
+            $this->settings->samesite,
+            false // httponly=false: JS needs read/write access to this data cookie
         );    
     }
 
@@ -80,16 +81,30 @@ trait BotBlockerCookieTrait {
         );
     }
 
-    protected function set_cookie(string $name, $value, int $expires, bool $dot, string $samesite): void
+    /**
+     * Return a safe SameSite value:
+     *  - invalid values fall back to 'Lax' (not 'None');
+     *  - 'None' is downgraded to 'Lax' on plain HTTP because
+     *    browsers silently reject SameSite=None without Secure.
+     */
+    public static function effective_samesite( string $samesite ): string
+    {
+        if ( ! in_array( $samesite, [ 'Lax', 'Strict', 'None' ], true ) ) {
+            return 'Lax';
+        }
+        if ( $samesite === 'None' && ! self::is_secure_connection() ) {
+            return 'Lax';
+        }
+        return $samesite;
+    }
+
+    protected function set_cookie(string $name, $value, int $expires, bool $dot, string $samesite, bool $httponly = true): void
     {
         if ( empty( $name ) ) {
             return;
         }
         
-        $samesites = ['Lax', 'Strict', 'None'];
-        if ( ! in_array($samesite, $samesites, true) ) {
-            $samesite = 'None';
-        }
+        $samesite = self::effective_samesite( $samesite );
 
         if ( headers_sent() ) {
             return;
@@ -123,9 +138,7 @@ trait BotBlockerCookieTrait {
             }
         }
 
-        $secure = ( $samesite === 'None' ) ? true : ( function_exists('wp_is_using_https') ? wp_is_using_https() : is_ssl() );
-
-        $httponly = true;
+        $secure = ( $samesite === 'None' ) ? true : self::is_secure_connection();
 
         if ( version_compare( PHP_VERSION, '7.3.0', '>=' ) ) {
             setcookie( $name, (string) $value, [
@@ -139,6 +152,23 @@ trait BotBlockerCookieTrait {
         } else {
             setcookie( $name, (string) $value, $expires, '/' . ( $domain ? '; Domain=' . $domain : '' ) . ( $secure ? '; Secure' : '' ) . ( $httponly ? '; HttpOnly' : '' ) );
         }
+    }
+
+    private static function is_secure_connection(): bool
+    {
+        if (function_exists('wp_is_using_https') && wp_is_using_https()) {
+            return true;
+        }
+        if (is_ssl()) {
+            return true;
+        }
+        if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower(trim($_SERVER['HTTP_X_FORWARDED_PROTO'])) === 'https') {
+            return true;
+        }
+        if (isset($_SERVER['HTTP_X_FORWARDED_SSL']) && strtolower(trim($_SERVER['HTTP_X_FORWARDED_SSL'])) === 'on') {
+            return true;
+        }
+        return false;
     }
 
 }

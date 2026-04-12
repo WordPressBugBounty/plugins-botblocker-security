@@ -78,6 +78,7 @@ abstract class BotBlockerBase {
     public $cookie_expected_hash;    
     public $cookie_visitor_data; 
     public $cookie_timestamp;
+    public bool $is_asset_request = false;
 
     // Rules properties
     public $bbcs_rule = [];
@@ -159,6 +160,7 @@ abstract class BotBlockerBase {
     public $should_show_block_page = false;
     public $should_show_denied_page = false;
     public $nonce_silent_protection = false;
+    public $csp_nonce = '';
 
     /**
      * @var BotBlockerSettings

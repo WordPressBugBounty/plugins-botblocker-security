@@ -1,10 +1,10 @@
 /*
  * BotBlocker Detection Utilities
- * Version: 1.0.0
- * Copyright (c) 2025 BotBlocker
+ * Version: 2.0.0
+ * Copyright (c) 2026 BotBlocker
  * 
  * This file contains various detection algorithms for identifying bots and automated browser environments.
- */
+ */ 
 
 function bbcs_detectJitter() {
     const timings = [];
@@ -58,6 +58,10 @@ function bbcs_detectJitter() {
     if (inconsistentTiming) {
         return true;
     }
+
+    if (timings.every(t => t === 0)) {
+        return true;
+    }
     
     return false;
 }
@@ -67,6 +71,24 @@ function bbcs_detectNavigatorMismatch() {
     const userAgent = nav.userAgent;
     const platform = nav.platform;
     const vendor = nav.vendor;
+
+    if (nav.webdriver === true) {
+        return true;
+    }
+
+    try {
+        if (Object.getOwnPropertyDescriptor(nav, 'webdriver') !== undefined) {
+            return true;
+        }
+    } catch (e) {}
+
+    if (/HeadlessChrome|PhantomJS|SlimerJS/i.test(userAgent)) {
+        return true;
+    }
+
+    if (window.outerWidth === 0 && window.outerHeight === 0) {
+        return true;
+    }
     
     let browserData = {
         chrome: userAgent.includes('Chrome') && !userAgent.includes('Edg/') && !userAgent.includes('OPR/'),
@@ -317,19 +339,46 @@ function bbcs_detectChromiumProperties() {
         '__fxdriver_unwrapped',
         '__webdriver_script_func',
         '$chrome_asyncScriptInfo',
-        '$cdc_asdjflasutopfhvcZLmcfl_'
+        '$cdc_asdjflasutopfhvcZLmcfl_',
+        '__puppeteer_evaluation_script__',
+        '__playwright_evaluation_script__',
+        '_WEBDRIVER_ELEM_CACHE',
+        'domAutomation',
+        'domAutomationController',
+        '__lastWatirAlert',
+        '__lastWatirConfirm',
+        '__lastWatirPrompt',
+        'webdriver'
     ];
     
     if (anomalyProps.some(prop => prop in window)) {
         return true;
     }
+
+    try {
+        if ('$cdc_asdjflasutopfhvcZLmcfl_' in document ||
+            'domAutomationController' in document ||
+            '__webdriver_evaluate' in document) {
+            return true;
+        }
+    } catch (e) {}
+
+    try {
+        if (navigator.permissions && navigator.permissions.query) {
+            const fnStr = Function.prototype.toString.call(navigator.permissions.query);
+            if (typeof fnStr === 'string' && !/\[native code\]/.test(fnStr)) {
+                return true;
+            }
+        }
+    } catch (e) {}
     
     if (navigator.userAgent.includes('Chrome') && !window.chrome) {
         return true;
     }
-    
-    if (navigator.userAgent.includes('Firefox') && 
-        typeof InstallTrigger === 'undefined') {
+
+    if (navigator.userAgent.includes('Firefox') &&
+        typeof CSS !== 'undefined' && CSS.supports &&
+        !CSS.supports('-moz-appearance', 'none')) {
         return true;
     }
     
@@ -373,7 +422,7 @@ function bbcs_detectWebGL() {
             return true;
         }
         
-        const blacklistedRenderers = ['SwiftShader', 'VirtualBox', 'VMware', 'llvmpipe'];
+        const blacklistedRenderers = ['SwiftShader', 'VirtualBox', 'VMware', 'llvmpipe', 'Software Rasterizer', 'Microsoft Basic Render'];
         const isEmulated = blacklistedRenderers.some(r => renderer.includes(r));
         
         if (isEmulated) {
@@ -386,8 +435,7 @@ function bbcs_detectWebGL() {
 
 function bbcs_detectTouchEvent() {
     const hasTouch = 'ontouchstart' in window || 
-                      navigator.maxTouchPoints > 0 || 
-                      navigator.msMaxTouchPoints > 0;
+                      navigator.maxTouchPoints > 0;
                       
     const screenTouchMatch = window.matchMedia && 
                             window.matchMedia('(pointer: coarse)').matches === hasTouch;
@@ -521,7 +569,7 @@ function bbcs_detectLanguageMismatch() {
             return true;
         }
         
-        const invalidLang = langs.some(l => typeof l !== 'string' || l.length < 2 || l.length > 5);
+        const invalidLang = langs.some(l => typeof l !== 'string' || l.length < 2 || l.length > 35);
         if (invalidLang) {
             return true;
         }
@@ -531,7 +579,7 @@ function bbcs_detectLanguageMismatch() {
         return true;
     }
     
-    const invalidChars = /[^a-zA-Z\-_]/;
+    const invalidChars = /[^a-zA-Z0-9\-_]/;
     if (invalidChars.test(lang)) {
         return true;
     }
@@ -544,79 +592,72 @@ function bbcs_detectLanguageMismatch() {
     return false;
 }
 
-function bbcs_isIncognito() {
-    let isPrivate = false;
+let _bbcs_incognitoResult = false;
+let _bbcs_incognitoResolved = false;
 
-    function identifyBrowser() {
-        const ua = navigator.userAgent;
-        if (ua.includes("Firefox")) return "Firefox";
-        if (ua.includes("Edg/")) return "Edge";
-        if (ua.includes("Chrome")) {
-            if (navigator.brave !== undefined) return "Brave";
-            if (ua.includes("OPR")) return "Opera";
-            return "Chrome";
-        }
-        if (ua.includes("Safari") && !ua.includes("Chrome")) return "Safari";
-        return "Unknown";
-    }
+(function() {
+    var ua = navigator.userAgent;
+    var isChromium = ua.includes('Chrome') || ua.includes('Edg/');
+    var isSafari = ua.includes('Safari') && !ua.includes('Chrome');
 
-    const browser = identifyBrowser();
-    
-    if (browser === "Firefox") {
-        const windowExists = typeof window.indexedDB !== 'undefined';
-        const IDBOpenDBRequest = Object.getPrototypeOf(indexedDB.open("test"));
-        
-        if (!windowExists || IDBOpenDBRequest.constructor.name !== "IDBOpenDBRequest") {
-            isPrivate = true;
-        }
-        
-        return isPrivate;
-    }
-    
-    if (browser === "Chrome" || browser === "Opera" || browser === "Edge" || browser === "Brave") {
-        const fs = window.requestFileSystem || window.webkitRequestFileSystem;
-        
-        if (!fs) {
-            isPrivate = true;
+    if (isChromium) {
+        if (navigator.storage && navigator.storage.estimate) {
+            navigator.storage.estimate().then(function(est) {
+                _bbcs_incognitoResult = est.quota < 120000000;
+                _bbcs_incognitoResolved = true;
+            }).catch(function() { _bbcs_incognitoResolved = true; });
         } else {
-            try {
-                if (navigator.storage && navigator.storage.estimate) {
-                    navigator.storage.estimate().then(({quota}) => {
-                        isPrivate = quota < 120000000;
-                    });
-                } else {
-                    fs(window.TEMPORARY, 100, () => { isPrivate = false; }, () => { isPrivate = true; });
-                }
-            } catch (e) {
-                isPrivate = true;
+            var fs = window.requestFileSystem || window.webkitRequestFileSystem;
+            if (fs) {
+                fs(window.TEMPORARY, 100,
+                    function() { _bbcs_incognitoResolved = true; },
+                    function() { _bbcs_incognitoResult = true; _bbcs_incognitoResolved = true; }
+                );
+            } else {
+                _bbcs_incognitoResolved = true;
             }
         }
-        
-        return isPrivate;
-    }
-    
-    if (browser === "Safari") {
+    } else if (isSafari) {
         try {
-            if (!window.localStorage) {
-                isPrivate = true;
-            } else {
-                window.localStorage.setItem("test", "1");
-                window.localStorage.removeItem("test");
+            var db = window.indexedDB.open('_bbcs_inc');
+            db.onerror = function() { _bbcs_incognitoResult = true; _bbcs_incognitoResolved = true; };
+            db.onsuccess = function() { _bbcs_incognitoResolved = true; try { db.result.close(); } catch(e) {} };
+        } catch (e) {
+            _bbcs_incognitoResolved = true;
+        }
+    } else {
+        _bbcs_incognitoResolved = true;
+    }
+})();
+
+function bbcs_isIncognito() {
+    if (_bbcs_incognitoResolved) return _bbcs_incognitoResult;
+    const ua = navigator.userAgent;
+
+    if (ua.includes('Firefox')) {
+        try {
+            const idbReq = indexedDB.open('_bbcs_inc');
+            if (Object.getPrototypeOf(idbReq).constructor.name !== 'IDBOpenDBRequest') {
+                return true;
             }
         } catch (e) {
-            isPrivate = true;
+            return true;
         }
-        
-        if (!isPrivate && navigator.maxTouchPoints !== undefined) {
-            const db = window.indexedDB.open("test");
-            db.onerror = () => { isPrivate = true; };
-            db.onsuccess = () => { isPrivate = false; db.result.close(); };
-        }
-        
-        return isPrivate;
+        return false;
     }
-    
-    return false;
+
+    if (ua.includes('Safari') && !ua.includes('Chrome')) {
+        try {
+            if (!window.localStorage) return true;
+            window.localStorage.setItem('_bbcs_t', '1');
+            window.localStorage.removeItem('_bbcs_t');
+        } catch (e) {
+            return true;
+        }
+        return false;
+    }
+
+    return _bbcs_incognitoResult;
 }
 
 function bbcs_clean_and_decode_base64_to_utf8(str) {

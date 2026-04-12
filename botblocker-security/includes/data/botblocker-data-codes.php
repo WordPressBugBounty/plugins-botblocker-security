@@ -53,7 +53,7 @@ function bbcs_codeList(int $code): array
             "searchbot" => false
         ],
         8 => [
-            "msg" => "Wrong click ban time1 or time2",
+            "msg" => "CAPTCHA verification failed ban time1 or time2",
             "allow" => false,
             "count" => true,
             "searchbot" => false

@@ -36,14 +36,14 @@ global $wpdb;
 class BBCS_GoogleAuthenticator
 {
     protected $_codeLength = 6;
-    /** @var \PragmaRX\Google2FA\Google2FA|null */
+    /** @var \BotBlocker\Vendor\PragmaRX\Google2FA\Google2FA|null */
     private $driver = null;
 
     public function __construct()
     {
-        if (class_exists('\PragmaRX\Google2FA\Google2FA')) {
+        if (class_exists('\BotBlocker\Vendor\PragmaRX\Google2FA\Google2FA')) {
             try {
-                $this->driver = new \PragmaRX\Google2FA\Google2FA();
+                $this->driver = new \BotBlocker\Vendor\PragmaRX\Google2FA\Google2FA();
             } catch (\Throwable $e) {
                 $this->driver = null;
             }

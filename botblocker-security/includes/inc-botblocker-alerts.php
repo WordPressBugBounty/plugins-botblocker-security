@@ -146,6 +146,16 @@ function bbcs_alerts_detect_cache_incompatibility(): ?array
 		// but still worth noting for users
 	}
 
+	// WP Rocket
+	if (is_plugin_active('wp-rocket/wp-rocket.php') || (is_multisite() && is_plugin_active_for_network('wp-rocket/wp-rocket.php'))) {
+		$warnings[] = __( 'WP Rocket detected. Add the BotBlocker cookie to the "Never Cache Cookies" list in WP Rocket settings. See CACHE-COMPATIBILITY.md.', 'botblocker-security' );
+	}
+
+	// Kinsta server-level cache
+	if (defined('KINSTAMU_VERSION')) {
+		$warnings[] = __( 'Kinsta hosting detected. Add the BotBlocker cookie as a cache bypass rule in the Kinsta dashboard. See CACHE-COMPATIBILITY.md.', 'botblocker-security' );
+	}
+
 	if (empty($warnings)) {
 		return null;
 	}

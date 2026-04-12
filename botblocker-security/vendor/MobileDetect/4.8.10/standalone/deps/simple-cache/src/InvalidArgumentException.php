@@ -1,6 +1,6 @@
 <?php
 
-namespace Psr\SimpleCache;
+namespace BotBlocker\Vendor\Psr\SimpleCache;
 
 /**
  * Exception interface for invalid cache arguments.

@@ -81,6 +81,7 @@ function bbcs_get_allowed_fields(): array {
         'login_brutforce_period',
         'login_brutforce_primary_block_time',
         'login_brutforce_secondary_block_time',
+        'cloud_api_timeout',
         'cloud_api_type',
         'cloud_api_email',
         'cloud_api_key',
@@ -183,9 +184,9 @@ function bbcs_loadDefaultSettings(){
         'botblocker_log_fake' => 1,
         'botblocker_log_goodip' => 1,
         'botblocker_log_block' => 1,
-        'botblocker_log_admin' => 1,
-        'botblocker_log_wp' => 1,
-        'botblocker_log_cli' => 1,
+        'botblocker_log_admin' => 0,
+        'botblocker_log_wp' => 0,
+        'botblocker_log_cli' => 0,
         'botblocker_log_bbcs' => 0,  
         'botblocker_log_error' => 1,
         'header_test_code' => 200,
@@ -197,7 +198,7 @@ function bbcs_loadDefaultSettings(){
         'hosting_block' => 0, 
         'block_fake_ref' => 1, 
 
-        'recaptcha_check' => 1,
+        'recaptcha_check' => 0,
         'recaptcha_key2' => '', 
         'recaptcha_secret2' => '',
         'recaptcha_key3' => '',
@@ -231,6 +232,7 @@ function bbcs_loadDefaultSettings(){
         'daylight_saving_time' => 0,
         'use_transients_for_cloud' => 0,
         'cookie_lifetime' => 604800,
+        'cloud_api_timeout' => 5,
         'vary_cookie' => 0,
 
         'telegram_notifications' => 0,
@@ -298,6 +300,7 @@ function bbcs_loadLightSecurity(){
         'ptr_cache_in_db' => 1,
         'botblocker_force_check' => 0,
         'cookie_lifetime' => 604800,
+        'cloud_api_timeout' => 5,
         'vary_cookie' => 0,
 
         'login_brutforce_enabled' => 1,
@@ -367,6 +370,7 @@ function bbcs_loadStrongSecurity(){
         'ptr_cache_in_db' => 1,
         'botblocker_force_check' => 0,
         'cookie_lifetime' => 604800,
+        'cloud_api_timeout' => 5,
         'vary_cookie' => 0,
 
         'login_brutforce_enabled' => 1,
@@ -437,6 +441,7 @@ function bbcs_loadFullSecurity(){
         'ptr_cache_in_db' => 1,
         'botblocker_force_check' => 0,
         'cookie_lifetime' => 604800,
+        'cloud_api_timeout' => 5,
         'vary_cookie' => 0,
 
         'login_brutforce_enabled' => 1,
