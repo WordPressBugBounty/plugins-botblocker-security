@@ -23,17 +23,17 @@
                         $('#bbcs_remaining_hits').val(response.data.remaining_hits);
                         $('#bbcs_remaining_days').val(response.data.remaining_days);
                         if (!isAutomaticRefresh) {
-                            alert('Cloud API information refreshed successfully!');
+                            alert(bbcsCloudApiL10n.refreshed);
                         }
                     } else {
                         if (!isAutomaticRefresh) {
-                            alert(response.data.error || 'Failed to refresh Cloud API information.');
+                            alert(response.data.error || bbcsCloudApiL10n.failed_refresh);
                         }
                     }
                 },
                 error: function (xhr, status, error) {
                     if (!isAutomaticRefresh) {
-                        alert('AJAX Error: ' + error);
+                        alert(bbcsCloudApiL10n.ajax_error + error);
                     }
                 },
                 complete: function () {

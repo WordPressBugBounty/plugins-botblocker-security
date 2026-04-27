@@ -36,13 +36,15 @@ $bbcs_updates_count = $bbcs_ctx['updates_count'];
 
             <?php if ( $bbcs_addons_locked || !$bbcs_has_cloud_api) : ?>
                 <div class="alert alert-warning bbcs-mb-16" role="alert">
-                    <h4 class="alert-heading"><?php esc_html_e('Unlock Add-ons Marketplace','botblocker-security'); ?></h4>
-                    <p><?php esc_html_e('Activate a BotBlocker PRO to install and manage premium add-ons.','botblocker-security'); ?></p>
+                    <h4 class="alert-heading"><i class="fa-solid fa-puzzle-piece me-1"></i><?php esc_html_e('Premium add-ons - included with BotBlocker PRO','botblocker-security'); ?></h4>
+                    <p class="mb-2"><?php esc_html_e('Each add-on is a turnkey extension: install in one click, configure in minutes, and gain a new layer of protection or speed without writing a line of code.','botblocker-security'); ?></p>
+                    <p class="mb-2 small bbcs-text-muted"><?php esc_html_e('Examples: Security Headers (HSTS, CSP, X-Frame), Hide Admin URL, Speed-up, Early Init, Anti-spam, Telegram alerts and more.','botblocker-security'); ?></p>
                     <?php if ( isset( $BBCSA->pages_cloud_api ) ) : ?>
                         <?php if ( $bbcs_has_cloud_api ) : ?>
-                            <a href="<?php echo esc_url( $BBCSA->pages_cloud_api ); ?>" target="_blank" class="btn btn-default btn-sm bbcs-link-blink"><i class="fa-solid fa-rocket me-1"></i><?php esc_html_e('Get Access Now','botblocker-security'); ?></a>
+                            <a href="<?php echo esc_url( $BBCSA->pages_cloud_api ); ?>" class="btn btn-sm bbcs-btn-upgrade"><i class="fa-solid fa-rocket me-1"></i><?php esc_html_e('Activate access','botblocker-security'); ?></a>
                         <?php else: ?>
-                            <a href="<?php echo esc_url('https://botblocker.top/pricing/'); ?>" class="btn btn-default bbcs-cloud-api-color bbcs-link-blink" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-arrow-up-right-from-square"></i>&nbsp;<?php esc_html_e( 'Compare Plans', 'botblocker-security' ); ?></a>
+                            <a href="<?php echo esc_url( $BBCSA->pages_cloud_api ); ?>" class="btn btn-sm bbcs-btn-upgrade"><i class="fa-solid fa-crown me-1"></i><?php esc_html_e( 'Get BotBlocker PRO', 'botblocker-security' ); ?></a>
+                            <a href="<?php echo esc_url('https://botblocker.top/pricing/'); ?>" class="btn btn-sm btn-default" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-table-list me-1"></i><?php esc_html_e( 'Compare Plans', 'botblocker-security' ); ?></a>
                         <?php endif; ?>
                     <?php endif; ?>
                 </div>

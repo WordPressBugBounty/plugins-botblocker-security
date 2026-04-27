@@ -4,7 +4,7 @@ Tags: security, firewall, anti-spam, captcha, brute force
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.6.17
+Stable tag: 1.6.18
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -235,6 +235,13 @@ Use **Allowlist** for admin IPs/services and enable "allow server self-IP" so WP
 
 == Changelog ==
  
+= 1.6.18 =
+Add new ASN database with auto-update
+Add Payment Gateway Bypass: dedicated whitelist for legitimate payment callbacks (webhooks, IPN, postbacks) so checkout notifications are never blocked
+Add auto-detection for 25+ e-commerce platforms (WooCommerce, EDD, SureCart, MemberPress, RCP, PMPro, Give, Dokan, WCFM, CartFlows, FunnelKit, etc.)
+Add built-in coverage for 30+ payment providers: Stripe, PayPal, Mollie, Adyen, Braintree, Square, Razorpay, YooKassa, Tinkoff, CloudPayments, Robokassa, Sberbank, WayForPay, LiqPay, Fondy, PayU, Klarna, Paystack, Flutterwave, GoCardless, Paddle, Authorize.Net, 2Checkout and more
+Add new "Payment Gateways" tab in Advanced Settings
+
 = 1.6.17 =
 Fix third-party library compatibility issues affecting some hosting environments
 Fix minor bugs and plugin incompatibilities with popular WordPress plugins

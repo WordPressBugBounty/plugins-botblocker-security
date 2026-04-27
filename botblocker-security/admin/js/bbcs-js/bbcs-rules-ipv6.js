@@ -230,7 +230,7 @@
                 var data = JSON.parse(e.target.result);
                 callback(data);
             } catch (err) {
-                alert("Invalid JSON file: " + err.message);
+                alert(bbcsIpv6L10n.invalid_json + err.message);
             }
         };
         reader.readAsText(file);
@@ -284,7 +284,7 @@
                         $("#editIPv6Modal").modal("show");
                     } else {
                         alert(
-                            "Failed to load IPv6 rule details: " + response.data
+                            bbcsIpv6L10n.failed_load + response.data
                         );
                     }
                 },
@@ -305,7 +305,7 @@
                         $("#editIPv6Modal").modal("hide");
                         $("#botblocker-ipv6-rules").DataTable().ajax.reload();
                     } else {
-                        alert("Failed to update IPv6 rule: " + response.data);
+                        alert(bbcsIpv6L10n.failed_update + response.data);
                     }
                 },
             });
@@ -317,7 +317,7 @@
             function () {
                 var id = $(this).data("id");
                 if (
-                    confirm("Are you sure you want to delete this IPv6 rule?")
+                    confirm(bbcsIpv6L10n.confirm_delete)
                 ) {
                     $.ajax({
                         url: botblockerData.ajaxurl,
@@ -371,7 +371,7 @@
                         $("#addIPv6Modal").modal("hide");
                         $("#botblocker-ipv6-rules").DataTable().ajax.reload();
                     } else {
-                        alert("Failed to create IPv6 rule: " + response.data);
+                        alert(bbcsIpv6L10n.failed_create + response.data);
                     }
                 },
             });
@@ -399,7 +399,7 @@
                         downloadLink.click();
                         document.body.removeChild(downloadLink);
                     } else {
-                        alert("Failed to export IPv6 rules: " + response.data);
+                        alert(bbcsIpv6L10n.failed_export + response.data);
                     }
                 },
             });
@@ -429,7 +429,7 @@
                                         .ajax.reload();
                                 } else {
                                     alert(
-                                        "Failed to import IPv6 rules: " +
+                                        bbcsIpv6L10n.failed_import +
                                             response.data
                                     );
                                 }
@@ -457,7 +457,7 @@
                                 .ajax.reload();
                         } else {
                             alert(
-                                "Failed to clear IPv6 rules: " + response.data
+                                bbcsIpv6L10n.failed_clear + response.data
                             );
                         }
                     },
@@ -499,9 +499,7 @@
                                         .ajax.reload();
                                 } else {
                                     alert(
-                                        "Failed to import IPv6 " +
-                                            listType +
-                                            ": " +
+                                        bbcsIpv6L10n['failed_import_' + listType] +
                                             response.data
                                     );
                                 }

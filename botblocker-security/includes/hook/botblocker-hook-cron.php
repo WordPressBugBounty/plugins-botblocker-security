@@ -40,6 +40,9 @@ function bbcs_register_cron_tasks()
     if (!wp_next_scheduled('bbcs_one_time_task')) {        
         wp_schedule_single_event(time() + 600, 'bbcs_one_time_task');  
     }
+    if (!wp_next_scheduled('bbcs_asn_db_freshness_task')) {
+        wp_schedule_event(time() + 60, 'every_five_days', 'bbcs_asn_db_freshness_task');
+    }
 }
 
 // Clear the cron tasks on plugin deactivation
@@ -52,6 +55,8 @@ function bbcs_remove_cron_tasks()
     wp_clear_scheduled_hook('bbcs_two_hours_task');
     wp_clear_scheduled_hook('bbcs_one_time_task');
     wp_clear_scheduled_hook('bbcs_summary_backfill');
+    wp_clear_scheduled_hook('bbcs_asn_db_freshness_task');
+    wp_clear_scheduled_hook('bbcs_asn_db_download_event');
 }
 
 add_action('bbcs_hourly_task', 'bbcs_summary_cron_handler');
@@ -121,9 +126,16 @@ function bbcs_get_cron_tasks()
         'bbcs_five_days_task'   => __('Cloud Data Sync', 'botblocker-security'),
         'bbcs_two_hours_task'   => __('Update IP Geolocation', 'botblocker-security'),
         'bbcs_one_time_task'    => __('Sync Early Init Data', 'botblocker-security'),
+        'bbcs_asn_db_download_event'  => __('ASN Database Download/Update', 'botblocker-security'),
+        'bbcs_asn_db_freshness_task'  => __('ASN Database Freshness Check', 'botblocker-security'),
     ];
 
     $tasks = [];
+
+    $asn_download_hook = 'bbcs_asn_db_download_event';
+    $asn_lock_active   = (bool) get_transient('bbcs_asn_db_lock');
+    $asn_window        = 5 * MINUTE_IN_SECONDS;
+    $asn_listed        = false;
 
     foreach ($plugin_tasks as $hook => $description) {
         foreach ($cron_jobs as $timestamp => $hooks) {
@@ -140,6 +152,10 @@ function bbcs_get_cron_tasks()
                     $progress = $time_left > 0
                         ? min(100, max(0, ((600 - $time_left) / 600) * 100)) 
                         : 0;
+                } elseif ($hook === $asn_download_hook) {
+                    $delta = max(0, $timestamp - $current_time);
+                    $progress = min(100, max(0, (($asn_window - $delta) / $asn_window) * 100));
+                    $asn_listed = true;
                 } else {
 
                     $progress = $interval > 0
@@ -155,6 +171,15 @@ function bbcs_get_cron_tasks()
             }
         }
     }
+
+    if (!$asn_listed && $asn_lock_active) {
+        $tasks[] = [
+            'description'    => __('ASN Database Download/Update', 'botblocker-security'),
+            'time_remaining' => 0,
+            'progress'       => 50,
+        ];
+    }
+
     wp_send_json_success($tasks);
 }
 

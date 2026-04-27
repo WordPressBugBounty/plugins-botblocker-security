@@ -65,7 +65,48 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 					data-bs-placement="top"
 					data-bs-original-title="<?php esc_attr_e('Clear expired transients from the database', 'botblocker-security'); ?>"></i>
 			</div>
-			
+
+			<?php
+			$bbcs_asn_status = function_exists('bbcs_asn_db_get_status') ? bbcs_asn_db_get_status() : [];
+			$bbcs_asn_state = isset($bbcs_asn_status['state']) ? (string) $bbcs_asn_status['state'] : 'absent';
+			$bbcs_asn_size = isset($bbcs_asn_status['size']) ? (int) $bbcs_asn_status['size'] : 0;
+			$bbcs_asn_dl = isset($bbcs_asn_status['downloaded_at']) ? (int) $bbcs_asn_status['downloaded_at'] : 0;
+			$bbcs_asn_type = isset($bbcs_asn_status['database_type']) ? (string) $bbcs_asn_status['database_type'] : '';
+			$bbcs_asn_present = function_exists('bbcs_asn_db_is_present') ? bbcs_asn_db_is_present() : false;
+			?>
+			<div class="bbcs_settings_button">
+				<button type="button" id="bbcs-update-asn-database" class="mb-1 btn btn-xs btn-default">
+					<i class="fa-solid fa-cloud-arrow-down"></i>
+					<?php esc_html_e('Update ASN database', 'botblocker-security'); ?>
+				</button>
+				<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"
+					data-bs-placement="top"
+					data-bs-original-title="<?php esc_attr_e('Schedule an immediate background download of the latest ASN (autonomous system) database from BotBlocker servers.', 'botblocker-security'); ?>"></i>
+			</div>
+			<div class="bbcs_settings_info" id="bbcs-asn-database-status" style="font-size:12px;color:#666;margin:4px 0 8px 4px;">
+				<?php
+				if ($bbcs_asn_present && $bbcs_asn_dl > 0) {
+					$bbcs_asn_age = human_time_diff($bbcs_asn_dl, time());
+					echo esc_html(sprintf(
+						/* translators: 1: ASN database type, 2: file size, 3: human-readable time difference. */
+						__('ASN DB: %1$s | %2$s | updated %3$s ago', 'botblocker-security'),
+						$bbcs_asn_type !== '' ? $bbcs_asn_type : __('ASN database', 'botblocker-security'),
+						size_format($bbcs_asn_size),
+						$bbcs_asn_age
+					));
+				} else {
+					esc_html_e('ASN DB: not yet downloaded.', 'botblocker-security');
+				}
+				if (!empty($bbcs_asn_status['last_error'])) {
+					echo '<br><span style="color:#b32d2e;">' . esc_html(sprintf(
+						/* translators: %s: short error code returned by the ASN downloader. */
+						__('Last error: %s', 'botblocker-security'),
+						$bbcs_asn_status['last_error']
+					)) . '</span>';
+				}
+				?>
+			</div>
+
 			<h3 class="bbcs_settings_h3"><?php esc_html_e('Features', 'botblocker-security'); ?></h3>
 
 			<div class="bbcs_settings_button">

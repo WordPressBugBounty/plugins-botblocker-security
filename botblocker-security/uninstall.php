@@ -32,6 +32,8 @@ $bbcs_cron_hooks = [
 	'bbcs_five_days_task',
 	'bbcs_two_hours_task',
 	'bbcs_one_time_task',
+	'bbcs_asn_db_freshness_task',
+	'bbcs_asn_db_download_event',
 ];
 
 $bbcs_option_keys = [
@@ -53,7 +55,8 @@ $bbcs_option_keys = [
 	'botblocker_active_addons',
 	'botblocker_tools_core_settings',
 	'botblocker_tools_login_settings',
-	'botblocker_tools_headers_settings',				// <---------- ДОБАВЛЕНО !!!!!!!!!!
+	'botblocker_tools_headers_settings',				
+	'bbcs_asn_db_status',
 ];
 
 /**
@@ -64,8 +67,11 @@ function bbcs_uninstall_site_data( $cron_hooks, $option_keys ) {
 
 	// 1. Remove cron tasks
 	foreach ( $cron_hooks as $hook ) {
-		wp_clear_scheduled_hook( $hook );
+		wp_unschedule_hook( $hook );
 	}
+
+	delete_transient( 'bbcs_asn_db_lock' );
+	delete_transient( 'bbcs_asn_db_failed_alert' );
 
 	// 2. Drop plugin tables
 	$bbcs_tables = [
@@ -135,13 +141,22 @@ function bbcs_uninstall_rmdir_recursive( $dir ) {
 
 //BBCS-MULTISITE
 if ( is_multisite() ) {
-	$bbcs_site_ids = get_sites( array( 'fields' => 'ids', 'number' => 0 ) );
-	foreach ( $bbcs_site_ids as $bbcs_site_id ) {
-		switch_to_blog( $bbcs_site_id );
-		require plugin_dir_path(__FILE__) . 'includes/inc-botblocker-tables.php';
-		bbcs_uninstall_site_data( $bbcs_cron_hooks, $bbcs_option_keys );
-		restore_current_blog();
-	}
+	$bbcs_uninstall_offset   = 0;
+	$bbcs_uninstall_per_page = 50;
+	do {
+		$bbcs_site_ids = get_sites( array(
+			'fields' => 'ids',
+			'number' => $bbcs_uninstall_per_page,
+			'offset' => $bbcs_uninstall_offset,
+		) );
+		foreach ( $bbcs_site_ids as $bbcs_site_id ) {
+			switch_to_blog( $bbcs_site_id );
+			require plugin_dir_path(__FILE__) . 'includes/inc-botblocker-tables.php';
+			bbcs_uninstall_site_data( $bbcs_cron_hooks, $bbcs_option_keys );
+			restore_current_blog();
+		}
+		$bbcs_uninstall_offset += $bbcs_uninstall_per_page;
+	} while ( count( $bbcs_site_ids ) === $bbcs_uninstall_per_page );
 	require plugin_dir_path(__FILE__) . 'includes/inc-botblocker-tables.php';
 	delete_site_option( 'bbcs_network_license_key' );
 	delete_site_option( 'bbcs_network_cloud_api_key' );

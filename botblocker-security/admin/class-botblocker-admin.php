@@ -103,6 +103,12 @@ class Botblocker_Admin
                 'ajaxurl' => admin_url('admin-ajax.php'),
                 'nonce' => wp_create_nonce("botblocker_nonce"),
             ));
+            wp_localize_script(BOTBLOCKER_SHORT_NAME . '-common-js', 'bbcsCommonL10n', array(
+                'ajax_error'          => __( 'AJAX Error: ', 'botblocker-security' ),
+                'early_init_confirm'  => __( 'Early Init requires active BotBlocker PRO and the Early Init add-on. Open Add-ons page?', 'botblocker-security' ),
+                'failed_copy'         => __( 'Failed to copy: ', 'botblocker-security' ),
+                'error_prefix'        => __( 'Error: ', 'botblocker-security' ),
+            ));
             wp_localize_script(BOTBLOCKER_SHORT_NAME . '-common-js', 'botblockerRedisMemcachedAvailability', array(
                 'redisAvailable' => bbcs_checkRedisAvailability(),
                 'memcachedAvailable' => bbcs_checkMemcachedAvailability()
@@ -132,6 +138,10 @@ class Botblocker_Admin
                     'ajaxurl' => admin_url('admin-ajax.php'),
                     'nonce' => wp_create_nonce("botblocker_nonce")
                 ));
+                wp_localize_script(BOTBLOCKER_SHORT_NAME . '-hits-js', 'bbcsHitsL10n', array(
+                    'failed_get_response' => __( 'Failed to get response: ', 'botblocker-security' ),
+                    'failed_create_rule'  => __( 'Failed to create rule: ', 'botblocker-security' ),
+                ));
             }
 
             if ($this->is_screen($screen->id, 'botblocker_page_bbcs_rules')) {
@@ -142,36 +152,138 @@ class Botblocker_Admin
                 wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-rules-path-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-path.js', array('jquery'), BOTBLOCKER_VERSION, true);
                 wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-proxy-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-proxy.js', array('jquery'), BOTBLOCKER_VERSION, true);
                 wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-asn-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-asn.js', array('jquery'), BOTBLOCKER_VERSION, true);
+                wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-geo-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-geo.js', array('jquery'), BOTBLOCKER_VERSION, true);
                 wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-chart-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-charts.js', array('jquery'), BOTBLOCKER_VERSION, false);
+
+                wp_localize_script(BOTBLOCKER_SHORT_NAME . '-geo-js', 'botblockerGeoData', array(
+                    'ajaxurl'   => admin_url('admin-ajax.php'),
+                    'nonce'     => wp_create_nonce("botblocker_nonce"),
+                    'i18n'      => array(
+                        'please_select_country'                 => __('Please select a country.', 'botblocker-security'),
+                        'country_already_added'                 => __('Country already added.', 'botblocker-security'),
+                        'invalid_country'                       => __('Invalid country.', 'botblocker-security'),
+                        'no_countries_selected'                 => __('No countries selected', 'botblocker-security'),
+                        'country_list_loaded'                   => __('Country list loaded.', 'botblocker-security'),
+                        'failed_to_load_saved_countries'        => __('Failed to load saved countries.', 'botblocker-security'),
+                        'server_error_loading_saved_countries'  => __('Server error while loading saved countries.', 'botblocker-security'),
+                        'country_list_saved'                    => __('Country list saved.', 'botblocker-security'),
+                        'failed_to_save_country_list'           => __('Failed to save country list.', 'botblocker-security'),
+                        'server_error_saving_country_list'      => __('Server error while saving country list.', 'botblocker-security'),
+                        'remove_country'                        => __('Remove country', 'botblocker-security'),
+                        'reloading'                             => __('Reloading...', 'botblocker-security'),
+                        'saving'                                => __('Saving...', 'botblocker-security')
+                    )
+                ));
 
                 wp_localize_script(BOTBLOCKER_SHORT_NAME . '-rules-js', 'botblockerData', array(
                     'ajaxurl' => admin_url('admin-ajax.php'),
                     'nonce' => wp_create_nonce("botblocker_nonce")
                 ));
+                wp_localize_script(BOTBLOCKER_SHORT_NAME . '-rules-js', 'bbcsRulesL10n', array(
+                    'invalid_json'   => __( 'Invalid JSON file: ', 'botblocker-security' ),
+                    'failed_update'  => __( 'Failed to update rule: ', 'botblocker-security' ),
+                    'failed_load'    => __( 'Failed to load rule details: ', 'botblocker-security' ),
+                    'confirm_delete' => __( 'Are you sure you want to delete this rule?', 'botblocker-security' ),
+                    'failed_create'  => __( 'Failed to create rule: ', 'botblocker-security' ),
+                    'failed_export'  => __( 'Failed to export rules: ', 'botblocker-security' ),
+                    'failed_import'  => __( 'Failed to import rules: ', 'botblocker-security' ),
+                    'failed_clear'   => __( 'Failed to clear rules: ', 'botblocker-security' ),
+                ));
                 wp_localize_script(BOTBLOCKER_SHORT_NAME . '-rules-ipv4-js', 'botblockerData', array(
                     'ajaxurl' => admin_url('admin-ajax.php'),
                     'nonce' => wp_create_nonce("botblocker_nonce")
+                ));
+                wp_localize_script(BOTBLOCKER_SHORT_NAME . '-rules-ipv4-js', 'bbcsIpv4L10n', array(
+                    'invalid_json'            => __( 'Invalid JSON file: ', 'botblocker-security' ),
+                    'failed_load'             => __( 'Failed to load IPv4 rule details: ', 'botblocker-security' ),
+                    'failed_update'           => __( 'Failed to update IPv4 rule: ', 'botblocker-security' ),
+                    'confirm_delete'          => __( 'Are you sure you want to delete this IPv4 rule?', 'botblocker-security' ),
+                    'failed_create'           => __( 'Failed to create IPv4 rule: ', 'botblocker-security' ),
+                    'failed_export'           => __( 'Failed to export IPv4 rules: ', 'botblocker-security' ),
+                    'failed_import'           => __( 'Failed to import IPv4 rules: ', 'botblocker-security' ),
+                    'failed_clear'            => __( 'Failed to clear IPv4 rules: ', 'botblocker-security' ),
+                    'failed_import_whitelist' => __( 'Failed to import IPv4 whitelist: ', 'botblocker-security' ),
+                    'failed_import_blacklist' => __( 'Failed to import IPv4 blacklist: ', 'botblocker-security' ),
                 ));
                 wp_localize_script(BOTBLOCKER_SHORT_NAME . '-rules-ipv6-js', 'botblockerData', array(
                     'ajaxurl' => admin_url('admin-ajax.php'),
                     'nonce' => wp_create_nonce("botblocker_nonce")
                 ));
+                wp_localize_script(BOTBLOCKER_SHORT_NAME . '-rules-ipv6-js', 'bbcsIpv6L10n', array(
+                    'invalid_json'            => __( 'Invalid JSON file: ', 'botblocker-security' ),
+                    'failed_load'             => __( 'Failed to load IPv6 rule details: ', 'botblocker-security' ),
+                    'failed_update'           => __( 'Failed to update IPv6 rule: ', 'botblocker-security' ),
+                    'confirm_delete'          => __( 'Are you sure you want to delete this IPv6 rule?', 'botblocker-security' ),
+                    'failed_create'           => __( 'Failed to create IPv6 rule: ', 'botblocker-security' ),
+                    'failed_export'           => __( 'Failed to export IPv6 rules: ', 'botblocker-security' ),
+                    'failed_import'           => __( 'Failed to import IPv6 rules: ', 'botblocker-security' ),
+                    'failed_clear'            => __( 'Failed to clear IPv6 rules: ', 'botblocker-security' ),
+                    'failed_import_whitelist' => __( 'Failed to import IPv6 whitelist: ', 'botblocker-security' ),
+                    'failed_import_blacklist' => __( 'Failed to import IPv6 blacklist: ', 'botblocker-security' ),
+                ));
                 wp_localize_script(BOTBLOCKER_SHORT_NAME . '-rules-white-js', 'botblockerData', array(
                     'ajaxurl' => admin_url('admin-ajax.php'),
                     'nonce' => wp_create_nonce("botblocker_nonce")
+                ));
+                wp_localize_script(BOTBLOCKER_SHORT_NAME . '-rules-white-js', 'bbcsWhiteL10n', array(
+                    'invalid_json'   => __( 'Invalid JSON file: ', 'botblocker-security' ),
+                    'failed_update'  => __( 'Failed to update white bot: ', 'botblocker-security' ),
+                    'failed_load'    => __( 'Failed to load white bot details: ', 'botblocker-security' ),
+                    'confirm_delete' => __( 'Are you sure you want to delete this white bot?', 'botblocker-security' ),
+                    'failed_create'  => __( 'Failed to create white bot: ', 'botblocker-security' ),
+                    'failed_export'  => __( 'Failed to export white bots: ', 'botblocker-security' ),
+                    'failed_import'  => __( 'Failed to import white bots: ', 'botblocker-security' ),
+                    'failed_clear'   => __( 'Failed to clear white bots: ', 'botblocker-security' ),
                 ));
                 wp_localize_script(BOTBLOCKER_SHORT_NAME . '-rules-path-js', 'botblockerData', array(
                     'ajaxurl' => admin_url('admin-ajax.php'),
                     'nonce' => wp_create_nonce("botblocker_nonce")
                 ));
+                wp_localize_script(BOTBLOCKER_SHORT_NAME . '-rules-path-js', 'bbcsPathL10n', array(
+                    'invalid_json'   => __( 'Invalid JSON file: ', 'botblocker-security' ),
+                    'failed_update'  => __( 'Failed to update path: ', 'botblocker-security' ),
+                    'failed_load'    => __( 'Failed to load path details: ', 'botblocker-security' ),
+                    'confirm_delete' => __( 'Are you sure you want to delete this path?', 'botblocker-security' ),
+                    'failed_create'  => __( 'Failed to create path: ', 'botblocker-security' ),
+                    'failed_export'  => __( 'Failed to export paths: ', 'botblocker-security' ),
+                    'failed_import'  => __( 'Failed to import paths: ', 'botblocker-security' ),
+                    'failed_clear'   => __( 'Failed to clear paths: ', 'botblocker-security' ),
+                ));
+                wp_localize_script(BOTBLOCKER_SHORT_NAME . '-proxy-js', 'bbcsProxyL10n', array(
+                    'invalid_json'          => __( 'Invalid JSON file: ', 'botblocker-security' ),
+                    'failed_update'         => __( 'Failed to update proxy: ', 'botblocker-security' ),
+                    'failed_load'           => __( 'Failed to load proxy details: ', 'botblocker-security' ),
+                    'confirm_delete'        => __( 'Are you sure you want to delete this proxy?', 'botblocker-security' ),
+                    'failed_create'         => __( 'Failed to create proxy: ', 'botblocker-security' ),
+                    'failed_export'         => __( 'Failed to export proxies: ', 'botblocker-security' ),
+                    'failed_import'         => __( 'Failed to import proxies: ', 'botblocker-security' ),
+                    'failed_clear'          => __( 'Failed to clear proxies: ', 'botblocker-security' ),
+                    'proxies_updated'       => __( 'Proxies successfully updated for Early BotBlocker Mode', 'botblocker-security' ),
+                    'failed_update_proxies' => __( 'Failed to update proxies: ', 'botblocker-security' ),
+                ));
                 wp_localize_script(BOTBLOCKER_SHORT_NAME . '-asn-js', 'botblockerData', array(
                     'ajaxurl' => admin_url('admin-ajax.php'),
                     'nonce' => wp_create_nonce("botblocker_nonce")
+                ));
+                wp_localize_script(BOTBLOCKER_SHORT_NAME . '-asn-js', 'bbcsAsnL10n', array(
+                    'invalid_json'   => __( 'Invalid JSON file: ', 'botblocker-security' ),
+                    'failed_update'  => __( 'Failed to update ASN rule: ', 'botblocker-security' ),
+                    'failed_load'    => __( 'Failed to load ASN details: ', 'botblocker-security' ),
+                    'confirm_delete' => __( 'Are you sure you want to delete this ASN rule?', 'botblocker-security' ),
+                    'failed_create'  => __( 'Failed to create ASN rule: ', 'botblocker-security' ),
+                    'failed_export'  => __( 'Failed to export ASN rules: ', 'botblocker-security' ),
+                    'failed_import'  => __( 'Failed to import ASN rules: ', 'botblocker-security' ),
+                    'failed_clear'   => __( 'Failed to clear ASN rules: ', 'botblocker-security' ),
                 ));
             }
 
             if ($this->is_screen($screen->id, 'botblocker_page_bbcs_cloud_api')) {
                 wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-cloud-api-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-cloud-api.js', array('jquery'), BOTBLOCKER_VERSION, true);
+                wp_localize_script(BOTBLOCKER_SHORT_NAME . '-cloud-api-js', 'bbcsCloudApiL10n', array(
+                    'refreshed'      => __( 'BotBlocker PRO information refreshed successfully!', 'botblocker-security' ),
+                    'failed_refresh' => __( 'Failed to refresh BotBlocker PRO information.', 'botblocker-security' ),
+                    'ajax_error'     => __( 'AJAX Error: ', 'botblocker-security' ),
+                ));
             }
 
             if ($this->is_screen($screen->id, 'botblocker_page_bbcs_setup_guide')) {
@@ -185,19 +297,57 @@ class Botblocker_Admin
                     'ajaxurl' => admin_url('admin-ajax.php'),
                     'nonce' => wp_create_nonce("botblocker_nonce")
                 ));
+                wp_localize_script(BOTBLOCKER_SHORT_NAME . '-2fa-js', 'bbcs2faL10n', array(
+                    'reset_failed' => __( 'Reset failed', 'botblocker-security' ),
+                ));
             }
 
             if ($this->is_screen($screen->id, 'botblocker_page_bbcs_settings')) {
                 wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-settings-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-settings.js', array('jquery'), BOTBLOCKER_VERSION, true);
+                wp_add_inline_script(
+                    BOTBLOCKER_SHORT_NAME . '-settings-js',
+                    'var bbcsUnsavedLabel = ' . wp_json_encode( __( 'Not saved!', 'botblocker-security' ) ) . ';',
+                    'before'
+                );
             }
 
             if ($this->is_screen($screen->id, 'botblocker_page_bbcs_tools')) {
                 wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-tools-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-tools.js', array('jquery'), BOTBLOCKER_VERSION, true);
+                wp_add_inline_script(
+                    BOTBLOCKER_SHORT_NAME . '-tools-js',
+                    'var bbcsUnsavedLabel = ' . wp_json_encode( __( 'Not saved!', 'botblocker-security' ) ) . ';',
+                    'before'
+                );
                 wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-maintenance-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-maintenance.js', array('jquery'), BOTBLOCKER_VERSION, true);
                 wp_localize_script(BOTBLOCKER_SHORT_NAME . '-maintenance-js', 'botblockerData', array(
                     'adminUrl' => is_network_admin() ? network_admin_url('') : admin_url(''),
                     'ajaxurl' => admin_url('admin-ajax.php'),
                     'nonce' => wp_create_nonce("botblocker_nonce")
+                ));
+                wp_localize_script(BOTBLOCKER_SHORT_NAME . '-maintenance-js', 'bbcsMaintenanceL10n', array(
+                    'db_reinstalled'          => __( 'Database reinstalled successfully!', 'botblocker-security' ),
+                    'failed_reinstall'        => __( 'Failed to reinstall database: ', 'botblocker-security' ),
+                    'ajax_error'              => __( 'AJAX Error: ', 'botblocker-security' ),
+                    'failed_backup'           => __( 'Failed backup: ', 'botblocker-security' ),
+                    'import_success'          => __( 'Import data and settings was successful!', 'botblocker-security' ),
+                    'failed_import'           => __( 'Failed import: ', 'botblocker-security' ),
+                    'salt_created'            => __( 'Salt successfully created!', 'botblocker-security' ),
+                    'failed_salt'             => __( 'Failed to create salt file.', 'botblocker-security' ),
+                    'operation_error'         => __( 'An error occurred while performing the operation.', 'botblocker-security' ),
+                    'log_cleared'             => __( 'Log file successfully cleared!', 'botblocker-security' ),
+                    'failed_clear_log'        => __( 'Failed to clear log file.', 'botblocker-security' ),
+                    'failed_get_log'          => __( 'Failed to get log file.', 'botblocker-security' ),
+                    'transients_cleared'      => __( 'Transients successfully cleared!', 'botblocker-security' ),
+                    'failed_clear_transients' => __( 'Failed to clear transients.', 'botblocker-security' ),
+                    'visitors_cleared'        => __( 'Visitors data successfully cleared!', 'botblocker-security' ),
+                    'failed_clear_visitors'   => __( 'Failed to clear visitors data.', 'botblocker-security' ),
+                    'rewrite_flushed'         => __( 'Rewrite rules successfully flushed!', 'botblocker-security' ),
+                    'failed_flush_rewrite'    => __( 'Failed to flush rewrite rules.', 'botblocker-security' ),
+                    'cache_cleared'           => __( 'Object cache successfully cleared!', 'botblocker-security' ),
+                    'failed_clear_cache'      => __( 'Failed to clear object cache.', 'botblocker-security' ),
+                    'asn_scheduled'           => __( 'ASN database update scheduled.', 'botblocker-security' ),
+                    'failed_schedule_asn'     => __( 'Failed to schedule ASN database update.', 'botblocker-security' ),
+                    'asn_error'               => __( 'An error occurred while scheduling the ASN database update.', 'botblocker-security' ),
                 ));
             }
 
@@ -216,10 +366,21 @@ class Botblocker_Admin
                     'ajaxurl' => admin_url('admin-ajax.php'),
                     'nonce' => wp_create_nonce("botblocker_nonce")
                 ));
+                wp_localize_script(BOTBLOCKER_SHORT_NAME . '-dash-js', 'bbcsDashL10n', array(
+                    'error_prefix' => __( 'Error: ', 'botblocker-security' ),
+                    'ajax_error'   => __( 'AJAX Error: ', 'botblocker-security' ),
+                ));
             }
 
             if ($this->is_screen($screen->id, 'botblocker_page_bbcs_setup_guide')) {
                 wp_enqueue_script(BOTBLOCKER_SHORT_NAME . '-setup-js', plugin_dir_url(__FILE__) . 'js/bbcs-js/bbcs-setup.js', array('jquery'), BOTBLOCKER_VERSION, true);
+                wp_localize_script(BOTBLOCKER_SHORT_NAME . '-setup-js', 'bbcsSetupL10n', array(
+                    'pro_required'   => __( 'Full Protection requires PRO license. Please upgrade to PRO first.', 'botblocker-security' ),
+                    'error_apply'    => __( 'Error applying profile', 'botblocker-security' ),
+                    'request_failed' => __( 'Request failed. Please try again.', 'botblocker-security' ),
+                    'please_wait'    => __( 'Please wait...', 'botblocker-security' ),
+                    'apply_now'      => __( 'Apply Now', 'botblocker-security' ),
+                ));
             }
         }
     }

@@ -1,6 +1,9 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
+require_once BOTBLOCKER_DIR . 'includes/data/botblocker-pro-features.php';
+require_once BOTBLOCKER_DIR . 'includes/data/botblocker-marketing-blocks.php';
+
 $BBCS = BotBlocker::getInstance();
 $BBCSA = Botblocker_Admin::getInstance();
 
@@ -60,9 +63,9 @@ $bbcs_contact_email_collected = (int) bbcs_get_option('bbcs_contact_email_collec
         <div class="text-muted bbcs-sidebar-pro-text " <?php echo $bbcs_early_available ? 'hidden' : ''; ?>>
             <?php 
             if (!$bbcs_cloud_api_active && !$bbcs_early_addon_active) {
-                echo esc_html__('Requires Cloud API and the Early Init add-on.', 'botblocker-security');
+                echo esc_html__('Requires BotBlocker PRO and the Early Init add-on.', 'botblocker-security');
             } elseif (!$bbcs_cloud_api_active) {
-                echo esc_html__('Requires active PRO', 'botblocker-security');
+                echo esc_html__('Requires active BotBlocker PRO', 'botblocker-security');
             } else {
                 echo esc_html__('Requires the Early Init add-on to be enabled.', 'botblocker-security');
             }
@@ -187,29 +190,23 @@ $bbcs_contact_email_collected = (int) bbcs_get_option('bbcs_contact_email_collec
             </a>
 
         </div>
-        <h2 class="card-title bbcs-color-white"><?php esc_html_e('PRO Features', 'botblocker-security'); ?></h2>
+        <h2 class="card-title bbcs-color-white"><?php esc_html_e('BotBlocker PRO', 'botblocker-security'); ?></h2>
 
     </header>
     <div class="card-body">
-        <ul class="bbcs-cloud-api-features">
-            <li><i class="fa-solid fa-check me-1"></i><?php esc_html_e('Hide login URL', 'botblocker-security'); ?></li>
-            <li><i class="fa-solid fa-check me-1"></i><?php esc_html_e('Speed Optimizations', 'botblocker-security'); ?></li>            
-            <li><i class="fa-solid fa-check me-1"></i><?php esc_html_e('Cloud Bot Detection', 'botblocker-security'); ?></li>
-            <li><i class="fa-solid fa-check me-1"></i><?php esc_html_e('VPN and Proxy Blocking', 'botblocker-security'); ?></li>
-            <li><i class="fa-solid fa-check me-1"></i><?php esc_html_e('Behavioral Analysis', 'botblocker-security'); ?></li>
-            <li><i class="fa-solid fa-check me-1"></i><?php esc_html_e('Threat Intelligence', 'botblocker-security'); ?></li>
-            <li><i class="fa-solid fa-check me-1"></i><?php esc_html_e('Daily Updates', 'botblocker-security'); ?></li>
-            <li><i class="fa-solid fa-check me-1"></i><?php esc_html_e('All Add-ons Access', 'botblocker-security'); ?></li>
-            <li><i class="fa-solid fa-check me-1"></i><?php esc_html_e('Early Initialization', 'botblocker-security'); ?></li>
-            <li><i class="fa-solid fa-check me-1"></i><?php esc_html_e('Priority Support', 'botblocker-security'); ?></li>
-        </ul>
-        <a href="<?php echo esc_url($BBCSA->pages_cloud_api); ?>" class="mt-2 btn btn-sm bbcs-btn-primary-cta"><i
-                class="fa-solid fa-crown"></i>&nbsp;<?php esc_html_e('Get PRO Now', 'botblocker-security'); ?>
+        <?php bbcs_render_pro_features_list(); ?>
+        <a href="<?php echo esc_url($BBCSA->pages_cloud_api); ?>" class="mt-2 btn btn-sm bbcs-btn-primary-cta w-100"><i
+                class="fa-solid fa-crown"></i>&nbsp;<?php esc_html_e('Get BotBlocker PRO', 'botblocker-security'); ?>
+        </a>
+        <a href="https://botblocker.top/pricing/" target="_blank" rel="noopener noreferrer" class="mt-2 btn btn-sm btn-default w-100">
+            <i class="fa-solid fa-table-list me-1"></i><?php esc_html_e('Compare Free vs PRO', 'botblocker-security'); ?>
         </a>
     </div>
 </section>
 
 <?php endif; ?>
+
+<?php bbcs_render_social_proof_card(); ?>
 
 <!-- Recommendations Section (Comming Soon)
 <section class="card bbcs-card-border-left">

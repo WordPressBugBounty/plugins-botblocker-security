@@ -57,6 +57,9 @@ class BotBlockerSettings {
     public $botblocker_log_tests = 1; 
     public $botblocker_log_wp = 0; 
 
+    public $payment_bypass_enable = 0;
+    public $payment_bypass_log    = 1;
+
     public $cache_ui_data = 0; 
     public $cache_ui_duration = 3600; 
     public $check = 0; 
@@ -76,7 +79,7 @@ class BotBlockerSettings {
     public $header_error_code = 400;
     public $header_test_code = 200;
     public $hits_per_user = 500;
-    public $hosting_block = 1;
+    public $hosting_block = 0;
     public $iframe_stop = 0;
     public $last_rule = '';
 
@@ -155,24 +158,29 @@ class BotBlockerSettings {
         if (file_exists($settingsFile)) {
             $settings = include($settingsFile);
             if (is_array($settings)) {
-                foreach ($settings as $key => $value) {
-                    if (property_exists($this, $key)) {
-                        $this->$key = $value;
-                    }
-                }
+                $this->assignSettings($settings);
                 return true;
             }
         } else {
             $settings = bbcs_generateSettingsFileFromDb(true);
             if (is_array($settings)) {
-                foreach ($settings as $key => $value) {
-                    if (property_exists($this, $key)) {
-                        $this->$key = $value;
-                    }
-                }
+                $this->assignSettings($settings);
                 return true;
             }
         }
         return false;
+    }
+
+    private function assignSettings(array $settings): void {
+        $defaults = get_class_vars(__CLASS__);
+        foreach ($settings as $key => $value) {
+            if (!property_exists($this, $key)) {
+                continue;
+            }
+            if (array_key_exists($key, $defaults) && is_scalar($defaults[$key]) && is_scalar($value)) {
+                settype($value, gettype($defaults[$key]));
+            }
+            $this->$key = $value;
+        }
     }
 }

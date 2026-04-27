@@ -245,7 +245,7 @@
                 var data = JSON.parse(e.target.result);
                 callback(data);
             } catch (err) {
-                alert("Invalid JSON file: " + err.message);
+                alert(bbcsProxyL10n.invalid_json + err.message);
             }
         };
         reader.readAsText(file);
@@ -278,7 +278,7 @@
                         $("#editProxyModal").modal("hide");
                         $("#botblocker-proxy-rules").DataTable().ajax.reload();
                     } else {
-                        alert("Failed to update proxy: " + response.data);
+                        alert(bbcsProxyL10n.failed_update + response.data);
                     }
                 },
             });
@@ -303,7 +303,7 @@
                         $("#editProxyForm").find('[name="comment"]').val(data.comment);
                         $("#editProxyModal").modal("show");
                     } else {
-                        alert("Failed to load proxy details: " + response.data);
+                        alert(bbcsProxyL10n.failed_load + response.data);
                     }
                 },
             });
@@ -311,7 +311,7 @@
 
         $("#botblocker-proxy-rules").on("click", ".delete-proxy", function () {
             var id = $(this).data("id");
-            if (confirm("Are you sure you want to delete this proxy?")) {
+            if (confirm(bbcsProxyL10n.confirm_delete)) {
                 $.ajax({
                     url: botblockerData.ajaxurl,
                     type: "POST",
@@ -347,7 +347,7 @@
                         $("#createProxyModal").modal("hide");
                         $("#botblocker-proxy-rules").DataTable().ajax.reload();
                     } else {
-                        alert("Failed to create proxy: " + response.data);
+                        alert(bbcsProxyL10n.failed_create + response.data);
                     }
                 },
             });
@@ -375,7 +375,7 @@
                         downloadLink.click();
                         document.body.removeChild(downloadLink);
                     } else {
-                        alert("Failed to export proxies: " + response.data);
+                        alert(bbcsProxyL10n.failed_export + response.data);
                     }
                 },
             });
@@ -405,7 +405,7 @@
                                         .ajax.reload();
                                 } else {
                                     alert(
-                                        "Failed to import proxies: " +
+                                        bbcsProxyL10n.failed_import +
                                             response.data
                                     );
                                 }
@@ -430,7 +430,7 @@
                         if (response.success) {
                             $("#botblocker-proxy-rules").DataTable().ajax.reload();
                         } else {
-                            alert("Failed to clear proxies: " + response.data);
+                            alert(bbcsProxyL10n.failed_clear + response.data);
                         }
                     },
                 });
@@ -447,9 +447,9 @@
                 },
                 success: function(response) {
                     if (response.success) {
-                        alert("Proxies successfully updated for Early BotBlocker Mode");
+                        alert(bbcsProxyL10n.proxies_updated);
                     } else {
-                        alert("Failed to update proxies: " + response.data);
+                        alert(bbcsProxyL10n.failed_update_proxies + response.data);
                     }
                 }
             });

@@ -5,9 +5,37 @@ include_once BOTBLOCKER_DIR . 'includes/data/botblocker-data-codes.php';
 include_once BOTBLOCKER_DIR . 'includes/data/botblocker-data-time.php';
 include_once BOTBLOCKER_DIR . 'includes/data/botblocker-data-settings.php';
 include_once BOTBLOCKER_DIR . 'includes/data/botblocker-data-reports.php';
+include_once BOTBLOCKER_DIR . 'includes/data/botblocker-data-payment.php';
 
 function bbcs_getRestrictedCountries() {
-    return ['CN', 'KP', 'IR', 'SY', 'CU'];
+    return ['CN', 'KP', 'IR', 'SY', 'CU', 'RU', 'BY', 'MM', 'TM', 'SD', 'ER', 'AF', 'VE'];
+}
+
+function bbcs_getBlockedCountries() {
+    $blockedCountries = bbcs_get_option('bbcs_blocked_countries', []);
+    if (is_string($blockedCountries)) {
+        $decoded = json_decode($blockedCountries, true);
+        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+            $blockedCountries = $decoded;
+        } else {
+            $blockedCountries = array_filter(array_map('trim', explode(',', $blockedCountries)));
+        }
+    }
+
+    if (is_array($blockedCountries)) {
+        $blockedCountries = array_map('strtoupper', array_filter($blockedCountries, function($item) {
+            return preg_match('/^[A-Z]{2}$/', (string) $item);
+        }));
+        $blockedCountries = array_values(array_unique($blockedCountries));
+    } else {
+        $blockedCountries = [];
+    }
+
+    if (!empty($blockedCountries)) {
+        return $blockedCountries;
+    }
+
+    return [];
 }
 
 function bbcs_get_x_robot_tags() : array {

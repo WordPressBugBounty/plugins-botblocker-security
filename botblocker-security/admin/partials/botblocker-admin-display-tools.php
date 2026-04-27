@@ -82,6 +82,7 @@ if ( isset( $_POST['save_settings'] ) ) {
 		update_option( 'botblocker_tools_core_settings', $bbcs_core_settings );
 		update_option( 'botblocker_tools_login_settings', $bbcs_login_settings );
 		update_option( 'botblocker_tools_headers_settings', $bbcs_headers_settings );
+		flush_rewrite_rules( true );
 	}
 }
 

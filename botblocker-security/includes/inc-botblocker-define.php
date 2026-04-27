@@ -6,7 +6,7 @@ define('BOTBLOCKER_SHORT_NAME', 'BotBlocker'); // A shorter version of the plugi
 if(!defined('BOTBLOCKER_TABLE_PREFIX')) define('BOTBLOCKER_TABLE_PREFIX', 'bbcs_'); // The prefix used for database tables
 define('BOTBLOCKER_PREFIX', 'bb_'); // The prefix used for settings and options
 
-define('BOTBLOCKER_VERSION', '1.6.17'); // The version number of the plugin
+define('BOTBLOCKER_VERSION', '1.6.18'); // The version number of the plugin
 define('BOTBLOCKER_DB_VERSION', '2.5.0'); // The database version of the plugin
 define('BOTBLOCKER_WIZARD_ON_UPDATE', false); // Show setup wizard after plugin update
 define('BOTBLOCKER_MODE_STABLE', 'stable');
@@ -135,6 +135,46 @@ AND page NOT LIKE '%/robots.txt%'
 AND page NOT LIKE '%/sitemap%')");
 
 define('BOTBLOCKER_INTEGRATE_MU_PLUGINS', true);
+
+// =====================================================================
+// Visitor IP / Country / ASN / Hosting resolution pipeline
+// =====================================================================
+// BOTBLOCKER_VISITOR_IP_SOURCE controls how country/ASN/hosting data is
+// resolved for each visitor.
+//
+//   'local'  - New pipeline (default). Order:
+//                1) local MMDB (asn_database.mmdb) -> country + asn + as_name
+//                2) SxGeo (Sypex Geo)              -> country only
+//                                                    (used while MMDB is
+//                                                     missing or downloading)
+//                3a) BOTBLOCKER_VISITOR_IP_STRICT = true  -> stop here.
+//                                                    No outbound visitor
+//                                                    lookups at all.
+//                3b) BOTBLOCKER_VISITOR_IP_STRICT = false -> continue:
+//                4) cloud (PRO only fills 'hosting'; basic+extended may
+//                                                    fill country/asn)
+//                5) ip2c HTTP fallback (only if country still empty)
+//
+//   'cloud'  - Legacy behavior. Cloud first (basic + extended), then SxGeo
+//              + ip2c if cloud failed. Use this to fully revert to the
+//              pre-MMDB pipeline.
+//
+// BOTBLOCKER_VISITOR_IP_STRICT (bool, default false):
+//   true   - hard cutoff after the local lookup (steps 1-2). No cloud,
+//            no ip2c. Use on isolated networks or to eliminate any
+//            outbound visitor-resolution traffic.
+//   false  - allow cloud (PRO) and ip2c fallbacks per the order above.
+//
+// Hosting detection ('hosting_block' setting) is PRO-only and is sourced
+// exclusively from the cloud_extended response. The local MMDB does not
+// expose a hosting flag.
+// =====================================================================
+if (!defined('BOTBLOCKER_VISITOR_IP_SOURCE')) {
+    define('BOTBLOCKER_VISITOR_IP_SOURCE', 'local');
+}
+if (!defined('BOTBLOCKER_VISITOR_IP_STRICT')) {
+    define('BOTBLOCKER_VISITOR_IP_STRICT', false);
+}
 
 function bbcs_full_domain_with_underscores($url)
 {

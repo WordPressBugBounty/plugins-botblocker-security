@@ -35,6 +35,7 @@ abstract class BotBlockerBase {
     public $date;
     public $cid;
     public $prefly;
+    public bool $_dst_applied = false;
 
     // Visitor properties
     public $host;
@@ -102,6 +103,7 @@ abstract class BotBlockerBase {
     // Endpoint properties
     public $reason_for_action;
     public $result_of_action = BOTBLOCKER_EMPTY;
+    public $payment_bypass_reason = '';
 
     // Initial config properties
     public $delete_query_string_from_referrer;

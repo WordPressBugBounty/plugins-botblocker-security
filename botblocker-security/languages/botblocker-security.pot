@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BotBlocker\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-07 09:20+0000\n"
+"POT-Creation-Date: 2026-04-26 06:54+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -17,9 +17,14 @@ msgstr ""
 "X-Domain: botblocker-security"
 
 #. 1: add-on name, 2: required BotBlocker version.
-#: includes/inc-botblocker-alerts.php:193
+#: includes/inc-botblocker-alerts.php:226
 #, php-format
 msgid "%1$s (requires >= %2$s)"
+msgstr ""
+
+#: includes/data/botblocker-marketing-blocks.php:143
+#, php-format
+msgid "%s active installs"
 msgstr ""
 
 #. %s is the name of the required field.
@@ -31,6 +36,18 @@ msgstr ""
 msgid "%s is required."
 msgstr ""
 
+#: includes/data/botblocker-marketing-blocks.php:142
+#, php-format
+msgid "%s+ active installs"
+msgstr ""
+
+#: includes/data/botblocker-marketing-blocks.php:165
+#, php-format
+msgid "(%s rating)"
+msgid_plural "(%s ratings)"
+msgstr[0] ""
+msgstr[1] ""
+
 #: includes/inc-botblocker-ui.php:52
 msgid "(Real-time)"
 msgstr ""
@@ -41,7 +58,7 @@ msgstr ""
 msgid "(Updated every %s)"
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:171
+#: admin/partials/botblocker-admin-dashboard-widgets.php:180
 msgid "1 = highest. Higher priority rules processed first."
 msgstr ""
 
@@ -123,12 +140,8 @@ msgstr ""
 msgid "404 Not Found"
 msgstr ""
 
-#: includes/section/cloud/botblocker-cloud-status.php:67
-msgid "5 Million+ bot signatures"
-msgstr ""
-
-#: admin/class-botblocker-setup-wizard.php:456
-#: admin/class-botblocker-setup-wizard.php:1014
+#: admin/class-botblocker-setup-wizard.php:470
+#: admin/class-botblocker-setup-wizard.php:1059
 msgid "5 million+ bot signatures"
 msgstr ""
 
@@ -153,7 +166,7 @@ msgid "9 months"
 msgstr ""
 
 #. 1: Link to the IPv4 tab URL, 2: Link to the IPv6 tab URL.
-#: admin/partials/botblocker-admin-display-rules.php:207
+#: admin/partials/botblocker-admin-display-rules.php:323
 #, php-format
 msgid ""
 "<strong>IPv4 / IPv6 Lists:</strong> Import allow/block lists on the %1$s and "
@@ -169,7 +182,7 @@ msgid ""
 msgstr ""
 
 #. %s: Link to the Paths tab URL.
-#: admin/partials/botblocker-admin-display-rules.php:201
+#: admin/partials/botblocker-admin-display-rules.php:317
 #, php-format
 msgid ""
 "<strong>Paths:</strong> Add payment gateway callback endpoints under %s to "
@@ -177,7 +190,7 @@ msgid ""
 msgstr ""
 
 #. %s: Link to the Proxy tab URL.
-#: admin/partials/botblocker-admin-display-rules.php:225
+#: admin/partials/botblocker-admin-display-rules.php:341
 #, php-format
 msgid ""
 "<strong>Proxy:</strong> Add network masks or header patterns (e.g., "
@@ -185,7 +198,7 @@ msgid ""
 msgstr ""
 
 #. %s: Link to the Rules tab URL.
-#: admin/partials/botblocker-admin-display-rules.php:213
+#: admin/partials/botblocker-admin-display-rules.php:329
 #, php-format
 msgid ""
 "<strong>Rules:</strong> Create rules in %s for IP, User-Agent, ASN, country, "
@@ -193,7 +206,7 @@ msgid ""
 msgstr ""
 
 #. %s: Link to the White Bots tab URL.
-#: admin/partials/botblocker-admin-display-rules.php:219
+#: admin/partials/botblocker-admin-display-rules.php:335
 #, php-format
 msgid ""
 "<strong>White Bots:</strong> Add trusted crawler domains (search engines, "
@@ -204,18 +217,18 @@ msgstr ""
 msgid "A page reload may be required."
 msgstr ""
 
-#: admin/class-botblocker-admin.php:329 admin/class-botblocker-admin.php:330
+#: admin/class-botblocker-admin.php:495 admin/class-botblocker-admin.php:496
 msgid "About"
 msgstr ""
 
 #: includes/section/cloud/botblocker-cloud-about.php:25
 #: includes/section/cloud/botblocker-cloud-services.php:24
-#: includes/section/cloud/botblocker-cloud-status.php:31
+#: includes/section/cloud/botblocker-cloud-status.php:33
 #: includes/section/cloud/botblocker-cloud-support.php:25
 msgid "About BotBlocker API"
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:177
+#: admin/partials/botblocker-section-right-sidebar.php:180
 msgid "About Cloud Verification"
 msgstr ""
 
@@ -247,8 +260,17 @@ msgstr ""
 msgid "Accept-Language"
 msgstr ""
 
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:122
+msgid "Access approved. Redirecting..."
+msgstr ""
+
+#: public/class-botblocker-captcha-renderer-full.php:1001
+#: public/captcha/render-silent-auto-trait.php:15
+msgid "Access denied. Please enable JavaScript and cookies."
+msgstr ""
+
 #: includes/botblocker/traits/class-botblocker-block-page-trait.php:29
-#: includes/botblocker/traits/class-botblocker-response-trait.php:236
+#: includes/botblocker/traits/class-botblocker-response-trait.php:270
 msgid "Access has been blocked"
 msgstr ""
 
@@ -257,7 +279,7 @@ msgstr ""
 msgid "Access to this page has been restricted."
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:179
+#: admin/partials/botblocker-admin-dashboard-widgets.php:188
 msgid "Action"
 msgstr ""
 
@@ -271,22 +293,23 @@ msgstr ""
 msgid "Action for this path"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-rules.php:59
-#: admin/partials/botblocker-admin-display-rules.php:76
-#: admin/partials/botblocker-admin-display-rules.php:95
-#: admin/partials/botblocker-admin-display-rules.php:115
-#: admin/partials/botblocker-admin-display-rules.php:135
-#: admin/partials/botblocker-admin-display-rules.php:152
+#: admin/partials/botblocker-admin-display-rules.php:86
+#: admin/partials/botblocker-admin-display-rules.php:103
+#: admin/partials/botblocker-admin-display-rules.php:122
+#: admin/partials/botblocker-admin-display-rules.php:142
+#: admin/partials/botblocker-admin-display-rules.php:162
+#: admin/partials/botblocker-admin-display-rules.php:179
+#: admin/partials/botblocker-admin-display-rules.php:198
 msgid "Actions"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-addons.php:182
+#: admin/partials/botblocker-admin-display-addons.php:184
 #: includes/section/integration/botblocker-int-2fa.php:139
 msgid "Activate"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-addons.php:40
-msgid "Activate a BotBlocker PRO to install and manage premium add-ons."
+#: admin/partials/botblocker-admin-display-addons.php:44
+msgid "Activate access"
 msgstr ""
 
 #: includes/shortcode/botblocker-shortcode-tooltips.php:91
@@ -297,19 +320,19 @@ msgstr ""
 msgid "Activate brute-force login protection."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:782
+#: admin/class-botblocker-setup-wizard.php:827
 msgid "Activates before other plugins"
 msgstr ""
 
-#: includes/ajax/inc-botblocker-ajax-common.php:676
+#: includes/ajax/inc-botblocker-ajax-common.php:706
 msgid "Activation sent."
 msgstr ""
 
-#: includes/ajax/inc-botblocker-ajax-common.php:670
+#: includes/ajax/inc-botblocker-ajax-common.php:700
 msgid "Activation service is unavailable."
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:27
+#: admin/partials/botblocker-section-right-sidebar.php:30
 #: includes/shortcode/botblocker-shortcode-sidebar.php:212
 #: includes/shortcode/botblocker-shortcode-sidebar.php:243
 #: includes/section/setup/botblocker-setup-pro.php:23
@@ -332,13 +355,26 @@ msgstr ""
 msgid "AdBlockers"
 msgstr ""
 
+#: admin/partials/botblocker-admin-display-rules.php:238
 #: includes/modal/modal-botblocker-rule-ipv4-add.php:76
 #: includes/modal/modal-botblocker-rule-ipv6-add.php:76
 msgid "Add"
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:194
+#: admin/partials/botblocker-admin-dashboard-widgets.php:203
 msgid "Add a short note to remember why you created this rule."
+msgstr ""
+
+#: includes/modal/modal-botblocker-asn-add.php:7
+msgid "Add ASN Rule"
+msgstr ""
+
+#: includes/section/controls/botblocker-asn-controls.php:4
+msgid "Add ASN rule"
+msgstr ""
+
+#: admin/partials/botblocker-admin-display-rules.php:226
+msgid "Add country"
 msgstr ""
 
 #: addons/bbcs-security-headers/inc/bbcs-security-headers-settings.php:133
@@ -381,7 +417,7 @@ msgstr ""
 msgid "Add Proxy"
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:197
+#: admin/partials/botblocker-admin-dashboard-widgets.php:206
 #: includes/modal/modal-botblocker-hits-add-rule.php:7
 msgid "Add Rule"
 msgstr ""
@@ -394,7 +430,7 @@ msgstr ""
 msgid "Add the following line before"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-cookie.php:109
+#: includes/section/settings/botblocker-set-cookie.php:130
 msgid ""
 "Add Vary: Cookie header for CDN compatibility. May reduce cache hit ratio."
 msgstr ""
@@ -405,11 +441,11 @@ msgstr ""
 msgid "Add white bot or search engine"
 msgstr ""
 
-#: includes/inc-botblocker-alerts.php:175
+#: includes/inc-botblocker-alerts.php:208
 msgid "Add-on Update Failed"
 msgstr ""
 
-#: admin/class-botblocker-admin.php:309 admin/class-botblocker-admin.php:310
+#: admin/class-botblocker-admin.php:475 admin/class-botblocker-admin.php:476
 #: admin/partials/botblocker-admin-display-addons.php:21
 #: includes/section/dashboard/botblocker-dash-links.php:31
 #: includes/section/settings/botblocker-set-notif.php:51
@@ -417,7 +453,7 @@ msgstr ""
 msgid "Add-ons"
 msgstr ""
 
-#: includes/inc-botblocker-alerts.php:201
+#: includes/inc-botblocker-alerts.php:234
 msgid "Add-ons Deactivated"
 msgstr ""
 
@@ -437,8 +473,8 @@ msgstr ""
 msgid "Additional Information"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-addons.php:121
-#: admin/partials/botblocker-admin-display-addons.php:196
+#: admin/partials/botblocker-admin-display-addons.php:123
+#: admin/partials/botblocker-admin-display-addons.php:198
 msgid "Addon Settings"
 msgstr ""
 
@@ -481,7 +517,7 @@ msgstr ""
 msgid "Admin logins, failed attempts, sensitive panel access traces."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:501
+#: admin/class-botblocker-setup-wizard.php:515
 msgid "Admin Panel"
 msgstr ""
 
@@ -493,15 +529,19 @@ msgstr ""
 msgid "Administrator Settings"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:583
+#: admin/class-botblocker-setup-wizard.php:597
 msgid "Admins will never be blocked while logged in"
+msgstr ""
+
+#: includes/data/botblocker-pro-features.php:44
+msgid "Advanced analytics & forensics"
 msgstr ""
 
 #: includes/modal/modal-botblocker-setup-wizard.php:94
 msgid "Advanced bot detection"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:868
+#: admin/class-botblocker-setup-wizard.php:913
 msgid "Advanced data structures"
 msgstr ""
 
@@ -517,20 +557,20 @@ msgid ""
 "verification to detect sophisticated bots."
 msgstr ""
 
-#: includes/section/cloud/botblocker-cloud-status.php:73
-msgid "Advanced reporting and analytics"
+#: includes/data/botblocker-pro-features.php:17
+msgid "Advanced reporting, analytics & forensics"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:999
+#: admin/class-botblocker-setup-wizard.php:1044
 msgid "Advanced security features for production sites."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:987
+#: admin/class-botblocker-setup-wizard.php:1032
 #: admin/partials/botblocker-admin-display-settings.php:87
 msgid "Advanced Settings"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:435
+#: admin/class-botblocker-setup-wizard.php:449
 msgid "Advanced threat detection"
 msgstr ""
 
@@ -538,36 +578,60 @@ msgstr ""
 msgid "After the repair is completed,"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:1007
-#: includes/section/cloud/botblocker-cloud-status.php:65
+#: admin/class-botblocker-setup-wizard.php:1052
 msgid "AI Behavioral analysis"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:458
+#: admin/class-botblocker-setup-wizard.php:472
 msgid "AI Behavioral analysis engine"
+msgstr ""
+
+#: admin/class-botblocker-setup-wizard.php:158
+msgid "AJAX error"
+msgstr ""
+
+#: admin/class-botblocker-setup-wizard.php:162
+msgid "AJAX error during cache save"
+msgstr ""
+
+#: admin/class-botblocker-setup-wizard.php:160
+msgid "AJAX error during captcha save"
+msgstr ""
+
+#: admin/class-botblocker-setup-wizard.php:159
+msgid "AJAX error during compatibility test"
+msgstr ""
+
+#: admin/class-botblocker-setup-wizard.php:161
+msgid "AJAX error during init mode save"
+msgstr ""
+
+#: admin/class-botblocker-admin.php:107 admin/class-botblocker-admin.php:285
+#: admin/class-botblocker-admin.php:330 admin/class-botblocker-admin.php:371
+msgid "AJAX Error: "
 msgstr ""
 
 #: includes/section/settings/botblocker-set-notif.php:89
 msgid "Alert when server load is critical or unusual bot activity is detected."
 msgstr ""
 
-#: admin/partials/botblocker-section-header.php:75
+#: admin/partials/botblocker-section-header.php:79
 msgid "Alerts"
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:202
-msgid "All Add-ons Access"
+#: admin/class-botblocker-setup-wizard.php:469
+msgid "All add-ons included (tools, security, notifications, etc.)"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:455
-msgid "All add-ons included (tools, security, notifications, etc.)"
+#: includes/ajax/inc-botblocker-ajax-asn.php:316
+msgid "All ASN rules have been cleared."
 msgstr ""
 
 #: includes/modal/modal-botblocker-salt-clear.php:13
 msgid "All existing cookies will become invalid."
 msgstr ""
 
-#: includes/utilites/util-botblocker-support.php:114
+#: includes/utilites/util-botblocker-support.php:119
 msgid "All fields are required."
 msgstr ""
 
@@ -583,7 +647,7 @@ msgstr ""
 msgid "All IPv6 rules have been cleared."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:735
+#: admin/class-botblocker-setup-wizard.php:780
 msgid ""
 "All methods can be combined with invisible background checks. Choose the one "
 "that fits your site."
@@ -597,20 +661,23 @@ msgstr ""
 msgid "All optimized!"
 msgstr ""
 
-#: includes/ajax/inc-botblocker-ajax-path.php:355
+#: includes/ajax/inc-botblocker-ajax-path.php:359
 msgid "All paths have been cleared."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:1015
-#: includes/section/cloud/botblocker-cloud-status.php:68
+#: admin/class-botblocker-setup-wizard.php:1060
 msgid "All Premium Add-ons"
+msgstr ""
+
+#: includes/data/botblocker-pro-features.php:20
+msgid "All premium add-ons included"
 msgstr ""
 
 #: includes/modal/modal-botblocker-log-clear.php:13
 msgid "All previous error records will be deleted."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:1029
+#: admin/class-botblocker-setup-wizard.php:1074
 msgid "All PRO features are active."
 msgstr ""
 
@@ -622,7 +689,7 @@ msgstr ""
 msgid "All rules have been cleared."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:540
+#: admin/class-botblocker-setup-wizard.php:554
 msgid "All tests passed. Your site is ready."
 msgstr ""
 
@@ -638,7 +705,7 @@ msgstr ""
 msgid "All visitor and statistics data will be cleared."
 msgstr ""
 
-#: includes/ajax/inc-botblocker-ajax-common.php:577
+#: includes/ajax/inc-botblocker-ajax-common.php:607
 msgid "All visitors data has been cleared successfully."
 msgstr ""
 
@@ -650,7 +717,9 @@ msgstr ""
 msgid "All WordPress transients will be cleared:"
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:181
+#: admin/partials/botblocker-admin-dashboard-widgets.php:190
+#: includes/modal/modal-botblocker-asn-add.php:31
+#: includes/modal/modal-botblocker-asn-edit.php:32
 #: includes/modal/modal-botblocker-hits-add-rule.php:80
 #: includes/modal/modal-botblocker-path-add.php:33
 #: includes/modal/modal-botblocker-path-edit.php:34
@@ -665,11 +734,11 @@ msgstr ""
 msgid "Allow"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:582
+#: admin/class-botblocker-setup-wizard.php:596
 msgid "Allow logged-in administrators"
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:203
+#: admin/partials/botblocker-admin-dashboard-widgets.php:212
 msgid "Allow or Block"
 msgstr ""
 
@@ -680,19 +749,23 @@ msgstr ""
 msgid "Allow or block this IP/subnet"
 msgstr ""
 
+#: includes/section/settings/botblocker-set-payment.php:40
+msgid "Allow Payment Gateway Callbacks"
+msgstr ""
+
 #: includes/shortcode/botblocker-shortcode-health-full.php:75
 msgid "Allow requests from server IP"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-connect.php:150
+#: includes/section/settings/botblocker-set-connect.php:157
 msgid "Allow requests from your server IP"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:597
+#: admin/class-botblocker-setup-wizard.php:611
 msgid "Allow WordPress Cron and server requests"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-connect.php:155
+#: includes/section/settings/botblocker-set-connect.php:162
 msgid ""
 "Allow your server IP to bypass security checks for updates and automated "
 "tasks."
@@ -714,11 +787,19 @@ msgstr ""
 msgid "Allowed:"
 msgstr ""
 
-#: includes/section/cloud/botblocker-cloud-status.php:174
+#: includes/section/cloud/botblocker-cloud-status.php:165
 msgid "Already have a license key?"
 msgstr ""
 
-#: admin/class-botblocker-admin.php:121
+#: admin/class-botblocker-admin.php:336
+msgid "An error occurred while performing the operation."
+msgstr ""
+
+#: admin/class-botblocker-admin.php:350
+msgid "An error occurred while scheduling the ASN database update."
+msgstr ""
+
+#: admin/class-botblocker-admin.php:127
 msgid "An error occurred. Please try again later."
 msgstr ""
 
@@ -746,17 +827,19 @@ msgstr ""
 msgid "API key retrieved successfully."
 msgstr ""
 
+#: admin/class-botblocker-admin.php:382
 #: includes/modal/modal-botblocker-setup-wizard.php:37
 #: includes/modal/modal-botblocker-setup-wizard.php:62
 #: includes/modal/modal-botblocker-setup-wizard.php:97
 msgid "Apply Now"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:481
+#: admin/class-botblocker-setup-wizard.php:165
+#: admin/class-botblocker-setup-wizard.php:495
 msgid "Apply preset"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:337
+#: admin/class-botblocker-setup-wizard.php:351
 msgid "Apply the recommended preset in one click (takes ~30 seconds)"
 msgstr ""
 
@@ -764,14 +847,48 @@ msgstr ""
 msgid "Are you sure you want to continue?"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:270
+#: admin/class-botblocker-admin.php:272
+msgid "Are you sure you want to delete this ASN rule?"
+msgstr ""
+
+#: admin/class-botblocker-admin.php:200
+msgid "Are you sure you want to delete this IPv4 rule?"
+msgstr ""
+
+#: admin/class-botblocker-admin.php:216
+msgid "Are you sure you want to delete this IPv6 rule?"
+msgstr ""
+
+#: admin/class-botblocker-admin.php:246
+msgid "Are you sure you want to delete this path?"
+msgstr ""
+
+#: admin/class-botblocker-admin.php:256
+msgid "Are you sure you want to delete this proxy?"
+msgstr ""
+
+#: admin/class-botblocker-admin.php:186
+msgid "Are you sure you want to delete this rule?"
+msgstr ""
+
+#: admin/class-botblocker-admin.php:232
+msgid "Are you sure you want to delete this white bot?"
+msgstr ""
+
+#: admin/class-botblocker-setup-wizard.php:284
 msgid "Are you sure you want to reset and restart the setup wizard?"
+msgstr ""
+
+#: admin/class-botblocker-setup-wizard.php:154
+msgid "Are you sure? We will apply the default settings (Balanced)."
 msgstr ""
 
 #: admin/partials/botblocker-admin-display-reports.php:11
 msgid "AS Info"
 msgstr ""
 
+#: includes/modal/modal-botblocker-asn-add.php:54
+#: includes/modal/modal-botblocker-asn-edit.php:55
 #: includes/modal/modal-botblocker-hits-add-rule.php:26
 #: includes/modal/modal-botblocker-rule-add.php:33
 #: includes/modal/modal-botblocker-rule-edit.php:29
@@ -784,12 +901,92 @@ msgstr ""
 msgid "AS Number"
 msgstr ""
 
+#: admin/partials/botblocker-admin-display-rules.php:63
+#: admin/partials/botblocker-admin-display-rules.php:194
 #: includes/section/settings/botblocker-set-connect.php:28
 msgid "ASN"
 msgstr ""
 
-#: includes/section/cloud/botblocker-cloud-status.php:71
-msgid "Attack log analysis and forensics"
+#: includes/ajax/inc-botblocker-ajax-asn.php:129
+msgid "ASN already exists."
+msgstr ""
+
+#: includes/ajax/inc-botblocker-ajax-asn.php:258
+msgid "ASN data is required for import."
+msgstr ""
+
+#: includes/section/tools/botblocker-tools-maintenance.php:93
+msgid "ASN database"
+msgstr ""
+
+#: includes/hook/botblocker-hook-cron.php:129
+#: includes/hook/botblocker-hook-cron.php:177
+msgid "ASN Database Download/Update"
+msgstr ""
+
+#: includes/hook/botblocker-hook-cron.php:130
+msgid "ASN Database Freshness Check"
+msgstr ""
+
+#: includes/ajax/inc-botblocker-ajax-common.php:518
+msgid "ASN database module is not available."
+msgstr ""
+
+#: includes/inc-botblocker-alerts.php:112
+msgid "ASN Database Update Failed"
+msgstr ""
+
+#: includes/ajax/inc-botblocker-ajax-common.php:532
+msgid "ASN database update is already scheduled."
+msgstr ""
+
+#: admin/class-botblocker-admin.php:348
+msgid "ASN database update scheduled."
+msgstr ""
+
+#: includes/ajax/inc-botblocker-ajax-common.php:528
+msgid ""
+"ASN database update scheduled. The download will start shortly in the "
+"background."
+msgstr ""
+
+#. 1: ASN database type, 2: file size, 3: human-readable time difference.
+#: includes/section/tools/botblocker-tools-maintenance.php:92
+#, php-format
+msgid "ASN DB: %1$s | %2$s | updated %3$s ago"
+msgstr ""
+
+#: includes/section/tools/botblocker-tools-maintenance.php:98
+msgid "ASN DB: not yet downloaded."
+msgstr ""
+
+#: includes/modal/modal-botblocker-asn-add.php:44
+#: includes/modal/modal-botblocker-asn-edit.php:45
+msgid "ASN Number"
+msgstr ""
+
+#: includes/ajax/inc-botblocker-ajax-asn.php:149
+msgid "ASN rule created successfully."
+msgstr ""
+
+#: includes/ajax/inc-botblocker-ajax-asn.php:211
+msgid "ASN rule deleted successfully."
+msgstr ""
+
+#: includes/ajax/inc-botblocker-ajax-asn.php:101
+msgid "ASN rule not found."
+msgstr ""
+
+#: includes/ajax/inc-botblocker-ajax-asn.php:235
+msgid "ASN rule toggled successfully."
+msgstr ""
+
+#: includes/ajax/inc-botblocker-ajax-asn.php:187
+msgid "ASN rule updated successfully."
+msgstr ""
+
+#: includes/ajax/inc-botblocker-ajax-asn.php:328
+msgid "ASN rules file generated successfully."
 msgstr ""
 
 #. %s: number of remaining verification attempts
@@ -817,7 +1014,7 @@ msgstr ""
 msgid "Auto-detected:"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:527
+#: admin/class-botblocker-setup-wizard.php:541
 msgid "Auto-Fix (Recommended)"
 msgstr ""
 
@@ -826,14 +1023,18 @@ msgstr ""
 msgid "Auto-save administrator IPs"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:606
+#: admin/class-botblocker-setup-wizard.php:620
 msgid ""
 "Auto-save of admin IPs is available in Settings. 2FA per role can be "
 "configured in Integrations."
 msgstr ""
 
-#: includes/section/cloud/botblocker-cloud-status.php:72
-msgid "Auto-update PTR and UA signatures"
+#: includes/data/botblocker-pro-features.php:16
+msgid "Auto-update of PTR and User-Agent databases"
+msgstr ""
+
+#: admin/class-botblocker-setup-wizard.php:155
+msgid "Automatic fix applied (stub). Moving on."
 msgstr ""
 
 #: includes/section/setup/botblocker-setup-pro.php:34
@@ -844,12 +1045,12 @@ msgstr ""
 msgid "Automatically save admin IPs to prevent lockout when changing settings."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:478
-#: admin/class-botblocker-setup-wizard.php:561
-#: admin/class-botblocker-setup-wizard.php:612
-#: admin/class-botblocker-setup-wizard.php:741
-#: admin/class-botblocker-setup-wizard.php:835
-#: admin/class-botblocker-setup-wizard.php:913
+#: admin/class-botblocker-setup-wizard.php:492
+#: admin/class-botblocker-setup-wizard.php:575
+#: admin/class-botblocker-setup-wizard.php:626
+#: admin/class-botblocker-setup-wizard.php:786
+#: admin/class-botblocker-setup-wizard.php:880
+#: admin/class-botblocker-setup-wizard.php:958
 msgid "Back"
 msgstr ""
 
@@ -882,24 +1083,30 @@ msgstr ""
 msgid "Basic"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:420
+#: admin/class-botblocker-setup-wizard.php:434
 msgid "Basic bot blocking"
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:199
-msgid "Behavioral Analysis"
+#: includes/data/botblocker-pro-features.php:36
+msgid "Behavioral & AI analysis"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:784
+#: includes/data/botblocker-pro-features.php:8
+msgid "Behavioral & AI traffic analysis"
+msgstr ""
+
+#: admin/class-botblocker-setup-wizard.php:829
 msgid "Better protection for login page"
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:139
-#: admin/partials/botblocker-admin-dashboard-widgets.php:146
+#: admin/partials/botblocker-admin-dashboard-widgets.php:148
+#: admin/partials/botblocker-admin-dashboard-widgets.php:155
 msgid "Black"
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:182
+#: admin/partials/botblocker-admin-dashboard-widgets.php:191
+#: includes/modal/modal-botblocker-asn-add.php:34
+#: includes/modal/modal-botblocker-asn-edit.php:35
 #: includes/modal/modal-botblocker-hits-add-rule.php:83
 #: includes/modal/modal-botblocker-path-add.php:36
 #: includes/modal/modal-botblocker-path-edit.php:37
@@ -934,7 +1141,7 @@ msgstr ""
 msgid "Block cross-origin iframes to prevent clickjacking."
 msgstr ""
 
-#: includes/section/settings/botblocker-set-connect.php:104
+#: includes/section/settings/botblocker-set-connect.php:111
 msgid ""
 "Block data center IPs (VPS, AWS, DigitalOcean, etc.). Search engines are "
 "always whitelisted."
@@ -972,7 +1179,7 @@ msgstr ""
 msgid "Block legacy HTTP/1.0 protocol."
 msgstr ""
 
-#: includes/shortcode/botblocker-shortcode-health.php:108
+#: includes/shortcode/botblocker-shortcode-health.php:107
 msgid "Block override"
 msgstr ""
 
@@ -992,11 +1199,11 @@ msgstr ""
 msgid "Block Response Code:"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-connect.php:141
+#: includes/section/settings/botblocker-set-connect.php:148
 msgid "Block traffic from known Tor exit nodes."
 msgstr ""
 
-#: includes/section/settings/botblocker-set-connect.php:123
+#: includes/section/settings/botblocker-set-connect.php:130
 msgid "Block traffic from known VPN service IP addresses."
 msgstr ""
 
@@ -1014,6 +1221,22 @@ msgstr ""
 
 #: includes/section/settings/botblocker-set-simple.php:87
 msgid "Block visitors without JavaScript support."
+msgstr ""
+
+#: admin/partials/botblocker-admin-display-rules.php:208
+msgid "Blocked countries:"
+msgstr ""
+
+#: includes/data/botblocker-marketing-blocks.php:201
+#, php-format
+msgid "Blocked today: <b>%1$s</b> &middot; Total: <b>%2$s</b>"
+msgid_plural "Blocked today: <b>%1$s</b> &middot; Total: <b>%2$s</b>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/data/botblocker-marketing-blocks.php:208
+#, php-format
+msgid "Blocked today: <b>0</b> &middot; Total: <b>%s</b>"
 msgstr ""
 
 #: includes/shortcode/botblocker-shortcode-rules.php:70
@@ -1039,7 +1262,7 @@ msgstr ""
 msgid "Blocking Cloudflare users"
 msgstr ""
 
-#: includes/shortcode/botblocker-shortcode-health.php:110
+#: includes/shortcode/botblocker-shortcode-health.php:109
 msgid "Blocking device options"
 msgstr ""
 
@@ -1059,7 +1282,7 @@ msgid "Blocking fake referrers"
 msgstr ""
 
 #: includes/shortcode/botblocker-shortcode-health-full.php:41
-#: includes/shortcode/botblocker-shortcode-health.php:97
+#: includes/shortcode/botblocker-shortcode-health.php:110
 msgid "Blocking hosting providers"
 msgstr ""
 
@@ -1102,7 +1325,7 @@ msgid "Blocking simple bot User-Agents"
 msgstr ""
 
 #: includes/shortcode/botblocker-shortcode-health-full.php:57
-#: includes/shortcode/botblocker-shortcode-health.php:107
+#: includes/shortcode/botblocker-shortcode-health.php:106
 msgid "Blocking Tor users"
 msgstr ""
 
@@ -1116,15 +1339,15 @@ msgid "Blocking users without JavaScript"
 msgstr ""
 
 #: includes/shortcode/botblocker-shortcode-health-full.php:56
-#: includes/shortcode/botblocker-shortcode-health.php:106
+#: includes/shortcode/botblocker-shortcode-health.php:105
 msgid "Blocking VPN users"
 msgstr ""
 
-#: includes/shortcode/botblocker-shortcode-health.php:109
+#: includes/shortcode/botblocker-shortcode-health.php:108
 msgid "Blocking web engine options"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:812
+#: admin/class-botblocker-setup-wizard.php:857
 msgid "Blocks attacks before WP starts"
 msgstr ""
 
@@ -1135,7 +1358,7 @@ msgid ""
 "security rules - all in one plugin."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:325
+#: admin/class-botblocker-setup-wizard.php:339
 msgid "Blocks brute-force, scanners and scrapers before they hit WordPress"
 msgstr ""
 
@@ -1147,26 +1370,27 @@ msgstr ""
 msgid "Blocks malicious bots and unwanted traffic before they reach your site."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:436
+#: admin/class-botblocker-setup-wizard.php:450
 msgid "Blocks most known bad bots"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:809
+#: admin/class-botblocker-setup-wizard.php:854
 msgid "Blocks threats before WordPress loads. Maximum security."
 msgstr ""
 
-#: public/class-botblocker-captcha-renderer-full.php:451
+#: public/class-botblocker-captcha-renderer-full.php:469
 #: public/captcha/render-moving-shapes-button-trait.php:20
 msgid "Blue"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-addons.php:60
+#: admin/partials/botblocker-admin-display-addons.php:62
 msgid ""
 "Boost your BotBlocker experience with add-ons and tools selected to increase "
 "security, productivity and enhance your website"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-tools.php:116
+#: admin/partials/botblocker-admin-display-about.php:40
+#: admin/partials/botblocker-admin-display-tools.php:117
 #: includes/section/setup/botblocker-setup-chain.php:56
 msgid "BotBlocker"
 msgstr ""
@@ -1229,7 +1453,7 @@ msgid "BotBlocker CRM"
 msgstr ""
 
 #: includes/section/cloud/botblocker-cloud-plans.php:43
-#: includes/section/cloud/botblocker-cloud-status.php:37
+#: includes/section/cloud/botblocker-cloud-status.php:39
 msgid "BotBlocker Features"
 msgstr ""
 
@@ -1237,12 +1461,16 @@ msgstr ""
 msgid "BotBlocker Health Panel"
 msgstr ""
 
-#: includes/section/about/botblocker-about-status.php:49
+#: includes/section/about/botblocker-about-status.php:103
 msgid "BotBlocker Hive Snapshot"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:54
+#: includes/section/settings/botblocker-set-captcha.php:57
 msgid "BotBlocker Image Captcha"
+msgstr ""
+
+#: includes/data/botblocker-marketing-blocks.php:212
+msgid "BotBlocker is active &middot; awaiting traffic"
 msgstr ""
 
 #: includes/shortcode/botblocker-shortcode-health-full.php:14
@@ -1250,12 +1478,12 @@ msgstr ""
 msgid "BotBlocker is disabled"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:931
+#: admin/class-botblocker-setup-wizard.php:976
 msgid "BotBlocker is now monitoring and protecting your site."
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:69
-#: admin/partials/botblocker-section-right-sidebar.php:238
+#: admin/partials/botblocker-admin-dashboard-widgets.php:78
+#: admin/partials/botblocker-section-right-sidebar.php:235
 msgid "BotBlocker News"
 msgstr ""
 
@@ -1281,14 +1509,18 @@ msgstr ""
 msgid "BotBlocker pages"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-about.php:40
 #: admin/partials/botblocker-admin-display-cloud-api.php:24
-#: admin/partials/botblocker-section-right-sidebar.php:185
+#: admin/partials/botblocker-section-right-sidebar.php:188
+#: admin/partials/botblocker-section-right-sidebar.php:193
 #: includes/section/cloud/botblocker-cloud-plans.php:45
-#: includes/section/cloud/botblocker-cloud-status.php:39
+#: includes/section/cloud/botblocker-cloud-status.php:41
 #: includes/section/setup/botblocker-setup-pro.php:19
 #: includes/section/setup/botblocker-setup-pro.php:21
 msgid "BotBlocker PRO"
+msgstr ""
+
+#: admin/class-botblocker-admin.php:283
+msgid "BotBlocker PRO information refreshed successfully!"
 msgstr ""
 
 #: includes/section/dashboard/botblocker-dash-health.php:90
@@ -1297,8 +1529,8 @@ msgid ""
 "full defense."
 msgstr ""
 
-#: includes/section/cloud/botblocker-cloud-status.php:18
-#: includes/section/cloud/botblocker-cloud-status.php:47
+#: includes/section/cloud/botblocker-cloud-status.php:20
+#: includes/section/cloud/botblocker-cloud-status.php:49
 msgid "BotBlocker PRO status"
 msgstr ""
 
@@ -1308,7 +1540,7 @@ msgid ""
 "activity using advanced filtering and blocking."
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:80
+#: admin/partials/botblocker-admin-dashboard-widgets.php:89
 msgid "BotBlocker Quick Rule"
 msgstr ""
 
@@ -1320,8 +1552,8 @@ msgstr ""
 msgid "BotBlocker requires WordPress 5.0 or later."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:247
-#: admin/class-botblocker-setup-wizard.php:296
+#: admin/class-botblocker-setup-wizard.php:261
+#: admin/class-botblocker-setup-wizard.php:310
 #: public/2FA/bbcs-2fa-setup.php:121 public/2FA/bbcs-2fa.php:165
 msgid "BotBlocker Security"
 msgstr ""
@@ -1334,7 +1566,7 @@ msgstr ""
 msgid "BotBlocker Security - Firewall & Bot Protection"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:192
+#: admin/class-botblocker-setup-wizard.php:206
 msgid "BotBlocker Security logo"
 msgstr ""
 
@@ -1346,14 +1578,14 @@ msgstr ""
 msgid "BotBlocker security plugin"
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:18
-#: admin/partials/botblocker-section-right-sidebar.php:262
-#: admin/partials/botblocker-section-right-sidebar.php:279
+#: admin/partials/botblocker-section-right-sidebar.php:21
+#: admin/partials/botblocker-section-right-sidebar.php:259
+#: admin/partials/botblocker-section-right-sidebar.php:276
 #: includes/section/tools/botblocker-tools-botblocker.php:31
 msgid "BotBlocker Settings"
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:75
+#: admin/partials/botblocker-admin-dashboard-widgets.php:84
 msgid "BotBlocker Stats"
 msgstr ""
 
@@ -1375,20 +1607,24 @@ msgid ""
 "and open-source license compliance."
 msgstr ""
 
-#: admin/partials/botblocker-section-header.php:176
+#: admin/partials/botblocker-section-header.php:180
 msgid "BotBlocker Website"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:1047
+#: admin/class-botblocker-setup-wizard.php:1092
 msgid "botblocker.top/contacts"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-addons.php:152
+#: admin/partials/botblocker-admin-display-addons.php:154
 msgid "Broken"
 msgstr ""
 
 #: includes/inc-botblocker-ui.php:286
 msgid "Browse Add-ons"
+msgstr ""
+
+#: includes/section/cloud/botblocker-cloud-status.php:67
+msgid "Browse premium add-ons"
 msgstr ""
 
 #: includes/section/settings/botblocker-set-browser.php:15
@@ -1422,8 +1658,18 @@ msgstr ""
 msgid "Brute-force attack"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:43
+#: includes/data/botblocker-pro-features.php:31
+msgid "Built-in CAPTCHA"
+msgstr ""
+
+#: includes/section/settings/botblocker-set-captcha.php:46
 msgid "Button - \"I am not a robot\""
+msgstr ""
+
+#: includes/section/settings/botblocker-set-payment.php:17
+msgid ""
+"Bypass BotBlocker checks for incoming payment gateway callbacks (webhooks / "
+"IPN / postbacks) so legitimate payment notifications are never blocked."
 msgstr ""
 
 #: includes/section/settings/botblocker-set-cookie.php:103
@@ -1438,7 +1684,7 @@ msgstr ""
 msgid "Cache Key Prefix:"
 msgstr ""
 
-#: includes/inc-botblocker-alerts.php:156
+#: includes/inc-botblocker-alerts.php:189
 msgid "Cache Plugin Compatibility"
 msgstr ""
 
@@ -1465,7 +1711,7 @@ msgstr ""
 msgid "Cache UI"
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:150
+#: admin/partials/botblocker-section-right-sidebar.php:153
 msgid "Caches PTR lookups to speed up repeat visitor checks (24h TTL)"
 msgstr ""
 
@@ -1498,21 +1744,29 @@ msgstr ""
 msgid "Captcha Mode:"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:129
+#: includes/section/settings/botblocker-set-captcha.php:132
 msgid "Captcha Timeout (seconds):"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:942
+#: admin/class-botblocker-setup-wizard.php:987
 msgid "CAPTCHA Type:"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:122
+#: includes/section/settings/botblocker-set-captcha.php:125
 msgid "Cat"
 msgstr ""
 
 #: includes/section/dashboard/botblocker-dash-geo.php:22
 #: includes/section/dashboard/botblocker-dash-traffic.php:22
 msgid "Change"
+msgstr ""
+
+#: includes/section/about/botblocker-about-status.php:57
+msgid "Changelog"
+msgstr ""
+
+#: includes/section/about/botblocker-about-status.php:90
+msgid "Changelog is not available."
 msgstr ""
 
 #: includes/utilites/util-botblocker-support.php:62
@@ -1523,7 +1777,7 @@ msgstr ""
 msgid "Check GET Parameters in Referrer"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:971
+#: admin/class-botblocker-setup-wizard.php:1016
 msgid "Check Reports"
 msgstr ""
 
@@ -1537,11 +1791,11 @@ msgid ""
 "methods."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:626
+#: admin/class-botblocker-setup-wizard.php:640
 msgid "Choose how suspicious visitors are verified."
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:184
+#: admin/partials/botblocker-admin-dashboard-widgets.php:193
 msgid "Choose how to treat this IP / subnet."
 msgstr ""
 
@@ -1563,11 +1817,11 @@ msgstr ""
 msgid "Choose which security events and visitor activities to log."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:754
+#: admin/class-botblocker-setup-wizard.php:799
 msgid "Choose Your Initialization Mode"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:411
+#: admin/class-botblocker-setup-wizard.php:425
 msgid "Choose Your Protection Level"
 msgstr ""
 
@@ -1579,7 +1833,7 @@ msgstr ""
 msgid "CID is not set or empty."
 msgstr ""
 
-#: public/class-botblocker-captcha-renderer-full.php:442
+#: public/class-botblocker-captcha-renderer-full.php:460
 #: public/captcha/render-moving-shapes-button-trait.php:11
 msgid "Circle"
 msgstr ""
@@ -1590,6 +1844,10 @@ msgstr ""
 
 #: addons/bbcs-speedup/inc/bbcs-speedup-settings.php:124
 msgid "Cleanup and Simplification"
+msgstr ""
+
+#: admin/partials/botblocker-admin-display-rules.php:241
+msgid "Clear all"
 msgstr ""
 
 #: includes/section/tools/botblocker-tools-maintenance.php:53
@@ -1604,7 +1862,7 @@ msgstr ""
 msgid "Clear expired transients from the database"
 msgstr ""
 
-#: includes/hook/botblocker-hook-cron.php:118
+#: includes/hook/botblocker-hook-cron.php:123
 msgid "Clear History"
 msgstr ""
 
@@ -1613,7 +1871,7 @@ msgid "Clear Log File"
 msgstr ""
 
 #: includes/modal/modal-botblocker-object-cache.php:7
-#: includes/section/tools/botblocker-tools-maintenance.php:94
+#: includes/section/tools/botblocker-tools-maintenance.php:135
 msgid "Clear Object Cache"
 msgstr ""
 
@@ -1640,7 +1898,7 @@ msgstr ""
 msgid "Clear transients"
 msgstr ""
 
-#: includes/section/tools/botblocker-tools-maintenance.php:74
+#: includes/section/tools/botblocker-tools-maintenance.php:115
 msgid "Clear visitor cookies"
 msgstr ""
 
@@ -1660,22 +1918,24 @@ msgstr ""
 msgid "CLI requests"
 msgstr ""
 
-#: public/class-botblocker-captcha-renderer-full.php:170
+#: public/class-botblocker-captcha-renderer-full.php:188
 #: public/captcha/render-color-button-trait.php:68
 msgid "Click on the matching color"
 msgstr ""
 
-#: public/class-botblocker-captcha-renderer-full.php:257
-#: public/class-botblocker-captcha-renderer-full.php:300
+#: public/class-botblocker-captcha-renderer-full.php:275
+#: public/class-botblocker-captcha-renderer-full.php:318
 #: public/captcha/render-image-button-trait.php:101
 #: public/captcha/render-image-button-trait.php:111
 msgid "Click on the matching image"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:661
+#: admin/class-botblocker-setup-wizard.php:690
 msgid "Click the matching color. Simple logic, hard to automate."
 msgstr ""
 
+#: includes/modal/modal-botblocker-asn-add.php:77
+#: includes/modal/modal-botblocker-asn-edit.php:78
 #: includes/modal/modal-botblocker-db-repair.php:27
 #: includes/modal/modal-botblocker-hits-add-rule.php:104
 #: includes/modal/modal-botblocker-path-add.php:71
@@ -1695,11 +1955,11 @@ msgstr ""
 msgid "Cloud API connection deactivated."
 msgstr ""
 
-#: includes/inc-botblocker-alerts.php:80
+#: includes/inc-botblocker-alerts.php:85
 msgid "Cloud API Expired"
 msgstr ""
 
-#: includes/inc-botblocker-alerts.php:95
+#: includes/inc-botblocker-alerts.php:100
 msgid "Cloud API Hits Exhausted"
 msgstr ""
 
@@ -1721,16 +1981,24 @@ msgstr ""
 msgid "Cloud API responded with error: "
 msgstr ""
 
+#: includes/section/settings/botblocker-set-cookie.php:106
+msgid "Cloud API Timeout"
+msgstr ""
+
 #: includes/section/cloud/botblocker-cloud-plans.php:39
-#: includes/section/cloud/botblocker-cloud-status.php:33
+#: includes/section/cloud/botblocker-cloud-status.php:35
 msgid "Cloud based verification"
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:197
-msgid "Cloud Bot Detection"
+#: includes/data/botblocker-pro-features.php:7
+msgid "Cloud bot detection (live signatures)"
 msgstr ""
 
-#: includes/hook/botblocker-hook-cron.php:121
+#: includes/data/botblocker-pro-features.php:35
+msgid "Cloud bot verification (live)"
+msgstr ""
+
+#: includes/hook/botblocker-hook-cron.php:126
 msgid "Cloud Data Sync"
 msgstr ""
 
@@ -1738,11 +2006,11 @@ msgstr ""
 msgid "Cloud databases of threats"
 msgstr ""
 
-#: includes/shortcode/botblocker-shortcode-health.php:104
+#: includes/shortcode/botblocker-shortcode-health.php:103
 msgid "Cloud protection"
 msgstr ""
 
-#: includes/section/cloud/botblocker-cloud-status.php:122
+#: includes/section/cloud/botblocker-cloud-status.php:113
 msgid "Cloud requests remaining in your plan."
 msgstr ""
 
@@ -1767,6 +2035,10 @@ msgstr ""
 msgid "Cloudflare Origin IPs"
 msgstr ""
 
+#: admin/partials/botblocker-admin-display-rules.php:256
+msgid "Codes for config"
+msgstr ""
+
 #: includes/shortcode/botblocker-shortcode-health-full.php:65
 msgid "Collect browser type"
 msgstr ""
@@ -1779,16 +2051,16 @@ msgstr ""
 msgid "Collect OS type"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:48
+#: includes/section/settings/botblocker-set-captcha.php:51
 msgid "Color Buttons"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:660
+#: admin/class-botblocker-setup-wizard.php:689
 msgid "Color Matching"
 msgstr ""
 
 #. %s is the URL to the reCaptcha v3 integration configuration page.
-#: includes/section/settings/botblocker-set-captcha.php:148
+#: includes/section/settings/botblocker-set-captcha.php:151
 #, php-format
 msgid ""
 "Combine any CAPTCHA type with reCaptcha v3. <a href=\"%s\">Configure keys</a>"
@@ -1800,12 +2072,15 @@ msgstr ""
 msgid "Coming soon"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-rules.php:58
-#: admin/partials/botblocker-admin-display-rules.php:75
-#: admin/partials/botblocker-admin-display-rules.php:94
-#: admin/partials/botblocker-admin-display-rules.php:114
-#: admin/partials/botblocker-admin-display-rules.php:134
-#: admin/partials/botblocker-admin-display-rules.php:151
+#: admin/partials/botblocker-admin-display-rules.php:85
+#: admin/partials/botblocker-admin-display-rules.php:102
+#: admin/partials/botblocker-admin-display-rules.php:121
+#: admin/partials/botblocker-admin-display-rules.php:141
+#: admin/partials/botblocker-admin-display-rules.php:161
+#: admin/partials/botblocker-admin-display-rules.php:178
+#: admin/partials/botblocker-admin-display-rules.php:197
+#: includes/modal/modal-botblocker-asn-add.php:66
+#: includes/modal/modal-botblocker-asn-edit.php:67
 #: includes/modal/modal-botblocker-hits-add-rule.php:62
 #: includes/modal/modal-botblocker-path-add.php:59
 #: includes/modal/modal-botblocker-path-edit.php:59
@@ -1822,7 +2097,7 @@ msgstr ""
 msgid "Comment"
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:192
+#: admin/partials/botblocker-admin-dashboard-widgets.php:201
 msgid "Comment (optional)"
 msgstr ""
 
@@ -1848,20 +2123,24 @@ msgstr ""
 msgid "Comments are disabled."
 msgstr ""
 
-#: includes/section/cloud/botblocker-cloud-status.php:25
+#: admin/partials/botblocker-section-right-sidebar.php:202
+msgid "Compare Free vs PRO"
+msgstr ""
+
+#: includes/section/cloud/botblocker-cloud-status.php:27
 msgid ""
-"Compare plan features below. PRO unlocks full cloud checks per visit, "
+"Compare plan features below. PRO unlocks full per-visit verification, "
 "advanced blocking rules, performance add-ons, and priority support."
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-addons.php:45
-#: includes/section/cloud/botblocker-cloud-status.php:51
+#: admin/partials/botblocker-admin-display-addons.php:47
+#: includes/section/cloud/botblocker-cloud-status.php:57
 #: includes/section/dashboard/botblocker-dash-health.php:144
 #: includes/section/setup/botblocker-setup-pro.php:48
 msgid "Compare Plans"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:490
+#: admin/class-botblocker-setup-wizard.php:504
 msgid "Compatibility Check"
 msgstr ""
 
@@ -1869,11 +2148,11 @@ msgstr ""
 msgid "Compatibility tests"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:423
+#: admin/class-botblocker-setup-wizard.php:437
 msgid "Compatible with all plugins"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:769
+#: admin/class-botblocker-setup-wizard.php:814
 msgid "Compatible with all setups"
 msgstr ""
 
@@ -1881,7 +2160,7 @@ msgstr ""
 msgid "Complete Setup Wizard"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:935
+#: admin/class-botblocker-setup-wizard.php:980
 msgid "Configuration Summary"
 msgstr ""
 
@@ -1937,7 +2216,7 @@ msgid ""
 "and improve loading speed."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:576
+#: admin/class-botblocker-setup-wizard.php:590
 msgid "Configure trusted users and systems that bypass security checks"
 msgstr ""
 
@@ -1955,19 +2234,23 @@ msgstr ""
 msgid "Confirm that you are human"
 msgstr ""
 
-#: public/class-botblocker-captcha-renderer-full.php:110
-#: public/class-botblocker-captcha-renderer-full.php:344
-#: public/class-botblocker-captcha-renderer-full.php:370
+#: public/class-botblocker-captcha-renderer-full.php:128
+#: public/class-botblocker-captcha-renderer-full.php:362
+#: public/class-botblocker-captcha-renderer-full.php:388
 #: public/captcha/render-recaptcha-with-button-trait.php:37
 #: public/captcha/render-simple-button-trait.php:16
 msgid "Confirm that you are human:"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:208
+#: admin/class-botblocker-setup-wizard.php:222
 msgid "Confirm that your browser is updated to the latest version."
 msgstr ""
 
-#: includes/section/cloud/botblocker-cloud-status.php:106
+#: addons/bbcs-security-headers/mu/botblocker-security-headers.php:659
+msgid "Conflicting plugins"
+msgstr ""
+
+#: includes/section/cloud/botblocker-cloud-status.php:97
 msgid "Connect"
 msgstr ""
 
@@ -1980,8 +2263,9 @@ msgstr ""
 #: includes/section/settings/botblocker-set-browser.php:93
 #: includes/section/settings/botblocker-set-browser.php:112
 #: includes/section/settings/botblocker-set-browser.php:131
-#: includes/section/settings/botblocker-set-connect.php:116
-#: includes/section/settings/botblocker-set-connect.php:134
+#: includes/section/settings/botblocker-set-connect.php:103
+#: includes/section/settings/botblocker-set-connect.php:123
+#: includes/section/settings/botblocker-set-connect.php:141
 #: includes/section/setup/botblocker-setup-chain.php:35
 msgid "Connect now!"
 msgstr ""
@@ -2008,8 +2292,8 @@ msgstr ""
 msgid "Connection Types"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:214
-#: admin/partials/botblocker-section-header.php:198
+#: admin/class-botblocker-setup-wizard.php:228
+#: admin/partials/botblocker-section-header.php:202
 msgid "Contact Us"
 msgstr ""
 
@@ -2022,11 +2306,11 @@ msgstr ""
 msgid "Content and Functionality"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:564
-#: admin/class-botblocker-setup-wizard.php:615
-#: admin/class-botblocker-setup-wizard.php:744
-#: admin/class-botblocker-setup-wizard.php:838
-#: admin/class-botblocker-setup-wizard.php:916
+#: admin/class-botblocker-setup-wizard.php:578
+#: admin/class-botblocker-setup-wizard.php:629
+#: admin/class-botblocker-setup-wizard.php:789
+#: admin/class-botblocker-setup-wizard.php:883
+#: admin/class-botblocker-setup-wizard.php:961
 msgid "Continue"
 msgstr ""
 
@@ -2109,8 +2393,8 @@ msgstr ""
 msgid "Cookies"
 msgstr ""
 
-#: public/template-botblocker-js.php:385
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:103
+#: public/template-botblocker-js.php:399
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:104
 msgid "Cookies are disabled in your browser. Enable cookies to continue."
 msgstr ""
 
@@ -2139,6 +2423,16 @@ msgstr ""
 msgid "Core, plugin, and theme security events."
 msgstr ""
 
+#. %s: short error code returned by the downloader.
+#: includes/inc-botblocker-alerts.php:116
+#, php-format
+msgid "Could not download the ASN database (%s). Will retry automatically."
+msgstr ""
+
+#: includes/inc-botblocker-alerts.php:119
+msgid "Could not download the ASN database. Will retry automatically."
+msgstr ""
+
 #: includes/inc-botblocker-shortcode.php:196
 #: includes/modal/modal-botblocker-hits-add-rule.php:28
 #: includes/modal/modal-botblocker-rule-add.php:35
@@ -2146,15 +2440,38 @@ msgstr ""
 msgid "Country"
 msgstr ""
 
+#: admin/class-botblocker-admin.php:163
+msgid "Country already added."
+msgstr ""
+
 #: includes/modal/modal-botblocker-rule-countries-list.php:7
 msgid "Country List"
+msgstr ""
+
+#: admin/class-botblocker-admin.php:166
+msgid "Country list loaded."
+msgstr ""
+
+#: admin/class-botblocker-admin.php:169
+#: admin/partials/botblocker-admin-display-rules.php:223
+msgid "Country list saved."
+msgstr ""
+
+#: includes/section/settings/botblocker-set-payment.php:20
+msgid ""
+"Covered: WooCommerce wc-api / wc-ajax, WC REST, EDD, Give, Memberpress, RCP, "
+"PMPro, Surecart, plus payment-specific paths and admin-ajax actions for "
+"Stripe, PayPal, Mollie, Adyen, Braintree, Square, Razorpay, YooKassa, "
+"Tinkoff, CloudPayments, Robokassa, Sberbank, WayForPay, LiqPay, Fondy, PayU, "
+"Klarna, Paystack, Flutterwave, GoCardless, Paddle, Authorize.Net, 2Checkout "
+"and many others."
 msgstr ""
 
 #: includes/section/settings/botblocker-set-cron.php:27
 msgid "cPanel Cron Jobs"
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:164
+#: admin/partials/botblocker-admin-dashboard-widgets.php:173
 msgid ""
 "Create allow/block rules for IPs or subnets. Use import buttons to add "
 "search engines and white bots."
@@ -2167,11 +2484,11 @@ msgid ""
 "blocked."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:980
+#: admin/class-botblocker-setup-wizard.php:1025
 msgid "Create custom block/allow rules"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:86
+#: includes/section/settings/botblocker-set-captcha.php:89
 msgid "Create key and secret"
 msgstr ""
 
@@ -2211,7 +2528,7 @@ msgstr ""
 msgid "Cron"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-settings.php:113
+#: admin/partials/botblocker-admin-display-settings.php:116
 #: includes/section/settings/botblocker-set-cron.php:13
 msgid "Cron Jobs"
 msgstr ""
@@ -2234,30 +2551,36 @@ msgstr ""
 msgid "Custom message shown when login is disabled."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:365
+#: admin/class-botblocker-setup-wizard.php:379
 msgid "Custom rules: IP, User-Agent, PTR, country, paths and more"
 msgstr ""
 
-#: includes/section/cloud/botblocker-cloud-status.php:74
+#: includes/data/botblocker-pro-features.php:18
 msgid "Custom security rules engine"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:988
+#: admin/class-botblocker-setup-wizard.php:1033
 msgid "Customize detection algorithms"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:345
+#: admin/class-botblocker-setup-wizard.php:359
 msgid "Cuts server load by blocking junk requests early"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:369
+#: includes/data/botblocker-pro-features.php:42
+msgid "Daily signature updates & threat feeds"
+msgstr ""
+
+#: includes/data/botblocker-pro-features.php:15
+msgid "Daily signature updates (5M+ patterns)"
+msgstr ""
+
+#: admin/class-botblocker-setup-wizard.php:383
 msgid "Daily threat updates from Cloud (signatures + bad networks)"
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:201
-msgid "Daily Updates"
-msgstr ""
-
+#: includes/modal/modal-botblocker-asn-add.php:33
+#: includes/modal/modal-botblocker-asn-edit.php:34
 #: includes/modal/modal-botblocker-hits-add-rule.php:82
 #: includes/modal/modal-botblocker-path-add.php:35
 #: includes/modal/modal-botblocker-path-edit.php:36
@@ -2268,8 +2591,8 @@ msgstr ""
 msgid "Dark"
 msgstr ""
 
-#: admin/class-botblocker-admin.php:239 admin/class-botblocker-admin.php:240
-#: admin/class-botblocker-admin.php:437 admin/class-botblocker-admin.php:456
+#: admin/class-botblocker-admin.php:405 admin/class-botblocker-admin.php:406
+#: admin/class-botblocker-admin.php:603 admin/class-botblocker-admin.php:622
 msgid "Dashboard"
 msgstr ""
 
@@ -2277,11 +2600,11 @@ msgstr ""
 msgid "Dashboard counters and daily statistics will be reset."
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-rules.php:55
-#: admin/partials/botblocker-admin-display-rules.php:73
-#: admin/partials/botblocker-admin-display-rules.php:92
-#: admin/partials/botblocker-admin-display-rules.php:111
-#: admin/partials/botblocker-admin-display-rules.php:131
+#: admin/partials/botblocker-admin-display-rules.php:82
+#: admin/partials/botblocker-admin-display-rules.php:100
+#: admin/partials/botblocker-admin-display-rules.php:119
+#: admin/partials/botblocker-admin-display-rules.php:138
+#: admin/partials/botblocker-admin-display-rules.php:158
 #: includes/modal/modal-botblocker-hits-add-rule.php:50
 #: includes/modal/modal-botblocker-rule-add.php:66
 #: includes/modal/modal-botblocker-rule-edit.php:56
@@ -2306,6 +2629,10 @@ msgstr ""
 
 #: includes/ajax/inc-botblocker-ajax-common.php:29
 msgid "Database has been reinstalled successfully."
+msgstr ""
+
+#: admin/class-botblocker-admin.php:328
+msgid "Database reinstalled successfully!"
 msgstr ""
 
 #: includes/modal/modal-botblocker-db-repair.php:7
@@ -2339,11 +2666,11 @@ msgstr ""
 msgid "Days to include in reports."
 msgstr ""
 
-#: includes/section/cloud/botblocker-cloud-status.php:145
-msgid "Days until your Cloud API subscription expires."
+#: includes/section/cloud/botblocker-cloud-status.php:136
+msgid "Days until your BotBlocker PRO subscription expires."
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-addons.php:180
+#: admin/partials/botblocker-admin-display-addons.php:182
 msgid "Deactivate"
 msgstr ""
 
@@ -2351,7 +2678,7 @@ msgstr ""
 msgid "Debug WordPress"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:764
+#: admin/class-botblocker-setup-wizard.php:809
 msgid "Default"
 msgstr ""
 
@@ -2367,7 +2694,7 @@ msgid ""
 "conflicts with other applications using the same Redis instance."
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-addons.php:202
+#: admin/partials/botblocker-admin-display-addons.php:204
 msgid "Delete"
 msgstr ""
 
@@ -2379,7 +2706,7 @@ msgstr ""
 msgid "Delete all visitor records and statistics"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-addons.php:201
+#: admin/partials/botblocker-admin-display-addons.php:203
 msgid "Delete this add-on?"
 msgstr ""
 
@@ -2393,7 +2720,7 @@ msgstr ""
 msgid "Describe your issue"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:972
+#: admin/class-botblocker-setup-wizard.php:1017
 msgid "Detailed logs of all blocked threats"
 msgstr ""
 
@@ -2490,7 +2817,7 @@ msgstr ""
 msgid "Disable XML-RPC"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-cookie.php:115
+#: includes/section/settings/botblocker-set-cookie.php:136
 #: includes/section/settings/botblocker-set-notif.php:104
 msgid "Disabled"
 msgstr ""
@@ -2522,16 +2849,16 @@ msgid ""
 "mobile app."
 msgstr ""
 
-#: includes/section/cloud/botblocker-cloud-status.php:106
+#: includes/section/cloud/botblocker-cloud-status.php:97
 msgid "Disconnect"
 msgstr ""
 
-#: botblocker-security.php:379
+#: botblocker-security.php:422
 msgid "Docs and FAQs"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:1038
-#: admin/partials/botblocker-section-header.php:181
+#: admin/class-botblocker-setup-wizard.php:1083
+#: admin/partials/botblocker-section-header.php:185
 msgid "Documentation"
 msgstr ""
 
@@ -2539,7 +2866,7 @@ msgstr ""
 msgid "Does not affect core site data."
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:121
+#: includes/section/settings/botblocker-set-captcha.php:124
 msgid "Dog"
 msgstr ""
 
@@ -2562,20 +2889,33 @@ msgstr ""
 msgid "Dump file for table %s not found."
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:72
+#: includes/section/settings/botblocker-set-captcha.php:75
 msgid "Dynamic Digit Captcha"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:713
+#: admin/class-botblocker-setup-wizard.php:740
 msgid "Dynamic Digits"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:69
+#: includes/section/settings/botblocker-set-captcha.php:72
 msgid "Dynamic Shape Captcha"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:696
+#: admin/class-botblocker-setup-wizard.php:723
 msgid "Dynamic Shapes"
+msgstr ""
+
+#: includes/section/settings/botblocker-set-payment.php:58
+msgid ""
+"E-commerce software detected on this site. Enabling this option is strongly "
+"recommended."
+msgstr ""
+
+#: admin/partials/botblocker-admin-display-addons.php:40
+msgid ""
+"Each add-on is a turnkey extension: install in one click, configure in "
+"minutes, and gain a new layer of protection or speed without writing a line "
+"of code."
 msgstr ""
 
 #: includes/section/settings/botblocker-set-simple.php:19
@@ -2590,7 +2930,7 @@ msgid ""
 "the one that matches your requirements."
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:118
+#: includes/section/settings/botblocker-set-captcha.php:121
 msgid "Eagle"
 msgstr ""
 
@@ -2598,9 +2938,8 @@ msgstr ""
 msgid "Early init"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:452
-#: admin/class-botblocker-setup-wizard.php:1003
-#: includes/section/cloud/botblocker-cloud-status.php:61
+#: admin/class-botblocker-setup-wizard.php:466
+#: admin/class-botblocker-setup-wizard.php:1048
 msgid "Early init - blocks before WP loads"
 msgstr ""
 
@@ -2614,11 +2953,17 @@ msgid ""
 msgstr ""
 
 #. %s: URL to rules page
-#: admin/class-botblocker-setup-wizard.php:826
+#: admin/class-botblocker-setup-wizard.php:871
 #, php-format
 msgid ""
 "Early Init provides instant IP banning. Custom blacklists (IPv4/IPv6) can be "
 "uploaded in %s for any mode."
+msgstr ""
+
+#: admin/class-botblocker-admin.php:108
+msgid ""
+"Early Init requires active BotBlocker PRO and the Early Init add-on. Open "
+"Add-ons page?"
 msgstr ""
 
 #: includes/ajax/inc-botblocker-ajax-common.php:330
@@ -2629,14 +2974,21 @@ msgstr ""
 msgid "Early init: filtering before WordPress loads"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:807
-#: admin/partials/botblocker-section-right-sidebar.php:203
+#: admin/class-botblocker-setup-wizard.php:852
 #: addons/bbcs-early-init/inc/bbcs-early-init-settings.php:23
 msgid "Early Initialization"
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:49
+#: admin/partials/botblocker-section-right-sidebar.php:52
 msgid "Early initialization"
+msgstr ""
+
+#: includes/data/botblocker-pro-features.php:40
+msgid "Early initialization (pre-WordPress block)"
+msgstr ""
+
+#: includes/data/botblocker-pro-features.php:12
+msgid "Early initialization - block before WordPress loads"
 msgstr ""
 
 #: includes/inc-botblocker-ui.php:146
@@ -2655,7 +3007,7 @@ msgid ""
 "before WordPress loads. MU mode is not required."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:1223
+#: admin/class-botblocker-setup-wizard.php:1268
 msgid "Early initialization requires PRO license."
 msgstr ""
 
@@ -2663,12 +3015,16 @@ msgstr ""
 msgid "Early Initialization runs BotBlocker before WordPress core loads."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:353
+#: admin/class-botblocker-setup-wizard.php:367
 msgid "Early protection mode: blocks bad requests before WordPress loads"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:885
+#: admin/class-botblocker-setup-wizard.php:930
 msgid "Easy to scale"
+msgstr ""
+
+#: includes/modal/modal-botblocker-asn-edit.php:7
+msgid "Edit ASN Rule"
 msgstr ""
 
 #: includes/modal/modal-botblocker-rule-ipv4-edit.php:7
@@ -2700,7 +3056,7 @@ msgstr ""
 msgid "Email"
 msgstr ""
 
-#: includes/ajax/inc-botblocker-ajax-common.php:660
+#: includes/ajax/inc-botblocker-ajax-common.php:690
 msgid "Email is required."
 msgstr ""
 
@@ -2712,12 +3068,11 @@ msgstr ""
 msgid "Email sent successfully."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:1017
-#: includes/section/cloud/botblocker-cloud-status.php:70
+#: admin/class-botblocker-setup-wizard.php:1062
 msgid "Emergency help (24h)"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:457
+#: admin/class-botblocker-setup-wizard.php:471
 msgid "Emergency support (24-hour resolution time)"
 msgstr ""
 
@@ -2749,7 +3104,7 @@ msgstr ""
 msgid "Enable BotBlocker Two-Factor Authentication for %s"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:852
+#: admin/class-botblocker-setup-wizard.php:897
 msgid ""
 "Enable caching for faster security checks. BotBlocker uses the available "
 "cache system."
@@ -2828,7 +3183,7 @@ msgstr ""
 msgid "Enable Two-Factor Authentication"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-cookie.php:118
+#: includes/section/settings/botblocker-set-cookie.php:139
 msgid "Enabled"
 msgstr ""
 
@@ -2861,8 +3216,8 @@ msgstr ""
 msgid "Enter a 6-digit TOTP code"
 msgstr ""
 
-#: includes/section/cloud/botblocker-cloud-status.php:104
-msgid "Enter Cloud API key"
+#: includes/section/cloud/botblocker-cloud-status.php:95
+msgid "Enter BotBlocker PRO key"
 msgstr ""
 
 #: includes/section/integration/botblocker-int-redis.php:69
@@ -2871,7 +3226,7 @@ msgid ""
 "server does not require authentication."
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:176
+#: admin/partials/botblocker-admin-dashboard-widgets.php:185
 msgid "Enter single IP or CIDR (e.g. 198.51.100.0/24 or 2001:db8::/32)."
 msgstr ""
 
@@ -2944,11 +3299,20 @@ msgstr ""
 msgid "Error and Access Settings"
 msgstr ""
 
+#: admin/class-botblocker-admin.php:379
+msgid "Error applying profile"
+msgstr ""
+
 #: includes/section/settings/botblocker-set-log.php:130
 msgid "Error Logging"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:598
+#: admin/class-botblocker-admin.php:110 admin/class-botblocker-admin.php:370
+#: admin/class-botblocker-setup-wizard.php:156
+msgid "Error: "
+msgstr ""
+
+#: admin/class-botblocker-setup-wizard.php:612
 msgid "Essential for scheduled tasks and backups"
 msgstr ""
 
@@ -2964,11 +3328,17 @@ msgstr ""
 msgid "Every day"
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:155
+#: admin/partials/botblocker-admin-dashboard-widgets.php:164
 msgid "Example:"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:301
+#: admin/partials/botblocker-admin-display-addons.php:41
+msgid ""
+"Examples: Security Headers (HSTS, CSP, X-Frame), Hide Admin URL, Speed-up, "
+"Early Init, Anti-spam, Telegram alerts and more."
+msgstr ""
+
+#: admin/class-botblocker-setup-wizard.php:315
 msgid "Exit Setup"
 msgstr ""
 
@@ -2983,10 +3353,10 @@ msgstr ""
 msgid "Expired rules:"
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:187
-#: admin/partials/botblocker-admin-display-rules.php:56
-#: admin/partials/botblocker-admin-display-rules.php:113
-#: admin/partials/botblocker-admin-display-rules.php:133
+#: admin/partials/botblocker-admin-dashboard-widgets.php:196
+#: admin/partials/botblocker-admin-display-rules.php:83
+#: admin/partials/botblocker-admin-display-rules.php:140
+#: admin/partials/botblocker-admin-display-rules.php:160
 #: includes/modal/modal-botblocker-hits-add-rule.php:92
 #: includes/modal/modal-botblocker-rule-add.php:115
 #: includes/modal/modal-botblocker-rule-edit.php:97
@@ -2995,6 +3365,10 @@ msgstr ""
 #: includes/modal/modal-botblocker-rule-ipv6-add.php:54
 #: includes/modal/modal-botblocker-rule-ipv6-edit.php:55
 msgid "Expires"
+msgstr ""
+
+#: includes/section/controls/botblocker-asn-controls.php:10
+msgid "Export ASN rules to JSON"
 msgstr ""
 
 #: includes/section/tools/botblocker-tools-botblocker.php:39
@@ -3023,7 +3397,7 @@ msgstr ""
 msgid "Export white bots to JSON"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:142
+#: includes/section/settings/botblocker-set-captcha.php:145
 msgid "Extended Captcha Check"
 msgstr ""
 
@@ -3059,34 +3433,83 @@ msgstr ""
 msgid "Failed Attempts Before Blocking:"
 msgstr ""
 
+#: admin/class-botblocker-admin.php:331
+msgid "Failed backup: "
+msgstr ""
+
+#: admin/class-botblocker-admin.php:333
+msgid "Failed import: "
+msgstr ""
+
 #. %s: comma-separated list of add-on names that failed to update.
-#: includes/inc-botblocker-alerts.php:169
+#: includes/inc-botblocker-alerts.php:202
 #, php-format
 msgid ""
 "Failed to auto-update add-on(s): %s. Please retry from the Add-ons page."
+msgstr ""
+
+#: includes/ajax/inc-botblocker-ajax-asn.php:318
+msgid "Failed to clear ASN rules."
+msgstr ""
+
+#: admin/class-botblocker-admin.php:276
+msgid "Failed to clear ASN rules: "
 msgstr ""
 
 #: includes/ajax/inc-botblocker-ajax-rules-ipv4.php:420
 msgid "Failed to clear IPv4 rules."
 msgstr ""
 
+#: admin/class-botblocker-admin.php:204
+msgid "Failed to clear IPv4 rules: "
+msgstr ""
+
 #: includes/ajax/inc-botblocker-ajax-rules-ipv6.php:417
 msgid "Failed to clear IPv6 rules."
 msgstr ""
 
-#: includes/ajax/inc-botblocker-ajax-path.php:357
+#: admin/class-botblocker-admin.php:220
+msgid "Failed to clear IPv6 rules: "
+msgstr ""
+
+#: admin/class-botblocker-admin.php:338
+msgid "Failed to clear log file."
+msgstr ""
+
+#: admin/class-botblocker-admin.php:347
+msgid "Failed to clear object cache."
+msgstr ""
+
+#: includes/ajax/inc-botblocker-ajax-path.php:361
 msgid "Failed to clear paths."
+msgstr ""
+
+#: admin/class-botblocker-admin.php:250
+msgid "Failed to clear paths: "
 msgstr ""
 
 #: includes/ajax/inc-botblocker-ajax-proxy.php:374
 msgid "Failed to clear proxies."
 msgstr ""
 
+#: admin/class-botblocker-admin.php:260
+msgid "Failed to clear proxies: "
+msgstr ""
+
 #: includes/ajax/inc-botblocker-ajax-rules.php:420
 msgid "Failed to clear rules."
 msgstr ""
 
-#: includes/ajax/inc-botblocker-ajax-common.php:580
+#: admin/class-botblocker-admin.php:190
+msgid "Failed to clear rules: "
+msgstr ""
+
+#: admin/class-botblocker-admin.php:341
+msgid "Failed to clear transients."
+msgstr ""
+
+#: admin/class-botblocker-admin.php:343
+#: includes/ajax/inc-botblocker-ajax-common.php:610
 msgid "Failed to clear visitors data."
 msgstr ""
 
@@ -3094,36 +3517,85 @@ msgstr ""
 msgid "Failed to clear white bots."
 msgstr ""
 
+#: admin/class-botblocker-admin.php:236
+msgid "Failed to clear white bots: "
+msgstr ""
+
 #: includes/hook/botblocker-hook-cloud-api.php:86
 msgid "Failed to connect to Cloud API. Try again later."
+msgstr ""
+
+#: admin/class-botblocker-admin.php:109
+msgid "Failed to copy: "
+msgstr ""
+
+#: includes/ajax/inc-botblocker-ajax-asn.php:151
+msgid "Failed to create ASN rule."
+msgstr ""
+
+#: admin/class-botblocker-admin.php:273
+msgid "Failed to create ASN rule: "
 msgstr ""
 
 #: includes/ajax/inc-botblocker-ajax-rules-ipv4.php:240
 msgid "Failed to create IPv4 rule."
 msgstr ""
 
+#: admin/class-botblocker-admin.php:201
+msgid "Failed to create IPv4 rule: "
+msgstr ""
+
 #: includes/ajax/inc-botblocker-ajax-rules-ipv6.php:241
 msgid "Failed to create IPv6 rule."
+msgstr ""
+
+#: admin/class-botblocker-admin.php:217
+msgid "Failed to create IPv6 rule: "
 msgstr ""
 
 #: includes/ajax/inc-botblocker-ajax-path.php:267
 msgid "Failed to create path."
 msgstr ""
 
+#: admin/class-botblocker-admin.php:247
+msgid "Failed to create path: "
+msgstr ""
+
 #: includes/ajax/inc-botblocker-ajax-proxy.php:270
 msgid "Failed to create proxy."
+msgstr ""
+
+#: admin/class-botblocker-admin.php:257
+msgid "Failed to create proxy: "
 msgstr ""
 
 #: includes/ajax/inc-botblocker-ajax-rules.php:330
 msgid "Failed to create rule."
 msgstr ""
 
+#: admin/class-botblocker-admin.php:143 admin/class-botblocker-admin.php:187
+#: admin/partials/botblocker-admin-dashboard-widgets.php:62
+msgid "Failed to create rule: "
+msgstr ""
+
+#: admin/class-botblocker-admin.php:335
+msgid "Failed to create salt file."
+msgstr ""
+
 #: includes/ajax/inc-botblocker-ajax-white-bots.php:278
 msgid "Failed to create white bot."
 msgstr ""
 
+#: admin/class-botblocker-admin.php:233
+msgid "Failed to create white bot: "
+msgstr ""
+
 #: includes/ajax/inc-botblocker-ajax-common.php:75
 msgid "Failed to create ZIP archive."
+msgstr ""
+
+#: includes/ajax/inc-botblocker-ajax-asn.php:213
+msgid "Failed to delete ASN rule."
 msgstr ""
 
 #: includes/ajax/inc-botblocker-ajax-rules-ipv4.php:110
@@ -3150,6 +3622,42 @@ msgstr ""
 msgid "Failed to delete white bot."
 msgstr ""
 
+#: admin/class-botblocker-admin.php:274
+msgid "Failed to export ASN rules: "
+msgstr ""
+
+#: admin/class-botblocker-admin.php:202
+msgid "Failed to export IPv4 rules: "
+msgstr ""
+
+#: admin/class-botblocker-admin.php:218
+msgid "Failed to export IPv6 rules: "
+msgstr ""
+
+#: admin/class-botblocker-admin.php:248
+msgid "Failed to export paths: "
+msgstr ""
+
+#: admin/class-botblocker-admin.php:258
+msgid "Failed to export proxies: "
+msgstr ""
+
+#: admin/class-botblocker-admin.php:188
+msgid "Failed to export rules: "
+msgstr ""
+
+#: admin/class-botblocker-admin.php:234
+msgid "Failed to export white bots: "
+msgstr ""
+
+#: admin/class-botblocker-admin.php:345
+msgid "Failed to flush rewrite rules."
+msgstr ""
+
+#: includes/ajax/inc-botblocker-ajax-asn.php:330
+msgid "Failed to generate ASN rules file."
+msgstr ""
+
 #: includes/ajax/inc-botblocker-ajax-rules-ipv4.php:550
 msgid "Failed to generate IPv4 rules file from database."
 msgstr ""
@@ -3158,7 +3666,7 @@ msgstr ""
 msgid "Failed to generate IPv6 rules file from database."
 msgstr ""
 
-#: includes/ajax/inc-botblocker-ajax-path.php:378
+#: includes/ajax/inc-botblocker-ajax-path.php:382
 msgid "Failed to generate paths file from database."
 msgstr ""
 
@@ -3166,24 +3674,132 @@ msgstr ""
 msgid "Failed to generate search_engines file from database."
 msgstr ""
 
+#: admin/class-botblocker-admin.php:339
+msgid "Failed to get log file."
+msgstr ""
+
+#: admin/class-botblocker-admin.php:142
+msgid "Failed to get response: "
+msgstr ""
+
+#: admin/partials/botblocker-admin-dashboard-widgets.php:66
+msgid "Failed to import "
+msgstr ""
+
+#: admin/class-botblocker-admin.php:275
+msgid "Failed to import ASN rules: "
+msgstr ""
+
+#: admin/class-botblocker-admin.php:206
+msgid "Failed to import IPv4 blacklist: "
+msgstr ""
+
+#: admin/class-botblocker-admin.php:203
+msgid "Failed to import IPv4 rules: "
+msgstr ""
+
+#: admin/class-botblocker-admin.php:205
+msgid "Failed to import IPv4 whitelist: "
+msgstr ""
+
+#: admin/class-botblocker-admin.php:222
+msgid "Failed to import IPv6 blacklist: "
+msgstr ""
+
+#: admin/class-botblocker-admin.php:219
+msgid "Failed to import IPv6 rules: "
+msgstr ""
+
+#: admin/class-botblocker-admin.php:221
+msgid "Failed to import IPv6 whitelist: "
+msgstr ""
+
+#: admin/class-botblocker-admin.php:249
+msgid "Failed to import paths: "
+msgstr ""
+
+#: admin/class-botblocker-admin.php:259
+msgid "Failed to import proxies: "
+msgstr ""
+
+#: admin/class-botblocker-admin.php:189
+msgid "Failed to import rules: "
+msgstr ""
+
+#: admin/class-botblocker-admin.php:235
+msgid "Failed to import white bots: "
+msgstr ""
+
+#: admin/class-botblocker-admin.php:271
+msgid "Failed to load ASN details: "
+msgstr ""
+
+#: admin/class-botblocker-admin.php:198
+msgid "Failed to load IPv4 rule details: "
+msgstr ""
+
+#: admin/class-botblocker-admin.php:214
+msgid "Failed to load IPv6 rule details: "
+msgstr ""
+
+#: admin/class-botblocker-admin.php:245
+msgid "Failed to load path details: "
+msgstr ""
+
+#: admin/class-botblocker-admin.php:255
+msgid "Failed to load proxy details: "
+msgstr ""
+
+#: admin/class-botblocker-admin.php:185
+msgid "Failed to load rule details: "
+msgstr ""
+
+#: admin/class-botblocker-admin.php:167
+msgid "Failed to load saved countries."
+msgstr ""
+
+#: admin/class-botblocker-admin.php:231
+msgid "Failed to load white bot details: "
+msgstr ""
+
 #: includes/ajax/inc-botblocker-ajax-common.php:166
 msgid "Failed to open ZIP archive."
+msgstr ""
+
+#: admin/class-botblocker-admin.php:284
+msgid "Failed to refresh BotBlocker PRO information."
 msgstr ""
 
 #: includes/hook/botblocker-hook-cloud-api.php:121
 msgid "Failed to refresh Cloud API"
 msgstr ""
 
+#: admin/class-botblocker-admin.php:329
+msgid "Failed to reinstall database: "
+msgstr ""
+
 #: includes/hook/botblocker-hook-cloud-api.php:43
 msgid "Failed to retrieve API key. Try again later."
 msgstr ""
 
-#: includes/ajax/inc-botblocker-ajax-common.php:678
+#: admin/class-botblocker-admin.php:170
+msgid "Failed to save country list."
+msgstr ""
+
+#: admin/class-botblocker-admin.php:349
+msgid "Failed to schedule ASN database update."
+msgstr ""
+
+#: includes/ajax/inc-botblocker-ajax-common.php:708
 msgid "Failed to send activation. Try again later."
 msgstr ""
 
 #: includes/ajax/inc-botblocker-ajax-common.php:394
 msgid "Failed to send email."
+msgstr ""
+
+#: includes/ajax/inc-botblocker-ajax-asn.php:237
+msgid "Failed to toggle ASN rule."
 msgstr ""
 
 #: includes/ajax/inc-botblocker-ajax-path.php:207
@@ -3194,59 +3810,101 @@ msgstr ""
 msgid "Failed to toggle white bot."
 msgstr ""
 
+#: includes/ajax/inc-botblocker-ajax-asn.php:189
+msgid "Failed to update ASN rule."
+msgstr ""
+
+#: admin/class-botblocker-admin.php:270
+msgid "Failed to update ASN rule: "
+msgstr ""
+
 #: includes/ajax/inc-botblocker-ajax-rules-ipv4.php:326
 msgid "Failed to update IPv4 rule."
+msgstr ""
+
+#: admin/class-botblocker-admin.php:199
+msgid "Failed to update IPv4 rule: "
 msgstr ""
 
 #: includes/ajax/inc-botblocker-ajax-rules-ipv6.php:328
 msgid "Failed to update IPv6 rule."
 msgstr ""
 
+#: admin/class-botblocker-admin.php:215
+msgid "Failed to update IPv6 rule: "
+msgstr ""
+
 #: includes/ajax/inc-botblocker-ajax-path.php:151
 msgid "Failed to update path."
+msgstr ""
+
+#: admin/class-botblocker-admin.php:244
+msgid "Failed to update path: "
+msgstr ""
+
+#: admin/class-botblocker-admin.php:262
+msgid "Failed to update proxies: "
 msgstr ""
 
 #: includes/ajax/inc-botblocker-ajax-proxy.php:171
 msgid "Failed to update proxy."
 msgstr ""
 
+#: admin/class-botblocker-admin.php:254
+msgid "Failed to update proxy: "
+msgstr ""
+
 #: includes/ajax/inc-botblocker-ajax-rules.php:188
 msgid "Failed to update rule."
+msgstr ""
+
+#: admin/class-botblocker-admin.php:184
+msgid "Failed to update rule: "
 msgstr ""
 
 #: includes/ajax/inc-botblocker-ajax-white-bots.php:162
 msgid "Failed to update white bot."
 msgstr ""
 
+#: admin/class-botblocker-admin.php:230
+msgid "Failed to update white bot: "
+msgstr ""
+
 #: includes/section/settings/botblocker-set-simple.php:94
 msgid "Fake Referer"
 msgstr ""
 
-#: includes/section/tools/botblocker-tools-maintenance.php:69
+#: includes/data/botblocker-pro-features.php:69
+msgid "Feature"
+msgstr ""
+
+#: includes/section/tools/botblocker-tools-maintenance.php:110
 msgid "Features"
 msgstr ""
 
-#: includes/section/cloud/botblocker-cloud-status.php:178
+#: includes/section/cloud/botblocker-cloud-status.php:169
 msgid "Fetch API key from cloud"
 msgstr ""
 
 #. %s is the name of the required field.
+#: includes/ajax/inc-botblocker-ajax-asn.php:114
+#: includes/ajax/inc-botblocker-ajax-asn.php:164
 #: includes/ajax/inc-botblocker-ajax-white-bots.php:136
 #: includes/ajax/inc-botblocker-ajax-white-bots.php:238
 #, php-format
 msgid "Field '%s' is required."
 msgstr ""
 
-#: public/class-botblocker-captcha-renderer-full.php:457
+#: public/class-botblocker-captcha-renderer-full.php:475
 #: public/captcha/render-moving-shapes-button-trait.php:67
 msgid "Find the shape:"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:979
+#: admin/class-botblocker-setup-wizard.php:1024
 msgid "Fine-tune Rules"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:530
+#: admin/class-botblocker-setup-wizard.php:544
 msgid "Fix Manually"
 msgstr ""
 
@@ -3264,13 +3922,13 @@ msgstr ""
 msgid "Follow the link:"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:550
+#: admin/class-botblocker-setup-wizard.php:564
 msgid "For payment issues, see our"
 msgstr ""
 
-#: includes/hook/botblocker-hook-addon.php:194
-#: includes/hook/botblocker-hook-addon.php:287
-#: includes/hook/botblocker-hook-addon.php:317
+#: includes/hook/botblocker-hook-addon.php:197
+#: includes/hook/botblocker-hook-addon.php:290
+#: includes/hook/botblocker-hook-addon.php:320
 msgid "Forbidden."
 msgstr ""
 
@@ -3282,8 +3940,16 @@ msgstr ""
 msgid "Force Verification for All"
 msgstr ""
 
+#: includes/data/botblocker-pro-features.php:70
+msgid "Free"
+msgstr ""
+
+#: includes/section/cloud/botblocker-cloud-status.php:185
+msgid "Free vs BotBlocker PRO"
+msgstr ""
+
 #: includes/section/cloud/botblocker-cloud-plans.php:41
-#: includes/section/cloud/botblocker-cloud-status.php:35
+#: includes/section/cloud/botblocker-cloud-status.php:37
 msgid "Free vs PRO"
 msgstr ""
 
@@ -3310,11 +3976,11 @@ msgid ""
 "Mode: Inspect public-facing requests only."
 msgstr ""
 
-#: includes/ajax/inc-botblocker-ajax-common.php:626
+#: includes/ajax/inc-botblocker-ajax-common.php:656
 msgid "Full profile requires Cloud API connection to be active."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:445
+#: admin/class-botblocker-setup-wizard.php:459
 #: includes/modal/modal-botblocker-setup-wizard.php:87
 msgid "Full Protection"
 msgstr ""
@@ -3323,8 +3989,12 @@ msgstr ""
 msgid "Full Protection Active"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:1096
+#: admin/class-botblocker-setup-wizard.php:1141
 msgid "Full protection requires PRO license."
+msgstr ""
+
+#: admin/class-botblocker-admin.php:378
+msgid "Full Protection requires PRO license. Please upgrade to PRO first."
 msgstr ""
 
 #: includes/section/dashboard/botblocker-dash-geo.php:8
@@ -3336,7 +4006,7 @@ msgstr ""
 msgid "Full Setup Wizard"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:80
+#: includes/section/settings/botblocker-set-captcha.php:83
 msgid "GD not enabled"
 msgstr ""
 
@@ -3353,6 +4023,10 @@ msgstr ""
 msgid "General settings"
 msgstr ""
 
+#: admin/partials/botblocker-admin-display-rules.php:67
+msgid "GEO"
+msgstr ""
+
 #: includes/section/settings/botblocker-set-simple.php:119
 msgid "Geo IP / Language Mismatch"
 msgstr ""
@@ -3365,8 +4039,9 @@ msgstr ""
 msgid "GeoIP Language mismatch"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-addons.php:43
-msgid "Get Access Now"
+#: admin/partials/botblocker-admin-display-addons.php:46
+#: admin/partials/botblocker-section-right-sidebar.php:199
+msgid "Get BotBlocker PRO"
 msgstr ""
 
 #: includes/section/settings/botblocker-set-data.php:39
@@ -3391,20 +4066,16 @@ msgstr ""
 msgid "GET parameter referrer check"
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:70
+#: admin/partials/botblocker-section-right-sidebar.php:73
 #: includes/modal/modal-botblocker-setup-wizard.php:79
 msgid "Get PRO"
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:207
-msgid "Get PRO Now"
-msgstr ""
-
-#: admin/partials/botblocker-section-right-sidebar.php:283
+#: admin/partials/botblocker-section-right-sidebar.php:280
 msgid "Get security updates and offers by email"
 msgstr ""
 
-#: admin/partials/botblocker-section-header.php:192
+#: admin/partials/botblocker-section-header.php:196
 msgid "GLOBUS.studio"
 msgstr ""
 
@@ -3421,21 +4092,21 @@ msgstr ""
 msgid "GMT Offset for Reports:"
 msgstr ""
 
-#: includes/inc-botblocker-alerts.php:178
+#: includes/inc-botblocker-alerts.php:211
 msgid "Go to Add-ons"
 msgstr ""
 
-#: admin/class-botblocker-admin.php:430
+#: admin/class-botblocker-admin.php:596
 msgid "Go to BotBlocker Dashboard"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:257
-#: admin/class-botblocker-setup-wizard.php:1035
+#: admin/class-botblocker-setup-wizard.php:271
+#: admin/class-botblocker-setup-wizard.php:1080
 #: public/2FA/bbcs-2fa-setup.php:131
 msgid "Go to Dashboard"
 msgstr ""
 
-#: public/class-botblocker-captcha-renderer-full.php:357
+#: public/class-botblocker-captcha-renderer-full.php:375
 #: public/captcha/render-recaptcha-with-button-trait.php:15
 #: public/captcha/render-recaptcha-with-button-trait.php:24
 msgid "Go to website"
@@ -3475,7 +4146,7 @@ msgid ""
 msgstr ""
 
 #. %s: URL to integrations page
-#: admin/class-botblocker-setup-wizard.php:726
+#: admin/class-botblocker-setup-wizard.php:771
 #, php-format
 msgid "Google reCAPTCHA v2/v3 is also supported. Configure keys in %s."
 msgstr ""
@@ -3486,6 +4157,8 @@ msgid ""
 "bots invisibly, without interrupting users."
 msgstr ""
 
+#: includes/modal/modal-botblocker-asn-add.php:32
+#: includes/modal/modal-botblocker-asn-edit.php:33
 #: includes/modal/modal-botblocker-hits-add-rule.php:81
 #: includes/modal/modal-botblocker-path-add.php:34
 #: includes/modal/modal-botblocker-path-edit.php:35
@@ -3496,12 +4169,12 @@ msgstr ""
 msgid "Gray"
 msgstr ""
 
-#: public/class-botblocker-captcha-renderer-full.php:452
+#: public/class-botblocker-captcha-renderer-full.php:470
 #: public/captcha/render-moving-shapes-button-trait.php:21
 msgid "Green"
 msgstr ""
 
-#: admin/partials/botblocker-section-header.php:163
+#: admin/partials/botblocker-section-header.php:167
 msgid "Guest"
 msgstr ""
 
@@ -3528,15 +4201,15 @@ msgstr ""
 msgid "Headers for Search Engines"
 msgstr ""
 
-#: admin/class-botblocker-admin.php:249 admin/class-botblocker-admin.php:250
+#: admin/class-botblocker-admin.php:415 admin/class-botblocker-admin.php:416
 msgid "Health Status"
 msgstr ""
 
-#: includes/section/tools/botblocker-tools-maintenance.php:88
+#: includes/section/tools/botblocker-tools-maintenance.php:129
 msgid "Helps resolve 404 errors after changing the permalink structure"
 msgstr ""
 
-#: public/class-botblocker-captcha-renderer-full.php:446
+#: public/class-botblocker-captcha-renderer-full.php:464
 #: public/captcha/render-moving-shapes-button-trait.php:15
 msgid "Hexagon"
 msgstr ""
@@ -3545,35 +4218,32 @@ msgstr ""
 msgid "Hide admin login URL"
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:195
-msgid "Hide login URL"
+#: includes/data/botblocker-pro-features.php:10
+#: includes/data/botblocker-pro-features.php:38
+msgid "Hide login URL & admin path"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:1005
+#: admin/class-botblocker-setup-wizard.php:1050
 msgid "Hide Login URL + add-ons"
-msgstr ""
-
-#: includes/section/cloud/botblocker-cloud-status.php:63
-msgid "Hide Login URL and more"
 msgstr ""
 
 #: addons/bbcs-speedup/inc/bbcs-speedup-settings.php:83
 msgid "Hide WordPress Version"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:357
+#: admin/class-botblocker-setup-wizard.php:371
 msgid "Hide wp-login and stop login abuse (optional add-on)"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:881
+#: admin/class-botblocker-setup-wizard.php:926
 msgid "High-performance distributed cache system."
 msgstr ""
 
-#: admin/partials/botblocker-section-header.php:187
+#: admin/partials/botblocker-section-header.php:191
 msgid "Hire a developer"
 msgstr ""
 
-#: botblocker-security.php:380
+#: botblocker-security.php:423
 msgid "Hire Developers"
 msgstr ""
 
@@ -3581,16 +4251,20 @@ msgstr ""
 msgid "Hits Per User"
 msgstr ""
 
-#: public/class-botblocker-captcha-renderer-full.php:813
+#: public/class-botblocker-captcha-renderer-full.php:831
 #: public/captcha/render-hold-button-trait.php:25
 msgid "HOLD"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:75
+#: admin/class-botblocker-setup-wizard.php:757
+msgid "Hold Button"
+msgstr ""
+
+#: includes/section/settings/botblocker-set-captcha.php:78
 msgid "Hold Button Captcha"
 msgstr ""
 
-#: public/class-botblocker-captcha-renderer-full.php:812
+#: public/class-botblocker-captcha-renderer-full.php:830
 #: public/captcha/render-hold-button-trait.php:24
 msgid "Hold the button and release in the green zone"
 msgstr ""
@@ -3603,11 +4277,11 @@ msgstr ""
 msgid "homepage"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:495
+#: admin/class-botblocker-setup-wizard.php:509
 msgid "Homepage Access"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:119
+#: includes/section/settings/botblocker-set-captcha.php:122
 msgid "Horse"
 msgstr ""
 
@@ -3615,7 +4289,7 @@ msgstr ""
 msgid "Hosting and system requirements"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-connect.php:98
+#: includes/section/settings/botblocker-set-connect.php:101
 msgid "Hosting Provider IPs"
 msgstr ""
 
@@ -3651,7 +4325,7 @@ msgstr ""
 msgid "How often to receive status reports."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:625
+#: admin/class-botblocker-setup-wizard.php:639
 msgid "How Should We Verify Suspicious Visitors?"
 msgstr ""
 
@@ -3669,7 +4343,7 @@ msgstr ""
 msgid "HTTP Codes"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-rules.php:150
+#: admin/partials/botblocker-admin-display-rules.php:177
 #: includes/modal/modal-botblocker-proxy-add.php:29
 #: includes/modal/modal-botblocker-proxy-edit.php:30
 msgid "HTTP Header"
@@ -3704,20 +4378,22 @@ msgstr ""
 msgid "https://leonidov.dev/"
 msgstr ""
 
-#: public/class-botblocker-captcha-renderer-full.php:110
+#: public/class-botblocker-captcha-renderer-full.php:128
 #: public/captcha/render-simple-button-trait.php:17
 msgid "I'm not a robot"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-rules.php:52
-#: admin/partials/botblocker-admin-display-rules.php:71
-#: admin/partials/botblocker-admin-display-rules.php:89
-#: admin/partials/botblocker-admin-display-rules.php:109
-#: admin/partials/botblocker-admin-display-rules.php:129
-#: admin/partials/botblocker-admin-display-rules.php:148
+#: admin/partials/botblocker-admin-display-rules.php:79
+#: admin/partials/botblocker-admin-display-rules.php:98
+#: admin/partials/botblocker-admin-display-rules.php:116
+#: admin/partials/botblocker-admin-display-rules.php:136
+#: admin/partials/botblocker-admin-display-rules.php:156
+#: admin/partials/botblocker-admin-display-rules.php:175
+#: admin/partials/botblocker-admin-display-rules.php:192
 msgid "ID"
 msgstr ""
 
+#: includes/ajax/inc-botblocker-ajax-asn.php:199
 #: includes/ajax/inc-botblocker-ajax-white-bots.php:173
 msgid "ID is required for deletion."
 msgstr ""
@@ -3740,7 +4416,7 @@ msgid ""
 "better security posture."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:206
+#: admin/class-botblocker-setup-wizard.php:220
 msgid ""
 "If you are using an ad blocker, please disable it or whitelist the current "
 "page."
@@ -3761,17 +4437,21 @@ msgstr ""
 msgid "Iframe protection (clickjacking)"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:110
+#: includes/section/settings/botblocker-set-captcha.php:113
 msgid "Image Captcha Pack:"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:94
+#: includes/section/settings/botblocker-set-captcha.php:97
 msgid "Image Delivery Mode:"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:677
-#: admin/class-botblocker-setup-wizard.php:943
+#: admin/class-botblocker-setup-wizard.php:706
+#: admin/class-botblocker-setup-wizard.php:988
 msgid "Image Recognition"
+msgstr ""
+
+#: includes/section/controls/botblocker-asn-controls.php:7
+msgid "Import ASN rules from JSON"
 msgstr ""
 
 #: includes/section/controls/botblocker-ipv4-controls.php:27
@@ -3783,25 +4463,29 @@ msgstr ""
 msgid "Import data and settings"
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:151
+#: admin/class-botblocker-admin.php:332
+msgid "Import data and settings was successful!"
+msgstr ""
+
+#: admin/partials/botblocker-admin-dashboard-widgets.php:160
 msgid ""
 "Import IP lists from TXT files. White lists allow IPs, black lists block "
 "them. One IP per line."
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:139
+#: admin/partials/botblocker-admin-dashboard-widgets.php:148
 msgid "Import IPv4 blacklist TXT"
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:138
+#: admin/partials/botblocker-admin-dashboard-widgets.php:147
 msgid "Import IPv4 whitelist TXT"
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:146
+#: admin/partials/botblocker-admin-dashboard-widgets.php:155
 msgid "Import IPv6 blacklist TXT"
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:145
+#: admin/partials/botblocker-admin-dashboard-widgets.php:154
 msgid "Import IPv6 whitelist TXT"
 msgstr ""
 
@@ -3836,6 +4520,10 @@ msgstr ""
 msgid "Import whitelist IPs from file"
 msgstr ""
 
+#: admin/partials/botblocker-admin-dashboard-widgets.php:64
+msgid "Imported: "
+msgstr ""
+
 #: addons/bbcs-speedup/inc/bbcs-speedup-settings.php:12
 msgid "Improve site performance by disabling unneeded assets and features."
 msgstr ""
@@ -3853,6 +4541,11 @@ msgstr ""
 msgid "Inactive"
 msgstr ""
 
+#: includes/data/botblocker-pro-features.php:82
+#: includes/data/botblocker-pro-features.php:89
+msgid "Included"
+msgstr ""
+
 #: includes/section/settings/botblocker-set-browser.php:43
 msgid "Incognito / Private"
 msgstr ""
@@ -3861,61 +4554,61 @@ msgstr ""
 msgid "Incognito mode"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-addons.php:92
-#: admin/partials/botblocker-admin-display-addons.php:155
-#: admin/partials/botblocker-admin-display-addons.php:158
+#: admin/partials/botblocker-admin-display-addons.php:94
+#: admin/partials/botblocker-admin-display-addons.php:157
+#: admin/partials/botblocker-admin-display-addons.php:160
 msgid "Incompatible"
 msgstr ""
 
 #. %s: comma-separated list of deactivated add-on names with version requirements.
-#: includes/inc-botblocker-alerts.php:204
+#: includes/inc-botblocker-alerts.php:237
 #, php-format
 msgid "Incompatible add-ons were deactivated: %s. Please update BotBlocker."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:946
+#: admin/class-botblocker-setup-wizard.php:991
 msgid "Initialization:"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:102
+#: includes/section/settings/botblocker-set-captcha.php:105
 msgid "Inline Base64 (Recommended)"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:97
+#: includes/section/settings/botblocker-set-captcha.php:100
 msgid ""
 "Inline: embed images in page (recommended). Separate: load via AJAX (legacy)."
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-addons.php:101
-#: admin/partials/botblocker-admin-display-addons.php:104
+#: admin/partials/botblocker-admin-display-addons.php:103
+#: admin/partials/botblocker-admin-display-addons.php:106
 msgid "Install"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-addons.php:53
-#: admin/partials/botblocker-admin-display-addons.php:117
+#: admin/partials/botblocker-admin-display-addons.php:55
 #: admin/partials/botblocker-admin-display-addons.php:119
+#: admin/partials/botblocker-admin-display-addons.php:121
 msgid "Installed"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-addons.php:76
+#: admin/partials/botblocker-admin-display-addons.php:78
 #, php-format
 msgid "Installed %s"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:811
+#: admin/class-botblocker-setup-wizard.php:856
 msgid "Instant IP ban capability"
 msgstr ""
 
 #: admin/partials/botblocker-admin-display-tools.php:12
-#: includes/hook/botblocker-hook-addon.php:64
-#: includes/hook/botblocker-hook-addon.php:83
+#: includes/hook/botblocker-hook-addon.php:67
+#: includes/hook/botblocker-hook-addon.php:86
 #: includes/hook/botblocker-hook-settings.php:8
 #: includes/hook/botblocker-hook-settings.php:121
 msgid "Insufficient permissions."
 msgstr ""
 
-#: admin/class-botblocker-admin.php:279 admin/class-botblocker-admin.php:280
-#: admin/class-botblocker-setup-wizard.php:727
+#: admin/class-botblocker-admin.php:445 admin/class-botblocker-admin.php:446
+#: admin/class-botblocker-setup-wizard.php:772
 #: admin/partials/botblocker-admin-display-integrations.php:48
 msgid "Integrations"
 msgstr ""
@@ -3940,16 +4633,20 @@ msgstr ""
 msgid "Invalid API key. Cloud API responded with: "
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:1303
+#: admin/class-botblocker-setup-wizard.php:1348
 msgid "Invalid cache type."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:1185
+#: admin/class-botblocker-setup-wizard.php:1230
 msgid "Invalid CAPTCHA mode."
 msgstr ""
 
-#: includes/ajax/inc-botblocker-ajax-common.php:665
-#: includes/utilites/util-botblocker-support.php:118
+#: admin/class-botblocker-admin.php:164
+msgid "Invalid country."
+msgstr ""
+
+#: includes/ajax/inc-botblocker-ajax-common.php:695
+#: includes/utilites/util-botblocker-support.php:123
 msgid "Invalid email address."
 msgstr ""
 
@@ -3958,7 +4655,7 @@ msgstr ""
 msgid "Invalid ID provided."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:1218
+#: admin/class-botblocker-setup-wizard.php:1263
 msgid "Invalid initialization mode."
 msgstr ""
 
@@ -3979,7 +4676,16 @@ msgstr ""
 msgid "Invalid IP address."
 msgstr ""
 
-#: includes/ajax/inc-botblocker-ajax-path.php:339
+#: admin/class-botblocker-admin.php:183 admin/class-botblocker-admin.php:197
+#: admin/class-botblocker-admin.php:213 admin/class-botblocker-admin.php:229
+#: admin/class-botblocker-admin.php:243 admin/class-botblocker-admin.php:253
+#: admin/class-botblocker-admin.php:269
+#: admin/partials/botblocker-admin-dashboard-widgets.php:67
+msgid "Invalid JSON file: "
+msgstr ""
+
+#: includes/ajax/inc-botblocker-ajax-asn.php:266
+#: includes/ajax/inc-botblocker-ajax-path.php:343
 #: includes/ajax/inc-botblocker-ajax-proxy.php:348
 #: includes/ajax/inc-botblocker-ajax-rules-ipv4.php:402
 #: includes/ajax/inc-botblocker-ajax-rules-ipv6.php:399
@@ -3988,11 +4694,11 @@ msgstr ""
 msgid "Invalid JSON format."
 msgstr ""
 
-#: includes/ajax/inc-botblocker-ajax-common.php:622
+#: includes/ajax/inc-botblocker-ajax-common.php:652
 msgid "Invalid mode."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:1074
+#: admin/class-botblocker-setup-wizard.php:1119
 msgid "Invalid preset."
 msgstr ""
 
@@ -4013,7 +4719,7 @@ msgstr ""
 msgid "Invalid upload."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:1165
+#: admin/class-botblocker-setup-wizard.php:1210
 msgid "Invalid UX mode."
 msgstr ""
 
@@ -4030,7 +4736,7 @@ msgstr ""
 msgid "IP"
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:174
+#: admin/partials/botblocker-admin-dashboard-widgets.php:183
 msgid "IP / Subnet"
 msgstr ""
 
@@ -4050,7 +4756,7 @@ msgstr ""
 msgid "IP Hits and Unique IPs"
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:133
+#: admin/partials/botblocker-admin-dashboard-widgets.php:142
 msgid "IP List Import"
 msgstr ""
 
@@ -4067,11 +4773,19 @@ msgstr ""
 msgid "IP range overlaps with an existing rule: %s"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:783
+#: admin/class-botblocker-setup-wizard.php:828
 msgid "IP white/blacklists work earlier"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-rules.php:195
+#: includes/data/botblocker-pro-features.php:30
+msgid "IP, ASN, GEO and proxy rules"
+msgstr ""
+
+#: includes/section/settings/botblocker-set-payment.php:29
+msgid "IPN"
+msgstr ""
+
+#: admin/partials/botblocker-admin-display-rules.php:311
 msgid "IPv4"
 msgstr ""
 
@@ -4080,11 +4794,11 @@ msgstr ""
 msgid "IPv4 address or subnet (CIDR)"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-rules.php:32
+#: admin/partials/botblocker-admin-display-rules.php:51
 msgid "IPv4 List"
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:136
+#: admin/partials/botblocker-admin-dashboard-widgets.php:145
 msgid "IPv4 Lists:"
 msgstr ""
 
@@ -4108,7 +4822,7 @@ msgstr ""
 msgid "IPv4 rules file generated successfully."
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-rules.php:196
+#: admin/partials/botblocker-admin-display-rules.php:312
 msgid "IPv6"
 msgstr ""
 
@@ -4121,11 +4835,11 @@ msgstr ""
 msgid "IPv6 Connections"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-rules.php:36
+#: admin/partials/botblocker-admin-display-rules.php:55
 msgid "IPv6 List"
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:143
+#: admin/partials/botblocker-admin-dashboard-widgets.php:152
 msgid "IPv6 Lists:"
 msgstr ""
 
@@ -4153,14 +4867,14 @@ msgstr ""
 msgid "ISPmanager scheduler"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:201
+#: admin/class-botblocker-setup-wizard.php:215
 msgid ""
 "JavaScript appears to be blocked on this page. BotBlocker Security requires "
 "JavaScript to function."
 msgstr ""
 
-#: public/template-botblocker-js.php:442
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:104
+#: public/template-botblocker-js.php:471
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:105
 msgid "JavaScript is disabled in your browser. Enable JavaScript to continue."
 msgstr ""
 
@@ -4180,6 +4894,12 @@ msgstr ""
 msgid "JS Info"
 msgstr ""
 
+#: includes/inc-botblocker-alerts.php:179
+msgid ""
+"Kinsta hosting detected. Add the BotBlocker cookie as a cache bypass rule in "
+"the Kinsta dashboard. See CACHE-COMPATIBILITY.md."
+msgstr ""
+
 #: admin/partials/botblocker-admin-display-reports.php:12
 msgid "Lang"
 msgstr ""
@@ -4191,6 +4911,12 @@ msgstr ""
 msgid "Language"
 msgstr ""
 
+#. %s: short error code returned by the ASN downloader.
+#: includes/section/tools/botblocker-tools-maintenance.php:103
+#, php-format
+msgid "Last error: %s"
+msgstr ""
+
 #: includes/section/settings/botblocker-set-cookie.php:61
 msgid "Lax"
 msgstr ""
@@ -4199,7 +4925,7 @@ msgstr ""
 msgid "Legal Information"
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:200
+#: admin/partials/botblocker-admin-dashboard-widgets.php:209
 msgid "Legend:"
 msgstr ""
 
@@ -4207,12 +4933,12 @@ msgstr ""
 msgid "Libraries and resources used in BotBlocker, with licenses and sources."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:417
+#: admin/class-botblocker-setup-wizard.php:431
 #: includes/modal/modal-botblocker-setup-wizard.php:27
 msgid "Light Protection"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:866
+#: admin/class-botblocker-setup-wizard.php:911
 msgid "Lightning fast response"
 msgstr ""
 
@@ -4220,25 +4946,25 @@ msgstr ""
 msgid "Live and historical traffic (IP, country, device, behavior markers)."
 msgstr ""
 
-#: public/class-botblocker-captcha-renderer-full.php:345
-#: public/class-botblocker-captcha-renderer-full.php:371
+#: public/class-botblocker-captcha-renderer-full.php:363
+#: public/class-botblocker-captcha-renderer-full.php:389
 #: public/template-botblocker-html.php:233
-#: public/template-botblocker-js.php:212 public/template-botblocker-js.php:323
-#: public/template-botblocker-js.php:363 public/template-botblocker-js.php:390
+#: public/template-botblocker-js.php:217 public/template-botblocker-js.php:336
+#: public/template-botblocker-js.php:377 public/template-botblocker-js.php:404
 #: public/captcha/render-recaptcha-with-button-trait.php:38
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:86
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:87
 msgid "Loading..."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:780
+#: admin/class-botblocker-setup-wizard.php:825
 msgid "Loads before regular plugins. Faster threat response."
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:54
+#: admin/partials/botblocker-section-right-sidebar.php:57
 msgid "Loads black/white IP lists via wp-config before WordPress core starts"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:766
+#: admin/class-botblocker-setup-wizard.php:811
 msgid "Loads with standard plugins. Fits most sites."
 msgstr ""
 
@@ -4290,6 +5016,10 @@ msgstr ""
 msgid "Log file not found."
 msgstr ""
 
+#: admin/class-botblocker-admin.php:337
+msgid "Log file successfully cleared!"
+msgstr ""
+
 #: includes/section/settings/botblocker-set-log.php:78
 msgid "Log Known Good IPs"
 msgstr ""
@@ -4300,6 +5030,10 @@ msgstr ""
 
 #: public/2FA/bbcs-2fa.php:227
 msgid "Log out"
+msgstr ""
+
+#: includes/section/settings/botblocker-set-payment.php:49
+msgid "Log Payment Bypass Events"
 msgstr ""
 
 #: includes/section/settings/botblocker-set-log.php:51
@@ -4368,7 +5102,7 @@ msgstr ""
 msgid "Log WordPress admin panel actions."
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-settings.php:110
+#: admin/partials/botblocker-admin-display-settings.php:113
 #: includes/section/settings/botblocker-set-log.php:14
 msgid "Logging Settings"
 msgstr ""
@@ -4382,7 +5116,7 @@ msgstr ""
 msgid "Login Brute-Force Protection"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:507
+#: admin/class-botblocker-setup-wizard.php:521
 msgid "Login Page"
 msgstr ""
 
@@ -4390,20 +5124,24 @@ msgstr ""
 msgid "Login URL"
 msgstr ""
 
+#: includes/data/botblocker-pro-features.php:32
+msgid "Logs & basic reports"
+msgstr ""
+
 #: includes/section/settings/botblocker-set-error.php:102
 msgid "Longer ban applied after repeated failures."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:418
+#: admin/class-botblocker-setup-wizard.php:432
 msgid "Low impact, works on any site"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:884
+#: admin/class-botblocker-setup-wizard.php:929
 #: includes/modal/modal-botblocker-setup-wizard.php:34
 msgid "Low resource usage"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:813
+#: admin/class-botblocker-setup-wizard.php:858
 msgid "Lowest server resource usage"
 msgstr ""
 
@@ -4412,7 +5150,7 @@ msgstr ""
 msgid "ltr"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-tools.php:119
+#: admin/partials/botblocker-admin-display-tools.php:120
 #: includes/section/tools/botblocker-tools-maintenance.php:12
 msgid "Maintenance"
 msgstr ""
@@ -4421,7 +5159,7 @@ msgstr ""
 msgid "Malicious IPs in cloud database:"
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:72
+#: admin/partials/botblocker-section-right-sidebar.php:75
 #: includes/section/setup/botblocker-setup-chain.php:37
 msgid "manage add-ons"
 msgstr ""
@@ -4442,11 +5180,11 @@ msgstr ""
 msgid "Manage your subscription details below."
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-addons.php:52
+#: admin/partials/botblocker-admin-display-addons.php:54
 msgid "Marketplace"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:697
+#: admin/class-botblocker-setup-wizard.php:724
 msgid "Match rotating shapes. BotBlocker exclusive."
 msgstr ""
 
@@ -4454,11 +5192,11 @@ msgstr ""
 msgid "Maximum compatibility"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:814
+#: admin/class-botblocker-setup-wizard.php:859
 msgid "Maximum protection"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:450
+#: admin/class-botblocker-setup-wizard.php:464
 msgid "Maximum protection with PRO features"
 msgstr ""
 
@@ -4471,7 +5209,7 @@ msgid "may reduce protection"
 msgstr ""
 
 #: admin/partials/botblocker-admin-display-integrations.php:62
-#: admin/partials/botblocker-section-right-sidebar.php:129
+#: admin/partials/botblocker-section-right-sidebar.php:132
 #: includes/section/integration/botblocker-int-memcached.php:12
 msgid "Memcached"
 msgstr ""
@@ -4506,11 +5244,11 @@ msgstr ""
 msgid "Minimal protection"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:522
+#: admin/class-botblocker-setup-wizard.php:536
 msgid "Minor compatibility issues detected"
 msgstr ""
 
-#: includes/inc-botblocker-alerts.php:65
+#: includes/inc-botblocker-alerts.php:70
 msgid "Missing Files"
 msgstr ""
 
@@ -4554,7 +5292,7 @@ msgstr ""
 msgid "Moderate"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:964
+#: admin/class-botblocker-setup-wizard.php:1009
 msgid "Monitor real-time threats and statistics"
 msgstr ""
 
@@ -4563,7 +5301,7 @@ msgid ""
 "Monthly or annual subscription with cloud intelligence and premium features."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:721
+#: admin/class-botblocker-setup-wizard.php:766
 msgid "More CAPTCHA Options Available:"
 msgstr ""
 
@@ -4577,12 +5315,12 @@ msgid ""
 "Enabling MU is unnecessary."
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:90
+#: admin/partials/botblocker-section-right-sidebar.php:93
 msgid ""
 "MU mode loads black/white IP lists before regular plugins and WordPress core"
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:85
+#: admin/partials/botblocker-section-right-sidebar.php:88
 #: includes/section/setup/botblocker-setup-chain.php:46
 msgid "MU plugin"
 msgstr ""
@@ -4593,7 +5331,7 @@ msgid ""
 "Early initialization is not required."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:779
+#: admin/class-botblocker-setup-wizard.php:824
 msgid "MU Plugin Mode"
 msgstr ""
 
@@ -4607,15 +5345,16 @@ msgstr ""
 msgid "My PRO status"
 msgstr ""
 
+#: admin/partials/botblocker-admin-display-rules.php:195
 #: includes/utilites/util-botblocker-support.php:38
 msgid "Name"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:1044
+#: admin/class-botblocker-setup-wizard.php:1089
 msgid "Need help? Visit our"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-rules.php:149
+#: admin/partials/botblocker-admin-display-rules.php:176
 #: includes/modal/modal-botblocker-proxy-add.php:16
 #: includes/modal/modal-botblocker-proxy-edit.php:17
 msgid "Network Mask"
@@ -4629,7 +5368,7 @@ msgstr ""
 msgid "New errors will be logged as they occur."
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:241
+#: admin/partials/botblocker-section-right-sidebar.php:238
 msgid "News"
 msgstr ""
 
@@ -4637,7 +5376,7 @@ msgstr ""
 msgid "Nginx"
 msgstr ""
 
-#: includes/inc-botblocker-alerts.php:139
+#: includes/inc-botblocker-alerts.php:162
 msgid ""
 "Nginx detected with WP_CACHE enabled. If using FastCGI Cache, ensure the "
 "BotBlocker cookie bypasses it. See CACHE-COMPATIBILITY.md."
@@ -4647,7 +5386,7 @@ msgstr ""
 msgid "Nginx vs Apache"
 msgstr ""
 
-#: admin/partials/botblocker-section-header.php:88
+#: admin/partials/botblocker-section-header.php:92
 msgid "No active alerts"
 msgstr ""
 
@@ -4659,16 +5398,20 @@ msgstr ""
 msgid "No backup codes remaining."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:894
+#: admin/class-botblocker-setup-wizard.php:939
 msgid "No Cache"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:897
+#: admin/class-botblocker-setup-wizard.php:942
 msgid "No configuration needed"
 msgstr ""
 
-#: includes/inc-botblocker-alerts.php:52
+#: includes/inc-botblocker-alerts.php:57
 msgid "No connection to BotBlocker Cloud"
+msgstr ""
+
+#: admin/class-botblocker-admin.php:165
+msgid "No countries selected"
 msgstr ""
 
 #: includes/shortcode/charts/chart-botblocker-stat.php:18
@@ -4681,7 +5424,7 @@ msgstr ""
 msgid "No data available."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:329
+#: admin/class-botblocker-setup-wizard.php:343
 msgid ""
 "No DNS/NS changes: works inside WordPress, no external services required"
 msgstr ""
@@ -4694,7 +5437,7 @@ msgstr ""
 msgid "No file content provided."
 msgstr ""
 
-#: admin/partials/botblocker-section-header.php:89
+#: admin/partials/botblocker-section-header.php:93
 msgid "No issues found"
 msgstr ""
 
@@ -4702,23 +5445,29 @@ msgstr ""
 msgid "No JavaScript Support"
 msgstr ""
 
+#: admin/class-botblocker-setup-wizard.php:673
+msgid ""
+"No manual verification. Access decisions are based entirely on IP databases, "
+"blacklists, and threat intelligence."
+msgstr ""
+
 #: includes/shortcode/botblocker-shortcode-sidebar.php:36
 msgid "No news items available"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:1068
-#: admin/class-botblocker-setup-wizard.php:1111
-#: admin/class-botblocker-setup-wizard.php:1143
-#: admin/class-botblocker-setup-wizard.php:1159
-#: admin/class-botblocker-setup-wizard.php:1178
-#: admin/class-botblocker-setup-wizard.php:1212
-#: admin/class-botblocker-setup-wizard.php:1281
-#: admin/class-botblocker-setup-wizard.php:1297
-#: admin/class-botblocker-setup-wizard.php:1344
-#: admin/class-botblocker-setup-wizard.php:1359
-#: admin/class-botblocker-setup-wizard.php:1384
-#: admin/class-botblocker-setup-wizard.php:1405
-#: includes/hook/botblocker-hook-cron.php:110
+#: admin/class-botblocker-setup-wizard.php:1113
+#: admin/class-botblocker-setup-wizard.php:1156
+#: admin/class-botblocker-setup-wizard.php:1188
+#: admin/class-botblocker-setup-wizard.php:1204
+#: admin/class-botblocker-setup-wizard.php:1223
+#: admin/class-botblocker-setup-wizard.php:1257
+#: admin/class-botblocker-setup-wizard.php:1326
+#: admin/class-botblocker-setup-wizard.php:1342
+#: admin/class-botblocker-setup-wizard.php:1389
+#: admin/class-botblocker-setup-wizard.php:1404
+#: admin/class-botblocker-setup-wizard.php:1443
+#: admin/class-botblocker-setup-wizard.php:1464
+#: includes/hook/botblocker-hook-cron.php:115
 msgid "No permission."
 msgstr ""
 
@@ -4730,17 +5479,17 @@ msgstr ""
 msgid "No rules provided."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:770
+#: admin/class-botblocker-setup-wizard.php:815
 msgid "No special configuration needed"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-addons.php:171
+#: admin/partials/botblocker-admin-display-addons.php:173
 msgid "No Update Source"
 msgstr ""
 
-#: includes/hook/botblocker-hook-addon.php:198
-#: includes/hook/botblocker-hook-addon.php:291
-#: includes/hook/botblocker-hook-addon.php:321
+#: includes/hook/botblocker-hook-addon.php:201
+#: includes/hook/botblocker-hook-addon.php:294
+#: includes/hook/botblocker-hook-addon.php:324
 msgid "Nonce verification failed."
 msgstr ""
 
@@ -4763,13 +5512,23 @@ msgstr ""
 #: includes/ajax/inc-botblocker-ajax-common.php:422
 #: includes/ajax/inc-botblocker-ajax-common.php:447
 #: includes/ajax/inc-botblocker-ajax-common.php:495
-#: includes/ajax/inc-botblocker-ajax-common.php:572
-#: includes/ajax/inc-botblocker-ajax-common.php:589
-#: includes/ajax/inc-botblocker-ajax-common.php:604
+#: includes/ajax/inc-botblocker-ajax-common.php:513
+#: includes/ajax/inc-botblocker-ajax-common.php:602
+#: includes/ajax/inc-botblocker-ajax-common.php:619
+#: includes/ajax/inc-botblocker-ajax-common.php:634
 msgid "Not enough permissions to perform the operation."
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:85
+#: includes/data/botblocker-pro-features.php:84
+#: includes/data/botblocker-pro-features.php:91
+msgid "Not included"
+msgstr ""
+
+#: admin/class-botblocker-admin.php:309 admin/class-botblocker-admin.php:318
+msgid "Not saved!"
+msgstr ""
+
+#: includes/section/settings/botblocker-set-captcha.php:88
 msgid "not set"
 msgstr ""
 
@@ -4782,7 +5541,7 @@ msgstr ""
 msgid "Notification Types"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-settings.php:119
+#: admin/partials/botblocker-admin-display-settings.php:122
 msgid "Notifications"
 msgstr ""
 
@@ -4790,8 +5549,12 @@ msgstr ""
 msgid "Notify on Critical Server Load"
 msgstr ""
 
-#: includes/ajax/inc-botblocker-ajax-common.php:610
+#: includes/ajax/inc-botblocker-ajax-common.php:640
 msgid "Object cache has been flushed successfully."
+msgstr ""
+
+#: admin/class-botblocker-admin.php:346
+msgid "Object cache successfully cleared!"
 msgstr ""
 
 #: includes/section/settings/botblocker-set-error.php:26
@@ -4814,9 +5577,15 @@ msgstr ""
 msgid "One‑Click Setup"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:465
-#: admin/class-botblocker-setup-wizard.php:794
+#: admin/class-botblocker-setup-wizard.php:479
+#: admin/class-botblocker-setup-wizard.php:839
 msgid "Only for PRO"
+msgstr ""
+
+#: includes/section/settings/botblocker-set-payment.php:23
+msgid ""
+"Only safe HTTP methods (GET, POST, HEAD) are bypassed. Hard IP blacklists "
+"and country blocks still apply."
 msgstr ""
 
 #: includes/section/report/botblocker-report-dashboard.php:56
@@ -4854,7 +5623,7 @@ msgstr ""
 msgid "Operation failed."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:433
+#: admin/class-botblocker-setup-wizard.php:447
 msgid "Optimal balance of security and usability"
 msgstr ""
 
@@ -4870,7 +5639,7 @@ msgstr ""
 msgid "Optional comment for this white bot"
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:71
+#: admin/partials/botblocker-section-right-sidebar.php:74
 #: includes/section/setup/botblocker-setup-chain.php:36
 msgid "or"
 msgstr ""
@@ -4879,7 +5648,7 @@ msgstr ""
 msgid "or a 16-character backup code"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:1046
+#: admin/class-botblocker-setup-wizard.php:1091
 msgid "or contact us at"
 msgstr ""
 
@@ -4889,12 +5658,12 @@ msgstr ""
 msgid "Or use a backup code (remaining: %s)"
 msgstr ""
 
-#: public/class-botblocker-captcha-renderer-full.php:454
+#: public/class-botblocker-captcha-renderer-full.php:472
 #: public/captcha/render-moving-shapes-button-trait.php:23
 msgid "Orange"
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:201
+#: admin/partials/botblocker-admin-dashboard-widgets.php:210
 msgid "Order of execution"
 msgstr ""
 
@@ -4976,13 +5745,19 @@ msgstr ""
 msgid "Path updated successfully."
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-rules.php:24
-#: admin/partials/botblocker-admin-display-rules.php:193
+#: admin/partials/botblocker-admin-display-rules.php:43
+#: admin/partials/botblocker-admin-display-rules.php:309
 msgid "Paths"
 msgstr ""
 
-#: includes/ajax/inc-botblocker-ajax-path.php:375
+#: includes/ajax/inc-botblocker-ajax-path.php:379
 msgid "Paths file generated successfully."
+msgstr ""
+
+#: admin/partials/botblocker-admin-display-settings.php:110
+#: includes/section/settings/botblocker-set-payment.php:13
+#: includes/section/settings/botblocker-set-payment.php:35
+msgid "Payment Gateways"
 msgstr ""
 
 #: addons/bbcs-security-headers/inc/bbcs-security-headers-settings.php:148
@@ -4992,11 +5767,11 @@ msgid ""
 "domains here."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:422
+#: admin/class-botblocker-setup-wizard.php:436
 msgid "Perfect for testing"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:539
+#: admin/class-botblocker-setup-wizard.php:553
 msgid "Perfect!"
 msgstr ""
 
@@ -5004,12 +5779,12 @@ msgstr ""
 msgid "Performance may decrease temporarily until the cache rebuilds."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:850
+#: admin/class-botblocker-setup-wizard.php:895
 #: addons/bbcs-speedup/inc/bbcs-speedup-settings.php:24
 msgid "Performance Optimization"
 msgstr ""
 
-#: includes/ajax/inc-botblocker-ajax-common.php:595
+#: includes/ajax/inc-botblocker-ajax-common.php:625
 msgid "Permalink rules have been flushed successfully."
 msgstr ""
 
@@ -5021,7 +5796,7 @@ msgstr ""
 msgid "Permanently Ban"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:867
+#: admin/class-botblocker-setup-wizard.php:912
 msgid "Persistent connections"
 msgstr ""
 
@@ -5044,11 +5819,19 @@ msgid ""
 "backup code can be used only once."
 msgstr ""
 
+#: admin/class-botblocker-admin.php:162
+msgid "Please select a country."
+msgstr ""
+
 #: public/template-botblocker-denied.php:214
 #: public/template-botblocker-html.php:224
 #: includes/botblocker/traits/class-botblocker-block-page-trait.php:11
 #: includes/botblocker/traits/class-botblocker-check-page-trait.php:10
 msgid "Please turn JavaScript on and reload the page"
+msgstr ""
+
+#: admin/class-botblocker-admin.php:381
+msgid "Please wait..."
 msgstr ""
 
 #: includes/section/settings/botblocker-set-cron.php:28
@@ -5063,8 +5846,20 @@ msgstr ""
 msgid "Plugins"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-addons.php:58
+#: admin/partials/botblocker-admin-display-addons.php:60
 msgid "Popular add-ons, new possibilities"
+msgstr ""
+
+#: admin/partials/botblocker-admin-display-addons.php:39
+msgid "Premium add-ons - included with BotBlocker PRO"
+msgstr ""
+
+#: includes/data/botblocker-pro-features.php:43
+msgid "Premium add-ons access"
+msgstr ""
+
+#: admin/class-botblocker-setup-wizard.php:758
+msgid "Press and hold to verify. No images or math required."
 msgstr ""
 
 #: includes/section/settings/botblocker-set-login-brutforce.php:17
@@ -5098,12 +5893,15 @@ msgstr ""
 msgid "Primary Block Time (seconds):"
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:169
-#: admin/partials/botblocker-admin-display-rules.php:53
-#: admin/partials/botblocker-admin-display-rules.php:72
-#: admin/partials/botblocker-admin-display-rules.php:90
-#: admin/partials/botblocker-admin-display-rules.php:110
-#: admin/partials/botblocker-admin-display-rules.php:130
+#: admin/partials/botblocker-admin-dashboard-widgets.php:178
+#: admin/partials/botblocker-admin-display-rules.php:80
+#: admin/partials/botblocker-admin-display-rules.php:99
+#: admin/partials/botblocker-admin-display-rules.php:117
+#: admin/partials/botblocker-admin-display-rules.php:137
+#: admin/partials/botblocker-admin-display-rules.php:157
+#: admin/partials/botblocker-admin-display-rules.php:193
+#: includes/modal/modal-botblocker-asn-add.php:16
+#: includes/modal/modal-botblocker-asn-edit.php:17
 #: includes/modal/modal-botblocker-hits-add-rule.php:36
 #: includes/modal/modal-botblocker-path-add.php:16
 #: includes/modal/modal-botblocker-path-edit.php:17
@@ -5127,10 +5925,16 @@ msgstr ""
 msgid "Priority (1-100)"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:1016
-#: admin/partials/botblocker-section-right-sidebar.php:204
-#: includes/section/cloud/botblocker-cloud-status.php:69
+#: admin/class-botblocker-setup-wizard.php:1061
 msgid "Priority Support"
+msgstr ""
+
+#: includes/data/botblocker-pro-features.php:21
+msgid "Priority support & emergency help (24h)"
+msgstr ""
+
+#: includes/data/botblocker-pro-features.php:45
+msgid "Priority support (24h response)"
 msgstr ""
 
 #: includes/section/setup/botblocker-setup-pro.php:35
@@ -5145,13 +5949,14 @@ msgstr ""
 msgid "Privacy policy"
 msgstr ""
 
-#: admin/class-botblocker-admin.php:319 admin/class-botblocker-admin.php:320
+#: admin/class-botblocker-admin.php:485 admin/class-botblocker-admin.php:486
+#: includes/data/botblocker-pro-features.php:72
 #: includes/modal/modal-botblocker-setup-wizard.php:88
 #: includes/utilites/util-botblocker-support.php:62
 msgid "PRO"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:1028
+#: admin/class-botblocker-setup-wizard.php:1073
 msgid "PRO Active"
 msgstr ""
 
@@ -5163,16 +5968,11 @@ msgstr ""
 msgid "PRO active:"
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:190
 #: includes/section/setup/botblocker-setup-pro.php:8
 msgid "PRO Features"
 msgstr ""
 
-#: includes/section/cloud/botblocker-cloud-status.php:58
-msgid "PRO features"
-msgstr ""
-
-#: admin/partials/botblocker-section-header.php:59
+#: admin/partials/botblocker-section-header.php:63
 msgid "PRO is active"
 msgstr ""
 
@@ -5181,27 +5981,28 @@ msgstr ""
 #: includes/section/settings/botblocker-set-browser.php:93
 #: includes/section/settings/botblocker-set-browser.php:112
 #: includes/section/settings/botblocker-set-browser.php:131
-#: includes/section/settings/botblocker-set-connect.php:116
-#: includes/section/settings/botblocker-set-connect.php:134
+#: includes/section/settings/botblocker-set-connect.php:103
+#: includes/section/settings/botblocker-set-connect.php:123
+#: includes/section/settings/botblocker-set-connect.php:141
 msgid "PRO option"
 msgstr ""
 
-#: includes/section/cloud/botblocker-cloud-status.php:81
+#: includes/section/cloud/botblocker-cloud-status.php:72
 msgid "PRO Status"
 msgstr ""
 
-#: includes/section/cloud/botblocker-cloud-status.php:89
+#: includes/section/cloud/botblocker-cloud-status.php:80
 msgid "PRO Status: Active"
 msgstr ""
 
-#: includes/section/cloud/botblocker-cloud-status.php:90
+#: includes/section/cloud/botblocker-cloud-status.php:81
 msgid "PRO Status: Inactive"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:605
-#: admin/class-botblocker-setup-wizard.php:734
-#: admin/class-botblocker-setup-wizard.php:821
-#: admin/class-botblocker-setup-wizard.php:906
+#: admin/class-botblocker-setup-wizard.php:619
+#: admin/class-botblocker-setup-wizard.php:779
+#: admin/class-botblocker-setup-wizard.php:866
+#: admin/class-botblocker-setup-wizard.php:951
 msgid "Pro Tip:"
 msgstr ""
 
@@ -5209,7 +6010,7 @@ msgstr ""
 msgid "PRO vs Free"
 msgstr ""
 
-#: includes/ajax/inc-botblocker-ajax-common.php:643
+#: includes/ajax/inc-botblocker-ajax-common.php:673
 msgid "Profile applied."
 msgstr ""
 
@@ -5221,12 +6022,16 @@ msgstr ""
 msgid "Protect default login endpoints and use a custom login URL."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:938
+#: admin/class-botblocker-setup-wizard.php:983
 msgid "Protection Level:"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-rules.php:40
-#: admin/partials/botblocker-admin-display-rules.php:197
+#: admin/class-botblocker-admin.php:261
+msgid "Proxies successfully updated for Early BotBlocker Mode"
+msgstr ""
+
+#: admin/partials/botblocker-admin-display-rules.php:59
+#: admin/partials/botblocker-admin-display-rules.php:313
 msgid "Proxy"
 msgstr ""
 
@@ -5275,7 +6080,7 @@ msgstr ""
 msgid "PTR anomalies"
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:146
+#: admin/partials/botblocker-section-right-sidebar.php:149
 msgid "PTR Cache"
 msgstr ""
 
@@ -5293,7 +6098,7 @@ msgstr ""
 msgid "PTR Options"
 msgstr ""
 
-#: public/class-botblocker-captcha-renderer-full.php:453
+#: public/class-botblocker-captcha-renderer-full.php:471
 #: public/captcha/render-moving-shapes-button-trait.php:22
 msgid "Purple"
 msgstr ""
@@ -5320,19 +6125,19 @@ msgid ""
 "Questions, suggestions, or need help? Contact us through any channel below."
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-rules.php:186
+#: admin/partials/botblocker-admin-display-rules.php:302
 msgid "Quick Guide"
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:162
+#: admin/partials/botblocker-admin-dashboard-widgets.php:171
 msgid "Quick IP Rule"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:957
+#: admin/class-botblocker-setup-wizard.php:1002
 msgid "Quick Start Guide"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:120
+#: includes/section/settings/botblocker-set-captcha.php:123
 msgid "Raccoon"
 msgstr ""
 
@@ -5344,19 +6149,23 @@ msgstr ""
 msgid "Raw event log for forensics and rule tuning."
 msgstr ""
 
-#: includes/section/cloud/botblocker-cloud-status.php:169
-msgid "Re-checks Cloud API status and updates connection details."
+#: includes/section/cloud/botblocker-cloud-status.php:160
+msgid "Re-checks BotBlocker PRO status and updates connection details."
+msgstr ""
+
+#: includes/section/cloud/botblocker-cloud-status.php:192
+msgid "Read full comparison"
 msgstr ""
 
 #: includes/section/dashboard/botblocker-dash-health.php:122
 msgid "Read More"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:80
+#: includes/section/settings/botblocker-set-captcha.php:83
 msgid "Read more"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:437
+#: admin/class-botblocker-setup-wizard.php:451
 msgid "Real visitors unaffected"
 msgstr ""
 
@@ -5368,7 +6177,7 @@ msgstr ""
 msgid "Real-time visitor geo statistics. View period:"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:333
+#: admin/class-botblocker-setup-wizard.php:347
 msgid "Real-time visitor statistics (IP, PTR, ASN, geo, device, OS, etc.)"
 msgstr ""
 
@@ -5376,11 +6185,11 @@ msgstr ""
 msgid "Real-time visitor statistics. View period:"
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:193
+#: admin/partials/botblocker-admin-dashboard-widgets.php:202
 msgid "Reason or context (e.g. temporary block)"
 msgstr ""
 
-#: includes/shortcode/botblocker-shortcode-health.php:98
+#: includes/shortcode/botblocker-shortcode-health.php:97
 msgid "reCAPTCHA enabled"
 msgstr ""
 
@@ -5394,16 +6203,16 @@ msgstr ""
 
 #: admin/partials/botblocker-admin-display-integrations.php:53
 #: includes/section/integration/botblocker-int-recaptcha2.php:29
-#: includes/section/settings/botblocker-set-captcha.php:65
+#: includes/section/settings/botblocker-set-captcha.php:68
 msgid "reCAPTCHA v2"
 msgstr ""
 
 #: includes/section/settings/botblocker-set-captcha.php:23
-#: includes/section/settings/botblocker-set-captcha.php:85
+#: includes/section/settings/botblocker-set-captcha.php:88
 msgid "reCaptcha v2"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:60
+#: includes/section/settings/botblocker-set-captcha.php:63
 msgid "reCAPTCHA v2 - \"I am not a robot\""
 msgstr ""
 
@@ -5436,6 +6245,10 @@ msgstr ""
 msgid "reCAPTCHA v3 Site Key:"
 msgstr ""
 
+#: includes/data/botblocker-pro-features.php:33
+msgid "reCAPTCHA, Redis, Memcached integrations"
+msgstr ""
+
 #: includes/section/settings/botblocker-set-notif.php:72
 msgid "Receive real-time security alerts via Pusher."
 msgstr ""
@@ -5448,7 +6261,7 @@ msgstr ""
 msgid "Receive security alerts via Telegram."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:678
+#: admin/class-botblocker-setup-wizard.php:671
 msgid "Recommended"
 msgstr ""
 
@@ -5457,7 +6270,7 @@ msgstr ""
 msgid "Recommended 2FA Apps"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:438
+#: admin/class-botblocker-setup-wizard.php:452
 msgid "Recommended for most sites"
 msgstr ""
 
@@ -5473,7 +6286,7 @@ msgstr ""
 msgid "Record visitor operating system."
 msgstr ""
 
-#: public/class-botblocker-captcha-renderer-full.php:450
+#: public/class-botblocker-captcha-renderer-full.php:468
 #: public/captcha/render-moving-shapes-button-trait.php:19
 msgid "Red"
 msgstr ""
@@ -5487,7 +6300,7 @@ msgid "Redirect URL"
 msgstr ""
 
 #: admin/partials/botblocker-admin-display-integrations.php:65
-#: admin/partials/botblocker-section-right-sidebar.php:106
+#: admin/partials/botblocker-section-right-sidebar.php:109
 #: includes/section/integration/botblocker-int-redis.php:12
 msgid "Redis"
 msgstr ""
@@ -5504,7 +6317,7 @@ msgstr ""
 msgid "Redis Database Number:"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:907
+#: admin/class-botblocker-setup-wizard.php:952
 msgid ""
 "Redis is faster for high-traffic sites. Memcached fits distributed setups. "
 "This can be changed later in Settings."
@@ -5547,8 +6360,8 @@ msgstr ""
 msgid "Referer"
 msgstr ""
 
-#: includes/section/cloud/botblocker-cloud-status.php:163
-msgid "Refresh Cloud API"
+#: includes/section/cloud/botblocker-cloud-status.php:154
+msgid "Refresh PRO status"
 msgstr ""
 
 #: includes/section/about/botblocker-about-legal.php:27
@@ -5559,8 +6372,8 @@ msgstr ""
 msgid "Regular hits will be removed from the database."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:763
-#: admin/class-botblocker-setup-wizard.php:947
+#: admin/class-botblocker-setup-wizard.php:808
+#: admin/class-botblocker-setup-wizard.php:992
 msgid "Regular Plugin"
 msgstr ""
 
@@ -5572,12 +6385,24 @@ msgstr ""
 msgid "Reinstall Database"
 msgstr ""
 
-#: includes/section/cloud/botblocker-cloud-status.php:140
+#: admin/partials/botblocker-admin-display-rules.php:214
+msgid "Reload"
+msgstr ""
+
+#: admin/class-botblocker-admin.php:173
+msgid "Reloading..."
+msgstr ""
+
+#: includes/section/cloud/botblocker-cloud-status.php:131
 msgid "Remaining days"
 msgstr ""
 
-#: includes/section/cloud/botblocker-cloud-status.php:117
+#: includes/section/cloud/botblocker-cloud-status.php:108
 msgid "Remaining Requests"
+msgstr ""
+
+#: includes/section/controls/botblocker-asn-controls.php:13
+msgid "Remove all ASN rules"
 msgstr ""
 
 #: includes/section/controls/botblocker-path-controls.php:12
@@ -5600,6 +6425,10 @@ msgstr ""
 
 #: addons/bbcs-speedup/inc/bbcs-speedup-settings.php:117
 msgid "Remove Comment URLs"
+msgstr ""
+
+#: admin/class-botblocker-admin.php:172
+msgid "Remove country"
 msgstr ""
 
 #: addons/bbcs-speedup/inc/bbcs-speedup-settings.php:61
@@ -5678,7 +6507,7 @@ msgstr ""
 msgid "Report Period:"
 msgstr ""
 
-#: admin/class-botblocker-admin.php:299 admin/class-botblocker-admin.php:300
+#: admin/class-botblocker-admin.php:465 admin/class-botblocker-admin.php:466
 msgid "Reports"
 msgstr ""
 
@@ -5688,6 +6517,10 @@ msgstr ""
 
 #: admin/partials/botblocker-admin-display-reports.php:37
 msgid "Reports dashboard"
+msgstr ""
+
+#: admin/class-botblocker-admin.php:380
+msgid "Request failed. Please try again."
 msgstr ""
 
 #: includes/section/setup/botblocker-setup-chain.php:22
@@ -5702,38 +6535,38 @@ msgstr ""
 msgid "Requests blocked"
 msgstr ""
 
-#: includes/inc-botblocker-alerts.php:66
+#: includes/inc-botblocker-alerts.php:71
 msgid "Required files missing. Regenerated."
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-addons.php:146
+#: admin/partials/botblocker-admin-display-addons.php:148
 msgid "Requires a newer BotBlocker version"
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:65
-msgid "Requires active PRO"
+#: admin/partials/botblocker-section-right-sidebar.php:68
+msgid "Requires active BotBlocker PRO"
 msgstr ""
 
 #. %s is the minimum required BotBlocker version.
-#: admin/partials/botblocker-admin-display-addons.php:80
-#: admin/partials/botblocker-admin-display-addons.php:146
+#: admin/partials/botblocker-admin-display-addons.php:82
+#: admin/partials/botblocker-admin-display-addons.php:148
 #, php-format
 msgid "Requires BotBlocker >= %s"
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:63
-msgid "Requires Cloud API and the Early Init add-on."
+#: admin/partials/botblocker-section-right-sidebar.php:66
+msgid "Requires BotBlocker PRO and the Early Init add-on."
 msgstr ""
 
 #: includes/modal/modal-botblocker-setup-wizard.php:78
 msgid "Requires PRO"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:459
+#: admin/class-botblocker-setup-wizard.php:473
 msgid "Requires PRO license"
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:67
+#: admin/partials/botblocker-section-right-sidebar.php:70
 msgid "Requires the Early Init add-on to be enabled."
 msgstr ""
 
@@ -5749,7 +6582,7 @@ msgstr ""
 msgid "Reset all BotBlocker tables to default settings"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:264
+#: admin/class-botblocker-setup-wizard.php:278
 msgid "Reset and Restart Wizard"
 msgstr ""
 
@@ -5761,6 +6594,10 @@ msgstr ""
 msgid "Reset cookies"
 msgstr ""
 
+#: admin/class-botblocker-admin.php:301
+msgid "Reset failed"
+msgstr ""
+
 #: includes/modal/modal-botblocker-rewrite-rules.php:7
 msgid "Reset Rewrite Rules"
 msgstr ""
@@ -5769,15 +6606,15 @@ msgstr ""
 msgid "Reset the rules"
 msgstr ""
 
-#: includes/section/tools/botblocker-tools-maintenance.php:84
+#: includes/section/tools/botblocker-tools-maintenance.php:125
 msgid "Reset URL rewrite rules"
 msgstr ""
 
-#: includes/section/tools/botblocker-tools-maintenance.php:78
+#: includes/section/tools/botblocker-tools-maintenance.php:119
 msgid "Resets all visitor cookies - visitors must re-verify"
 msgstr ""
 
-#: includes/section/tools/botblocker-tools-maintenance.php:98
+#: includes/section/tools/botblocker-tools-maintenance.php:139
 msgid ""
 "Resets the internal WordPress cache and external caching systems (Redis, "
 "Memcached)"
@@ -5787,7 +6624,7 @@ msgstr ""
 msgid "Resets the internal WordPress cache."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:513
+#: admin/class-botblocker-setup-wizard.php:527
 msgid "REST API"
 msgstr ""
 
@@ -5797,12 +6634,16 @@ msgid ""
 "automated threats."
 msgstr ""
 
-#: includes/section/cloud/botblocker-cloud-status.php:184
-msgid "Retrieves your API key from the cloud."
+#: includes/section/cloud/botblocker-cloud-status.php:175
+msgid "Retrieves your BotBlocker PRO key from the cloud."
 msgstr ""
 
 #: includes/modal/modal-botblocker-setup-wizard.php:119
 msgid "Review security score"
+msgstr ""
+
+#: admin/class-botblocker-admin.php:344
+msgid "Rewrite rules successfully flushed!"
 msgstr ""
 
 #: includes/section/integration/botblocker-int-2fa.php:189
@@ -5813,11 +6654,14 @@ msgstr ""
 msgid "RSS feeds are disabled. Visit the"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-rules.php:57
-#: admin/partials/botblocker-admin-display-rules.php:74
-#: admin/partials/botblocker-admin-display-rules.php:93
-#: admin/partials/botblocker-admin-display-rules.php:112
-#: admin/partials/botblocker-admin-display-rules.php:132
+#: admin/partials/botblocker-admin-display-rules.php:84
+#: admin/partials/botblocker-admin-display-rules.php:101
+#: admin/partials/botblocker-admin-display-rules.php:120
+#: admin/partials/botblocker-admin-display-rules.php:139
+#: admin/partials/botblocker-admin-display-rules.php:159
+#: admin/partials/botblocker-admin-display-rules.php:196
+#: includes/modal/modal-botblocker-asn-add.php:27
+#: includes/modal/modal-botblocker-asn-edit.php:28
 #: includes/modal/modal-botblocker-hits-add-rule.php:75
 #: includes/modal/modal-botblocker-path-add.php:28
 #: includes/modal/modal-botblocker-path-edit.php:29
@@ -5865,7 +6709,7 @@ msgstr ""
 msgid "Rule expiration date and time"
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:204
+#: admin/partials/botblocker-admin-dashboard-widgets.php:213
 msgid "Rule lifetime"
 msgstr ""
 
@@ -5892,18 +6736,18 @@ msgstr ""
 msgid "Rule updated successfully."
 msgstr ""
 
-#: admin/class-botblocker-admin.php:269 admin/class-botblocker-admin.php:270
-#: admin/class-botblocker-setup-wizard.php:827
-#: admin/partials/botblocker-admin-display-rules.php:20
-#: admin/partials/botblocker-admin-display-rules.php:192
+#: admin/class-botblocker-admin.php:435 admin/class-botblocker-admin.php:436
+#: admin/class-botblocker-setup-wizard.php:872
+#: admin/partials/botblocker-admin-display-rules.php:39
+#: admin/partials/botblocker-admin-display-rules.php:308
 msgid "Rules"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-rules.php:14
+#: admin/partials/botblocker-admin-display-rules.php:33
 msgid "Rules and IP lists"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-rules.php:235
+#: admin/partials/botblocker-admin-display-rules.php:351
 msgid "Rules and IP lists statistics"
 msgstr ""
 
@@ -5915,7 +6759,7 @@ msgstr ""
 msgid "Rules will be regenerated automatically."
 msgstr ""
 
-#: admin/partials/botblocker-section-header.php:45
+#: admin/partials/botblocker-section-header.php:49
 msgid "Run Setup Wizard Again"
 msgstr ""
 
@@ -5923,7 +6767,7 @@ msgstr ""
 msgid "Run the wizard to configure protection"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:491
+#: admin/class-botblocker-setup-wizard.php:505
 msgid "Running compatibility tests for your site"
 msgstr ""
 
@@ -5935,7 +6779,7 @@ msgstr ""
 msgid "Safe defaults"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:373
+#: admin/class-botblocker-setup-wizard.php:387
 msgid "Safe defaults: works with WooCommerce, Elementor and most caches"
 msgstr ""
 
@@ -5952,12 +6796,17 @@ msgstr ""
 msgid "Salt file created successfully."
 msgstr ""
 
+#: admin/class-botblocker-admin.php:334
+msgid "Salt successfully created!"
+msgstr ""
+
 #: includes/section/settings/botblocker-set-cookie.php:20
 msgid ""
 "SameSite policy controls cross-site cookie behavior to protect against CSRF "
 "attacks."
 msgstr ""
 
+#: includes/modal/modal-botblocker-asn-add.php:78
 #: includes/modal/modal-botblocker-path-add.php:72
 #: includes/modal/modal-botblocker-rule-ipv4-edit.php:77
 #: includes/modal/modal-botblocker-rule-ipv6-edit.php:77
@@ -5965,10 +6814,15 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
+#: includes/section/controls/botblocker-asn-controls.php:16
+msgid "Save ASN rules to PHP file"
+msgstr ""
+
 #: includes/section/integration/botblocker-int-2fa.php:219
 msgid "Save Backup Codes"
 msgstr ""
 
+#: includes/modal/modal-botblocker-asn-edit.php:79
 #: includes/modal/modal-botblocker-path-edit.php:72
 #: includes/modal/modal-botblocker-proxy-edit.php:66
 #: includes/modal/modal-botblocker-rule-add.php:133
@@ -5985,6 +6839,10 @@ msgstr ""
 msgid "Save IPv6 rules to PHP file"
 msgstr ""
 
+#: admin/partials/botblocker-admin-display-rules.php:218
+msgid "Save list"
+msgstr ""
+
 #: includes/modal/modal-botblocker-db-repair.php:16
 msgid "Save the file"
 msgstr ""
@@ -5995,6 +6853,11 @@ msgstr ""
 
 #: includes/section/controls/botblocker-white-controls.php:17
 msgid "Save white bot rules to PHP file"
+msgstr ""
+
+#: admin/class-botblocker-admin.php:174
+#: admin/class-botblocker-setup-wizard.php:164
+msgid "Saving..."
 msgstr ""
 
 #: includes/section/integration/botblocker-int-2fa.php:97
@@ -6011,12 +6874,18 @@ msgid ""
 "suspicious traffic sources."
 msgstr ""
 
+#: includes/section/tools/botblocker-tools-maintenance.php:84
+msgid ""
+"Schedule an immediate background download of the latest ASN (autonomous "
+"system) database from BotBlocker servers."
+msgstr ""
+
 #: includes/modal/modal-botblocker-rule-add.php:36
 #: includes/modal/modal-botblocker-rule-edit.php:32
 msgid "Script Name"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-rules.php:91
+#: admin/partials/botblocker-admin-display-rules.php:118
 #: includes/modal/modal-botblocker-white-add.php:46
 #: includes/modal/modal-botblocker-white-edit.php:47
 msgid "Search"
@@ -6035,7 +6904,7 @@ msgid "Secondary Block Time (seconds):"
 msgstr ""
 
 #: includes/shortcode/botblocker-shortcode-health-full.php:52
-#: includes/shortcode/botblocker-shortcode-health.php:100
+#: includes/shortcode/botblocker-shortcode-health.php:99
 msgid "Secondary time ban enabled"
 msgstr ""
 
@@ -6043,7 +6912,7 @@ msgstr ""
 msgid "Seconds remaining until unlock:"
 msgstr ""
 
-#: includes/botblocker/traits/class-botblocker-response-trait.php:237
+#: includes/botblocker/traits/class-botblocker-response-trait.php:271
 msgid "Seconds until unlock:"
 msgstr ""
 
@@ -6094,6 +6963,19 @@ msgstr ""
 msgid "Security error. Refresh the page and try again."
 msgstr ""
 
+#: addons/bbcs-security-headers/mu/botblocker-security-headers.php:655
+msgid ""
+"Security headers are disabled because a conflicting plugin was detected."
+msgstr ""
+
+#: includes/data/botblocker-pro-features.php:39
+msgid "Security headers management"
+msgstr ""
+
+#: includes/data/botblocker-pro-features.php:11
+msgid "Security headers management (HSTS, CSP, X-Frame, Permissions-Policy)"
+msgstr ""
+
 #: includes/section/setup/botblocker-setup-health.php:5
 msgid "Security Health Status"
 msgstr ""
@@ -6102,33 +6984,42 @@ msgstr ""
 msgid "Security score"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:950
+#: admin/class-botblocker-setup-wizard.php:995
 msgid "Security Score:"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:380
-#: admin/partials/botblocker-section-right-sidebar.php:282
+#: admin/class-botblocker-setup-wizard.php:394
+#: admin/partials/botblocker-section-right-sidebar.php:279
 msgid "Security Updates and Offers"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:468
-#: admin/class-botblocker-setup-wizard.php:797
+#: admin/class-botblocker-setup-wizard.php:482
+#: admin/class-botblocker-setup-wizard.php:842
 msgid "See plans"
+msgstr ""
+
+#: includes/section/cloud/botblocker-cloud-status.php:53
+#: includes/section/cloud/botblocker-cloud-status.php:189
+msgid "See pricing"
 msgstr ""
 
 #: includes/section/settings/botblocker-set-captcha.php:37
 msgid "Select CAPTCHA type for visitor verification."
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:113
+#: admin/partials/botblocker-admin-display-rules.php:230
+msgid "Select country"
+msgstr ""
+
+#: includes/section/settings/botblocker-set-captcha.php:116
 msgid "Select image theme for CAPTCHA."
 msgstr ""
 
-#: admin/partials/botblocker-section-header.php:122
+#: admin/partials/botblocker-section-header.php:126
 msgid "Select Language"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:680
+#: admin/class-botblocker-setup-wizard.php:707
 msgid "Select matching images. Best balance of security and UX."
 msgstr ""
 
@@ -6144,19 +7035,23 @@ msgstr ""
 msgid "Select rule type"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:755
+#: admin/class-botblocker-setup-wizard.php:800
 msgid "Select when BotBlocker activates. Earlier = stronger protection."
 msgstr ""
 
-#: includes/section/settings/botblocker-set-connect.php:145
+#: admin/partials/botblocker-admin-display-rules.php:247
+msgid "Selected countries"
+msgstr ""
+
+#: includes/section/settings/botblocker-set-connect.php:152
 msgid "Self Connections"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:1390
+#: admin/class-botblocker-setup-wizard.php:1449
 msgid "Self-test completed successfully! Check your log."
 msgstr ""
 
-#: admin/class-botblocker-admin.php:120
+#: admin/class-botblocker-admin.php:126
 #: includes/utilites/util-botblocker-support.php:52
 msgid "Send"
 msgstr ""
@@ -6169,24 +7064,32 @@ msgstr ""
 msgid "Send suspicious requests to BotBlocker Cloud for verification."
 msgstr ""
 
-#: includes/section/settings/botblocker-set-cookie.php:106
+#: includes/section/settings/botblocker-set-cookie.php:127
 msgid "Send Vary: Cookie Header"
 msgstr ""
 
-#: includes/utilites/util-botblocker-support.php:134
+#: includes/utilites/util-botblocker-support.php:139
 msgid "Sending failed. Please try again later."
 msgstr ""
 
-#: admin/class-botblocker-admin.php:119
+#: admin/class-botblocker-admin.php:125
 msgid "Sending..."
 msgstr ""
 
-#: includes/section/cloud/botblocker-cloud-status.php:75
+#: includes/data/botblocker-pro-features.php:19
 msgid "SEO bots whitelist management"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:103
+#: includes/section/settings/botblocker-set-captcha.php:106
 msgid "Separate Requests (Legacy)"
+msgstr ""
+
+#: admin/class-botblocker-admin.php:168
+msgid "Server error while loading saved countries."
+msgstr ""
+
+#: admin/class-botblocker-admin.php:171
+msgid "Server error while saving country list."
 msgstr ""
 
 #: includes/section/about/botblocker-about-status.php:33
@@ -6234,10 +7137,10 @@ msgstr ""
 msgid "Set up 2FA for your account"
 msgstr ""
 
-#: admin/class-botblocker-admin.php:259 admin/class-botblocker-admin.php:260
-#: admin/class-botblocker-admin.php:444
-#: admin/class-botblocker-setup-wizard.php:260
-#: admin/partials/botblocker-admin-dashboard-widgets.php:111
+#: admin/class-botblocker-admin.php:425 admin/class-botblocker-admin.php:426
+#: admin/class-botblocker-admin.php:610
+#: admin/class-botblocker-setup-wizard.php:274
+#: admin/partials/botblocker-admin-dashboard-widgets.php:120
 #: admin/partials/botblocker-admin-display-settings.php:48
 #: includes/section/dashboard/botblocker-dash-geo.php:13
 #: includes/section/dashboard/botblocker-dash-health.php:24
@@ -6246,15 +7149,15 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-#: includes/hook/botblocker-hook-settings.php:232
+#: includes/hook/botblocker-hook-settings.php:237
 msgid "Settings saved."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:253
+#: admin/class-botblocker-setup-wizard.php:267
 msgid "Setup Already Completed"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:254
+#: admin/class-botblocker-setup-wizard.php:268
 msgid "Setup is complete. You can adjust settings anytime from the Dashboard."
 msgstr ""
 
@@ -6266,8 +7169,8 @@ msgstr ""
 msgid "Setup session expired. Please refresh the page."
 msgstr ""
 
-#: admin/class-botblocker-admin.php:347 admin/class-botblocker-admin.php:348
-#: admin/partials/botblocker-section-header.php:37
+#: admin/class-botblocker-admin.php:513 admin/class-botblocker-admin.php:514
+#: admin/partials/botblocker-section-header.php:41
 #: includes/section/dashboard/botblocker-dash-health.php:132
 msgid "Setup Wizard"
 msgstr ""
@@ -6280,22 +7183,31 @@ msgstr ""
 msgid "Show unique visitors (by IP) or all requests."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:361
+#: admin/class-botblocker-setup-wizard.php:375
 msgid "Shows exactly what was blocked and why (reason + URL + IP)"
 msgstr ""
 
-#: includes/section/cloud/botblocker-cloud-status.php:98
-msgid "Shows whether PRO is active. Managed automatically."
+#: includes/section/cloud/botblocker-cloud-status.php:89
+msgid "Shows whether BotBlocker PRO is active. Managed automatically."
 msgstr ""
 
-#: includes/section/cloud/botblocker-cloud-status.php:22
+#: includes/section/cloud/botblocker-cloud-status.php:24
 msgid ""
-"Shows your Cloud API connection and subscription status. An active "
-"connection delivers live security updates, firewall rules, and premium bot-"
-"detection from the BotBlocker cloud."
+"Shows your BotBlocker PRO connection and subscription status. An active "
+"subscription delivers live security updates, firewall rules, and premium bot-"
+"detection from the BotBlocker network."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:883
+#: admin/class-botblocker-setup-wizard.php:666
+#: admin/class-botblocker-setup-wizard.php:670
+msgid "Silent Auto-Verify"
+msgstr ""
+
+#: includes/section/settings/botblocker-set-captcha.php:43
+msgid "Silent Auto-Verify (No CAPTCHA)"
+msgstr ""
+
+#: admin/class-botblocker-setup-wizard.php:928
 msgid "Simple and reliable"
 msgstr ""
 
@@ -6304,6 +7216,10 @@ msgstr ""
 #: includes/section/settings/botblocker-set-simple.php:24
 #: includes/section/settings/botblocker-set-simple.php:37
 msgid "Simple Bot Detection"
+msgstr ""
+
+#: includes/data/botblocker-pro-features.php:29
+msgid "Simple bot detection (UA, headers, JS, language)"
 msgstr ""
 
 #: includes/section/settings/botblocker-set-simple.php:16
@@ -6316,7 +7232,7 @@ msgstr ""
 msgid "Simple JS Consistency"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:714
+#: admin/class-botblocker-setup-wizard.php:741
 msgid "Simple math with moving numbers. Easy and effective."
 msgstr ""
 
@@ -6334,11 +7250,15 @@ msgstr ""
 msgid "Site visitors"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:402
+#: admin/class-botblocker-setup-wizard.php:416
 msgid "Skip (use default)"
 msgstr ""
 
-#: includes/section/about/botblocker-about-status.php:46
+#: admin/partials/botblocker-admin-dashboard-widgets.php:65
+msgid "Skipped: "
+msgstr ""
+
+#: includes/section/about/botblocker-about-status.php:52
 msgid "Software versions"
 msgstr ""
 
@@ -6346,16 +7266,16 @@ msgstr ""
 msgid "Solve the expression:"
 msgstr ""
 
-#: public/class-botblocker-captcha-renderer-full.php:693
+#: public/class-botblocker-captcha-renderer-full.php:711
 msgid "Solve the following:"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:200
+#: admin/class-botblocker-setup-wizard.php:214
 msgid "Something isn't working."
 msgstr ""
 
 #: includes/botblocker/traits/class-botblocker-denied-page-trait.php:12
-#: includes/botblocker/traits/class-botblocker-response-trait.php:178
+#: includes/botblocker/traits/class-botblocker-response-trait.php:212
 msgid "Sorry, your request has been denied"
 msgstr ""
 
@@ -6371,37 +7291,33 @@ msgid ""
 "0.1) for local Redis installations."
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:196
-msgid "Speed Optimizations"
-msgstr ""
-
-#: admin/partials/botblocker-section-right-sidebar.php:134
+#: admin/partials/botblocker-section-right-sidebar.php:137
 msgid "Speeds up visitor processing via Memcached"
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:111
+#: admin/partials/botblocker-section-right-sidebar.php:114
 msgid "Speeds up visitor processing via Redis"
 msgstr ""
 
-#: public/class-botblocker-captcha-renderer-full.php:443
+#: public/class-botblocker-captcha-renderer-full.php:461
 #: public/captcha/render-moving-shapes-button-trait.php:12
 msgid "Square"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:899
+#: admin/class-botblocker-setup-wizard.php:944
 msgid "Standard performance"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:768
+#: admin/class-botblocker-setup-wizard.php:813
 msgid "Standard plugin loading"
 msgstr ""
 
-#: public/class-botblocker-captcha-renderer-full.php:445
+#: public/class-botblocker-captcha-renderer-full.php:463
 #: public/captcha/render-moving-shapes-button-trait.php:14
 msgid "Star"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:399
+#: admin/class-botblocker-setup-wizard.php:413
 msgid "Start setup"
 msgstr ""
 
@@ -6434,11 +7350,11 @@ msgctxt "statistics label"
 msgid "Unique Visitors"
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:21
+#: admin/partials/botblocker-section-right-sidebar.php:24
 msgid "Status"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:211
+#: admin/class-botblocker-setup-wizard.php:225
 msgid "Still having issues? Contact our support team."
 msgstr ""
 
@@ -6446,7 +7362,7 @@ msgstr ""
 msgid "Stop Visitor Icon"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:341
+#: admin/class-botblocker-setup-wizard.php:355
 msgid "Stops hosting bots, proxies and Tor traffic"
 msgstr ""
 
@@ -6466,7 +7382,7 @@ msgstr ""
 msgid "Strong"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:430
+#: admin/class-botblocker-setup-wizard.php:444
 #: includes/modal/modal-botblocker-setup-wizard.php:52
 msgid "Strong Protection"
 msgstr ""
@@ -6479,7 +7395,7 @@ msgstr ""
 msgid "Strongest protection mode"
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:288
+#: admin/partials/botblocker-section-right-sidebar.php:285
 msgid "Subscribe"
 msgstr ""
 
@@ -6493,12 +7409,20 @@ msgstr ""
 msgid "Success!"
 msgstr ""
 
+#: admin/partials/botblocker-admin-dashboard-widgets.php:61
+msgid "Success: IP rule added"
+msgstr ""
+
+#: admin/partials/botblocker-admin-dashboard-widgets.php:63
+msgid "Successfully imported "
+msgstr ""
+
 #: includes/utilites/util-botblocker-support.php:18
 #: includes/utilites/util-botblocker-support.php:26
 msgid "Support"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:1045
+#: admin/class-botblocker-setup-wizard.php:1090
 msgid "support center"
 msgstr ""
 
@@ -6514,7 +7438,7 @@ msgstr ""
 msgid "Support via tickets"
 msgstr ""
 
-#: includes/hook/botblocker-hook-cron.php:123
+#: includes/hook/botblocker-hook-cron.php:128
 msgid "Sync Early Init Data"
 msgstr ""
 
@@ -6526,12 +7450,12 @@ msgstr ""
 msgid "System Cron Job Commands"
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:265
+#: admin/partials/botblocker-section-right-sidebar.php:262
 msgid "System Status"
 msgstr ""
 
 #: includes/section/about/botblocker-about-status.php:11
-#: includes/section/about/botblocker-about-status.php:44
+#: includes/section/about/botblocker-about-status.php:47
 msgid "System status"
 msgstr ""
 
@@ -6539,7 +7463,7 @@ msgstr ""
 msgid "Takes effect immediately."
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:202
+#: admin/partials/botblocker-admin-dashboard-widgets.php:211
 msgid "Target IP/Subnet"
 msgstr ""
 
@@ -6561,6 +7485,10 @@ msgstr ""
 
 #: includes/section/about/botblocker-about-legal.php:25
 msgid "Terms of Service"
+msgstr ""
+
+#: admin/class-botblocker-setup-wizard.php:163
+msgid "Test failed: "
 msgstr ""
 
 #: includes/section/settings/botblocker-set-error.php:40
@@ -6601,7 +7529,7 @@ msgstr ""
 msgid "Themes"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:523
+#: admin/class-botblocker-setup-wizard.php:537
 msgid "These can be fixed automatically. Your site will stay functional."
 msgstr ""
 
@@ -6613,7 +7541,7 @@ msgstr ""
 msgid "This action cannot be undone."
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-addons.php:201
+#: admin/partials/botblocker-admin-display-addons.php:203
 msgid ""
 "This add-on is incompatible with your BotBlocker version. Delete anyway?"
 msgstr ""
@@ -6628,25 +7556,31 @@ msgid ""
 "Choose a different login slug."
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:200
-msgid "Threat Intelligence"
+#: includes/data/botblocker-pro-features.php:14
+msgid "Threat intelligence & zero-day botnet feeds"
 msgstr ""
 
 #: admin/partials/botblocker-admin-display-reports.php:9
 msgid "Time"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-captcha.php:131
+#: includes/section/settings/botblocker-set-captcha.php:134
 msgid "Time allowed to complete CAPTCHA verification."
 msgstr ""
 
 #: includes/shortcode/botblocker-shortcode-health-full.php:51
-#: includes/shortcode/botblocker-shortcode-health.php:99
+#: includes/shortcode/botblocker-shortcode-health.php:98
 msgid "Time ban enabled"
 msgstr ""
 
 #: includes/section/settings/botblocker-set-login-brutforce.php:54
 msgid "Time period for counting failed login attempts."
+msgstr ""
+
+#: includes/section/settings/botblocker-set-cookie.php:109
+msgid ""
+"Timeout in seconds for cloud API requests. Increase if your server has slow "
+"outbound connections."
 msgstr ""
 
 #: includes/section/settings/botblocker-set-ui.php:103
@@ -6657,11 +7591,11 @@ msgstr ""
 msgid "To enable database repair and optimization:"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:391
+#: admin/class-botblocker-setup-wizard.php:405
 msgid "To receive important security news and special offers."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:203
+#: admin/class-botblocker-setup-wizard.php:217
 msgid "To resolve this, check the following:"
 msgstr ""
 
@@ -6669,7 +7603,7 @@ msgstr ""
 msgid "Today blocked"
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:159
+#: admin/partials/botblocker-section-right-sidebar.php:162
 msgid "Today blocked:"
 msgstr ""
 
@@ -6681,12 +7615,12 @@ msgstr ""
 msgid "Today's Statistics"
 msgstr ""
 
-#: public/class-botblocker-captcha-renderer-full.php:816
+#: public/class-botblocker-captcha-renderer-full.php:834
 #: public/captcha/render-hold-button-trait.php:26
 msgid "Too early. Try again."
 msgstr ""
 
-#: public/class-botblocker-captcha-renderer-full.php:817
+#: public/class-botblocker-captcha-renderer-full.php:835
 #: public/captcha/render-hold-button-trait.php:27
 msgid "Too late. Try again."
 msgstr ""
@@ -6695,8 +7629,16 @@ msgstr ""
 msgid "Too many attempts. Try again in 5 minutes."
 msgstr ""
 
-#: admin/class-botblocker-admin.php:289 admin/class-botblocker-admin.php:290
-#: admin/partials/botblocker-admin-display-tools.php:107
+#: includes/ajax/inc-botblocker-ajax-path.php:301
+msgid "Too many entries. Maximum 1000 per import."
+msgstr ""
+
+#: includes/utilites/util-botblocker-support.php:76
+msgid "Too many requests. Please try again later."
+msgstr ""
+
+#: admin/class-botblocker-admin.php:455 admin/class-botblocker-admin.php:456
+#: admin/partials/botblocker-admin-display-tools.php:108
 #: includes/section/tools/botblocker-tools-botblocker.php:25
 #: includes/section/tools/botblocker-tools-maintenance.php:25
 msgid "Tools"
@@ -6732,7 +7674,7 @@ msgstr ""
 msgid "Tor"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-connect.php:132
+#: includes/section/settings/botblocker-set-connect.php:139
 msgid "Tor Exit Nodes"
 msgstr ""
 
@@ -6740,7 +7682,7 @@ msgstr ""
 msgid "Total blocked"
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:161
+#: admin/partials/botblocker-section-right-sidebar.php:164
 msgid "Total blocked:"
 msgstr ""
 
@@ -6796,12 +7738,20 @@ msgstr ""
 msgid "Transients are temporary database data used by plugins and themes."
 msgstr ""
 
-#: public/class-botblocker-captcha-renderer-full.php:444
+#: admin/class-botblocker-admin.php:340
+msgid "Transients successfully cleared!"
+msgstr ""
+
+#: public/class-botblocker-captcha-renderer-full.php:462
 #: public/captcha/render-moving-shapes-button-trait.php:13
 msgid "Triangle"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:207
+#: includes/data/botblocker-marketing-blocks.php:147
+msgid "Trusted by users"
+msgstr ""
+
+#: admin/class-botblocker-setup-wizard.php:221
 msgid "Try using Chrome, Firefox, Safari, or Edge."
 msgstr ""
 
@@ -6818,6 +7768,10 @@ msgstr ""
 #: public/2FA/bbcs-2fa.php:151 public/2FA/bbcs-2fa.php:166
 #: includes/section/integration/botblocker-int-2fa.php:56
 msgid "Two-Factor Authentication"
+msgstr ""
+
+#: includes/data/botblocker-pro-features.php:34
+msgid "Two-Factor Authentication (2FA)"
 msgstr ""
 
 #: includes/section/integration/botblocker-int-2fa.php:60
@@ -6840,7 +7794,7 @@ msgstr ""
 msgid "Two-Factor Authentication Setup"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-rules.php:54
+#: admin/partials/botblocker-admin-display-rules.php:81
 #: includes/modal/modal-botblocker-hits-add-rule.php:16
 #: includes/modal/modal-botblocker-rule-add.php:17
 #: includes/modal/modal-botblocker-rule-edit.php:17
@@ -6851,7 +7805,7 @@ msgstr ""
 msgid "Type or data is not set or empty."
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-settings.php:116
+#: admin/partials/botblocker-admin-display-settings.php:119
 msgid "UI Settings"
 msgstr ""
 
@@ -6859,14 +7813,24 @@ msgstr ""
 msgid "Ultimate tier only"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:864
+#: admin/class-botblocker-setup-wizard.php:909
 msgid "Ultra-fast in-memory cache. Best performance."
 msgstr ""
 
-#: includes/ajax/inc-botblocker-ajax-common.php:651
+#: includes/ajax/inc-botblocker-ajax-common.php:681
 msgid "Unauthorized"
 msgstr ""
 
+#: includes/ajax/inc-botblocker-ajax-asn.php:6
+#: includes/ajax/inc-botblocker-ajax-asn.php:88
+#: includes/ajax/inc-botblocker-ajax-asn.php:108
+#: includes/ajax/inc-botblocker-ajax-asn.php:158
+#: includes/ajax/inc-botblocker-ajax-asn.php:196
+#: includes/ajax/inc-botblocker-ajax-asn.php:220
+#: includes/ajax/inc-botblocker-ajax-asn.php:244
+#: includes/ajax/inc-botblocker-ajax-asn.php:255
+#: includes/ajax/inc-botblocker-ajax-asn.php:307
+#: includes/ajax/inc-botblocker-ajax-asn.php:325
 #: includes/ajax/inc-botblocker-ajax-common.php:26
 #: includes/ajax/inc-botblocker-ajax-common.php:39
 #: includes/ajax/inc-botblocker-ajax-common.php:126
@@ -6875,7 +7839,7 @@ msgstr ""
 #: includes/ajax/inc-botblocker-ajax-common.php:297
 #: includes/ajax/inc-botblocker-ajax-common.php:386
 #: includes/ajax/inc-botblocker-ajax-common.php:403
-#: includes/ajax/inc-botblocker-ajax-common.php:618
+#: includes/ajax/inc-botblocker-ajax-common.php:648
 #: includes/ajax/inc-botblocker-ajax-hits.php:21
 #: includes/ajax/inc-botblocker-ajax-hits.php:179
 #: includes/ajax/inc-botblocker-ajax-hits.php:224
@@ -6887,8 +7851,8 @@ msgstr ""
 #: includes/ajax/inc-botblocker-ajax-path.php:215
 #: includes/ajax/inc-botblocker-ajax-path.php:275
 #: includes/ajax/inc-botblocker-ajax-path.php:289
-#: includes/ajax/inc-botblocker-ajax-path.php:347
-#: includes/ajax/inc-botblocker-ajax-path.php:371
+#: includes/ajax/inc-botblocker-ajax-path.php:351
+#: includes/ajax/inc-botblocker-ajax-path.php:375
 #: includes/ajax/inc-botblocker-ajax-proxy.php:12
 #: includes/ajax/inc-botblocker-ajax-proxy.php:99
 #: includes/ajax/inc-botblocker-ajax-proxy.php:133
@@ -6962,29 +7926,29 @@ msgstr ""
 msgid "Unknown chart data type."
 msgstr ""
 
-#: includes/inc-botblocker-ui.php:47
-msgid "Unknown period"
+#: admin/class-botblocker-setup-wizard.php:157
+msgid "Unknown error"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-addons.php:39
-msgid "Unlock Add-ons Marketplace"
+#: includes/inc-botblocker-ui.php:47
+msgid "Unknown period"
 msgstr ""
 
 #: includes/section/dashboard/botblocker-dash-health.php:118
 msgid "Unlock Advanced Protection"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:998
+#: admin/class-botblocker-setup-wizard.php:1043
 msgid "Unlock PRO Protection"
 msgstr ""
 
-#: includes/shortcode/botblocker-shortcode-health.php:105
+#: includes/shortcode/botblocker-shortcode-health.php:104
 msgid "Unresponsive IP blocking"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-addons.php:113
-#: admin/partials/botblocker-admin-display-addons.php:168
-#: admin/partials/botblocker-admin-display-addons.php:192
+#: admin/partials/botblocker-admin-display-addons.php:115
+#: admin/partials/botblocker-admin-display-addons.php:170
+#: admin/partials/botblocker-admin-display-addons.php:194
 msgid "Update"
 msgstr ""
 
@@ -6993,31 +7957,35 @@ msgstr ""
 msgid "Update All (%d)"
 msgstr ""
 
+#: includes/section/tools/botblocker-tools-maintenance.php:80
+msgid "Update ASN database"
+msgstr ""
+
 #. %s is the minimum required BotBlocker version for the update.
-#: admin/partials/botblocker-admin-display-addons.php:85
+#: admin/partials/botblocker-admin-display-addons.php:87
 #, php-format
 msgid "Update available, requires BotBlocker >= %s"
 msgstr ""
 
 #. %s is the minimum required BotBlocker version.
-#: admin/partials/botblocker-admin-display-addons.php:92
-#: admin/partials/botblocker-admin-display-addons.php:155
-#: admin/partials/botblocker-admin-display-addons.php:158
+#: admin/partials/botblocker-admin-display-addons.php:94
+#: admin/partials/botblocker-admin-display-addons.php:157
+#: admin/partials/botblocker-admin-display-addons.php:160
 #, php-format
 msgid "Update BotBlocker to %s to use this add-on"
 msgstr ""
 
-#: includes/hook/botblocker-hook-cron.php:122
+#: includes/hook/botblocker-hook-cron.php:127
 msgid "Update IP Geolocation"
 msgstr ""
 
 #. %s is the minimum required BotBlocker version for the update.
-#: admin/partials/botblocker-admin-display-addons.php:117
+#: admin/partials/botblocker-admin-display-addons.php:119
 #, php-format
 msgid "Update requires BotBlocker >= %s"
 msgstr ""
 
-#: includes/hook/botblocker-hook-cron.php:119
+#: includes/hook/botblocker-hook-cron.php:124
 msgid "Update Statistics"
 msgstr ""
 
@@ -7029,16 +7997,16 @@ msgstr ""
 msgid "Upgrade now!"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:1022
-#: admin/partials/botblocker-section-header.php:54
+#: admin/class-botblocker-setup-wizard.php:1067
+#: admin/partials/botblocker-section-header.php:58
 msgid "Upgrade to PRO"
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:107
+#: admin/partials/botblocker-admin-dashboard-widgets.php:116
 msgid "Upgrade your plan for better protection."
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:157
+#: admin/partials/botblocker-admin-dashboard-widgets.php:166
 msgid ""
 "Uploading a new list will add new IPs and skip existing ones. Invalid lines "
 "will be skipped automatically."
@@ -7107,7 +8075,7 @@ msgid ""
 "high traffic. Transient storage may be redefined by other plugins."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:895
+#: admin/class-botblocker-setup-wizard.php:940
 msgid "Use WordPress transients. Works on any hosting."
 msgstr ""
 
@@ -7163,12 +8131,12 @@ msgstr ""
 msgid "Verification code is required."
 msgstr ""
 
-#: public/class-botblocker-captcha-renderer-full.php:815
+#: public/class-botblocker-captcha-renderer-full.php:833
 #: public/captcha/render-hold-button-trait.php:29
 msgid "Verification failed."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:349
+#: admin/class-botblocker-setup-wizard.php:363
 msgid "Verifies search engines to protect SEO. Detects fake crawlers"
 msgstr ""
 
@@ -7196,7 +8164,7 @@ msgstr ""
 msgid "Verifying your browser"
 msgstr ""
 
-#: public/class-botblocker-captcha-renderer-full.php:814
+#: public/class-botblocker-captcha-renderer-full.php:832
 #: public/captcha/render-hold-button-trait.php:28
 msgid "Verifying..."
 msgstr ""
@@ -7207,25 +8175,21 @@ msgid "Version"
 msgstr ""
 
 #. %s is the add-on version number.
-#: admin/partials/botblocker-admin-display-addons.php:76
-#: admin/partials/botblocker-admin-display-addons.php:142
+#: admin/partials/botblocker-admin-display-addons.php:78
+#: admin/partials/botblocker-admin-display-addons.php:144
 #, php-format
 msgid "Version %s"
 msgstr ""
 
-#: includes/section/cloud/botblocker-cloud-status.php:68
-msgid "view"
-msgstr ""
-
-#: includes/inc-botblocker-alerts.php:208
+#: includes/inc-botblocker-alerts.php:241
 msgid "View Add-ons"
 msgstr ""
 
-#: admin/partials/botblocker-section-header.php:109
+#: admin/partials/botblocker-section-header.php:113
 msgid "View All"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:963
+#: admin/class-botblocker-setup-wizard.php:1008
 msgid "View Dashboard"
 msgstr ""
 
@@ -7237,8 +8201,20 @@ msgstr ""
 msgid "View my PRO"
 msgstr ""
 
+#: includes/data/botblocker-marketing-blocks.php:180
+msgid "View on WordPress.org"
+msgstr ""
+
 #: includes/section/settings/botblocker-set-log.php:33
 msgid "Visitor Logging Settings"
+msgstr ""
+
+#: admin/class-botblocker-admin.php:342
+msgid "Visitors data successfully cleared!"
+msgstr ""
+
+#: admin/partials/botblocker-admin-display-rules.php:265
+msgid "Visitors from selected countries will not be able to access the site."
 msgstr ""
 
 #: includes/section/dashboard/botblocker-dash-visitors.php:12
@@ -7249,20 +8225,23 @@ msgstr ""
 msgid "VPN"
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:198
-msgid "VPN and Proxy Blocking"
+#: includes/data/botblocker-pro-features.php:37
+msgid "VPN / Tor / proxy blocking"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:1006
-#: includes/section/cloud/botblocker-cloud-status.php:64
+#: admin/class-botblocker-setup-wizard.php:1051
 msgid "VPN and Tor Blocking"
 msgstr ""
 
-#: includes/section/settings/botblocker-set-connect.php:114
+#: includes/section/settings/botblocker-set-connect.php:121
 msgid "VPN Connections"
 msgstr ""
 
-#: includes/inc-botblocker-alerts.php:132
+#: includes/data/botblocker-pro-features.php:9
+msgid "VPN, Tor and proxy blocking"
+msgstr ""
+
+#: includes/inc-botblocker-alerts.php:155
 msgid ""
 "W3 Total Cache detected. If using Disk Enhanced mode with rewrite rules, add "
 "a cookie-based server exception. See CACHE-COMPATIBILITY.md."
@@ -7284,6 +8263,10 @@ msgstr ""
 msgid "Weak"
 msgstr ""
 
+#: includes/section/settings/botblocker-set-payment.php:28
+msgid "Webhook"
+msgstr ""
+
 #: includes/section/dashboard/botblocker-dash-traffic.php:17
 msgid "Website Traffic"
 msgstr ""
@@ -7296,11 +8279,11 @@ msgstr ""
 msgid "Weekly"
 msgstr ""
 
-#: includes/hook/botblocker-hook-cron.php:120
+#: includes/hook/botblocker-hook-cron.php:125
 msgid "Weekly Maintenance"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:321
+#: admin/class-botblocker-setup-wizard.php:335
 msgid "Welcome to BotBlocker Security"
 msgstr ""
 
@@ -7312,12 +8295,28 @@ msgstr ""
 msgid "What Data Does BotBlocker Collect"
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:189
+#: includes/section/cloud/botblocker-cloud-status.php:64
+msgid "What you get with BotBlocker PRO"
+msgstr ""
+
+#: includes/data/botblocker-marketing-blocks.php:75
+msgid "What's new in"
+msgstr ""
+
+#: includes/section/settings/botblocker-set-payment.php:43
+msgid ""
+"When enabled, requests matching well-known payment callback patterns (paths, "
+"query keys, admin-ajax actions, signature headers) skip JS-challenge, "
+"CAPTCHA and rate-limit. Recommended for any site with WooCommerce or another "
+"e-commerce plugin."
+msgstr ""
+
+#: admin/partials/botblocker-admin-dashboard-widgets.php:198
 msgid "When the rule should stop applying."
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:138
-#: admin/partials/botblocker-admin-dashboard-widgets.php:145
+#: admin/partials/botblocker-admin-dashboard-widgets.php:147
+#: admin/partials/botblocker-admin-dashboard-widgets.php:154
 msgid "White"
 msgstr ""
 
@@ -7345,8 +8344,8 @@ msgstr ""
 msgid "White bot updated successfully."
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-rules.php:28
-#: admin/partials/botblocker-admin-display-rules.php:194
+#: admin/partials/botblocker-admin-display-rules.php:47
+#: admin/partials/botblocker-admin-display-rules.php:310
 msgid "White Bots"
 msgstr ""
 
@@ -7358,28 +8357,28 @@ msgstr ""
 msgid "White bots data is required for import."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:589
+#: admin/class-botblocker-setup-wizard.php:603
 msgid "Whitelist your current IP"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:575
+#: admin/class-botblocker-setup-wizard.php:589
 msgid "Who Should Always Have Access?"
 msgstr ""
 
-#: public/class-botblocker-captcha-renderer-full.php:459
+#: public/class-botblocker-captcha-renderer-full.php:477
 #: public/captcha/render-moving-shapes-button-trait.php:69
 msgid "with color:"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:1412
+#: admin/class-botblocker-setup-wizard.php:1471
 msgid "Wizard reset successfully."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:552
+#: admin/class-botblocker-setup-wizard.php:566
 msgid "WooCommerce configuration guide"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:546
+#: admin/class-botblocker-setup-wizard.php:560
 msgid "WooCommerce Detected"
 msgstr ""
 
@@ -7387,12 +8386,11 @@ msgstr ""
 msgid "WordPress 2FA Documentation"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:1004
-#: includes/section/cloud/botblocker-cloud-status.php:62
+#: admin/class-botblocker-setup-wizard.php:1049
 msgid "WordPress Acceleration"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:454
+#: admin/class-botblocker-setup-wizard.php:468
 msgid "WordPress acceleration and optimization"
 msgstr ""
 
@@ -7412,7 +8410,7 @@ msgstr ""
 msgid "WordPress admin area log"
 msgstr ""
 
-#: admin/partials/botblocker-admin-display-tools.php:113
+#: admin/partials/botblocker-admin-display-tools.php:114
 msgid "WordPress Core"
 msgstr ""
 
@@ -7444,6 +8442,11 @@ msgstr ""
 msgid "WordPress speed optimization"
 msgstr ""
 
+#: includes/data/botblocker-pro-features.php:13
+#: includes/data/botblocker-pro-features.php:41
+msgid "WordPress speed optimizations"
+msgstr ""
+
 #: includes/section/integration/botblocker-int-transients.php:29
 msgid "WordPress Transients"
 msgstr ""
@@ -7455,7 +8458,7 @@ msgid ""
 "mechanism improves performance without requiring external cache servers."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:898
+#: admin/class-botblocker-setup-wizard.php:943
 msgid "Works everywhere"
 msgstr ""
 
@@ -7467,7 +8470,13 @@ msgstr ""
 msgid "WP Cron Jobs"
 msgstr ""
 
-#: includes/inc-botblocker-alerts.php:125
+#: includes/inc-botblocker-alerts.php:174
+msgid ""
+"WP Rocket detected. Add the BotBlocker cookie to the \"Never Cache Cookies\" "
+"list in WP Rocket settings. See CACHE-COMPATIBILITY.md."
+msgstr ""
+
+#: includes/inc-botblocker-alerts.php:148
 msgid ""
 "WP Super Cache (Expert/mod_rewrite mode) serves cached pages via .htaccess, "
 "bypassing PHP. Add a cookie-based exception. See CACHE-COMPATIBILITY.md."
@@ -7483,6 +8492,12 @@ msgstr ""
 
 #: addons/bbcs-hide-admin/inc/bbcs-hide-admin-settings.php:29
 msgid "WPS Hide Login is active. Deactivate it to use these settings."
+msgstr ""
+
+#: includes/section/settings/botblocker-set-payment.php:52
+msgid ""
+"Write a log entry every time a payment callback bypass is applied. Useful "
+"for auditing."
 msgstr ""
 
 #: includes/shortcode/botblocker-shortcode-health-full.php:63
@@ -7502,11 +8517,11 @@ msgstr ""
 msgid "Yevhen Leonidov"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:474
+#: admin/class-botblocker-setup-wizard.php:488
 msgid "You can change this anytime with one click."
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:153
+#: admin/partials/botblocker-admin-dashboard-widgets.php:162
 msgid ""
 "You can prepare your list in any text editor. Each line should contain a "
 "single IP address or subnet in CIDR format (e.g. 192.168.1.0/24)."
@@ -7516,7 +8531,7 @@ msgstr ""
 msgid "You do not have permission to view this information."
 msgstr ""
 
-#: admin/partials/botblocker-admin-dashboard-widgets.php:107
+#: admin/partials/botblocker-admin-dashboard-widgets.php:116
 #: includes/section/dashboard/botblocker-dash-health.php:18
 msgid "You have PRO activated. Check your plan."
 msgstr ""
@@ -7525,10 +8540,11 @@ msgstr ""
 msgid "You must be logged in."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:653
-#: admin/class-botblocker-setup-wizard.php:670
-#: admin/class-botblocker-setup-wizard.php:689
-#: admin/class-botblocker-setup-wizard.php:706
+#: admin/class-botblocker-setup-wizard.php:682
+#: admin/class-botblocker-setup-wizard.php:699
+#: admin/class-botblocker-setup-wizard.php:716
+#: admin/class-botblocker-setup-wizard.php:733
+#: admin/class-botblocker-setup-wizard.php:750
 #: includes/section/report/botblocker-report-dashboard.php:67
 #: includes/section/setup/botblocker-setup-chain.php:74
 msgid "Your browser does not support the video tag."
@@ -7539,12 +8555,12 @@ msgstr ""
 msgid "Your cloud API has expired."
 msgstr ""
 
-#: includes/inc-botblocker-alerts.php:76
+#: includes/inc-botblocker-alerts.php:81
 msgid "Your cloud API has expired. Please renew it."
 msgstr ""
 
 #. %d: number of hits remaining before the cloud API is exhausted.
-#: includes/inc-botblocker-alerts.php:90 includes/inc-botblocker-pro.php:179
+#: includes/inc-botblocker-alerts.php:95 includes/inc-botblocker-pro.php:179
 msgid "Your cloud API has fewer than %d hits remaining."
 msgstr ""
 
@@ -7553,16 +8569,16 @@ msgstr ""
 msgid "Your cloud API has no hits remaining."
 msgstr ""
 
-#: includes/inc-botblocker-alerts.php:91
+#: includes/inc-botblocker-alerts.php:96
 msgid "Your cloud API has no hits remaining. Please renew."
 msgstr ""
 
 #. %d: number of days left before the cloud API expires.
-#: includes/inc-botblocker-alerts.php:75 includes/inc-botblocker-pro.php:169
+#: includes/inc-botblocker-alerts.php:80 includes/inc-botblocker-pro.php:169
 msgid "Your cloud API will expire in %d days."
 msgstr ""
 
-#: admin/partials/botblocker-section-right-sidebar.php:286
+#: admin/partials/botblocker-section-right-sidebar.php:283
 msgid "Your email"
 msgstr ""
 
@@ -7570,7 +8586,7 @@ msgstr ""
 msgid "Your Google reCAPTCHA v3 site key for invisible bot detection."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:591
+#: admin/class-botblocker-setup-wizard.php:605
 msgid "Your IP address will be permanently trusted"
 msgstr ""
 
@@ -7578,7 +8594,7 @@ msgstr ""
 msgid "Your login URL is already customized."
 msgstr ""
 
-#: includes/utilites/util-botblocker-support.php:137
+#: includes/utilites/util-botblocker-support.php:142
 msgid "Your message has been sent."
 msgstr ""
 
@@ -7592,7 +8608,7 @@ msgid ""
 "shields are actively monitoring and blocking advanced threats in real-time."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:930
+#: admin/class-botblocker-setup-wizard.php:975
 msgid "Your Site is Now Protected"
 msgstr ""
 
@@ -7602,17 +8618,16 @@ msgid ""
 "automated attacks, but several critical shields are still disabled."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:547
+#: admin/class-botblocker-setup-wizard.php:561
 msgid "Your store is compatible with BotBlocker."
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:421
+#: admin/class-botblocker-setup-wizard.php:435
 msgid "Zero impact on visitors"
 msgstr ""
 
-#: admin/class-botblocker-setup-wizard.php:453
-#: admin/class-botblocker-setup-wizard.php:1013
-#: includes/section/cloud/botblocker-cloud-status.php:66
+#: admin/class-botblocker-setup-wizard.php:467
+#: admin/class-botblocker-setup-wizard.php:1058
 msgid "Zero-day botnet updates"
 msgstr ""
 

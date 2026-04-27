@@ -38,7 +38,7 @@ function bbcs_render_health_full_shortcode($atts) {
         ['key' => 'block_cf_users',           'label' => __('Blocking Cloudflare origin IPs', 'botblocker-security'),'type' => 'core'],
         ['key' => 'block_ipv6_users',         'label' => __('Blocking IPv6 connections', 'botblocker-security'),     'type' => 'core'],
         ['key' => 'block_http10_users',       'label' => __('Blocking HTTP/1.0 users', 'botblocker-security'),       'type' => 'core'],
-        ['key' => 'hosting_block',            'label' => __('Blocking hosting providers', 'botblocker-security'),    'type' => 'core'],
+        ['key' => 'hosting_block',            'label' => __('Blocking hosting providers', 'botblocker-security'),    'type' => 'cloud_extended'],
         ['key' => 'recaptcha_check',          'label' => __('reCAPTCHA v3 enabled', 'botblocker-security'),          'type' => 'core'],
         ['key' => 'block_incognito_users',    'label' => __('Blocking incognito/private mode', 'botblocker-security'),'type' => 'core'],
         ['key' => 'block_adblocker_users',    'label' => __('Blocking AdBlock/uBlock users', 'botblocker-security'), 'type' => 'core'],

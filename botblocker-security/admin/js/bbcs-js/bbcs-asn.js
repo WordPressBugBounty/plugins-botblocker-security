@@ -214,7 +214,7 @@
                 var data = JSON.parse(e.target.result);
                 callback(data);
             } catch (err) {
-                alert("Invalid JSON file: " + err.message);
+                alert(bbcsAsnL10n.invalid_json + err.message);
             }
         };
         reader.readAsText(file);
@@ -244,7 +244,7 @@
                         $("#editAsnModal").modal("hide");
                         $("#botblocker-asn-rules").DataTable().ajax.reload();
                     } else {
-                        alert("Failed to update ASN rule: " + response.data);
+                        alert(bbcsAsnL10n.failed_update + response.data);
                     }
                 },
             });
@@ -272,7 +272,7 @@
                         $("#editAsnForm").find('[name="comment"]').val(data.comment);
                         $("#editAsnModal").modal("show");
                     } else {
-                        alert("Failed to load ASN details: " + response.data);
+                        alert(bbcsAsnL10n.failed_load + response.data);
                     }
                 },
             });
@@ -280,7 +280,7 @@
 
         $("#botblocker-asn-rules").on("click", ".delete-asn", function () {
             var id = $(this).data("id");
-            if (confirm("Are you sure you want to delete this ASN rule?")) {
+            if (confirm(bbcsAsnL10n.confirm_delete)) {
                 $.ajax({
                     url: botblockerData.ajaxurl,
                     type: "POST",
@@ -313,7 +313,7 @@
                         $("#createAsnModal").modal("hide");
                         $("#botblocker-asn-rules").DataTable().ajax.reload();
                     } else {
-                        alert("Failed to create ASN rule: " + response.data);
+                        alert(bbcsAsnL10n.failed_create + response.data);
                     }
                 },
             });
@@ -338,7 +338,7 @@
                         downloadLink.click();
                         document.body.removeChild(downloadLink);
                     } else {
-                        alert("Failed to export ASN rules: " + response.data);
+                        alert(bbcsAsnL10n.failed_export + response.data);
                     }
                 },
             });
@@ -365,7 +365,7 @@
                                     showImportResultModal(response.data);
                                     $("#botblocker-asn-rules").DataTable().ajax.reload();
                                 } else {
-                                    alert("Failed to import ASN rules: " + response.data);
+                                    alert(bbcsAsnL10n.failed_import + response.data);
                                 }
                             },
                         });
@@ -388,7 +388,7 @@
                         if (response.success) {
                             $("#botblocker-asn-rules").DataTable().ajax.reload();
                         } else {
-                            alert("Failed to clear ASN rules: " + response.data);
+                            alert(bbcsAsnL10n.failed_clear + response.data);
                         }
                     },
                 });

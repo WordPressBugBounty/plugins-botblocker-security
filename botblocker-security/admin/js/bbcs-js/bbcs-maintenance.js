@@ -112,16 +112,16 @@
                     },
                     success: function (response) {
                         if (response.success) {
-                            alert("Database reinstalled successfully!");
+                            alert(bbcsMaintenanceL10n.db_reinstalled);
                             location.reload();
                         } else {
                             alert(
-                                "Failed to reinstall database: " + response.data
+                                bbcsMaintenanceL10n.failed_reinstall + response.data
                             );
                         }
                     },
                     error: function (xhr, status, error) {
-                        alert("AJAX Error: " + error);
+                        alert(bbcsMaintenanceL10n.ajax_error + error);
                     },
                 });
             });
@@ -180,11 +180,11 @@
                                 window.location.reload();
                             }, 1000);
                         } else {
-                            alert("Failed backup: " + response.data.message);
+                            alert(bbcsMaintenanceL10n.failed_backup + response.data.message);
                         }
                     },
                     error: function (xhr, status, error) {
-                        alert("AJAX Error: " + error);
+                        alert(bbcsMaintenanceL10n.ajax_error + error);
                     },
                 });
             });
@@ -214,17 +214,17 @@
                         success: function (response) {
                             if (response.success) {
                                 alert(
-                                    "Import data and settings was successful!"
+                                    bbcsMaintenanceL10n.import_success
                                 );
                                 window.location.reload();
                             } else {
                                 alert(
-                                    "Failed import: " + response.data.message
+                                    bbcsMaintenanceL10n.failed_import + response.data.message
                                 );
                             }
                         },
                         error: function (xhr, status, error) {
-                            alert("AJAX Error: " + error);
+                            alert(bbcsMaintenanceL10n.ajax_error + error);
                         },
                     });
                 }
@@ -245,14 +245,14 @@
                 },
                 success: function (response) {
                     if (response.success) {
-                        alert(response.data.message || 'Salt successfully created!');
+                        alert(response.data.message || bbcsMaintenanceL10n.salt_created);
                     } else {
-                        alert(response.data.message || 'Failed to create salt file.');
+                        alert(response.data.message || bbcsMaintenanceL10n.failed_salt);
                     }
                 },
                 error: function (xhr, status, error) {
                     console.error('AJAX error:', error);
-                    alert('An error occurred while performing the operation.');
+                    alert(bbcsMaintenanceL10n.operation_error);
                 }
             });
         });
@@ -269,14 +269,14 @@
                 },
                 success: function (response) {
                     if (response.success) {
-                        alert(response.data.message || 'Log file successfully cleared!');
+                        alert(response.data.message || bbcsMaintenanceL10n.log_cleared);
                     } else {
-                        alert(response.data.message || 'Failed to clear log file.');
+                        alert(response.data.message || bbcsMaintenanceL10n.failed_clear_log);
                     }
                 },
                 error: function (xhr, status, error) {
                     console.error('AJAX error:', error);
-                    alert('An error occurred while performing the operation.');
+                    alert(bbcsMaintenanceL10n.operation_error);
                 }
             });
         });
@@ -300,12 +300,12 @@
                     tempLink.click();
                     document.body.removeChild(tempLink);
                 } else {
-                    alert(response.data.message || 'Failed to get log file.');
+                    alert(response.data.message || bbcsMaintenanceL10n.failed_get_log);
                 }
             },
             error: function (xhr, status, error) {
                 console.error('AJAX error:', error);
-                alert('An error occurred while performing the operation.');
+                alert(bbcsMaintenanceL10n.operation_error);
             }
         });
     });
@@ -329,14 +329,14 @@
                 },
                 success: function (response) {
                     if (response.success) {
-                        alert(response.data.message || 'Transients successfully cleared!');
+                        alert(response.data.message || bbcsMaintenanceL10n.transients_cleared);
                     } else {
-                        alert(response.data.message || 'Failed to clear transients.');
+                        alert(response.data.message || bbcsMaintenanceL10n.failed_clear_transients);
                     }
                 },
                 error: function (xhr, status, error) {
                     console.error('AJAX error:', error);
-                    alert('An error occurred while performing the operation.');
+                    alert(bbcsMaintenanceL10n.operation_error);
                 }
             });
         });
@@ -353,15 +353,15 @@
                 },
                 success: function (response) {
                     if (response.success) {
-                        alert(response.data.message || 'Visitors data successfully cleared!');
+                        alert(response.data.message || bbcsMaintenanceL10n.visitors_cleared);
                         window.location.reload();
                     } else {
-                        alert(response.data.message || 'Failed to clear visitors data.');
+                        alert(response.data.message || bbcsMaintenanceL10n.failed_clear_visitors);
                     }
                 },
                 error: function (xhr, status, error) {
                     console.error('AJAX error:', error);
-                    alert('An error occurred while performing the operation.');
+                    alert(bbcsMaintenanceL10n.operation_error);
                 }
             });
         });
@@ -378,14 +378,14 @@
                 },
                 success: function (response) {
                     if (response.success) {
-                        alert(response.data.message || 'Rewrite rules successfully flushed!');
+                        alert(response.data.message || bbcsMaintenanceL10n.rewrite_flushed);
                     } else {
-                        alert(response.data.message || 'Failed to flush rewrite rules.');
+                        alert(response.data.message || bbcsMaintenanceL10n.failed_flush_rewrite);
                     }
                 },
                 error: function (xhr, status, error) {
                     console.error('AJAX error:', error);
-                    alert('An error occurred while performing the operation.');
+                    alert(bbcsMaintenanceL10n.operation_error);
                 }
             });
         });
@@ -402,16 +402,45 @@
                 },
                 success: function (response) {
                     if (response.success) {
-                        alert(response.data.message || 'Object cache successfully cleared!');
+                        alert(response.data.message || bbcsMaintenanceL10n.cache_cleared);
                     } else {
-                        alert(response.data.message || 'Failed to clear object cache.');
+                        alert(response.data.message || bbcsMaintenanceL10n.failed_clear_cache);
                     }
                 },
                 error: function (xhr, status, error) {
                     console.error('AJAX error:', error);
-                    alert('An error occurred while performing the operation.');
+                    alert(bbcsMaintenanceL10n.operation_error);
                 }
             });
+        });
+    });
+    $('#bbcs-update-asn-database').on('click', function () {
+        var $btn = $(this);
+        if ($btn.prop('disabled')) {
+            return;
+        }
+        $btn.prop('disabled', true);
+        $.ajax({
+            url: botblockerData.ajaxurl,
+            method: 'POST',
+            data: {
+                action: 'bbcs_update_asn_database',
+                nonce: botblockerData.nonce
+            },
+            success: function (response) {
+                if (response && response.success) {
+                    alert((response.data && response.data.message) || bbcsMaintenanceL10n.asn_scheduled);
+                } else {
+                    alert((response && response.data && response.data.message) || bbcsMaintenanceL10n.failed_schedule_asn);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('AJAX error:', error);
+                alert(bbcsMaintenanceL10n.asn_error);
+            },
+            complete: function () {
+                $btn.prop('disabled', false);
+            }
         });
     });
 })(jQuery);

@@ -13,27 +13,30 @@ trait BotBlockerMuDB
 		$minutes = (abs($gmt_offset) - $hours) * 60;
 		$gmt_offset_str = sprintf('%s%02d:%02d', $sign, $hours, $minutes);
 		try {
-			// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+			$timezone = new \DateTimeZone($gmt_offset_str);
+			$now = new \DateTime('now', $timezone);
+			$today_start = (clone $now)->setTime(0, 0, 0)->format('Y-m-d H:i:s');
+			$now_local = $now->format('Y-m-d H:i:s');
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$last_update_time = $wpdb->get_var($wpdb->prepare("SELECT last_update FROM `{$wpdb->bbcs_counters}` WHERE id = %d", 1));
-
-			if ($last_update_time) {
-				$timezone = new \DateTimeZone($gmt_offset_str);
-				$current_date = new \DateTime('now', $timezone);
-				$today_start = clone $current_date;
-				$today_start->setTime(0, 0, 0);
-				$last_update = \DateTime::createFromFormat('Y-m-d H:i:s', $last_update_time, $timezone);
-				if ($last_update && $last_update < $today_start) {
-					// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-				$wpdb->update($wpdb->bbcs_counters, array('today_hits' => 0, 'today_blocked' => 0), array('id' => 1), array('%d','%d'), array('%d'));
-
+			$result = $wpdb->query($wpdb->prepare(
+				"UPDATE `{$wpdb->bbcs_counters}` SET
+					today_hits = IF(last_update IS NOT NULL AND last_update < %s, 0, today_hits),
+					today_blocked = IF(last_update IS NOT NULL AND last_update < %s, 1, today_blocked + 1),
+					total_blocked = total_blocked + 1,
+					last_update = %s
+					WHERE id = %d",
+				$today_start, $today_start, $now_local, 1
+			));
+			if ($result === false || $wpdb->rows_affected === 0) {
+				if (function_exists('bbcs_ensure_counters_row')) {
+					bbcs_ensure_counters_row(true);
 				}
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->query($wpdb->prepare(
+					"UPDATE `{$wpdb->bbcs_counters}` SET today_blocked = 1, total_blocked = 1, last_update = %s WHERE id = %d",
+					$now_local, 1
+				));
 			}
-			// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$wpdb->query($wpdb->prepare("UPDATE `{$wpdb->bbcs_counters}` SET today_blocked = today_blocked + %d, total_blocked = total_blocked + %d, last_update = NOW() WHERE id = %d", 1, 1, 1));
-
 		} catch (\Exception $e) {
 		}
 	}

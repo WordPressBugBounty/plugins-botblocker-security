@@ -287,7 +287,7 @@
             .done(function (res) {
 
                 if (!res || !res.success) {
-                    alert('Reset failed');
+                    alert(bbcs2faL10n.reset_failed);
                     return;
                 }
 

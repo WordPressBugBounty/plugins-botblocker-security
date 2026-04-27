@@ -150,6 +150,20 @@ class BotBlocker_SetupWizard
 					'reports_url'        => bbcs_site_admin_page_url('bbcs_reports'),
 					'current_ip'         => $this->get_current_ip(),
 					'site_url'           => home_url('/'),
+					'i18n'               => [
+						'confirm_apply_defaults' => __( 'Are you sure? We will apply the default settings (Balanced).', 'botblocker-security' ),
+						'auto_fix_stub'          => __( 'Automatic fix applied (stub). Moving on.', 'botblocker-security' ),
+						'error_prefix'           => __( 'Error: ', 'botblocker-security' ),
+						'unknown_error'          => __( 'Unknown error', 'botblocker-security' ),
+						'ajax_error'             => __( 'AJAX error', 'botblocker-security' ),
+						'ajax_error_compat'      => __( 'AJAX error during compatibility test', 'botblocker-security' ),
+						'ajax_error_captcha'     => __( 'AJAX error during captcha save', 'botblocker-security' ),
+						'ajax_error_init'        => __( 'AJAX error during init mode save', 'botblocker-security' ),
+						'ajax_error_cache'       => __( 'AJAX error during cache save', 'botblocker-security' ),
+						'test_failed_prefix'     => __( 'Test failed: ', 'botblocker-security' ),
+						'saving'                 => __( 'Saving...', 'botblocker-security' ),
+						'apply_preset'           => __( 'Apply preset', 'botblocker-security' ),
+					],
 				]); ?>;
 			</script>
 			<script src="<?php echo esc_url(add_query_arg('ver', BOTBLOCKER_VERSION, plugin_dir_url(__FILE__) . 'js/bootstrap/bootstrap.bundle.min.js')); ?>"></script>
@@ -1399,6 +1413,45 @@ private function render_wizard_content() {
 		bbcs_update_option('bbcs_setup_wizard_completed', true);
 		bbcs_update_option('bbcs_setup_wizard_completed_at', time());
 		bbcs_delete_option('bbcs_activation_redirect');
+
+		if ( function_exists( 'bbcs_payment_detect_ecommerce' ) && bbcs_payment_detect_ecommerce() ) {
+			global $wpdb;
+			if ( isset( $wpdb->bbcs_settings ) ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$current = $wpdb->get_var(
+					$wpdb->prepare(
+						"SELECT `value` FROM `{$wpdb->bbcs_settings}` WHERE `key` = %s",
+						'payment_bypass_enable'
+					)
+				);
+				if ( (int) $current !== 1 ) {
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					$wpdb->replace(
+						$wpdb->bbcs_settings,
+						[ 'key' => 'payment_bypass_enable', 'value' => '1' ],
+						[ '%s', '%s' ]
+					);
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					$log_existing = $wpdb->get_var(
+						$wpdb->prepare(
+							"SELECT `value` FROM `{$wpdb->bbcs_settings}` WHERE `key` = %s",
+							'payment_bypass_log'
+						)
+					);
+					if ( $log_existing === null ) {
+						// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+						$wpdb->replace(
+							$wpdb->bbcs_settings,
+							[ 'key' => 'payment_bypass_log', 'value' => '1' ],
+							[ '%s', '%s' ]
+						);
+					}
+					if ( function_exists( 'bbcs_generateSettingsFileFromDb' ) ) {
+						bbcs_generateSettingsFileFromDb();
+					}
+				}
+			}
+		}
 
 		$score = bbcs_calculateSiteHealth(); 
 		

@@ -10,13 +10,13 @@ if (! defined('ABSPATH')) exit; // Exit if accessed directly
  *
  * @link              https://globus.studio
  * @package           botblocker-security
- * @version           1.6.17
+ * @version           1.6.18
  *
  * @wordpress-plugin
  * Plugin Name:       BotBlocker Security - Firewall & Bot Protection
  * Plugin URI:        https://botblocker.top/
- * Description:       Blocks bots, scrapers and automated threats in real time. CAPTCHA, IP rules, proxy detection, login protection, reCAPTCHA, cloud API and customizable security rules - all in one plugin.
- * Version:           1.6.17
+ * Description:       Blocks bots, brute force attacks, spam and automated threats in real time. CAPTCHA, IP rules, proxy/vpn/tor detection, login protection, reCAPTCHA, customizable security rules - all in one plugin. Maximum Security for WordPress.
+ * Version:           1.6.18
  * Author:            Yevhen Leonidov
  * Author URI:        https://leonidov.dev/
  * License:           GPL-2.0+
@@ -82,6 +82,10 @@ bbcs_handleBotblockerCloudAPI();
 // Verify endpoint (fallback for environments where admin-ajax.php is blocked)
 require_once BOTBLOCKER_DIR . 'includes/inc-botblocker-verify-endpoint.php';
 
+// Marketing blocks (changelog parser, in-plugin update message, social proof, etc.)
+require_once BOTBLOCKER_DIR . 'includes/data/botblocker-marketing-blocks.php';
+add_action( 'in_plugin_update_message-' . BOTBLOCKER_BASENAME, 'bbcs_render_in_plugin_update_message', 10, 2 );
+
 /**
  * Checks if the request is an AJAX request and performs logic.
  *
@@ -94,6 +98,13 @@ function bbcs_botblocker_ajax_check()
 {
     check_ajax_referer('botblocker_nonce', 'nonce');
 
+    // Rate-limit: max 100 check-requests per IP per hour.
+    /*
+    if ( function_exists( 'bbcs_ajax_ip_rate_limit' ) && ! bbcs_ajax_ip_rate_limit( 'bbcs_botblocker_check', 100, HOUR_IN_SECONDS ) ) {
+        wp_send_json_error( array( 'message' => __( 'Too many requests. Please try again later.', 'botblocker-security' ) ), 429 );
+    }
+    */
+    
     /* Include the BotBlocker main class file */
     require_once(BOTBLOCKER_DIR . 'includes/botblocker/class-botblocker.php');
     $botBlocker = new BotBlocker();
@@ -123,42 +134,50 @@ function bbcs_activate_botblocker($network_wide = false)
 
     // Open output buffering to prevent premature output
     ob_start();
+    try {
+        $is_fresh_install = !bbcs_tablesExist();
 
-    $is_fresh_install = !bbcs_tablesExist();
+        /* Check installation and create tables if necessary */
+        bbcs_check_install();
 
-    /* Check installation and create tables if necessary */
-    bbcs_check_install();
+        require_once BOTBLOCKER_DIR . 'includes/class-botblocker-activator.php';
+        Botblocker_Activator::activate();
 
-    require_once BOTBLOCKER_DIR . 'includes/class-botblocker-activator.php';
-    Botblocker_Activator::activate();
+        // Install mu-plugin
+        if (defined('BOTBLOCKER_INTEGRATE_MU_PLUGINS') && BOTBLOCKER_INTEGRATE_MU_PLUGINS) {
+            bbcs_installMuPlugin();
+        }
 
-    // Install mu-plugin
-    if (defined('BOTBLOCKER_INTEGRATE_MU_PLUGINS') && BOTBLOCKER_INTEGRATE_MU_PLUGINS) {
-        bbcs_installMuPlugin();
+        bbcs_register_cron_tasks();
+
+        if (function_exists('bbcs_asn_db_schedule_download')) {
+            bbcs_asn_db_schedule_download('activation');
+        }
+
+        // License URL
+        bbcs_rewrite_rules();
+
+        // Ensure plugin-specific rewrite rules are registered before flushing.
+        if (function_exists('bbcs_register_2fa_rewrite_rules')) {
+            bbcs_register_2fa_rewrite_rules();
+        }
+        if (function_exists('bbcs_register_verify_rewrite_rules')) {
+            bbcs_register_verify_rewrite_rules();
+        }
+
+        flush_rewrite_rules(true);
+
+        if ($is_fresh_install) {
+            set_transient('bbcs_just_activated', true, 60);
+            bbcs_update_option('bbcs_activation_redirect', true);
+        }
+    } finally {
+        // Clean up output buffering even if an error occurred above,
+        // so WordPress can render its activation error message.
+        if (ob_get_level() > 0) {
+            ob_end_clean();
+        }
     }
-
-    bbcs_register_cron_tasks();
-
-    // License URL
-    bbcs_rewrite_rules();
-
-    // Ensure plugin-specific rewrite rules are registered before flushing.
-    if (function_exists('bbcs_register_2fa_rewrite_rules')) {
-        bbcs_register_2fa_rewrite_rules();
-    }
-    if (function_exists('bbcs_register_verify_rewrite_rules')) {
-        bbcs_register_verify_rewrite_rules();
-    }
-
-    flush_rewrite_rules(true);
-
-    if ($is_fresh_install) {
-        set_transient('bbcs_just_activated', true, 60);
-        bbcs_update_option('bbcs_activation_redirect', true);
-    }
-
-    // Clean up output buffering
-    ob_end_clean();
 }
 register_activation_hook(__FILE__, 'bbcs_activate_botblocker');
 
@@ -169,31 +188,43 @@ function bbcs_activate_network_wide()
         return;
     }
     ob_start();
-    $site_ids = get_sites(array('fields' => 'ids', 'number' => 0));
-    foreach ($site_ids as $site_id) {
-        switch_to_blog($site_id);
+    try {
+        $site_ids = bbcs_get_all_site_ids();
+        foreach ($site_ids as $site_id) {
+            switch_to_blog($site_id);
+            require BOTBLOCKER_DIR . 'includes/inc-botblocker-tables.php';
+            $is_fresh_install = !bbcs_tablesExist();
+            bbcs_check_install();
+            require_once BOTBLOCKER_DIR . 'includes/class-botblocker-activator.php';
+            Botblocker_Activator::activate();
+            bbcs_register_cron_tasks();
+            if (function_exists('bbcs_asn_db_schedule_download')) {
+                bbcs_asn_db_schedule_download('activation');
+            }
+            bbcs_rewrite_rules();
+            if (function_exists('bbcs_register_2fa_rewrite_rules')) {
+                bbcs_register_2fa_rewrite_rules();
+            }
+            // Note: flush_rewrite_rules() is intentionally NOT called per-site here.
+            // Rewrite rules are flushed lazily by WordPress on next request via
+            // the option update; per-site flush in a loop is prohibitively slow
+            // on large networks. Single-site activation still flushes immediately.
+            // flush_rewrite_rules(true);
+            if ($is_fresh_install) {
+                set_transient('bbcs_just_activated', true, 60);
+                bbcs_update_option('bbcs_activation_redirect', true);
+            }
+            restore_current_blog();
+        }
         require BOTBLOCKER_DIR . 'includes/inc-botblocker-tables.php';
-        $is_fresh_install = !bbcs_tablesExist();
-        bbcs_check_install();
-        require_once BOTBLOCKER_DIR . 'includes/class-botblocker-activator.php';
-        Botblocker_Activator::activate();
-        bbcs_register_cron_tasks();
-        bbcs_rewrite_rules();
-        if (function_exists('bbcs_register_2fa_rewrite_rules')) {
-            bbcs_register_2fa_rewrite_rules();
+        if (defined('BOTBLOCKER_INTEGRATE_MU_PLUGINS') && BOTBLOCKER_INTEGRATE_MU_PLUGINS) {
+            bbcs_installMuPlugin();
         }
-        flush_rewrite_rules(true);
-        if ($is_fresh_install) {
-            set_transient('bbcs_just_activated', true, 60);
-            bbcs_update_option('bbcs_activation_redirect', true);
+    } finally {
+        if (ob_get_level() > 0) {
+            ob_end_clean();
         }
-        restore_current_blog();
     }
-    require BOTBLOCKER_DIR . 'includes/inc-botblocker-tables.php';
-    if (defined('BOTBLOCKER_INTEGRATE_MU_PLUGINS') && BOTBLOCKER_INTEGRATE_MU_PLUGINS) {
-        bbcs_installMuPlugin();
-    }
-    ob_end_clean();
 }
 
 /**
@@ -242,14 +273,17 @@ function bbcs_deactivate_network_wide()
     if (! is_multisite()) {
         return;
     }
-    $site_ids = get_sites(array('fields' => 'ids', 'number' => 0));
+    $site_ids = bbcs_get_all_site_ids();
     foreach ($site_ids as $site_id) {
         switch_to_blog($site_id);
         require BOTBLOCKER_DIR . 'includes/inc-botblocker-tables.php';
         require_once BOTBLOCKER_DIR . 'includes/class-botblocker-deactivator.php';
         Botblocker_Deactivator::deactivate();
         bbcs_remove_cron_tasks();
-        flush_rewrite_rules(true);
+        // Note: per-site flush_rewrite_rules() is intentionally omitted here.
+        // WordPress regenerates rewrite rules lazily on the next request for
+        // each site; calling flush in a loop is prohibitively slow on large networks.
+        // flush_rewrite_rules(true);
         restore_current_blog();
     }
     require BOTBLOCKER_DIR . 'includes/inc-botblocker-tables.php';
@@ -320,6 +354,9 @@ function bbcs_on_wp_initialize_site($new_site)
     require_once BOTBLOCKER_DIR . 'includes/class-botblocker-activator.php';
     Botblocker_Activator::activate();
     bbcs_register_cron_tasks();
+    if (function_exists('bbcs_asn_db_schedule_download')) {
+        bbcs_asn_db_schedule_download('activation');
+    }
     bbcs_rewrite_rules();
     if (function_exists('bbcs_register_2fa_rewrite_rules')) {
         bbcs_register_2fa_rewrite_rules();

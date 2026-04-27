@@ -5,7 +5,8 @@
     "require": {
         "php": ">=7.4,<8.1",
         "pragmarx/google2fa": "^8.0",
-        "paragonie/constant_time_encoding": "^2.6"
+        "paragonie/constant_time_encoding": "^2.6",
+        "maxmind-db/reader": "^1.13"
     },
     "config": {
         "vendor-dir": "vendor/2FA/v8",

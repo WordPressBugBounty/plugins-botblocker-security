@@ -23,7 +23,7 @@
                 var $modal = $btn.closest('.modal');
                 var hasPro = $modal.data('pro') === 1 || $modal.data('pro') === '1';
                 if (!hasPro) {
-                    alert('Full Protection requires PRO license. Please upgrade to PRO first.');
+                    alert(bbcsSetupL10n.pro_required);
                     return;
                 }
             }
@@ -37,7 +37,7 @@
             $('.bbcs-profile-choice').removeClass('border-primary');
             $card.addClass('border-primary');
             
-            $btn.find('.bbcs-btn-text').text('Please wait...').removeClass('d-none');
+            $btn.find('.bbcs-btn-text').text(bbcsSetupL10n.please_wait).removeClass('d-none');
             $btn.find('.spinner-border').removeClass('d-none');
             
             $.ajax({
@@ -53,15 +53,15 @@
                 if (resp && resp.success) {
                     window.location.reload();
                 } else {
-                    alert(resp && resp.data && resp.data.message ? resp.data.message : 'Error applying profile');
+                    alert(resp && resp.data && resp.data.message ? resp.data.message : bbcsSetupL10n.error_apply);
                     $('.bbcs-apply-profile').prop('disabled', false).removeClass('disabled');
-                    $btn.find('.bbcs-btn-text').text($btn.data('original-text') || 'Apply Now');
+                    $btn.find('.bbcs-btn-text').text($btn.data('original-text') || bbcsSetupL10n.apply_now);
                     $btn.find('.spinner-border').addClass('d-none');
                 }
             }).fail(function () {
-                alert('Request failed. Please try again.');
+                alert(bbcsSetupL10n.request_failed);
                 $('.bbcs-apply-profile').prop('disabled', false).removeClass('disabled');
-                $btn.find('.bbcs-btn-text').text($btn.data('original-text') || 'Apply Now');
+                $btn.find('.bbcs-btn-text').text($btn.data('original-text') || bbcsSetupL10n.apply_now);
                 $btn.find('.spinner-border').addClass('d-none');
             });
         });

@@ -23,6 +23,9 @@ function bbcs_on_plugin_updated($upgrader, $hook_extra): void
             bbcs_alerts_set_addon_update_failed($result['failed']);
         }
         bbcs_deactivate_incompatible_addons($new_version);
+        if (function_exists('bbcs_asn_db_schedule_download')) {
+            bbcs_asn_db_schedule_download('upgrade');
+        }
     });
 }
 

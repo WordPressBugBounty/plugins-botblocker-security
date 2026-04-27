@@ -15,11 +15,11 @@
                     if (response.success) {
                         alert(response.data.message); 
                     } else {
-                        alert('Error: ' + response.data.message); 
+                        alert(bbcsDashL10n.error_prefix + response.data.message); 
                     }
                 },
                 error: function (xhr, status, error) {
-                    alert('AJAX Error: ' + error);
+                    alert(bbcsDashL10n.ajax_error + error);
                 },
             });
         });

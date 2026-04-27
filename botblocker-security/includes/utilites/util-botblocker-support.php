@@ -70,7 +70,12 @@ class BBCS_Support_Button {
     
     public function handle_support_request() {
         check_ajax_referer('botblocker_support_nonce', 'nonce');
-        
+
+        // Rate-limit: max 10 support requests per IP per hour.
+        if ( function_exists( 'bbcs_ajax_ip_rate_limit' ) && ! bbcs_ajax_ip_rate_limit( 'bbcs_send_support', 10, HOUR_IN_SECONDS ) ) {
+            wp_send_json_error( array( 'message' => __( 'Too many requests. Please try again later.', 'botblocker-security' ) ), 429 );
+        }
+
         $domain = '';
 
         $origin_raw = filter_input( INPUT_SERVER, 'HTTP_ORIGIN', FILTER_UNSAFE_RAW );

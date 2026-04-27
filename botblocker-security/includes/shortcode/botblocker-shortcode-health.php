@@ -94,7 +94,6 @@ function bbcs_generateSiteHealthList()
         'block_proxy_users'     => __('Blocking proxy users', 'botblocker-security'),
         'block_ipv6_users'      => __('Blocking IPv6 users', 'botblocker-security'),
         'block_http10_users'    => __('Blocking HTTP/1.0 users', 'botblocker-security'),
-        'hosting_block'         => __('Blocking hosting providers', 'botblocker-security'),
         'recaptcha_check'       => __('reCAPTCHA enabled', 'botblocker-security'),
         'time_ban'              => __('Time ban enabled', 'botblocker-security'),
         'time_ban_2'            => __('Secondary time ban enabled', 'botblocker-security'),
@@ -108,6 +107,7 @@ function bbcs_generateSiteHealthList()
         'block_override'            => __('Block override', 'botblocker-security'),
         'block_web_engine_options'  => __('Blocking web engine options', 'botblocker-security'),
         'block_device_options'      => __('Blocking device options', 'botblocker-security'),
+        'hosting_block'             => __('Blocking hosting providers', 'botblocker-security'),
     ];
 
     $variables_not_affecting_weight = [
@@ -200,7 +200,6 @@ function bbcs_calculateSiteHealth()
             'block_proxy_users' => function($value) { return $value == 1; },
             'block_ipv6_users' => function($value) { return $value == 1; },
             'block_http10_users' => function($value) { return $value == 1; },
-            'hosting_block' => function($value) { return $value == 1; },
             'recaptcha_check' => function($value) use ($BBCS) {
                 return $value == 1 && !empty($BBCS->settings->recaptcha_key3) && !empty($BBCS->settings->recaptcha_secret3);
             },
@@ -226,6 +225,7 @@ function bbcs_calculateSiteHealth()
             'block_override' => function($value) { return $value == 1; },
             'block_web_engine_options' => function($value) { return $value == 1; },
             'block_device_options' => function($value) { return $value == 1; },
+            'hosting_block' => function($value) { return $value == 1; },
         ];
 
         if (isset($BBCS->settings->check) && $BBCS->settings->check == 1) {

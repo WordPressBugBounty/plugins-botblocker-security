@@ -94,8 +94,15 @@ $bbcs_has_pro = bbcs_isCloudAPIActive();
 
 			<div class="bbcs_checkbox_input mb-2">
     			<div class="bbcs_label_checkbox_box">
-        			<input type="checkbox" name="hosting_block" value="1" <?php checked(1, isset($bbcs_settings['hosting_block']) ? $bbcs_settings['hosting_block'] : 0); ?>>        			
-					<span class="bbcs_label_input_checkbox"><?php esc_html_e('Hosting Provider IPs', 'botblocker-security'); ?></span>
+        			<input type="checkbox" name="hosting_block" class="bbcs_checkbox_input_input" value="1"
+            			<?php checked(1, isset($bbcs_settings['hosting_block']) ? $bbcs_settings['hosting_block'] : 0); ?>
+						<?php if (!$bbcs_has_pro) echo 'disabled'; ?>>
+        			<span class="bbcs-cloud-api-column">
+						<span class="bbcs_label_input_checkbox bbcs-cloud-api-color"><?php esc_html_e('Hosting Provider IPs', 'botblocker-security'); ?></span>
+        			<small class="text-muted bbcs-ps-5" <?php echo $bbcs_has_pro ? 'hidden' : ''; ?>>
+                			<?php esc_html_e('PRO option', 'botblocker-security'); ?> (<a href="<?php echo esc_url($BBCSA->pages_cloud_api); ?>"><?php esc_html_e('Connect now!', 'botblocker-security'); ?></a>)
+            			</small>
+        			</span>
     			</div>
     			<i class="fa-regular fa-circle-question" 
 				data-bs-toggle="tooltip" 

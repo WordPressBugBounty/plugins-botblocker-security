@@ -107,6 +107,9 @@ settings_errors('botblocker_messages');
 								<a class="nav-link" data-bs-toggle="tab" href="#traffic"><?php esc_html_e('Traffic and Referrer Settings', 'botblocker-security'); ?></a>
 							</li>						
 							<li class="nav-item">
+								<a class="nav-link" data-bs-toggle="tab" href="#payment"><?php esc_html_e('Payment Gateways', 'botblocker-security'); ?></a>
+							</li>						
+							<li class="nav-item">
 								<a class="nav-link" data-bs-toggle="tab" href="#log"><?php esc_html_e('Logging Settings', 'botblocker-security'); ?></a>
 							</li>						
 							<li class="nav-item">
@@ -127,6 +130,7 @@ settings_errors('botblocker_messages');
 								include_once BOTBLOCKER_DIR . 'includes/section/settings/botblocker-set-login-brutforce.php';
                                 include_once BOTBLOCKER_DIR . 'includes/section/settings/botblocker-set-captcha.php';
                                 include_once BOTBLOCKER_DIR . 'includes/section/settings/botblocker-set-traffic.php';
+                                include_once BOTBLOCKER_DIR . 'includes/section/settings/botblocker-set-payment.php';
                                 include_once BOTBLOCKER_DIR . 'includes/section/settings/botblocker-set-log.php';
                         		include_once BOTBLOCKER_DIR . 'includes/section/settings/botblocker-set-cron.php'; 
                                 include_once BOTBLOCKER_DIR . 'includes/section/settings/botblocker-set-ui.php';

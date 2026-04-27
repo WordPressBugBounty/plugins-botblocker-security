@@ -297,6 +297,10 @@ function bbcs_import_paths_callback()
 
     $paths = json_decode(sanitize_textarea_field(wp_unslash($_POST['paths'])), true);
     if (is_array($paths)) {
+        if (count($paths) > 1000) {
+            wp_send_json_error(__('Too many entries. Maximum 1000 per import.', 'botblocker-security'));
+            return;
+        }
         $imported = 0;
         $skipped = 0;
         foreach ($paths as $path) {

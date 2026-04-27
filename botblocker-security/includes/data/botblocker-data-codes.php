@@ -254,7 +254,7 @@ function bbcs_codeList(int $code): array
             "searchbot" => false
         ],
         59 => [
-            "msg" => "Wordpress administrator",
+            "msg" => "WordPress administrator",
             "allow" => true,
             "count" => false,
             "searchbot" => false
@@ -285,13 +285,13 @@ function bbcs_codeList(int $code): array
             "searchbot" => false
         ],
         73 => [
-            "msg" => "Wordpress heartbeat",
+            "msg" => "WordPress heartbeat",
             "allow" => true,
             "count" => false,
             "searchbot" => false
         ],
         74 => [
-            "msg" => "Wordpress REST API",
+            "msg" => "WordPress REST API",
             "allow" => true,
             "count" => false,
             "searchbot" => false
@@ -299,6 +299,12 @@ function bbcs_codeList(int $code): array
         80 => [
             "msg" => "Captcha timeout",
             "allow" => false,
+            "count" => true,
+            "searchbot" => false
+        ],
+        81 => [
+            "msg" => "Payment gateway callback bypass",
+            "allow" => true,
             "count" => true,
             "searchbot" => false
         ],

@@ -236,7 +236,7 @@
             var data = JSON.parse(e.target.result);
             callback(data);
           } catch (err) {
-            alert("Invalid JSON file: " + err.message);
+            alert(bbcsPathL10n.invalid_json + err.message);
           }
         };
         reader.readAsText(file);
@@ -269,7 +269,7 @@
                   $("#editPathModal").modal("hide");
                   $("#botblocker-paths").DataTable().ajax.reload();
                 } else {
-                  alert("Failed to update path: " + response.data);
+                  alert(bbcsPathL10n.failed_update + response.data);
                 }
               },
             });
@@ -296,7 +296,7 @@
                   $("#editPathForm").find('[name="rule"]').val(data.rule);
                   $("#editPathModal").modal("show");
                 } else {
-                  alert("Failed to load path details: " + response.data);
+                  alert(bbcsPathL10n.failed_load + response.data);
                 }
               },
             });
@@ -304,7 +304,7 @@
       
         $("#botblocker-paths").on("click", ".delete-path", function () {
             var id = $(this).data("id");
-            if (confirm("Are you sure you want to delete this path?")) {
+            if (confirm(bbcsPathL10n.confirm_delete)) {
               $.ajax({
                 url: botblockerData.ajaxurl,
                 type: "POST",
@@ -337,7 +337,7 @@
                   $("#createPathModal").modal("hide");
                   $("#botblocker-paths").DataTable().ajax.reload();
                 } else {
-                  alert("Failed to create path: " + response.data);
+                  alert(bbcsPathL10n.failed_create + response.data);
                 }
               },
             });
@@ -362,7 +362,7 @@
                   downloadLink.click();
                   document.body.removeChild(downloadLink);
                 } else {
-                  alert("Failed to export paths: " + response.data);
+                  alert(bbcsPathL10n.failed_export + response.data);
                 }
               },
             });
@@ -389,7 +389,7 @@
                         showImportResultModal(response.data);
                         $("#botblocker-paths").DataTable().ajax.reload();
                       } else {
-                        alert("Failed to import paths: " + response.data);
+                        alert(bbcsPathL10n.failed_import + response.data);
                       }
                     },
                   });
@@ -412,7 +412,7 @@
                   if (response.success) {
                     $("#botblocker-paths").DataTable().ajax.reload();
                   } else {
-                    alert("Failed to clear paths: " + response.data);
+                    alert(bbcsPathL10n.failed_clear + response.data);
                   }
                 },
               });

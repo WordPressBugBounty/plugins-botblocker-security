@@ -2,7 +2,7 @@
  * BotBlocker Admin CSS Styles
  * 
  * @package     BotBlocker
- * @version     1.6.17
+ * @version     1.6.18
  * @author      BotBlocker Team
  * @copyright   Copyright (c) 2025 BotBlocker
  */
@@ -2319,4 +2319,73 @@ h2.card-title small {
   .bbcs-upgrade-icon {
     font-size: 26px;
   }
+}
+
+.bbcs-header-upgrade-cta {
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  box-shadow: 0 1px 4px rgba(255, 152, 0, 0.35);
+}
+.bbcs-header-upgrade-cta:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 2px 8px rgba(255, 152, 0, 0.5);
+}
+
+.bbcs-pro-comparison-wrap { margin-top: 8px; }
+.bbcs-pro-comparison { font-size: 13px; }
+.bbcs-pro-comparison thead th {
+  background: #f6f7fb;
+  font-weight: 600;
+  border-bottom: 2px solid #e3e6ee;
+}
+.bbcs-pro-comparison tbody td { vertical-align: middle; }
+.bbcs-pro-comparison tbody tr:hover { background: #fafbfd; }
+.bbcs-pro-comparison .fa-check { font-size: 14px; }
+.bbcs-pro-comparison .fa-minus { opacity: 0.5; }
+
+.bbcs-narrative-card { margin-bottom: 12px; }
+.bbcs-narrative-text {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.bbcs-header-narrative {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  justify-content: center;
+  padding: 0 16px;
+  font-size: 13px;
+  color: #2e353e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bbcs-header-narrative-text { line-height: 1.2; }
+.bbcs-header-narrative-text b { font-weight: 600; }
+
+.bbcs-social-proof-rating { font-size: 14px; }
+.bbcs-social-proof-rating .fa-star,
+.bbcs-social-proof-rating .fa-star-half-stroke { font-size: 14px; }
+
+.bbcs-changelog { padding-right: 4px; }
+.bbcs-changelog .bbcs-changelog-version {
+  font-size: 13px;
+  font-weight: 600;
+  background: #f6f7fb;
+  padding: 6px 10px;
+  border-left: 3px solid blueviolet;
+  margin: 14px 0 6px;
+}
+.bbcs-changelog .bbcs-changelog-version:first-child { margin-top: 0; }
+.bbcs-changelog .bbcs-changelog-list {
+  list-style: disc;
+  padding-left: 22px;
+  margin: 0 0 8px;
+}
+.bbcs-changelog .bbcs-changelog-list li {
+  font-size: 13px;
+  line-height: 1.5;
+  padding: 1px 0;
+  color: #333;
 }

@@ -25,6 +25,7 @@ trait BotBlockerVisitorTrait {
         $this->identify_by_user_agent();
         $this->get_ip_info();
         $this->check_restricted_country();
+        $this->check_blocked_country();
     }
 
     public function check_admin_status() : void
@@ -273,6 +274,9 @@ trait BotBlockerVisitorTrait {
 
     public function check_hosting() : void
     {
+        if (function_exists('bbcs_isCloudAPIActive') && !bbcs_isCloudAPIActive()) {
+            return;
+        }
         if (
             $this->settings->hosting_block == 1 &&
             in_array($this->hosting, [1, '1'], true) &&
@@ -284,22 +288,106 @@ trait BotBlockerVisitorTrait {
 
     public function get_ip_info() : void
     {
+        $source = defined('BOTBLOCKER_VISITOR_IP_SOURCE') ? BOTBLOCKER_VISITOR_IP_SOURCE : 'local';
+        if ($source === 'cloud') {
+            $this->get_ip_info_legacy();
+        } else {
+            $this->get_ip_info_pipeline();
+        }
+
+        if ($this->country != BOTBLOCKER_EMPTY && !empty($this->country)) {
+            $this->country_name = bbcs_get_country_by_code($this->country);
+        }
+    }
+
+    private function get_ip_info_legacy() : void
+    {
         if ($this->has_valid_cloud_api()) {
             $cloud = $this->collect_cloud_data();
             if ($cloud === false || isset($cloud['error'])) {
                 $this->country = $this->get_alternative_ip_info();
             } else {
-                $this->country = $cloud['country'];
-                $this->cidr = $cloud['cidr'];
-                $this->asname = $cloud['asname'];
-                $this->asnum = $cloud['asnum'];
-                $this->hosting = $cloud['hosting'];    
+                $this->country = $cloud['country'] ?? BOTBLOCKER_EMPTY;
+                $this->cidr    = $cloud['cidr']    ?? BOTBLOCKER_EMPTY;
+                $this->asname  = $cloud['asname']  ?? BOTBLOCKER_EMPTY;
+                $this->asnum   = $cloud['asnum']   ?? BOTBLOCKER_EMPTY;
+                $this->hosting = $cloud['hosting'] ?? BOTBLOCKER_EMPTY;
             }
-        } else $this->country = $this->get_alternative_ip_info();  
-
-        if ($this->country != BOTBLOCKER_EMPTY && !empty($this->country)) {
-            $this->country_name = bbcs_get_country_by_code($this->country);
+        } else {
+            $this->country = $this->get_alternative_ip_info();
         }
+    }
+
+    private function get_ip_info_pipeline() : void
+    {
+        $local = function_exists('bbcs_asn_db_lookup') ? bbcs_asn_db_lookup($this->ip) : null;
+        if (is_array($local) && !empty($local['country']) && $local['country'] !== BOTBLOCKER_EMPTY) {
+            $this->country = $local['country'];
+            $this->asnum   = $local['asn']     ?? BOTBLOCKER_EMPTY;
+            $this->asname  = $local['as_name'] ?? BOTBLOCKER_EMPTY;
+            $this->cidr    = $local['cidr']    ?? BOTBLOCKER_EMPTY;
+        } else {
+            $this->country = $this->get_sxgeo_country();
+        }
+
+        $strict = defined('BOTBLOCKER_VISITOR_IP_STRICT') && BOTBLOCKER_VISITOR_IP_STRICT;
+        $cloud_active = function_exists('bbcs_isCloudAPIActive') && bbcs_isCloudAPIActive();
+        $hosting_wanted = ($this->settings->hosting_block == 1 && $cloud_active);
+
+        if ($strict) {
+            if ($hosting_wanted && $this->has_valid_cloud_api()) {
+                $cloud = $this->collect_cloud_data();
+                if (is_array($cloud) && !isset($cloud['error']) && $cloud !== false) {
+                    $this->hosting = $cloud['hosting'] ?? BOTBLOCKER_EMPTY;
+                }
+            }
+            if (empty($this->country)) {
+                $this->country = BOTBLOCKER_EMPTY;
+            }
+            return;
+        }
+
+        $needs_country = ($this->country == BOTBLOCKER_EMPTY || empty($this->country));
+        if (($needs_country || $hosting_wanted) && $this->has_valid_cloud_api()) {
+            $cloud = $this->collect_cloud_data();
+            if (is_array($cloud) && !isset($cloud['error']) && $cloud !== false) {
+                if ($needs_country) {
+                    $this->country = $cloud['country'] ?? BOTBLOCKER_EMPTY;
+                }
+                if ($this->cidr === BOTBLOCKER_EMPTY) {
+                    $this->cidr = $cloud['cidr'] ?? BOTBLOCKER_EMPTY;
+                }
+                if ($this->asname === BOTBLOCKER_EMPTY) {
+                    $this->asname = $cloud['asname'] ?? BOTBLOCKER_EMPTY;
+                }
+                if ($this->asnum === BOTBLOCKER_EMPTY) {
+                    $this->asnum = $cloud['asnum'] ?? BOTBLOCKER_EMPTY;
+                }
+                if ($cloud_active) {
+                    $this->hosting = $cloud['hosting'] ?? BOTBLOCKER_EMPTY;
+                }
+            }
+        }
+
+        if ($this->country == BOTBLOCKER_EMPTY || empty($this->country)) {
+            $fallback = BotBlockerWpRequest::ip2c($this->ip);
+            if (!empty($fallback)) {
+                $this->country = $fallback;
+            }
+        }
+    }
+
+    private function get_sxgeo_country()
+    {
+        if ($this->ip_version == 4) {
+            require_once $this->dirs['vendor'] . 'SypexGeo/SxGeo.php';
+            $SxGeo = new SxGeo('SxGeo.dat');
+            $country = $SxGeo->getCountry($this->ip);
+            if (!empty($country)) {
+                return $country;
+            }
+        }
+        return BOTBLOCKER_EMPTY;
     }
 
     private function get_alternative_ip_info()
@@ -317,13 +405,25 @@ trait BotBlockerVisitorTrait {
         if ($this->ip_version == 6) {
             return BOTBLOCKER_EMPTY;
         }
-    } 
+    }
  
     public function check_restricted_country() : void
     {
         $restrictedCountries = bbcs_getRestrictedCountries();
         if (in_array($this->country, $restrictedCountries)) {
             $this->settings->recaptcha_check = 0;
+        }
+    }
+ 
+    public function check_blocked_country() : void
+    {
+        if ($this->isAdmin) {
+            return;
+        }
+
+        $blockedCountries = bbcs_getBlockedCountries();
+        if (!empty($blockedCountries) && in_array($this->country, $blockedCountries, true)) {
+            $this->redirect_to_denied(13, 'Denied by country: ' . $this->country);
         }
     }
  
@@ -359,7 +459,7 @@ trait BotBlockerVisitorTrait {
 
         if ($isSelfIP) {
             if ($isCron) {
-                bbcs_storeData('Wordpress self request', 70);
+                bbcs_storeData('WordPress self request', 70);
                 bbcs_process_hit(70);
                 return true;
             } elseif ($allowSelfIPReq) {

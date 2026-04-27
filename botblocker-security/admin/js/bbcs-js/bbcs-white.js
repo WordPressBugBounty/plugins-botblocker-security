@@ -238,7 +238,7 @@
             var data = JSON.parse(e.target.result);
             callback(data);
           } catch (err) {
-            alert("Invalid JSON file: " + err.message);
+            alert(bbcsWhiteL10n.invalid_json + err.message);
           }
         };
         reader.readAsText(file);
@@ -271,7 +271,7 @@
                   $("#editWhiteModal").modal("hide");
                   $("#botblocker-white").DataTable().ajax.reload();
                 } else {
-                  alert("Failed to update white bot: " + response.data);
+                  alert(bbcsWhiteL10n.failed_update + response.data);
                 }
               },
             });
@@ -300,7 +300,7 @@
                   $("#editWhiteForm").find('[name="distance"]').val(data.distance);
                   $("#editWhiteModal").modal("show");
                 } else {
-                  alert("Failed to load white bot details: " + response.data);
+                  alert(bbcsWhiteL10n.failed_load + response.data);
                 }
               },
             });
@@ -308,7 +308,7 @@
 
         $("#botblocker-white").on("click", ".delete-white", function () {
             var id = $(this).data("id");
-            if (confirm("Are you sure you want to delete this white bot?")) {
+            if (confirm(bbcsWhiteL10n.confirm_delete)) {
               $.ajax({
                 url: botblockerData.ajaxurl,
                 type: "POST",
@@ -341,7 +341,7 @@
                   $("#createWhiteModal").modal("hide");
                   $("#botblocker-white").DataTable().ajax.reload();
                 } else {
-                  alert("Failed to create white bot: " + response.data);
+                  alert(bbcsWhiteL10n.failed_create + response.data);
                 }
               },
             });
@@ -366,7 +366,7 @@
                   downloadLink.click();
                   document.body.removeChild(downloadLink);
                 } else {
-                  alert("Failed to export white bots: " + response.data);
+                  alert(bbcsWhiteL10n.failed_export + response.data);
                 }
               },
             });
@@ -393,7 +393,7 @@
                         showImportResultModal(response.data);
                         $("#botblocker-white").DataTable().ajax.reload();
                       } else {
-                        alert("Failed to import white bots: " + response.data);
+                        alert(bbcsWhiteL10n.failed_import + response.data);
                       }
                     },
                   });
@@ -416,7 +416,7 @@
                   if (response.success) {
                     $("#botblocker-white").DataTable().ajax.reload();
                   } else {
-                    alert("Failed to clear white bots: " + response.data);
+                    alert(bbcsWhiteL10n.failed_clear + response.data);
                   }
                 },
               });

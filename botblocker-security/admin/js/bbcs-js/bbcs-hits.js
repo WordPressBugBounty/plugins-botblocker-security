@@ -469,7 +469,7 @@
             var data = response.data;
             add_modal_selected_value(data);
           } else {
-            alert("Failed to get response: " + response.data);
+            alert(bbcsHitsL10n.failed_get_response + response.data);
           }
         },
       });
@@ -555,7 +555,7 @@
                     $('#this_ip').val('');
                     $("#AddRuleModal").modal("hide");                    
                 } else {
-                    alert("Failed to create rule: " + response.data);
+                    alert(bbcsHitsL10n.failed_create_rule + response.data);
                 }
             },
         });

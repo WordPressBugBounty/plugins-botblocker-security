@@ -236,7 +236,11 @@ if ($BBCS->settings->utm_referrer == 1 and $BBCS->referer != '') {
 
   function dispatchServiceEvent() {
     return new Promise(function(resolve) {
-      <?php if ($BBCS->ip_version == 6) { ?>
+      <?php
+        $bbcs_use_ipv6_echo = ($BBCS->ip_version == 6)
+            && (!function_exists('bbcs_asn_db_is_present') || !bbcs_asn_db_is_present());
+      ?>
+      <?php if ($bbcs_use_ipv6_echo) { ?>
         var GLOBUS_studio_API_request = new XMLHttpRequest();
         // Constant URL → not user input. Printed inside a JS string.
         // Escaping HTML is irrelevant; value is validated via esc_url_raw().

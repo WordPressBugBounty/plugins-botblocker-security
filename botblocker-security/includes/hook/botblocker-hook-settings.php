@@ -177,7 +177,9 @@ function bbcs_botblocker_handle_settings_save()
         'email_notifications',
         'pusher_notifications',
         'critical_load_notifications',
-        'login_brutforce_enabled'
+        'login_brutforce_enabled',
+        'payment_bypass_enable',
+        'payment_bypass_log'
     ];
 
     if (!isset($_POST['x_robots_directives'])) {
@@ -186,6 +188,11 @@ function bbcs_botblocker_handle_settings_save()
 
     foreach ($checkbox_fields as $field) {
         $value = isset($_POST[$field]) ? '1' : '0';
+        if ($field === 'hosting_block' && $value === '1') {
+            if (!(function_exists('bbcs_isCloudAPIActive') && bbcs_isCloudAPIActive())) {
+                $value = '0';
+            }
+        }
         // REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $wpdb->replace(

@@ -103,29 +103,62 @@ function bbcs_uninstallMuPlugin() {
 }
 
 function bbcs_removeWpConfigEarlyInitCode() {
+	if ( get_site_transient( 'bbcs_wpconfig_writing' ) ) {
+		return false;
+	}
+	set_site_transient( 'bbcs_wpconfig_writing', 1, 30 );
+
 	$wp_config_file = ABSPATH . 'wp-config.php';
 
 	if ( ! file_exists( $wp_config_file ) ) {
+		delete_site_transient( 'bbcs_wpconfig_writing' );
 		return false;
 	}
 
+	// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 	$config_contents = file_get_contents( $wp_config_file );
+	if ( $config_contents === false ) {
+		delete_site_transient( 'bbcs_wpconfig_writing' );
+		return false;
+	}
+
+	if ( substr( $config_contents, 0, 3 ) === "\xEF\xBB\xBF" ) {
+		$config_contents = substr( $config_contents, 3 );
+	}
+
 	$marker_start    = '/* BBCS Start */';
 	$marker_end      = '/* BBCS End */';
 	$start_position  = strpos( $config_contents, $marker_start );
 	$end_position    = strpos( $config_contents, $marker_end );
 
 	if ( $start_position === false || $end_position === false ) {
+		delete_site_transient( 'bbcs_wpconfig_writing' );
 		return false;
 	}
 
 	$end_position += strlen( $marker_end );
 
 	$new_config_contents = substr( $config_contents, 0, $start_position ) . substr( $config_contents, $end_position );
-	file_put_contents( $wp_config_file, $new_config_contents );
+
+	$backup = $wp_config_file . '.bbcs.bak';
+	copy( $wp_config_file, $backup );
+
+	$tmp = $wp_config_file . '.bbcs.tmp';
+	// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+	$written = ( file_put_contents( $tmp, $new_config_contents, LOCK_EX ) !== false );
+
+	if ( $written ) {
+		$written = rename( $tmp, $wp_config_file );
+	}
+
+	if ( ! $written && file_exists( $tmp ) ) {
+		wp_delete_file( $tmp );
+	}
+
+	delete_site_transient( 'bbcs_wpconfig_writing' );
 	bbcs_clearFileCache();
 
-	return true;
+	return $written;
 }
 
 function bbcs_deleteRuleFiles()

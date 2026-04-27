@@ -57,6 +57,15 @@ function bbcs_dashboard_assets(): void {
 			'ajaxurl' => admin_url('admin-ajax.php'),
 			'nonce'   => wp_create_nonce("botblocker_nonce"),
 		));
+		wp_localize_script(BOTBLOCKER_SHORT_NAME . '-dashboard', 'bbcsDashboardWidgetL10n', array(
+			'rule_added'            => __( 'Success: IP rule added', 'botblocker-security' ),
+			'failed_create_rule'    => __( 'Failed to create rule: ', 'botblocker-security' ),
+			'import_success_prefix' => __( 'Successfully imported ', 'botblocker-security' ),
+			'import_imported'       => __( 'Imported: ', 'botblocker-security' ),
+			'import_skipped'        => __( 'Skipped: ', 'botblocker-security' ),
+			'failed_import_prefix'  => __( 'Failed to import ', 'botblocker-security' ),
+			'invalid_json'          => __( 'Invalid JSON file: ', 'botblocker-security' ),
+		));
 	}
 }
 add_action('admin_enqueue_scripts', 'bbcs_dashboard_assets');

@@ -37,7 +37,7 @@ include('botblocker-section-header.php');
                 <div class="col-md-12">
                     <section class="card">
                         <header class="card-header">
-                            <h2 class="card-title"><?php esc_html_e( 'BotBlocker PRO', 'botblocker-security'); ?></h2>
+                            <h2 class="card-title"><?php esc_html_e( 'BotBlocker', 'botblocker-security'); ?></h2>
                         </header>
                         <div class="card-body">
 							<?php

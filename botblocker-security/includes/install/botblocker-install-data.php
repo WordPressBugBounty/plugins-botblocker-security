@@ -77,6 +77,30 @@ function bbcs_insertDefaultCounters()
     }
 }
 
+function bbcs_ensure_counters_row(bool $force = false)
+{
+    static $verified = false;
+    if ($verified && !$force) {
+        return;
+    }
+    global $wpdb;
+    if (empty($wpdb->bbcs_counters)) {
+        return;
+    }
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    $exists = $wpdb->get_var("SELECT id FROM `{$wpdb->bbcs_counters}` WHERE id = 1");
+    if ($exists) {
+        $verified = true;
+        return;
+    }
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    $wpdb->query(
+        "INSERT INTO `{$wpdb->bbcs_counters}` (id, today_hits, today_blocked, total_hits, total_blocked, search_engine_visits)
+         VALUES (1, 0, 0, 0, 0, 0)"
+    );
+    $verified = true;
+}
+
 function bbcs_insertDefaultSearchEngines()
 {
     global $wpdb;
@@ -264,7 +288,7 @@ function bbcs_insertDefaultPaths()
     $default_paths = [
         ['priority' => 1,  'search' => '/wp-cron.php', 'rule' => 'allow', 'comment' => 'WordPress cron jobs', 'disable' => 1],
         ['priority' => 1,  'search' => '/wp-admin/admin-ajax.php', 'rule' => 'allow', 'comment' => 'WordPress AJAX', 'disable' => 1],
-        ['priority' => 1,  'search' => '/wp-admin/post.php', 'rule' => 'allow', 'comment' => 'Wordpress POST', 'disable' => 1],
+        ['priority' => 1,  'search' => '/wp-admin/post.php', 'rule' => 'allow', 'comment' => 'WordPress POST', 'disable' => 1],
         ['priority' => 1,  'search' => '/?wc-ajax=', 'rule' => 'allow', 'comment' => 'Woocommerce AJAX', 'disable' => 1],
     ];
 

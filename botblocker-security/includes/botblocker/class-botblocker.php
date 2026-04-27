@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
  * This class is responsible for all the operations against bots.
  * It handles detections, logging, and blocking of suspicious bot activities.
  * 
- * @version    1.6.17
+ * @version    1.6.18
  * @author     BotBlocker Team
  * @package    Botblocker 
  * @subpackage Botblocker/includes
@@ -18,6 +18,7 @@ require_once BOTBLOCKER_DIR . 'includes/botblocker/class-botblocker-settings.php
 require_once BOTBLOCKER_DIR . 'includes/botblocker/traits/class-botblocker-core-trait.php';
 require_once BOTBLOCKER_DIR . 'includes/botblocker/traits/class-botblocker-visitor-trait.php';
 require_once BOTBLOCKER_DIR . 'includes/botblocker/traits/class-botblocker-rules-trait.php';
+require_once BOTBLOCKER_DIR . 'includes/botblocker/traits/class-botblocker-payment-trait.php';
 require_once BOTBLOCKER_DIR . 'includes/botblocker/traits/class-botblocker-response-trait.php';
 require_once BOTBLOCKER_DIR . 'includes/botblocker/traits/class-botblocker-local-trait.php';
 require_once BOTBLOCKER_DIR . 'includes/botblocker/traits/class-botblocker-post-trait.php';
@@ -33,6 +34,7 @@ class BotBlocker extends BotBlockerBase
     use BotBlockerCoreTrait;
     use BotBlockerVisitorTrait;
     use BotBlockerRulesTrait;
+    use BotBlockerPaymentTrait;
     use BotBlockerResponseTrait;
     use BotBlockerLocalTrait;
     use BotBlockerPostTrait;
@@ -80,6 +82,7 @@ class BotBlocker extends BotBlockerBase
         if ($this->perform_prefly_checks()) return;
         $this->collect_visitor_data();
 		$this->update_settings_based_on_visitor_data();
+        if ($this->check_payment_bypass()) return;
         if ($this->is_safe_request()) return;
         if ($this->check_white_bot()) return;
         if ($this->check_ip_rules()) return;
@@ -146,7 +149,7 @@ class BotBlocker extends BotBlockerBase
         } else {
             if (BBCS_DIE_MESSAGE) {
                 $this->print_hive();
-                die('Wordpress stopped by BotBlocker');
+                die('WordPress stopped by BotBlocker');
             } else {
                 die();
             }

@@ -61,7 +61,7 @@ function bbcs_current_site_email(): string {
 }
 
 function bbcs_current_user_agent(): string {
-	return 'BotBlocker-Wordpress-Security-Plugin/ ' . BOTBLOCKER_VERSION . ' by https://globus.studio; Client:' . get_bloginfo( 'url' );
+	return 'BotBlocker-WordPress-Security-Plugin/ ' . BOTBLOCKER_VERSION . ' by https://globus.studio; Client:' . get_bloginfo( 'url' );
 }
 
 function bbcs_can_manage(): string {
@@ -71,9 +71,47 @@ function bbcs_can_manage(): string {
 	return 'manage_options';
 }
 
+/**
+ * Return all site IDs in the network using paginated queries.
+ *
+ * Using 'number' => 0 loads every row into memory at once - on networks with
+ * 1 000+ sites this can exhaust the PHP memory limit.  This helper fetches IDs
+ * in batches of $per_page (default 50) so memory usage stays bounded regardless
+ * of network size.
+ *
+ * On a single-site install (or when get_sites() is unavailable) the function
+ * returns an array containing only the current blog ID.
+ *
+ * @param int $per_page Batch size (default 50).
+ * @return int[] Ordered list of integer site IDs.
+ */
+function bbcs_get_all_site_ids( int $per_page = 50 ): array {
+	if ( ! is_multisite() || ! function_exists( 'get_sites' ) ) {
+		return array( get_current_blog_id() );
+	}
+
+	$all_ids = array();
+	$offset  = 0;
+
+	do {
+		$batch = get_sites( array(
+			'fields' => 'ids',
+			'number' => $per_page,
+			'offset' => $offset,
+		) );
+		foreach ( $batch as $id ) {
+			$all_ids[] = (int) $id;
+		}
+		$offset += $per_page;
+	} while ( count( $batch ) === $per_page );
+
+	return $all_ids;
+}
+
 function bbcs_foreach_site( callable $callback ): void {
 	if ( is_multisite() && function_exists( 'get_sites' ) ) {
-		$site_ids = get_sites( array( 'fields' => 'ids', 'number' => 0 ) );
+		// Use paginated helper to avoid OOM on networks with 1 000+ sites.
+		$site_ids = bbcs_get_all_site_ids();
 		foreach ( $site_ids as $site_id ) {
 			switch_to_blog( $site_id );
 			require BOTBLOCKER_DIR . 'includes/inc-botblocker-tables.php';

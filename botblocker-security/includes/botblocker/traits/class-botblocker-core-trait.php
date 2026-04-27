@@ -5,6 +5,7 @@ trait BotBlockerCoreTrait {
     
     public function start_bbcs()
     {
+        $this->_dst_applied = false;
         $this->error_headers = bbcs_loadHeadersArray();
         $this->country = BOTBLOCKER_EMPTY;
         $this->cidr = BOTBLOCKER_EMPTY;
@@ -168,9 +169,23 @@ trait BotBlockerCoreTrait {
 
     public function apply_daylight_saving() : void
     {
-        if($this->settings->daylight_saving_time == 1) {
-            if (gmdate('I')) $this->settings->admin_gmt_offset += 1; 
-        }    
+        if ($this->settings->daylight_saving_time != 1 || !empty($this->_dst_applied)) {
+            return;
+        }
+        $this->_dst_applied = true;
+        $base_seconds = (int)(floatval($this->settings->admin_gmt_offset) * 3600);
+        $now_ts = time();
+        foreach (\DateTimeZone::listIdentifiers() as $tz_id) {
+            $tz = new \DateTimeZone($tz_id);
+            $trans = $tz->getTransitions($now_ts, $now_ts);
+            if (empty($trans)) {
+                continue;
+            }
+            if ($trans[0]['isdst'] && ($trans[0]['offset'] - 3600) === $base_seconds) {
+                $this->settings->admin_gmt_offset += 1;
+                return;
+            }
+        }
     }
 
     public function set_error_header_fallback() : void

@@ -110,13 +110,13 @@ function bbcs_addIPv6Rule( $ip, $comment ) {
 }
 
 function bbcs_getServerIPv4() {
-    $url = BOTBLOCKER_API_GS_URL . 'ip?v=4';
+    $url = BOTBLOCKER_API_GS_URL . '/ip?v=4';
     $response = wp_remote_get($url, [
-        'timeout' => 10,
+        'timeout'     => 10,
         'redirection' => 0,
         'httpversion' => '1.1',
-        'user-agent' => bbcs_current_user_agent(), //BBCS-MULTISITE
-        'sslverify' => false,
+        'user-agent'  => bbcs_current_user_agent(), //BBCS-MULTISITE
+        //'sslverify'  => false
     ]);
 
     if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) {
@@ -134,14 +134,14 @@ function bbcs_getServerIPv4() {
 }
 
 function bbcs_getServerIPv6() {
-    $url = BOTBLOCKER_API_GS_URL . 'ip?v=6';
+    $url = BOTBLOCKER_API_GS_URL . '/ip?v=6';
     $response = wp_remote_get($url, [
-        'timeout' => 10,
+        'timeout'     => 10,
         'redirection' => 0,
         'httpversion' => '1.1',
-        'user-agent' => bbcs_current_user_agent(), //BBCS-MULTISITE
-        'sslverify' => false,
-        'headers' => [
+        'user-agent'  => bbcs_current_user_agent(), //BBCS-MULTISITE
+        //'sslverify'  => false
+        'headers'     => [
             'Accept' => 'text/plain',
         ],
     ]);
@@ -159,45 +159,6 @@ function bbcs_getServerIPv6() {
 
     return $serverIPv6;
 }
-
-/*
-function bbcs_getServerIPv4() {
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, BOTBLOCKER_API_GS_URL . 'ip?v=4');
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-    curl_setopt($ch, CURLOPT_USERAGENT, BOTBLOCKER_USER_AGENT);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-    $serverIPv4 = @trim(wp_strip_all_tags(curl_exec($ch)));
-    curl_close($ch);
-
-    if (!filter_var($serverIPv4, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-        $serverIPv4 = bbcs_getServerIPFallback('ipv4');
-    }
-    return $serverIPv4;
-}
-
-function bbcs_getServerIPv6() {
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, BOTBLOCKER_API_GS_URL . 'ip?v=6');
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-    curl_setopt($ch, CURLOPT_USERAGENT, BOTBLOCKER_USER_AGENT);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-    curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V6); // Force IPv6 resolution
-    $serverIPv6 = @trim(wp_strip_all_tags(curl_exec($ch)));
-    curl_close($ch);
-
-    if (!filter_var($serverIPv6, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
-        $serverIPv6 = bbcs_getServerIPFallback('ipv6');
-    }
-    return $serverIPv6;
-}
-*/
 
 function bbcs_getServerIPFallback($version) {
     if (!function_exists('shell_exec')) {
@@ -255,18 +216,26 @@ function bbcs_fetchAndStoreParentIPs() {
     $response = wp_remote_get(BOTBLOCKER_PARENT_IPS_URL, array(
         'timeout'    => 10,
         'user-agent' => bbcs_current_user_agent(), //BBCS-MULTISITE
-        'sslverify'  => false,
+       // 'sslverify'  => false
     ));
 
     if (is_wp_error($response)) {
         throw new \Exception(wp_kses_post('Error loading URL: ' . BOTBLOCKER_PARENT_IPS_URL . ' | WP Error: ' . $response->get_error_message()));
     }
 
-    $body        = wp_remote_retrieve_body($response);
+    $body = wp_remote_retrieve_body($response);
+    if (strlen($body) > 512 * 1024) {
+        throw new \Exception('Response too large from ' . BOTBLOCKER_PARENT_IPS_URL);
+    }
+
     $ipAddresses = json_decode($body, true);
 
     if (!is_array($ipAddresses)) {
         throw new \Exception('Invalid JSON format in response.');
+    }
+
+    if (count($ipAddresses) > 10000) {
+        throw new \Exception('Too many IP entries in response (max 10000).');
     }
 
     foreach ($ipAddresses as $ip) {
@@ -281,40 +250,3 @@ function bbcs_fetchAndStoreParentIPs() {
         }
     }
 }
-
-/*
-function bbcs_fetchAndStoreParentIPs() {
-    $ch = curl_init(BOTBLOCKER_PARENT_IPS_URL);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-    curl_setopt($ch, CURLOPT_USERAGENT, BOTBLOCKER_USER_AGENT);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-    $response = curl_exec($ch);
-    if ($response === false) {
-        $error = curl_error($ch);
-        curl_close($ch);
-        throw new \Exception(wp_kses_post("Error loading URL: " . BOTBLOCKER_PARENT_IPS_URL . " | cURL Error: " . $error));
-    }
-    curl_close($ch);
-    $ipAddresses = json_decode($response, true);
-    if (!is_array($ipAddresses)) {
-        throw new \Exception("Invalid JSON format in response.");
-    }
-
-    foreach ($ipAddresses as $ip) {
-        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-            bbcs_addIPv4Rule($ip, "IPv4 BotBlocker Server");
-        }
-        elseif (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
-            bbcs_addIPv6Rule($ip, "IPv6 BotBlocker Server");
-        }
-        else {
-            if (BBCS_DEBUG == true) {
-            // error_log("INVALID IP: $ip");
-            }
-        }
-    }
-}
-*/

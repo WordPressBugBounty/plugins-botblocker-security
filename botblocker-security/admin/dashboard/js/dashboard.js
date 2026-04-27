@@ -10,9 +10,9 @@
             success: function (response) {
                 if (response.success) {
                     form[0].reset();
-                    alert('Success: IP rule added');
+                    alert(bbcsDashboardWidgetL10n.rule_added);
                 } else {
-                    alert("Failed to create rule: " + response.data);
+                    alert(bbcsDashboardWidgetL10n.failed_create_rule + response.data);
                 }
             },
         });
@@ -55,11 +55,11 @@
                         },
                         success: function (response) {
                             if (response.success) {
-                                alert("Successfully imported " + ipVersion.toUpperCase() + " " + listType + ":\n" + 
-                                      "Imported: " + response.data.imported + "\n" + 
-                                      "Skipped: " + response.data.skipped);
+                                alert(bbcsDashboardWidgetL10n.import_success_prefix + ipVersion.toUpperCase() + " " + listType + ":\n" + 
+                                      bbcsDashboardWidgetL10n.import_imported + response.data.imported + "\n" + 
+                                      bbcsDashboardWidgetL10n.import_skipped + response.data.skipped);
                             } else {
-                                alert("Failed to import " + ipVersion.toUpperCase() + " " + listType + ": " + response.data);
+                                alert(bbcsDashboardWidgetL10n.failed_import_prefix + ipVersion.toUpperCase() + " " + listType + ": " + response.data);
                             }
                         },
                     });
@@ -89,10 +89,11 @@
                         },
                         success: function (response) {
                             if (response.success) {
-                                alert(`Imported: ${response.data.imported} | Skipped ${response.data.skipped}`);
+                                alert(bbcsDashboardWidgetL10n.import_imported + response.data.imported + " | " + bbcsDashboardWidgetL10n.import_skipped + response.data.skipped);
                             } else {
                                 alert(
-                                    "Failed to import IPv4 rules: " +
+                                    bbcsDashboardWidgetL10n.failed_import_prefix +
+                                        "IPv4 rules: " +
                                         response.data
                                 );
                             }
@@ -122,10 +123,11 @@
                         },
                         success: function (response) {
                             if (response.success) {
-                                alert(`Imported: ${response.data.imported} | Skipped ${response.data.skipped}`);
+                                alert(bbcsDashboardWidgetL10n.import_imported + response.data.imported + " | " + bbcsDashboardWidgetL10n.import_skipped + response.data.skipped);
                             } else {
                                 alert(
-                                    "Failed to import IPv6 rules: " +
+                                    bbcsDashboardWidgetL10n.failed_import_prefix +
+                                        "IPv6 rules: " +
                                         response.data
                                 );
                             }
@@ -144,7 +146,7 @@
                 var data = JSON.parse(e.target.result);
                 callback(data);
             } catch (err) {
-                alert("Invalid JSON file: " + err.message);
+                alert(bbcsDashboardWidgetL10n.invalid_json + err.message);
             }
         };
         reader.readAsText(file);

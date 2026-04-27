@@ -321,7 +321,7 @@
                 var data = JSON.parse(e.target.result);
                 callback(data);
             } catch (err) {
-                alert("Invalid JSON file: " + err.message);
+                alert(bbcsRulesL10n.invalid_json + err.message);
             }
         };
         reader.readAsText(file);
@@ -348,7 +348,7 @@
                         $("#editRuleModal").modal("hide");
                         $("#botblocker-rules").DataTable().ajax.reload();
                     } else {
-                        alert("Failed to update rule: " + response.data);
+                        alert(bbcsRulesL10n.failed_update + response.data);
                     }
                 },
             });
@@ -389,7 +389,7 @@
                             .val(expiresFormattedDate);
                         $("#editRuleModal").modal("show");
                     } else {
-                        alert("Failed to load rule details: " + response.data);
+                        alert(bbcsRulesL10n.failed_load + response.data);
                     }
                 },
             });
@@ -397,7 +397,7 @@
 
         $("#botblocker-rules").on("click", ".delete-rule", function () {
             var id = $(this).data("id");
-            if (confirm("Are you sure you want to delete this rule?")) {
+            if (confirm(bbcsRulesL10n.confirm_delete)) {
                 $.ajax({
                     url: botblockerData.ajaxurl,
                     type: "POST",
@@ -449,7 +449,7 @@
                         $("#createRuleModal").modal("hide");
                         $("#botblocker-rules").DataTable().ajax.reload();
                     } else {
-                        alert("Failed to create rule: " + response.data);
+                        alert(bbcsRulesL10n.failed_create + response.data);
                     }
                 },
             });
@@ -477,7 +477,7 @@
                         downloadLink.click();
                         document.body.removeChild(downloadLink);
                     } else {
-                        alert("Failed to export rules: " + response.data);
+                        alert(bbcsRulesL10n.failed_export + response.data);
                     }
                 },
             });
@@ -507,7 +507,7 @@
                                         .ajax.reload();
                                 } else {
                                     alert(
-                                        "Failed to import rules: " +
+                                        bbcsRulesL10n.failed_import +
                                             response.data
                                     );
                                 }
@@ -532,7 +532,7 @@
                         if (response.success) {
                             $("#botblocker-rules").DataTable().ajax.reload();
                         } else {
-                            alert("Failed to clear rules: " + response.data);
+                            alert(bbcsRulesL10n.failed_clear + response.data);
                         }
                     },
                 });

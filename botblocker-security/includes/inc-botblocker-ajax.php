@@ -23,5 +23,7 @@ include_once BOTBLOCKER_DIR . 'includes/ajax/inc-botblocker-ajax-asn.php';
 
 include_once BOTBLOCKER_DIR . 'includes/ajax/inc-botblocker-ajax-proxy.php';
 
+include_once BOTBLOCKER_DIR . 'includes/ajax/inc-botblocker-ajax-geo.php';
+
 // Include the file with common ajax functions.
 include_once BOTBLOCKER_DIR . 'includes/ajax/inc-botblocker-ajax-common.php';

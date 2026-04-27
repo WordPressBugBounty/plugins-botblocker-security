@@ -1,6 +1,38 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
+function bbcs_ajax_ip_rate_limit( string $action, int $limit = 10, int $window = HOUR_IN_SECONDS ): bool {
+	$raw_ip = isset( $_SERVER['REMOTE_ADDR'] ) ? (string) $_SERVER['REMOTE_ADDR'] : '';
+	if ( $raw_ip === '' ) {
+		// No IP available (CLI / unit-test context) - allow without limiting.
+		return true;
+	}
+
+	$key  = 'bbcs_rl_' . sanitize_key( $action ) . '_' . md5( $raw_ip );
+	$data = get_transient( $key );
+
+	if ( $data === false ) {
+		set_transient( $key, array( 'count' => 1, 'since' => time() ), $window );
+		return true;
+	}
+
+	if ( ! is_array( $data ) ) {
+		$data = array( 'count' => (int) $data, 'since' => time() - $window );
+	}
+
+	if ( time() - $data['since'] >= $window ) {
+		set_transient( $key, array( 'count' => 1, 'since' => time() ), $window );
+		return true;
+	}
+
+	if ( $data['count'] >= $limit ) {
+		return false;
+	}
+
+	set_transient( $key, array( 'count' => $data['count'] + 1, 'since' => $data['since'] ), $window );
+	return true;
+}
+
 function bbcs_expandIPv6($ip)
 {
     $ip = strstr($ip, '/', true) ?: $ip;

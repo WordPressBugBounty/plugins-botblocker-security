@@ -505,6 +505,36 @@ function bbcs_clear_transients_ajax()
 }
 add_action('wp_ajax_bbcs_clear_transients', 'bbcs_clear_transients_ajax');
 
+function bbcs_update_asn_database_ajax()
+{
+	check_ajax_referer('botblocker_nonce', 'nonce');
+
+	if (!current_user_can(bbcs_can_manage())) {
+		wp_send_json_error(['message' => __('Not enough permissions to perform the operation.', 'botblocker-security')]);
+		return;
+	}
+
+	if (!function_exists('bbcs_asn_db_schedule_download')) {
+		wp_send_json_error(['message' => __('ASN database module is not available.', 'botblocker-security')]);
+		return;
+	}
+
+	delete_transient('bbcs_asn_db_lock');
+
+	$scheduled = bbcs_asn_db_schedule_download('manual', 15);
+
+	if ($scheduled) {
+		wp_send_json_success([
+			'message' => __('ASN database update scheduled. The download will start shortly in the background.', 'botblocker-security'),
+		]);
+	} else {
+		wp_send_json_success([
+			'message' => __('ASN database update is already scheduled.', 'botblocker-security'),
+		]);
+	}
+}
+add_action('wp_ajax_bbcs_update_asn_database', 'bbcs_update_asn_database_ajax');
+
 function bbcs_clear_hits_database()
 {
 	global $wpdb;

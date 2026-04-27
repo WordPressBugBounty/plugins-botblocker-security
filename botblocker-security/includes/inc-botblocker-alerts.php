@@ -35,6 +35,11 @@ function bbcs_alerts_get_all(): array
 		$alerts[] = $addon_incompatible_alert;
 	}
 
+	$asn_db_failed_alert = get_transient('bbcs_asn_db_failed_alert');
+	if (!empty($asn_db_failed_alert)) {
+		$alerts[] = $asn_db_failed_alert;
+	}
+
 	// Cache plugin compatibility warnings
 	$cache_alert = bbcs_alerts_detect_cache_incompatibility();
 	if (!empty($cache_alert)) {
@@ -97,6 +102,24 @@ function bbcs_alerts_set_cloud_api_hits_exhausted($hits_left = null): void
 	];
 
 	set_transient('bbcs_cloud_api_hits_exhausted_alert', $alert, DAY_IN_SECONDS);
+}
+
+function bbcs_alerts_set_asn_db_failed(string $error_code = ''): void
+{
+	$alert = [
+		'type'    => 'asn_db_failed',
+		'icon'    => 'fas fa-database bg-warning text-light',
+		'title'   => __('ASN Database Update Failed', 'botblocker-security'),
+		'message' => $error_code !== ''
+			? sprintf(
+				/* translators: %s: short error code returned by the downloader. */
+				__('Could not download the ASN database (%s). Will retry automatically.', 'botblocker-security'),
+				$error_code
+			)
+			: __('Could not download the ASN database. Will retry automatically.', 'botblocker-security'),
+	];
+
+	set_transient('bbcs_asn_db_failed_alert', $alert, DAY_IN_SECONDS);
 }
 
 /**

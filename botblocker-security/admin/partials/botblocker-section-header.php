@@ -14,6 +14,8 @@ $bbcs_alerts = bbcs_alerts_get_all();
 
 $bbcs_has_pro = bbcs_isCloudAPIActive();
 
+//require_once BOTBLOCKER_DIR . 'includes/data/botblocker-marketing-blocks.php';
+
 ?><header class="header">
 	<div class="logo-container">
 		<a href="<?php echo esc_url($BBCSA->pages_dashboard);?>" class="logo">
@@ -26,6 +28,8 @@ $bbcs_has_pro = bbcs_isCloudAPIActive();
 			<i class="fas fa-bars" aria-label="Toggle sidebar"></i>
 		</div>
 	</div>
+
+	<?php //bbcs_render_header_narrative(); ?>
  
 	<div class="header-right">
 		<?php 
@@ -50,8 +54,8 @@ $bbcs_has_pro = bbcs_isCloudAPIActive();
 		
 		<span class="bbcs-header-pro-button">
 			<?php if ($bbcs_has_pro == false): ?>
-				<a href="<?php echo esc_url($BBCSA->pages_cloud_api); ?>" class="mt-2 btn btn-xs btn-default"><i class="fa-solid fa-crown"></i>&nbsp;
-				<?php esc_html_e( 'Upgrade to PRO', 'botblocker-security'); ?>
+				<a href="<?php echo esc_url($BBCSA->pages_cloud_api); ?>" class="mt-2 btn btn-xs btn-warning bbcs-header-upgrade-cta"><i class="fa-solid fa-crown"></i>&nbsp;<b>
+				<?php esc_html_e( 'Upgrade to PRO', 'botblocker-security'); ?></b>
 			</a>
 			<?php endif; ?>	
 			<?php if ($bbcs_has_pro == true): ?>

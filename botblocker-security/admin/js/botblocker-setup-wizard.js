@@ -61,7 +61,7 @@
                 // Skip button
                 $(document).on('click', '.bbcs-wizard-skip', (e) => {
                     e.preventDefault();
-                    if (confirm('Вы уверены? Мы применим настройки по умолчанию (Balanced).')) {
+                    if (confirm(bbcs_setup_wizard_vars.i18n.confirm_apply_defaults)) {
                         this.applyDefaultsAndFinish();
                     }
                 });
@@ -422,13 +422,13 @@
                         if (response.success) {
                             this.goToStep(2);
                         } else {
-                            alert('Error: ' + (response.data || 'Unknown error'));
-                            $('.bbcs-wizard-apply-preset').prop('disabled', false).text('Apply preset');
+                            alert(bbcs_setup_wizard_vars.i18n.error_prefix + (response.data || bbcs_setup_wizard_vars.i18n.unknown_error));
+                            $('.bbcs-wizard-apply-preset').prop('disabled', false).text(bbcs_setup_wizard_vars.i18n.apply_preset);
                         }
                     },
                     error: () => {
-                        alert('AJAX error');
-                        $('.bbcs-wizard-apply-preset').prop('disabled', false).text('Apply preset');
+                        alert(bbcs_setup_wizard_vars.i18n.ajax_error);
+                        $('.bbcs-wizard-apply-preset').prop('disabled', false).text(bbcs_setup_wizard_vars.i18n.apply_preset);
                     }
                 });
             },
@@ -447,11 +447,11 @@
                         if (response.success) {
                             this.displayTestResults(response.data);
                         } else {
-                            alert('Test failed: ' + (response.data || 'Unknown error'));
+                            alert(bbcs_setup_wizard_vars.i18n.test_failed_prefix + (response.data || bbcs_setup_wizard_vars.i18n.unknown_error));
                         }
                     },
                     error: () => {
-                        alert('AJAX error during compatibility test');
+                        alert(bbcs_setup_wizard_vars.i18n.ajax_error_compat);
                     }
                 });
             },
@@ -489,7 +489,7 @@
             
             fixCompatibilityAuto: function() {
                 // TODO: автофикс проблем совместимости
-                alert('Автоматическое исправление применено (заглушка). Переходим дальше.');
+                alert(bbcs_setup_wizard_vars.i18n.auto_fix_stub);
                 this.goToStep(3);
             },
             
@@ -517,7 +517,7 @@
                 if (!$btn.data('original-text')) {
                     $btn.data('original-text', $btn.html());
                 }
-                $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> Saving...');
+                $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> ' + bbcs_setup_wizard_vars.i18n.saving);
                 
                 $.ajax({
                     url: bbcs_setup_wizard_vars.ajax_url,
@@ -531,12 +531,12 @@
                         if (response.success) {
                             this.goToStep(5);
                         } else {
-                            alert('Error: ' + (response.data || 'Unknown error'));
+                            alert(bbcs_setup_wizard_vars.i18n.error_prefix + (response.data || bbcs_setup_wizard_vars.i18n.unknown_error));
                             $btn.prop('disabled', false).html($btn.data('original-text'));
                         }
                     },
                     error: () => {
-                        alert('AJAX error during captcha save');
+                        alert(bbcs_setup_wizard_vars.i18n.ajax_error_captcha);
                         $btn.prop('disabled', false).html($btn.data('original-text'));
                     }
                 });
@@ -547,7 +547,7 @@
                 if (!$btn.data('original-text')) {
                     $btn.data('original-text', $btn.html());
                 }
-                $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> Saving...');
+                $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> ' + bbcs_setup_wizard_vars.i18n.saving);
                 
                 $.ajax({
                     url: bbcs_setup_wizard_vars.ajax_url,
@@ -561,12 +561,12 @@
                         if (response.success) {
                             this.goToStep(6);
                         } else {
-                            alert('Error: ' + (response.data || 'Unknown error'));
+                            alert(bbcs_setup_wizard_vars.i18n.error_prefix + (response.data || bbcs_setup_wizard_vars.i18n.unknown_error));
                             $btn.prop('disabled', false).html($btn.data('original-text'));
                         }
                     },
                     error: () => {
-                        alert('AJAX error during init mode save');
+                        alert(bbcs_setup_wizard_vars.i18n.ajax_error_init);
                         $btn.prop('disabled', false).html($btn.data('original-text'));
                     }
                 });
@@ -615,7 +615,7 @@
                 if (!$btn.data('original-text')) {
                     $btn.data('original-text', $btn.html());
                 }
-                $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> Saving...');
+                $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> ' + bbcs_setup_wizard_vars.i18n.saving);
                 
                 $.ajax({
                     url: bbcs_setup_wizard_vars.ajax_url,
@@ -629,12 +629,12 @@
                         if (response.success) {
                             this.goToStep(7);
                         } else {
-                            alert('Error: ' + (response.data || 'Unknown error'));
+                            alert(bbcs_setup_wizard_vars.i18n.error_prefix + (response.data || bbcs_setup_wizard_vars.i18n.unknown_error));
                             $btn.prop('disabled', false).html($btn.data('original-text'));
                         }
                     },
                     error: () => {
-                        alert('AJAX error during cache save');
+                        alert(bbcs_setup_wizard_vars.i18n.ajax_error_cache);
                         $btn.prop('disabled', false).html($btn.data('original-text'));
                     }
                 });

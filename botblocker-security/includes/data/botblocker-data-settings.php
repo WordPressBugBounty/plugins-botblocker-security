@@ -94,6 +94,8 @@ function bbcs_get_allowed_fields(): array {
         'memcached_prefix',
         'mu_enable',
         'noarchive',
+        'payment_bypass_enable',
+        'payment_bypass_log',
         'ptr_cache_in_db',
         'ptrcache_time',
         'pusher_notifications',
@@ -235,6 +237,9 @@ function bbcs_loadDefaultSettings(){
         'cloud_api_timeout' => 5,
         'vary_cookie' => 0,
 
+        'payment_bypass_enable' => 0,
+        'payment_bypass_log'    => 1,
+
         'telegram_notifications' => 0,
         'email_notifications' => 0,
         'pusher_notifications' => 0,
@@ -255,10 +260,6 @@ function bbcs_loadLightSecurity(){
     return array(
         'secure_mode' => 2,
         'disable' => 0,
-        'bbcs_captcha_img_inline' => 1,
-        'bbcs_captcha_img_pack' => 1,
-        'bbcs_captcha_mode' => 0,
-        'bbcs_captcha_wait' => 30,
 
         'block_empty_ua' => 1,
         'block_empty_lang' => 1,
@@ -325,10 +326,6 @@ function bbcs_loadStrongSecurity(){
     return array(
         'secure_mode' => 2,
         'disable' => 0,
-        'bbcs_captcha_img_inline' => 1,
-        'bbcs_captcha_img_pack' => 1,
-        'bbcs_captcha_mode' => BOTBLOCKER_CAPTCHA_MODE_DEFAULT,
-        'bbcs_captcha_wait' => 30,
 
         'block_empty_ua' => 1,
         'block_empty_lang' => 1,
@@ -359,7 +356,7 @@ function bbcs_loadStrongSecurity(){
         'header_error_code' => 400,
         'samesite' => 'Lax', 
         'iframe_stop' => 1, 
-        'hosting_block' => 1, 
+        'hosting_block' => 0, 
         'block_fake_ref' => 1, 
 
         'recaptcha_check' => 1,
@@ -396,10 +393,6 @@ function bbcs_loadFullSecurity(){
     return array(
         'secure_mode' => 2,
         'disable' => 0,
-        'bbcs_captcha_img_inline' => 1,
-        'bbcs_captcha_img_pack' => 1,
-        'bbcs_captcha_mode' => BOTBLOCKER_CAPTCHA_MODE_DEFAULT,
-        'bbcs_captcha_wait' => 30,
 
         'block_empty_ua' => 1,
         'block_empty_lang' => 1,

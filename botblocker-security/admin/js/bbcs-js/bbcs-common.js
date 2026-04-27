@@ -139,7 +139,7 @@
                     }
                 },
                 error: function (xhr, status, error) {
-                    alert("AJAX Error: " + error);
+                    alert(bbcsCommonL10n.ajax_error + error);
                 },
             });
         }
@@ -179,7 +179,7 @@
                     }
                 },
                 error: function (xhr, status, error) {
-                    alert("AJAX Error: " + error);
+                    alert(bbcsCommonL10n.ajax_error + error);
                 },
             });
         }
@@ -209,7 +209,7 @@
                     }
                 },
                 error: function (xhr, status, error) {
-                    alert("AJAX Error: " + error);
+                    alert(bbcsCommonL10n.ajax_error + error);
                 },
             });
         }
@@ -223,7 +223,7 @@
             if (!earlyAvailable && EarlyInitEnabled) {
 
                 $el.prop('checked', false);
-                var go = confirm('Early Init requires active Cloud API Connection and the Early Init addon. Open Addons page?');
+                var go = confirm(bbcsCommonL10n.early_init_confirm);
                 if (go && addonsUrl) { window.location.href = addonsUrl; }
                 return;
             }
@@ -253,7 +253,7 @@
                     }
                 },
                 error: function (xhr, status, error) {
-                    alert("AJAX Error: " + error);
+                    alert(bbcsCommonL10n.ajax_error + error);
                 },
             });
         }
@@ -317,7 +317,7 @@
                 button.querySelector('i').setAttribute('title', 'Copy to clipboard');
             }, 2000);
         }).catch(err => {
-            alert('Failed to copy: ' + err);
+            alert(bbcsCommonL10n.failed_copy + err);
         });
     };
 
@@ -469,7 +469,7 @@
                 error: function (xhr, status, error) {
                     $btn.prop('disabled', false).html(initialText);
                     const errorMsg = (xhr.responseJSON && xhr.responseJSON.data) ? xhr.responseJSON.data : error;
-                    alert('Error: ' + errorMsg);
+                    alert(bbcsCommonL10n.error_prefix + errorMsg);
                 }
             });
         });
