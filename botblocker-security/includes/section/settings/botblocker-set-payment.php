@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 					<?php esc_html_e( 'Bypass BotBlocker checks for incoming payment gateway callbacks (webhooks / IPN / postbacks) so legitimate payment notifications are never blocked.', 'botblocker-security' ); ?>
 				</p>
 				<p class="bbcs-info-text">
-					<?php esc_html_e( 'Covered: WooCommerce wc-api / wc-ajax, WC REST, EDD, Give, Memberpress, RCP, PMPro, Surecart, plus payment-specific paths and admin-ajax actions for Stripe, PayPal, Mollie, Adyen, Braintree, Square, Razorpay, YooKassa, Tinkoff, CloudPayments, Robokassa, Sberbank, WayForPay, LiqPay, Fondy, PayU, Klarna, Paystack, Flutterwave, GoCardless, Paddle, Authorize.Net, 2Checkout and many others.', 'botblocker-security' ); ?>
+					<?php esc_html_e( 'Covered: WooCommerce wc-api / wc-ajax, WC REST, EDD, Give, Memberpress, RCP, PMPro, Surecart, plus payment-specific paths and admin-ajax actions for Stripe, PayPal, Mollie, Adyen, Braintree, Square, Razorpay, CloudPayments, WayForPay, LiqPay, Fondy, PayU, Klarna, Paystack, Flutterwave, GoCardless, Paddle, Authorize.Net, 2Checkout and many others.', 'botblocker-security' ); ?>
 				</p>
 				<p class="bbcs-info-text">
 					<?php esc_html_e( 'Only safe HTTP methods (GET, POST, HEAD) are bypassed. Hard IP blacklists and country blocks still apply.', 'botblocker-security' ); ?>

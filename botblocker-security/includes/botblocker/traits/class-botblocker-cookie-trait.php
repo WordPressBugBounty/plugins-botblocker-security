@@ -140,18 +140,14 @@ trait BotBlockerCookieTrait {
 
         $secure = ( $samesite === 'None' ) ? true : self::is_secure_connection();
 
-        if ( version_compare( PHP_VERSION, '7.3.0', '>=' ) ) {
-            setcookie( $name, (string) $value, [
-                'expires'  => $expires,
-                'path'     => '/',
-                'domain'   => $domain,
-                'secure'   => $secure,
-                'httponly' => $httponly,
-                'samesite' => $samesite,
-            ] );
-        } else {
-            setcookie( $name, (string) $value, $expires, '/' . ( $domain ? '; Domain=' . $domain : '' ) . ( $secure ? '; Secure' : '' ) . ( $httponly ? '; HttpOnly' : '' ) );
-        }
+        setcookie( $name, (string) $value, [
+            'expires'  => $expires,
+            'path'     => '/',
+            'domain'   => $domain,
+            'secure'   => $secure,
+            'httponly' => $httponly,
+            'samesite' => $samesite,
+        ] );
     }
 
     private static function is_secure_connection(): bool

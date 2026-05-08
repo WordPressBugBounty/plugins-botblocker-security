@@ -224,12 +224,15 @@ function bbcs_createTables()
     bbcs_create_page_filters_tables();
 }
 
-function bbcs_tablesExist()
+function bbcs_tablesExist( bool $reset = false )
 {
     global $wpdb;
 
     static $memo = [];
     $blog_id = get_current_blog_id();
+    if ( $reset ) {
+        unset( $memo[$blog_id] );
+    }
     if (isset($memo[$blog_id])) {
         return $memo[$blog_id];
     }

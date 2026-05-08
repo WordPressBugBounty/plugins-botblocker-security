@@ -16,6 +16,7 @@ class Cyber_Secure_Botblocker
 		$this->plugin_name = 'botblocker-security';
 
 		$this->load_dependencies();
+		add_filter( 'load_textdomain_mofile', array( $this, 'bbcs_force_local_translations' ), 20, 2 );
 		$this->set_locale();
 		$this->define_admin_hooks();
 	}
@@ -31,6 +32,8 @@ class Cyber_Secure_Botblocker
 
 	private function set_locale()
 	{
+		unload_textdomain($this->plugin_name);
+		
 		$plugin_i18n = new Botblocker_i18n();
 
 		if (isset($_COOKIE['bbcs_preferred_language'])) {
@@ -48,7 +51,7 @@ class Cyber_Secure_Botblocker
 				);
 			}
 		} else {
-			$this->loader->add_action('plugins_loaded', $plugin_i18n, 'load_plugin_textdomain');
+			$plugin_i18n->load_plugin_textdomain();
 		}
 	}
 
@@ -80,5 +83,33 @@ class Cyber_Secure_Botblocker
 	public function get_version()
 	{
 		return $this->version;
+	}
+
+	public function bbcs_force_local_translations( $mofile, $domain ) {
+		if ( $domain !== $this->plugin_name ) {
+			return $mofile;
+		}
+
+		if ( isset( $_COOKIE['bbcs_preferred_language'] ) ) {
+			$preferred = sanitize_text_field( wp_unslash( $_COOKIE['bbcs_preferred_language'] ) );
+			$preferred_path = BOTBLOCKER_DIR . 'languages/botblocker-security-' . $preferred . '.mo';
+			if ( file_exists( $preferred_path ) ) {
+				return $preferred_path;
+			}
+		}
+
+		$locale = determine_locale();
+		$local_mofile = BOTBLOCKER_DIR . 'languages/botblocker-security-' . $locale . '.mo';
+
+		if ( file_exists( $local_mofile ) ) {
+			return $local_mofile;
+		}
+
+		$default = BOTBLOCKER_DIR . 'languages/botblocker-security-en_US.mo';
+		if ( file_exists( $default ) ) {
+			return $default;
+		}
+
+		return false;
 	}
 }

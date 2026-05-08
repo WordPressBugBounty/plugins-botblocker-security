@@ -94,11 +94,20 @@ trait BotBlockerPaymentTrait {
         if ( $uri === '' ) {
             return null;
         }
+
+        $path = function_exists( 'wp_parse_url' )
+            ? wp_parse_url( $uri, PHP_URL_PATH )
+            : parse_url( $uri, PHP_URL_PATH );
+
+        if ( ! is_string( $path ) || $path === '' ) {
+            $path = explode( '?', $uri, 2 )[0];
+        }
+
         foreach ( bbcs_get_payment_paths() as $needle ) {
             if ( $needle === '' ) {
                 continue;
             }
-            if ( stripos( $uri, $needle ) !== false ) {
+            if ( stripos( $path, $needle ) !== false ) {
                 return $needle;
             }
         }

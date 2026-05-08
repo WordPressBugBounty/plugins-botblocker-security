@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
  * This class is responsible for all the operations against bots.
  * It handles detections, logging, and blocking of suspicious bot activities.
  * 
- * @version    1.6.18
+ * @version    1.6.19
  * @author     BotBlocker Team
  * @package    Botblocker 
  * @subpackage Botblocker/includes

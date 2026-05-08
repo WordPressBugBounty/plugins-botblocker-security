@@ -491,10 +491,6 @@ trait BotBlockerVisitorTrait {
 
     public function is_wordpress_heartbeat(): bool
     {
-       // REVIEWER NOTE: Heartbeat is a core WP AJAX action, not user form data
-        if ( ! check_ajax_referer('botblocker_nonce', 'nonce', false) ){
-            $this->nonce_silent_protection = true;
-        }
         if (isset($this->uri) && strpos($this->uri, '/wp-admin/admin-ajax.php') !== false) {
             if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'heartbeat') {
                 return true;

@@ -43,10 +43,6 @@ trait BotBlockerCheckPageTrait {
     
    private function prepare_check_js_data() {
 
-        if ( ! check_ajax_referer('botblocker_nonce', 'nonce', false) ){
-            $this->nonce_silent_protection = true;
-        }
-
         $botblocker_parse_url = wp_parse_url($this->uri); 
         $botblocker_output = array();
         

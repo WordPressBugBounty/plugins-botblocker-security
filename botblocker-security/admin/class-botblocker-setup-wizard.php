@@ -291,6 +291,10 @@ private function render_wizard_content() {
 									nonce: '<?php echo wp_create_nonce('bbcs-wizard-admin-nonce'); ?>'
 								},
 								success: function() {
+									try {
+										localStorage.removeItem('bbcs_wizard_progress');
+										localStorage.removeItem('bbcs_wizard_contact_email');
+									} catch (error) {}
 									window.location.reload();
 								}
 							});

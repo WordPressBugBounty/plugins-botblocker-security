@@ -8,9 +8,6 @@ trait BotBlockerResponseTrait {
         if ($this->settings->noarchive == 1) {
             $this->x_robots_tag['noarchive'] = 'noarchive';
         }
-        if ( ! check_ajax_referer('botblocker_nonce', 'nonce', false) ) {
-            $this->nonce_silent_protection = true;
-        }
         if (isset($_GET['utm_referrer']) && $this->settings->utm_noindex == 1) {
             $this->x_robots_tag['noindex'] = 'noindex';
         }

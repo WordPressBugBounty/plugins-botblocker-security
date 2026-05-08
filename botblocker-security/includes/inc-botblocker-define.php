@@ -6,7 +6,7 @@ define('BOTBLOCKER_SHORT_NAME', 'BotBlocker'); // A shorter version of the plugi
 if(!defined('BOTBLOCKER_TABLE_PREFIX')) define('BOTBLOCKER_TABLE_PREFIX', 'bbcs_'); // The prefix used for database tables
 define('BOTBLOCKER_PREFIX', 'bb_'); // The prefix used for settings and options
 
-define('BOTBLOCKER_VERSION', '1.6.18'); // The version number of the plugin
+define('BOTBLOCKER_VERSION', '1.6.19'); // The version number of the plugin
 define('BOTBLOCKER_DB_VERSION', '2.5.0'); // The database version of the plugin
 define('BOTBLOCKER_WIZARD_ON_UPDATE', false); // Show setup wizard after plugin update
 define('BOTBLOCKER_MODE_STABLE', 'stable');
@@ -75,7 +75,7 @@ define('BBCS_CACHE_DEBUG', false);
 // PRINT HIVE AND STOP if DIE (ONLY FOR DEBUG)              
 define('BBCS_DIE_MESSAGE', false);  
 // ONLY FOR DEBUG        
-define('BBCS_BLOCK_REASON_VIEW', true);    
+define('BBCS_BLOCK_REASON_VIEW', false); // TRUE to show block reason in the block message (for testing purposes only, not recommended for production)    
 // ONLY FOR DEBUG  
 define('BBCS_FATAL_ERROR_HIVE', true);  
 // If true, errors will be logged to debug.log
@@ -83,7 +83,7 @@ define('BBCS_LOG_TO_DEBUG', true);
 // Stop execution on fatal errors
 define('BBCS_ERROR_EXIT', false);
 // 
-define('BOTBLOCKER_MODE', BOTBLOCKER_MODE_DEV); 
+define('BOTBLOCKER_MODE', BOTBLOCKER_MODE_STABLE); 
 
 define('BBCS_STOP_DIRECT','<?php
 // If this file is called directly, abort.

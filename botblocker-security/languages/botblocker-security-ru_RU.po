@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: BotBlocker\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-07-27 19:12+0000\n"
-"PO-Revision-Date: 2026-04-26 09:30+0000\n"
+"PO-Revision-Date: 2026-05-05 19:39+0000\n"
 "Last-Translator: \n"
 "Language-Team: Русский\n"
 "Language: ru_RU\n"
@@ -142,8 +142,8 @@ msgstr "30 минут"
 msgid "404 Not Found"
 msgstr "404 Не найдено"
 
-#: admin/class-botblocker-setup-wizard.php:470
-#: admin/class-botblocker-setup-wizard.php:1059
+#: admin/class-botblocker-setup-wizard.php:474
+#: admin/class-botblocker-setup-wizard.php:1063
 msgid "5 million+ bot signatures"
 msgstr "5+ миллионов сигнатур ботов"
 
@@ -276,7 +276,7 @@ msgstr "О механизме временного кэширования (trans
 msgid "Accept-Language"
 msgstr "Accept-Language"
 
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:122
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:118
 msgid "Access approved. Redirecting..."
 msgstr "Доступ разрешен. Перенаправление..."
 
@@ -286,7 +286,7 @@ msgid "Access denied. Please enable JavaScript and cookies."
 msgstr "Доступ запрещен. Пожалуйста, включите JavaScript и cookie."
 
 #: includes/botblocker/traits/class-botblocker-block-page-trait.php:29
-#: includes/botblocker/traits/class-botblocker-response-trait.php:270
+#: includes/botblocker/traits/class-botblocker-response-trait.php:267
 msgid "Access has been blocked"
 msgstr "Доступ заблокирован"
 
@@ -336,7 +336,7 @@ msgstr "Активировать BotBlocker PRO"
 msgid "Activate brute-force login protection."
 msgstr "Активируйте защиту от брутфорса админки."
 
-#: admin/class-botblocker-setup-wizard.php:827
+#: admin/class-botblocker-setup-wizard.php:831
 msgid "Activates before other plugins"
 msgstr "Активируется раньше других плагинов"
 
@@ -554,7 +554,7 @@ msgid "Admin logins, failed attempts, sensitive panel access traces."
 msgstr ""
 "Входы администратора, неудачные попытки и следы доступа к защищённой панели."
 
-#: admin/class-botblocker-setup-wizard.php:515
+#: admin/class-botblocker-setup-wizard.php:519
 msgid "Admin Panel"
 msgstr "Панель администратора"
 
@@ -566,7 +566,7 @@ msgstr "admin@botblocker.top"
 msgid "Administrator Settings"
 msgstr "Настройки администратора"
 
-#: admin/class-botblocker-setup-wizard.php:597
+#: admin/class-botblocker-setup-wizard.php:601
 msgid "Admins will never be blocked while logged in"
 msgstr "Администраторы никогда не блокируются, пока они авторизованы"
 
@@ -578,7 +578,7 @@ msgstr "Расширенная аналитика и анализ данных"
 msgid "Advanced bot detection"
 msgstr "Продвинутое обнаружение ботов"
 
-#: admin/class-botblocker-setup-wizard.php:913
+#: admin/class-botblocker-setup-wizard.php:917
 msgid "Advanced data structures"
 msgstr "Продвинутые структуры данных"
 
@@ -600,16 +600,16 @@ msgstr ""
 msgid "Advanced reporting, analytics & forensics"
 msgstr "Расширенные возможности отчетности, аналитики и анализа данных"
 
-#: admin/class-botblocker-setup-wizard.php:1044
+#: admin/class-botblocker-setup-wizard.php:1048
 msgid "Advanced security features for production sites."
 msgstr "Расширенные функции безопасности для сайтов с посетителями."
 
-#: admin/class-botblocker-setup-wizard.php:1032
+#: admin/class-botblocker-setup-wizard.php:1036
 #: admin/partials/botblocker-admin-display-settings.php:87
 msgid "Advanced Settings"
 msgstr "Расширенные настройки"
 
-#: admin/class-botblocker-setup-wizard.php:449
+#: admin/class-botblocker-setup-wizard.php:453
 msgid "Advanced threat detection"
 msgstr "Продвинутое обнаружение угроз"
 
@@ -617,11 +617,11 @@ msgstr "Продвинутое обнаружение угроз"
 msgid "After the repair is completed,"
 msgstr "После завершения восстановления,"
 
-#: admin/class-botblocker-setup-wizard.php:1052
+#: admin/class-botblocker-setup-wizard.php:1056
 msgid "AI Behavioral analysis"
 msgstr "ИИ-анализ поведения"
 
-#: admin/class-botblocker-setup-wizard.php:472
+#: admin/class-botblocker-setup-wizard.php:476
 msgid "AI Behavioral analysis engine"
 msgstr "AI-движок поведенческого анализа"
 
@@ -660,7 +660,7 @@ msgstr ""
 msgid "Alerts"
 msgstr "Оповещения"
 
-#: admin/class-botblocker-setup-wizard.php:469
+#: admin/class-botblocker-setup-wizard.php:473
 msgid "All add-ons included (tools, security, notifications, etc.)"
 msgstr "Все аддоны включены (инструменты, безопасность, уведомления и т.д.)"
 
@@ -688,7 +688,7 @@ msgstr "Все правила IPv4 были удалены."
 msgid "All IPv6 rules have been cleared."
 msgstr "Все правила IPv6 были удалены."
 
-#: admin/class-botblocker-setup-wizard.php:780
+#: admin/class-botblocker-setup-wizard.php:784
 msgid ""
 "All methods can be combined with invisible background checks. Choose the one "
 "that fits your site."
@@ -708,7 +708,7 @@ msgstr "Всё оптимизировано!"
 msgid "All paths have been cleared."
 msgstr "Все пути были удалены."
 
-#: admin/class-botblocker-setup-wizard.php:1060
+#: admin/class-botblocker-setup-wizard.php:1064
 msgid "All Premium Add-ons"
 msgstr "Все премиум-дополнения"
 
@@ -720,7 +720,7 @@ msgstr "Все премиум-дополнения включены"
 msgid "All previous error records will be deleted."
 msgstr "Все предыдущие записи об ошибках будут удалены."
 
-#: admin/class-botblocker-setup-wizard.php:1074
+#: admin/class-botblocker-setup-wizard.php:1078
 msgid "All PRO features are active."
 msgstr "Все функции PRO активны."
 
@@ -732,7 +732,7 @@ msgstr "Все прокси были удалены."
 msgid "All rules have been cleared."
 msgstr "Все правила были удалены."
 
-#: admin/class-botblocker-setup-wizard.php:554
+#: admin/class-botblocker-setup-wizard.php:558
 msgid "All tests passed. Your site is ready."
 msgstr "Все тесты пройдены. Ваш сайт готов."
 
@@ -777,7 +777,7 @@ msgstr "Все транзиенты WordPress будут удалены:"
 msgid "Allow"
 msgstr "Разрешить"
 
-#: admin/class-botblocker-setup-wizard.php:596
+#: admin/class-botblocker-setup-wizard.php:600
 msgid "Allow logged-in administrators"
 msgstr "Разрешить администраторам, вошедшим в систему"
 
@@ -804,7 +804,7 @@ msgstr "Разрешить запросы с IP сервера"
 msgid "Allow requests from your server IP"
 msgstr "Разрешить запросы с IP вашего сервера"
 
-#: admin/class-botblocker-setup-wizard.php:611
+#: admin/class-botblocker-setup-wizard.php:615
 msgid "Allow WordPress Cron and server requests"
 msgstr "Разрешить WordPress Cron и серверные запросы"
 
@@ -882,11 +882,11 @@ msgid "Apply Now"
 msgstr "Применить сейчас"
 
 #: admin/class-botblocker-setup-wizard.php:165
-#: admin/class-botblocker-setup-wizard.php:495
+#: admin/class-botblocker-setup-wizard.php:499
 msgid "Apply preset"
 msgstr "Применить набор настроек"
 
-#: admin/class-botblocker-setup-wizard.php:351
+#: admin/class-botblocker-setup-wizard.php:355
 msgid "Apply the recommended preset in one click (takes ~30 seconds)"
 msgstr "Применить рекомендованные настройки одним кликом (занимает ~30 секунд)"
 
@@ -1063,7 +1063,7 @@ msgstr "Автор"
 msgid "Auto-detected:"
 msgstr "Автоопределение:"
 
-#: admin/class-botblocker-setup-wizard.php:541
+#: admin/class-botblocker-setup-wizard.php:545
 msgid "Auto-Fix (Recommended)"
 msgstr "Авто-исправление (рекомендуется)"
 
@@ -1072,7 +1072,7 @@ msgstr "Авто-исправление (рекомендуется)"
 msgid "Auto-save administrator IPs"
 msgstr "Автоматическое сохранение IP-адресов администратора"
 
-#: admin/class-botblocker-setup-wizard.php:620
+#: admin/class-botblocker-setup-wizard.php:624
 msgid ""
 "Auto-save of admin IPs is available in Settings. 2FA per role can be "
 "configured in Integrations."
@@ -1098,12 +1098,12 @@ msgstr ""
 "Автоматическое сохранение IP-адресов администраторов для предотвращения "
 "блокировки при изменении настроек."
 
-#: admin/class-botblocker-setup-wizard.php:492
-#: admin/class-botblocker-setup-wizard.php:575
-#: admin/class-botblocker-setup-wizard.php:626
-#: admin/class-botblocker-setup-wizard.php:786
-#: admin/class-botblocker-setup-wizard.php:880
-#: admin/class-botblocker-setup-wizard.php:958
+#: admin/class-botblocker-setup-wizard.php:496
+#: admin/class-botblocker-setup-wizard.php:579
+#: admin/class-botblocker-setup-wizard.php:630
+#: admin/class-botblocker-setup-wizard.php:790
+#: admin/class-botblocker-setup-wizard.php:884
+#: admin/class-botblocker-setup-wizard.php:962
 msgid "Back"
 msgstr "Назад"
 
@@ -1136,7 +1136,7 @@ msgstr "Блокировать неотвечающих клиентов"
 msgid "Basic"
 msgstr "Базовый"
 
-#: admin/class-botblocker-setup-wizard.php:434
+#: admin/class-botblocker-setup-wizard.php:438
 msgid "Basic bot blocking"
 msgstr "Базовая блокировка ботов"
 
@@ -1150,7 +1150,7 @@ msgid "Behavioral & AI traffic analysis"
 msgstr ""
 "Анализ трафика на основе поведенческих данных и искусственного интеллекта"
 
-#: admin/class-botblocker-setup-wizard.php:829
+#: admin/class-botblocker-setup-wizard.php:833
 msgid "Better protection for login page"
 msgstr "Улучшенная защита страницы входа"
 
@@ -1408,26 +1408,23 @@ msgstr "Блокировка пользователей VPN"
 msgid "Blocking web engine options"
 msgstr "Блокировка параметров веб-движка"
 
-#: admin/class-botblocker-setup-wizard.php:857
+#: admin/class-botblocker-setup-wizard.php:861
 msgid "Blocks attacks before WP starts"
 msgstr "Блокирует атаки до запуска WordPress"
 
 #. Description of the plugin
-#| msgid ""
-#| "Blocks bots, scrapers and automated threats in real time. CAPTCHA, IP "
-#| "rules, proxy detection, login protection, reCAPTCHA, cloud API and "
-#| "customizable security rules — all in one plugin."
 msgid ""
-"Blocks bots, scrapers and automated threats in real time. CAPTCHA, IP rules, "
-"proxy detection, login protection, reCAPTCHA, cloud API and customizable "
-"security rules - all in one plugin."
+"Blocks bots, brute force attacks, spam and automated threats in real time. "
+"CAPTCHA, IP rules, proxy/vpn/tor detection, login protection, reCAPTCHA, "
+"customizable security rules - all in one plugin. Maximum Security for "
+"WordPress."
 msgstr ""
-"Блокировка ботов, скреперов и автоматизированных угроз в режиме реального "
-"времени. CAPTCHA, правила для IP-адресов, обнаружение прокси, защита логина, "
-"reCAPTCHA, облачный API и настраиваемые правила безопасности - все это в "
-"одном плагине."
+"Блокирует ботов, брутфорс-атаки, спам и автоматизированные угрозы в режиме "
+"реального времени. CAPTCHA, IP-правила, обнаружение прокси/VPN/Tor, защита "
+"входа в систему, reCAPTCHA, настраиваемые правила безопасности - всё в одном "
+"плагине. Максимальная безопасность для WordPress."
 
-#: admin/class-botblocker-setup-wizard.php:339
+#: admin/class-botblocker-setup-wizard.php:343
 msgid "Blocks brute-force, scanners and scrapers before they hit WordPress"
 msgstr ""
 "Блокирует brute-force, сканеры и скреперы ещё до того, как они достигнут "
@@ -1443,11 +1440,11 @@ msgstr ""
 "Блокирует вредоносные боты и нежелательный трафик до того, как они достигнут "
 "вашего сайта."
 
-#: admin/class-botblocker-setup-wizard.php:450
+#: admin/class-botblocker-setup-wizard.php:454
 msgid "Blocks most known bad bots"
 msgstr "Блокирует большинство известных вредоносных ботов"
 
-#: admin/class-botblocker-setup-wizard.php:854
+#: admin/class-botblocker-setup-wizard.php:858
 msgid "Blocks threats before WordPress loads. Maximum security."
 msgstr "Блокирует угрозы ещё до загрузки WordPress. Максимальная защита."
 
@@ -1561,7 +1558,7 @@ msgstr "BotBlocker активен &middot; ожидает трафик"
 msgid "BotBlocker is disabled"
 msgstr "BotBlocker отключен"
 
-#: admin/class-botblocker-setup-wizard.php:976
+#: admin/class-botblocker-setup-wizard.php:980
 msgid "BotBlocker is now monitoring and protecting your site."
 msgstr "BotBlocker теперь контролирует и защищает ваш сайт."
 
@@ -1650,7 +1647,7 @@ msgstr ""
 "Для работы BotBlocker требуется WordPress 5.0 или более поздняя версия."
 
 #: admin/class-botblocker-setup-wizard.php:261
-#: admin/class-botblocker-setup-wizard.php:310
+#: admin/class-botblocker-setup-wizard.php:314
 #: public/2FA/bbcs-2fa-setup.php:121 public/2FA/bbcs-2fa.php:165
 msgid "BotBlocker Security"
 msgstr "Безопасность BotBlocker"
@@ -1712,7 +1709,7 @@ msgstr ""
 msgid "BotBlocker Website"
 msgstr "Сайт BotBlocker"
 
-#: admin/class-botblocker-setup-wizard.php:1092
+#: admin/class-botblocker-setup-wizard.php:1096
 msgid "botblocker.top/contacts"
 msgstr "botblocker.top/contacts"
 
@@ -1860,7 +1857,7 @@ msgstr "Режим Captcha:"
 msgid "Captcha Timeout (seconds):"
 msgstr "Время ожидания Captcha (секунд):"
 
-#: admin/class-botblocker-setup-wizard.php:987
+#: admin/class-botblocker-setup-wizard.php:991
 msgid "CAPTCHA Type:"
 msgstr "Тип CAPTCHA"
 
@@ -1889,7 +1886,7 @@ msgstr "Чат"
 msgid "Check GET Parameters in Referrer"
 msgstr "Проверять GET-параметры в реферере"
 
-#: admin/class-botblocker-setup-wizard.php:1016
+#: admin/class-botblocker-setup-wizard.php:1020
 msgid "Check Reports"
 msgstr "Просмотреть отчеты"
 
@@ -1905,7 +1902,7 @@ msgstr ""
 "Выберите один из методов проверки: кнопка, цвет, изображение, форма, цифра "
 "или reCAPTCHA."
 
-#: admin/class-botblocker-setup-wizard.php:640
+#: admin/class-botblocker-setup-wizard.php:644
 msgid "Choose how suspicious visitors are verified."
 msgstr "Выберите способ проверки подозрительных посетителей."
 
@@ -1935,11 +1932,11 @@ msgid "Choose which security events and visitor activities to log."
 msgstr ""
 "Выберите, какие события безопасности и действия посетителей записывать."
 
-#: admin/class-botblocker-setup-wizard.php:799
+#: admin/class-botblocker-setup-wizard.php:803
 msgid "Choose Your Initialization Mode"
 msgstr "Выберите режим инициализации"
 
-#: admin/class-botblocker-setup-wizard.php:425
+#: admin/class-botblocker-setup-wizard.php:429
 msgid "Choose Your Protection Level"
 msgstr "Выберите уровень защиты"
 
@@ -2051,7 +2048,7 @@ msgstr "Нажмите на подходящий цвет"
 msgid "Click on the matching image"
 msgstr "Нажмите на соответствующее изображение"
 
-#: admin/class-botblocker-setup-wizard.php:690
+#: admin/class-botblocker-setup-wizard.php:694
 msgid "Click the matching color. Simple logic, hard to automate."
 msgstr ""
 "Нажмите на совпадающий цвет. Простая логика, но сложная для автоматизации."
@@ -2179,7 +2176,7 @@ msgstr "Собирать данные об ОС"
 msgid "Color Buttons"
 msgstr "Цветные кнопки"
 
-#: admin/class-botblocker-setup-wizard.php:689
+#: admin/class-botblocker-setup-wizard.php:693
 msgid "Color Matching"
 msgstr "Сопоставление цветов"
 
@@ -2273,7 +2270,7 @@ msgstr ""
 msgid "Compare Plans"
 msgstr "Сравнить тарифы"
 
-#: admin/class-botblocker-setup-wizard.php:504
+#: admin/class-botblocker-setup-wizard.php:508
 msgid "Compatibility Check"
 msgstr "Проверка совместимости"
 
@@ -2281,11 +2278,11 @@ msgstr "Проверка совместимости"
 msgid "Compatibility tests"
 msgstr "Проверка совместимости"
 
-#: admin/class-botblocker-setup-wizard.php:437
+#: admin/class-botblocker-setup-wizard.php:441
 msgid "Compatible with all plugins"
 msgstr "Совместим со всеми плагинами"
 
-#: admin/class-botblocker-setup-wizard.php:814
+#: admin/class-botblocker-setup-wizard.php:818
 msgid "Compatible with all setups"
 msgstr "Совместим со всеми конфигурациями"
 
@@ -2293,7 +2290,7 @@ msgstr "Совместим со всеми конфигурациями"
 msgid "Complete Setup Wizard"
 msgstr "Завершить мастер настройки"
 
-#: admin/class-botblocker-setup-wizard.php:980
+#: admin/class-botblocker-setup-wizard.php:984
 msgid "Configuration Summary"
 msgstr "Сводка конфигурации"
 
@@ -2361,7 +2358,7 @@ msgstr ""
 "Настройка параметров безопасности и автоматизация обнаружения ботов для "
 "снижения нагрузки на сервер и повышения скорости загрузки."
 
-#: admin/class-botblocker-setup-wizard.php:590
+#: admin/class-botblocker-setup-wizard.php:594
 msgid "Configure trusted users and systems that bypass security checks"
 msgstr ""
 "Настройте доверенных пользователей и системы, которые обходят проверки "
@@ -2457,11 +2454,11 @@ msgstr "Контакты и поддержка"
 msgid "Content and Functionality"
 msgstr "Содержание и функциональность"
 
-#: admin/class-botblocker-setup-wizard.php:578
-#: admin/class-botblocker-setup-wizard.php:629
-#: admin/class-botblocker-setup-wizard.php:789
-#: admin/class-botblocker-setup-wizard.php:883
-#: admin/class-botblocker-setup-wizard.php:961
+#: admin/class-botblocker-setup-wizard.php:582
+#: admin/class-botblocker-setup-wizard.php:633
+#: admin/class-botblocker-setup-wizard.php:793
+#: admin/class-botblocker-setup-wizard.php:887
+#: admin/class-botblocker-setup-wizard.php:965
 msgid "Continue"
 msgstr "Продолжить"
 
@@ -2553,7 +2550,7 @@ msgid "Cookies"
 msgstr "Cookies"
 
 #: public/template-botblocker-js.php:399
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:104
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:100
 msgid "Cookies are disabled in your browser. Enable cookies to continue."
 msgstr ""
 "В вашем браузере отключены файлы cookie. Включите cookies, чтобы продолжить."
@@ -2625,17 +2622,15 @@ msgstr "Список стран сохранен."
 msgid ""
 "Covered: WooCommerce wc-api / wc-ajax, WC REST, EDD, Give, Memberpress, RCP, "
 "PMPro, Surecart, plus payment-specific paths and admin-ajax actions for "
-"Stripe, PayPal, Mollie, Adyen, Braintree, Square, Razorpay, YooKassa, "
-"Tinkoff, CloudPayments, Robokassa, Sberbank, WayForPay, LiqPay, Fondy, PayU, "
-"Klarna, Paystack, Flutterwave, GoCardless, Paddle, Authorize.Net, 2Checkout "
-"and many others."
+"Stripe, PayPal, Mollie, Adyen, Braintree, Square, Razorpay, CloudPayments, "
+"WayForPay, LiqPay, Fondy, PayU, Klarna, Paystack, Flutterwave, GoCardless, "
+"Paddle, Authorize.Net, 2Checkout and many others."
 msgstr ""
-"Поддерживаются: WooCommerce wc-api / wc-ajax, WC REST, EDD, Give, "
-"Memberpress, RCP, PMPro, Surecart, а также специальные платежные пути и "
-"действия admin-ajax для Stripe, PayPal, Mollie, Adyen, Braintree, Square, "
-"Razorpay, YooKassa, Tinkoff, CloudPayments, Robokassa, Сбербанка, WayForPay, "
-"LiqPay, Fondy, PayU, Klarna, Paystack, Flutterwave, GoCardless, Paddle, "
-"Authorize.Net, 2Checkout и многие другие."
+"Включено: WooCommerce wc-api / wc-ajax, WC REST, EDD, Give, Memberpress, RCP,"
+" PMPro, Surecart, а также специфические для платежей пути и действия admin-"
+"ajax для Stripe, PayPal, Mollie, Adyen, Braintree, Square, Razorpay, "
+"CloudPayments, WayForPay, LiqPay, Fondy, PayU, Klarna, Paystack, Flutterwave,"
+" GoCardless, Paddle, Authorize.Net, 2Checkout и многие другие."
 
 #: includes/section/settings/botblocker-set-cron.php:27
 msgid "cPanel Cron Jobs"
@@ -2663,7 +2658,7 @@ msgstr ""
 "страны, типа устройства и т. д. Мгновенно реагируйте на новые угрозы, имея "
 "полный контроль над тем, что блокируется."
 
-#: admin/class-botblocker-setup-wizard.php:1025
+#: admin/class-botblocker-setup-wizard.php:1029
 msgid "Create custom block/allow rules"
 msgstr "Создание правил блокировки и доступа"
 
@@ -2733,7 +2728,7 @@ msgstr ""
 msgid "Custom message shown when login is disabled."
 msgstr "Сообщение для пользователей, если вход на сайт отключён."
 
-#: admin/class-botblocker-setup-wizard.php:379
+#: admin/class-botblocker-setup-wizard.php:383
 msgid "Custom rules: IP, User-Agent, PTR, country, paths and more"
 msgstr "Пользовательские правила: IP, User-Agent, PTR, страна, пути и другие"
 
@@ -2741,11 +2736,11 @@ msgstr "Пользовательские правила: IP, User-Agent, PTR, с
 msgid "Custom security rules engine"
 msgstr "Модуль пользовательских правил безопасности"
 
-#: admin/class-botblocker-setup-wizard.php:1033
+#: admin/class-botblocker-setup-wizard.php:1037
 msgid "Customize detection algorithms"
 msgstr "Настройка алгоритмов обнаружения"
 
-#: admin/class-botblocker-setup-wizard.php:359
+#: admin/class-botblocker-setup-wizard.php:363
 msgid "Cuts server load by blocking junk requests early"
 msgstr "Снижает нагрузку на сервер, блокируя мусорные запросы на раннем этапе"
 
@@ -2757,7 +2752,7 @@ msgstr "Ежедневные обновления сигнатур и канал
 msgid "Daily signature updates (5M+ patterns)"
 msgstr "Ежедневные обновления сигнатур (более 5 млн шаблонов)"
 
-#: admin/class-botblocker-setup-wizard.php:383
+#: admin/class-botblocker-setup-wizard.php:387
 msgid "Daily threat updates from Cloud (signatures + bad networks)"
 msgstr "Ежедневные обновления угроз из облака (подписи + неблагонадёжные сети)"
 
@@ -2862,7 +2857,7 @@ msgstr "Деактивировать"
 msgid "Debug WordPress"
 msgstr "Отладка WordPress"
 
-#: admin/class-botblocker-setup-wizard.php:809
+#: admin/class-botblocker-setup-wizard.php:813
 msgid "Default"
 msgstr "По умолчанию"
 
@@ -2911,7 +2906,7 @@ msgstr ""
 msgid "Describe your issue"
 msgstr "Опишите вашу проблему"
 
-#: admin/class-botblocker-setup-wizard.php:1017
+#: admin/class-botblocker-setup-wizard.php:1021
 msgid "Detailed logs of all blocked threats"
 msgstr "Подробные логи всех заблокированных угроз"
 
@@ -3057,7 +3052,7 @@ msgstr "Отключить"
 msgid "Docs and FAQs"
 msgstr "Документация и FAQ"
 
-#: admin/class-botblocker-setup-wizard.php:1083
+#: admin/class-botblocker-setup-wizard.php:1087
 #: admin/partials/botblocker-section-header.php:185
 msgid "Documentation"
 msgstr "Документация"
@@ -3093,7 +3088,7 @@ msgstr "Файл дампа для таблицы %s не найден."
 msgid "Dynamic Digit Captcha"
 msgstr "Динамическая цифровая Captcha"
 
-#: admin/class-botblocker-setup-wizard.php:740
+#: admin/class-botblocker-setup-wizard.php:744
 msgid "Dynamic Digits"
 msgstr "Динамические цифры"
 
@@ -3101,7 +3096,7 @@ msgstr "Динамические цифры"
 msgid "Dynamic Shape Captcha"
 msgstr "Динамическая форма Captcha"
 
-#: admin/class-botblocker-setup-wizard.php:723
+#: admin/class-botblocker-setup-wizard.php:727
 msgid "Dynamic Shapes"
 msgstr "Динамические фигуры"
 
@@ -3149,8 +3144,8 @@ msgstr "Орел"
 msgid "Early init"
 msgstr "Ранняя инициализация"
 
-#: admin/class-botblocker-setup-wizard.php:466
-#: admin/class-botblocker-setup-wizard.php:1048
+#: admin/class-botblocker-setup-wizard.php:470
+#: admin/class-botblocker-setup-wizard.php:1052
 msgid "Early init - blocks before WP loads"
 msgstr "Ранний запуск - блокировка до загрузки WordPress"
 
@@ -3177,7 +3172,7 @@ msgstr ""
 "дальше; мусор отбрасывается как можно раньше."
 
 #. %s: URL to rules page
-#: admin/class-botblocker-setup-wizard.php:871
+#: admin/class-botblocker-setup-wizard.php:875
 #, php-format
 msgid ""
 "Early Init provides instant IP banning. Custom blacklists (IPv4/IPv6) can be "
@@ -3202,7 +3197,7 @@ msgstr "Early Init требует наличия Cloud API и включенно
 msgid "Early init: filtering before WordPress loads"
 msgstr "Ранняя инициация: фильтрация до загрузки WordPress"
 
-#: admin/class-botblocker-setup-wizard.php:852
+#: admin/class-botblocker-setup-wizard.php:856
 #: addons/bbcs-early-init/inc/bbcs-early-init-settings.php:23
 msgid "Early Initialization"
 msgstr "Ранняя инициализация"
@@ -3239,7 +3234,7 @@ msgstr ""
 "Ранняя инициализация включена: фильтрация по черному списку IP и базовым "
 "правилам выполняется до загрузки WordPress. Режим MU не требуется."
 
-#: admin/class-botblocker-setup-wizard.php:1268
+#: admin/class-botblocker-setup-wizard.php:1272
 msgid "Early initialization requires PRO license."
 msgstr "Для ранней инициализации требуется лицензия PRO."
 
@@ -3247,12 +3242,12 @@ msgstr "Для ранней инициализации требуется лиц
 msgid "Early Initialization runs BotBlocker before WordPress core loads."
 msgstr "Ранняя инициализация запускает BotBlocker до загрузки ядра WordPress."
 
-#: admin/class-botblocker-setup-wizard.php:367
+#: admin/class-botblocker-setup-wizard.php:371
 msgid "Early protection mode: blocks bad requests before WordPress loads"
 msgstr ""
 "Режим ранней защиты: блокирует вредоносные запросы до загрузки WordPress"
 
-#: admin/class-botblocker-setup-wizard.php:930
+#: admin/class-botblocker-setup-wizard.php:934
 msgid "Easy to scale"
 msgstr "Легкая масштабируемость"
 
@@ -3301,11 +3296,11 @@ msgstr "Email-уведомления"
 msgid "Email sent successfully."
 msgstr "Электронное письмо успешно отправлено."
 
-#: admin/class-botblocker-setup-wizard.php:1062
+#: admin/class-botblocker-setup-wizard.php:1066
 msgid "Emergency help (24h)"
 msgstr "Экстренная помощь (24/7)"
 
-#: admin/class-botblocker-setup-wizard.php:471
+#: admin/class-botblocker-setup-wizard.php:475
 msgid "Emergency support (24-hour resolution time)"
 msgstr "Экстренная поддержка (24 часа на решение)"
 
@@ -3337,7 +3332,7 @@ msgstr "Включить базовые заголовки безопаснос�
 msgid "Enable BotBlocker Two-Factor Authentication for %s"
 msgstr "Включить двухфакторную аутентификацию BotBlocker для %s"
 
-#: admin/class-botblocker-setup-wizard.php:897
+#: admin/class-botblocker-setup-wizard.php:901
 msgid ""
 "Enable caching for faster security checks. BotBlocker uses the available "
 "cache system."
@@ -3576,7 +3571,7 @@ msgstr "Журнал ошибок"
 msgid "Error: "
 msgstr "Ошибка: "
 
-#: admin/class-botblocker-setup-wizard.php:612
+#: admin/class-botblocker-setup-wizard.php:616
 msgid "Essential for scheduled tasks and backups"
 msgstr "Необходимо для запланированных задач и резервного копирования"
 
@@ -3605,7 +3600,7 @@ msgstr ""
 "админ-панели, ускорение работы, раннее инициализирование, защита от спама, "
 "уведомления в Telegram и многое другое."
 
-#: admin/class-botblocker-setup-wizard.php:315
+#: admin/class-botblocker-setup-wizard.php:319
 msgid "Exit Setup"
 msgstr "Выйти из мастера настройки"
 
@@ -4169,11 +4164,11 @@ msgstr "Поле '%s' является обязательным."
 msgid "Find the shape:"
 msgstr "Найдите фигуру:"
 
-#: admin/class-botblocker-setup-wizard.php:1024
+#: admin/class-botblocker-setup-wizard.php:1028
 msgid "Fine-tune Rules"
 msgstr "Тонкая настройка правил"
 
-#: admin/class-botblocker-setup-wizard.php:544
+#: admin/class-botblocker-setup-wizard.php:548
 msgid "Fix Manually"
 msgstr "Исправить вручную"
 
@@ -4193,7 +4188,7 @@ msgstr ""
 msgid "Follow the link:"
 msgstr "Перейдите по ссылке:"
 
-#: admin/class-botblocker-setup-wizard.php:564
+#: admin/class-botblocker-setup-wizard.php:568
 msgid "For payment issues, see our"
 msgstr "По вопросам оплаты обращайтесь "
 
@@ -4253,7 +4248,7 @@ msgstr ""
 msgid "Full profile requires Cloud API connection to be active."
 msgstr "Для полной защиты требуется активное подключение Cloud API."
 
-#: admin/class-botblocker-setup-wizard.php:459
+#: admin/class-botblocker-setup-wizard.php:463
 #: includes/modal/modal-botblocker-setup-wizard.php:87
 msgid "Full Protection"
 msgstr "Полная защита"
@@ -4262,7 +4257,7 @@ msgstr "Полная защита"
 msgid "Full Protection Active"
 msgstr "Полная защита активна"
 
-#: admin/class-botblocker-setup-wizard.php:1141
+#: admin/class-botblocker-setup-wizard.php:1145
 msgid "Full protection requires PRO license."
 msgstr "Для полной защиты требуется лицензия PRO."
 
@@ -4379,7 +4374,7 @@ msgid "Go to BotBlocker Dashboard"
 msgstr "Перейти на панель управления BotBlocker"
 
 #: admin/class-botblocker-setup-wizard.php:271
-#: admin/class-botblocker-setup-wizard.php:1080
+#: admin/class-botblocker-setup-wizard.php:1084
 #: public/2FA/bbcs-2fa-setup.php:131
 msgid "Go to Dashboard"
 msgstr "Перейти в панель управления"
@@ -4426,7 +4421,7 @@ msgstr ""
 "человека перед отправкой формы или доступом к странице."
 
 #. %s: URL to integrations page
-#: admin/class-botblocker-setup-wizard.php:771
+#: admin/class-botblocker-setup-wizard.php:775
 #, php-format
 msgid "Google reCAPTCHA v2/v3 is also supported. Configure keys in %s."
 msgstr "Также поддерживается Google reCAPTCHA v2/v3. Настройте ключи в %s."
@@ -4506,7 +4501,7 @@ msgstr "Скрыть URL-адрес админки"
 msgid "Hide login URL & admin path"
 msgstr "Скрыть URL-адрес входа и путь к админке"
 
-#: admin/class-botblocker-setup-wizard.php:1050
+#: admin/class-botblocker-setup-wizard.php:1054
 msgid "Hide Login URL + add-ons"
 msgstr "Скрыть URL-адрес входа + аддоны"
 
@@ -4514,13 +4509,13 @@ msgstr "Скрыть URL-адрес входа + аддоны"
 msgid "Hide WordPress Version"
 msgstr "Скрыть версию WordPress"
 
-#: admin/class-botblocker-setup-wizard.php:371
+#: admin/class-botblocker-setup-wizard.php:375
 msgid "Hide wp-login and stop login abuse (optional add-on)"
 msgstr ""
 "Скрывает wp-login и предотвращает злоупотребления входом в систему "
 "(опциональное дополнение)"
 
-#: admin/class-botblocker-setup-wizard.php:926
+#: admin/class-botblocker-setup-wizard.php:930
 msgid "High-performance distributed cache system."
 msgstr "Высокопроизводительная распределенная система кэширования"
 
@@ -4541,7 +4536,7 @@ msgstr "Запросов на пользователя"
 msgid "HOLD"
 msgstr "УДЕРЖИВАТЬ"
 
-#: admin/class-botblocker-setup-wizard.php:757
+#: admin/class-botblocker-setup-wizard.php:761
 msgid "Hold Button"
 msgstr "Удерживайте кнопку"
 
@@ -4562,7 +4557,7 @@ msgstr "Домашняя страница"
 msgid "homepage"
 msgstr "домашняя страница"
 
-#: admin/class-botblocker-setup-wizard.php:509
+#: admin/class-botblocker-setup-wizard.php:513
 msgid "Homepage Access"
 msgstr "Доступ к главной странице"
 
@@ -4611,7 +4606,7 @@ msgstr "Как долго хранить необработанные данны
 msgid "How often to receive status reports."
 msgstr "Как часто получать отчеты о состоянии."
 
-#: admin/class-botblocker-setup-wizard.php:639
+#: admin/class-botblocker-setup-wizard.php:643
 msgid "How Should We Verify Suspicious Visitors?"
 msgstr "Как проверять подозрительных посетителей?"
 
@@ -4743,8 +4738,8 @@ msgstr "Пакет изображений Captcha:"
 msgid "Image Delivery Mode:"
 msgstr "Режим доставки изображений:"
 
-#: admin/class-botblocker-setup-wizard.php:706
-#: admin/class-botblocker-setup-wizard.php:988
+#: admin/class-botblocker-setup-wizard.php:710
+#: admin/class-botblocker-setup-wizard.php:992
 msgid "Image Recognition"
 msgstr "Распознавание изображений"
 
@@ -4867,7 +4862,7 @@ msgstr "Несовместимо"
 msgid "Incompatible add-ons were deactivated: %s. Please update BotBlocker."
 msgstr "Несовместимые аддоны были деактивированы: %s. Обновите BotBlocker."
 
-#: admin/class-botblocker-setup-wizard.php:991
+#: admin/class-botblocker-setup-wizard.php:995
 msgid "Initialization:"
 msgstr "Инициализация:"
 
@@ -4898,7 +4893,7 @@ msgstr "Установлено"
 msgid "Installed %s"
 msgstr "Установлено %s"
 
-#: admin/class-botblocker-setup-wizard.php:856
+#: admin/class-botblocker-setup-wizard.php:860
 msgid "Instant IP ban capability"
 msgstr "Мгновенная блокировка IP-адресов"
 
@@ -4911,7 +4906,7 @@ msgid "Insufficient permissions."
 msgstr "Недостаточно прав."
 
 #: admin/class-botblocker-admin.php:445 admin/class-botblocker-admin.php:446
-#: admin/class-botblocker-setup-wizard.php:772
+#: admin/class-botblocker-setup-wizard.php:776
 #: admin/partials/botblocker-admin-display-integrations.php:48
 msgid "Integrations"
 msgstr "Интеграции"
@@ -4936,11 +4931,11 @@ msgstr "Неверный 6-значный код. Попробуйте ещё р
 msgid "Invalid API key. Cloud API responded with: "
 msgstr "Неверный ключ API. Облачный API ответил:"
 
-#: admin/class-botblocker-setup-wizard.php:1348
+#: admin/class-botblocker-setup-wizard.php:1352
 msgid "Invalid cache type."
 msgstr "Недопустимый тип кэша."
 
-#: admin/class-botblocker-setup-wizard.php:1230
+#: admin/class-botblocker-setup-wizard.php:1234
 msgid "Invalid CAPTCHA mode."
 msgstr "Неверный режим CAPTCHA."
 
@@ -4958,7 +4953,7 @@ msgstr "Неверный адрес электронной почты."
 msgid "Invalid ID provided."
 msgstr "Предоставлен неверный идентификатор."
 
-#: admin/class-botblocker-setup-wizard.php:1263
+#: admin/class-botblocker-setup-wizard.php:1267
 msgid "Invalid initialization mode."
 msgstr "Недопустимый режим инициализации."
 
@@ -5001,7 +4996,7 @@ msgstr "Неверный формат JSON."
 msgid "Invalid mode."
 msgstr "Недопустимый режим."
 
-#: admin/class-botblocker-setup-wizard.php:1119
+#: admin/class-botblocker-setup-wizard.php:1123
 msgid "Invalid preset."
 msgstr "Неверная предустановка."
 
@@ -5022,7 +5017,7 @@ msgstr "Недопустимая настройка."
 msgid "Invalid upload."
 msgstr "Неверная загрузка."
 
-#: admin/class-botblocker-setup-wizard.php:1210
+#: admin/class-botblocker-setup-wizard.php:1214
 msgid "Invalid UX mode."
 msgstr "Неверный режим UX."
 
@@ -5076,7 +5071,7 @@ msgstr "IP-протоколы"
 msgid "IP range overlaps with an existing rule: %s"
 msgstr "Диапазон IP-адресов пересекается с существующим правилом: %s"
 
-#: admin/class-botblocker-setup-wizard.php:828
+#: admin/class-botblocker-setup-wizard.php:832
 msgid "IP white/blacklists work earlier"
 msgstr "Белые и чёрные списки IP срабатывают раньше"
 
@@ -5179,7 +5174,7 @@ msgstr ""
 "Security требуется JavaScript."
 
 #: public/template-botblocker-js.php:471
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:105
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:101
 msgid "JavaScript is disabled in your browser. Enable JavaScript to continue."
 msgstr ""
 "В вашем браузере отключён JavaScript. Включите JavaScript, чтобы продолжить."
@@ -5243,12 +5238,12 @@ msgstr ""
 "Библиотеки и ресурсы, используемые в BotBlocker, с указанием лицензий и "
 "источников."
 
-#: admin/class-botblocker-setup-wizard.php:431
+#: admin/class-botblocker-setup-wizard.php:435
 #: includes/modal/modal-botblocker-setup-wizard.php:27
 msgid "Light Protection"
 msgstr "Лёгкая защита"
 
-#: admin/class-botblocker-setup-wizard.php:911
+#: admin/class-botblocker-setup-wizard.php:915
 msgid "Lightning fast response"
 msgstr "Мгновенный отклик"
 
@@ -5264,11 +5259,11 @@ msgstr ""
 #: public/template-botblocker-js.php:217 public/template-botblocker-js.php:336
 #: public/template-botblocker-js.php:377 public/template-botblocker-js.php:404
 #: public/captcha/render-recaptcha-with-button-trait.php:38
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:87
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:83
 msgid "Loading..."
 msgstr "Загрузка..."
 
-#: admin/class-botblocker-setup-wizard.php:825
+#: admin/class-botblocker-setup-wizard.php:829
 msgid "Loads before regular plugins. Faster threat response."
 msgstr "Загружается раньше обычных плагинов. Быстрая реакция на угрозы."
 
@@ -5278,7 +5273,7 @@ msgstr ""
 "Загрузка черных/белых списков IP-адресов через wp-config перед запуском ядра "
 "WordPress"
 
-#: admin/class-botblocker-setup-wizard.php:811
+#: admin/class-botblocker-setup-wizard.php:815
 msgid "Loads with standard plugins. Fits most sites."
 msgstr ""
 "Загружается со стандартными плагинами. Подходит для большинства сайтов."
@@ -5433,7 +5428,7 @@ msgstr "Brute-force защита входа"
 msgid "Login Brute-Force Protection"
 msgstr "Защита от брутфорс атак"
 
-#: admin/class-botblocker-setup-wizard.php:521
+#: admin/class-botblocker-setup-wizard.php:525
 msgid "Login Page"
 msgstr "Страница входа"
 
@@ -5450,16 +5445,16 @@ msgid "Longer ban applied after repeated failures."
 msgstr "После повторных нарушений был применен более длительный запрет."
 
 # те
-#: admin/class-botblocker-setup-wizard.php:432
+#: admin/class-botblocker-setup-wizard.php:436
 msgid "Low impact, works on any site"
 msgstr "Не оказывает сильного воздействия, работает на любом сайте"
 
-#: admin/class-botblocker-setup-wizard.php:929
+#: admin/class-botblocker-setup-wizard.php:933
 #: includes/modal/modal-botblocker-setup-wizard.php:34
 msgid "Low resource usage"
 msgstr "Низкое потребление ресурсов"
 
-#: admin/class-botblocker-setup-wizard.php:858
+#: admin/class-botblocker-setup-wizard.php:862
 msgid "Lowest server resource usage"
 msgstr "Минимальное потребление ресурсов сервера"
 
@@ -5506,7 +5501,7 @@ msgstr "Управление информацией о подписке."
 msgid "Marketplace"
 msgstr "Маркетплейс"
 
-#: admin/class-botblocker-setup-wizard.php:724
+#: admin/class-botblocker-setup-wizard.php:728
 msgid "Match rotating shapes. BotBlocker exclusive."
 msgstr "Сопоставьте вращающиеся фигуры. Эксклюзив BotBlocker."
 
@@ -5514,11 +5509,11 @@ msgstr "Сопоставьте вращающиеся фигуры. Эксклю
 msgid "Maximum compatibility"
 msgstr "Максимальная совместимость"
 
-#: admin/class-botblocker-setup-wizard.php:859
+#: admin/class-botblocker-setup-wizard.php:863
 msgid "Maximum protection"
 msgstr "Максимальная защита"
 
-#: admin/class-botblocker-setup-wizard.php:464
+#: admin/class-botblocker-setup-wizard.php:468
 msgid "Maximum protection with PRO features"
 msgstr "Максимальная защита с функциями PRO"
 
@@ -5569,7 +5564,7 @@ msgstr "Сообщение (по умолчанию)"
 msgid "Minimal protection"
 msgstr "Минимальная защита"
 
-#: admin/class-botblocker-setup-wizard.php:536
+#: admin/class-botblocker-setup-wizard.php:540
 msgid "Minor compatibility issues detected"
 msgstr "Обнаружены незначительные проблемы совместимости"
 
@@ -5617,7 +5612,7 @@ msgstr "Отсутствующие данные о правилах."
 msgid "Moderate"
 msgstr "Умеренный"
 
-#: admin/class-botblocker-setup-wizard.php:1009
+#: admin/class-botblocker-setup-wizard.php:1013
 msgid "Monitor real-time threats and statistics"
 msgstr "Мониторинг угроз и статистики в реальном времени"
 
@@ -5627,7 +5622,7 @@ msgid ""
 msgstr ""
 "Ежемесячная или годовая подписка с облачным интеллектом и премиум-функциями."
 
-#: admin/class-botblocker-setup-wizard.php:766
+#: admin/class-botblocker-setup-wizard.php:770
 msgid "More CAPTCHA Options Available:"
 msgstr "Доступно больше вариантов CAPTCHA:"
 
@@ -5663,7 +5658,7 @@ msgstr ""
 "Активен MU-плагин: ранняя фильтрация IP и правил выполняется до загрузки "
 "остальных плагинов. Ранняя инициализация не требуется."
 
-#: admin/class-botblocker-setup-wizard.php:824
+#: admin/class-botblocker-setup-wizard.php:828
 msgid "MU Plugin Mode"
 msgstr "Режим MU-плагина"
 
@@ -5684,7 +5679,7 @@ msgstr "Мой PRO-статус"
 msgid "Name"
 msgstr "Имя"
 
-#: admin/class-botblocker-setup-wizard.php:1089
+#: admin/class-botblocker-setup-wizard.php:1093
 msgid "Need help? Visit our"
 msgstr "Нужна помощь? Посетите нашу"
 
@@ -5734,11 +5729,11 @@ msgstr "Для этого домена не найден ключ API."
 msgid "No backup codes remaining."
 msgstr "Резервных кодов не осталось."
 
-#: admin/class-botblocker-setup-wizard.php:939
+#: admin/class-botblocker-setup-wizard.php:943
 msgid "No Cache"
 msgstr "Без кэширования"
 
-#: admin/class-botblocker-setup-wizard.php:942
+#: admin/class-botblocker-setup-wizard.php:946
 msgid "No configuration needed"
 msgstr "Настройка не требуется"
 
@@ -5760,7 +5755,7 @@ msgstr "Данные за указанный период отсутствуют
 msgid "No data available."
 msgstr "Данные отсутствуют."
 
-#: admin/class-botblocker-setup-wizard.php:343
+#: admin/class-botblocker-setup-wizard.php:347
 msgid ""
 "No DNS/NS changes: works inside WordPress, no external services required"
 msgstr ""
@@ -5782,7 +5777,7 @@ msgstr "Проблем не обнаружено"
 msgid "No JavaScript Support"
 msgstr "Нет поддержки JavaScript"
 
-#: admin/class-botblocker-setup-wizard.php:673
+#: admin/class-botblocker-setup-wizard.php:677
 msgid ""
 "No manual verification. Access decisions are based entirely on IP databases, "
 "blacklists, and threat intelligence."
@@ -5794,18 +5789,18 @@ msgstr ""
 msgid "No news items available"
 msgstr "Нет доступных новостей"
 
-#: admin/class-botblocker-setup-wizard.php:1113
-#: admin/class-botblocker-setup-wizard.php:1156
-#: admin/class-botblocker-setup-wizard.php:1188
-#: admin/class-botblocker-setup-wizard.php:1204
-#: admin/class-botblocker-setup-wizard.php:1223
-#: admin/class-botblocker-setup-wizard.php:1257
-#: admin/class-botblocker-setup-wizard.php:1326
-#: admin/class-botblocker-setup-wizard.php:1342
-#: admin/class-botblocker-setup-wizard.php:1389
-#: admin/class-botblocker-setup-wizard.php:1404
-#: admin/class-botblocker-setup-wizard.php:1443
-#: admin/class-botblocker-setup-wizard.php:1464
+#: admin/class-botblocker-setup-wizard.php:1117
+#: admin/class-botblocker-setup-wizard.php:1160
+#: admin/class-botblocker-setup-wizard.php:1192
+#: admin/class-botblocker-setup-wizard.php:1208
+#: admin/class-botblocker-setup-wizard.php:1227
+#: admin/class-botblocker-setup-wizard.php:1261
+#: admin/class-botblocker-setup-wizard.php:1330
+#: admin/class-botblocker-setup-wizard.php:1346
+#: admin/class-botblocker-setup-wizard.php:1393
+#: admin/class-botblocker-setup-wizard.php:1408
+#: admin/class-botblocker-setup-wizard.php:1472
+#: admin/class-botblocker-setup-wizard.php:1493
 #: includes/hook/botblocker-hook-cron.php:115
 msgid "No permission."
 msgstr "Нет разрешения."
@@ -5818,7 +5813,7 @@ msgstr "Правила импорта не предусмотрены."
 msgid "No rules provided."
 msgstr "Правила не предусмотрены."
 
-#: admin/class-botblocker-setup-wizard.php:815
+#: admin/class-botblocker-setup-wizard.php:819
 msgid "No special configuration needed"
 msgstr "Особая настройка не требуется"
 
@@ -5916,8 +5911,8 @@ msgstr "Настройка безопасности в один клик"
 msgid "One‑Click Setup"
 msgstr "Настройка в один клик"
 
-#: admin/class-botblocker-setup-wizard.php:479
-#: admin/class-botblocker-setup-wizard.php:839
+#: admin/class-botblocker-setup-wizard.php:483
+#: admin/class-botblocker-setup-wizard.php:843
 msgid "Only for PRO"
 msgstr "Только для PRO"
 
@@ -5968,7 +5963,7 @@ msgstr "Операционные системы"
 msgid "Operation failed."
 msgstr "Операция не удалась."
 
-#: admin/class-botblocker-setup-wizard.php:447
+#: admin/class-botblocker-setup-wizard.php:451
 msgid "Optimal balance of security and usability"
 msgstr "Оптимальный баланс безопасности и удобства"
 
@@ -5993,7 +5988,7 @@ msgstr "или"
 msgid "or a 16-character backup code"
 msgstr "или 16-значный резервный код"
 
-#: admin/class-botblocker-setup-wizard.php:1091
+#: admin/class-botblocker-setup-wizard.php:1095
 msgid "or contact us at"
 msgstr "или свяжитесь с нами по адресу"
 
@@ -6120,11 +6115,11 @@ msgstr ""
 "Fondy), аналитических сервисов (Google Analytics, Facebook Pixel) и других "
 "внешних сервисов."
 
-#: admin/class-botblocker-setup-wizard.php:436
+#: admin/class-botblocker-setup-wizard.php:440
 msgid "Perfect for testing"
 msgstr "Идеально для тестирования"
 
-#: admin/class-botblocker-setup-wizard.php:553
+#: admin/class-botblocker-setup-wizard.php:557
 msgid "Perfect!"
 msgstr "Отлично!"
 
@@ -6133,7 +6128,7 @@ msgid "Performance may decrease temporarily until the cache rebuilds."
 msgstr ""
 "Производительность может временно снизиться, пока кэш не восстановится."
 
-#: admin/class-botblocker-setup-wizard.php:895
+#: admin/class-botblocker-setup-wizard.php:899
 #: addons/bbcs-speedup/inc/bbcs-speedup-settings.php:24
 msgid "Performance Optimization"
 msgstr "Оптимизация производительности"
@@ -6150,7 +6145,7 @@ msgstr "Правила ЧПУ успешно сброшены."
 msgid "Permanently Ban"
 msgstr "Постоянный бан"
 
-#: admin/class-botblocker-setup-wizard.php:912
+#: admin/class-botblocker-setup-wizard.php:916
 msgid "Persistent connections"
 msgstr "Постоянные соединения"
 
@@ -6216,7 +6211,7 @@ msgstr "Дополнительные функции премиум-класса 
 msgid "Premium add-ons access"
 msgstr "Доступ к премиум-дополнениям"
 
-#: admin/class-botblocker-setup-wizard.php:758
+#: admin/class-botblocker-setup-wizard.php:762
 msgid "Press and hold to verify. No images or math required."
 msgstr ""
 "Нажмите и удерживайте, чтобы подтвердить. Никаких изображений или "
@@ -6290,7 +6285,7 @@ msgstr "Приоритет"
 msgid "Priority (1-100)"
 msgstr "Приоритет (1-100)"
 
-#: admin/class-botblocker-setup-wizard.php:1061
+#: admin/class-botblocker-setup-wizard.php:1065
 msgid "Priority Support"
 msgstr "Приоритетная поддержка"
 
@@ -6321,7 +6316,7 @@ msgstr "Политика конфиденциальности"
 msgid "PRO"
 msgstr "PRO"
 
-#: admin/class-botblocker-setup-wizard.php:1073
+#: admin/class-botblocker-setup-wizard.php:1077
 msgid "PRO Active"
 msgstr "PRO активен"
 
@@ -6364,10 +6359,10 @@ msgstr "Статус PRO: Активен"
 msgid "PRO Status: Inactive"
 msgstr "Статус PRO: Неактивен"
 
-#: admin/class-botblocker-setup-wizard.php:619
-#: admin/class-botblocker-setup-wizard.php:779
-#: admin/class-botblocker-setup-wizard.php:866
-#: admin/class-botblocker-setup-wizard.php:951
+#: admin/class-botblocker-setup-wizard.php:623
+#: admin/class-botblocker-setup-wizard.php:783
+#: admin/class-botblocker-setup-wizard.php:870
+#: admin/class-botblocker-setup-wizard.php:955
 msgid "Pro Tip:"
 msgstr "PRO-совет:"
 
@@ -6389,7 +6384,7 @@ msgstr ""
 "Защита стандартных точек входа и использование пользовательского URL для "
 "авторизации."
 
-#: admin/class-botblocker-setup-wizard.php:983
+#: admin/class-botblocker-setup-wizard.php:987
 msgid "Protection Level:"
 msgstr "Уровень защиты:"
 
@@ -6504,7 +6499,7 @@ msgstr "Быстрое руководство"
 msgid "Quick IP Rule"
 msgstr "Быстрое правило для IP"
 
-#: admin/class-botblocker-setup-wizard.php:1002
+#: admin/class-botblocker-setup-wizard.php:1006
 msgid "Quick Start Guide"
 msgstr "Руководство по быстрому старту"
 
@@ -6539,7 +6534,7 @@ msgstr "Узнать больше"
 msgid "Read more"
 msgstr "Читать далее"
 
-#: admin/class-botblocker-setup-wizard.php:451
+#: admin/class-botblocker-setup-wizard.php:455
 msgid "Real visitors unaffected"
 msgstr "Реальные посетители не затрагиваются"
 
@@ -6555,7 +6550,7 @@ msgstr ""
 "Геостатистика посетителей сайта в режиме реального времени. Период просмотра:"
 " "
 
-#: admin/class-botblocker-setup-wizard.php:347
+#: admin/class-botblocker-setup-wizard.php:351
 msgid "Real-time visitor statistics (IP, PTR, ASN, geo, device, OS, etc.)"
 msgstr ""
 "Статистика посетителей в реальном времени (IP, PTR, ASN, гео, устройство, ОС "
@@ -6644,7 +6639,7 @@ msgstr "Получать предупреждения о безопасност�
 msgid "Receive security alerts via Telegram."
 msgstr "Получать предупреждения о безопасности через Telegram."
 
-#: admin/class-botblocker-setup-wizard.php:671
+#: admin/class-botblocker-setup-wizard.php:675
 msgid "Recommended"
 msgstr "Рекомендуется"
 
@@ -6653,7 +6648,7 @@ msgstr "Рекомендуется"
 msgid "Recommended 2FA Apps"
 msgstr "Рекомендуемые приложения для 2FA"
 
-#: admin/class-botblocker-setup-wizard.php:452
+#: admin/class-botblocker-setup-wizard.php:456
 msgid "Recommended for most sites"
 msgstr "Рекомендуется для большинства сайтов"
 
@@ -6700,7 +6695,7 @@ msgstr "Интеграция Redis-кеша"
 msgid "Redis Database Number:"
 msgstr "Номер базы данных Redis:"
 
-#: admin/class-botblocker-setup-wizard.php:952
+#: admin/class-botblocker-setup-wizard.php:956
 msgid ""
 "Redis is faster for high-traffic sites. Memcached fits distributed setups. "
 "This can be changed later in Settings."
@@ -6761,8 +6756,8 @@ msgstr "Возврат средств"
 msgid "Regular hits will be removed from the database."
 msgstr "Обычные обращения будут удалены из базы данных."
 
-#: admin/class-botblocker-setup-wizard.php:808
-#: admin/class-botblocker-setup-wizard.php:992
+#: admin/class-botblocker-setup-wizard.php:812
+#: admin/class-botblocker-setup-wizard.php:996
 msgid "Regular Plugin"
 msgstr "Обычный плагин"
 
@@ -6957,7 +6952,7 @@ msgstr "Требуется BotBlocker PRO и дополнение Early Init."
 msgid "Requires PRO"
 msgstr "Требуется PRO"
 
-#: admin/class-botblocker-setup-wizard.php:473
+#: admin/class-botblocker-setup-wizard.php:477
 msgid "Requires PRO license"
 msgstr "Требуется лицензия PRO"
 
@@ -7023,7 +7018,7 @@ msgstr ""
 msgid "Resets the internal WordPress cache."
 msgstr "Сбрасывает внутренний кэш WordPress."
 
-#: admin/class-botblocker-setup-wizard.php:527
+#: admin/class-botblocker-setup-wizard.php:531
 msgid "REST API"
 msgstr "REST API"
 
@@ -7138,7 +7133,7 @@ msgid "Rule updated successfully."
 msgstr "Правило успешно обновлено."
 
 #: admin/class-botblocker-admin.php:435 admin/class-botblocker-admin.php:436
-#: admin/class-botblocker-setup-wizard.php:872
+#: admin/class-botblocker-setup-wizard.php:876
 #: admin/partials/botblocker-admin-display-rules.php:39
 #: admin/partials/botblocker-admin-display-rules.php:308
 msgid "Rules"
@@ -7168,7 +7163,7 @@ msgstr "Запустить мастер настройки заново"
 msgid "Run the wizard to configure protection"
 msgstr "Запустить мастер настройки защиты"
 
-#: admin/class-botblocker-setup-wizard.php:505
+#: admin/class-botblocker-setup-wizard.php:509
 msgid "Running compatibility tests for your site"
 msgstr "Выполнение тестов на совместимость для вашего сайта"
 
@@ -7180,7 +7175,7 @@ msgstr "Русский"
 msgid "Safe defaults"
 msgstr "Безопасные настройки"
 
-#: admin/class-botblocker-setup-wizard.php:387
+#: admin/class-botblocker-setup-wizard.php:391
 msgid "Safe defaults: works with WooCommerce, Elementor and most caches"
 msgstr ""
 "Безопасные настройки: совместимы с WooCommerce, Elementor и большинством "
@@ -7323,7 +7318,7 @@ msgstr "Вторичный временной запрет включен"
 msgid "Seconds remaining until unlock:"
 msgstr "Секунд до разблокировки:"
 
-#: includes/botblocker/traits/class-botblocker-response-trait.php:271
+#: includes/botblocker/traits/class-botblocker-response-trait.php:268
 msgid "Seconds until unlock:"
 msgstr "Секунды до разблокировки:"
 
@@ -7400,17 +7395,17 @@ msgstr "Статус безопасности системы"
 msgid "Security score"
 msgstr "Оценка безопасности"
 
-#: admin/class-botblocker-setup-wizard.php:995
+#: admin/class-botblocker-setup-wizard.php:999
 msgid "Security Score:"
 msgstr "Уровень безопасности:"
 
-#: admin/class-botblocker-setup-wizard.php:394
+#: admin/class-botblocker-setup-wizard.php:398
 #: admin/partials/botblocker-section-right-sidebar.php:279
 msgid "Security Updates and Offers"
 msgstr "Обновления и предложения по безопасности"
 
-#: admin/class-botblocker-setup-wizard.php:482
-#: admin/class-botblocker-setup-wizard.php:842
+#: admin/class-botblocker-setup-wizard.php:486
+#: admin/class-botblocker-setup-wizard.php:846
 msgid "See plans"
 msgstr "Тарифные планы"
 
@@ -7435,7 +7430,7 @@ msgstr "Тема изображений для CAPTCHA."
 msgid "Select Language"
 msgstr "Выберите язык"
 
-#: admin/class-botblocker-setup-wizard.php:707
+#: admin/class-botblocker-setup-wizard.php:711
 msgid "Select matching images. Best balance of security and UX."
 msgstr ""
 "Выберите совпадающие изображения. Оптимальный баланс безопасности и удобства."
@@ -7454,7 +7449,7 @@ msgstr ""
 msgid "Select rule type"
 msgstr "Выберите тип правила"
 
-#: admin/class-botblocker-setup-wizard.php:800
+#: admin/class-botblocker-setup-wizard.php:804
 msgid "Select when BotBlocker activates. Earlier = stronger protection."
 msgstr "Выберите время активации BotBlocker. Раньше = более надежная защита."
 
@@ -7466,7 +7461,7 @@ msgstr "Выбранные страны"
 msgid "Self Connections"
 msgstr "Самоподключения"
 
-#: admin/class-botblocker-setup-wizard.php:1449
+#: admin/class-botblocker-setup-wizard.php:1478
 msgid "Self-test completed successfully! Check your log."
 msgstr "Самодиагностика успешно завершена! Проверьте журнал событий."
 
@@ -7573,7 +7568,7 @@ msgstr "Настройте 2FA для своей учётной записи"
 msgid "Settings"
 msgstr "Настройки"
 
-#: includes/hook/botblocker-hook-settings.php:237
+#: includes/hook/botblocker-hook-settings.php:239
 msgid "Settings saved."
 msgstr "Настройки сохранены."
 
@@ -7609,7 +7604,7 @@ msgstr "Показывать CAPTCHA всем посетителям, минуя
 msgid "Show unique visitors (by IP) or all requests."
 msgstr "Показывать уникальных посетителей (по IP) или все запросы."
 
-#: admin/class-botblocker-setup-wizard.php:375
+#: admin/class-botblocker-setup-wizard.php:379
 msgid "Shows exactly what was blocked and why (reason + URL + IP)"
 msgstr ""
 "Показывает точно, что именно было заблокировано и почему (причина + URL + IP-"
@@ -7636,8 +7631,8 @@ msgstr ""
 "подписка обеспечивает получение оперативных обновлений безопасности, правил "
 "брандмауэра и расширенных функций обнаружения ботов из сети BotBlocker."
 
-#: admin/class-botblocker-setup-wizard.php:666
 #: admin/class-botblocker-setup-wizard.php:670
+#: admin/class-botblocker-setup-wizard.php:674
 msgid "Silent Auto-Verify"
 msgstr "Тихая автопроверка"
 
@@ -7645,7 +7640,7 @@ msgstr "Тихая автопроверка"
 msgid "Silent Auto-Verify (No CAPTCHA)"
 msgstr "Тихая автопроверка (без CAPTCHA)"
 
-#: admin/class-botblocker-setup-wizard.php:928
+#: admin/class-botblocker-setup-wizard.php:932
 msgid "Simple and reliable"
 msgstr "Простота и надежность"
 
@@ -7672,7 +7667,7 @@ msgstr ""
 msgid "Simple JS Consistency"
 msgstr "Простая JS согласованность"
 
-#: admin/class-botblocker-setup-wizard.php:741
+#: admin/class-botblocker-setup-wizard.php:745
 msgid "Simple math with moving numbers. Easy and effective."
 msgstr "Простая математика с движущимися числами. Легко и эффективно."
 
@@ -7690,7 +7685,7 @@ msgstr "Ключ сайта не установлен."
 msgid "Site visitors"
 msgstr "Посетители сайта"
 
-#: admin/class-botblocker-setup-wizard.php:416
+#: admin/class-botblocker-setup-wizard.php:420
 msgid "Skip (use default)"
 msgstr "Пропустить (использовать по умолчанию)"
 
@@ -7715,7 +7710,7 @@ msgid "Something isn't working."
 msgstr "Что-то не работает."
 
 #: includes/botblocker/traits/class-botblocker-denied-page-trait.php:12
-#: includes/botblocker/traits/class-botblocker-response-trait.php:212
+#: includes/botblocker/traits/class-botblocker-response-trait.php:209
 msgid "Sorry, your request has been denied"
 msgstr "Извините, ваш запрос был отклонён"
 
@@ -7748,11 +7743,11 @@ msgstr "Ускорение обработки посетителей с помо
 msgid "Square"
 msgstr "Квадрат"
 
-#: admin/class-botblocker-setup-wizard.php:944
+#: admin/class-botblocker-setup-wizard.php:948
 msgid "Standard performance"
 msgstr "Стандартная производительность"
 
-#: admin/class-botblocker-setup-wizard.php:813
+#: admin/class-botblocker-setup-wizard.php:817
 msgid "Standard plugin loading"
 msgstr "Стандартная загрузка плагина"
 
@@ -7761,7 +7756,7 @@ msgstr "Стандартная загрузка плагина"
 msgid "Star"
 msgstr "Звезда"
 
-#: admin/class-botblocker-setup-wizard.php:413
+#: admin/class-botblocker-setup-wizard.php:417
 msgid "Start setup"
 msgstr "Начать настройку"
 
@@ -7806,7 +7801,7 @@ msgstr "У вас все еще есть проблемы? Свяжитесь с
 msgid "Stop Visitor Icon"
 msgstr "Значок «Остановить посетителя»"
 
-#: admin/class-botblocker-setup-wizard.php:355
+#: admin/class-botblocker-setup-wizard.php:359
 msgid "Stops hosting bots, proxies and Tor traffic"
 msgstr "Блокирует хостинг ботов, прокси и трафик с Tor"
 
@@ -7826,7 +7821,7 @@ msgstr "Строгая"
 msgid "Strong"
 msgstr "Сильный"
 
-#: admin/class-botblocker-setup-wizard.php:444
+#: admin/class-botblocker-setup-wizard.php:448
 #: includes/modal/modal-botblocker-setup-wizard.php:52
 msgid "Strong Protection"
 msgstr "Сильная защита"
@@ -7866,7 +7861,7 @@ msgstr "Импорт завершён успешно "
 msgid "Support"
 msgstr "Поддержка"
 
-#: admin/class-botblocker-setup-wizard.php:1090
+#: admin/class-botblocker-setup-wizard.php:1094
 msgid "support center"
 msgstr "Центр поддержки"
 
@@ -7976,7 +7971,7 @@ msgstr "Сайт темы"
 msgid "Themes"
 msgstr "Темы"
 
-#: admin/class-botblocker-setup-wizard.php:537
+#: admin/class-botblocker-setup-wizard.php:541
 msgid "These can be fixed automatically. Your site will stay functional."
 msgstr ""
 "Они могут быть исправлены автоматически. Ваш сайт останется функциональным."
@@ -8044,7 +8039,7 @@ msgstr "Часовой пояс для временных меток отчет�
 msgid "To enable database repair and optimization:"
 msgstr "Чтобы включить функцию восстановления и оптимизации базы данных:"
 
-#: admin/class-botblocker-setup-wizard.php:405
+#: admin/class-botblocker-setup-wizard.php:409
 msgid "To receive important security news and special offers."
 msgstr ""
 "Чтобы получать важные новости о безопасности и специальные предложения."
@@ -8281,7 +8276,7 @@ msgstr "Настройки интерфейса"
 msgid "Ultimate tier only"
 msgstr "Только для тарифа Ultimate"
 
-#: admin/class-botblocker-setup-wizard.php:909
+#: admin/class-botblocker-setup-wizard.php:913
 msgid "Ultra-fast in-memory cache. Best performance."
 msgstr ""
 "Сверхбыстрый кэш в оперативной памяти. Максимальная производительность."
@@ -8407,7 +8402,7 @@ msgstr "Период неизвестен"
 msgid "Unlock Advanced Protection"
 msgstr "Разблокировать расширенную защиту"
 
-#: admin/class-botblocker-setup-wizard.php:1043
+#: admin/class-botblocker-setup-wizard.php:1047
 msgid "Unlock PRO Protection"
 msgstr "Разблокируйте защиту PRO"
 
@@ -8466,7 +8461,7 @@ msgstr "Обновление соли приводит к сбросу всех 
 msgid "Upgrade now!"
 msgstr "Обновить сейчас!"
 
-#: admin/class-botblocker-setup-wizard.php:1067
+#: admin/class-botblocker-setup-wizard.php:1071
 #: admin/partials/botblocker-section-header.php:58
 msgid "Upgrade to PRO"
 msgstr "Обновление до PRO"
@@ -8564,7 +8559,7 @@ msgstr ""
 "сайтов с высокой посещаемостью. Хранилище транзиентов может быть "
 "переопределено другими плагинами."
 
-#: admin/class-botblocker-setup-wizard.php:940
+#: admin/class-botblocker-setup-wizard.php:944
 msgid "Use WordPress transients. Works on any hosting."
 msgstr "Использовать WordPress transients. Работает на любом хостинге."
 
@@ -8625,7 +8620,7 @@ msgstr "Требуется код проверки."
 msgid "Verification failed."
 msgstr "Проверка не пройдена."
 
-#: admin/class-botblocker-setup-wizard.php:363
+#: admin/class-botblocker-setup-wizard.php:367
 msgid "Verifies search engines to protect SEO. Detects fake crawlers"
 msgstr ""
 "Проверка поисковых систем для защиты SEO. Обнаруживает поддельные краулеры"
@@ -8683,7 +8678,7 @@ msgstr "Просмотр дополнений"
 msgid "View All"
 msgstr "Просмотреть все"
 
-#: admin/class-botblocker-setup-wizard.php:1008
+#: admin/class-botblocker-setup-wizard.php:1012
 msgid "View Dashboard"
 msgstr "Перейти в консоль"
 
@@ -8723,7 +8718,7 @@ msgstr "VPN"
 msgid "VPN / Tor / proxy blocking"
 msgstr "Блокировка VPN / Tor / прокси"
 
-#: admin/class-botblocker-setup-wizard.php:1051
+#: admin/class-botblocker-setup-wizard.php:1055
 msgid "VPN and Tor Blocking"
 msgstr "Блокировка VPN и Tor"
 
@@ -8785,7 +8780,7 @@ msgstr "Еженедельно"
 msgid "Weekly Maintenance"
 msgstr "Еженедельное обслуживание"
 
-#: admin/class-botblocker-setup-wizard.php:335
+#: admin/class-botblocker-setup-wizard.php:339
 msgid "Welcome to BotBlocker Security"
 msgstr "Добро пожаловать в BotBlocker Security!"
 
@@ -8864,11 +8859,11 @@ msgstr "Белые боты и поисковые системы"
 msgid "White bots data is required for import."
 msgstr "Для импорта требуются данные о белых ботах."
 
-#: admin/class-botblocker-setup-wizard.php:603
+#: admin/class-botblocker-setup-wizard.php:607
 msgid "Whitelist your current IP"
 msgstr "Добавить текущий IP в белый список"
 
-#: admin/class-botblocker-setup-wizard.php:589
+#: admin/class-botblocker-setup-wizard.php:593
 msgid "Who Should Always Have Access?"
 msgstr "Кому всегда обеспечен доступ?"
 
@@ -8877,15 +8872,15 @@ msgstr "Кому всегда обеспечен доступ?"
 msgid "with color:"
 msgstr "с цветом:"
 
-#: admin/class-botblocker-setup-wizard.php:1471
+#: admin/class-botblocker-setup-wizard.php:1500
 msgid "Wizard reset successfully."
 msgstr "Мастер настройки успешно сброшен."
 
-#: admin/class-botblocker-setup-wizard.php:566
+#: admin/class-botblocker-setup-wizard.php:570
 msgid "WooCommerce configuration guide"
 msgstr "Руководство по настройке WooCommerce"
 
-#: admin/class-botblocker-setup-wizard.php:560
+#: admin/class-botblocker-setup-wizard.php:564
 msgid "WooCommerce Detected"
 msgstr "Обнаружен WooCommerce"
 
@@ -8893,11 +8888,11 @@ msgstr "Обнаружен WooCommerce"
 msgid "WordPress 2FA Documentation"
 msgstr "Документация по 2FA для WordPress"
 
-#: admin/class-botblocker-setup-wizard.php:1049
+#: admin/class-botblocker-setup-wizard.php:1053
 msgid "WordPress Acceleration"
 msgstr "Ускорение WordPress"
 
-#: admin/class-botblocker-setup-wizard.php:468
+#: admin/class-botblocker-setup-wizard.php:472
 msgid "WordPress acceleration and optimization"
 msgstr "Ускорение и оптимизация WordPress"
 
@@ -8969,7 +8964,7 @@ msgstr ""
 "механизм кэширования повышает производительность без необходимости "
 "использования внешних серверов кэша."
 
-#: admin/class-botblocker-setup-wizard.php:943
+#: admin/class-botblocker-setup-wizard.php:947
 msgid "Works everywhere"
 msgstr "Работает везде"
 
@@ -9037,7 +9032,7 @@ msgstr "Yandex.Metrica ID"
 msgid "Yevhen Leonidov"
 msgstr "Евгений Леонидов"
 
-#: admin/class-botblocker-setup-wizard.php:488
+#: admin/class-botblocker-setup-wizard.php:492
 msgid "You can change this anytime with one click."
 msgstr "Это можно изменить в любой момент одним кликом."
 
@@ -9063,11 +9058,11 @@ msgstr "У вас активирована подписка PRO. Проверь�
 msgid "You must be logged in."
 msgstr "Требуется авторизация."
 
-#: admin/class-botblocker-setup-wizard.php:682
-#: admin/class-botblocker-setup-wizard.php:699
-#: admin/class-botblocker-setup-wizard.php:716
-#: admin/class-botblocker-setup-wizard.php:733
-#: admin/class-botblocker-setup-wizard.php:750
+#: admin/class-botblocker-setup-wizard.php:686
+#: admin/class-botblocker-setup-wizard.php:703
+#: admin/class-botblocker-setup-wizard.php:720
+#: admin/class-botblocker-setup-wizard.php:737
+#: admin/class-botblocker-setup-wizard.php:754
 #: includes/section/report/botblocker-report-dashboard.php:67
 #: includes/section/setup/botblocker-setup-chain.php:74
 msgid "Your browser does not support the video tag."
@@ -9111,7 +9106,7 @@ msgstr "Ваш адрес электронной почты"
 msgid "Your Google reCAPTCHA v3 site key for invisible bot detection."
 msgstr "Ваш ключ сайта Google reCAPTCHA v3 для обнаружения невидимых ботов."
 
-#: admin/class-botblocker-setup-wizard.php:605
+#: admin/class-botblocker-setup-wizard.php:609
 msgid "Your IP address will be permanently trusted"
 msgstr "Ваш IP-адрес будет навсегда добавлен в доверенные"
 
@@ -9135,7 +9130,7 @@ msgstr ""
 "Ваш сайт полностью защищен BotBlocker PRO. Облачные щиты безопасности "
 "активно отслеживают и блокируют продвинутые угрозы в реальном времени."
 
-#: admin/class-botblocker-setup-wizard.php:975
+#: admin/class-botblocker-setup-wizard.php:979
 msgid "Your Site is Now Protected"
 msgstr "Ваш сайт теперь под защитой"
 
@@ -9148,16 +9143,16 @@ msgstr ""
 "автоматические атаки, но несколько критических защитных модулей все еще "
 "отключены."
 
-#: admin/class-botblocker-setup-wizard.php:561
+#: admin/class-botblocker-setup-wizard.php:565
 msgid "Your store is compatible with BotBlocker."
 msgstr "Ваш магазин совместим с BotBlocker."
 
-#: admin/class-botblocker-setup-wizard.php:435
+#: admin/class-botblocker-setup-wizard.php:439
 msgid "Zero impact on visitors"
 msgstr "Никакого воздействия на посетителей."
 
-#: admin/class-botblocker-setup-wizard.php:467
-#: admin/class-botblocker-setup-wizard.php:1058
+#: admin/class-botblocker-setup-wizard.php:471
+#: admin/class-botblocker-setup-wizard.php:1062
 msgid "Zero-day botnet updates"
 msgstr "Обновления для нулевого дня ботнетов"
 

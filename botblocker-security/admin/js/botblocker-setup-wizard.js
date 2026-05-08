@@ -17,6 +17,10 @@
                 this.displayCurrentIP();
                 this.initializeContactEmail();
                 this.showStep(this.currentStep);
+
+                if (this.currentStep === 2) {
+                    this.runCompatibilityTests();
+                }
             },
 
             initializeContactEmail: function() {

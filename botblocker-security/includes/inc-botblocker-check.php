@@ -15,8 +15,8 @@ function bbcs_check_empty_UA($useragent)
 
 function bbcs_check_request_method($method) 
 {
-    $allowed_methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];
-    // TODO  HEAD OPTIONS CONNECT TRACE
+    $allowed_methods = ['GET', 'POST', 'HEAD', 'PUT', 'DELETE', 'PATCH'];
+    // CONNECT and TRACE are intentionally blocked (security risk / XST)
     $method = strtoupper(trim($method));
 
     if ($method === 'OPTIONS') { // WooCommerce wizard (v10.*)

@@ -161,7 +161,6 @@ abstract class BotBlockerBase {
     public $should_show_check_page = false;
     public $should_show_block_page = false;
     public $should_show_denied_page = false;
-    public $nonce_silent_protection = false;
     public $csp_nonce = '';
 
     /**

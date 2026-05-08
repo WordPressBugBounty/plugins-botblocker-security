@@ -4,7 +4,7 @@ Tags: security, firewall, anti-spam, captcha, brute force
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.6.18
+Stable tag: 1.6.19
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -235,11 +235,21 @@ Use **Allowlist** for admin IPs/services and enable "allow server self-IP" so WP
 
 == Changelog ==
  
+= 1.6.19 =
+Add new security rules to block emerging threats
+Update coverage for new bots and crawlers
+Add coverage for 20+ payment providers in the Payment Gateway Bypass whitelist
+Add HEAD request support for security checks and blocking
+Fix minor bugs and UI glitches in admin panel
+Fix language selection issue
+Fix setup wizard issue with some hosting environments
+Update translation files
+
 = 1.6.18 =
 Add new ASN database with auto-update
 Add Payment Gateway Bypass: dedicated whitelist for legitimate payment callbacks (webhooks, IPN, postbacks) so checkout notifications are never blocked
 Add auto-detection for 25+ e-commerce platforms (WooCommerce, EDD, SureCart, MemberPress, RCP, PMPro, Give, Dokan, WCFM, CartFlows, FunnelKit, etc.)
-Add built-in coverage for 30+ payment providers: Stripe, PayPal, Mollie, Adyen, Braintree, Square, Razorpay, YooKassa, Tinkoff, CloudPayments, Robokassa, Sberbank, WayForPay, LiqPay, Fondy, PayU, Klarna, Paystack, Flutterwave, GoCardless, Paddle, Authorize.Net, 2Checkout and more
+Add built-in coverage for 30+ payment providers: Stripe, PayPal, Mollie, Adyen, Braintree, Square, Razorpay, CloudPayments, WayForPay, LiqPay, Fondy, PayU, Klarna, Paystack, Flutterwave, GoCardless, Paddle, Authorize.Net, 2Checkout and more
 Add new "Payment Gateways" tab in Advanced Settings
 
 = 1.6.17 =
@@ -386,4 +396,4 @@ BotBlocker Security is developed and maintained by GLOBUS.studio.
 * Code, code review - Andrii Lukashevych
 * Code, translations - Aleksandr Kinakh
 
-**BotBlocker Security - The first line of defense for your WordPress site.**
+**BotBlocker Security - The first line of defense for your WordPress site.**r WordPress site.**

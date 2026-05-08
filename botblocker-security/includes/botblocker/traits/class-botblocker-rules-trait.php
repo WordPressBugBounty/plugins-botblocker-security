@@ -9,11 +9,6 @@ public function check_secret_parameter() : bool
     if ($param != '' && $param != BOTBLOCKER_EMPTY) {
         $cookie_set = isset($_COOKIE[$param]);
 
-        // REVIEWER NOTE: This is an internal GET parameter for access control, not form data. No nonce is used by design.
-        if ( ! check_ajax_referer('botblocker_nonce', 'nonce', false) ){
-            $this->nonce_silent_protection = true;
-        }
-
         if (isset($_GET[$param]) || $cookie_set) {
             $this->x_robots_tag['noindex'] = 'noindex';
             $this->visitorType = self::VISITOR_SECRET;
