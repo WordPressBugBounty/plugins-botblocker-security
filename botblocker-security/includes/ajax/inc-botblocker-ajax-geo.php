@@ -24,9 +24,10 @@ function bbcs_get_geo_countries_callback() {
         $blockedCountries = [];
     }
 
-    $blockedCountries = array_values( array_unique( array_map( 'strtoupper', array_filter( $blockedCountries, function( $item ) {
-        return is_string( $item ) && preg_match( '/^[A-Z]{2}$/', trim( $item ) );
-    } ) ) ) );
+    $blockedCountries = array_values( array_unique( array_filter( array_map( function( $item ) {
+        $country = is_string( $item ) ? strtoupper( trim( $item ) ) : '';
+        return preg_match( '/^[A-Z]{2}$/', $country ) ? $country : '';
+    }, $blockedCountries ) ) ) );
 
     wp_send_json_success( $blockedCountries );
 }
@@ -56,9 +57,10 @@ function bbcs_save_geo_countries_callback() {
         $countries = [];
     }
 
-    $sanitized = array_values( array_unique( array_map( 'strtoupper', array_filter( $countries, function( $item ) {
-        return is_string( $item ) && preg_match( '/^[A-Z]{2}$/', trim( $item ) );
-    } ) ) ) );
+    $sanitized = array_values( array_unique( array_filter( array_map( function( $item ) {
+        $country = is_string( $item ) ? strtoupper( trim( $item ) ) : '';
+        return preg_match( '/^[A-Z]{2}$/', $country ) ? $country : '';
+    }, $countries ) ) ) );
 
     bbcs_update_option( 'bbcs_blocked_countries', $sanitized );
     wp_send_json_success( $sanitized );

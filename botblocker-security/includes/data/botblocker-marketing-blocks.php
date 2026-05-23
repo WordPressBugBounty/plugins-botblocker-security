@@ -78,6 +78,18 @@ if ( ! function_exists( 'bbcs_render_in_plugin_update_message' ) ) {
 				$html .= '<li>' . esc_html( $line ) . '</li>';
 			}
 			$html .= '</ul></div>';
+		} else {
+			$upgrade_notice = '';
+			if ( isset( $response->upgrade_notice ) && is_string( $response->upgrade_notice ) ) {
+				$upgrade_notice = trim( wp_strip_all_tags( $response->upgrade_notice ) );
+			}
+
+			$html .= '<div class="notice notice-warning inline bbcs-update-alert-warning"><p>';
+			$html .= '<strong>' . esc_html__( 'New BotBlocker version available', 'botblocker-security' ) . ': ' . esc_html( $version ) . '</strong><br>';
+			$html .= $upgrade_notice !== ''
+				? esc_html( $upgrade_notice )
+				: esc_html__( 'BotBlocker runs early in the WordPress request lifecycle. Back up your site and review the update before upgrading.', 'botblocker-security' );
+			$html .= '</p></div>';
 		}
 
 		$html .= '<p class="bbcs-update-spacer">';

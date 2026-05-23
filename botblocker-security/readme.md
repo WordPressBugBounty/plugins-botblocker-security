@@ -2,13 +2,13 @@
 Contributors: globusstudio, alukashevych, alexandrkinakh
 Tags: security, firewall, anti-spam, captcha, brute force
 Requires at least: 5.0
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.6.19
+Stable tag: 1.6.20
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Protect your WordPress site: firewall, bot & brute-force protection, anti-spam, multi-layer CAPTCHA, optional cloud threat intel.
+Protect your WordPress site or multisite network: firewall, bot & brute-force protection, anti-spam, multi-layer CAPTCHA, optional cloud threat intel.
 
 == Description ==
 
@@ -19,6 +19,8 @@ Protect your WordPress site: firewall, bot & brute-force protection, anti-spam, 
 **BotBlocker Security is the all-in-one solution to keep your site safe from automated threats.** This powerful **WordPress security plugin and Web Application Firewall (WAF)** acts as a dedicated **anti-bot** firewall, blocking malicious traffic at the front gate without slowing down your site.
 
 BotBlocker's setup and onboarding experience allows anyone to secure their **WordPress site** in under 1 minute, regardless of technical expertise. You can rest assured knowing you have enabled the right **site protection** settings to protect your website.
+
+BotBlocker also supports **WordPress Multisite**, making it suitable for agencies, developers, and administrators who manage networks of client sites from a single WordPress installation.
 
 = 🔥 WordPress Firewall (WAF) =
 
@@ -32,6 +34,7 @@ BotBlocker Security includes an endpoint **firewall/WAF** that identifies and bl
 * Real-time IP Blocklist blocks all requests from the most malicious IPs
 * Early-init protection - blocks threats before WordPress loads
 * Cloud-based threat intelligence - cross-checks every visitor against global threat databases
+* Extended Secure Mode - stricter challenge, session, and token validation for high-risk traffic
 * No visitor data collected - only technical request parameters analyzed (GDPR/CCPA-compliant)
 * Brute force protection with login attempt limits and multi-layer verification
 
@@ -63,6 +66,7 @@ Comprehensive tools to block attackers and monitor your site in real-time:
 
 * **Advanced Blocking Rules** - block by IP or build rules based on IP Range, Hostname, User Agent, Referrer, PTR record, ASN, country, city, and more
 * **IP-PTR-Host Mismatch Detection** - automatically detect and block fake crawlers (e.g., fake Googlebots)
+* **Crawler & AI Allowlist Management** - manage trusted SEO bots and LLM/AI crawlers such as OpenAI, Claude, and Gemini while still detecting impersonators
 * **Blacklist & Whitelist Management** - instantly allow or block any IP, ASN, range, or User-Agent
 * **Live Traffic Monitoring** - see all traffic in real-time: robots, humans, 404 errors, logins/logouts, file requests, and content consumption
 * **Server IP Identification** - prevent lockouts by automatically identifying and protecting server IPs
@@ -77,8 +81,10 @@ BotBlocker's robust defense won't slow your site down - in fact, it often improv
 * **Lightweight & Fast** - negligible overhead in normal conditions. Reduces database and server load during attacks
 * **Built-in Caching** - Redis and Memcached support for high-traffic environments
 * **Cache Plugin Compatibility** - automatic `DONOTCACHEPAGE` + `Cache-Control: no-store` on verification pages. Works with WP Super Cache (PHP mode), W3 Total Cache, WP Rocket, LiteSpeed Cache, Hummingbird, and more. Server-level caches (Nginx FastCGI, Varnish, Cloudflare) may need a cookie-based bypass rule - see `docs/CACHE-COMPATIBILITY.md`
+* **Cache-Optimized CAPTCHA Delivery** - Image Delivery Mode serves image CAPTCHA assets in a cache-friendly way for high-traffic sites
 * **DDoS Protection Compatibility** - automatic detection of JS-challenges from DDoS-Guard, Stormwall, and similar services. See `docs/DDOS-COMPATIBILITY.md` for advanced configuration
 * **Seamless Compatibility** - works with Cloudflare, CDN services, caching plugins, and optimizers
+* **WordPress Multisite Support** - protect multisite networks and agency-managed site fleets
 * **Full IPv6 Support** - all security functions work with both IPv4 and IPv6
 * **Server Optimization** *(Premium Addon)* - additional performance enhancements for high-traffic sites
 
@@ -89,25 +95,27 @@ You don't have to be a security expert to use BotBlocker:
 * **Quick Installation Wizard** - step-by-step setup guide for configuration in under 1 minute
 * **Intuitive Admin Panel** - organized settings with clear descriptions and tooltips
 * **Multilingual** - translated into English, Spanish, German, French, Polish, Russian, Ukrainian, and more
-* **No Conflicts** - built following WordPress best practices, tested with recent WP versions
+* **No Conflicts & Modern PHP Compatibility** - built following WordPress best practices, tested with recent WP versions and current PHP releases including PHP 8.5
 * **Adjustable Logging** - configurable retention periods with time zone awareness and daylight saving support
 
 **Security first - BotBlocker's on guard!**
 
 = 🔥 PRO Version =
 
-Upgrade to PRO for enhanced protection and performance features:
+Upgrade to PRO for production sites, WooCommerce stores, agencies, and high-traffic WordPress projects that need cloud intelligence, premium add-ons, and faster support. Current PRO subscriptions start at **$12/month**; compare plan limits and current offers on the [pricing page](https://botblocker.top/pricing/). Annual billing includes 1 month free, and most purchases are covered by a 30-day refund policy according to the [Terms of Service](https://botblocker.top/terms-of-service/).
+
+**PRO includes:**
 
 * Real-time cloud threat intelligence checks against global databases
 * Zero-day threat detection - behavioral analysis and heuristic rules catch unknown attack patterns before signatures are available
-* Hide login URL and protect against targeted attacks
-* Security Headers - automatic HSTS, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy, and Content-Security-Policy (CSP) configuration
-* Early-init (Before WordPress loads) filtering for maximum performance and security
-* WordPress Acceleration - frontend optimization
-* Speed optimization features for high-traffic sites
-* Server optimization features for high-traffic sites
-* Priority support and updates
-* Access to premium add-ons
+* VPN, Tor, proxy, ASN, and hosting reputation checks for stricter traffic filtering
+* Hide Admin URL add-on - custom login URL and protection for default `wp-login.php` and registration endpoints
+* Security Headers add-on - HSTS, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy, and Content-Security-Policy (CSP) configuration
+* Early Init add-on - filtering before WordPress Core loads for better performance during attacks
+* Speed Up WordPress add-on - frontend cleanup and optimization for faster page delivery
+* Advanced reporting, analytics, and forensic traffic context
+* Daily signature, PTR, User-Agent, and AI model updates
+* Priority support with 24-hour response and emergency help for critical issues
 
 == Features ==
 
@@ -121,6 +129,7 @@ BotBlocker employs advanced multi-layer detection to identify and block threats:
 * IP reputation and blacklist checks with global threat intelligence
 * DNS-based and PTR lookups to detect fake crawlers
 * Heuristic and behavioral analysis for suspicious patterns
+* Trusted SEO and LLM/AI crawler allowlists for known services such as OpenAI, Claude, and Gemini
 * Browser fingerprint and feature mismatch detection
 * Header and protocol validation
 * JavaScript challenge and capability verification
@@ -143,14 +152,18 @@ Choose from various CAPTCHA types to protect your site:
 * **BotBlocker Color CAPTCHA** - select colored buttons challenge
 * **BotBlocker Digits CAPTCHA** - floating math challenge
 * **BotBlocker Images CAPTCHA** - animal image selection
+* **BotBlocker Image Delivery Mode** - cache-friendly image CAPTCHA delivery for high-traffic sites and aggressive caching setups
 * **BotBlocker Shapes CAPTCHA** - floating shapes challenge
-* **BotBlocker Hold Button** - press and hold to verify, no images or math required
+* **BotBlocker Hold Button CAPTCHA** - press and hold to verify, distinct from one-click Single Button mode, with no images or math required
 * **Silent Auto-Verify** - no CAPTCHA shown. Real users pass automatically via JS fingerprint checks; bots see "Access denied"
 * **Hybrid Mode** - combine any CAPTCHA with reCAPTCHA v3 for dual-layer protection
 
 = Additional Capabilities =
 
 * Early-init & MU plugin support
+* WordPress Multisite support
+* Extended Secure Mode for stricter verification on sensitive routes and high-risk traffic
+* Trusted LLM/AI crawler allowlist management
 * Real-time cloud threat checks
 * Dynamic and graphical anti-bot challenges
 * Automatic logging with adjustable retention
@@ -188,13 +201,25 @@ No. Local protection works out of the box. **Cloud checks (PRO)** are optional a
 
 Yes. BotBlocker recognizes proxy headers to resolve the real client IP and can block origin bypass attempts. Fully compatible with Cloudflare and other CDN services.
 
+= Does BotBlocker support WordPress Multisite? =
+
+Yes. BotBlocker can protect WordPress Multisite networks, making it useful for agencies, developers, and administrators who manage multiple sites from one installation.
+
+= How does BotBlocker handle AI crawlers and LLM bots? =
+
+BotBlocker can recognize and allow trusted AI crawlers and LLM-related services while continuing to block spoofed user agents, fake crawlers, scrapers, and abusive automation. This includes allowlist handling for services such as OpenAI, Claude, and Gemini.
+
 = Does BotBlocker work behind DDoS protection services (DDoS-Guard, Stormwall, etc.)? =
 
-Yes. Since version 1.6.13, BotBlocker automatically detects and handles simple JS-challenge responses from external DDoS protection services. For advanced challenges (Proof-of-Work, interactive CAPTCHA from the DDoS provider), add `/wp-admin/admin-ajax.php` to the challenge bypass list in your DDoS service control panel. See `docs/DDOS-COMPATIBILITY.md` included with the plugin for detailed configuration examples.
+Yes. BotBlocker automatically detects and handles simple JS-challenge responses from external DDoS protection services. For advanced challenges (Proof-of-Work, interactive CAPTCHA from the DDoS provider), add `/wp-admin/admin-ajax.php` to the challenge bypass list in your DDoS service control panel. See `docs/DDOS-COMPATIBILITY.md` included with the plugin for detailed configuration examples.
 
 = Does BotBlocker work with caching plugins? =
 
 Yes. BotBlocker automatically sets `DONOTCACHEPAGE` and `Cache-Control: no-store` headers on verification/denied pages, preventing PHP-based cache plugins from caching them. WP Super Cache (PHP mode), W3 Total Cache, WP Rocket, LiteSpeed Cache, and Hummingbird work out of the box. For server-level caches (Nginx FastCGI, Varnish) or WP Super Cache Expert (mod_rewrite) mode, add a cookie-based bypass rule - see `docs/CACHE-COMPATIBILITY.md` included with the plugin. The MU-plugin phase also defines `DONOTCACHEPAGE` for visitors without a BotBlocker cookie.
+
+= Can Image CAPTCHA work on high-traffic cached sites? =
+
+Yes. Image Delivery Mode is designed for high-traffic sites and caching-heavy environments, helping image CAPTCHA assets load reliably without letting cached verification pages weaken protection.
 
 = Can I protect XML-RPC/REST API or login/comments? =
 
@@ -202,7 +227,11 @@ Yes. XML-RPC and REST API endpoints are blocked by default. You can create acces
 
 = What CAPTCHA types are available? =
 
-One-click button, color buttons, animal images, floating shapes, floating math, hold button, silent auto-verify, plus Google reCAPTCHA v2/v3. Silent Auto-Verify is the recommended default - real users pass automatically with zero interaction. Any internal CAPTCHA can be combined with reCAPTCHA v3. Our proprietary CAPTCHAs are designed to be nearly impossible to bypass with AI-based anti-CAPTCHA services.
+One-click button, hold button, color buttons, animal images, image delivery mode, floating shapes, floating math, silent auto-verify, plus Google reCAPTCHA v2/v3. Silent Auto-Verify is the recommended default - real users pass automatically with zero interaction. Any internal CAPTCHA can be combined with reCAPTCHA v3. Our proprietary CAPTCHAs are designed to be nearly impossible to bypass with AI-based anti-CAPTCHA services.
+
+= What is Extended Secure Mode? =
+
+Extended Secure Mode tightens the verification chain for sensitive or suspicious traffic. It applies stricter challenge token validation, browser capability checks, and session consistency rules before allowing the request to continue.
 
 = Does BotBlocker Security support IPv6? =
 
@@ -235,8 +264,16 @@ Use **Allowlist** for admin IPs/services and enable "allow server self-IP" so WP
 
 == Changelog ==
  
+= 1.6.20 =
+Add WordPress 7.0 compatibility and Connections support for BotBlocker Security
+Fix WordPress 7.0 REST OPTIONS permission checks from wp-admin pages
+Add ASN allow, block, dark, and gray rule handling with safer crawler verification
+Improve anti-detect checks for critical browser fingerprint mismatch combinations
+Fix Geo country rule sanitization and Cloud API contact email validation
+Improve plugin update notices when remote changelog data is unavailable
+
 = 1.6.19 =
-Add new security rules to block emerging threats
+Add new security rules to block emerging threats with updated ASN coverage
 Update coverage for new bots and crawlers
 Add coverage for 20+ payment providers in the Payment Gateway Bypass whitelist
 Add HEAD request support for security checks and blocking
@@ -380,6 +417,7 @@ BotBlocker Security does **not** collect or process personal data of your visito
 == Support and Documentation ==
 
 * Product site: [https://botblocker.top/products/](https://botblocker.top/products/)
+* Pricing and PRO plans: [https://botblocker.top/pricing/](https://botblocker.top/pricing/)
 * Documentation: [https://botblocker.top/docs/](https://botblocker.top/docs/)
 * Contact/support: [https://botblocker.top/contacts/](https://botblocker.top/contacts/)
 * Community: [https://botblocker.top/community/](https://botblocker.top/community/)
@@ -396,4 +434,4 @@ BotBlocker Security is developed and maintained by GLOBUS.studio.
 * Code, code review - Andrii Lukashevych
 * Code, translations - Aleksandr Kinakh
 
-**BotBlocker Security - The first line of defense for your WordPress site.**r WordPress site.**
+**BotBlocker Security - The first line of defense for your WordPress site.**

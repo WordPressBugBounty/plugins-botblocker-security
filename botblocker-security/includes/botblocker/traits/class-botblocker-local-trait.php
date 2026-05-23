@@ -597,6 +597,38 @@ trait BotBlockerLocalTrait
 
         $combinationDetected = false;
 
+        $enabledChecks = [];
+        foreach ($groups as $settingKey => $checks) {
+            if (!empty($this->settings->$settingKey) && $this->settings->$settingKey == true) {
+                foreach ($checks as $checkKey) {
+                    $enabledChecks[$checkKey] = true;
+                }
+            }
+        }
+
+        $criticalCombinations = [
+            ['navigatorMismatch', 'webGLMismatch', 'critical_combination_navigator_webgl'],
+            ['fakePlugins', 'chromiumProperties', 'critical_combination_plugins_chrome'],
+            ['fontRenderMismatch', 'languageMismatch', 'critical_combination_font_language'],
+        ];
+
+        foreach ($criticalCombinations as $combination) {
+            [$firstCheck, $secondCheck, $reason] = $combination;
+            if (
+                !empty($enabledChecks[$firstCheck]) &&
+                !empty($enabledChecks[$secondCheck]) &&
+                isset($this->post_antidetect_scope[$firstCheck]) &&
+                $this->post_antidetect_scope[$firstCheck] &&
+                isset($this->post_antidetect_scope[$secondCheck]) &&
+                $this->post_antidetect_scope[$secondCheck]
+            ) {
+                $combinationDetected = true;
+                $blockReasons[] = $reason;
+            }
+        }
+
+        /*
+
         if (
             isset($this->post_antidetect_scope['navigatorMismatch']) &&
             $this->post_antidetect_scope['navigatorMismatch'] &&
@@ -626,6 +658,7 @@ trait BotBlockerLocalTrait
             $combinationDetected = true;
             $blockReasons[] = 'critical_combination_font_language';
         }
+        */
 
         $shouldBlock = false;
         $blockReason = '';

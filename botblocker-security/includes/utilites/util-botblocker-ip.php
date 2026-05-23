@@ -105,12 +105,38 @@ function bbcs_gmp_import($data)
 
 function bbcs_netMatch($network, $ip)
 {
-    $ip_arr = explode('/', $network);
-    $network_long = ip2long($ip_arr[0]);
-    $x = ip2long($ip_arr[1]);
-    $mask =  long2ip($x) == $ip_arr[1] ? $x : 0xffffffff << (32 - $ip_arr[1]);
-    $ip_long = ip2long($ip);
-    return ($ip_long & $mask) == ($network_long & $mask);
+    $parts = explode('/', trim((string) $network), 2);
+    if (count($parts) !== 2) {
+        return false;
+    }
+
+    $subnet = trim($parts[0]);
+    $prefix = (int) $parts[1];
+    $ip_bin = @inet_pton(trim((string) $ip));
+    $subnet_bin = @inet_pton($subnet);
+
+    if ($ip_bin === false || $subnet_bin === false || strlen($ip_bin) !== strlen($subnet_bin)) {
+        return false;
+    }
+
+    $max_prefix = strlen($ip_bin) * 8;
+    if ($prefix < 0 || $prefix > $max_prefix) {
+        return false;
+    }
+
+    $full_bytes = intdiv($prefix, 8);
+    $remaining_bits = $prefix % 8;
+
+    if ($full_bytes > 0 && substr($ip_bin, 0, $full_bytes) !== substr($subnet_bin, 0, $full_bytes)) {
+        return false;
+    }
+
+    if ($remaining_bits === 0) {
+        return true;
+    }
+
+    $mask = (0xff << (8 - $remaining_bits)) & 0xff;
+    return (ord($ip_bin[$full_bytes]) & $mask) === (ord($subnet_bin[$full_bytes]) & $mask);
 }
 
 function bbcs_isIpOrCidr($input) {
@@ -286,13 +312,28 @@ function bbcs_testWhiteBot($ip, $ptr_ok, $time, $ttl)
                 $ip2[] = $line['ip'];
             }
         }
+        $ptr = strtolower( rtrim( (string) $ptr, '.' ) );
         $test_ptr = 0;
         foreach ($ptr_domains as $ptr_line) {
+            $ptr_line = strtolower( rtrim( trim( (string) $ptr_line ), '.' ) );
             if ($ptr_line == '.') {
                 $test_ptr = 1;
                 break;
             }
-            if (stripos($ptr, $ptr_line, 0) !== false) {
+            if ( $ptr_line === '' ) {
+                continue;
+            }
+
+            if ( $ptr_line[0] === '.' ) {
+                $domain = substr( $ptr_line, 1 );
+                if ( $ptr === $domain || substr( $ptr, -strlen( $ptr_line ) ) === $ptr_line ) {
+                    $test_ptr = 1;
+                    break;
+                }
+                continue;
+            }
+
+            if ( $ptr === $ptr_line || substr( $ptr, -( strlen( $ptr_line ) + 1 ) ) === '.' . $ptr_line ) {
                 $test_ptr = 1;
                 break;
             }

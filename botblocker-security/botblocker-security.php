@@ -10,19 +10,19 @@ if (! defined('ABSPATH')) exit; // Exit if accessed directly
  *
  * @link              https://globus.studio
  * @package           botblocker-security
- * @version           1.6.19
+ * @version           1.6.20
  *
  * @wordpress-plugin
  * Plugin Name:       BotBlocker Security - Firewall & Bot Protection
  * Plugin URI:        https://botblocker.top/
  * Description:       Blocks bots, brute force attacks, spam and automated threats in real time. CAPTCHA, IP rules, proxy/vpn/tor detection, login protection, reCAPTCHA, customizable security rules - all in one plugin. Maximum Security for WordPress.
- * Version:           1.6.19
+ * Version:           1.6.20
  * Author:            Yevhen Leonidov
  * Author URI:        https://leonidov.dev/
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Requires at least: 5.0
- * Tested up to:      6.9
+ * Tested up to:      7.0
  * Requires PHP:      7.4
  * Text Domain:       botblocker-security
  * Domain Path:       /languages
@@ -85,6 +85,9 @@ require_once BOTBLOCKER_DIR . 'includes/inc-botblocker-verify-endpoint.php';
 // Marketing blocks (changelog parser, in-plugin update message, social proof, etc.)
 require_once BOTBLOCKER_DIR . 'includes/data/botblocker-marketing-blocks.php';
 add_action( 'in_plugin_update_message-' . BOTBLOCKER_BASENAME, 'bbcs_render_in_plugin_update_message', 10, 2 );
+
+// WordPress 7.0 Connections integration.
+require_once BOTBLOCKER_DIR . 'includes/inc-botblocker-connectors.php';
 
 /**
  * Checks if the request is an AJAX request and performs logic.

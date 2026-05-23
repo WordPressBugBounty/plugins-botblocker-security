@@ -145,7 +145,9 @@ function bbcs_insertDefaultSearchEngines()
             ['priority' => 35, 'search' => 'Claude-User', 'data' => '.anthropic.com', 'rule' => 'allow', 'comment' => 'Claude user-initiated requests', 'disable' => 0],
             ['priority' => 36, 'search' => 'Claude-SearchBot', 'data' => '.anthropic.com', 'rule' => 'allow', 'comment' => 'Claude search crawler', 'disable' => 0],
 
-            ['priority' => 11, 'search' => 'facebookexternalhit', 'data' => '.fbsv.net .tfbnw.net', 'rule' => 'allow', 'comment' => 'Facebook crawler', 'disable' => 0],
+            ['priority' => 11, 'search' => 'facebookexternalhit', 'data' => '.fbsv.net .tfbnw.net .facebook.com asn:32934', 'rule' => 'allow', 'comment' => 'Facebook crawler', 'disable' => 0],
+            ['priority' => 11, 'search' => 'Facebot', 'data' => '.facebook.com .fbsv.net .tfbnw.net asn:32934', 'rule' => 'allow', 'comment' => 'Facebook link preview crawler', 'disable' => 0],
+            ['priority' => 11, 'search' => 'Instagram', 'data' => '.instagram.com .facebook.com .fbsv.net .tfbnw.net asn:32934', 'rule' => 'allow', 'comment' => 'Instagram link preview', 'disable' => 0],
             ['priority' => 19, 'search' => 'vkShare', 'data' => '.vk.com .vkontakte.ru .userapi.ru', 'rule' => 'allow', 'comment' => 'VK link preview', 'disable' => 0],
             ['priority' => 24, 'search' => 'LinkedInBot', 'data' => '.linkedin.com .ads.linkedin.com', 'rule' => 'allow', 'comment' => 'LinkedIn bot for link preview and ads', 'disable' => 0],
             ['priority' => 26, 'search' => 'Pinterestbot', 'data' => '.pinterest.com', 'rule' => 'allow', 'comment' => 'Pinterest link preview bot', 'disable' => 0],
@@ -153,10 +155,11 @@ function bbcs_insertDefaultSearchEngines()
             ['priority' => 27, 'search' => 'TelegramBot',     'data' => 'asn:62041 asn:59930 asn:62014 asn:44907', 'rule' => 'allow', 'comment' => 'Telegram link preview (ASN-verified)', 'disable' => 0],
             ['priority' => 29, 'search' => 'Twitterbot',      'data' => '.twttr.com',                  'rule' => 'allow', 'comment' => 'Twitter/X link preview',   'disable' => 0],
             ['priority' => 40, 'search' => 'Slackbot',        'data' => '.slack.com',                  'rule' => 'allow', 'comment' => 'Slack link expander',       'disable' => 0],
-            ['priority' => 42, 'search' => 'WhatsApp',        'data' => '.whatsapp.net .whatsapp.com', 'rule' => 'allow', 'comment' => 'WhatsApp link preview',     'disable' => 0],
+            ['priority' => 42, 'search' => 'WhatsApp',        'data' => '.whatsapp.net .whatsapp.com asn:32934', 'rule' => 'allow', 'comment' => 'WhatsApp link preview',     'disable' => 0],
             ['priority' => 44, 'search' => 'SkypeUriPreview', 'data' => '.skype.com',                  'rule' => 'allow', 'comment' => 'Skype link preview',         'disable' => 0],
             ['priority' => 45, 'search' => 'Discordbot', 'data' => '.discordapp.com .discord.com', 'rule' => 'allow', 'comment' => 'Discord link expander', 'disable' => 0],
             ['priority' => 48, 'search' => 'OdklBot', 'data' => '.odnoklassniki.ru', 'rule' => 'allow', 'comment' => 'Odnoklassniki link preview', 'disable' => 0],
+            ['priority' => 49, 'search' => 'Cardyb', 'data' => '.', 'rule' => 'allow', 'comment' => 'Bluesky/Cardyb link preview', 'disable' => 0],
 
             ['priority' => 60, 'search' => 'UptimeRobot', 'data' => 'uptimerobot.com', 'rule' => 'allow', 'comment' => 'UptimeRobot monitoring', 'disable' => 0],
             ['priority' => 60, 'search' => 'Pingdom', 'data' => 'pingdom.com', 'rule' => 'allow', 'comment' => 'Pingdom monitoring', 'disable' => 0],

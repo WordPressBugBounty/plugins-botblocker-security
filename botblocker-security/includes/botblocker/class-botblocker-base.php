@@ -84,6 +84,7 @@ abstract class BotBlockerBase {
     // Rules properties
     public $bbcs_rule = [];
     public $bbcs_se = [];
+    public $bbcs_asn = [];
     public $bbcs_path = [];
     public $bbcs_proxy = [];
     public $self_ips = [];

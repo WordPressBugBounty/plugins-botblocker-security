@@ -32,10 +32,73 @@ function bbcs_get_botblocker_hits( $where ) {
     $gmt_offset = isset( $BBCS->settings->admin_gmt_offset ) ? (float) $BBCS->settings->admin_gmt_offset : 0;
 
     if ( $search !== '' ) {
-        $like            = '%' . $wpdb->esc_like( $search ) . '%';
+        $like               = '%' . $wpdb->esc_like( $search ) . '%';
+        $gmt_offset_seconds = (int) round( $gmt_offset * HOUR_IN_SECONDS );
+        $search_fields      = [
+            'ip',
+            'ptr',
+            'asnum',
+            'asname',
+            'country',
+            'country_name',
+            'lang',
+            'name_lang',
+            'useragent',
+            'browser',
+            'os',
+            'device',
+            'referer',
+            'page',
+            'method',
+            'result',
+            'passed',
+            'cid',
+            //'js_w',
+            //'js_h',
+            //'js_cw',
+            //'js_ch',
+            //'js_co',
+            //'js_pi',
+            //'adblock',
+        ];
+        $search_parts       = [];
+        $search_values      = [];
+
+        foreach ( $search_fields as $field ) {
+            $search_parts[]  = "CAST({$field} AS CHAR) LIKE %s";
+            $search_values[] = $like;
+        }
+
+        $search_parts[]  = "CONCAT('AS', asnum) LIKE %s";
+        $search_values[] = $like;
+        $search_parts[]  = "DATE_FORMAT(FROM_UNIXTIME(date + %d), '%%Y-%%m-%%d %%H:%%i:%%s') LIKE %s";
+        $search_values[] = $gmt_offset_seconds;
+        $search_values[] = $like;
+
+        $matched_codes = [];
+        if ( function_exists( 'bbcs_codeList' ) ) {
+            for ( $code = 0; $code <= 100; $code++ ) {
+                $code_data = bbcs_codeList( $code );
+                $message   = isset( $code_data['msg'] ) ? wp_strip_all_tags( (string) $code_data['msg'] ) : '';
+
+                if ( $message !== '' && $message !== 'Unknown code' && stripos( $message, $search ) !== false ) {
+                    $matched_codes[] = $code;
+                }
+            }
+        }
+
+        if ( ! empty( $matched_codes ) ) {
+            $matched_codes  = array_values( array_unique( $matched_codes ) );
+            $search_parts[] = 'passed IN (' . implode( ', ', array_fill( 0, count( $matched_codes ), '%d' ) ) . ')';
+
+            foreach ( $matched_codes as $code ) {
+                $search_values[] = $code;
+            }
+        }
+
         $search_condition = $wpdb->prepare(
-            "(ip LIKE %s OR ptr LIKE %s OR lang LIKE %s OR useragent LIKE %s OR country LIKE %s OR referer LIKE %s OR page LIKE %s)",
-            $like, $like, $like, $like, $like, $like, $like
+            '(' . implode( ' OR ', $search_parts ) . ')',
+            ...$search_values
         );
         $where = trim( $where );
         if ( $where === '' ) {

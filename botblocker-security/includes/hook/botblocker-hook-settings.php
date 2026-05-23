@@ -73,6 +73,9 @@ function bbcs_botblocker_handle_integrations_save()
 
     $allowed_fields = bbcs_get_allowed_fields();
     foreach ( $allowed_fields as $key ) {
+        if ( in_array( $key, $checkbox_fields, true ) ) {
+            continue;
+        }
         if ( isset( $_POST[ $key ] ) ) {
             $prepared_value = null;
             if ( is_array( $_POST[ $key ] ) ) {
@@ -212,6 +215,9 @@ function bbcs_botblocker_handle_settings_save()
 
     $allowed_fields = bbcs_get_allowed_fields();
     foreach ( $allowed_fields as $key ) {
+        if ( in_array( $key, $checkbox_fields, true ) ) {
+            continue;
+        }
         if ( isset( $_POST[ $key ] ) ) {
             $prepared_value = null;
             if ( is_array( $_POST[ $key ] ) ) {

@@ -19,6 +19,10 @@ function bbcs_get_migrations_registry() {
             'file'     => 'migration-2-5-0.php',
             'callback' => 'bbcs_migration_2_5_0',
         ],
+        '2.6.0' => [
+            'file'     => 'migration-2-6-0.php',
+            'callback' => 'bbcs_migration_2_6_0',
+        ],
     ];
 }
 

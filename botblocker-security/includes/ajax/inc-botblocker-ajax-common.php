@@ -682,30 +682,32 @@ function bbcs_handle_contact_email() {
 		return;
 	}
 
+	$raw_data = isset($_POST['data']) ? sanitize_text_field(wp_unslash($_POST['data'])) : '';
+	$data = sanitize_email($raw_data);
+
+	if (empty($data)) {
+		wp_send_json_error(array('message' => __('Email is required.', 'botblocker-security')));
+		return;
+	}
+
+	if ( ! is_email( $data ) ) {
+		wp_send_json_error( array( 'message' => __( 'Invalid email address.', 'botblocker-security' ) ) );
+		return;
+	}
+
+	if (!function_exists('bbcs_send_activation_to_cloud')) {
+		wp_send_json_error(array('message' => __('Activation service is unavailable.', 'botblocker-security')));
+		return;
+	}
+
 	try {
-		$raw_data = isset($_POST['data']) ? sanitize_text_field(wp_unslash($_POST['data'])) : '';
-		$data = sanitize_email($raw_data);
-
-		if (empty($data)) {
-			wp_send_json_error(array('message' => __('Email is required.', 'botblocker-security')));
-			return;
-		}
-
-		if ( ! is_email( $data ) ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid email address.', 'botblocker-security' ) ) );
-			return;
-		}
-
-		if (!function_exists('bbcs_send_activation_to_cloud')) {
-			wp_send_json_error(array('message' => __('Activation service is unavailable.', 'botblocker-security')));
-			return;
-		}
-
 		bbcs_send_activation_to_cloud($data);
 		bbcs_update_option('bbcs_contact_email_collected', 1);
-		wp_send_json_success(array('message' => __('Activation sent.', 'botblocker-security')));
 	} catch (Exception $e) {
 		wp_send_json_error(array('message' => __('Failed to send activation. Try again later.', 'botblocker-security')));
+		return;
 	}
+
+	wp_send_json_success(array('message' => __('Activation sent.', 'botblocker-security')));
 }
 add_action('wp_ajax_bbcs_contact_email', 'bbcs_handle_contact_email');

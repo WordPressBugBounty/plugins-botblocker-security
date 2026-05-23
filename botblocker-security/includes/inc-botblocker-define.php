@@ -6,8 +6,8 @@ define('BOTBLOCKER_SHORT_NAME', 'BotBlocker'); // A shorter version of the plugi
 if(!defined('BOTBLOCKER_TABLE_PREFIX')) define('BOTBLOCKER_TABLE_PREFIX', 'bbcs_'); // The prefix used for database tables
 define('BOTBLOCKER_PREFIX', 'bb_'); // The prefix used for settings and options
 
-define('BOTBLOCKER_VERSION', '1.6.19'); // The version number of the plugin
-define('BOTBLOCKER_DB_VERSION', '2.5.0'); // The database version of the plugin
+define('BOTBLOCKER_VERSION', '1.6.20'); // The version number of the plugin
+define('BOTBLOCKER_DB_VERSION', '2.6.0'); // The database version of the plugin
 define('BOTBLOCKER_WIZARD_ON_UPDATE', false); // Show setup wizard after plugin update
 define('BOTBLOCKER_MODE_STABLE', 'stable');
 define('BOTBLOCKER_MODE_DEV',    'dev');
@@ -82,8 +82,8 @@ define('BBCS_FATAL_ERROR_HIVE', true);
 define('BBCS_LOG_TO_DEBUG', true);
 // Stop execution on fatal errors
 define('BBCS_ERROR_EXIT', false);
-// 
-define('BOTBLOCKER_MODE', BOTBLOCKER_MODE_STABLE); 
+
+define('BOTBLOCKER_MODE', BOTBLOCKER_MODE_STABLE); // Set the plugin mode to 'dev' for development or 'stable' for production
 
 define('BBCS_STOP_DIRECT','<?php
 // If this file is called directly, abort.

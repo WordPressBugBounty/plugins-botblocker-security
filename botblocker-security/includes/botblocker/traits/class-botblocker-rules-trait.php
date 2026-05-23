@@ -3,6 +3,63 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 trait BotBlockerRulesTrait {
 
+    private function get_asn_rule(): ?string
+    {
+        if ( empty( $this->bbcs_asn ) || ! is_array( $this->bbcs_asn ) ) {
+            return null;
+        }
+
+        $asnum = $this->get_normalized_asnum();
+        if ( $asnum === '' || ! isset( $this->bbcs_asn[ $asnum ] ) ) {
+            return null;
+        }
+
+        $rule = strtolower( trim( (string) $this->bbcs_asn[ $asnum ] ) );
+        return in_array( $rule, [ 'allow', 'block', 'dark', 'gray' ], true ) ? $rule : null;
+    }
+
+    private function get_normalized_asnum(): string
+    {
+        if ( empty( $this->asnum ) || $this->asnum === BOTBLOCKER_EMPTY ) {
+            return '';
+        }
+
+        return preg_replace( '/[^0-9]/', '', (string) $this->asnum );
+    }
+
+    private function has_matching_asn_token( array $tokens ): bool
+    {
+        $asnum = $this->get_normalized_asnum();
+        if ( $asnum === '' ) {
+            return false;
+        }
+
+        foreach ( $tokens as $token ) {
+            if (
+                is_string( $token ) &&
+                strncmp( $token, 'asn:', 4 ) === 0 &&
+                preg_replace( '/[^0-9]/', '', substr( $token, 4 ) ) === $asnum
+            ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private function has_pending_restrictive_response(): bool
+    {
+        return $this->visitorType === self::VISITOR_FAKEBOT
+            || $this->should_show_denied_page === true
+            || $this->should_show_block_page === true
+            || $this->should_show_check_page === true
+            || (int) $this->suspect_status === 2;
+    }
+
+    private function is_allowed_asn_for_white_bot( array $tokens ): bool
+    {
+        return $this->has_matching_asn_token( $tokens ) && $this->get_asn_rule() === 'allow';
+    }
+
 public function check_secret_parameter() : bool
 {
     $param = $this->settings->secret_botblocker_get_param;
@@ -54,6 +111,10 @@ public function check_secret_parameter() : bool
 
     public function check_path_rules() : bool
     {
+        if ( $this->has_pending_restrictive_response() ) {
+            return true;
+        }
+
         foreach ($this->bbcs_path as $bbcs_line => $bbcs_sign) {
             if (stripos($this->uri, $bbcs_line) !== false) {
                 if ($bbcs_sign == 'block') {
@@ -63,6 +124,9 @@ public function check_secret_parameter() : bool
                 } elseif ($bbcs_sign == 'gray') {
                     $this->set_gray_status('GRAY By rule (url part): ' . $bbcs_line);
                 } elseif ($bbcs_sign == 'allow') {
+                    if ( $this->has_pending_restrictive_response() ) {
+                        continue;
+                    }
                     $this->visitorType = self::VISITOR_LEGALBOT;
                     if ($this->settings->botblocker_log_allow == 1) {
                         bbcs_storeData('Allow access to path: ' . $bbcs_line, 4);
@@ -75,7 +139,7 @@ public function check_secret_parameter() : bool
         if($this->visitorType == self::VISITOR_LEGALBOT){
             return true;
         }
-        return false;
+        return $this->has_pending_restrictive_response();
     }
 
     /*
@@ -121,36 +185,7 @@ public function check_secret_parameter() : bool
 
     public function check_white_bot() : bool
     {
-        // Pass 1: ASN-only match (no UA required, no PTR lookup).
-        // Handles bots that arrive without their known UA or without rDNS
-        // (e.g. Google IPv6 crawlers, TelegramBot).
-        // Only fires when the cloud API has populated $this->asnum.
-        if ( ! empty( $this->asnum ) && $this->asnum !== BOTBLOCKER_EMPTY ) {
-            foreach ( $this->bbcs_se as $bbcs_line => $bbcs_sign ) {
-                if ( isset( $this->bbcs_rule[ $bbcs_line ] ) && $this->bbcs_rule[ $bbcs_line ] === 'allow' ) {
-                    foreach ( $bbcs_sign as $token ) {
-                        if (
-                            is_string( $token ) &&
-                            strncmp( $token, 'asn:', 4 ) === 0 &&
-                            substr( $token, 4 ) === (string) $this->asnum
-                        ) {
-                            $this->result_of_action = 'Legal bot by ASN: ' . esc_sql( $bbcs_line ) . ' (' . esc_sql( $token ) . ')';
-                            $this->white_bot        = $bbcs_line;
-                            $this->visitorType      = self::VISITOR_LEGALBOT;
-                            break 2;
-                        }
-                    }
-                }
-            }
-        }
-
-        if ( $this->visitorType === self::VISITOR_LEGALBOT ) {
-            bbcs_storeData( null, 5 );
-            bbcs_process_hit( 5 );
-            return true;
-        }
-
-        // Pass 2: UA match + PTR verification (existing logic).
+        // UA match + PTR or ASN-table verification.
         foreach ($this->bbcs_se as $bbcs_line => $bbcs_sign) {
             if (stripos($this->useragent, $bbcs_line) === false) {
                 continue;
@@ -169,6 +204,13 @@ public function check_secret_parameter() : bool
                 $this->set_gray_status("1 - <b>gray</b> by user-agent: {$escaped_line}");
                 break;
             } elseif ($rule === 'allow') {
+                if ( $this->is_allowed_asn_for_white_bot( $bbcs_sign ) ) {
+                    $this->result_of_action = 'Legal bot by ASN token: ' . $escaped_line . ' (asn:' . esc_sql( (string) $this->asnum ) . ')';
+                    $this->white_bot        = $escaped_line;
+                    $this->visitorType      = self::VISITOR_LEGALBOT;
+                    break;
+                }
+
                 // Strip asn: tokens - PTR verification only works with domain suffixes.
                 $ptr_tokens = array();
                 foreach ( $bbcs_sign as $token ) {
@@ -177,12 +219,7 @@ public function check_secret_parameter() : bool
                     }
                 }
                 if ( empty( $ptr_tokens ) ) {
-                    // Entry has only asn: tokens; UA matched but no PTR domains defined.
-                    // Treat as verified because ASN ownership was already established by
-                    // the cloud API - the matching UA is an additional positive signal.
-                    $this->result_of_action = "Legal bot detected (ASN-only entry): {$escaped_line}";
-                    $this->white_bot        = $escaped_line;
-                    $this->visitorType      = self::VISITOR_LEGALBOT;
+                    $this->redirect_to_denied(7, "Fake bot detected: {$escaped_line}");
                 } elseif (bbcs_testWhiteBot($this->ip, $ptr_tokens, $this->time, $this->settings->ptrcache_time) === true) {
                     if (!in_array('.', $ptr_tokens, true)) {
                         bbcs_storePTRrule();
@@ -205,8 +242,49 @@ public function check_secret_parameter() : bool
         return false;
     }
 
+    public function check_asn_rules() : bool
+    {
+        if ( $this->has_pending_restrictive_response() ) {
+            return true;
+        }
+
+        $rule = $this->get_asn_rule();
+        if ( $rule === null ) {
+            return false;
+        }
+
+        $search = 'asn=' . esc_sql( (string) $this->asnum );
+        $rule_data = [
+            'rule'   => $rule,
+            'search' => $search,
+            'asnum'  => $this->asnum,
+        ];
+
+        if ( $rule === 'allow' ) {
+            if ( (int) $this->suspect_status > 0 ) {
+                return false;
+            }
+            $this->result_of_action = esc_sql( '<b>Allow</b> by ASN rule: ' . $this->asnum );
+            return $this->allow_access( $rule_data );
+        } elseif ( $rule === 'block' ) {
+            $this->redirect_to_block( 6, esc_sql( 'BLOCK by ASN rule: ' . $this->asnum ), $rule_data );
+            return true;
+        } elseif ( $rule === 'dark' ) {
+            $this->redirect_to_dark( esc_sql( 'DARK by ASN rule: ' . $this->asnum ) );
+            return true;
+        } elseif ( $rule === 'gray' ) {
+            $this->set_gray_status( esc_sql( 'GRAY by ASN rule: ' . $this->asnum ) );
+        }
+
+        return false;
+    }
+
     public function check_rules_database() : bool
     {
+        if ( $this->has_pending_restrictive_response() ) {
+            return true;
+        }
+
         global $wpdb;
         $rule = null;
         $search = null;
@@ -303,10 +381,14 @@ public function check_secret_parameter() : bool
         } elseif ($rule == 'gray') {
             $this->set_gray_status(esc_sql('GRAY By rule: ' . $search));
         }
-        return $rule == 'allow';
+        return $rule == 'allow' || $this->has_pending_restrictive_response();
     }
 
     public function check_ip_rules() : bool {
+        if ( $this->has_pending_restrictive_response() ) {
+            return true;
+        }
+
         global $wpdb;
         $table_name = $this->ip_version == 4 ? $wpdb->bbcs_ipv4rules : $wpdb->bbcs_ipv6rules;
 

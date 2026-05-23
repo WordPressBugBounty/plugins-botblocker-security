@@ -69,6 +69,17 @@ class BotBlocker_SetupWizard
 			return;
 		}
 
+		global $pagenow;
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$is_activation_request = isset( $_GET['activate'] ) || isset( $_GET['activate-multi'] );
+		if ( 'plugins.php' !== $pagenow || ! $is_activation_request ) {
+			return;
+		}
+
+		if ( ! current_user_can( bbcs_can_manage() ) ) {
+			return;
+		}
+
         if ( ! bbcs_get_option( 'bbcs_activation_redirect', false ) ) {
 			return;
 		}

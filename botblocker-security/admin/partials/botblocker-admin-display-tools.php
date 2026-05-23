@@ -3,7 +3,6 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 include('botblocker-section-header.php');
 
-
 $bbcs_tools_notice = null;
 $bbcs_tools_login_url_draft = null;
 
@@ -13,10 +12,12 @@ if ( isset( $_POST['save_settings'] ) ) {
     }
     check_admin_referer( 'save_botblocker_settings', 'botblocker_settings_nonce' );
 
-    $bbcs_core_settings  	= [];
-    $bbcs_login_settings 	= [];
-	$bbcs_headers_settings 	= [];
-    $bbcs_existing_login_settings = get_option( 'botblocker_tools_login_settings', [] );
+	$bbcs_core_settings     		= [];
+	$bbcs_login_settings    		= [];
+	$bbcs_headers_settings  		= [];
+	$bbcs_malware_settings  		= [];
+	$bbcs_https_protocol_settings 	= [];
+    $bbcs_existing_login_settings 	= get_option( 'botblocker_tools_login_settings', [] );
 
     if ( function_exists( 'bbcs_get_tools_core_options' ) ) {
         foreach ( bbcs_get_tools_core_options() as $bbcs_field ) {
@@ -78,10 +79,38 @@ if ( isset( $_POST['save_settings'] ) ) {
     }
 
 
+	if ( function_exists( 'bbcs_get_tools_malware_options' ) ) {
+        foreach ( bbcs_get_tools_malware_options() as $bbcs_field ) {
+            if ( isset( $_POST[ $bbcs_field ] ) ) {
+                // REVIEWER NOTE: Values are normalized and sanitized by bbcs_malware_sanitize_settings() below.
+                // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+                $bbcs_malware_settings[ $bbcs_field ] = wp_unslash( $_POST[ $bbcs_field ] );
+            }
+        }
+        $bbcs_malware_settings = bbcs_malware_sanitize_settings( $bbcs_malware_settings );
+    }
+
+	if ( isset( $_POST['botblocker_tools_https_protocol_settings'] ) && is_array( $_POST['botblocker_tools_https_protocol_settings'] ) ) {		
+		$raw_https = wp_unslash( $_POST['botblocker_tools_https_protocol_settings'] );
+		if ( function_exists( 'bbcs_get_tools_https_protocol_options' ) ) {
+			foreach ( bbcs_get_tools_https_protocol_options() as $bbcs_field ) {
+				$bbcs_https_protocol_settings[ $bbcs_field ] = isset( $raw_https[ $bbcs_field ] ) && sanitize_text_field( $raw_https[ $bbcs_field ] ) ? 1 : 0;
+			}
+		}
+	} elseif ( function_exists( 'bbcs_get_tools_https_protocol_options' ) ) {
+		foreach ( bbcs_get_tools_https_protocol_options() as $bbcs_field ) {
+			$bbcs_https_protocol_settings[ $bbcs_field ] = isset( $_POST[ $bbcs_field ] )
+				&& sanitize_text_field( wp_unslash( $_POST[ $bbcs_field ] ) )
+				? 1 : 0;
+		}
+	}
+
 	if ( null === $bbcs_tools_notice ) {
 		update_option( 'botblocker_tools_core_settings', $bbcs_core_settings );
 		update_option( 'botblocker_tools_login_settings', $bbcs_login_settings );
 		update_option( 'botblocker_tools_headers_settings', $bbcs_headers_settings );
+		update_option( 'botblocker_tools_malware_settings', $bbcs_malware_settings );
+		update_option( 'botblocker_tools_https_protocol_settings', $bbcs_https_protocol_settings );
 		flush_rewrite_rules( true );
 	}
 }

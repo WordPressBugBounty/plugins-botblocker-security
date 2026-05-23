@@ -50,7 +50,7 @@ function bbcs_storeData($reason_message = null, $reason = null)
         'js_co' => sanitize_text_field($BBCS->js_co ?? BOTBLOCKER_EMPTY),
         'js_pi' => sanitize_text_field($BBCS->js_pi ?? BOTBLOCKER_EMPTY),
         'refhost' => sanitize_text_field($BBCS->refhost ?? BOTBLOCKER_EMPTY),
-        'adblock' => sanitize_text_field($BBCS->post_adblocker_foundlock ?? BOTBLOCKER_EMPTY),
+        'adblock' => sanitize_text_field($BBCS->post_adblocker_found ?? BOTBLOCKER_EMPTY),
         'asnum' => sanitize_text_field($BBCS->asnum ?? BOTBLOCKER_EMPTY),
         'asname' => sanitize_text_field($BBCS->asname ?? BOTBLOCKER_EMPTY),
         'result' => $BBCS->result_of_action,

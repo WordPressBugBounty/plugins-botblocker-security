@@ -18,6 +18,7 @@ function bbcs_check_install()
 
     if (!bbcs_tablesExist()) {
         bbcs_createTables();
+		bbcs_tablesExist(true);
         bbcs_init_db_and_files();
     } else {
         bbcs_ensure_counters_row();

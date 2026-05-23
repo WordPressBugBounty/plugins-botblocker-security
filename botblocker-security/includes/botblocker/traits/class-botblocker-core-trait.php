@@ -65,6 +65,12 @@ trait BotBlockerCoreTrait {
             $this->bbcs_rule = [];
             $this->bbcs_se = [];
         }
+        if (file_exists(bbcs_data_dir() . 'asn_rules.php')) {
+            $asn_rules = include(bbcs_data_dir() . 'asn_rules.php');
+            $this->bbcs_asn = $asn_rules['bbcs_asn'] ?? [];
+        } else {
+            $this->bbcs_asn = [];
+        }
         if (file_exists(bbcs_data_dir() . 'ip.php')) {
             $self_ip_rules = include(bbcs_data_dir() . 'ip.php');
             $this->self_ips = $self_ip_rules['self_ips'] ?? [];

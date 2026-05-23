@@ -538,6 +538,7 @@ class BBCS_RedisStorage
             $cursor = null;
             
             do {
+                // TODO: phpredis scan() normally returns the key list and mutates $cursor by reference; this tuple-style parsing may skip existing keys.
                 $scanResult = $this->redis->scan($cursor, $pattern, 100);
                 
                 if (!$scanResult) {

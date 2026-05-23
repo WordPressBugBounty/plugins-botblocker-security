@@ -176,20 +176,26 @@ trait BotBlockerVisitorTrait {
         if (filter_var($this->ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
             foreach ($this->bbcs_proxy as $proxy_mask => $proxy_attr) {
                 if (bbcs_netMatch($proxy_mask, $this->ip) == 1 && isset($_SERVER[$proxy_attr])) {
-                    $this->ip = sanitize_text_field(wp_unslash($_SERVER[$proxy_attr]));
-                    $this->isProxy = 'PROXY_v4';
-                    $this->is_proxy_det = $proxy_attr;
-                    break;
+                    $proxy_ip = $this->extract_proxy_header_ip( $_SERVER[$proxy_attr] );
+                    if ( $proxy_ip !== '' && $this->apply_visitor_ip( $proxy_ip ) ) {
+                        $this->read_ptr();
+                        $this->isProxy = 'PROXY_v4';
+                        $this->is_proxy_det = $proxy_attr;
+                        break;
+                    }
                 }
             }
         }
-        if (filter_var($this->ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+        if ($this->isProxy === BOTBLOCKER_EMPTY && filter_var($this->ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
             foreach ($this->bbcs_proxy as $proxy_mask => $proxy_attr) {
                 if (bbcs_netMatch($proxy_mask, $this->ip) == 1 && isset($_SERVER[$proxy_attr])) {
-                    $this->ip = sanitize_text_field(wp_unslash($_SERVER[$proxy_attr]));
-                    $this->isProxy = 'PROXY_v6';
-                    $this->is_proxy_det = $proxy_attr;
-                    break;
+                    $proxy_ip = $this->extract_proxy_header_ip( $_SERVER[$proxy_attr] );
+                    if ( $proxy_ip !== '' && $this->apply_visitor_ip( $proxy_ip ) ) {
+                        $this->read_ptr();
+                        $this->isProxy = 'PROXY_v6';
+                        $this->is_proxy_det = $proxy_attr;
+                        break;
+                    }
                 }
             }
         }
@@ -203,6 +209,22 @@ trait BotBlockerVisitorTrait {
                 }
             }
         }
+    }
+
+    private function extract_proxy_header_ip( $raw_header ): string
+    {
+        $header = sanitize_text_field( wp_unslash( (string) $raw_header ) );
+        foreach ( explode( ',', $header ) as $candidate ) {
+            $candidate = trim( $candidate );
+            if ( $candidate === '' ) {
+                continue;
+            }
+            $candidate = trim( $candidate, " \t\n\r\0\x0B[]" );
+            if ( filter_var( $candidate, FILTER_VALIDATE_IP ) ) {
+                return $candidate;
+            }
+        }
+        return '';
     }
 
     public function validate_referer() : void {
@@ -565,7 +587,7 @@ trait BotBlockerVisitorTrait {
     public function read_ip() : void
     {
         if (isset($_SERVER['REMOTE_ADDR'])) {
-            $this->ip = trim(wp_strip_all_tags(wp_unslash($_SERVER['REMOTE_ADDR'])));
+            $ip = trim(wp_strip_all_tags(wp_unslash($_SERVER['REMOTE_ADDR'])));
         } else {
             if ($this->settings->botblocker_log_block == 1) {
                 bbcs_storeData('IP not reading', 15);
@@ -573,24 +595,36 @@ trait BotBlockerVisitorTrait {
             bbcs_process_hit(15);
             $this->process_die();
         }
-        if (filter_var($this->ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-            $this->ip_version = 4;
-            $bbcsIParray = explode('.', $this->ip);
-            $this->ip_short = $bbcsIParray[0] . '.' . $bbcsIParray[1] . '.' . $bbcsIParray[2] . '.0/24';
-            $this->ipnum = bbcs_ipToNumeric($this->ip);
-        } elseif (filter_var($this->ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
-            $this->ip = bbcs_expandIPv6($this->ip);
-            $this->ip_version = 6;
-            $bbcsIParray = explode(':', $this->ip);
-            $this->ip_short = $bbcsIParray[0] . ':' . $bbcsIParray[1] . ':' . $bbcsIParray[2] . ':' . $bbcsIParray[3] . ':0000:0000:0000:0000/64';
-            $this->ipnum = bbcs_ipv6_bin($this->ip);
-        } else {
+
+        if ( ! $this->apply_visitor_ip( $ip ) ) {
             if ($this->settings->botblocker_log_block == 1) {
                 bbcs_storeData('IP not valid', 15);
             }
             bbcs_process_hit(15);
             $this->process_die();
         }
+    }
+
+    private function apply_visitor_ip( string $ip ): bool
+    {
+        $ip = trim( $ip );
+        if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
+            $this->ip = $ip;
+            $this->ip_version = 4;
+            $bbcsIParray = explode('.', $this->ip);
+            $this->ip_short = $bbcsIParray[0] . '.' . $bbcsIParray[1] . '.' . $bbcsIParray[2] . '.0/24';
+            $this->ipnum = bbcs_ipToNumeric($this->ip);
+            return true;
+        }
+        if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
+            $this->ip = bbcs_expandIPv6($ip);
+            $this->ip_version = 6;
+            $bbcsIParray = explode(':', $this->ip);
+            $this->ip_short = $bbcsIParray[0] . ':' . $bbcsIParray[1] . ':' . $bbcsIParray[2] . ':' . $bbcsIParray[3] . ':0000:0000:0000:0000/64';
+            $this->ipnum = bbcs_ipv6_bin($this->ip);
+            return true;
+        }
+        return false;
     }
 
     public function read_ptr() : void

@@ -57,6 +57,7 @@ $bbcs_option_keys = [
 	'botblocker_tools_login_settings',
 	'botblocker_tools_headers_settings',				
 	'bbcs_asn_db_status',
+	'botblocker_tools_https_protocol_settings',
 ];
 
 /**

@@ -130,6 +130,8 @@ function bbcs_get_cron_tasks()
         'bbcs_asn_db_freshness_task'  => __('ASN Database Freshness Check', 'botblocker-security'),
     ];
 
+    $plugin_tasks = apply_filters('bbcs_cron_task_labels', $plugin_tasks);
+
     $tasks = [];
 
     $asn_download_hook = 'bbcs_asn_db_download_event';
@@ -179,6 +181,8 @@ function bbcs_get_cron_tasks()
             'progress'       => 50,
         ];
     }
+
+    $tasks = apply_filters('bbcs_cron_tasks', $tasks, $cron_jobs, $current_time);
 
     wp_send_json_success($tasks);
 }
