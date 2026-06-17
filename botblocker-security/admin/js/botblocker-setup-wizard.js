@@ -13,6 +13,7 @@
             init: function() {
           //      console.log('BotBlocker Wizard: Init called');
                 this.restoreProgress();
+                this.restoreUIState();
                 this.bindEvents();
                 this.displayCurrentIP();
                 this.initializeContactEmail();
@@ -20,6 +21,10 @@
 
                 if (this.currentStep === 2) {
                     this.runCompatibilityTests();
+                } else if (this.currentStep === 6) {
+                    this.checkCacheAvailability();
+                } else if (this.currentStep === 7) {
+                    this.completeWizard();
                 }
             },
 
@@ -240,7 +245,7 @@
                     this.selectedPreset = state.selectedPreset || null;
                     this.selectedCaptchaMode = state.selectedCaptchaMode || 8;
                     this.selectedInitMode = state.selectedInitMode || 'regular';
-                    this.selectedCache = state.selectedCache || null;
+                    this.selectedCache = state.selectedCache || 'none';
                     
                     this.restoreUIState();
                 }
@@ -248,24 +253,23 @@
             
             restoreUIState: function() {
                 if (this.selectedPreset) {
+                    $('.bbcs-wizard-preset').removeClass('selected');
                     $(`.bbcs-wizard-preset[data-preset="${this.selectedPreset}"]`).addClass('selected');
                     $('.bbcs-wizard-apply-preset').prop('disabled', false);
                 }
                 
                 if (this.selectedCaptchaMode) {
+                    $('.bbcs-captcha-card').removeClass('selected');
                     $(`.bbcs-captcha-card[data-captcha="${this.selectedCaptchaMode}"]`).addClass('selected');
                     $('.bbcs-wizard-save-captcha').prop('disabled', false);
                 }
                 
                 if (this.selectedInitMode) {
+                    $('.bbcs-wizard-init-card').removeClass('selected');
                     $(`.bbcs-wizard-init-card[data-mode="${this.selectedInitMode}"]`).addClass('selected');
                     $('.bbcs-wizard-save-init-mode').prop('disabled', false);
                 }
-                
-                if (this.selectedCache) {
-                    $(`.bbcs-cache-card[data-cache="${this.selectedCache}"]`).addClass('selected');
-                    $('.bbcs-wizard-save-cache').prop('disabled', false);
-                }
+
             },
             
             clearProgress: function() {
@@ -278,24 +282,23 @@
             },
             
             resetStepState: function(step) {
-                // Сброс состояния UI для каждого шага при возврате
                 if (step === 1) {
-                    // Step 1: Preset selection - восстановить кнопку
+                    // Step 1: Preset selection 
                     const $btn = $('.bbcs-wizard-apply-preset');
                     if (!$btn.data('original-text')) {
                         $btn.data('original-text', $btn.html());
                     }
                     $btn.prop('disabled', this.selectedPreset === null).html($btn.data('original-text'));
                 } else if (step === 2) {
-                    // Step 2: Compatibility tests - сбросить к начальному состоянию (спиннеры)
+                    // Step 2: Compatibility tests 
                     $('.bbcs-wizard-test-status i').removeClass('fa-check fa-times text-success text-danger').addClass('fa-spinner fa-spin');
                     $('.bbcs-wizard-test-warnings').hide();
                     $('.bbcs-wizard-test-success').hide();
                 } else if (step === 3) {
-                    // Step 3: Exclusions - ничего особенного, просто показать шаг
-                    // Чекбоксы сохраняют свое состояние
+                    // Step 3: Exclusions 
+
                 } else if (step === 4) {
-                    // Step 4: CAPTCHA mode - восстановить кнопку
+                    // Step 4: CAPTCHA mode 
                     const $btn = $('.bbcs-wizard-save-captcha');
                     if (!$btn.data('original-text')) {
                         $btn.data('original-text', $btn.html());
@@ -313,14 +316,14 @@
                         }
                     });
                 } else if (step === 5) {
-                    // Step 5: Initialization Mode - восстановить кнопку
+                    // Step 5: Initialization Mode 
                     const $btn = $('.bbcs-wizard-save-init-mode');
                     if (!$btn.data('original-text')) {
                         $btn.data('original-text', $btn.html());
                     }
                     $btn.prop('disabled', this.selectedInitMode === null).html($btn.data('original-text'));
                 } else if (step === 6) {
-                    // Step 6: Cache Selection - восстановить кнопку
+                    // Step 6: Cache Selection 
                     const $btn = $('.bbcs-wizard-save-cache');
                     if (!$btn.data('original-text')) {
                         $btn.data('original-text', $btn.html());
@@ -332,49 +335,25 @@
             showStep: function(step) {
               //  console.log('Showing step:', step, 'from current step:', this.currentStep);
                 
-                // Просто скрыть все и показать нужный
+
                 $('.bbcs-wizard-step').hide();
                 $(`.bbcs-wizard-step[data-step="${step}"]`).show();
                 
-                // Обновить текущий шаг
+
                 this.currentStep = step;
                 this.updateProgress();
             },
             
             goBackToStep: function(step) {
-                if (step === 1) {
-                    const $btn = $('.bbcs-wizard-apply-preset');
-                    if ($btn.data('original-text')) {
-                        $btn.html($btn.data('original-text')).prop('disabled', this.selectedPreset === null);
-                    }
-                } else if (step === 4) {
-                    const $btn = $('.bbcs-wizard-save-captcha');
-                    if ($btn.data('original-text')) {
-                        $btn.html($btn.data('original-text')).prop('disabled', this.selectedCaptchaMode === null);
-                    }
-                    
-                    $('.bbcs-captcha-card').removeClass('playing');
-                    $('.bbcs-captcha-video').each(function() {
-                        if (typeof this.pause === 'function') {
-                            if (!this.paused) {
-                                this.pause();
-                            }
-                            this.currentTime = 0;
-                        }
-                    });
-                } else if (step === 5) {
-                    const $btn = $('.bbcs-wizard-save-init-mode');
-                    if ($btn.data('original-text')) {
-                        $btn.html($btn.data('original-text')).prop('disabled', this.selectedInitMode === null);
-                    }
-                } else if (step === 6) {
-                    const $btn = $('.bbcs-wizard-save-cache');
-                    if ($btn.data('original-text')) {
-                        $btn.html($btn.data('original-text')).prop('disabled', this.selectedCache === null);
-                    }
-                }
-                this.saveProgress();
+                this.resetStepState(step);
                 this.showStep(step);
+                this.saveProgress();
+
+                if (step === 2) {
+                    this.runCompatibilityTests();
+                } else if (step === 6) {
+                    this.checkCacheAvailability();
+                }
             },
             
             goToStep: function(step) {
@@ -384,8 +363,8 @@
                     this.resetStepState(step);
                 }
                 
-                this.saveProgress();
                 this.showStep(step);
+                this.saveProgress();
                 
                 if (step === 2 && step > previousStep) {
                     this.runCompatibilityTests();
@@ -492,7 +471,7 @@
             },
             
             fixCompatibilityAuto: function() {
-                // TODO: автофикс проблем совместимости
+                // TODO: Implement auto-fix logic on the server and call it here. For now, just show an alert and go to manual step.
                 alert(bbcs_setup_wizard_vars.i18n.auto_fix_stub);
                 this.goToStep(3);
             },
@@ -577,8 +556,27 @@
             },
             
             checkCacheAvailability: function() {
+                const $btn = $('.bbcs-wizard-save-cache');
+                const $actions = $('.bbcs-wizard-step[data-step="6"] .bbcs-wizard-actions');
+                if (!$btn.data('original-text')) {
+                    $btn.data('original-text', $btn.html());
+                }
+
+                $('.bbcs-cache-card').removeClass('selected');
                 $('.bbcs-cache-status').html('<i class="fa-solid fa-spinner fa-spin"></i>');
-                
+                $('.bbcs-cache-card[data-cache="redis"], .bbcs-cache-card[data-cache="memcached"]').addClass('disabled');
+                $actions.hide();
+                $btn.prop('disabled', true);
+
+                // 'none' is always available — select immediately, no AJAX delay
+                if (!this.selectedCache || this.selectedCache === 'none') {
+                    $('.bbcs-cache-card[data-cache="none"]').addClass('selected');
+                    this.selectedCache = 'none';
+                    this.saveProgress();
+                    $actions.show();
+                    $btn.prop('disabled', false).html($btn.data('original-text'));
+                }
+
                 $.ajax({
                     url: bbcs_setup_wizard_vars.ajax_url,
                     type: 'POST',
@@ -593,6 +591,7 @@
                             
                             if (response.data.redis) {
                                 $redisCard.find('.bbcs-cache-status').html('<i class="fa-solid fa-check text-success"></i>');
+                                $redisCard.removeClass('disabled');
                             } else {
                                 $redisCard.find('.bbcs-cache-status').html('<i class="fa-solid fa-times text-danger"></i>');
                                 $redisCard.addClass('disabled');
@@ -600,16 +599,38 @@
                             
                             if (response.data.memcached) {
                                 $memcachedCard.find('.bbcs-cache-status').html('<i class="fa-solid fa-check text-success"></i>');
+                                $memcachedCard.removeClass('disabled');
                             } else {
                                 $memcachedCard.find('.bbcs-cache-status').html('<i class="fa-solid fa-times text-danger"></i>');
                                 $memcachedCard.addClass('disabled');
                             }
-                            
-                            if (!this.selectedCache) {
-                                this.selectedCache = 'none';
-                                $('.bbcs-wizard-save-cache').prop('disabled', false);
+
+                            // Apply saved selection only after availability confirmed
+                            if (this.selectedCache && this.selectedCache !== 'none') {
+                                const $target = $(`.bbcs-cache-card[data-cache="${this.selectedCache}"]`);
+                                if (!$target.hasClass('disabled')) {
+                                    $('.bbcs-cache-card').removeClass('selected');
+                                    $target.addClass('selected');
+                                } else {
+                                    // Saved selection unavailable — fall back to 'none'
+                                    $('.bbcs-cache-card').removeClass('selected');
+                                    $('.bbcs-cache-card[data-cache="none"]').addClass('selected');
+                                    this.selectedCache = 'none';
+                                    this.saveProgress();
+                                }
                             }
+                        } else {
+                            $('.bbcs-cache-card[data-cache="redis"]').addClass('disabled');
+                            $('.bbcs-cache-card[data-cache="memcached"]').addClass('disabled');
                         }
+                        $actions.show();
+                        $btn.prop('disabled', false).html($btn.data('original-text'));
+                    },
+                    error: () => {
+                        $('.bbcs-cache-card[data-cache="redis"]').addClass('disabled');
+                        $('.bbcs-cache-card[data-cache="memcached"]').addClass('disabled');
+                        $actions.show();
+                        $btn.prop('disabled', false).html($btn.data('original-text'));
                     }
                 });
             },
@@ -746,46 +767,18 @@
                     data: {
                         action: 'bbcs_wizard_save_preset',
                         nonce: bbcs_setup_wizard_vars.nonce,
-                        preset: 'balanced'
+                        preset: 'strong'
                     },
-                    success: () => {
-                        // Применяем дефолтные настройки для всех остальных шагов
-                        $.ajax({
-                            url: bbcs_setup_wizard_vars.ajax_url,
-                            type: 'POST',
-                            data: {
-                                action: 'bbcs_wizard_save_exclusions',
-                                nonce: bbcs_setup_wizard_vars.nonce,
-                                exclude_admins: true,
-                                exclude_current_ip: true,
-                                exclude_cron: true,
-                                current_ip: bbcs_setup_wizard_vars.current_ip
-                            }
-                        });
-                        
-                        $.ajax({
-                            url: bbcs_setup_wizard_vars.ajax_url,
-                            type: 'POST',
-                            data: {
-                                action: 'bbcs_wizard_save_ux',
-                                nonce: bbcs_setup_wizard_vars.nonce,
-                                ux_mode: 'challenge'
-                            }
-                        });
-                        
-                        $.ajax({
-                            url: bbcs_setup_wizard_vars.ajax_url,
-                            type: 'POST',
-                            data: {
-                                action: 'bbcs_wizard_save_notifications',
-                                nonce: bbcs_setup_wizard_vars.nonce,
-                                notify_daily: true,
-                                notify_brute_force: true,
-                                notify_weekly: false
-                            }
-                        });
-                        
+                    success: function(response) {
+                        if (!response.success) {
+                            alert(bbcs_setup_wizard_vars.i18n.error_prefix + (response.data || bbcs_setup_wizard_vars.i18n.unknown_error));
+                            window.location.href = bbcs_setup_wizard_vars.dashboard_url;
+                            return;
+                        }
                         // Redirect to dashboard
+                        window.location.href = bbcs_setup_wizard_vars.dashboard_url;
+                    },
+                    error: function() {
                         window.location.href = bbcs_setup_wizard_vars.dashboard_url;
                     }
                 });

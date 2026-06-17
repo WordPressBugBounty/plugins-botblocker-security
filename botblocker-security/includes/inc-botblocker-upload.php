@@ -1,17 +1,21 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+declare(strict_types=1);
 
-function bbcs_get_protected_upload_slug() {
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
+
+function bbcs_get_protected_upload_slug(): string {
 	$slug = defined( 'BOTBLOCKER_SHORT_NAME' ) ? BOTBLOCKER_SHORT_NAME : 'botblocker';
 	$slug = sanitize_title( (string) $slug );
 	return $slug;
 }
 
-function bbcs_get_protected_upload_dir( $return_url = false ) {
+function bbcs_get_protected_upload_dir( bool $return_url = false ) {
 
 	$uploads = wp_upload_dir();
-	$slug = bbcs_get_protected_upload_slug();
-	$dir  = trailingslashit( $uploads['basedir'] ) . $slug . '/';
+	$slug    = bbcs_get_protected_upload_slug();
+	$dir     = trailingslashit( $uploads['basedir'] ) . $slug . '/';
 
 	$dir_url = isset( $uploads['baseurl'] ) ? trailingslashit( $uploads['baseurl'] ) . $slug . '/' : null;
 
@@ -22,13 +26,13 @@ function bbcs_get_protected_upload_dir( $return_url = false ) {
 	$marker = $dir . 'bbcs-owner.txt';
 	if ( ! file_exists( $marker ) ) {
 		//return new WP_Error( 'not_owned', 'Ownership marker not found' );
-        return null;
+		return null;
 	}
 
 	return $return_url ? $dir_url : $dir;
 }
 
-function bbcs_create_protected_upload_dir( $return_url = false ) {
+function bbcs_create_protected_upload_dir( bool $return_url = false ) {
 	if ( ! function_exists( 'wp_upload_dir' ) ) {
 		return new WP_Error( 'no_wp_context', 'wp_upload_dir() unavailable' );
 	}
@@ -64,7 +68,7 @@ function bbcs_create_protected_upload_dir( $return_url = false ) {
 	}
 
 	$htaccess = "<IfModule mod_authz_core.c>\n    Require all denied\n</IfModule>\n<IfModule !mod_authz_core.c>\n    Deny from all\n</IfModule>\n";
-	$indexphp = "<?php exit;";
+	$indexphp = '<?php exit;';
 	$webconf  = "<configuration>\n  <system.webServer>\n    <authorization>\n      <deny users=\"*\" />\n    </authorization>\n  </system.webServer>\n</configuration>\n";
 
 	$marker_name    = 'bbcs-owner.txt';

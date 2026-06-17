@@ -253,6 +253,10 @@
         }
       });
 
+        if ($('#bbcs_white_bots').hasClass('active')) {
+            initializeWhiteTable();
+        }
+
         $("#priority").on("input", function () {
             $("#priorityValue").val(this.value);
         });

@@ -291,8 +291,23 @@
               data: "datetime",
               width: "85px",
               render: function (data, type, row) {
-                let addRule_btn = '<a href="#" style="float:right; margin-right:-5px;" class="bbcs-icon-button" data-cid="'+ row.js_info.cid +'"><i style="font-size:14px; line-height:1em; width:14px; height:14px;" class="fas fa-gear bbcs-gray ms-1" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" data-bs-original-title="Add rule"></i></a>';
-                return "<span class='bbcs-" + data.m.toLowerCase() + "'>" + data.m +"</span>"+ addRule_btn +"<br><br>" + data.date + "<br><br><small>" + data.time + "</small>";                
+                var $btn = $('<a>', {
+                  href: '#',
+                  style: 'float:right; margin-right:-5px;',
+                  class: 'bbcs-icon-button',
+                  'data-cid': row.js_info.cid,
+                  'data-modal': JSON.stringify(row.modal || {})
+                });
+                var $icon = $('<i>', {
+                  style: 'font-size:14px; line-height:1em; width:14px; height:14px;',
+                  class: 'fas fa-gear bbcs-gray ms-1',
+                  'data-bs-toggle': 'tooltip',
+                  'data-bs-html': 'true',
+                  'data-bs-placement': 'top',
+                  'data-bs-original-title': 'Add rule'
+                });
+                $btn.append($icon);
+                return "<span class='bbcs-" + data.m.toLowerCase() + "'>" + data.m + "</span>" + $btn.prop('outerHTML') + "<br><br>" + data.date + "<br><br><small>" + data.time + "</small>";
               }, 
             },
             { 
@@ -408,6 +423,24 @@
   
 
     $(document).ready(function () {
+        // Permanently ban → hide date picker + fill +200y.
+        $(document).on('change', 'select[name="rule"]', function () {
+            var $expires = $(this).closest('form').find('[name="expires"]');
+            if (!$expires.length) return;
+            var $wrapper = $expires.closest('.col-md-6');
+            if ($(this).val() === 'permanently_ban') {
+                var d = new Date();
+                d.setFullYear(d.getFullYear() + 200);
+                var pad = function (n) { return String(n).padStart(2, '0'); };
+                $expires.val(d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes()));
+                $wrapper.hide();
+                $expires.prop('required', false);
+            } else {
+                $wrapper.show();
+                $expires.prop('required', true);
+            }
+        });
+
       function initializeTabTable(target) {
 
           if (target === '') {
@@ -425,10 +458,10 @@
   
       const hash = window.location.hash;
       if (hash) {
-          const tabLink = $(`a[href="${hash}"]`);
+          const tabLink = $(`a[data-bs-toggle="tab"][href="${hash}"], a[data-bs-toggle="tab"][href="${hash.toLowerCase()}"]`);
           if (tabLink.length) {
               tabLink.tab('show'); 
-              initializeTabTable(hash); 
+              initializeTabTable(tabLink.attr('href')); 
           }
       } else {
          // initializeDataTable("botblocker-hits");
@@ -440,104 +473,73 @@
       });
     });
 
-    $("#botblocker-hits, #botblocker-hits-admin, #botblocker-other-admin, #botblocker-hits-full").on("click", 'td>a.bbcs-icon-button', function () {
-    
-      $("#AddRuleModal").modal("show");
-      
-      $('#type').val('ip'); 
-      $('#rule').find('option').not('[value="allow"], [value="block"]').hide();
-
-  //    const ruleOptions = $('#rule').html();
-
-      const cid = $(this).attr("data-cid").trim();
-      const form = document.getElementById("addRuleForm");
-      if(!cid) {
+    $("#botblocker-hits, #botblocker-hits-admin, #botblocker-other-admin, #botblocker-hits-full").on("click", 'td>a.bbcs-icon-button', function (e) {
+      e.preventDefault();
+      var $btn = $(this);
+      var cid = ($btn.attr("data-cid") || '').trim();
+      if (!cid) {
         console.error("CID not found");
         return;
       }
 
-      $.ajax({
-        url: botblockerData.ajaxurl,
-        type: "POST",
-        data: {
-          action: "bbcs_get_botblocker_hits_data_for_modal",
-          cid: cid,
-          nonce: botblockerData.nonce,
-        },
-        success: function (response) {
-          if (response.success) {
-            var data = response.data;
-            add_modal_selected_value(data);
-          } else {
-            alert(bbcsHitsL10n.failed_get_response + response.data);
-          }
-        },
-      });
-      
-
-      function add_modal_selected_value(data) {
-        const selectedData = form.querySelector("#data");
-        selectedData.value = data[0].ip;
-        $('#this_ip').val(data[0].ip);
-
-        const selectedType = form.querySelector("#type");
-        let selectedTypeValue = selectedType.options[selectedType.selectedIndex].value;
-      
-        $('#type').on('change', function () {
-          selectedTypeValue = $(this).val();
-
-          switch (selectedTypeValue) {
-            case 'ip':
-              selectedData.value = data[0].ip;
-              $('#rule').find('option').not('[value="allow"], [value="block"]').hide();
-              break;
-            case 'useragent': 
-              $('#rule').find('option').show();
-              selectedData.value = data[0].useragent;
-              break;
-            case 'ptr':
-              $('#rule').find('option').show();
-                selectedData.value = data[0].ptr;
-                break;
-            case 'referer':
-              $('#rule').find('option').show();
-              selectedData.value = data[0].referer;
-              break;
-            case 'country':
-              $('#rule').find('option').show();
-              selectedData.value = data[0].country_name;
-              break;
-            case 'asname':
-              $('#rule').find('option').show();
-              selectedData.value = data[0].asname;
-              break;
-            case 'asnum':
-              $('#rule').find('option').show();
-              selectedData.value = data[0].asnum;
-              break;
-            case 'lang':
-              $('#rule').find('option').show();
-              selectedData.value = data[0].name_lang;
-              break;
-            default:
-             // console.log('None of the options matched');
-              break;
-          }
-
-        });
+      var raw = $btn.attr("data-modal");
+      var data = raw ? JSON.parse(raw) : null;
+      if (!data) {
+        console.error("Modal data not found");
+        return;
       }
 
-      const expiresInput = form.querySelector("#expires");      
-      const now = new Date();
-      now.setDate(now.getDate() + 1);
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, "0");
-      const day = String(now.getDate()).padStart(2, "0");
-      const hours = String(now.getHours()).padStart(2, "0");
-      const minutes = String(now.getMinutes()).padStart(2, "0");
+      var form = document.getElementById("addRuleForm");
+      var typeMap = {
+        useragent: data.useragent,
+        ptr: data.ptr,
+        referer: data.referer,
+        country: data.country_name,
+        asname: data.asname,
+        asnum: data.asnum,
+        lang: data.name_lang
+      };
 
-      const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}`;
-      expiresInput.value = formattedDate;
+      // Reset options.
+      $('#type option').prop('disabled', false);
+      $('#rule option').prop('disabled', false);
+
+      // Disable broken type options.
+      $('#type option').each(function () {
+        var $opt = $(this);
+        var val = $opt.val();
+        if (val === 'ip') return;
+        var v = typeMap[val] || '';
+        $opt.prop('disabled', !v || ('' + v).trim() === '');
+      });
+
+      $('#type').val('ip');
+      $('#rule option[value="gray"], #rule option[value="dark"]').prop('disabled', true);
+
+      $('#this_ip').val(data.ip);
+      $('#data').val(data.ip);
+
+      // Type change handler.
+      var selectedData = form.querySelector("#data");
+      $('#type').off('change').on('change', function () {
+        var val = $(this).val();
+        if (val === 'ip') {
+          selectedData.value = data.ip;
+          $('#rule option[value="gray"], #rule option[value="dark"]').prop('disabled', true);
+        } else {
+          $('#rule option').prop('disabled', false);
+          selectedData.value = typeMap[val] || '';
+        }
+      });
+
+      // Set expires.
+      var expiresInput = form.querySelector("#expires");
+      var now = new Date();
+      now.setDate(now.getDate() + 1);
+      var pad = function (n) { return String(n).padStart(2, "0"); };
+      expiresInput.value = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate()) + 'T' + pad(now.getHours()) + ':' + pad(now.getMinutes());
+
+      $("#AddRuleModal").modal("show");
     });
 
     $("#addRuleForm").on("submit", function (e) {

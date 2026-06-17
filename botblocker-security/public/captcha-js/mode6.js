@@ -21,9 +21,9 @@ function renderMode6Captcha(params) {
             const item = expressionData[i];
             chars.push({
                 char: item.c,
-                x: 50 + i * 20 + (item.o || 0),
+                x: 50 + i * 20,
                 y: 40,
-                baseX: 50 + i * 20 + (item.o || 0),
+                baseX: 50 + i * 20,
                 baseY: 40,
                 color: getRandomColor(),
                 amplitude: Math.random() * 5 + 2,

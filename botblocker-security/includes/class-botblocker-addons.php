@@ -1,0 +1,889 @@
+<?php
+declare(strict_types=1);
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+class BotBlockerAddons {
+
+	/**
+	 * @var array<string,bool>
+	 */
+	private static $loaded_cores = array();
+
+	public static function loadCore( array $addon ): void {
+		$slug = isset( $addon['slug'] ) ? sanitize_key( (string) $addon['slug'] ) : '';
+		$core = ! empty( $addon['core'] ) ? (string) $addon['core'] : '';
+
+		if ( $slug === '' ) {
+			// No slug to dedup on; fall back to path-keyed include_once.
+			if ( $core !== '' && file_exists( $core ) ) {
+				include_once $core;
+			}
+			return;
+		}
+
+		if ( isset( self::$loaded_cores[ $slug ] ) ) {
+			return;
+		}
+
+		if ( $core !== '' && file_exists( $core ) ) {
+			self::$loaded_cores[ $slug ] = true;
+			include_once $core;
+		}
+	}
+
+	public static function rootDir(): string {
+		return BotBlockerMultisite::getAddonsDir();
+	}
+
+	public static function rootUrl(): string {
+		return BotBlockerMultisite::getAddonsUrl();
+	}
+
+	public static function getMarketUrl(): string {
+		if ( defined( 'BOTBLOCKER_MODE' ) && BOTBLOCKER_MODE === BOTBLOCKER_MODE_DEV ) {
+			return defined( 'BOTBLOCKER_ADDONS_DEV' ) ? BOTBLOCKER_ADDONS_DEV : '';
+		}
+		return defined( 'BOTBLOCKER_ADDONS' ) ? BOTBLOCKER_ADDONS : '';
+	}
+
+	public static function safeRelativePath( $path ): string {
+
+		if ( ! is_string( $path ) || trim( $path ) === '' ) {
+			return '';
+		}
+
+		$path = str_replace( '\\', '/', trim( $path ) );
+		$path = ltrim( $path, '/' );
+
+		if (
+			$path === ''
+			|| $path === '.'
+			|| strpos( $path, "\0" ) !== false
+			|| strpos( $path, ':' ) !== false
+			|| preg_match( '#(^|/)\.\.(/|$)#', $path )
+		) {
+			return '';
+		}
+		return $path;
+	}
+
+	public static function safeSymbolName( $value ): string {
+
+		if ( ! is_string( $value ) ) {
+			return '';
+		}
+
+		$value = trim( $value );
+		if ( $value === '' ) {
+			return '';
+		}
+
+		return preg_match( '/^[A-Za-z_][A-Za-z0-9_]*$/', $value ) ? $value : '';
+	}
+
+	public static function safeCallableName( $value ): string {
+
+		if ( ! is_string( $value ) ) {
+			return '';
+		}
+
+		$value = trim( $value );
+		if ( $value === '' ) {
+			return '';
+		}
+
+		return preg_match( '/^[A-Za-z_\\\\][A-Za-z0-9_\\\\]*(::[A-Za-z_][A-Za-z0-9_]*)?$/', $value ) ? $value : '';
+	}
+
+	public static function absPath( string $base, string $relative ): string {
+
+		$relative = self::safeRelativePath( $relative );
+		if ( $relative === '' ) {
+			return '';
+		}
+		return trailingslashit( $base ) . str_replace( '/', DIRECTORY_SEPARATOR, $relative );
+	}
+
+	public static function fileUrl( string $slug, string $relative ): string {
+		$relative = self::safeRelativePath( $relative );
+		if ( $relative === '' ) {
+			return '';
+		}
+		return trailingslashit( self::rootUrl() ) . rawurlencode( $slug ) . '/' . str_replace( '%2F', '/', rawurlencode( $relative ) );
+	}
+
+	public static function parseManifest( string $base, string $slug = '' ): array {
+		$manifest_file = trailingslashit( $base ) . 'bbcs-addon.json';
+		if ( ! file_exists( $manifest_file ) ) {
+			return array();
+		}
+
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+		$raw = file_get_contents( $manifest_file );
+		if ( ! is_string( $raw ) || trim( $raw ) === '' ) {
+			return array();
+		}
+
+		$manifest = json_decode( $raw, true );
+		if ( ! is_array( $manifest ) ) {
+			return array();
+		}
+
+		return self::normalizeManifest( $manifest, $base, $slug );
+	}
+
+	public static function normalizeManifest( array $manifest, string $base, string $folder_slug = '' ): array {
+
+		$declared_slug = isset( $manifest['slug'] ) ? sanitize_key( (string) $manifest['slug'] ) : '';
+		$folder_slug   = sanitize_key( $folder_slug );
+		$slug          = $declared_slug !== '' ? $declared_slug : $folder_slug;
+
+		$settings     = isset( $manifest['settings'] ) && is_array( $manifest['settings'] ) ? $manifest['settings'] : array();
+		$assets       = isset( $manifest['assets'] ) && is_array( $manifest['assets'] ) ? $manifest['assets'] : array();
+		$lifecycle    = isset( $manifest['lifecycle'] ) && is_array( $manifest['lifecycle'] ) ? $manifest['lifecycle'] : array();
+		$runtime      = isset( $manifest['runtime'] ) && is_array( $manifest['runtime'] ) ? $manifest['runtime'] : array();
+		$main_rel     = isset( $manifest['main'] ) ? self::safeRelativePath( $manifest['main'] ) : '';
+		$core_rel     = isset( $manifest['core'] ) ? self::safeRelativePath( $manifest['core'] ) : '';
+		$settings_rel = isset( $settings['view'] ) ? self::safeRelativePath( $settings['view'] ) : '';
+		$icon_rel     = '';
+		if ( isset( $assets['icon'] ) ) {
+			$icon_rel = self::safeRelativePath( $assets['icon'] );
+		} elseif ( isset( $manifest['icon'] ) ) {
+			$icon_rel = self::safeRelativePath( $manifest['icon'] );
+		}
+		$readme_rel = isset( $assets['readme'] ) ? self::safeRelativePath( $assets['readme'] ) : 'readme.txt';
+
+		$root          = $main_rel !== '' ? self::absPath( $base, $main_rel ) : ( $slug !== '' ? trailingslashit( $base ) . $slug . '.php' : '' );
+		$core          = $core_rel !== '' ? self::absPath( $base, $core_rel ) : '';
+		$settings_path = $settings_rel !== '' ? self::absPath( $base, $settings_rel ) : '';
+		$icon_path     = $icon_rel !== '' ? self::absPath( $base, $icon_rel ) : '';
+		$readme_path   = $readme_rel !== '' ? self::absPath( $base, $readme_rel ) : '';
+
+		$features = array();
+		if ( isset( $manifest['features'] ) && is_array( $manifest['features'] ) ) {
+			foreach ( $manifest['features'] as $feature ) {
+				$feature = sanitize_key( (string) $feature );
+				if ( $feature !== '' ) {
+					$features[] = $feature;
+				}
+			}
+		}
+
+		$normalized_lifecycle = array();
+		foreach ( array( 'file', 'install', 'activate', 'deactivate', 'delete', 'update', 'load', 'health_check' ) as $key ) {
+			if ( ! isset( $lifecycle[ $key ] ) || ! is_string( $lifecycle[ $key ] ) || trim( $lifecycle[ $key ] ) === '' ) {
+				continue;
+			}
+			$normalized_lifecycle[ $key ] = $key === 'file'
+					? self::safeRelativePath( $lifecycle[ $key ] )
+					: trim( $lifecycle[ $key ] );
+		}
+
+		$pre_run_manifest  = isset( $runtime['pre_run'] ) && is_array( $runtime['pre_run'] ) ? $runtime['pre_run'] : array();
+		$pre_run_file_rel  = isset( $pre_run_manifest['file'] ) ? self::safeRelativePath( $pre_run_manifest['file'] ) : '';
+		$pre_run_file      = $pre_run_file_rel !== '' ? self::absPath( $base, $pre_run_file_rel ) : '';
+		$pre_run           = array(
+			'enabled'        => ! empty( $pre_run_manifest['enabled'] ),
+			'file'           => ( $pre_run_file !== '' && file_exists( $pre_run_file ) ) ? $pre_run_file : '',
+			'file_relative'  => $pre_run_file_rel,
+			'contract'       => isset( $pre_run_manifest['contract'] ) ? sanitize_key( (string) $pre_run_manifest['contract'] ) : '',
+			'ready_constant' => isset( $pre_run_manifest['ready_constant'] ) ? self::safeSymbolName( $pre_run_manifest['ready_constant'] ) : '',
+			'ready_callback' => isset( $pre_run_manifest['ready_callback'] ) ? self::safeCallableName( $pre_run_manifest['ready_callback'] ) : '',
+			'register'       => isset( $pre_run_manifest['register'] ) ? self::safeCallableName( $pre_run_manifest['register'] ) : '',
+		);
+		$requires_core     = isset( $manifest['requires_core'] ) ? trim( (string) $manifest['requires_core'] ) : '';
+		$requires_php      = isset( $manifest['requires_php'] ) ? trim( (string) $manifest['requires_php'] ) : '';
+		$schema            = isset( $manifest['schema'] ) ? trim( (string) $manifest['schema'] ) : '2.0';
+		$settings_option   = isset( $settings['option'] ) ? sanitize_key( (string) $settings['option'] ) : '';
+		$settings_sanitize = isset( $settings['sanitize'] ) && is_string( $settings['sanitize'] ) ? trim( $settings['sanitize'] ) : '';
+
+		$valid = $slug !== ''
+			&& $slug === sanitize_key( $slug )
+			&& ( $folder_slug === '' || $folder_slug === $slug )
+			&& $schema !== ''
+			&& trim( (string) ( $manifest['name'] ?? '' ) ) !== ''
+			&& trim( (string) ( $manifest['version'] ?? '' ) ) !== ''
+			&& $requires_core !== ''
+			&& $core !== ''
+			&& file_exists( $core );
+
+		if ( $valid && $requires_php !== '' && version_compare( PHP_VERSION, $requires_php, '<' ) ) {
+			$valid = false;
+		}
+
+		return array(
+			'slug'              => $slug,
+			'base'              => trailingslashit( $base ),
+			'root'              => $root,
+			'core'              => $core,
+			'settings'          => $settings_path,
+			'icon'              => ( $icon_rel !== '' && file_exists( $icon_path ) ) ? self::fileUrl( $slug, $icon_rel ) : '',
+			'valid'             => $valid,
+			'name'              => isset( $manifest['name'] ) ? trim( (string) $manifest['name'] ) : $slug,
+			'author'            => isset( $manifest['author'] ) ? trim( (string) $manifest['author'] ) : '',
+			'description'       => isset( $manifest['description'] ) ? trim( (string) $manifest['description'] ) : '',
+			'version'           => isset( $manifest['version'] ) ? trim( (string) $manifest['version'] ) : '',
+			'requires_core'     => $requires_core,
+			'requires_php'      => $requires_php,
+			'schema'            => $schema,
+			'source_format'     => 'v2',
+			'has_settings'      => $settings_path !== '' && file_exists( $settings_path ),
+			'settings_option'   => $settings_option,
+			'settings_sanitize' => $settings_sanitize,
+			'lifecycle'         => $normalized_lifecycle,
+			'pre_run'           => $pre_run,
+			'features'          => array_values( array_unique( $features ) ),
+			'manifest'          => trailingslashit( $base ) . 'bbcs-addon.json',
+			'readme'            => ( $readme_path !== '' && file_exists( $readme_path ) ) ? $readme_path : '',
+		);
+	}
+	public static function scanLegacy( string $base, string $slug ): array {
+		$root     = trailingslashit( $base ) . $slug . '.php';
+		$core     = trailingslashit( $base ) . 'inc' . DIRECTORY_SEPARATOR . $slug . '-core.php';
+		$settings = trailingslashit( $base ) . 'inc' . DIRECTORY_SEPARATOR . $slug . '-settings.php';
+		$iconSvg  = trailingslashit( $base ) . $slug . '.svg';
+		$iconPng  = trailingslashit( $base ) . $slug . '.png';
+		$readme   = trailingslashit( $base ) . 'readme.txt';
+		$iconPath = file_exists( $iconSvg ) ? $iconSvg : ( file_exists( $iconPng ) ? $iconPng : '' );
+		$iconUrl  = $iconPath ? self::rootUrl() . $slug . '/' . basename( $iconPath ) : '';
+		$valid    = file_exists( $root ) && file_exists( $core ) && file_exists( $settings ) && $iconPath && file_exists( $readme );
+		$headers  = array(
+			'Name'         => 'Plugin Name',
+			'Author'       => 'Author',
+			'Description'  => 'Description',
+			'Version'      => 'Version',
+			'RequiresCore' => 'Requires-Core',
+		);
+		$meta     = file_exists( $root ) ? get_file_data( $root, $headers ) : array(
+			'Name'         => '',
+			'Author'       => '',
+			'Description'  => '',
+			'Version'      => '',
+			'RequiresCore' => '',
+		);
+
+		return array(
+			'slug'              => $slug,
+			'base'              => trailingslashit( $base ),
+			'root'              => $root,
+			'core'              => $core,
+			'settings'          => $settings,
+			'icon'              => $iconUrl,
+			'valid'             => $valid,
+			'name'              => isset( $meta['Name'] ) ? $meta['Name'] : $slug,
+			'author'            => isset( $meta['Author'] ) ? $meta['Author'] : '',
+			'description'       => isset( $meta['Description'] ) ? $meta['Description'] : '',
+			'version'           => isset( $meta['Version'] ) ? $meta['Version'] : '',
+			'requires_core'     => isset( $meta['RequiresCore'] ) ? $meta['RequiresCore'] : '',
+			'requires_php'      => '',
+			'schema'            => '1.0',
+			'source_format'     => 'v1',
+			'has_settings'      => file_exists( $settings ),
+			'settings_option'   => '',
+			'settings_sanitize' => '',
+			'lifecycle'         => array(),
+			'features'          => array(),
+			'manifest'          => '',
+			'readme'            => file_exists( $readme ) ? $readme : '',
+		);
+	}
+
+	public static function scanAll(): array {
+		$dir = self::rootDir();
+		if ( ! is_dir( $dir ) ) {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [Addons] scanAll: addons directory not found: ' . $dir );
+			}
+			return array();
+		}
+		$entries = array_diff( scandir( $dir ), array( '.', '..' ) );
+		$addons  = array();
+		foreach ( $entries as $entry ) {
+			if ( preg_match( '/_bbcs_bak$/', $entry ) ) {
+				continue;
+			}
+			$slug = sanitize_key( $entry );
+			$base = $dir . $slug . DIRECTORY_SEPARATOR;
+			if ( ! is_dir( $base ) ) {
+				continue;
+			}
+			$manifest        = self::parseManifest( $base, $slug );
+			$addons[ $slug ] = ! empty( $manifest ) ? $manifest : self::scanLegacy( $base, $slug );
+		}
+		return $addons;
+	}
+
+	public static function getActive(): array {
+		$active = BotBlockerMultisite::getOption( 'bbcs_active_addons', array() );
+		if ( ! is_array( $active ) ) {
+			return array();
+		}
+		return array_values( $active );
+	}
+
+	public static function isActive( string $slug ): bool {
+		$slug = sanitize_key( $slug );
+		return in_array( $slug, self::getActive(), true );
+	}
+
+	public static function isCompatible( array $addon, string $core_version = '' ): bool {
+		if ( empty( $addon['requires_core'] ) ) {
+			return false;
+		}
+		$version = $core_version !== '' ? $core_version : BOTBLOCKER_VERSION;
+		return version_compare( $version, $addon['requires_core'], '>=' );
+	}
+
+	public static function fileRequiresCore( string $slug ): string {
+		$slug     = sanitize_key( $slug );
+		$base     = trailingslashit( BotBlockerMultisite::getAddonsDir() ) . $slug . DIRECTORY_SEPARATOR;
+		$manifest = self::parseManifest( $base, $slug );
+		if ( ! empty( $manifest ) ) {
+			return $manifest['requires_core'] ?? '';
+		}
+
+		$root = $base . $slug . '.php';
+		if ( ! file_exists( $root ) ) {
+			return '';
+		}
+		$meta = get_file_data( $root, array( 'RequiresCore' => 'Requires-Core' ) );
+		return $meta['RequiresCore'] ?? '';
+	}
+
+	public static function includeLifecycleFile( array $addon ): void {
+		$lifecycle = isset( $addon['lifecycle'] ) && is_array( $addon['lifecycle'] ) ? $addon['lifecycle'] : array();
+		if ( empty( $lifecycle['file'] ) ) {
+			return;
+		}
+		$file = self::absPath( $addon['base'] ?? '', $lifecycle['file'] );
+		if ( $file !== '' && file_exists( $file ) ) {
+			include_once $file;
+		}
+	}
+
+	public static function dispatchLifecycle( string $slug, string $event, array $addon, array $context = array() ): void {
+		$slug  = sanitize_key( $slug );
+		$event = sanitize_key( $event );
+		if ( $slug === '' || $event === '' ) {
+			return;
+		}
+
+		self::includeLifecycleFile( $addon );
+
+		$callback = '';
+		if ( isset( $addon['lifecycle'] ) && is_array( $addon['lifecycle'] ) && ! empty( $addon['lifecycle'][ $event ] ) ) {
+			$callback = (string) $addon['lifecycle'][ $event ];
+		}
+
+		if ( $callback !== '' && ! is_callable( $callback ) && ! empty( $addon['core'] ) ) {
+			self::loadCore( $addon );
+		}
+
+		if ( $callback !== '' && is_callable( $callback ) ) {
+			if ( function_exists( $callback ) && ( new \ReflectionFunction( $callback ) )->isInternal() ) {
+			} else {
+				call_user_func( $callback, $addon, $context, $event, $slug );
+			}
+		}
+
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG && in_array( $event, array( 'install', 'activate', 'deactivate', 'delete', 'update' ), true ) ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+			error_log( '[BBCS DEBUG] [Addons] Lifecycle: slug=' . $slug . ' event=' . $event );
+		}
+
+		do_action( 'bbcs_addon_lifecycle', $event, $slug, $addon, $context );
+		do_action( "bbcs_addon_{$event}", $slug, $addon, $context );
+		do_action( "bbcs_addon_{$slug}_{$event}", $addon, $context );
+	}
+
+	public static function getActiveFeatures(): array {
+		$addons   = self::scanAll();
+		$features = array();
+		foreach ( self::getActive() as $slug ) {
+			if ( ! isset( $addons[ $slug ] ) || empty( $addons[ $slug ]['valid'] ) || ! self::isCompatible( $addons[ $slug ] ) ) {
+				continue;
+			}
+			foreach ( ( $addons[ $slug ]['features'] ?? array() ) as $feature ) {
+				$feature = sanitize_key( (string) $feature );
+				if ( $feature !== '' ) {
+					$features[] = $feature;
+				}
+			}
+		}
+		return array_values( array_unique( $features ) );
+	}
+
+	public static function declaresFeature( array $addon, string $feature ): bool {
+		$feature = sanitize_key( $feature );
+		if ( $feature === '' || empty( $addon['features'] ) || ! is_array( $addon['features'] ) ) {
+			return false;
+		}
+		return in_array( $feature, array_map( 'sanitize_key', $addon['features'] ), true );
+	}
+
+	public static function hasActiveFeature( string $feature ): bool {
+		return in_array( sanitize_key( $feature ), self::getActiveFeatures(), true );
+	}
+
+	public static function hasActiveProvider( string $feature, string $legacy_filter = '' ): bool {
+		if ( self::hasActiveFeature( $feature ) ) {
+			return true;
+		}
+
+		if ( $legacy_filter !== '' && strpos( $legacy_filter, 'bbcs_' ) === 0 ) {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+			return (bool) apply_filters( $legacy_filter, false );
+		}
+
+		return false;
+	}
+
+	public static function getByFeature( string $feature ): array {
+
+		$feature = sanitize_key( $feature );
+		$addons  = self::scanAll();
+		$active  = self::getActive();
+		$matches = array();
+		foreach ( $addons as $slug => $addon ) {
+			if ( ! in_array( $slug, $active, true ) || empty( $addon['valid'] ) || ! self::isCompatible( $addon ) ) {
+				continue;
+			}
+			if ( in_array( $feature, $addon['features'] ?? array(), true ) ) {
+				$matches[ $slug ] = $addon;
+			}
+		}
+		return $matches;
+	}
+
+	public static function registerTrafficDecisionProvider( string $slug, $callback, int $priority = 10 ): bool {
+
+		$slug = sanitize_key( $slug );
+		if ( $slug === '' || ! is_callable( $callback ) ) {
+			return false;
+		}
+
+		if ( ! isset( $GLOBALS['bbcs_traffic_decision_providers'] ) || ! is_array( $GLOBALS['bbcs_traffic_decision_providers'] ) ) {
+			$GLOBALS['bbcs_traffic_decision_providers'] = array();
+		}
+
+		$GLOBALS['bbcs_traffic_decision_providers'][ $slug ] = array(
+			'slug'     => $slug,
+			'callback' => $callback,
+			'priority' => max( -9999, min( 9999, $priority ) ),
+		);
+		return true;
+	}
+
+	public static function getTrafficDecisionProviders(): array {
+
+		$providers = isset( $GLOBALS['bbcs_traffic_decision_providers'] ) && is_array( $GLOBALS['bbcs_traffic_decision_providers'] ) ? $GLOBALS['bbcs_traffic_decision_providers'] : array();
+		uasort(
+			$providers,
+			static function ( $a, $b ) {
+
+				$priority_a = isset( $a['priority'] ) ? (int) $a['priority'] : 10;
+				$priority_b = isset( $b['priority'] ) ? (int) $b['priority'] : 10;
+				if ( $priority_a === $priority_b ) {
+					return strcmp( (string) ( $a['slug'] ?? '' ), (string) ( $b['slug'] ?? '' ) );
+				}
+				return $priority_a <=> $priority_b;
+			}
+		);
+		return $providers;
+	}
+
+	public static function isPreRunMarkerReady( array $pre_run, array $addon, string $slug ): bool {
+
+		$ready_constant = $pre_run['ready_constant'] ?? '';
+		if ( $ready_constant !== '' && defined( $ready_constant ) && constant( $ready_constant ) ) {
+			return true;
+		}
+
+		$ready_callback = $pre_run['ready_callback'] ?? '';
+		if ( $ready_callback !== '' && is_callable( $ready_callback ) ) {
+			return (bool) call_user_func( $ready_callback, $addon, array( 'phase' => 'pre_run' ), 'pre_run', $slug );
+		}
+
+		return false;
+	}
+
+	public static function includePreRunAddons(): array {
+
+		$addons = self::scanAll();
+		$active = self::getActive();
+		$loaded = array();
+		if ( ! isset( $GLOBALS['bbcs_pre_run_addons_loaded'] ) || ! is_array( $GLOBALS['bbcs_pre_run_addons_loaded'] ) ) {
+			$GLOBALS['bbcs_pre_run_addons_loaded'] = array();
+		}
+
+		foreach ( $active as $slug ) {
+			$slug = sanitize_key( (string) $slug );
+			if ( $slug === '' || isset( $GLOBALS['bbcs_pre_run_addons_loaded'][ $slug ] ) ) {
+				continue;
+			}
+
+			if ( ! isset( $addons[ $slug ] ) || empty( $addons[ $slug ]['valid'] ) || ( $addons[ $slug ]['source_format'] ?? '' ) !== 'v2' || ! self::isCompatible( $addons[ $slug ] ) || ! self::declaresFeature( $addons[ $slug ], 'traffic_decision_provider' ) ) {
+				continue;
+			}
+
+			$pre_run = isset( $addons[ $slug ]['pre_run'] ) && is_array( $addons[ $slug ]['pre_run'] ) ? $addons[ $slug ]['pre_run'] : array();
+			if ( empty( $pre_run['enabled'] ) || empty( $pre_run['file'] ) || ( $pre_run['contract'] ?? '' ) !== 'traffic_decision_provider' || empty( $pre_run['register'] ) || ( empty( $pre_run['ready_constant'] ) && empty( $pre_run['ready_callback'] ) ) ) {
+				continue;
+			}
+
+			include_once $pre_run['file'];
+			if ( ! self::isPreRunMarkerReady( $pre_run, $addons[ $slug ], $slug ) ) {
+				continue;
+			}
+
+			if ( ! is_callable( $pre_run['register'] ) ) {
+				continue;
+			}
+
+			call_user_func( $pre_run['register'], $addons[ $slug ], array( 'phase' => 'pre_run' ), 'pre_run', $slug );
+			$GLOBALS['bbcs_pre_run_addons_loaded'][ $slug ] = true;
+			$loaded[]                                       = $slug;
+			do_action( 'bbcs_addon_pre_run_loaded', $slug, $addons[ $slug ] );
+		}
+
+		return $loaded;
+	}
+
+	public static function sanitizeSettingsValue( $value ) {
+
+		if ( is_array( $value ) ) {
+				$clean = array();
+			foreach ( $value as $key => $item ) {
+				$clean[ sanitize_key( (string) $key ) ] = self::sanitizeSettingsValue( $item );
+			}
+				return $clean;
+		}
+		if ( is_bool( $value ) ) {
+			return $value ? 1 : 0;
+		}
+		if ( is_numeric( $value ) ) {
+			return sanitize_text_field( (string) $value );
+		}
+			return sanitize_textarea_field( (string) $value );
+	}
+
+	public static function saveSettingsFromPost( array $post ): void {
+		$addons = self::scanAll();
+		foreach ( self::getActive() as $slug ) {
+			if ( ! isset( $addons[ $slug ] ) || empty( $addons[ $slug ]['valid'] ) || empty( $addons[ $slug ]['settings_option'] ) ) {
+				continue;
+			}
+			$option = $addons[ $slug ]['settings_option'];
+			if ( ! array_key_exists( $option, $post ) ) {
+				continue;
+			}
+			$raw = wp_unslash( $post[ $option ] );
+			self::loadCore( $addons[ $slug ] );
+			$sanitize = $addons[ $slug ]['settings_sanitize'] ?? '';
+			$clean    = is_callable( $sanitize ) ? call_user_func( $sanitize, $raw ) : self::sanitizeSettingsValue( $raw );
+			update_option( $option, $clean );
+		}
+	}
+
+	public static function fetchMarket(): array {
+		$url = self::getMarketUrl();
+		if ( empty( $url ) ) {
+			return array();
+		}
+
+		$res = wp_remote_get( $url, array( 'timeout' => 10 ) );
+		if ( ! is_wp_error( $res ) && wp_remote_retrieve_response_code( $res ) === 200 ) {
+			$json = json_decode( wp_remote_retrieve_body( $res ), true );
+			if ( is_array( $json ) && isset( $json['addons'] ) && is_array( $json['addons'] ) ) {
+				return $json['addons'];
+			}
+		}
+
+		return array();
+	}
+
+	public static function autoUpdate( string $core_version = '' ): array {
+		$result  = array(
+			'updated' => array(),
+			'failed'  => array(),
+		);
+		$version = $core_version !== '' ? $core_version : BOTBLOCKER_VERSION;
+
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+			error_log( '[BBCS DEBUG] [Addons] autoUpdate: start' );
+		}
+
+		$market = self::fetchMarket();
+		if ( empty( $market ) ) {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [Addons] autoUpdate: market empty, skipped' );
+			}
+			return $result;
+		}
+
+		$addons = self::scanAll();
+		if ( empty( $addons ) ) {
+			return $result;
+		}
+
+		if ( ! function_exists( 'download_url' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
+		if ( ! WP_Filesystem() ) {
+			return $result;
+		}
+
+		$marketBySlug = array();
+		foreach ( $market as $item ) {
+			if ( ! empty( $item['url'] ) ) {
+				$slug                  = preg_replace( '/\.zip$/', '', basename( (string) wp_parse_url( $item['url'], PHP_URL_PATH ) ) );
+				$marketBySlug[ $slug ] = $item;
+			}
+		}
+
+		$active = BotBlockerMultisite::getOption( 'bbcs_active_addons', array() );
+		if ( ! is_array( $active ) ) {
+			$active = array();
+		}
+		$active_changed = false;
+		$reactivate     = array();
+
+		foreach ( $addons as $slug => $addon ) {
+			if ( ! isset( $marketBySlug[ $slug ] ) ) {
+				continue;
+			}
+			$remote    = $marketBySlug[ $slug ];
+			$remoteVer = $remote['version'] ?? '';
+			$localVer  = $addon['version'] ?? '';
+
+			if ( ! $remoteVer || ! $localVer ) {
+				continue;
+			}
+			if ( ! version_compare( $remoteVer, $localVer, '>' ) ) {
+				continue;
+			}
+
+			$url = $remote['url'] ?? '';
+			if ( empty( $url ) || ! function_exists( 'bbcs_is_allowed_addon_url' ) || ! bbcs_is_allowed_addon_url( $url ) ) {
+				continue;
+			}
+
+			if ( ! empty( $remote['requires_core'] ) && version_compare( $version, $remote['requires_core'], '<' ) ) {
+				continue;
+			}
+
+			$tmp = download_url( $url );
+			if ( is_wp_error( $tmp ) ) {
+				$result['failed'][] = array(
+					'slug'  => $slug,
+					'name'  => $addon['name'] ?: $slug,
+					'error' => $tmp->get_error_message(),
+				);
+				continue;
+			}
+
+			$wasActive = in_array( $slug, $active, true );
+			if ( $wasActive ) {
+				self::dispatchLifecycle( $slug, 'deactivate', $addon, array( 'reason' => 'auto_update' ) );
+				do_action( 'bbcs_addon_toggled', $slug, false );
+				$active         = array_values( array_diff( $active, array( $slug ) ) );
+				$active_changed = true;
+			}
+
+			if ( ! function_exists( 'bbcs_install_addon_package' ) ) {
+				if ( file_exists( $tmp ) ) {
+					wp_delete_file( $tmp );
+				}
+				if ( $wasActive ) {
+					$active[] = $slug; }
+				$result['failed'][] = array(
+					'slug'  => $slug,
+					'name'  => $addon['name'] ?: $slug,
+					'error' => 'Add-on package installer is unavailable',
+				);
+				continue;
+			}
+
+			$installed = bbcs_install_addon_package(
+				$tmp,
+				array(
+					'slug'            => $slug,
+					'filename'        => basename( (string) wp_parse_url( $url, PHP_URL_PATH ) ),
+					'core_version'    => $version,
+					'lifecycle_event' => 'update',
+				)
+			);
+			if ( file_exists( $tmp ) ) {
+				wp_delete_file( $tmp );
+			}
+
+			if ( is_wp_error( $installed ) ) {
+				if ( $wasActive ) {
+					$active[] = $slug;
+					self::dispatchLifecycle( $slug, 'activate', $addon, array( 'reason' => 'auto_update_rollback' ) );
+					do_action( 'bbcs_addon_toggled', $slug, true );
+				}
+				$result['failed'][] = array(
+					'slug'  => $slug,
+					'name'  => $addon['name'] ?: $slug,
+					'error' => $installed->get_error_message(),
+				);
+				continue;
+			}
+
+			$result['updated'][] = $slug;
+			if ( $wasActive ) {
+				$reactivate[] = $slug;
+			}
+		}
+
+		if ( ! empty( $reactivate ) ) {
+			$updated_addons = self::scanAll();
+			foreach ( $reactivate as $slug ) {
+				if ( isset( $updated_addons[ $slug ] ) && $updated_addons[ $slug ]['valid'] && self::isCompatible( $updated_addons[ $slug ], $version ) ) {
+					$active[] = $slug;
+					self::dispatchLifecycle( $slug, 'activate', $updated_addons[ $slug ], array( 'reason' => 'auto_update' ) );
+					do_action( 'bbcs_addon_toggled', $slug, true );
+				}
+			}
+			$active         = array_values( array_unique( $active ) );
+			$active_changed = true;
+		}
+
+		if ( $active_changed ) {
+			BotBlockerMultisite::updateOption( 'bbcs_active_addons', $active );
+		}
+
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+			error_log( '[BBCS DEBUG] [Addons] autoUpdate: complete updated=' . count( $result['updated'] ?? array() ) . ' failed=' . count( $result['failed'] ?? array() ) );
+		}
+
+		return $result;
+	}
+
+	public static function includeAll(): void {
+		$addons = self::scanAll();
+		$active = BotBlockerMultisite::getOption( 'bbcs_active_addons', array() );
+		if ( ! is_array( $active ) ) {
+			$active = array();
+		}
+
+		$incompatible       = array();
+		$incompatible_slugs = array();
+		$loaded             = array();
+
+		foreach ( $active as $slug ) {
+			if ( ! isset( $addons[ $slug ] ) || ! $addons[ $slug ]['valid'] ) {
+				continue;
+			}
+
+			if ( ! self::isCompatible( $addons[ $slug ] ) ) {
+				$incompatible[]       = array(
+					'name'          => $addons[ $slug ]['name'] ?: $slug,
+					'requires_core' => $addons[ $slug ]['requires_core'],
+				);
+				$incompatible_slugs[] = $slug;
+				continue;
+			}
+
+			self::loadCore( $addons[ $slug ] );
+			$loaded[] = $slug;
+			self::dispatchLifecycle( $slug, 'load', $addons[ $slug ] );
+		}
+
+		if ( ! empty( $incompatible ) ) {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [Addons] includeAll: deactivated incompatible addons: ' . implode( ', ', $incompatible_slugs ) );
+			}
+			$new_active = array_values(
+				array_filter(
+					$active,
+					function ( $s ) use ( $addons ) {
+								return isset( $addons[ $s ] ) && $addons[ $s ]['valid'] && self::isCompatible( $addons[ $s ] );
+					}
+				)
+			);
+			if ( $new_active !== $active ) {
+				BotBlockerMultisite::updateOption( 'bbcs_active_addons', $new_active );
+			}
+			BotBlockerAlerts::setAddonIncompatible( $incompatible );
+
+			foreach ( $incompatible_slugs as $slug ) {
+				if ( isset( $addons[ $slug ] ) && self::declaresFeature( $addons[ $slug ], 'early_init_provider' ) && ! empty( $addons[ $slug ]['core'] ) ) {
+					self::loadCore( $addons[ $slug ] );
+				}
+			}
+
+			foreach ( $incompatible_slugs as $slug ) {
+				if ( isset( $addons[ $slug ] ) ) {
+					self::dispatchLifecycle( $slug, 'deactivate', $addons[ $slug ], array( 'reason' => 'incompatible' ) );
+				}
+			}
+		}
+
+		foreach ( $loaded as $slug ) {
+			if ( isset( $addons[ $slug ] ) ) {
+				self::dispatchLifecycle( $slug, 'health_check', $addons[ $slug ] );
+			}
+		}
+		$cloud_api_active  = ( class_exists( 'BotBlockerPro' ) && BotBlockerPro::isActive() );
+		$early_init_loaded = false;
+		foreach ( $loaded as $slug ) {
+			if ( isset( $addons[ $slug ] ) && self::declaresFeature( $addons[ $slug ], 'early_init_provider' ) ) {
+				$early_init_loaded = true;
+				break;
+			}
+		}
+		if ( ! $early_init_loaded ) {
+			$early_init_loaded = (bool) apply_filters( 'bbcs_early_init_provider_active', false );
+		}
+
+		if ( $early_init_loaded && is_multisite() && get_site_option( 'bbcs_sites_map_dirty' ) ) {
+			if ( function_exists( 'bbcs_generateSitesMapFile' ) ) {
+				bbcs_generateSitesMapFile( true );
+			}
+		}
+
+		if ( ! $early_init_loaded || ! $cloud_api_active ) {
+			if ( $early_init_loaded && is_multisite() && function_exists( 'bbcs_early_init_check_consistency' ) ) {
+				bbcs_early_init_check_consistency();
+			} elseif ( function_exists( 'bbcs_early_init_disable_feature' ) ) {
+				bbcs_early_init_disable_feature();
+			}
+			return;
+		}
+
+		if ( function_exists( 'bbcs_early_init_check_consistency' ) ) {
+			bbcs_early_init_check_consistency();
+		}
+
+		if ( function_exists( 'bbcs_early_init_maybe_restore_wp_config' ) ) {
+			bbcs_early_init_maybe_restore_wp_config();
+		}
+	}
+
+	public static function deactivateAll(): void {
+
+		$addons = self::scanAll();
+		$active = BotBlockerMultisite::getOption( 'bbcs_active_addons', array() );
+		if ( ! is_array( $active ) ) {
+			$active = array();
+		}
+
+		foreach ( $active as $slug ) {
+			if ( ! isset( $addons[ $slug ] ) || ! $addons[ $slug ]['valid'] ) {
+				continue;
+			}
+			self::loadCore( $addons[ $slug ] );
+			self::dispatchLifecycle( $slug, 'deactivate', $addons[ $slug ], array( 'reason' => 'plugin_deactivation' ) );
+			do_action( 'bbcs_addon_toggled', $slug, false );
+		}
+	}
+}

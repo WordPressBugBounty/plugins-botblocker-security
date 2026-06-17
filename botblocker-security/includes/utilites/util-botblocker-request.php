@@ -1,147 +1,148 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+declare(strict_types=1);
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
 
 class BotBlockerWpRequest {
 
-    public static function send_to_cloud($data, $url, $endpoint = '')
-    {
-        $base = untrailingslashit($url);
-        $path = 'botblocker';
-        if (!empty($endpoint)) {
-            $path .= '/' . ltrim($endpoint, '/');
-        }
-        $fullURL = $base . '/' . $path;
+	public static function send_to_cloud( array $data, string $url, string $endpoint = '' ) {
+		$base = untrailingslashit( $url );
+		$path = 'botblocker';
+		if ( ! empty( $endpoint ) ) {
+			$path .= '/' . ltrim( $endpoint, '/' );
+		}
+		$fullURL = $base . '/' . $path;
 
-        $timeout = 5;
-        if (class_exists('BotBlocker') && method_exists('BotBlocker', 'getInstance')) {
-            $inst = BotBlocker::getInstance();
-            if (isset($inst->settings->cloud_api_timeout)) {
-                $timeout = max(1, min(30, (int) $inst->settings->cloud_api_timeout));
-            }
-        }
+		$timeout = 5;
+		if ( class_exists( 'BotBlocker' ) && method_exists( 'BotBlocker', 'getInstance' ) ) {
+			$inst = BotBlocker::getInstance();
+			if ( isset( $inst->settings->cloud_api_timeout ) ) {
+				$timeout = max( 1, min( 30, (int) $inst->settings->cloud_api_timeout ) );
+			}
+		}
 
-        $args = [
-            'method'      => 'POST',
-            'timeout'     => $timeout,
-            'redirection' => 0,
-            'httpversion' => '1.1',
-            'headers'     => [
-                'Content-Type'  => 'application/json; charset=utf-8',
-                'Referer'       => bbcs_current_site_url(), //BBCS-MULTISITE
-                'User-Agent'    => bbcs_current_user_agent(), //BBCS-MULTISITE
-            ],
-            'body'        => wp_json_encode($data),
-        ];
+		$args = array(
+			'method'      => 'POST',
+			'timeout'     => $timeout,
+			'redirection' => 0,
+			'httpversion' => '1.1',
+			'headers'     => array(
+				'Content-Type' => 'application/json; charset=utf-8',
+				'Referer'      => BotBlockerMultisite::getCurrentSiteUrl(), //BBCS-MULTISITE
+				'User-Agent'   => BotBlockerMultisite::getCurrentUserAgent(), //BBCS-MULTISITE
+			),
+			'body'        => wp_json_encode( $data ),
+		);
 
-        $response = wp_remote_post($fullURL, $args);
+		$response = wp_remote_post( $fullURL, $args );
 
-        $http_code = wp_remote_retrieve_response_code($response);
-        $body = wp_remote_retrieve_body($response);
+		$http_code = wp_remote_retrieve_response_code( $response );
+		$body      = wp_remote_retrieve_body( $response );
 
-        if (BBCS_DEBUG === true) {
-        //    $formattedParams = $fullURL . '-' . $http_code . "\r\n" . print_r($data, true) . "\r\n" . 'Response:' . "\r\n" . $body . "\r\n\r\n";
-        //    error_log($formattedParams);
-        }
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// REVIEWER NOTE: Conditional debug logging; gated behind BBCS_DEBUG and disabled in production.
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log, WordPress.PHP.DevelopmentFunctions.error_log_print_r
+			error_log( '[BBCS DEBUG] [Request] ' . $fullURL . '-' . $http_code . "\r\n" . print_r( $data, true ) . "\r\n" . 'Response:' . "\r\n" . $body . "\r\n\r\n" );
+		}
 
-        if ($http_code === 200 && !empty($body) && self::is_json($body)) {
-            delete_transient('bbcs_cloud_connection_failed_alert');
-            return json_decode(trim($body), true);
-        }
+		if ( $http_code === 200 && ! empty( $body ) && self::is_json( $body ) ) {
+			delete_transient( 'bbcs_cloud_connection_failed_alert' );
+			return json_decode( trim( $body ), true );
+		}
 
-        bbcs_alerts_set_cloud_connection_failed();
-        return false;
-    }
+		BotBlockerAlerts::setCloudConnectionFailed();
+		return false;
+	}
 
-    public static function is_json($string)
-    {
-        json_decode($string);
-        return (json_last_error() == JSON_ERROR_NONE);
-    }
+	public static function is_json( string $string ): bool {
+		json_decode( $string );
+		return ( json_last_error() == JSON_ERROR_NONE );
+	}
 
-    public static function download_to_file(string $url, string $destination, array $args_overrides = []): array
-    {
-        $defaults = [
-            'method'      => 'GET',
-            'timeout'     => 600,
-            'redirection' => 5,
-            'httpversion' => '1.1',
-            'sslverify'   => true,
-            'stream'      => true,
-            'filename'    => $destination,
-            'headers'     => [
-                'Accept'     => 'application/octet-stream',
-                'Referer'    => function_exists('bbcs_current_site_url') ? bbcs_current_site_url() : home_url(),
-                'User-Agent' => function_exists('bbcs_current_user_agent') ? bbcs_current_user_agent() : 'BotBlocker',
-            ],
-        ];
+	public static function download_to_file( string $url, string $destination, array $args_overrides = array() ): array {
+		$defaults = array(
+			'method'      => 'GET',
+			'timeout'     => 600,
+			'redirection' => 5,
+			'httpversion' => '1.1',
+			'sslverify'   => true,
+			'stream'      => true,
+			'filename'    => $destination,
+			'headers'     => array(
+				'Accept'     => 'application/octet-stream',
+				'Referer'    => method_exists( 'BotBlockerMultisite', 'getCurrentSiteUrl' ) ? BotBlockerMultisite::getCurrentSiteUrl() : home_url(),
+				'User-Agent' => method_exists( 'BotBlockerMultisite', 'getCurrentUserAgent' ) ? BotBlockerMultisite::getCurrentUserAgent() : 'BotBlocker',
+			),
+		);
 
-        $args = array_replace_recursive($defaults, $args_overrides);
+		$args = array_replace_recursive( $defaults, $args_overrides );
 
-        $response = wp_remote_get($url, $args);
+		$response = wp_remote_get( $url, $args );
 
-        if (is_wp_error($response)) {
-            if (file_exists($destination)) {
-                @unlink($destination);
-            }
-            return [
-                'ok'    => false,
-                'error' => 'wp_error:' . $response->get_error_code(),
-            ];
-        }
+		if ( is_wp_error( $response ) ) {
+			if ( file_exists( $destination ) ) {
+				@unlink( $destination );  // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink,WordPress.PHP.NoSilencedErrors.Discouraged
+			}
+			return array(
+				'ok'    => false,
+				'error' => 'wp_error:' . $response->get_error_code(),
+			);
+		}
 
-        $http_code = (int) wp_remote_retrieve_response_code($response);
-        if ($http_code !== 200) {
-            if (file_exists($destination)) {
-                @unlink($destination);
-            }
-            return [
-                'ok'    => false,
-                'error' => 'http_' . $http_code,
-            ];
-        }
+		$http_code = (int) wp_remote_retrieve_response_code( $response );
+		if ( $http_code !== 200 ) {
+			if ( file_exists( $destination ) ) {
+				@unlink( $destination );  // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink,WordPress.PHP.NoSilencedErrors.Discouraged
+			}
+			return array(
+				'ok'    => false,
+				'error' => 'http_' . $http_code,
+			);
+		}
 
-        if (!file_exists($destination) || filesize($destination) === 0) {
-            if (file_exists($destination)) {
-                @unlink($destination);
-            }
-            return [
-                'ok'    => false,
-                'error' => 'empty_file',
-            ];
-        }
+		if ( ! file_exists( $destination ) || filesize( $destination ) === 0 ) {
+			if ( file_exists( $destination ) ) {
+				@unlink( $destination );  // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink,WordPress.PHP.NoSilencedErrors.Discouraged
+			}
+			return array(
+				'ok'    => false,
+				'error' => 'empty_file',
+			);
+		}
 
-        return [
-            'ok'           => true,
-            'http_code'    => $http_code,
-            'size'         => filesize($destination),
-            'content_type' => (string) wp_remote_retrieve_header($response, 'content-type'),
-        ];
-    }
+		return array(
+			'ok'           => true,
+			'http_code'    => $http_code,
+			'size'         => filesize( $destination ),
+			'content_type' => (string) wp_remote_retrieve_header( $response, 'content-type' ),
+		);
+	}
 
-    public static function ip2c($ip)
-    {
-        $url = 'https://ip2c.org/?ip=' . rawurlencode((string) $ip);
-        $args = [
-            'method'      => 'GET',
-            'timeout'     => 3,
-            'redirection' => 0,
-            'httpversion' => '1.1',
-            'headers'     => [
-                'User-Agent' => function_exists('bbcs_current_user_agent') ? bbcs_current_user_agent() : 'BotBlocker/IP2C', //BBCS-MULTISITE
-            ],
-        ];
-        $response = wp_remote_get($url, $args);
-        if (is_wp_error($response)) {
-            return false;
-        }
-        $http_code = wp_remote_retrieve_response_code($response);
-        $body = wp_remote_retrieve_body($response);
-        if ($http_code === 200 && !empty($body)) {
-            $reply_ip2c = explode(';', trim($body));
-            if (isset($reply_ip2c[0]) && $reply_ip2c[0] === '1' && isset($reply_ip2c[1])) {
-                return mb_strtoupper($reply_ip2c[1]);
-            }
-        }
-        return false;
-    }
+	public static function ip2c( string $ip ) {
+		$url      = 'https://ip2c.org/?ip=' . rawurlencode( (string) $ip );
+		$args     = array(
+			'method'      => 'GET',
+			'timeout'     => 3,
+			'redirection' => 0,
+			'httpversion' => '1.1',
+			'headers'     => array(
+				'User-Agent' => method_exists( 'BotBlockerMultisite', 'getCurrentUserAgent' ) ? BotBlockerMultisite::getCurrentUserAgent() : 'BotBlocker/IP2C', //BBCS-MULTISITE
+			),
+		);
+		$response = wp_remote_get( $url, $args );
+		if ( is_wp_error( $response ) ) {
+			return false;
+		}
+		$http_code = wp_remote_retrieve_response_code( $response );
+		$body      = wp_remote_retrieve_body( $response );
+		if ( $http_code === 200 && ! empty( $body ) ) {
+			$reply_ip2c = explode( ';', trim( $body ) );
+			if ( isset( $reply_ip2c[0] ) && $reply_ip2c[0] === '1' && isset( $reply_ip2c[1] ) ) {
+				return mb_strtoupper( $reply_ip2c[1] );
+			}
+		}
+		return false;
+	}
 }

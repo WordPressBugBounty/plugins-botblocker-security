@@ -1,206 +1,249 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+declare(strict_types=1);
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
 
 /**
  * Register 2FA rewrite rules. Use a named function so activation hook
  * can call it before flushing rules.
  */
-function bbcs_register_2fa_rewrite_rules() {
-    add_rewrite_rule(
-        '^bbcs-2fa/?$',
-        'index.php?bbcs_2fa=1',
-        'top'
-    );
-    add_rewrite_rule(
-        '^bbcs-2fa-setup/?$',
-        'index.php?bbcs_2fa_setup=1',
-        'top'
-    );
+function bbcs_register_2fa_rewrite_rules(): void {
+	add_rewrite_rule(
+		'^bbcs-2fa/?$',
+		'index.php?bbcs_2fa=1',
+		'top'
+	);
+	add_rewrite_rule(
+		'^bbcs-2fa-setup/?$',
+		'index.php?bbcs_2fa_setup=1',
+		'top'
+	);
 }
-add_action('init', 'bbcs_register_2fa_rewrite_rules', 10);
+add_action( 'init', 'bbcs_register_2fa_rewrite_rules', 10 );
 
 /**
  * Parse incoming requests and set query vars for 2FA endpoints
  * as a fallback if rewrite rules are not yet present or flushed.
  */
-function bbcs_2fa_parse_request($wp) {
-    global $bbcs_google_auth;
+function bbcs_2fa_parse_request( $wp ) {
+	global $bbcs_google_auth;
 
-    if ( ! is_user_logged_in() ) {
-        return;
-    }
+	if ( ! is_user_logged_in() ) {
+		return;
+	}
 
-    $bbcs_saved_settings = $bbcs_google_auth->get_settings();
+	$bbcs_saved_settings = $bbcs_google_auth->get_settings();
 
-    if (isset($bbcs_saved_settings['bbcs_2fa_enable']) && !$bbcs_saved_settings['bbcs_2fa_enable']) {
-        return;
-    }
+	if ( isset( $bbcs_saved_settings['bbcs_2fa_enable'] ) && ! $bbcs_saved_settings['bbcs_2fa_enable'] ) {
+		return;
+	}
 
-    $request_uri = isset($_SERVER['REQUEST_URI']) ? esc_url_raw(wp_unslash($_SERVER['REQUEST_URI'])) : '';
-    $path = wp_parse_url($request_uri, PHP_URL_PATH);
-    
-    if ($path && preg_match('#/bbcs-2fa/?$#', $path)) {
-        $wp->query_vars['bbcs_2fa'] = '1';
-    }
-    if ($path && preg_match('#/bbcs-2fa-setup/?$#', $path)) {
-        $wp->query_vars['bbcs_2fa_setup'] = '1';
-    }
+	$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+	$path        = wp_parse_url( $request_uri, PHP_URL_PATH );
+
+	if ( $path && preg_match( '#/bbcs-2fa/?$#', $path ) ) {
+		$wp->query_vars['bbcs_2fa'] = '1';
+	}
+	if ( $path && preg_match( '#/bbcs-2fa-setup/?$#', $path ) ) {
+		$wp->query_vars['bbcs_2fa_setup'] = '1';
+	}
 }
-add_action('parse_request', 'bbcs_2fa_parse_request', 5);
+add_action( 'parse_request', 'bbcs_2fa_parse_request', 5 );
 
-add_action('init', function() {
-    $rules_version = get_option('bbcs_2fa_rules_version', '0');
-    $current_version = '1.2';
-    
-    if ($rules_version !== $current_version) {
-        bbcs_register_2fa_rewrite_rules();
-        flush_rewrite_rules(false);
-        update_option('bbcs_2fa_rules_version', $current_version);
-    }
-}, 999);
+add_action(
+	'init',
+	function () {
+		$rules_version   = get_option( 'bbcs_2fa_rules_version', '0' );
+		$current_version = '1.2';
 
-add_filter('query_vars', function($vars) {
-    $vars[] = 'bbcs_2fa';
-    $vars[] = 'bbcs_2fa_setup';
-    return $vars;
-}, 10, 1);
+		if ( $rules_version !== $current_version ) {
+			bbcs_register_2fa_rewrite_rules();
+			flush_rewrite_rules( false );
+			update_option( 'bbcs_2fa_rules_version', $current_version );
+		}
+	},
+	999
+);
 
-add_filter('login_redirect', function($redirect_to, $request, $user) {
-    if ( is_wp_error($user) || ! bbcs_is_2fa_required_for_user($user->ID) ) {
-        return $redirect_to;
-    }
-    
-    if (is_wp_error($user)) {
-        return $redirect_to;
-    }
+add_filter(
+	'query_vars',
+	function ( $vars ) {
+		$vars[] = 'bbcs_2fa';
+		$vars[] = 'bbcs_2fa_setup';
+		return $vars;
+	},
+	10,
+	1
+);
 
-    $secret = get_user_meta($user->ID, '_2fa_secret', true);
+add_filter(
+	'login_redirect',
+	function ( $redirect_to, $request, $user ) {
+		if ( is_wp_error( $user ) || ! bbcs_is_2fa_required_for_user( $user->ID ) ) {
+			return $redirect_to;
+		}
 
-    if (empty($secret)) {
-        update_user_meta($user->ID, '_2fa_setup_pending', 1);
-        return site_url('/?bbcs_2fa_setup=1');
-    }
+		if ( is_wp_error( $user ) ) {
+			return $redirect_to;
+		}
 
-    $redirect_candidate = is_string( $request ) ? wp_unslash( $request ) : '';
-    $redirect_to_check = sanitize_text_field( $redirect_candidate );
-    if ( $redirect_to_check && strpos( $redirect_to_check, 'wp-admin' ) !== false ) {
-        update_user_meta( $user->ID, '_2fa_pending', 1 );
-        return site_url( '/?bbcs_2fa=1' );
-    }
+		$secret = get_user_meta( $user->ID, '_2fa_secret', true );
 
-    return $redirect_to;
-}, 10, 3);
+		if ( empty( $secret ) ) {
+			update_user_meta( $user->ID, '_2fa_setup_pending', 1 );
+			return site_url( '/?bbcs_2fa_setup=1' );
+		}
 
-add_action('admin_init', function() {
-    // Ignorе AJAX, REST, CRON - do not perform checks and redirects for background requests
-    if (wp_doing_ajax() || wp_doing_cron()) {
-        return;
-    }
+		update_user_meta( $user->ID, '_2fa_pending', 1 );
+		$saved_redirect = ! empty( $redirect_to ) ? $redirect_to : admin_url();
+		update_user_meta( $user->ID, '_2fa_redirect_to', $saved_redirect );
+		return site_url( '/?bbcs_2fa=1' );
+	},
+	10,
+	3
+);
 
-    if (defined('REST_REQUEST') && REST_REQUEST) {
-        return;
-    }
+add_action(
+	'admin_init',
+	function () {
+		if ( wp_doing_ajax() || wp_doing_cron() ) {
+			return;
+		}
 
-    $action = filter_input(INPUT_GET, 'action', FILTER_SANITIZE_SPECIAL_CHARS);
-    if ('logout' === $action) {
-        return;
-    }
+		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+			return;
+		}
 
-    $request_uri = isset($_SERVER['REQUEST_URI']) ? esc_url_raw(wp_unslash($_SERVER['REQUEST_URI'])) : '';
-    if ($request_uri && strpos($request_uri, '/wp-json/') !== false) {
-        return;
-    }
+		$action = filter_input( INPUT_GET, 'action', FILTER_SANITIZE_SPECIAL_CHARS );
+		if ( 'logout' === $action ) {
+			return;
+		}
 
-    if ( ! is_user_logged_in() ) {
-        return;
-    }
+		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+		if ( $request_uri && strpos( $request_uri, '/wp-json/' ) !== false ) {
+			return;
+		}
 
-    $user_id = get_current_user_id();
-    if ( ! $user_id ) {
-        return;
-    }
+		if ( ! is_user_logged_in() ) {
+			return;
+		}
 
-    if ( ! bbcs_is_2fa_required_for_user($user_id) ) {
-        return;
-    }
+		$user_id = get_current_user_id();
+		if ( ! $user_id ) {
+			return;
+		}
 
-    $secret = get_user_meta($user_id, '_2fa_secret', true);
+		if ( ! bbcs_is_2fa_required_for_user( $user_id ) ) {
+			return;
+		}
 
-    // Setup pending
-    if (empty($secret) && get_user_meta($user_id, '_2fa_setup_pending', true)) {
-        wp_safe_redirect(home_url('/?bbcs_2fa_setup=1'));
-        exit;
-    }
+		$secret = get_user_meta( $user_id, '_2fa_secret', true );
 
-    // Verification pending
-    if (get_user_meta($user_id, '_2fa_pending', true)) {
-        wp_safe_redirect(home_url('/?bbcs_2fa=1'));
-        exit;
-    }
-}, 5);
+		// Setup pending
+		if ( empty( $secret ) && get_user_meta( $user_id, '_2fa_setup_pending', true ) ) {
+			wp_safe_redirect( home_url( '/?bbcs_2fa_setup=1' ) );
+			exit;
+		}
 
-function bbcs_generate_backup_codes($count = 10) {
-    $codes = [];
-    for ($i = 0; $i < $count; $i++) {        
-        $codes[] = strtoupper(bin2hex(random_bytes(8)));
-    }
-    return $codes;
-}
+		// Verification pending
+		if ( get_user_meta( $user_id, '_2fa_pending', true ) ) {
+			wp_safe_redirect( home_url( '/?bbcs_2fa=1' ) );
+			exit;
+		}
+	},
+	5
+);
 
-function bbcs_hash_backup_code($code) {
-    return password_hash($code, PASSWORD_DEFAULT);
-}
-
-function bbcs_verify_backup_code($code, $stored_codes) {
-    if (!is_array($stored_codes)) return false;
-
-    foreach ($stored_codes as $idx => $stored) {
-        if (strpos($stored, '$') === 0) {
-            if (password_verify($code, $stored)) {
-                return $idx;
-            }
-        }
-    }
-
-    $code_upper = strtoupper($code);
-    foreach ($stored_codes as $idx => $stored) {
-        if (is_string($stored) && strtoupper($stored) === $code_upper) {
-            return $idx;
-        }
-    }
-
-    return false;
+function bbcs_generate_backup_codes( int $count = 10 ): array {
+	$codes = array();
+	for ( $i = 0; $i < $count; $i++ ) {
+		$codes[] = strtoupper( bin2hex( random_bytes( 8 ) ) );
+	}
+	return $codes;
 }
 
-function bbcs_check_rate_limit($user_id) {
-    $data = get_transient( 'bbcs_2fa_attempts_' . $user_id );
-
-    // No record - first attempt in this window.
-    if ( $data === false ) {
-        set_transient( 'bbcs_2fa_attempts_' . $user_id, [ 'count' => 1, 'since' => time() ], 300 ); // 5 minutes
-        return true;
-    }
-
-    // Backwards compat: old format stored a plain integer.
-    if ( ! is_array( $data ) ) {
-        $data = [ 'count' => (int) $data, 'since' => time() - 300 ];
-    }
-
-    // Fallback TTL check: persistent object cache may ignore TTL.
-    // If 5+ minutes have passed since the window started, reset the counter.
-    if ( time() - $data['since'] >= 300 ) {
-        set_transient( 'bbcs_2fa_attempts_' . $user_id, [ 'count' => 1, 'since' => time() ], 300 );
-        return true;
-    }
-
-    if ( $data['count'] >= 5 ) {
-        return false;
-    }
-
-    set_transient( 'bbcs_2fa_attempts_' . $user_id, [ 'count' => $data['count'] + 1, 'since' => $data['since'] ], 300 );
-    return true;
+function bbcs_hash_backup_code( string $code ): string {
+	return password_hash( $code, PASSWORD_DEFAULT );
 }
 
-function bbcs_reset_rate_limit($user_id) {
-    delete_transient('bbcs_2fa_attempts_' . $user_id);
+function bbcs_verify_backup_code( string $code, $stored_codes ) {
+	if ( ! is_array( $stored_codes ) ) {
+		return false;
+	}
+
+	foreach ( $stored_codes as $idx => $stored ) {
+		if ( strpos( $stored, '$' ) === 0 ) {
+			if ( password_verify( $code, $stored ) ) {
+				return $idx;
+			}
+		}
+	}
+
+	$code_upper = strtoupper( $code );
+	foreach ( $stored_codes as $idx => $stored ) {
+		if ( is_string( $stored ) && strtoupper( $stored ) === $code_upper ) {
+			return $idx;
+		}
+	}
+
+	return false;
+}
+
+function bbcs_check_rate_limit( $user_id ): bool {
+	$data = get_transient( 'bbcs_2fa_attempts_' . $user_id );
+
+	// No record - first attempt in this window.
+	if ( $data === false ) {
+		set_transient(
+			'bbcs_2fa_attempts_' . $user_id,
+			array(
+				'count' => 1,
+				'since' => time(),
+			),
+			300
+		); // 5 minutes
+		return true;
+	}
+
+	// Backwards compat: old format stored a plain integer.
+	if ( ! is_array( $data ) ) {
+		$data = array(
+			'count' => (int) $data,
+			'since' => time() - 300,
+		);
+	}
+
+	// Fallback TTL check: persistent object cache may ignore TTL.
+	// If 5+ minutes have passed since the window started, reset the counter.
+	if ( time() - $data['since'] >= 300 ) {
+		set_transient(
+			'bbcs_2fa_attempts_' . $user_id,
+			array(
+				'count' => 1,
+				'since' => time(),
+			),
+			300
+		);
+		return true;
+	}
+
+	if ( $data['count'] >= 5 ) {
+		return false;
+	}
+
+	set_transient(
+		'bbcs_2fa_attempts_' . $user_id,
+		array(
+			'count' => $data['count'] + 1,
+			'since' => $data['since'],
+		),
+		300
+	);
+	return true;
+}
+
+function bbcs_reset_rate_limit( $user_id ): void {
+	delete_transient( 'bbcs_2fa_attempts_' . $user_id );
 }

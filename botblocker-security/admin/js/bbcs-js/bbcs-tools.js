@@ -19,9 +19,20 @@
     var $saveButtons = $form.find('button[name="save_settings"]');
     if (!$saveButtons.length) return;
 
-    var initial = $form.serialize();
+    function serializeSettings() {
+      return $form.find(':input').not('[data-bbcs-no-dirty]').serialize();
+    }
+
+    var initial = serializeSettings();
     var dirty = false;
     var isSaving = false;
+
+    function bypassDirtyPrompt() {
+      window.bbcsBypassUnsavedPrompt = true;
+      dirty = false;
+      isSaving = true;
+      updateUI();
+    }
 
     function ensureIndicators() {
       $saveButtons.each(function () {
@@ -39,28 +50,39 @@
     }
 
     function checkDirty() {
-      var now = $form.serialize();
+      var now = serializeSettings();
       dirty = (now !== initial);
       updateUI();
     }
 
     ensureIndicators();
 
-    $form.on('change input keyup', 'input, select, textarea', checkDirty);
+    $form.on('change input keyup', 'input:not([data-bbcs-no-dirty]), select:not([data-bbcs-no-dirty]), textarea:not([data-bbcs-no-dirty])', checkDirty);
 
     $form.on('click', 'button[name="save_settings"]', function () {
       isSaving = true;
     });
 
+    $form.on('click', '[data-bbcs-bypass-dirty], button[formaction]', bypassDirtyPrompt);
+
     window.addEventListener('beforeunload', function (e) {
+      if (window.bbcsBypassUnsavedPrompt) {
+        return;
+      }
+
       if (dirty) {
         e.preventDefault();
         e.returnValue = '';
       }
     });
 
-    $form.on('submit', function () {
-      if (isSaving) {
+    $form.on('submit', function (event) {
+      var submitter = event.originalEvent && event.originalEvent.submitter ? event.originalEvent.submitter : document.activeElement;
+      if (submitter && $(submitter).is('[data-bbcs-bypass-dirty], button[formaction]')) {
+        bypassDirtyPrompt();
+      }
+
+      if (isSaving || window.bbcsBypassUnsavedPrompt) {
         dirty = false;
         updateUI();
         isSaving = false;

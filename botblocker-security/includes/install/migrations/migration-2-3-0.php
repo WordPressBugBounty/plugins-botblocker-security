@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 function bbcs_migration_2_3_0() {
@@ -23,7 +24,7 @@ function bbcs_migration_2_3_0() {
     $alter_parts[] = "MODIFY `ip1` VARCHAR(11) NOT NULL DEFAULT ''";
     $alter_parts[] = "MODIFY `ip2` VARCHAR(11) NOT NULL DEFAULT ''";
     $alter_parts[] = "ADD KEY `ipv4range_disabled_index` (`disable`, `ip1`, `ip2`)";
-	$alter_parts[] = "ADD UNIQUE KEY `search` (`search`(191))";
+    $alter_parts[] = "ADD UNIQUE KEY `search` (`search`(191))";
 
     $wpdb->query(
         "ALTER TABLE `{$wpdb->bbcs_ipv4rules}`
@@ -61,6 +62,13 @@ function bbcs_migration_2_3_0() {
                 MODIFY `date` INTEGER      NOT NULL DEFAULT 0,
                 ADD PRIMARY KEY (`ip`)"
         );
+    }
+
+    if ( ! empty( $wpdb->last_error ) ) {
+        if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+            error_log( '[BBCS DEBUG] [Migration] migration 2.3.0: DDL error - ' . $wpdb->last_error );
+        }
     }
 
     $idx_category_exists = $wpdb->get_var(
@@ -181,7 +189,7 @@ function bbcs_migration_2_3_0() {
     );
     $wpdb->query( $sql );
 
-	bbcs_generateAllFilesFromDb();
+	BotBlockerDb::generateAllFiles();
 
     // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, PluginCheck.Security.DirectDB.UnescapedDBParameter
 }

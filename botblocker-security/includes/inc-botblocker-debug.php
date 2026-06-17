@@ -1,62 +1,77 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+declare(strict_types=1);
 
-/** 
- * 
- *  Set error and exception handlers for BotBlocker
- *                  
-*/
-function bbcs_errorHandlerSet() {
-/*
-    $log_to_debug = defined('BBCS_LOG_TO_DEBUG') && BBCS_LOG_TO_DEBUG;
-    
-    set_error_handler(function ($errno, $errstr, $errfile, $errline) use ($log_to_debug) {
-        if (!(error_reporting() & $errno)) {
-            return;
-        }
-
-        if ($log_to_debug) {
-           error_log("BotBlocker Error [$errno]: $errstr in $errfile on line $errline");
-        }
-        
-         echo "<b>BotBlocker </b> v." . esc_html(BOTBLOCKER_VERSION) . '<br><br>';
-         echo "<pre style='background-color: #f4f4f4; padding: 10px; border: 1px solid #ddd;'>";
-         echo '<b>Error:</b> ['.esc_html($errno).'] '. esc_html($errstr). '<br><br>';
-         echo 'Error on line <b>'. esc_html($errline) .'</b> in file'. esc_html($errfile). '<br><br>';
-         debug_print_backtrace();
-         echo "</pre>";
-        if (defined('BBCS_ERROR_EXIT') && BBCS_ERROR_EXIT) {
-            bbcs_errorHandlerRestore();
-            exit(1);
-        }
-    });
-
-    set_exception_handler(function ($exception) use ($log_to_debug) {
-
-        if ($log_to_debug) {
-           error_log("BotBlocker Exception: " . $exception->getMessage() . " in " . $exception->getFile() . " on line " . $exception->getLine());
-           error_log($exception->getTraceAsString());
-        }
-         echo "<b>BotBlocker </b> v." . esc_html(BOTBLOCKER_VERSION) . '<br><br>';
-         echo "<pre style='background-color: #f4f4f4; padding: 10px; border: 1px solid #ddd;'>";
-         echo "<b>Exception:</b> " . esc_html($exception->getMessage()) . "<br>";
-         echo "Error on line <b>" . esc_html($exception->getLine() ). "</b> in file " . esc_html($exception->getFile()) . "<br><br>";
-         echo "<pre>" . esc_html($exception->getTraceAsString()) . "</pre>";
-         echo "</pre>";
-        if (defined('BBCS_ERROR_EXIT') && BBCS_ERROR_EXIT) {
-            bbcs_errorHandlerRestore();
-            exit(1);
-        }
-    });
-*/
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
 }
 
-/** 
- * 
- *  Restore error and exception handlers
- *                  
-*/
-function bbcs_errorHandlerRestore(){
-    restore_error_handler();
-    restore_exception_handler();
+/**
+ * Sensitive keys whose values should never appear in diagnostic output.
+ *
+ * Extend this list via the 'bbcs_sensitive_hive_keys' filter to add
+ * new fields without modifying this file.
+ *
+ * @return string[] Lowercase sensitive key names.
+ */
+function bbcs_sensitive_hive_keys(): array {
+	$keys = array(
+		'cloud_api_key',
+		'cloud_api_pass',
+		'cloud_api_secret',
+		'cloud_api_email',
+		'recaptcha_key2',
+		'recaptcha_key3',
+		'recaptcha_secret2',
+		'recaptcha_secret3',
+		'salt',
+		'salt_pz',
+		'redis_password',
+		'memcached_password',
+		'password',
+		'secret',
+		'api_key',
+		'token',
+	);
+
+	/**
+	 * Filter the list of sensitive hive keys that should be masked in diagnostic output.
+	 *
+	 * @param string[] $keys Lowercase key names to mask.
+	 */
+	return apply_filters( 'bbcs_sensitive_hive_keys', $keys );
+}
+
+/**
+ * Recursively mask sensitive values in a diagnostic data structure.
+ *
+ * Values whose keys match the sensitive list are replaced with '****'.
+ * Objects are converted to arrays before masking.
+ *
+ * @param array $data The diagnostic data (from get_bot_blocker_hive()).
+ * @return array Data with sensitive values masked.
+ */
+function bbcs_mask_sensitive_data( array $data ): array {
+	$sensitive_keys = bbcs_sensitive_hive_keys();
+
+	foreach ( $data as $key => $value ) {
+		$lower_key = strtolower( (string) $key );
+
+		if ( is_object( $value ) ) {
+			$value = get_object_vars( $value );
+		}
+
+		if ( is_array( $value ) ) {
+			$data[ $key ] = bbcs_mask_sensitive_data( $value );
+			continue;
+		}
+
+		foreach ( $sensitive_keys as $sensitive ) {
+			if ( strpos( $lower_key, $sensitive ) !== false ) {
+				$data[ $key ] = '****';
+				continue 2;
+			}
+		}
+	}
+
+	return $data;
 }

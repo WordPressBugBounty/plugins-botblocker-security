@@ -17,7 +17,7 @@ function renderMode2Captcha(params) {
         /* Inline base64 mode: all images are embedded directly in captcha data. */
         var buttonImages = params.buttonImages;
         var row = document.createElement("p");
-        row.style.maxWidth = "499px";
+        row.style.maxWidth = "500px";
 
         for (var i = 0; i < buttonImages.length; i++) {
             (function(item) {
@@ -49,7 +49,7 @@ function renderMode2Captcha(params) {
         var selectRequestMode = params.selectRequestMode;
 
         var rowEl = document.createElement("p");
-        rowEl.style.maxWidth = "499px";
+        rowEl.style.maxWidth = "500px";
         rowEl.innerHTML = buttons.join("");
         content.appendChild(rowEl);
 
@@ -78,7 +78,7 @@ function renderMode2Captcha(params) {
                     }
                 })
                 .catch(function(error) {
-                    console.error("Retrieve image error:", error);
+                    console.error('[BBCS DEBUG] Retrieve image error:', error);
                 });
         }
 

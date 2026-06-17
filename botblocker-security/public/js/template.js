@@ -13,19 +13,19 @@ window.bbcsDebugEnabled = bbcsJsData.debugEnabled ? 'true' : 'false';
 
 window.bbcsDebugLog = function(...args) {
     if (window.bbcsDebugEnabled) {
-        console.log(...args);
+        console.log('[BBCS DEBUG]', ...args);
     }
 };
 
 window.bbcsDebugWarn = function(...args) {
     if (window.bbcsDebugEnabled) {
-        console.warn(...args);
+        console.warn('[BBCS DEBUG]', ...args);
     }
 };
 
 window.bbcsDebugError = function(...args) {
     if (window.bbcsDebugEnabled) {
-        console.error(...args);
+        console.error('[BBCS DEBUG]', ...args);
     }
 };
 
@@ -33,6 +33,76 @@ bbcsDebugLog(bbcsJsData.shortName + ' v.' + bbcsJsData.version);
 
 var bbcsDdosRetryCount = 0;
 var bbcsDdosMaxRetries = 3;
+
+window.bbcsCheckUI = {
+	timerInterval: null,
+	secondsLeft: 6,
+	attempt: 0,
+	maxAttempts: 3,
+	_lastMsg: '',
+
+	showVerifying: function () {
+		this._stopTimer();
+		this.secondsLeft = 6;
+		this.attempt = 0;
+		this._render('Verifying...');
+	},
+
+	showRetry: function (attemptNum) {
+		this.attempt = attemptNum;
+		this._render('Retrying... (' + attemptNum + '/' + this.maxAttempts + ')');
+		this._startTimer();
+	},
+
+	showCAPTCHA: function () {
+		this._stopTimer();
+		this._render('Verification failed. Please complete the challenge below.');
+	},
+
+	showFallback: function () {
+		this._stopTimer();
+		this._render('Verification is temporarily unavailable. Please wait and reload the page.');
+	},
+
+	showSuccess: function () {
+		this._stopTimer();
+		this._render('Access approved. Redirecting...');
+	},
+
+	hide: function () {
+		this._stopTimer();
+		var el = document.getElementById('bbcs-status');
+		if (el) { el.innerHTML = ''; }
+	},
+
+	_render: function (msg) {
+		this._lastMsg = msg;
+		var el = document.getElementById('bbcs-status');
+		if (!el) return;
+		el.innerHTML = '<div style="margin-bottom:2px;">' + msg + '</div>'
+			+ '<div style="font-size:12px;color:#999;">' + this.secondsLeft + 's</div>';
+	},
+
+	_startTimer: function () {
+		var self = this;
+		this.timerInterval = setInterval(function () {
+			if (self.secondsLeft > 0) {
+				self.secondsLeft--;
+				self._render(self._lastMsg);
+			}
+			if (self.secondsLeft <= 0) {
+				self._stopTimer();
+			}
+		}, 1000);
+	},
+
+	_stopTimer: function () {
+		if (this.timerInterval) {
+			clearInterval(this.timerInterval);
+			this.timerInterval = null;
+		}
+	}
+};
 
 function bbcs_isDdosResponse(responseText) {
     if (!responseText) return false;
@@ -64,6 +134,9 @@ function bbcs_handleDdosResponse(responseText, s, d, x, checkFn) {
     bbcs_extractDdosCookie(responseText);
     if (bbcsDdosRetryCount < bbcsDdosMaxRetries) {
         bbcsDdosRetryCount++;
+        if (bbcsJsData.ddosResilience) {
+            bbcsCheckUI.showRetry(bbcsDdosRetryCount);
+        }
         var delay = bbcsDdosRetryCount * 1000;
         bbcsDebugLog('DDoS retry ' + bbcsDdosRetryCount + '/' + bbcsDdosMaxRetries + ' in ' + delay + 'ms');
         setTimeout(function() {
@@ -71,6 +144,16 @@ function bbcs_handleDdosResponse(responseText, s, d, x, checkFn) {
         }, delay);
         return true;
     }
+    if (bbcsJsData.ddosResilience) {
+        bbcsCheckUI.showCAPTCHA();
+    }
+    var rc = 0;
+    try { rc = parseInt(sessionStorage.getItem('bbcsRedirectCount') || '0', 10); } catch(e) {}
+    if (rc >= 2) {
+        bbcsDebugLog('DDoS redirect loop detected, stopping');
+        return true;
+    }
+    try { sessionStorage.setItem('bbcsRedirectCount', String(rc + 1)); } catch(e) {}
     bbcsDebugLog('DDoS retries exhausted, redirecting to page');
     window.location.href = bbcsJsData.redirectUrl;
     return true;
@@ -198,6 +281,7 @@ function dispatchServiceEvent() {
 }
 
 function initProcessHandler(result1, result2) {
+    bbcsDebugLog('initProcessHandler: mode=' + bbcsJsData.selectRequestMode + ' debugEnabled=' + bbcsJsData.debugEnabled + ' ddosResilience=' + bbcsJsData.ddosResilience);
     var bbcs_detectionParams = bbcs_getDetectionParams();
     window.data = 'test=' + bbcsJsData.testHash + 
         '&h1=' + bbcsJsData.h1Hash + 
@@ -240,14 +324,29 @@ async function performAsyncStep() {
 performAsyncStep();
 
 function botblocker_captcha_render() {
+    bbcsDebugLog('botblocker_captcha_render called. renderCaptcha defined=' + (typeof renderCaptcha === 'function') + ' bbcsCaptchaData defined=' + (typeof bbcsCaptchaData !== 'undefined'));
+    if (bbcsJsData.ddosResilience && typeof bbcsCircuitBreaker !== 'undefined' && bbcsCircuitBreaker.isOpen()) {
+        return;
+    }
     if (typeof renderCaptcha === 'function') {
         renderCaptcha();
     }
 }
 
 window[bbcsJsData.checkFunctionName] = function(s, d, x, ajaxEndpoint) {
+    if (bbcsJsData.ddosResilience) {
+        if (typeof bbcsCircuitBreaker !== 'undefined' && bbcsCircuitBreaker.isOpen()) {
+            return;
+        }
+    }
     if (!ajaxEndpoint) ajaxEndpoint = bbcsJsData.ajaxUrl;
-    document.getElementById("content").innerHTML = bbcsJsData.loadingText;
+    if (bbcsJsData.ddosResilience) {
+        if (bbcsDdosRetryCount === 0) {
+            bbcsCheckUI.showVerifying();
+        }
+    } else {
+        document.getElementById("content").innerHTML = bbcsJsData.loadingText;
+    }
     
     var data = new FormData();
     data.append('action', 'bbcs_botblocker_check');
@@ -281,7 +380,31 @@ window[bbcsJsData.checkFunctionName] = function(s, d, x, ajaxEndpoint) {
                 if (responseText) {
                     var obj = JSON.parse(responseText); 
 
+                    if (bbcsJsData.ddosResilience) {
+                        if (typeof obj.bbcs_sig !== 'string') {
+                            if (typeof bbcsCircuitBreaker !== 'undefined') {
+                                bbcsCircuitBreaker.recordFailure();
+                            }
+                        } else {
+                            delete obj.bbcs_sig;
+                        }
+
+                        if (typeof obj.cookie !== 'string') {
+                            var backupCookie = xhr.getResponseHeader('X-BBCS-' + bbcsJsData.uid);
+                            if (backupCookie) {
+                                obj.cookie = backupCookie;
+                            }
+                        }
+                    }
+
                     if (typeof(obj.cookie) == "string") {
+                        bbcsDebugLog('Got cookie in response, redirecting');
+                        if (bbcsJsData.ddosResilience) {
+                            bbcsCheckUI.showSuccess();
+                            if (typeof bbcsCircuitBreaker !== 'undefined') {
+                                bbcsCircuitBreaker.failures = 0;
+                            }
+                        }
                         var d = new Date();
                         d.setTime(d.getTime() + ((bbcsJsData.cookieLifetime || 604800) * 1000)); 
                         var expires = "expires=" + d.toUTCString();
@@ -347,6 +470,12 @@ window[bbcsJsData.checkFunctionName] = function(s, d, x, ajaxEndpoint) {
                     var checkFn = window[bbcsJsData.checkFunctionName];
                     if (bbcs_handleDdosResponse(xhr.responseText, s, d, x, checkFn)) return;
                 }
+                if (bbcsJsData.ddosResilience) {
+                    if (typeof bbcsCircuitBreaker !== 'undefined') {
+                        bbcsCircuitBreaker.recordFailure();
+                    }
+                    bbcsCheckUI.showCAPTCHA();
+                }
                 botblocker_captcha_render();
             }
 
@@ -360,6 +489,12 @@ window[bbcsJsData.checkFunctionName] = function(s, d, x, ajaxEndpoint) {
             if (bbcs_isDdosResponse(xhr.responseText)) {
                 var checkFn = window[bbcsJsData.checkFunctionName];
                 if (bbcs_handleDdosResponse(xhr.responseText, s, d, x, checkFn)) return;
+            }
+            if (bbcsJsData.ddosResilience) {
+                if (typeof bbcsCircuitBreaker !== 'undefined') {
+                    bbcsCircuitBreaker.recordFailure();
+                }
+                bbcsCheckUI.showCAPTCHA();
             }
             botblocker_captcha_render();
         }
@@ -377,6 +512,12 @@ window[bbcsJsData.checkFunctionName] = function(s, d, x, ajaxEndpoint) {
             window.location.href = bbcsJsData.redirectUrl;
             return;
         }
+        if (bbcsJsData.ddosResilience) {
+            if (typeof bbcsCircuitBreaker !== 'undefined') {
+                bbcsCircuitBreaker.recordFailure();
+            }
+            bbcsCheckUI.showCAPTCHA();
+        }
         botblocker_captcha_render();
     };
 
@@ -391,6 +532,12 @@ window[bbcsJsData.checkFunctionName] = function(s, d, x, ajaxEndpoint) {
             bbcsDebugLog('Error during DDoS retry, redirecting');
             window.location.href = bbcsJsData.redirectUrl;
             return;
+        }
+        if (bbcsJsData.ddosResilience) {
+            if (typeof bbcsCircuitBreaker !== 'undefined') {
+                bbcsCircuitBreaker.recordFailure();
+            }
+            bbcsCheckUI.showCAPTCHA();
         }
         botblocker_captcha_render();
     };

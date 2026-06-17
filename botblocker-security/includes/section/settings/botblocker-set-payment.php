@@ -1,5 +1,7 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 
 <div class="tab-pane container fade" id="payment">
@@ -52,7 +54,31 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 					data-bs-original-title="<?php esc_attr_e( 'Write a log entry every time a payment callback bypass is applied. Useful for auditing.', 'botblocker-security' ); ?>"></i>
 			</div>
 
-			<?php if ( bbcs_payment_detect_ecommerce() ) : ?>
+			<?php $bbcs_payment_enabled = isset( $bbcs_settings['payment_bypass_enable'] ) && (int) $bbcs_settings['payment_bypass_enable'] === 1; ?>
+
+			<div class="bbcs_checkbox_input mb-2">
+				<div class="bbcs_label_checkbox_box">
+					<input type="checkbox" name="payment_strict_method" value="1"
+						<?php checked( 1, isset( $bbcs_settings['payment_strict_method'] ) ? (int) $bbcs_settings['payment_strict_method'] : 0 ); ?>
+						<?php echo $bbcs_payment_enabled ? '' : 'disabled'; ?>>
+					<span class="bbcs_label_input_checkbox"><?php esc_html_e( 'Strict Webhook Validation (POST only)', 'botblocker-security' ); ?></span>
+				</div>
+				<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top"
+					data-bs-original-title="<?php esc_attr_e( 'When enabled, payment bypass only applies to POST requests and requires signature headers to have valid format (min 8 chars). GET requests with payment query keys will not be bypassed. Reduces attack surface while keeping real webhooks working.', 'botblocker-security' ); ?>"></i>
+			</div>
+
+			<div class="bbcs_checkbox_input mb-2">
+				<div class="bbcs_label_checkbox_box">
+					<input type="checkbox" name="payment_keep_ip_rules" value="1"
+						<?php checked( 1, isset( $bbcs_settings['payment_keep_ip_rules'] ) ? (int) $bbcs_settings['payment_keep_ip_rules'] : 0 ); ?>
+						<?php echo $bbcs_payment_enabled ? '' : 'disabled'; ?>>
+					<span class="bbcs_label_input_checkbox"><?php esc_html_e( 'Enforce IP / ASN Rules for Payment Callbacks', 'botblocker-security' ); ?></span>
+				</div>
+				<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top"
+					data-bs-original-title="<?php esc_attr_e( 'When enabled, payment callbacks still skip CAPTCHA but IP blacklists, ASN rules, path rules and country blocks remain active. A blocked IP cannot use a payment callback to bypass the block.', 'botblocker-security' ); ?>"></i>
+			</div>
+
+			<?php if ( BotBlockerPaymentData::detectEcommerce() ) : ?>
 				<div class="alert alert-info p-2 mt-2 mb-0" role="status">
 					<i class="fa-solid fa-shopping-cart me-1"></i>
 					<?php esc_html_e( 'E-commerce software detected on this site. Enabling this option is strongly recommended.', 'botblocker-security' ); ?>

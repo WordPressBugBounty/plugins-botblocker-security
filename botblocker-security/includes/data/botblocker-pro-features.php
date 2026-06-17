@@ -1,9 +1,13 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit;
+declare(strict_types=1);
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 if ( ! function_exists( 'bbcs_get_pro_features' ) ) {
 	function bbcs_get_pro_features(): array {
-		return [
+		return array(
 			__( 'Cloud bot detection (live signatures)', 'botblocker-security' ),
 			__( 'Behavioral & AI traffic analysis', 'botblocker-security' ),
 			__( 'VPN, Tor and proxy blocking', 'botblocker-security' ),
@@ -19,31 +23,99 @@ if ( ! function_exists( 'bbcs_get_pro_features' ) ) {
 			__( 'SEO bots whitelist management', 'botblocker-security' ),
 			__( 'All premium add-ons included', 'botblocker-security' ),
 			__( 'Priority support & emergency help (24h)', 'botblocker-security' ),
-		];
+		);
 	}
 }
 
 if ( ! function_exists( 'bbcs_get_pro_comparison' ) ) {
 	function bbcs_get_pro_comparison(): array {
-		return [
-			[ 'feature' => __( 'Simple bot detection (UA, headers, JS, language)', 'botblocker-security' ), 'free' => true,  'pro' => true ],
-			[ 'feature' => __( 'IP, ASN, GEO and proxy rules', 'botblocker-security' ),                     'free' => true,  'pro' => true ],
-			[ 'feature' => __( 'Built-in CAPTCHA',                                  'botblocker-security' ), 'free' => true,  'pro' => true ],
-			[ 'feature' => __( 'Logs & basic reports',                              'botblocker-security' ), 'free' => true,  'pro' => true ],
-			[ 'feature' => __( 'reCAPTCHA, Redis, Memcached integrations',          'botblocker-security' ), 'free' => true,  'pro' => true ],
-			[ 'feature' => __( 'Two-Factor Authentication (2FA)',                   'botblocker-security' ), 'free' => true,  'pro' => true ],
-			[ 'feature' => __( 'Cloud bot verification (live)',                     'botblocker-security' ), 'free' => false, 'pro' => true ],
-			[ 'feature' => __( 'Behavioral & AI analysis',                          'botblocker-security' ), 'free' => false, 'pro' => true ],
-			[ 'feature' => __( 'VPN / Tor / proxy blocking',                        'botblocker-security' ), 'free' => false, 'pro' => true ],
-			[ 'feature' => __( 'Hide login URL & admin path',                       'botblocker-security' ), 'free' => false, 'pro' => true ],
-			[ 'feature' => __( 'Security headers management',                       'botblocker-security' ), 'free' => false, 'pro' => true ],
-			[ 'feature' => __( 'Early initialization (pre-WordPress block)',        'botblocker-security' ), 'free' => false, 'pro' => true ],
-			[ 'feature' => __( 'WordPress speed optimizations',                     'botblocker-security' ), 'free' => false, 'pro' => true ],
-			[ 'feature' => __( 'Daily signature updates & threat feeds',            'botblocker-security' ), 'free' => false, 'pro' => true ],
-			[ 'feature' => __( 'Premium add-ons access',                            'botblocker-security' ), 'free' => false, 'pro' => true ],
-			[ 'feature' => __( 'Advanced analytics & forensics',                    'botblocker-security' ), 'free' => false, 'pro' => true ],
-			[ 'feature' => __( 'Priority support (24h response)',                   'botblocker-security' ), 'free' => false, 'pro' => true ],
-		];
+		return array(
+			array(
+				'feature' => __( 'Simple bot detection (UA, headers, JS, language)', 'botblocker-security' ),
+				'free'    => true,
+				'pro'     => true,
+			),
+			array(
+				'feature' => __( 'IP, ASN, GEO and proxy rules', 'botblocker-security' ),
+				'free'    => true,
+				'pro'     => true,
+			),
+			array(
+				'feature' => __( 'Built-in CAPTCHA', 'botblocker-security' ),
+				'free'    => true,
+				'pro'     => true,
+			),
+			array(
+				'feature' => __( 'Logs & basic reports', 'botblocker-security' ),
+				'free'    => true,
+				'pro'     => true,
+			),
+			array(
+				'feature' => __( 'reCAPTCHA, Redis, Memcached integrations', 'botblocker-security' ),
+				'free'    => true,
+				'pro'     => true,
+			),
+			array(
+				'feature' => __( 'Two-Factor Authentication (2FA)', 'botblocker-security' ),
+				'free'    => true,
+				'pro'     => true,
+			),
+			array(
+				'feature' => __( 'Cloud bot verification (live)', 'botblocker-security' ),
+				'free'    => false,
+				'pro'     => true,
+			),
+			array(
+				'feature' => __( 'Behavioral & AI analysis', 'botblocker-security' ),
+				'free'    => false,
+				'pro'     => true,
+			),
+			array(
+				'feature' => __( 'VPN / Tor / proxy blocking', 'botblocker-security' ),
+				'free'    => false,
+				'pro'     => true,
+			),
+			array(
+				'feature' => __( 'Hide login URL & admin path', 'botblocker-security' ),
+				'free'    => false,
+				'pro'     => true,
+			),
+			array(
+				'feature' => __( 'Security headers management', 'botblocker-security' ),
+				'free'    => false,
+				'pro'     => true,
+			),
+			array(
+				'feature' => __( 'Early initialization (pre-WordPress block)', 'botblocker-security' ),
+				'free'    => false,
+				'pro'     => true,
+			),
+			array(
+				'feature' => __( 'WordPress speed optimizations', 'botblocker-security' ),
+				'free'    => false,
+				'pro'     => true,
+			),
+			array(
+				'feature' => __( 'Daily signature updates & threat feeds', 'botblocker-security' ),
+				'free'    => false,
+				'pro'     => true,
+			),
+			array(
+				'feature' => __( 'Premium add-ons access', 'botblocker-security' ),
+				'free'    => false,
+				'pro'     => true,
+			),
+			array(
+				'feature' => __( 'Advanced analytics & forensics', 'botblocker-security' ),
+				'free'    => false,
+				'pro'     => true,
+			),
+			array(
+				'feature' => __( 'Priority support (24h response)', 'botblocker-security' ),
+				'free'    => false,
+				'pro'     => true,
+			),
+		);
 	}
 }
 

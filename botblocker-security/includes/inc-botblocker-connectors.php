@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -9,8 +11,8 @@ if ( ! defined( 'BBCS_WP_CONNECTOR_ID' ) ) {
 
 if ( ! function_exists( 'bbcs_connector_pro_url' ) ) {
 	function bbcs_connector_pro_url(): string {
-		if ( function_exists( 'bbcs_site_admin_page_url' ) ) {
-			return bbcs_site_admin_page_url( 'bbcs_cloud_api' );
+		if ( method_exists( 'BotBlockerMultisite', 'getSiteAdminPageUrl' ) ) {
+			return BotBlockerMultisite::getSiteAdminPageUrl( 'bbcs_cloud_api' );
 		}
 
 		return admin_url( 'admin.php?page=bbcs_cloud_api' );
@@ -19,7 +21,7 @@ if ( ! function_exists( 'bbcs_connector_pro_url' ) ) {
 
 if ( ! function_exists( 'bbcs_connector_cloud_api_active' ) ) {
 	function bbcs_connector_cloud_api_active(): bool {
-		return function_exists( 'bbcs_isCloudAPIActive' ) && bbcs_isCloudAPIActive();
+		return class_exists( 'BotBlockerPro' ) && BotBlockerPro::isActive();
 	}
 }
 
@@ -57,7 +59,7 @@ if ( ! function_exists( 'bbcs_register_wp_connector' ) ) {
 add_action( 'wp_connectors_init', 'bbcs_register_wp_connector' );
 
 if ( ! function_exists( 'bbcs_enqueue_wp_connector_assets' ) ) {
-	function bbcs_enqueue_wp_connector_assets( $hook_suffix ): void {
+	function bbcs_enqueue_wp_connector_assets( string $hook_suffix ): void {
 		global $pagenow;
 
 		if ( ! function_exists( 'wp_register_script_module' ) || ! function_exists( 'wp_enqueue_script_module' ) ) {
@@ -90,7 +92,7 @@ if ( ! function_exists( 'bbcs_enqueue_wp_connector_assets' ) ) {
 		);
 		wp_enqueue_script( 'botblocker-connectors-data' );
 
-		wp_register_script_module(
+		bbcs_register_script_module(
 			'botblocker-connectors',
 			BOTBLOCKER_URL . 'admin/js/bbcs-js/bbcs-connectors.js',
 			array(
@@ -101,7 +103,7 @@ if ( ! function_exists( 'bbcs_enqueue_wp_connector_assets' ) ) {
 			),
 			BOTBLOCKER_VERSION
 		);
-		wp_enqueue_script_module( 'botblocker-connectors' );
+		bbcs_enqueue_script_module( 'botblocker-connectors' );
 	}
 }
 add_action( 'admin_enqueue_scripts', 'bbcs_enqueue_wp_connector_assets' );

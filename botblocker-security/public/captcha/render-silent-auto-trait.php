@@ -1,4 +1,7 @@
 <?php
+declare(strict_types=1);
+
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -12,8 +15,8 @@ trait BBCS_RenderSilentAutoTrait {
 		return array(
 			'mode'   => 8,
 			'params' => array(
-				'deniedText'  => __( 'Access denied. Please enable JavaScript and cookies.', 'botblocker-security' ),
-				'silentHash'  => $hash,
+				'deniedText' => __( 'Access denied. Please enable JavaScript and cookies.', 'botblocker-security' ),
+				'silentHash' => $hash,
 			),
 		);
 	}

@@ -175,10 +175,12 @@
                     },
                     success: function (response) {
                         if (response.success) {
-                            window.location.href = response.data.download_url;
-                            setTimeout(function () {
-                                window.location.reload();
-                            }, 1000);
+                            var tempLink = document.createElement('a');
+                            tempLink.href = response.data.download_url;
+                            tempLink.style.display = 'none';
+                            document.body.appendChild(tempLink);
+                            tempLink.click();
+                            document.body.removeChild(tempLink);
                         } else {
                             alert(bbcsMaintenanceL10n.failed_backup + response.data.message);
                         }
@@ -437,6 +439,64 @@
             error: function (xhr, status, error) {
                 console.error('AJAX error:', error);
                 alert(bbcsMaintenanceL10n.asn_error);
+            },
+            complete: function () {
+                $btn.prop('disabled', false);
+            }
+        });
+    });
+    $('#bbcs-update-rugov').on('click', function () {
+        var $btn = $(this);
+        if ($btn.prop('disabled')) {
+            return;
+        }
+        $btn.prop('disabled', true);
+        $.ajax({
+            url: botblockerData.ajaxurl,
+            method: 'POST',
+            data: {
+                action: 'bbcs_update_rugov',
+                nonce: botblockerData.nonce
+            },
+            success: function (response) {
+                if (response && response.success) {
+                    alert((response.data && response.data.message) || response.data || bbcsMaintenanceL10n.rugov_scheduled || 'RU-Gov list update scheduled.');
+                } else {
+                    alert((response && response.data) || 'Failed to schedule RU-Gov list update.');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('AJAX error:', error);
+                alert('Error scheduling RU-Gov list update.');
+            },
+            complete: function () {
+                $btn.prop('disabled', false);
+            }
+        });
+    });
+    $('#bbcs-sync-llm').on('click', function () {
+        var $btn = $(this);
+        if ($btn.prop('disabled')) {
+            return;
+        }
+        $btn.prop('disabled', true);
+        $.ajax({
+            url: botblockerData.ajaxurl,
+            method: 'POST',
+            data: {
+                action: 'bbcs_sync_llm_cloud',
+                nonce: botblockerData.nonce
+            },
+            success: function (response) {
+                if (response && response.success) {
+                    alert((response.data && response.data.message) || response.data || 'LLM providers synced successfully.');
+                } else {
+                    alert((response && response.data) || 'LLM sync failed.');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('AJAX error:', error);
+                alert('Error syncing LLM providers.');
             },
             complete: function () {
                 $btn.prop('disabled', false);

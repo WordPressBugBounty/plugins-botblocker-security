@@ -1,7 +1,7 @@
 /*
  * BotBlocker Script - AdBlock Detection Logic
  * Version: 1.2.3
- * Copyright (c) 2025 BotBlocker
+ * Copyright (c) 2026 BotBlocker
  * 
  * This file contains detection algorithms for various ad blocking software
  * and implements countermeasures without affecting user experience.

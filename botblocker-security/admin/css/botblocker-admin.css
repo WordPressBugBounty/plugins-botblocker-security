@@ -2,9 +2,9 @@
  * BotBlocker Admin CSS Styles
  * 
  * @package     BotBlocker
- * @version     1.6.20
+ * @version     1.6.21
  * @author      BotBlocker Team
- * @copyright   Copyright (c) 2025 BotBlocker
+ * @copyright   Copyright (c) 2026 BotBlocker
  */
 
 #adminmenu .wp-submenu a[href*="page=bbcs_cloud_api"]::after {
@@ -590,6 +590,11 @@ input:checked + .bbcs_slider:before {
   transform: translateX(15px);
 }
 
+input:disabled + .bbcs_slider {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .bbcs_switch_label {
   font-size: 14px;
   cursor: pointer;
@@ -1056,6 +1061,32 @@ code.bbcs-malware-code {
   background: none !important;
 }
 
+.bbcs-malware-progress-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 0.95em;
+}
+
+.bbcs-malware-progress {
+  margin-bottom: 4px;
+  border-radius: 4px;
+  background-color: #e9ecef;
+}
+
+#bbcs-malware-progress-detail {
+  display: block;
+  margin-top: 2px;
+}
+
+#bbcs-malware-progress-current-file {
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
 .bbcs-counters-grid {
   display: grid;
   align-content: center;
@@ -1299,6 +1330,145 @@ h2.card-title small {
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 16px;
   align-items: stretch;
+}
+
+.bbcs-addon-header-actions {
+  position: static;
+  right: auto !important;
+  top: auto !important;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.bbcs-addon-upload-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 2px 6px rgba(13, 110, 253, 0.18);
+}
+
+.bbcs-addon-upload-panel {
+  margin: 0 0 16px;
+  padding: 14px;
+  border: 1px solid #dfe7f1;
+  border-left: 3px solid #0d6efd;
+  background: #f8fbff;
+  border-radius: 5px;
+}
+
+.bbcs-addon-upload-copy {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.bbcs-addon-upload-icon {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #0d6efd;
+  background: #e8f1ff;
+  border-radius: 5px;
+  flex: 0 0 34px;
+}
+
+.bbcs-addon-upload-form {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.bbcs-addon-upload-drop {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 42px;
+  padding: 8px 10px;
+  margin: 0;
+  border: 1px dashed #b8c8dc;
+  border-radius: 5px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.bbcs-addon-upload-drop:hover {
+  border-color: #0d6efd;
+  background: #fafdff;
+}
+
+.bbcs-addon-upload-drop:focus-within {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.12);
+}
+
+.bbcs-addon-upload-drop-icon {
+  color: #0d6efd;
+}
+
+.bbcs-addon-upload-drop-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.bbcs-addon-upload-drop-title {
+  font-weight: 600;
+  color: #2f3b4c;
+  white-space: nowrap;
+}
+
+.bbcs-addon-upload-file-name {
+  max-width: 100%;
+  overflow: hidden;
+  color: #6c757d;
+  font-size: 12px;
+  line-height: 15px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bbcs-addon-upload-drop input[type="file"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+}
+
+@media (max-width: 576px) {
+  .bbcs-addon-card-header {
+    flex-wrap: wrap;
+  }
+
+  .bbcs-addon-header-actions,
+  .bbcs-addon-upload-form {
+    width: 100%;
+  }
+
+  .bbcs-addon-header-actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    margin-top: 8px;
+    margin-left: 0;
+  }
+
+  .bbcs-addon-upload-form {
+    grid-template-columns: 1fr;
+  }
+
+  .bbcs-addon-upload-form .btn,
+  .bbcs-addon-upload-toggle {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 .bbcs-pb-20 {

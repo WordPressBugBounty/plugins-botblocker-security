@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 function bbcs_get_country_by_code($code) 

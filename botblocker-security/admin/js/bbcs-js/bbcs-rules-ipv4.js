@@ -244,6 +244,10 @@
             }
         });
 
+        if ($('#bbcs_IPv4_list').hasClass('active')) {
+            loadIpv4RulesTable();
+        }
+
         $("#priority").on("input", function () {
             $("#priorityValue").val(this.value);
         });

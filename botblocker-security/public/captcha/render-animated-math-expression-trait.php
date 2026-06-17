@@ -1,71 +1,85 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+declare(strict_types=1);
+
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
 
 trait BBCS_RenderAnimatedMathExpressionTrait {
 
-    private function getAnimatedMathExpressionData() {
+	private function getAnimatedMathExpressionData() {
 
-        $num1 = wp_rand(1, 20);
-        $num2 = wp_rand(1, 10);
-        $operations = ['+', '-']; 
-        $operationIndex = wp_rand(0, 1);
-        $operation = $operations[$operationIndex];
+		$num1           = wp_rand( 1, 20 );
+		$num2           = wp_rand( 1, 10 );
+		$operations     = array( '+', '-' );
+		$operationIndex = wp_rand( 0, 1 );
+		$operation      = $operations[ $operationIndex ];
 
-        switch ($operation) {
-            case '+': $result = $num1 + $num2; break;
-            case '-': $result = $num1 - $num2; break;
-        }
+		if ( $operation === '-' && $num2 > $num1 ) {
+			$temp = $num1;
+			$num1 = $num2;
+			$num2 = $temp;
+		}
 
-        $nonce = $this->createChallenge((string) $result, 6);
+		switch ( $operation ) {
+			case '+':
+				$result = $num1 + $num2;
+				break;
+			case '-':
+				$result = $num1 - $num2;
+				break;
+		}
 
-        $wrongAnswers = [];
-        $maxRetries = 50;
-        $retries = 0;
-        while (count($wrongAnswers) < 3 && $retries < $maxRetries) {
-            $retries++;
-            $offset = wp_rand(1, 5) * (wp_rand(0, 1) ? 1 : -1);
-            $candidate = $result + $offset;
-            if ($candidate > 0 && $candidate != $result && !in_array($candidate, $wrongAnswers)) {
-                $wrongAnswers[] = $candidate;
-            }
-        }
-        // Fallback: guarantee exactly 3 wrong answers
-        $fallback = $result + 6;
-        while (count($wrongAnswers) < 3) {
-            if ($fallback > 0 && $fallback != $result && !in_array($fallback, $wrongAnswers)) {
-                $wrongAnswers[] = $fallback;
-            }
-            $fallback++;
-        }
+		$nonce = $this->createChallenge( (string) $result, 6 );
 
-        $allAnswers = array_merge([$result], $wrongAnswers);
-        shuffle($allAnswers);
+		$wrongAnswers = array();
+		$maxRetries   = 50;
+		$retries      = 0;
+		while ( count( $wrongAnswers ) < 3 && $retries < $maxRetries ) {
+			++$retries;
+			$offset    = wp_rand( 1, 5 ) * ( wp_rand( 0, 1 ) ? 1 : -1 );
+			$candidate = $result + $offset;
+			if ( $candidate > 0 && $candidate != $result && ! in_array( $candidate, $wrongAnswers ) ) {
+				$wrongAnswers[] = $candidate;
+			}
+		}
+		// Fallback: guarantee exactly 3 wrong answers
+		$fallback = $result + 6;
+		while ( count( $wrongAnswers ) < 3 ) {
+			if ( $fallback > 0 && $fallback != $result && ! in_array( $fallback, $wrongAnswers ) ) {
+				$wrongAnswers[] = $fallback;
+			}
+			++$fallback;
+		}
 
-        $answerButtons = [];
-        
-        foreach ($allAnswers as $answer) {
-            $answerButtons[] = [
-                'value' => $answer,
-                'hash' => $this->answerHash($nonce, (string) $answer)
-            ];
-        }
-        
-        $expressionChars = str_split("{$num1} {$operation} {$num2} = ?");
-        $expressionData = [];
-        foreach ($expressionChars as $ch) {
-            $expressionData[] = [
-                'c' => $ch,
-                'o' => wp_rand(-3, 3),
-            ];
-        }
+		$allAnswers = array_merge( array( $result ), $wrongAnswers );
+		shuffle( $allAnswers );
 
-        return [
-            'mode' => 6,
-            'params' => [
-                'instructionText' => __('Solve the expression:', 'botblocker-security'),
-                'expressionData' => $expressionData,
-                'answers' => $answerButtons
-            ]
-        ];
-    }
+		$answerButtons = array();
+
+		foreach ( $allAnswers as $answer ) {
+			$answerButtons[] = array(
+				'value' => $answer,
+				'hash'  => $this->answerHash( $nonce, (string) $answer ),
+			);
+		}
+
+		$expressionChars = str_split( "{$num1} {$operation} {$num2} = ?" );
+		$expressionData  = array();
+		foreach ( $expressionChars as $ch ) {
+			$expressionData[] = array(
+				'c' => $ch,
+			);
+		}
+
+		return array(
+			'mode'   => 6,
+			'params' => array(
+				'instructionText' => __( 'Solve the following:', 'botblocker-security' ),
+				'expressionData'  => $expressionData,
+				'answers'         => $answerButtons,
+			),
+		);
+	}
 }

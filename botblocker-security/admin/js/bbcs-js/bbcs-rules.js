@@ -330,6 +330,24 @@
     $(document).ready(function () {
         initializeRulesTable();
 
+        // Permanently ban → hide date picker + fill +200y.
+        $(document).on('change', 'select[name="rule"]', function () {
+            var $expires = $(this).closest('form').find('[name="expires"]');
+            if (!$expires.length) return;
+            var $wrapper = $expires.closest('.col-md-6');
+            if ($(this).val() === 'permanently_ban') {
+                var d = new Date();
+                d.setFullYear(d.getFullYear() + 200);
+                var pad = function (n) { return String(n).padStart(2, '0'); };
+                $expires.val(d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes()));
+                $wrapper.hide();
+                $expires.prop('required', false);
+            } else {
+                $wrapper.show();
+                $expires.prop('required', true);
+            }
+        });
+
         $("#priority").on("input", function () {
             $("#priorityValue").val(this.value);
         });

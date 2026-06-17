@@ -135,7 +135,7 @@
                     if (response.success) {
                       //  console.log("Cache settings updated successfully.");
                     } else {
-                        console.error("Failed to update cache settings: " + response.data);
+                        console.error("Failed to update cache settings: " + (response.data && response.data.message || response.data));
                     }
                 },
                 error: function (xhr, status, error) {
@@ -175,7 +175,7 @@
                     if (response.success) {
                      //   console.log("APCu setting updated.");
                     } else {
-                        console.error("APCu update failed: " + response.data);
+                        console.error("APCu update failed: " + (response.data && response.data.message || response.data));
                     }
                 },
                 error: function (xhr, status, error) {
@@ -205,7 +205,7 @@
                             setTimeout(function () { window.location.reload(); }, 300);
                         }
                     } else {
-                        console.error("MU update failed: " + response.data);
+                        console.error("MU update failed: " + (response.data && response.data.message || response.data));
                     }
                 },
                 error: function (xhr, status, error) {
@@ -248,7 +248,7 @@
                     } else {
 
                         $el.prop('checked', false);
-                        var msg = response.data || 'Early Init cannot be enabled. Please ensure Cloud API and addon are active.';
+                        var msg = (response.data && response.data.message) || response.data || 'Early Init cannot be enabled. Please ensure Cloud API and addon are active.';
                         alert(msg);
                     }
                 },
@@ -460,11 +460,17 @@
                     data: data
                 },
                 success: function (response) {
-                    $btn.html('<i class="fa-solid fa-check me-2"></i>');
-                    $btn.prop('disabled', true);
-                    setTimeout(function () {
-                        $btn.closest('.card').fadeOut();
-                    }, 1000);
+                    if (response.success) {
+                        $btn.html('<i class="fa-solid fa-check me-2"></i>');
+                        $btn.prop('disabled', true);
+                        setTimeout(function () {
+                            $btn.closest('.card').fadeOut();
+                        }, 1000);
+                    } else {
+                        $btn.prop('disabled', false).html(initialText);
+                        var errMsg = (response.data && response.data.message) || 'Error';
+                        alert(bbcsCommonL10n.error_prefix + errMsg);
+                    }
                 },
                 error: function (xhr, status, error) {
                     $btn.prop('disabled', false).html(initialText);

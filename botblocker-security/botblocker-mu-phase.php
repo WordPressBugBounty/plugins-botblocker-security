@@ -1,122 +1,181 @@
 <?php
-if (! defined('ABSPATH')) exit; // Exit if accessed directly
+declare(strict_types=1);
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
 
 require_once __DIR__ . '/includes/mu/mu-botblocker-ip.php';
 require_once __DIR__ . '/includes/mu/mu-botblocker-header.php';
 require_once __DIR__ . '/includes/mu/mu-botblocker-db.php';
 require_once __DIR__ . '/includes/mu/mu-botblocker-utils.php';
 
-class BotBlockerMuPhase
-{
+class BotBlockerMuPhase {
+
 	use BotBlockerMuIP;
 	use BotBlockerMuHeader;
 	use BotBlockerMuDB;
 	use BotBlockerMuUtils;
 
-	private string $ip = '';
+	private string $ip         = '';
 	private string $ip_version = '';
-	private array  $dirs = [];
-	private string $protocol = '';
-	private array  $settings = [];
+	private array $dirs        = array();
+	private string $protocol   = '';
+	private array $settings    = array();
 
 	public function __construct() {}
 
-	public function run(): void
-	{
-		$this->send_no_cache_headers();
+	public function run(): void {
 		$this->load_directories();
 		$this->load_settings();
-		if ($this->check_disabled_state()) return;
-		if ($this->check_secret_parameter()) return;
+		if ( $this->check_disabled_state() ) {
+			return;
+		}
+		if ( $this->check_secret_parameter() ) {
+			return;
+		}
+		if ( $this->is_wordpress_maintenance_request() ) {
+			return;
+		}
 		$this->read_ip();
 		$this->read_protocol();
-		$res = $this->is_ip_blocked($this->read_ip_rules(), $this->ip);
-		if ($res) {
+		$res = $this->is_ip_blocked( $this->read_ip_rules(), $this->ip );
+		if ( $res ) {
 			$this->increment_blocked_hit();
 			$this->show_denied_page();
 		}
-		// Prevent caching for unverified visitors (no BotBlocker cookie).
-		// PHP-based cache plugins check DONOTCACHEPAGE at shutdown.
-		$this->prevent_cache_for_unverified();
 	}
 
-	/**
-	 * If visitor has no BotBlocker cookie, tell cache plugins not to cache.
-	 * This prevents caching of the verification page or serving cached
-	 * content to visitors who haven't passed the check yet.
-	 */
-	private function prevent_cache_for_unverified(): void
-	{
-		$cookie_name = $this->settings['cookie'] ?? 'BotBlocker';
-		if (empty($cookie_name)) {
-			$cookie_name = 'BotBlocker';
+	private function define_no_cache_constants(): void {
+		// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
+		if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+			define( 'DONOTCACHEPAGE', true );
 		}
-		if (!isset($_COOKIE[$cookie_name]) || empty($_COOKIE[$cookie_name])) {
-			// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
-			if (!defined('DONOTCACHEPAGE'))   define('DONOTCACHEPAGE', true);
-			if (!defined('DONOTCACHEOBJECT')) define('DONOTCACHEOBJECT', true);
-			if (!defined('DONOTCACHEDB'))     define('DONOTCACHEDB', true);
-			// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
-
-			$this->register_wpfc_no_cache_filter();
+		if ( ! defined( 'DONOTCACHEOBJECT' ) ) {
+			define( 'DONOTCACHEOBJECT', true );
 		}
+		if ( ! defined( 'DONOTCACHEDB' ) ) {
+			define( 'DONOTCACHEDB', true );
+		}
+		// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
+
+		$this->register_wpfc_no_cache_filter();
+		$this->register_wp_rocket_no_cache_filter();
 	}
 
-	/**
-	 * Make WP Fastest Cache respect DONOTCACHEPAGE.
-	 */
-	private function register_wpfc_no_cache_filter(): void
-	{
-		if (defined('BBCS_WPFC_COMPAT')) return;
-		define('BBCS_WPFC_COMPAT', true);
+	private function register_wpfc_no_cache_filter(): void {
+		if ( defined( 'BBCS_WPFC_COMPAT' ) ) {
+			return;
+		}
+		define( 'BBCS_WPFC_COMPAT', true );
 
-		add_filter('wpfc_buffer_callback_filter', static function ($buffer) {
-			if (defined('DONOTCACHEPAGE') && DONOTCACHEPAGE) {
-				return '';
-			}
-			return $buffer;
-		}, 1);
+		add_filter(
+			'wpfc_buffer_callback_filter',
+			static function ( $buffer, $type = '' ) {
+				// Returning '' is only safe for the "html"/"cache" page paths;
+				// for asset types (css, js, ...) WPFC writes it to disk as-is.
+				if ( 'html' !== $type && 'cache' !== $type ) {
+					return $buffer;
+				}
+				if ( defined( 'DONOTCACHEPAGE' ) && DONOTCACHEPAGE ) {
+					return '';
+				}
+				return $buffer;
+			},
+			1,
+			2
+		);
 	}
 
-	private function show_denied_page(): void
-	{
+	private function register_wp_rocket_no_cache_filter(): void {
+		if ( defined( 'BBCS_WPROCKET_COMPAT' ) ) {
+			return;
+		}
+		define( 'BBCS_WPROCKET_COMPAT', true );
+
+		add_filter( 'do_rocket_generate_caching_files', '__return_false', PHP_INT_MAX );
+	}
+
+	private function show_denied_page(): void {
+		$this->define_no_cache_constants();
+		$this->send_no_cache_headers();
 		$this->set_iframe_headers();
 		$this->set_denied_headers();
 		$this->set_denied_page();
 		die();
 	}
 
-	private function set_denied_page(): void
-	{
+	private function set_denied_page(): void {
 		$this->render_denied_page();
 	}
 
-	private function render_denied_page(): void
-{
-	$plugin_url = $this->get_plugin_url();
-	$info       = $this->ip;
+	private function render_denied_page(): void {
+		$plugin_url = $this->get_plugin_url();
+		$info       = $this->ip;
 
-	$allowed_html = [
-		'html'     => ['dir' => [], 'lang' => [], 'style' => []],
-		'head'     => [],
-		'meta'     => ['charset' => [], 'name' => [], 'content' => []],
-		'title'    => [],
-		'body'     => ['style' => []],
-		'div'      => ['style' => [], 'class' => []],
-		'p'        => ['style' => [], 'class' => []],
-		'h1'       => ['style' => [], 'class' => []],
-		'span'     => ['style' => [], 'class' => []],
-		'small'    => ['style' => [], 'class' => []],
-		'b'        => [],
-		'a'        => ['href' => [], 'title' => [], 'target' => [], 'rel' => [], 'style' => []],
-		'img'      => ['src' => [], 'alt' => [], 'style' => [], 'height' => [], 'width' => [], 'class' => []],
-		'noscript' => [],
-		'header'   => ['style' => [], 'class' => []],
-		'footer'   => ['style' => [], 'class' => []],
-		'style'    => [],
-	];
+		$allowed_html = array(
+			'html'     => array(
+				'dir'   => array(),
+				'lang'  => array(),
+				'style' => array(),
+			),
+			'head'     => array(),
+			'meta'     => array(
+				'charset' => array(),
+				'name'    => array(),
+				'content' => array(),
+			),
+			'title'    => array(),
+			'body'     => array( 'style' => array() ),
+			'div'      => array(
+				'style' => array(),
+				'class' => array(),
+			),
+			'p'        => array(
+				'style' => array(),
+				'class' => array(),
+			),
+			'h1'       => array(
+				'style' => array(),
+				'class' => array(),
+			),
+			'span'     => array(
+				'style' => array(),
+				'class' => array(),
+			),
+			'small'    => array(
+				'style' => array(),
+				'class' => array(),
+			),
+			'b'        => array(),
+			'a'        => array(
+				'href'   => array(),
+				'title'  => array(),
+				'target' => array(),
+				'rel'    => array(),
+				'style'  => array(),
+			),
+			'img'      => array(
+				'src'    => array(),
+				'alt'    => array(),
+				'style'  => array(),
+				'height' => array(),
+				'width'  => array(),
+				'class'  => array(),
+			),
+			'noscript' => array(),
+			'header'   => array(
+				'style' => array(),
+				'class' => array(),
+			),
+			'footer'   => array(
+				'style' => array(),
+				'class' => array(),
+			),
+			'style'    => array(),
+		);
 
-	$html_template = '
+		$html_template = '
 <html dir="ltr" lang="en">
 <head>
   <meta charset="utf-8" />
@@ -269,7 +328,7 @@ class BotBlockerMuPhase
 </head>
 <body>
   <header class="header">
-    <img src="' . esc_url($plugin_url . '/admin/img/logo-small-transparent.webp') . '" alt="BotBlocker WordPress Plugin" class="logo">
+    <img src="' . esc_url( $plugin_url . '/admin/img/logo-small-transparent.webp' ) . '" alt="BotBlocker WordPress Plugin" class="logo">
   </header>
 
   <div class="content">
@@ -278,7 +337,7 @@ class BotBlockerMuPhase
     </noscript>
 
     <div class="bbcs-icon">
-      <img src="' . esc_url($plugin_url . '/public/icons/security.svg') . '" alt="BotBlocker WordPress Plugin" class="logo">
+      <img src="' . esc_url( $plugin_url . '/public/icons/security.svg' ) . '" alt="BotBlocker WordPress Plugin" class="logo">
     </div>
     <br />
 
@@ -288,7 +347,7 @@ class BotBlockerMuPhase
     </div>
 
     <div class="user-data">
-      <span>Your IP: ' . esc_html($info) . '</span>
+      <span>Your IP: ' . esc_html( $info ) . '</span>
     </div>
   </div>
 
@@ -299,8 +358,7 @@ class BotBlockerMuPhase
 </body>
 </html>';
 
-	echo '<!DOCTYPE html>';
-	echo wp_kses($html_template, $allowed_html);
-}
-
+		echo '<!DOCTYPE html>';
+		echo wp_kses( $html_template, $allowed_html );
+	}
 }

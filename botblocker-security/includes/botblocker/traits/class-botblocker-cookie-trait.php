@@ -1,170 +1,173 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+declare(strict_types=1);
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
 
 trait BotBlockerCookieTrait {
-    
-    public function set_bot_blocker_cookie() : void
-    {
-        $this->set_cookie(
-            $this->settings->cookie, 
-            $this->uid, 
-            $this->time + 31536000, // 1 year
-            false, 
-            $this->settings->samesite
-        ); 
-    }
 
-    public function set_allow_cookie_uid() : void
-    {
-        $this->set_cookie(
-            $this->uid, 
-            md5($this->settings->salt . $this->settings->cloud_api_pass . $this->host . $this->useragent . $this->ip . $this->time) . '-' . $this->time,
-            $this->time + $this->settings->cookie_lifetime, 
-            false,
-            $this->settings->samesite,
-            false // httponly=false: JS needs read/write access to this data cookie
-        );    
-    }
+	public function set_bot_blocker_cookie(): void {
+		$this->set_cookie(
+			$this->settings->cookie,
+			$this->uid,
+			$this->time + 31536000, // 1 year
+			false,
+			$this->settings->samesite
+		);
+	}
 
-    public function increment_hit_cookie_counter() : void
-    {
-        $this->set_cookie(
-            $this->settings->cookie . '_hits', 
-            $this->cookie_hits_counter, 
-            $this->time + 86400, // 1 day
-            false, 
-            $this->settings->samesite
-        );
-    }
+	public function set_allow_cookie_uid(): void {
+		$this->set_cookie(
+			$this->uid,
+			$this->create_session_token() . '-' . $this->time,
+			$this->time + $this->settings->cookie_lifetime,
+			false,
+			$this->settings->samesite,
+			false // httponly=false: JS needs read/write access to this data cookie
+		);
+	}
 
-    public function reset_cookies_by_overflow() : void
-    {
-        $this->set_cookie(
-            $this->settings->cookie . '_hits', 
-            0, 
-            $this->time - 100, 
-            false, 
-            $this->settings->samesite
-        );
-        $this->set_cookie(
-            $this->uid, 
-            0, 
-            $this->time - 100, 
-            false, 
-            $this->settings->samesite
-        );
-    }
+	public function increment_hit_cookie_counter(): void {
+		$this->set_cookie(
+			$this->settings->cookie . '_hits',
+			$this->cookie_hits_counter,
+			$this->time + 86400, // 1 day
+			false,
+			$this->settings->samesite
+		);
+	}
 
-    public function set_secret_cookie() : void
-    {
-        $this->set_cookie(
-            $this->settings->secret_botblocker_get_param, 
-            1, 
-            $this->time + 2592000, // 1 month
-            true, 
-            $this->settings->samesite
-        );
-    }
+	public function reset_cookies_by_overflow(): void {
+		$this->set_cookie(
+			$this->settings->cookie . '_hits',
+			0,
+			$this->time - 100,
+			false,
+			$this->settings->samesite
+		);
+		$this->set_cookie(
+			$this->uid,
+			0,
+			$this->time - 100,
+			false,
+			$this->settings->samesite
+		);
+	}
 
-    public function delete_cookie(string $name) : void
-    {
-        if ( empty( $name ) ) {
-            return;
-        }
-        
-        $this->set_cookie(
-            $name,      
-            '',        
-            $this->time - 100,  
-            false,
-            $this->settings->samesite
-        );
-    }
+	public function set_secret_cookie(): void {
+		$this->set_cookie(
+			$this->settings->secret_botblocker_get_param,
+			1,
+			$this->time + 2592000, // 1 month
+			true,
+			$this->settings->samesite
+		);
+	}
 
-    /**
-     * Return a safe SameSite value:
-     *  - invalid values fall back to 'Lax' (not 'None');
-     *  - 'None' is downgraded to 'Lax' on plain HTTP because
-     *    browsers silently reject SameSite=None without Secure.
-     */
-    public static function effective_samesite( string $samesite ): string
-    {
-        if ( ! in_array( $samesite, [ 'Lax', 'Strict', 'None' ], true ) ) {
-            return 'Lax';
-        }
-        if ( $samesite === 'None' && ! self::is_secure_connection() ) {
-            return 'Lax';
-        }
-        return $samesite;
-    }
+	public function delete_cookie( string $name ): void {
+		if ( empty( $name ) ) {
+			return;
+		}
 
-    protected function set_cookie(string $name, $value, int $expires, bool $dot, string $samesite, bool $httponly = true): void
-    {
-        if ( empty( $name ) ) {
-            return;
-        }
-        
-        $samesite = self::effective_samesite( $samesite );
+		$this->set_cookie(
+			$name,
+			'',
+			$this->time - 100,
+			false,
+			$this->settings->samesite
+		);
+	}
 
-        if ( headers_sent() ) {
-            return;
-        }
+	/**
+	 * Return a safe SameSite value:
+	 *  - invalid values fall back to 'Lax' (not 'None');
+	 *  - 'None' is downgraded to 'Lax' on plain HTTP because
+	 *    browsers silently reject SameSite=None without Secure.
+	 */
+	public static function effective_samesite( string $samesite ): string {
+		if ( ! in_array( $samesite, array( 'Lax', 'Strict', 'None' ), true ) ) {
+			return 'Lax';
+		}
+		if ( $samesite === 'None' && ! self::is_secure_connection() ) {
+			return 'Lax';
+		}
+		return $samesite;
+	}
 
-        $domain = '';
-        if ( $dot ) {
+	protected function set_cookie( string $name, $value, int $expires, bool $dot, string $samesite, bool $httponly = true ): void {
+		if ( empty( $name ) ) {
+			return;
+		}
 
-            $base_host = defined('COOKIE_DOMAIN') && COOKIE_DOMAIN ? COOKIE_DOMAIN : '';
+		$samesite = self::effective_samesite( $samesite );
 
-            if ( '' === $base_host ) {
-                $parsed = wp_parse_url( home_url( '/' ), PHP_URL_HOST );
-                if ( is_string( $parsed ) ) {
-                    $base_host = $parsed;
-                }
-            }
-            if ( is_string( $base_host ) && $base_host !== '' ) {
+		if ( headers_sent() ) {
+			return;
+		}
 
-                $host = strtolower( preg_replace( '/:\d+$/', '', ltrim( $base_host, '.' ) ) );
+		$domain = '';
+		if ( $dot ) {
 
-                if ( function_exists('idn_to_ascii') ) {
-                    $idn = idn_to_ascii( $host, 0, defined('INTL_IDNA_VARIANT_UTS46') ? INTL_IDNA_VARIANT_UTS46 : 0 );
-                    if ( is_string( $idn ) && $idn !== '' ) {
-                        $host = $idn;
-                    }
-                }
+			$base_host = defined( 'COOKIE_DOMAIN' ) && COOKIE_DOMAIN ? COOKIE_DOMAIN : '';
 
-                if ( filter_var( $host, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME ) ) {
-                    $domain = '.' . $host;
-                }
-            }
-        }
+			if ( '' === $base_host ) {
+				$parsed = wp_parse_url( home_url( '/' ), PHP_URL_HOST );
+				if ( is_string( $parsed ) ) {
+					$base_host = $parsed;
+				}
+			}
+			if ( $base_host !== '' ) {
 
-        $secure = ( $samesite === 'None' ) ? true : self::is_secure_connection();
+				$host = strtolower( preg_replace( '/:\d+$/', '', ltrim( $base_host, '.' ) ) );
 
-        setcookie( $name, (string) $value, [
-            'expires'  => $expires,
-            'path'     => '/',
-            'domain'   => $domain,
-            'secure'   => $secure,
-            'httponly' => $httponly,
-            'samesite' => $samesite,
-        ] );
-    }
+				if ( function_exists( 'idn_to_ascii' ) ) {
+					$idn = idn_to_ascii( $host, 0, defined( 'INTL_IDNA_VARIANT_UTS46' ) ? INTL_IDNA_VARIANT_UTS46 : 0 );
+					if ( is_string( $idn ) && $idn !== '' ) {
+						$host = $idn;
+					}
+				}
 
-    private static function is_secure_connection(): bool
-    {
-        if (function_exists('wp_is_using_https') && wp_is_using_https()) {
-            return true;
-        }
-        if (is_ssl()) {
-            return true;
-        }
-        if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower(trim($_SERVER['HTTP_X_FORWARDED_PROTO'])) === 'https') {
-            return true;
-        }
-        if (isset($_SERVER['HTTP_X_FORWARDED_SSL']) && strtolower(trim($_SERVER['HTTP_X_FORWARDED_SSL'])) === 'on') {
-            return true;
-        }
-        return false;
-    }
+				if ( filter_var( $host, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME ) ) {
+					$domain = '.' . $host;
+				}
+			}
+		}
 
+		$secure = ( $samesite === 'None' ) ? true : self::is_secure_connection();
+
+		setcookie(
+			$name,
+			(string) $value,
+			array(
+				'expires'  => $expires,
+				'path'     => '/',
+				'domain'   => $domain,
+				'secure'   => $secure,
+				'httponly' => $httponly,
+				'samesite' => $samesite,
+			)
+		);
+		if ( ! headers_sent() && $this->settings->bbcs_ddos_resilience == 1 ) {
+			$str_value = (string) $value;
+			if ( strpos( $str_value, '.' ) === false ) {
+				header( 'X-BBCS-' . $name . ': ' . $str_value, false );
+			}
+		}
+	}
+
+	private static function is_secure_connection(): bool {
+		if ( bbcs_is_using_https() ) {
+			return true;
+		}
+		if ( is_ssl() ) {
+			return true;
+		}
+		if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && strtolower( trim( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) ) === 'https' ) {    // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- HTTP_X_FORWARDED_PROTO is not user input and does not require nonce verification. It is used for detecting secure connections when behind certain types of proxies.
+			return true;
+		}
+		if ( isset( $_SERVER['HTTP_X_FORWARDED_SSL'] ) && strtolower( trim( $_SERVER['HTTP_X_FORWARDED_SSL'] ) ) === 'on' ) {   // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- HTTP_X_FORWARDED_SSL is not user input and does not require nonce verification. It is used for detecting secure connections when behind certain types of proxies.
+			return true;
+		}
+		return false;
+	}
 }

@@ -16,8 +16,17 @@
 
     $(document).on('change', 'select[name="bbcs_captcha_mode"]', toggleImgPack);
 
+    function togglePaymentSubOptions() {
+        var enabled = $('input[name="payment_bypass_enable"]').is(':checked');
+        $('input[name="payment_strict_method"]').prop('disabled', !enabled);
+        $('input[name="payment_keep_ip_rules"]').prop('disabled', !enabled);
+    }
+
+    $(document).on('change', 'input[name="payment_bypass_enable"]', togglePaymentSubOptions);
+
     $(document).ready(function () {
         toggleImgPack();
+        togglePaymentSubOptions();
     });
 
 })(jQuery);

@@ -1,4 +1,7 @@
 <?php
+declare(strict_types=1);
+
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -66,7 +69,11 @@ trait BBCS_RenderImageButtonTrait {
 		$green = wp_rand( 10, 50 );
 		$blue  = wp_rand( 10, 50 );
 
-		$image_for_check = imagecreatefromjpeg( $img_dir . $color_ids[ $color ] . '.jpg' );
+		$image_file = $img_dir . $color_ids[ $color ] . '.jpg';
+		if ( ! file_exists( $image_file ) ) {
+			return $this->getSimpleButtonData();
+		}
+		$image_for_check = imagecreatefromjpeg( $image_file );
 		imagefilter( $image_for_check, IMG_FILTER_COLORIZE, $red, $green, $blue );
 		imagefilter( $image_for_check, IMG_FILTER_BRIGHTNESS, wp_rand( -50, 50 ) );
 		imagefilter( $image_for_check, IMG_FILTER_CONTRAST, wp_rand( -50, 50 ) );

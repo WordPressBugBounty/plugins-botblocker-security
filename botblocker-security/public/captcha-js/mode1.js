@@ -3,7 +3,15 @@
 function renderMode1Captcha(params) {
     const { buttons, instruction, colorImageData, colorClass } = params;
 
+    if (typeof bbcsJsData !== 'undefined' && bbcsJsData.debugEnabled) {
+        console.log('[BBCS DEBUG] renderMode1Captcha: buttons=' + (buttons ? buttons.length : 0) + ' colorImageData_len=' + (colorImageData ? colorImageData.length : 0) + ' colorClass=' + colorClass);
+    }
+
     const content = document.getElementById("content");
+    if (!content) {
+        console.error('[BBCS DEBUG] renderMode1Captcha: #content element not found');
+        return;
+    }
     content.innerHTML = '';
 
     const swatch = document.createElement('div');
@@ -18,13 +26,13 @@ function renderMode1Captcha(params) {
     const wrap = document.createElement('div');
     wrap.style.maxWidth = '200px';
     buttons.forEach(function(btn) {
-        const span = document.createElement('span');
-        span.className = colorClass;
-        span.style.cssText = 'cursor:pointer;display:inline-block;margin:4px;background-image:url(data:image/png;base64,' + btn.image + ');background-size:cover;width:40px;height:40px;';
-        span.addEventListener('click', function() {
+        const el = document.createElement('span');
+        el.className = colorClass;
+        el.style.cssText = 'background-image:url(data:image/png;base64,' + btn.image + ');';
+        el.addEventListener('click', function() {
             window[bbcsJsData.checkFunctionName]('post', window.data, btn.hash);
         });
-        wrap.appendChild(span);
+        wrap.appendChild(el);
     });
     content.appendChild(wrap);
 }

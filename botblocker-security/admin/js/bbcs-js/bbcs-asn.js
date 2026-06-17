@@ -233,6 +233,15 @@
             }
         });
 
+        if ($('#bbcs_asn_list').hasClass('active')) {
+            initializeAsnTable();
+            if (asnTable) {
+                setTimeout(function() {
+                    asnTable.columns.adjust();
+                }, 150);
+            }
+        }
+
         $("#editAsnForm").on("submit", function (e) {
             e.preventDefault();
             $.ajax({

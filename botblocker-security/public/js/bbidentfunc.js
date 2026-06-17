@@ -44,7 +44,7 @@ function bbcs_computeFingerprint() {
         gradient.addColorStop(1, '#00f');
         ctx.fillStyle = gradient;
         ctx.font = '16px Arial';
-        ctx.fillText("BotBlocker 👾 2025", 2, 15);
+        ctx.fillText("BotBlocker 👾 2026", 2, 15);
         ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
         ctx.font = '18px Times New Roman';
         ctx.fillText("BotblockeR", 4, 45);

@@ -2,12 +2,19 @@
 
 function renderCaptcha() {
   if (typeof bbcsCaptchaData === "undefined") {
-    console.error("BBCS CAPTCHA initial data not loaded");
+    console.error('[BBCS DEBUG] CAPTCHA initial data not loaded');
+    if (typeof bbcsJsData !== 'undefined' && bbcsJsData.debugEnabled) {
+      console.log('[BBCS DEBUG] renderCaptcha: bbcsCaptchaData is undefined');
+    }
     return;
   }
 
   const mode = parseInt(bbcsCaptchaData.mode, 10);
   const params = bbcsCaptchaData.params;
+
+  if (typeof bbcsJsData !== 'undefined' && bbcsJsData.debugEnabled) {
+    console.log('[BBCS DEBUG] renderCaptcha: mode=' + mode + ' params keys=' + (params ? Object.keys(params).join(',') : 'null') + ' token=' + (bbcsCaptchaData.challengeToken ? bbcsCaptchaData.challengeToken.substring(0,10)+'...' : 'empty'));
+  }
 
   switch (mode) {
     case 0:
@@ -56,7 +63,7 @@ function renderCaptcha() {
       }
       break;
     default:
-      console.error("Unknown CAPTCHA mode:", mode);
+      console.error('[BBCS DEBUG] Unknown CAPTCHA mode:', mode);
       break;
   }
 }
