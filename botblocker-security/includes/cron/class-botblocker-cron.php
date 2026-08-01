@@ -401,6 +401,24 @@ class BotBlockerCron
 		}
 	}
 
+	private static function loadTaskDependencies(): void
+	{
+		require_once BOTBLOCKER_DIR . 'helpers-cron.php';
+	}
+
+	private static function runTask(string $hook): void
+	{
+		self::loadTaskDependencies();
+
+		try {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+			do_action($hook);
+		} catch (\Throwable $e) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log(sprintf('[BBCS] [Cron] Task %s failed: %s in %s:%d', $hook, $e->getMessage(), $e->getFile(), $e->getLine()));
+		}
+	}
+
 	public static function fallbackRunner(): void
 	{
 		if (wp_doing_cron()) {
@@ -452,8 +470,9 @@ class BotBlockerCron
 						// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 						error_log("[BBCS DEBUG] [Cron] Running overdue task: {$hook}");
 					}
-					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
-					do_action($hook);
+					// runTask() never throws, so a failing handler still gets
+					// rescheduled below instead of staying permanently overdue.
+					self::runTask($hook);
 
 					wp_unschedule_event($event->timestamp, $hook);
 					if (! empty($config['schedule'])) {
@@ -469,7 +488,7 @@ class BotBlockerCron
 					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 					error_log('[BBCS DEBUG] [Cron] Running overdue one-time task');
 				}
-				do_action('bbcs_one_time_task');
+				self::runTask('bbcs_one_time_task');
 				wp_unschedule_event($one_time->timestamp, 'bbcs_one_time_task');
 			}
 		} finally {
@@ -489,5 +508,4 @@ add_action('wp_ajax_bbcs_get_cron_tasks', array('BotBlockerCron', 'getTasksList'
 add_action('init', array('BotBlockerCron', 'fallbackRunner'));
 add_action('bbcs_hourly_task', array('BotBlockerSummary', 'cronHandler'));
 add_action('bbcs_summary_backfill', array('BotBlockerSummary', 'backfillHandler'));
-add_action('bbcs_tls_fingerprints_sync_event', array('BotBlockerTlsFingerprintsSync', 'doSync'));
 add_action('bbcs_cleanup_hot_bans', array('BotBlockerCron', 'cleanupHotBansHandler'));

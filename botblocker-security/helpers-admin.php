@@ -3,6 +3,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// === Shared with scheduled tasks (also loaded by the cron fallback runner) ===
+require_once BOTBLOCKER_DIR . 'helpers-cron.php';
+
 // === Admin-only data / UI ===
 require_once BOTBLOCKER_DIR . 'includes/data/botblocker-data-lang-options.php';
 require_once BOTBLOCKER_DIR . 'includes/data/botblocker-data-system-info.php';
@@ -18,7 +21,6 @@ require_once BOTBLOCKER_DIR . 'includes/install/class-botblocker-deactivator.php
 require_once BOTBLOCKER_DIR . 'includes/ajax/inc-botblocker-ajax-wrappers.php';
 
 // === Admin hooks ===
-require_once BOTBLOCKER_DIR . 'includes/hook/class-botblocker-cloud-api-hooks.php';
 require_once BOTBLOCKER_DIR . 'includes/hook/class-botblocker-settings-hooks.php';
 require_once BOTBLOCKER_DIR . 'includes/hook/class-botblocker-addon-hooks.php';
 require_once BOTBLOCKER_DIR . 'includes/hook/class-botblocker-tools-hooks.php';
@@ -31,13 +33,9 @@ require_once BOTBLOCKER_DIR . 'includes/data/botblocker-marketing-blocks.php';
 require_once BOTBLOCKER_DIR . 'includes/mail/class-botblocker-mailer.php';
 require_once BOTBLOCKER_DIR . 'includes/utilites/util-botblocker-user.php';
 require_once BOTBLOCKER_DIR . 'includes/data/botblocker-data-news.php';
-require_once BOTBLOCKER_DIR . 'includes/data/class-botblocker-summary.php';
 require_once BOTBLOCKER_DIR . 'includes/utilites/util-botblocker-support.php';
-require_once BOTBLOCKER_DIR . 'includes/class-botblocker-telegram.php';
 
-// === Sync (admin/cron) ===
-require_once BOTBLOCKER_DIR . 'includes/cache/class-botblocker-llm-sync.php';
-require_once BOTBLOCKER_DIR . 'includes/cache/class-botblocker-tls-fingerprints-sync.php';
+// === Sync (admin) ===
 require_once BOTBLOCKER_DIR . 'includes/utilites/util-botblocker-early-phase-dedup.php';
 
 // === AJAX handler classes ===

@@ -50,6 +50,13 @@ trait BotBlockerTlsTrait {
 			return false;
 		}
 
+		if ( $category === 'malicious' ) {
+			$this->suspect_status   = 3;
+			$this->result_of_action = 'TLS fingerprint: malicious tool (' . ( $entry['ua_family'] ?? 'unknown' ) . ')';
+			$this->redirect_to_dark( 'Malicious TLS fingerprint: ' . $fingerprint );
+			return true;
+		}
+
 		if ( $category === 'automation' ) {
 			$this->suspect_status   = 2;
 			$this->result_of_action = 'TLS fingerprint: automation tool';

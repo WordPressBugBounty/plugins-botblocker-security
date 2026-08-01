@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * This class is responsible for all the operations against bots.
  * It handles detections, logging, and blocking of suspicious bot activities.
  *
- * @version    1.7
+ * @version    1.7.1
  * @author     BotBlocker Team
  * @package    Botblocker
  * @subpackage Botblocker/includes
