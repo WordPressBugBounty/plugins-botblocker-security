@@ -94,60 +94,66 @@ class BotBlockerInstallIp {
 	}
 
 	public static function getServerIPv4() {
-		$url      = BOTBLOCKER_API_GS_URL . '/ip?v=4';
-		$response = wp_remote_get(
-			$url,
-			array(
-				'timeout'     => 10,
-				'redirection' => 0,
-				'httpversion' => '1.1',
-				'user-agent'  => BotBlockerMultisite::getCurrentUserAgent(), //BBCS-MULTISITE
-			//'sslverify'  => false
-			)
+		$urls = array(
+			BOTBLOCKER_API_URL . '/ip?v=4',
+			BOTBLOCKER_API_GS_URL . '/ip?v=4',
 		);
+		foreach ( $urls as $url ) {
+			$response = wp_remote_get(
+				$url,
+				array(
+					'timeout'     => 10,
+					'redirection' => 0,
+					'httpversion' => '1.1',
+					'user-agent'  => BotBlockerMultisite::getCurrentUserAgent(),
+				)
+			);
 
-		if ( is_wp_error( $response ) || wp_remote_retrieve_response_code( $response ) !== 200 ) {
-			return self::getServerIPFallback( 'ipv4' );
+			if ( is_wp_error( $response ) || wp_remote_retrieve_response_code( $response ) !== 200 ) {
+				continue;
+			}
+
+			$body       = wp_remote_retrieve_body( $response );
+			$serverIPv4 = trim( wp_strip_all_tags( $body ) );
+
+			if ( filter_var( $serverIPv4, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
+				return $serverIPv4;
+			}
 		}
-
-		$body       = wp_remote_retrieve_body( $response );
-		$serverIPv4 = trim( wp_strip_all_tags( $body ) );
-
-		if ( ! filter_var( $serverIPv4, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
-			return self::getServerIPFallback( 'ipv4' );
-		}
-
-		return $serverIPv4;
+		return self::getServerIPFallback( 'ipv4' );
 	}
 
 	public static function getServerIPv6() {
-		$url      = BOTBLOCKER_API_GS_URL . '/ip?v=6';
-		$response = wp_remote_get(
-			$url,
-			array(
-				'timeout'     => 10,
-				'redirection' => 0,
-				'httpversion' => '1.1',
-				'user-agent'  => BotBlockerMultisite::getCurrentUserAgent(), //BBCS-MULTISITE
-			//'sslverify'  => false
-				'headers'     => array(
-					'Accept' => 'text/plain',
-				),
-			)
+		$urls = array(
+			BOTBLOCKER_API_URL . '/ip?v=6',
+			BOTBLOCKER_API_GS_URL . '/ip?v=6',
 		);
+		foreach ( $urls as $url ) {
+			$response = wp_remote_get(
+				$url,
+				array(
+					'timeout'     => 10,
+					'redirection' => 0,
+					'httpversion' => '1.1',
+					'user-agent'  => BotBlockerMultisite::getCurrentUserAgent(),
+					'headers'     => array(
+						'Accept' => 'text/plain',
+					),
+				)
+			);
 
-		if ( is_wp_error( $response ) || wp_remote_retrieve_response_code( $response ) !== 200 ) {
-			return self::getServerIPFallback( 'ipv6' );
+			if ( is_wp_error( $response ) || wp_remote_retrieve_response_code( $response ) !== 200 ) {
+				continue;
+			}
+
+			$body       = wp_remote_retrieve_body( $response );
+			$serverIPv6 = trim( wp_strip_all_tags( $body ) );
+
+			if ( filter_var( $serverIPv6, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
+				return $serverIPv6;
+			}
 		}
-
-		$body       = wp_remote_retrieve_body( $response );
-		$serverIPv6 = trim( wp_strip_all_tags( $body ) );
-
-		if ( ! filter_var( $serverIPv6, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
-			return self::getServerIPFallback( 'ipv6' );
-		}
-
-		return $serverIPv6;
+		return self::getServerIPFallback( 'ipv6' );
 	}
 
 	public static function getServerIPFallback( string $version ) {
@@ -238,7 +244,7 @@ class BotBlockerInstallIp {
 				self::addIPv6Rule( $ip, 'IPv6 BotBlocker Server' );
 			} elseif ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG == true ) {
 					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-					error_log('[BBCS DEBUG] [Install] INVALID IP: ' . $ip);
+					error_log( '[BBCS DEBUG] [Install] INVALID IP: ' . $ip );
 
 			}
 		}

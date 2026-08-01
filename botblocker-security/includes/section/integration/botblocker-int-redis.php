@@ -47,7 +47,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<div class="bbcs_text_input mb-2">
 				<div class="bbcs_label_input_box">
-					<span class="bbcs-label-input"><?php esc_html_e( 'Redis Server Host:', 'botblocker-security' ); ?></span>
+					<span class="bbcs-label-input"><?php esc_html_e( 'Server Host:', 'botblocker-security' ); ?></span>
 					<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top"
 						data-bs-original-title="<?php esc_attr_e( 'Specify the Redis server hostname or IP address. Default is localhost (127.0.0.1) for local Redis installations.', 'botblocker-security' ); ?>"></i>
 				</div>
@@ -59,7 +59,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<div class="bbcs_text_input mb-2">
 				<div class="bbcs_label_input_box">
-					<span class="bbcs-label-input"><?php esc_html_e( 'Redis Key Prefix:', 'botblocker-security' ); ?></span>
+					<span class="bbcs-label-input"><?php esc_html_e( 'Key Prefix:', 'botblocker-security' ); ?></span>
 					<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top"
 						data-bs-original-title="<?php esc_attr_e( 'Define a unique prefix for all Redis keys to organize data and prevent conflicts with other applications using the same Redis instance.', 'botblocker-security' ); ?>"></i>
 				</div>
@@ -71,7 +71,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<div class="bbcs_text_input mb-2">
 				<div class="bbcs_label_input_box">
-					<span class="bbcs-label-input"><?php esc_html_e( 'Redis Authentication Password:', 'botblocker-security' ); ?></span>
+					<span class="bbcs-label-input"><?php esc_html_e( 'Password:', 'botblocker-security' ); ?></span>
 					<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top"
 						data-bs-original-title="<?php esc_attr_e( 'Enter Redis server authentication password if required. Leave empty if Redis server does not require authentication.', 'botblocker-security' ); ?>"></i>
 				</div>
@@ -83,12 +83,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<div class="bbcs_text_input mb-2">
 				<div class="bbcs_label_input_box">
-					<span class="bbcs-label-input"><?php esc_html_e( 'Redis Server Port:', 'botblocker-security' ); ?></span>
+					<span class="bbcs-label-input"><?php esc_html_e( 'Server Port:', 'botblocker-security' ); ?></span>
 					<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top"
 						data-bs-original-title="<?php esc_attr_e( 'Enter the Redis server port number. Standard port is 6379 for most Redis installations.', 'botblocker-security' ); ?>"></i>
 				</div>
 				<div class="bbcs_text_input_inner">
 					<input type="number" class="bbcs_number_input_input" name="redis_port" value="<?php echo isset( $bbcs_settings['redis_port'] ) ? esc_html( $bbcs_settings['redis_port'] ) : 0; ?>">
+				</div>
+			</div>
+
+			<div class="bbcs_text_input mb-2">
+				<div class="bbcs_label_input_box">
+					<span class="bbcs-label-input"><?php esc_html_e( 'Database Index:', 'botblocker-security' ); ?></span>
+					<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top"
+						data-bs-original-title="<?php esc_attr_e( 'Select the Redis database index (0-15) to use. Default is 0. Different database indexes provide logical isolation between applications sharing the same Redis server.', 'botblocker-security' ); ?>"></i>
+				</div>
+				<div class="bbcs_text_input_inner">
+					<input type="number" min="0" max="15" class="bbcs_number_input_input" name="redis_database" value="<?php echo isset( $bbcs_settings['redis_database'] ) ? esc_html( $bbcs_settings['redis_database'] ) : 0; ?>">
 				</div>
 			</div>
 		</div>

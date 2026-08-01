@@ -38,6 +38,15 @@ class BotBlockerCaptchaRenderer {
 		$this->botblocker_check_function_name = $botblocker_check_function_name;
 	}
 
+	public static function t( string $text ): string {
+		$bbcs = BotBlocker::getInstance();
+		if ( (int) $bbcs->settings->secure_mode === BotBlocker::SECURE_MODE_FRONTEND && function_exists( '__' ) ) {
+			// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText -- $text is a dynamic translation key passed via the t() wrapper
+			return __( $text, 'botblocker-security' );
+		}
+		return $text;
+	}
+
 	public static function verifyChallengeToken( string $salt, string $token, string $submittedHash, string $submittedDate, string $submittedIp ) {
 		if ( strpos( $token, '.' ) !== false ) {
 			return self::verifyChallengeTokenHmac( $salt, $token, $submittedHash, $submittedDate, $submittedIp );
@@ -276,6 +285,11 @@ class BotBlockerCaptchaRenderer {
 	public function getCaptchaData(): array {
 		$mode = $this->BBCS->settings->bbcs_captcha_mode;
 
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( '[BBCS DEBUG] [Renderer] getCaptchaData: mode=' . $mode . ' secure_mode=' . $this->BBCS->settings->secure_mode . ' recaptcha_key2=' . ( empty( $this->BBCS->settings->recaptcha_key2 ) ? 'EMPTY' : 'SET' ) );
+		}
+
 		switch ( $mode ) {
 			case 0:
 				return $this->getSimpleButtonData();
@@ -298,5 +312,22 @@ class BotBlockerCaptchaRenderer {
 			default:
 				return $this->getSimpleButtonData();
 		}
+	}
+
+	public function render(): string {
+		$data = $this->getCaptchaData();
+		$mode = (int) ( $data['mode'] ?? 0 );
+		$fn   = $this->botblocker_check_function_name;
+		$dir  = $this->BBCS->dirs['public'];
+
+		require_once dirname( __DIR__ ) . '/includes/botblocker/class-botblocker-security-page-assets.php';
+
+		$js  = 'window.bbcsJsData = ' . BotBlockerSecurityPageAssets::json( array( 'checkFunctionName' => $fn ) ) . ";\n";
+		$js .= 'var bbcsCaptchaData = ' . BotBlockerSecurityPageAssets::json( $data ) . ";\n";
+		$js .= BotBlockerSecurityPageAssets::read( $dir, 'captcha-js/captcha.js' ) . "\n";
+		$js .= BotBlockerSecurityPageAssets::read( $dir, 'captcha-js/mode' . $mode . '.js' ) . "\n";
+		$js .= "renderCaptcha();\n";
+
+		return $js;
 	}
 }

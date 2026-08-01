@@ -5,13 +5,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require 'botblocker-section-header.php';
 
-$bbcs_notice = get_transient( 'bbcs_notice_cloud_api_' . get_current_user_id() );
-if ( is_array( $bbcs_notice ) && isset( $bbcs_notice['message'], $bbcs_notice['type'] ) ) {
-	add_settings_error( 'botblocker_messages', 'botblocker_message', $bbcs_notice['message'], $bbcs_notice['type'] );
-	delete_transient( 'bbcs_notice_cloud_api_' . get_current_user_id() );
-}
-
-settings_errors( 'botblocker_messages' );
 ?><section role="main" class="content-body">
 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 	<div class="row">

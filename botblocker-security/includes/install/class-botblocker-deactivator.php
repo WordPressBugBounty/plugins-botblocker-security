@@ -20,16 +20,6 @@ class Botblocker_Deactivator {
 			BotBlockerInstall::uninstallMuPlugin();
 		}
 
-		$sec_headers_mu = trailingslashit( WPMU_PLUGIN_DIR ) . 'botblocker-security-headers.php';
-		if ( file_exists( $sec_headers_mu ) ) {
-			wp_delete_file( $sec_headers_mu );
-			clearstatcache( true );
-		}
-
-		if ( ! is_multisite() && method_exists( 'BotBlockerInstall', 'removeWpConfigEarlyInitCode' ) ) {
-			BotBlockerInstall::removeWpConfigEarlyInitCode();
-		}
-
 		BotBlockerCron::removeTasks();
 
 		flush_rewrite_rules( true );
@@ -55,14 +45,6 @@ class Botblocker_Deactivator {
 		require BOTBLOCKER_DIR . 'includes/database/inc-botblocker-tables.php';
 		if ( defined( 'BOTBLOCKER_INTEGRATE_MU_PLUGINS' ) && BOTBLOCKER_INTEGRATE_MU_PLUGINS ) {
 			BotBlockerInstall::uninstallMuPlugin();
-		}
-		$sec_headers_mu = trailingslashit( WPMU_PLUGIN_DIR ) . 'botblocker-security-headers.php';
-		if ( file_exists( $sec_headers_mu ) ) {
-			wp_delete_file( $sec_headers_mu );
-			clearstatcache( true );
-		}
-		if ( method_exists( 'BotBlockerInstall', 'removeWpConfigEarlyInitCode' ) ) {
-			BotBlockerInstall::removeWpConfigEarlyInitCode();
 		}
 	}
 }

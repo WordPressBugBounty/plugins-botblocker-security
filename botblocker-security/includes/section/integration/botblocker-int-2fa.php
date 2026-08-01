@@ -23,8 +23,8 @@ if ( empty( $bbcs_secret ) ) {
 
 $bbcs_backup_codes = get_user_meta( $bbcs_user_id, '_2fa_backup_codes_temp', true );
 if ( empty( $bbcs_backup_codes ) ) {
-	$bbcs_new_codes      = bbcs_generate_backup_codes();
-	$bbcs_saved          = add_user_meta( $bbcs_user_id, '_2fa_backup_codes_temp', $bbcs_new_codes, true );
+	$bbcs_new_codes = bbcs_generate_backup_codes();
+	$bbcs_saved     = add_user_meta( $bbcs_user_id, '_2fa_backup_codes_temp', $bbcs_new_codes, true );
 	if ( $bbcs_saved ) {
 		$bbcs_backup_codes = $bbcs_new_codes;
 	} else {
@@ -53,8 +53,8 @@ if ( ! $bbcs_2fa_verified ) {
 
 	$bbcs_backup_codes = get_user_meta( $bbcs_user_id, '_2fa_backup_codes_temp', true );
 	if ( empty( $bbcs_backup_codes ) ) {
-		$bbcs_new_codes      = bbcs_generate_backup_codes();
-		$bbcs_saved          = add_user_meta( $bbcs_user_id, '_2fa_backup_codes_temp', $bbcs_new_codes, true );
+		$bbcs_new_codes = bbcs_generate_backup_codes();
+		$bbcs_saved     = add_user_meta( $bbcs_user_id, '_2fa_backup_codes_temp', $bbcs_new_codes, true );
 		if ( $bbcs_saved ) {
 			$bbcs_backup_codes = $bbcs_new_codes;
 		} else {
@@ -65,7 +65,7 @@ if ( ! $bbcs_2fa_verified ) {
 	$bbcs_qr_url = $bbcs_google_auth->getQRCodeUrl( $bbcs_user->user_email, $bbcs_secret );
 }
 
-?><div class="tab-pane container fade" id="bbcs_2fa">
+?><div class="tab-pane container fade" id="bbcs-2fa">
 	<div class="row">
 
 		<div class="col-xxl-3 col-xl-6 col-lg-6 col-sm-12 col-md-12  bbcs-info-column">
@@ -94,7 +94,7 @@ if ( ! $bbcs_2fa_verified ) {
 
 		<!-- Show the QR code and the verification form -->
 		<div class="col-xxl-3 col-xl-6 col-lg-6 col-sm-12 col-md-12">
-			<h3 class="bbcs_settings_h3"><?php esc_html_e( 'Enable Two-Factor Authentication', 'botblocker-security' ); ?></h3>
+			<h3 class="bbcs_settings_h3"><?php esc_html_e( 'Two-Factor Authentication', 'botblocker-security' ); ?></h3>
 
 			<div class="bbcs_checkbox_input mt-3 mb-3">
 				<div class="bbcs_label_checkbox_box">
@@ -124,7 +124,7 @@ if ( ! $bbcs_2fa_verified ) {
 					<div class="d-flex justify-content-center w-100 mb-3">
 						<img src="<?php echo esc_attr( $bbcs_qr_url ); ?>"
 							alt="QR Code"
-							id="bbcs_2fa_qr-code"
+							id="bbcs-2fa-qr-code"
 							class="img-fluid border"
 							style="max-width:180px;">
 					</div>
@@ -139,7 +139,7 @@ if ( ! $bbcs_2fa_verified ) {
 						<div class="bbcs_text_input_inner">
 							<input type="text"
 								class="bbcs_text_input_input text-center"
-								id="bbcs_2fa_code_input"
+								id="bbcs-2fa-code-input"
 								name="bbcs_2fa_code"
 								maxlength="6"
 								pattern="[0-9]{6}"
@@ -156,7 +156,7 @@ if ( ! $bbcs_2fa_verified ) {
 					<div class="col-md-12">
 						<button type="button"
 							class="btn btn-success w-100"
-							id="bbcs_2fa_submit_btn"
+							id="bbcs-2fa-submit-btn"
 							name="bbcs_2fa_submit_btn"
 							value="Verify 2FA">
 							<i class="fas fa-check me-1"></i>

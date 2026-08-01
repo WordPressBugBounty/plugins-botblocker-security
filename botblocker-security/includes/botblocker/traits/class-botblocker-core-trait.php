@@ -40,6 +40,8 @@ trait BotBlockerCoreTrait {
 			'proxy.php'          => 'BotBlockerFileRenderer::renderProxy',
 			'paths.php'          => 'BotBlockerFileRenderer::renderPaths',
 			'rules.php'          => 'BotBlockerFileRenderer::renderRules',
+			'tls_fingerprints.php' => 'BotBlockerFileRenderer::renderTlsFingerprints',
+			'addons.php'         => 'BotBlockerFileRenderer::renderAddons',
 		);
 
 		$is_any_missing = false;
@@ -57,15 +59,16 @@ trait BotBlockerCoreTrait {
 	}
 
 	public function load_data(): void {
-		$this->bbcs_rule       = array();
-		$this->bbcs_se         = array();
-		$this->bbcs_asn        = array();
-		$this->self_ips        = array();
-		$this->admin_ips       = array();
-		$this->bbcs_llm        = array();
-		$this->bbcs_good_bots  = array();
-		$this->bbcs_proxy      = array();
-		$this->bbcs_path       = array();
+		$this->bbcs_rule      = array();
+		$this->bbcs_se        = array();
+		$this->bbcs_asn       = array();
+		$this->self_ips       = array();
+		$this->admin_ips      = array();
+		$this->bbcs_llm       = array();
+		$this->bbcs_good_bots = array();
+		$this->bbcs_proxy     = array();
+		$this->bbcs_path      = array();
+		$this->bbcs_tls_fingerprints = array();
 
 		$this->media_logo_botblocker = BOTBLOCKER_URL . 'admin/img/logo-small-transparent.webp';
 		$this->media_icon_stop       = BOTBLOCKER_URL . 'public/icons/security.svg';
@@ -142,6 +145,18 @@ trait BotBlockerCoreTrait {
 		if ( file_exists( BotBlockerMultisite::getDataDir() . 'paths.php' ) ) {
 			$path            = bbcs_safe_load_with_recovery( BotBlockerMultisite::getDataDir() . 'paths.php' );
 			$this->bbcs_path = $path['bbcs_path'] ?? $this->bbcs_path;
+		}
+	}
+
+	public function lazy_load_tls_fingerprints(): void {
+		static $loaded = false;
+		if ( $loaded ) {
+			return;
+		}
+		$loaded = true;
+		if ( file_exists( BotBlockerMultisite::getDataDir() . 'tls_fingerprints.php' ) ) {
+			$tls_data                   = bbcs_safe_load_with_recovery( BotBlockerMultisite::getDataDir() . 'tls_fingerprints.php' );
+			$this->bbcs_tls_fingerprints = $tls_data['bbcs_tls_fingerprints'] ?? $this->bbcs_tls_fingerprints;
 		}
 	}
 
@@ -289,9 +304,9 @@ trait BotBlockerCoreTrait {
 		// Only apply fallback when GD is unavailable AND the current mode actually requires GD (modes 1 and 2).
 		// Modes 0, 3-8 do not use GD and must not be overridden.
 		$gd_modes = array( 1, 2 );
-		if ( isset( $this->prefly['gd'] ) && $this->prefly['gd'] === 0
-			&& in_array( (int) $this->settings->bbcs_captcha_mode, $gd_modes, true )
-		) {
+		$gd_ok   = isset( $this->prefly['gd'] ) ? (int) $this->prefly['gd'] : -1;
+		$in_gd   = in_array( (int) $this->settings->bbcs_captcha_mode, $gd_modes, true );
+		if ( $gd_ok === 0 && $in_gd ) {
 			if ( empty( $this->settings->recaptcha_key2 ) || empty( $this->settings->recaptcha_secret2 ) ) {
 				$this->settings->bbcs_captcha_mode = '0';
 			} else {
@@ -320,6 +335,11 @@ trait BotBlockerCoreTrait {
 
 		if ( isset( $this->settings->salt_pz ) ) {
 			$this->settings->salt = $this->settings->salt_pz . $this->settings->salt;
+		}
+
+		if ( empty( $this->settings->salt ) ) {
+			$this->settings->salt = bin2hex( random_bytes( 16 ) );
+			BotBlockerInstall::createSaltFile( true );
 		}
 	}
 
@@ -365,9 +385,9 @@ trait BotBlockerCoreTrait {
 			'ip'      => $ip,
 		);
 
-		$cloud = BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_GS_URL );
+		$cloud = BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_URL );
 		if ( $cloud === false ) {
-			$cloud = BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_URL );
+			$cloud = BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_GS_URL );
 		}
 
 		if ( $cloud !== null && $cloud !== false ) {

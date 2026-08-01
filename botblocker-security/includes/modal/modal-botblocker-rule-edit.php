@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="editRuleModalLabel"><?php esc_html_e( 'Edit Rule', 'botblocker-security' ); ?></h5>
+				<h5 class="modal-title" id="editRuleModalLabel"><?php esc_html_e( 'Edit Generic Rule', 'botblocker-security' ); ?></h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
 									<span class="bbcs-label-input"><?php esc_html_e( 'Type', 'botblocker-security' ); ?></span>
-									<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e( 'Select rule type', 'botblocker-security' ); ?>"></i>
+									<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Select rule type', 'botblocker-security' ); ?></span></span>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<select class="bbcs_select_input_input" id="type" name="type" required>
@@ -42,7 +42,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
 									<span class="bbcs-label-input"><?php esc_html_e( 'Priority', 'botblocker-security' ); ?></span>
-									<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e( 'Rule priority (1-100)', 'botblocker-security' ); ?>"></i>
+									<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Rule priority (1-100)', 'botblocker-security' ); ?></span></span>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<input type="range" class="bbcs_text_input_input" id="priority" name="priority" min="1" max="100" required>
@@ -56,7 +56,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
 									<span class="bbcs-label-input"><?php esc_html_e( 'Data', 'botblocker-security' ); ?></span>
-									<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e( 'Rule data', 'botblocker-security' ); ?>"></i>
+									<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Value to match - format depends on selected type (e.g. user agent string, referer URL, language code, country code, URI path)', 'botblocker-security' ); ?></span></span>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<textarea class="bbcs_text_input_input" id="data" name="data" rows="3"></textarea>
@@ -67,7 +67,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
 									<span class="bbcs-label-input"><?php esc_html_e( 'Comment', 'botblocker-security' ); ?></span>
-									<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e( 'Comment for this rule', 'botblocker-security' ); ?>"></i>
+									<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Comment for this rule', 'botblocker-security' ); ?></span></span>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<textarea class="bbcs_text_input_input" id="comment" name="comment" rows="3"></textarea>
@@ -80,7 +80,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
 									<span class="bbcs-label-input"><?php esc_html_e( 'Rule', 'botblocker-security' ); ?></span>
-									<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e( 'Rule action', 'botblocker-security' ); ?>"></i>
+									<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Rule action', 'botblocker-security' ); ?></span></span>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<select class="bbcs_select_input_input" id="rule" name="rule" required>
@@ -97,7 +97,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
 									<span class="bbcs-label-input"><?php esc_html_e( 'Expires', 'botblocker-security' ); ?></span>
-									<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e( 'Rule expiration date and time', 'botblocker-security' ); ?>"></i>
+									<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Rule expiration date and time', 'botblocker-security' ); ?></span></span>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<input type="datetime-local" class="bbcs_text_input_input" id="expires" name="expires" required>
@@ -109,7 +109,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary btn-xs" data-bs-dismiss="modal"><?php esc_html_e( 'Close', 'botblocker-security' ); ?></button>
-				<button type="submit" form="editRuleForm" class="btn btn-primary btn-xs"><?php esc_html_e( 'Save changes', 'botblocker-security' ); ?></button>
+				<button type="submit" form="editRuleForm" class="btn btn-primary btn-xs"><?php esc_html_e( 'Save', 'botblocker-security' ); ?></button>
 			</div>
 		</div>
 	</div>

@@ -25,13 +25,6 @@ $bbcs_settings = bbcs_load_integrations();
 
 require 'botblocker-section-header.php';
 
-$bbcs_notice = get_transient( 'bbcs_notice_integrations_' . get_current_user_id() );
-if ( is_array( $bbcs_notice ) && isset( $bbcs_notice['message'], $bbcs_notice['type'] ) ) {
-	add_settings_error( 'botblocker_messages', 'botblocker_message', $bbcs_notice['message'], $bbcs_notice['type'] );
-	delete_transient( 'bbcs_notice_integrations_' . get_current_user_id() );
-}
-
-settings_errors( 'botblocker_messages' );
 ?> 
 <section role="main" class="content-body">    
 	<form method="post" id="bbcs-integrations-form" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
@@ -52,10 +45,10 @@ settings_errors( 'botblocker_messages' );
 					<div class="card-body">
 					<ul class="nav nav-tabs">
 						<li class="nav-item">
-							<a class="nav-link active" data-bs-toggle="tab" href="#bbcs_recaptchav2"><?php esc_html_e( 'reCAPTCHA v2', 'botblocker-security' ); ?></a>
+							<a class="nav-link active" data-bs-toggle="tab" href="#bbcs_recaptchav2"><?php esc_html_e( 'reCaptcha v2', 'botblocker-security' ); ?></a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" data-bs-toggle="tab" href="#bbcs_recaptchav3"><?php esc_html_e( 'reCAPTCHA v3', 'botblocker-security' ); ?></a>
+							<a class="nav-link" data-bs-toggle="tab" href="#bbcs_recaptchav3"><?php esc_html_e( 'reCaptcha v3', 'botblocker-security' ); ?></a>
 						</li>
 						<li class="nav-item">
 							<a class="nav-link" data-bs-toggle="tab" href="#bbcs_memcached"><?php esc_html_e( 'Memcached', 'botblocker-security' ); ?></a>
@@ -67,7 +60,7 @@ settings_errors( 'botblocker_messages' );
 							<a class="nav-link" data-bs-toggle="tab" href="#bbcs_api"><?php esc_html_e( 'BotBlocker Cloud', 'botblocker-security' ); ?></a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" data-bs-toggle="tab" href="#bbcs_2fa"><?php esc_html_e( 'BotBlocker 2FA', 'botblocker-security' ); ?></a>
+							<a class="nav-link" data-bs-toggle="tab" href="#bbcs-2fa"><?php esc_html_e( 'BotBlocker 2FA', 'botblocker-security' ); ?></a>
 						</li>
 					</ul>
 					<div class="tab-content mt-3">

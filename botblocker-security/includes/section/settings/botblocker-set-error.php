@@ -80,7 +80,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</div>
 			<div class="bbcs_text_input mb-2">
 				<div class="bbcs_label_input_box">        			
-					<span class="bbcs-label-input"><?php esc_html_e( 'Block Duration (seconds):', 'botblocker-security' ); ?></span>
+					<span class="bbcs-label-input"><?php esc_html_e( 'Block Time (seconds):', 'botblocker-security' ); ?></span>
 					<i class="fa-regular fa-circle-question" 
 					data-bs-toggle="tooltip" 
 					data-bs-html="true"  
@@ -96,7 +96,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</div>
 			<div class="bbcs_text_input mb-2">
 				<div class="bbcs_label_input_box">        			
-					<span class="bbcs-label-input"><?php esc_html_e( 'Repeat Block Duration (seconds):', 'botblocker-security' ); ?></span>
+					<span class="bbcs-label-input"><?php esc_html_e( 'Repeat Block Time (seconds):', 'botblocker-security' ); ?></span>
 					<i class="fa-regular fa-circle-question" 
 					data-bs-toggle="tooltip" 
 					data-bs-html="true"  

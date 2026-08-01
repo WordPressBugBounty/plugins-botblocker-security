@@ -5,8 +5,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class BotBlockerSummary
-{
+class BotBlockerSummary {
+
 	public static function isTableReady(): bool {
 		static $ready = array();
 		$blog_id      = get_current_blog_id();

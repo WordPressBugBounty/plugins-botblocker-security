@@ -7,6 +7,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 trait BotBlockerVisitorTrait {
 
+	public function collect_basic_request_data(): void {
+		$this->read_host();
+		$this->read_method();
+		$this->read_ip();
+		$this->read_scheme();
+		$this->read_user_agent();
+		$this->read_uri();
+	}
+
 	public function collect_visitor_data(): void {
 		$this->read_host();
 		$this->read_method();
@@ -19,6 +28,7 @@ trait BotBlockerVisitorTrait {
 		$this->read_language_data();
 		$this->read_protocol();
 		$this->read_http_accept();
+		$this->read_tls_fingerprints();
 		$this->generate_page_url();
 		$this->process_referer();
 		$this->process_page();
@@ -33,6 +43,51 @@ trait BotBlockerVisitorTrait {
 		$this->get_ip_info();
 		$this->check_restricted_country();
 		$this->check_blocked_country();
+	}
+
+	public function read_tls_fingerprints(): void {
+
+		if ( ! $this->is_tls_fingerprint_source_trusted() ) {
+			return;
+		}
+
+		$ja3_header = isset( $this->settings->tls_fingerprint_header_ja3 )
+			? (string) $this->settings->tls_fingerprint_header_ja3 : 'X-TLS-JA3';
+		$ja4_header = isset( $this->settings->tls_fingerprint_header_ja4 )
+			? (string) $this->settings->tls_fingerprint_header_ja4 : 'X-TLS-JA4';
+
+		$server_ja3_header = 'HTTP_' . strtoupper( str_replace( '-', '_', $ja3_header ) );
+		$server_ja4_header = 'HTTP_' . strtoupper( str_replace( '-', '_', $ja4_header ) );
+
+		if ( isset( $_SERVER[ $server_ja3_header ] ) ) {
+			$this->visitor_ja3 = trim( wp_strip_all_tags( wp_unslash( $_SERVER[ $server_ja3_header ] ) ) );
+		}
+		if ( isset( $_SERVER['HTTP_CF_JA3_FINGERPRINT'] ) && empty( $this->visitor_ja3 ) ) {
+			$this->visitor_ja3 = trim( wp_strip_all_tags( wp_unslash( $_SERVER['HTTP_CF_JA3_FINGERPRINT'] ) ) );
+		}
+		if ( isset( $_SERVER[ $server_ja4_header ] ) ) {
+			$this->visitor_ja4 = trim( wp_strip_all_tags( wp_unslash( $_SERVER[ $server_ja4_header ] ) ) );
+		}
+	}
+
+	private function is_tls_fingerprint_source_trusted(): bool {
+		if ( isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) || isset( $_SERVER['CF-IPCOUNTRY'] ) ) {
+			return true;
+		}
+		$trusted = isset( $this->settings->tls_fingerprint_trusted_proxy )
+			? trim( (string) $this->settings->tls_fingerprint_trusted_proxy ) : '';
+		if ( $trusted === '' ) {
+			return false;
+		}
+		$remote = isset( $_SERVER['REMOTE_ADDR'] )
+			? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+		if ( $remote === '' ) {
+			return false;
+		}
+		if ( BotBlockerIp::netMatch( $trusted, $remote ) == 1 ) {
+			return true;
+		}
+		return false;
 	}
 
 	public function check_admin_status(): void {
@@ -51,7 +106,7 @@ trait BotBlockerVisitorTrait {
 	 * before rules, then idempotent (no-op on second call from process_cookies).
 	 * Sets $this->verification_state, $this->cookie_kind, $this->uid, and
 	 * cookie parse properties (cookie_stored_hash, cookie_timestamp,
-	 * cookie_visitor_data) — everything is available after one call.
+	 * cookie_visitor_data) - everything is available after one call.
 	 */
 	protected function resolve_cookie_identity(): void {
 		if ( $this->verification_state !== null ) {
@@ -72,15 +127,15 @@ trait BotBlockerVisitorTrait {
 		// --- parse cookie data ---
 		$this->cookie_visitor_data = isset( $_COOKIE[ $this->uid ] )
 			? trim( wp_strip_all_tags( wp_unslash( $_COOKIE[ $this->uid ] ) ) ) : '';
-		$parts       = explode( '-', $this->cookie_visitor_data );
-		$stored_hash = isset( $parts[0] ) ? trim( $parts[0] ) : '';
-		$timestamp   = isset( $parts[1] ) ? (int) trim( $parts[1] ) : 0;
+		$parts                     = explode( '-', $this->cookie_visitor_data );
+		$stored_hash               = isset( $parts[0] ) ? trim( $parts[0] ) : '';
+		$timestamp                 = isset( $parts[1] ) ? (int) trim( $parts[1] ) : 0;
 
 		$this->cookie_stored_hash = $stored_hash;
 		$this->cookie_timestamp   = $timestamp;
 
 		// --- classify ---
-		$kind = $this->cookie_hash_kind( (string) $stored_hash, $timestamp );
+		$kind              = $this->cookie_hash_kind( (string) $stored_hash, $timestamp );
 		$this->cookie_kind = $kind;
 
 		if ( $kind === 'session' ) {
@@ -378,6 +433,9 @@ trait BotBlockerVisitorTrait {
 			require_once BOTBLOCKER_DIR . 'vendor/MobileDetect/3.74.3/MobileDetect.php';
 			$detect = new \BotBlocker\Vendor\Detection\MobileDetect();
 		}
+		if ( $detect === null ) {
+			return BOTBLOCKER_EMPTY;
+		}
 		$detect->setUserAgent( $userAgent );
 		if ( $detect->isTablet() ) {
 			return 'tablet';
@@ -617,7 +675,7 @@ trait BotBlockerVisitorTrait {
 		if ( ! $home_host ) {
 			return false;
 		}
-		return strpos( $ua, (string) $home_host ) !== false;
+		return BotBlockerCheck::string_contains_host_www( $ua, (string) $home_host );
 	}
 
 	public function is_wordpress_system_cron(): bool {
@@ -652,7 +710,7 @@ trait BotBlockerVisitorTrait {
 	}
 
 	public function perform_simple_bot_checks(): void {
-		if ( $this->settings->block_empty_ua && BotBlockerCheck::isEmptyUA( $this->useragent ) === false ) {
+		if ( $this->settings->block_empty_ua && BotBlockerCheck::isNotEmptyUA( $this->useragent ) === false ) {
 			$this->redirect_to_denied( 50, 'Empty UA' );
 		}
 		if ( $this->settings->block_ipv6_users && $this->ip_version == 6 ) {
@@ -675,7 +733,7 @@ trait BotBlockerVisitorTrait {
 			in_array( $this->isProxy, array( 'PROXY_v4', 'PROXY_v6' ), true ) &&
 			$this->is_proxy_det === 'HTTP_CF_CONNECTING_IP'
 		) {
-			$this->redirect_to_denied( 55, 'CloudFlare' );
+			$this->redirect_to_denied( 55, 'Cloudflare' );
 		}
 		if ( $this->settings->block_proxy_users && $this->isProxy === 'DETECTED' && $this->is_proxy_det === 'CLASSIC' ) {
 			$this->redirect_to_denied( 56, 'Classic proxy' );
@@ -692,6 +750,7 @@ trait BotBlockerVisitorTrait {
 		if ( substr_count( $this->host, ':' ) === 1 ) {
 			$this->host = explode( ':', $this->host, 2 )[0];
 		}
+		$this->host = BotBlockerCheck::strip_www( $this->host );
 	}
 
 	public function read_method(): void {
@@ -803,10 +862,6 @@ trait BotBlockerVisitorTrait {
 
 			$host = $host ? preg_replace( '/[^0-9a-z\-\.:]/i', '', $host ) : '';
 
-			if ( $this->referer !== '' && $host === '' ) {
-				$host = preg_replace( '/[^0-9a-z\-\.]/i', '', $this->referer );
-			}
-
 			$this->refhost = $host;
 
 			$scheme               = isset( $parts['scheme'] ) ? strtolower( $parts['scheme'] ) : '';
@@ -886,27 +941,35 @@ trait BotBlockerVisitorTrait {
 	}
 
 	public function check_bot_by_useragent( $useragent ) {
-		$botSignatures = BotBlockerData::getBotSignatures();
-		foreach ( $botSignatures as $signature ) {
-			$signature = preg_replace( '/\s+/', ' ', trim( urldecode( $signature ) ) );
-			if ( stripos( $useragent, $signature ) !== false && ! empty( $signature ) ) {
+		foreach ( BotBlockerData::getBotSignatures() as $signature ) {
+			if ( stripos( $useragent, $signature ) !== false ) {
 				return $signature;
 			}
 		}
 		return false;
 	}
 
+	private function session_debug_log( string $msg ): void {
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+			error_log( '[BBCS DEBUG] [Session] ' . $msg );
+		}
+	}
+
 	public function verify_session_token( string $raw_cookie_value ): bool {
 		$parts = explode( '.', $raw_cookie_value, 2 );
 		if ( count( $parts ) !== 2 || strlen( $parts[0] ) !== 32 || strlen( $parts[1] ) !== 64 ) {
+			$this->session_debug_log( 'VERIFY FAIL: bad format' );
 			return false;
 		}
 
 		$session_id   = $parts[0];
 		$signature    = $parts[1];
 		$expected_sig = hash_hmac( 'sha256', $session_id, $this->settings->salt );
+		$id_short     = substr( $session_id, 0, 8 );
 
 		if ( ! hash_equals( $expected_sig, $signature ) ) {
+			$this->session_debug_log( "VERIFY FAIL: signature mismatch id={$id_short}…" );
 			return false;
 		}
 
@@ -914,27 +977,35 @@ trait BotBlockerVisitorTrait {
 
 		if ( $payload !== null && is_array( $payload ) ) {
 			if ( isset( $payload['t'] ) && $this->time - (int) $payload['t'] > $this->settings->cookie_lifetime ) {
+				$this->session_debug_log( "VERIFY FAIL: expired id={$id_short}… age=" . ( $this->time - (int) $payload['t'] ) . 's' );
 				return false;
 			}
-			// CRITICAL SECURITY: UID binding — token from a different visitor must be rejected
+			// CRITICAL SECURITY: UID binding - token from a different visitor must be rejected
+			$payload_u = isset( $payload['u'] ) ? (string) $payload['u'] : '?';
 			if ( ! isset( $payload['u'] ) || $payload['u'] !== $this->uid ) {
+				$this->session_debug_log( "VERIFY FAIL: UID binding mismatch id={$id_short}… payload.u={$payload_u} current.uid={$this->uid} (stolen/replayed token?)" );
 				return false;
 			}
 			// END CRITICAL SECURITY: UID binding
 			$this->visitorType = self::VISITOR_HUMAN;
+			$issued_ip = isset( $payload['i'] ) ? (string) $payload['i'] : '?';
+			$ip_note   = ( $issued_ip !== '?' && $issued_ip !== (string) $this->ip ) ? ' IP CHANGED (survived)' : '';
+			$this->session_debug_log( "VERIFY OK id={$id_short}… payload.u={$payload_u} current.uid={$this->uid} age=" . ( $this->time - (int) ( $payload['t'] ?? $this->time ) ) . 's | issued_ip=' . $issued_ip . ' now_ip=' . $this->ip . ' (IP not checked)' . $ip_note );
 			return true;
 		}
 
+		$this->session_debug_log( "VERIFY FAIL: id not in bucket id={$id_short}… (expired/evicted/forged)" );
 		return false;
 	}
 
 	public function create_session_token( $time = null, $ip = null, $uid = null ): string {
-		$t   = $time ?? $this->time;
-		$i   = $ip   ?? $this->ip;
-		$u   = $uid  ?? $this->uid;
+		$t = $time ?? $this->time;
+		$i = $ip ?? $this->ip;
+		$u = $uid ?? $this->uid;
 
 		if ( ! $this->settings->session_token_enabled ) {
-			return hash( 'sha256',
+			return hash(
+				'sha256',
 				$this->settings->salt .
 				$this->settings->cloud_api_pass .
 				$this->host .
@@ -944,15 +1015,17 @@ trait BotBlockerVisitorTrait {
 			);
 		}
 
-		$session_id  = bin2hex( random_bytes( 16 ) );
-		$signature   = hash_hmac( 'sha256', $session_id, $this->settings->salt );
-		$payload     = array(
+		$session_id = bin2hex( random_bytes( 16 ) );
+		$signature  = hash_hmac( 'sha256', $session_id, $this->settings->salt );
+		$payload    = array(
 			'u' => $u,
 			't' => $t,
 			'i' => $i,
 		);
 
 		$this->session_bucket_set( $session_id, $payload );
+
+		$this->session_debug_log( 'CREATE id=' . substr( $session_id, 0, 8 ) . '… uid=' . $u . ' stored in bucket' );
 
 		return $session_id . '.' . $signature;
 	}
@@ -997,11 +1070,14 @@ trait BotBlockerVisitorTrait {
 		// Hysteresis cap: allow overflow to 50000, trim to 45000.
 		// Avoids O(n log n) uasort on every write after reaching cap.
 		if ( count( $bucket ) > 50000 ) {
-			uasort( $bucket, function ( $a, $b ): int {
-				$ea = isset( $a['e'] ) ? (int) $a['e'] : 0;
-				$eb = isset( $b['e'] ) ? (int) $b['e'] : 0;
-				return $ea - $eb;
-			} );
+			uasort(
+				$bucket,
+				function ( $a, $b ): int {
+					$ea = isset( $a['e'] ) ? (int) $a['e'] : 0;
+					$eb = isset( $b['e'] ) ? (int) $b['e'] : 0;
+					return $ea - $eb;
+				}
+			);
 			$bucket = array_slice( $bucket, -45000, 45000, true );
 		}
 

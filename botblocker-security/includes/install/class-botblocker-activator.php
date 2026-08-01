@@ -7,6 +7,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Botblocker_Activator {
 
 	public static function activate( bool $network_wide = false ): void {
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( '[BBCS DEBUG] [Activator] activate() called, network_wide=' . ( $network_wide ? '1' : '0' ) );
+		}
+
 		if ( is_multisite() && $network_wide ) {
 			self::activateNetworkWide();
 			return;
@@ -14,6 +19,11 @@ class Botblocker_Activator {
 
 		self::activateSite( true );
 		flush_rewrite_rules( true );
+
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( '[BBCS DEBUG] [Activator] activate() completed' );
+		}
 	}
 
 	public static function activateNetworkWide(): void {
@@ -28,6 +38,10 @@ class Botblocker_Activator {
 				try {
 					require BOTBLOCKER_DIR . 'includes/database/inc-botblocker-tables.php';
 					self::activateSite( false );
+
+					if ( ! BotBlockerMultisite::getOption( 'bbcs_setup_wizard_completed', false ) ) {
+						BotBlockerMultisite::updateOption( 'bbcs_activation_redirect', true );
+					}
 				} catch ( \Throwable $e ) {
 					if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 						// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
@@ -50,8 +64,24 @@ class Botblocker_Activator {
 	}
 
 	private static function activateSite( bool $is_fresh_install_context ): void {
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( '[BBCS DEBUG] [Activator] activateSite() called, fresh=' . ( $is_fresh_install_context ? '1' : '0' ) );
+		}
+
 		$is_fresh_install = $is_fresh_install_context && ! BotBlockerInstall::tablesExist();
+
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( '[BBCS DEBUG] [Activator] activateSite: is_fresh_install=' . ( $is_fresh_install ? '1' : '0' ) . ' tables_exist=' . ( BotBlockerInstall::tablesExist() ? '1' : '0' ) );
+		}
+
 		BotBlockerInstall::checkInstall();
+
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( '[BBCS DEBUG] [Activator] activateSite: after checkInstall' );
+		}
 
 		if ( $is_fresh_install_context && defined( 'BOTBLOCKER_INTEGRATE_MU_PLUGINS' ) && BOTBLOCKER_INTEGRATE_MU_PLUGINS ) {
 			BotBlockerInstall::installMuPlugin();
@@ -81,6 +111,11 @@ class Botblocker_Activator {
 			if ( $is_fresh_install_context ) {
 				BotBlockerMultisite::updateOption( 'bbcs_activation_redirect', true );
 			}
+		}
+
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( '[BBCS DEBUG] [Activator] activateSite() completed' );
 		}
 	}
 }

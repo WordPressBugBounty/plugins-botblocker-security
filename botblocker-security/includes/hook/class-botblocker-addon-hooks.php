@@ -7,6 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once __DIR__ . '/hook-addon-validation.php';
 require_once __DIR__ . '/hook-addon-install.php';
+require_once BOTBLOCKER_DIR . 'includes/class-botblocker-toastify.php';
 
 class BotBlockerAddonHooks {
 
@@ -102,22 +103,46 @@ class BotBlockerAddonHooks {
 			BotBlockerAlerts::setAddonUpdateFailed( $result['failed'] );
 		}
 		self::deactivateIncompatible();
-		wp_safe_redirect( esc_url_raw( add_query_arg( 'bbcs_updated_all', '1', BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' ) ) ) );
+		BBCS_Toastify::flash( __( 'All add-ons have been updated.', 'botblocker-security' ), BBCS_Toastify::TYPE_SUCCESS, BBCS_Toastify::PAGE_ADDONS );
+		wp_safe_redirect( BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' ) );
 		exit;
 	}
 
 	public static function handleToggle(): void {
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( '[BBCS DEBUG] [Addons] handleToggle: entered' );
+		}
+
 		if ( ! current_user_can( BotBlockerMultisite::canManage() ) ) {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+				error_log( '[BBCS DEBUG] [Addons] handleToggle: insufficient permissions' );
+			}
 			wp_die( esc_html__( 'Insufficient permissions.', 'botblocker-security' ) );
 		}
 		check_admin_referer( 'bbcs_toggle_addon', 'bbcs_toggle_addon_nonce' );
 
 		$slug = isset( $_POST['slug'] ) ? sanitize_key( wp_unslash( $_POST['slug'] ) ) : '';
 		if ( $slug === '' ) {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+				error_log( '[BBCS DEBUG] [Addons] handleToggle: empty slug' );
+			}
 			wp_safe_redirect( BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' ) );
 			exit;
 		}
+
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( '[BBCS DEBUG] [Addons] handleToggle: slug=' . $slug );
+		}
+
 		if ( ! class_exists( 'BotBlockerAddons' ) ) {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+				error_log( '[BBCS DEBUG] [Addons] handleToggle: BotBlockerAddons class not found' );
+			}
 			wp_safe_redirect( BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' ) );
 			exit;
 		}
@@ -129,16 +154,35 @@ class BotBlockerAddonHooks {
 		if ( ! isset( $addons[ $slug ] ) || ! $addons[ $slug ]['valid'] ) {
 			$active = array_values( array_diff( $active, array( $slug ) ) );
 			BotBlockerMultisite::updateOption( 'bbcs_active_addons', $active );
-			wp_safe_redirect( BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' ) . '&bbcs_error=invalid' );
+			BBCS_Toastify::flash_addon_error( 'invalid' );
+			wp_safe_redirect( BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' ) );
 			exit;
 		}
 		if ( ! in_array( $slug, $active, true ) && ! BotBlockerAddons::isCompatible( $addons[ $slug ] ) ) {
-			wp_safe_redirect( BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' ) . '&bbcs_error=requires_core&bbcs_error_msg=' . rawurlencode( $addons[ $slug ]['requires_core'] ) );
+			BBCS_Toastify::flash_addon_error( 'requires_core', $addons[ $slug ]['requires_core'] ?? null );
+			wp_safe_redirect( BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' ) );
 			exit;
 		}
 		$was_active = in_array( $slug, $active, true );
+
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( '[BBCS DEBUG] [Addons] Toggle: slug=' . $slug . ' was_active=' . ( $was_active ? '1' : '0' ) . ' step=before_loadCore' );
+		}
+
 		BotBlockerAddons::loadCore( $addons[ $slug ] );
+
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( '[BBCS DEBUG] [Addons] Toggle: slug=' . $slug . ' step=after_loadCore' );
+		}
+
 		BotBlockerAddons::includeLifecycleFile( $addons[ $slug ] );
+
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( '[BBCS DEBUG] [Addons] Toggle: slug=' . $slug . ' step=after_includeLifecycleFile' );
+		}
 
 		if ( $was_active ) {
 			$active = array_values( array_diff( $active, array( $slug ) ) );
@@ -159,7 +203,8 @@ class BotBlockerAddonHooks {
 			error_log( '[BBCS DEBUG] [Addons] Toggle: slug=' . $slug . ' action=' . ( $is_now_active ? 'activate' : 'deactivate' ) . ' status=success' );
 		}
 
-		wp_safe_redirect( BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' ) . '&bbcs_updated=1' );
+		BBCS_Toastify::flash( __( 'Add-on updated successfully.', 'botblocker-security' ), BBCS_Toastify::TYPE_SUCCESS, BBCS_Toastify::PAGE_ADDONS );
+		wp_safe_redirect( BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' ) );
 		exit;
 	}
 
@@ -176,29 +221,23 @@ class BotBlockerAddonHooks {
 		$requires_core = isset( $_POST['requires_core'] ) ? sanitize_text_field( wp_unslash( $_POST['requires_core'] ) ) : '';
 		$redir         = BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' );
 		if ( $slug === '' || $url === '' ) {
-			wp_safe_redirect( esc_url_raw( add_query_arg( 'bbcs_error', 'install_args', $redir ) ) );
+			BBCS_Toastify::flash_addon_error( 'install_args' );
+			wp_safe_redirect( $redir );
 			exit;
 		}
 		if ( ! BotBlockerPro::isActive() ) {
-			wp_safe_redirect( esc_url_raw( add_query_arg( 'bbcs_error', 'pro_required', $redir ) ) );
+			BBCS_Toastify::flash_addon_error( 'pro_required' );
+			wp_safe_redirect( $redir );
 			exit;
 		}
 		if ( ! bbcs_is_allowed_addon_url( $url ) ) {
-			wp_safe_redirect( esc_url_raw( add_query_arg( 'bbcs_error', 'url_not_allowed', $redir ) ) );
+			BBCS_Toastify::flash_addon_error( 'url_not_allowed' );
+			wp_safe_redirect( $redir );
 			exit;
 		}
 		if ( ! empty( $requires_core ) && version_compare( BOTBLOCKER_VERSION, $requires_core, '<' ) ) {
-			wp_safe_redirect(
-				esc_url_raw(
-					add_query_arg(
-						array(
-							'bbcs_error'     => 'requires_core',
-							'bbcs_error_msg' => $requires_core,
-						),
-						$redir
-					)
-				)
-			);
+			BBCS_Toastify::flash_addon_error( 'requires_core', $requires_core );
+			wp_safe_redirect( $redir );
 			exit;
 		}
 		if ( ! function_exists( 'download_url' ) ) {
@@ -206,17 +245,8 @@ class BotBlockerAddonHooks {
 		}
 		$tmp = download_url( $url );
 		if ( is_wp_error( $tmp ) ) {
-			wp_safe_redirect(
-				esc_url_raw(
-					add_query_arg(
-						array(
-							'bbcs_error'     => 'download',
-							'bbcs_error_msg' => $tmp->get_error_message(),
-						),
-						$redir
-					)
-				)
-			);
+			BBCS_Toastify::flash_addon_error( 'download', $tmp->get_error_message() );
+			wp_safe_redirect( $redir );
 			exit;
 		}
 
@@ -236,7 +266,8 @@ class BotBlockerAddonHooks {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [Addons] Install: slug=' . $slug . ' status=failed error=' . $installed->get_error_code() );
 			}
-			wp_safe_redirect( esc_url_raw( add_query_arg( bbcs_addon_install_error_args( $installed ), $redir ) ) );
+			BBCS_Toastify::flash_addon_error( $installed->get_error_code(), $installed->get_error_message() );
+			wp_safe_redirect( $redir );
 			exit;
 		}
 
@@ -245,7 +276,8 @@ class BotBlockerAddonHooks {
 			error_log( '[BBCS DEBUG] [Addons] Install: slug=' . $slug . ' status=success' );
 		}
 
-		wp_safe_redirect( esc_url_raw( add_query_arg( 'bbcs_installed', '1', $redir ) ) );
+		BBCS_Toastify::flash( __( 'Add-on installed successfully.', 'botblocker-security' ), BBCS_Toastify::TYPE_SUCCESS, BBCS_Toastify::PAGE_ADDONS );
+		wp_safe_redirect( $redir );
 		exit;
 	}
 
@@ -260,7 +292,8 @@ class BotBlockerAddonHooks {
 
 		$redir = BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' );
 		if ( empty( $_FILES['bbcs_addon_zip'] ) || ! is_array( $_FILES['bbcs_addon_zip'] ) ) {
-			wp_safe_redirect( esc_url_raw( add_query_arg( 'bbcs_error', 'upload_missing', $redir ) ) );
+			BBCS_Toastify::flash_addon_error( 'upload_missing' );
+			wp_safe_redirect( $redir );
 			exit;
 		}
 
@@ -268,28 +301,21 @@ class BotBlockerAddonHooks {
 		$file  = $_FILES['bbcs_addon_zip'];
 		$error = isset( $file['error'] ) ? (int) $file['error'] : UPLOAD_ERR_NO_FILE;
 		if ( $error !== UPLOAD_ERR_OK ) {
-			wp_safe_redirect(
-				esc_url_raw(
-					add_query_arg(
-						array(
-							'bbcs_error'     => 'upload_failed',
-							'bbcs_error_msg' => (string) $error,
-						),
-						$redir
-					)
-				)
-			);
+			BBCS_Toastify::flash_addon_error( 'upload_failed', (string) $error );
+			wp_safe_redirect( $redir );
 			exit;
 		}
 
 		$tmp_name = isset( $file['tmp_name'] ) ? (string) $file['tmp_name'] : '';
 		$name     = isset( $file['name'] ) ? sanitize_file_name( (string) $file['name'] ) : '';
 		if ( $tmp_name === '' || ! file_exists( $tmp_name ) || strtolower( pathinfo( $name, PATHINFO_EXTENSION ) ) !== 'zip' ) {
-			wp_safe_redirect( esc_url_raw( add_query_arg( 'bbcs_error', 'zip_extension', $redir ) ) );
+			BBCS_Toastify::flash_addon_error( 'zip_extension' );
+			wp_safe_redirect( $redir );
 			exit;
 		}
 		if ( ! is_uploaded_file( $tmp_name ) && ! defined( 'WP_CLI' ) ) {
-			wp_safe_redirect( esc_url_raw( add_query_arg( 'bbcs_error', 'upload_untrusted', $redir ) ) );
+			BBCS_Toastify::flash_addon_error( 'upload_untrusted' );
+			wp_safe_redirect( $redir );
 			exit;
 		}
 
@@ -305,7 +331,8 @@ class BotBlockerAddonHooks {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [Addons] Upload: file=' . $name . ' status=failed error=' . $installed->get_error_code() );
 			}
-			wp_safe_redirect( esc_url_raw( add_query_arg( bbcs_addon_install_error_args( $installed ), $redir ) ) );
+			BBCS_Toastify::flash_addon_error( $installed->get_error_code(), $installed->get_error_message() );
+			wp_safe_redirect( $redir );
 			exit;
 		}
 
@@ -314,17 +341,8 @@ class BotBlockerAddonHooks {
 			error_log( '[BBCS DEBUG] [Addons] Upload: file=' . $name . ' slug=' . ( $installed['slug'] ?? '' ) . ' status=success' );
 		}
 
-		wp_safe_redirect(
-			esc_url_raw(
-				add_query_arg(
-					array(
-						'bbcs_uploaded' => '1',
-						'bbcs_addon'    => $installed['slug'],
-					),
-					$redir
-				)
-			)
-		);
+		BBCS_Toastify::flash( __( 'Add-on package uploaded. Find it below, then activate it when ready.', 'botblocker-security' ), BBCS_Toastify::TYPE_SUCCESS, BBCS_Toastify::PAGE_ADDONS );
+		wp_safe_redirect( $redir );
 		exit;
 	}
 
@@ -376,7 +394,8 @@ class BotBlockerAddonHooks {
 			error_log( '[BBCS DEBUG] [Addons] Delete: slug=' . $slug . ' status=success' );
 		}
 
-		wp_safe_redirect( BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' ) . '&bbcs_deleted=1' );
+		BBCS_Toastify::flash( __( 'Add-on deleted.', 'botblocker-security' ), BBCS_Toastify::TYPE_SUCCESS, BBCS_Toastify::PAGE_ADDONS );
+		wp_safe_redirect( BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' ) );
 		exit;
 	}
 
@@ -397,21 +416,13 @@ class BotBlockerAddonHooks {
 			exit;
 		}
 		if ( ! bbcs_is_allowed_addon_url( $url ) ) {
-			wp_safe_redirect( esc_url_raw( add_query_arg( 'bbcs_error', 'url_not_allowed', $redir ) ) );
+			BBCS_Toastify::flash_addon_error( 'url_not_allowed' );
+			wp_safe_redirect( $redir );
 			exit;
 		}
 		if ( ! empty( $requires_core ) && version_compare( BOTBLOCKER_VERSION, $requires_core, '<' ) ) {
-			wp_safe_redirect(
-				esc_url_raw(
-					add_query_arg(
-						array(
-							'bbcs_error'     => 'requires_core',
-							'bbcs_error_msg' => $requires_core,
-						),
-						$redir
-					)
-				)
-			);
+			BBCS_Toastify::flash_addon_error( 'requires_core', $requires_core );
+			wp_safe_redirect( $redir );
 			exit;
 		}
 		if ( ! function_exists( 'download_url' ) ) {
@@ -421,23 +432,15 @@ class BotBlockerAddonHooks {
 			require_once ABSPATH . 'wp-admin/includes/file.php';
 		}
 		if ( ! WP_Filesystem() ) {
-			wp_safe_redirect( esc_url_raw( add_query_arg( 'bbcs_error', 'fs_unavailable', $redir ) ) );
+			BBCS_Toastify::flash_addon_error( 'fs_unavailable' );
+			wp_safe_redirect( $redir );
 			exit;
 		}
 
 		$tmp = download_url( $url );
 		if ( is_wp_error( $tmp ) ) {
-			wp_safe_redirect(
-				esc_url_raw(
-					add_query_arg(
-						array(
-							'bbcs_error'     => 'download',
-							'bbcs_error_msg' => $tmp->get_error_message(),
-						),
-						$redir
-					)
-				)
-			);
+			BBCS_Toastify::flash_addon_error( 'download', $tmp->get_error_message() );
+			wp_safe_redirect( $redir );
 			exit;
 		}
 
@@ -487,11 +490,12 @@ class BotBlockerAddonHooks {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [Addons] Update: slug=' . $slug . ' status=failed error=' . $installed->get_error_code() );
 			}
-			wp_safe_redirect( esc_url_raw( add_query_arg( bbcs_addon_install_error_args( $installed ), $redir ) ) );
+			BBCS_Toastify::flash_addon_error( $installed->get_error_code(), $installed->get_error_message() );
+			wp_safe_redirect( $redir );
 			exit;
 		}
 
-		$redirect_args = array( 'bbcs_updated' => '1' );
+		$requires_core_after_update = '';
 		if ( $wasActive ) {
 			$updated_addons = class_exists( 'BotBlockerAddons' ) ? BotBlockerAddons::scanAll() : array();
 			if ( isset( $updated_addons[ $slug ] ) && BotBlockerAddons::isCompatible( $updated_addons[ $slug ] ) ) {
@@ -504,7 +508,7 @@ class BotBlockerAddonHooks {
 				BotBlockerAddons::dispatchLifecycle( $slug, 'activate', $updated_addons[ $slug ], array( 'reason' => 'update' ) );
 				do_action( 'bbcs_addon_toggled', $slug, true );
 			} elseif ( isset( $updated_addons[ $slug ] ) && ! empty( $updated_addons[ $slug ]['requires_core'] ) ) {
-				$redirect_args['bbcs_requires_core'] = $updated_addons[ $slug ]['requires_core'];
+				$requires_core_after_update = $updated_addons[ $slug ]['requires_core'];
 			}
 		}
 
@@ -513,7 +517,13 @@ class BotBlockerAddonHooks {
 			error_log( '[BBCS DEBUG] [Addons] Update: slug=' . $slug . ' status=success' );
 		}
 
-		wp_safe_redirect( esc_url_raw( add_query_arg( $redirect_args, $redir ) ) );
+		if ( $requires_core_after_update !== '' ) {
+			/* translators: %s: required BotBlocker version */
+			BBCS_Toastify::flash( sprintf( __( 'Add-on was updated but not reactivated - it requires BotBlocker %s or higher. Please update the plugin first.', 'botblocker-security' ), $requires_core_after_update ), BBCS_Toastify::TYPE_WARNING, BBCS_Toastify::PAGE_ADDONS );
+		} else {
+			BBCS_Toastify::flash( __( 'Add-on updated successfully.', 'botblocker-security' ), BBCS_Toastify::TYPE_SUCCESS, BBCS_Toastify::PAGE_ADDONS );
+		}
+		wp_safe_redirect( $redir );
 		exit;
 	}
 }

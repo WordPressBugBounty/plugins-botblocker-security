@@ -16,42 +16,33 @@
     }
 
     function showNotice(type, message) {
-        var $cardBody = $("#bbcs-market").closest('.card').find('.card-body').first();
-        if (!$cardBody.length) { $cardBody = $('.wrap'); }
-        var cls = type === 'success' ? 'alert-success' : (type === 'warning' ? 'alert-warning' : 'alert-danger');
-        var $notice = $('<div/>', { 'class': 'alert ' + cls + ' bbcs-mb-16', 'role': 'alert' }).text(message);
-        $cardBody.prepend($notice);
-        setTimeout(function(){ $notice.fadeOut(300, function(){ $(this).remove(); }); }, 7000);
+        var $container = $('.bbcs-settings-content');
+        if (!$container.length) { $container = $('.bbcs-wrap'); }
+        var cls = type === 'success' ? 'bbcs-green-card' : (type === 'warning' ? 'bbcs-amber-card' : 'bbcs-card');
+        var $notice = $('<div/>', {
+            'class': 'bbcs-card bbcs-card-pad ' + cls + ' bbcs-mb-3',
+            'role': 'alert'
+        }).html('<div class="bbcs-row bbcs-g-2"><span class="bbcs-dot"></span><span class="bbcs-fs-sm">' + $('<span>').text(message).html() + '</span></div>');
+
+        $container.prepend($notice);
+        setTimeout(function () { $notice.fadeOut(300, function () { $(this).remove(); }); }, 7000);
     }
 
-    function activateTabById(id) {
-        var $link = $('a[data-bs-toggle="tab"][href="' + id + '"]');
-        if ($link.length) {
-            if (window.bootstrap && bootstrap.Tab) {
-                var tab = new bootstrap.Tab($link.get(0));
-                tab.show();
-            } else {
-                $link.trigger('click');
-            }
+    function activateTabByName(tabId) {
+        // Sidebar nav activation: find matching snav item and click it
+        var $item = $('.bbcs-snav-item[data-snav-tab="' + tabId + '"]');
+        if ($item.length && !$item.hasClass('is-active')) {
+            $item.trigger('click');
         }
     }
 
-    function attachCardOverlay($form) {
-        var $card = $form.closest('.card');
-        if (!$card.length) return;
-        var $overlay = $('<div class="bbcs-card-overlay"/>').append(
-            '<div class="spinner-border text-primary" role="status" style="width: 2rem; height: 2rem;"><span class="visually-hidden">Loading...</span></div>'
-        );
-        $card.append($overlay);
-        $card.find('button').prop('disabled', true);
-    }
-
     function setUploadPanel(open) {
-        var $panel = $('#bbcs-addon-upload-panel');
-        var $button = $('[data-bbcs-toggle-upload]');
+        var $panel = $('#bbcs-upload-section');
+        var $button = $('#bbcs-toggle-upload');
         if (!$panel.length || !$button.length) return;
 
-        $button.attr('aria-expanded', open ? 'true' : 'false');
+        $button.attr('aria-expanded', open);
+
         if (open) {
             $panel.prop('hidden', false).hide().slideDown(160);
         } else {
@@ -68,69 +59,71 @@
         var error = getParam('bbcs_error');
         var errorMsg = getParam('bbcs_error_msg');
         var requiresCore = getParam('bbcs_requires_core');
+        var L = window.bbcsAddonsL10n || {};
 
         if (installed) {
-            showNotice('success', 'Add-on installed successfully.');
-            activateTabById('#bbcs-installed');
+            showNotice('success', L.installed || 'Add-on installed successfully.');
+            activateTabByName('Marketplace');
         }
         if (uploaded) {
-            showNotice('success', 'Add-on package uploaded. Review it in the Installed tab, then activate it when ready.');
-            activateTabById('#bbcs-installed');
+            showNotice('success', L.uploaded || 'Add-on package uploaded. Find it below, then activate it when ready.');
+            activateTabByName('Marketplace');
         }
         if (updatedAll) {
-            showNotice('success', 'All add-ons have been updated.');
-            activateTabById('#bbcs-installed');
+            showNotice('success', L.updated_all || 'All add-ons have been updated.');
+            activateTabByName('Marketplace');
         }
         if (updated && !requiresCore) {
-            showNotice('success', 'Add-on updated successfully.');
-            activateTabById('#bbcs-installed');
+            showNotice('success', L.updated || 'Add-on updated successfully.');
+            activateTabByName('Marketplace');
         }
         if (requiresCore) {
-            showNotice('warning', 'Add-on was updated but not reactivated - it requires BotBlocker version ' + requiresCore + ' or higher. Please update the plugin.');
-            activateTabById('#bbcs-installed');
+            var msg = (L.requires_core_msg || 'Add-on was updated but not reactivated - it requires BotBlocker version %s or higher. Please update the plugin.').replace('%s', requiresCore);
+            showNotice('warning', msg);
+            activateTabByName('Marketplace');
         }
         if (deleted) {
-            showNotice('warning', 'Add-on deleted.');
-            activateTabById('#bbcs-installed');
+            showNotice('warning', L.deleted || 'Add-on deleted.');
+            activateTabByName('Marketplace');
         }
         if (error) {
-            var msg = 'Operation failed.';
-            if (error === 'invalid') msg = 'The add-on is invalid or broken.';
-            if (error === 'install_args') msg = 'Installation arguments are missing.';
-            if (error === 'download') msg = 'Failed to download the add-on package.';
-            if (error === 'unzip') msg = 'Failed to unpack the add-on package.';
-            if (error === 'fs_unavailable') msg = 'Filesystem API is not available.';
-            if (error === 'url_not_allowed') msg = 'The add-on download URL is not allowed.';
-            if (error === 'upload_missing') msg = 'Choose an add-on ZIP package first.';
-            if (error === 'upload_failed') msg = 'The add-on upload failed.';
-            if (error === 'upload_untrusted') msg = 'The uploaded file was not accepted by WordPress.';
-            if (error === 'zip_missing') msg = 'Add-on package is missing or unreadable.';
-            if (error === 'zip_extension') msg = 'The add-on package must be a ZIP file.';
-            if (error === 'zip_too_large') msg = 'The add-on package is too large.';
-            if (error === 'zip_open') msg = 'The add-on package cannot be opened.';
-            if (error === 'zip_file_count') msg = 'The add-on package has an invalid file count.';
-            if (error === 'zip_unsafe_path') msg = 'The package contains an unsafe file path.';
-            if (error === 'zip_entry_too_large') msg = 'The package contains an oversized file.';
-            if (error === 'extract_missing') msg = 'The temporary extraction folder is missing.';
-            if (error === 'package_root') msg = 'The package must contain exactly one root folder.';
-            if (error === 'package_slug') msg = 'The package root folder must be a valid slug.';
-            if (error === 'package_invalid') msg = 'The package does not match the BotBlocker add-on contract.';
-            if (error === 'pro_required') msg = 'Official BotBlocker add-ons require BotBlocker PRO. Custom ZIP add-ons can still be uploaded.';
-            if (error === 'requires_core_missing') msg = 'The package must declare Requires-Core.';
-            if (error === 'slug_mismatch') msg = 'The package slug does not match the requested add-on.';
-            if (error === 'requires_php') msg = 'This add-on requires a newer PHP version.';
-            if (error === 'file_mods_disabled') msg = 'File modifications are disabled for this WordPress installation.';
-            if (error === 'tmp_failed') msg = 'Failed to create a temporary add-on folder.';
-            if (error === 'move_source') msg = 'The validated add-on source is missing.';
-            if (error === 'backup_failed') msg = 'Failed to backup the existing add-on.';
-            if (error === 'move_failed') msg = 'Failed to install the add-on package.';
+            var msg = L.operation_failed || 'Operation failed.';
+            if (error === 'invalid') msg = L.invalid || 'The add-on is invalid or broken.';
+            if (error === 'install_args') msg = L.install_args || 'Installation arguments are missing.';
+            if (error === 'download') msg = L.download || 'Failed to download the add-on package.';
+            if (error === 'unzip') msg = L.unzip || 'Failed to unpack the add-on package.';
+            if (error === 'fs_unavailable') msg = L.fs_unavailable || 'Filesystem API is not available.';
+            if (error === 'url_not_allowed') msg = L.url_not_allowed || 'The add-on download URL is not allowed.';
+            if (error === 'upload_missing') msg = L.upload_missing || 'Choose an add-on ZIP package first.';
+            if (error === 'upload_failed') msg = L.upload_failed || 'The add-on upload failed.';
+            if (error === 'upload_untrusted') msg = L.upload_untrusted || 'The uploaded file was not accepted by WordPress.';
+            if (error === 'zip_missing') msg = L.zip_missing || 'Add-on package is missing or unreadable.';
+            if (error === 'zip_extension') msg = L.zip_extension || 'The add-on package must be a ZIP file.';
+            if (error === 'zip_too_large') msg = L.zip_too_large || 'The add-on package is too large.';
+            if (error === 'zip_open') msg = L.zip_open || 'The add-on package cannot be opened.';
+            if (error === 'zip_file_count') msg = L.zip_file_count || 'The add-on package has an invalid file count.';
+            if (error === 'zip_unsafe_path') msg = L.zip_unsafe_path || 'The package contains an unsafe file path.';
+            if (error === 'zip_entry_too_large') msg = L.zip_entry_too_large || 'The package contains an oversized file.';
+            if (error === 'extract_missing') msg = L.extract_missing || 'The temporary extraction folder is missing.';
+            if (error === 'package_root') msg = L.package_root || 'The package must contain exactly one root folder.';
+            if (error === 'package_slug') msg = L.package_slug || 'The package root folder must be a valid slug.';
+            if (error === 'package_invalid') msg = L.package_invalid || 'The package does not match the BotBlocker add-on contract.';
+            if (error === 'pro_required') msg = L.pro_required || 'Official BotBlocker add-ons require BotBlocker PRO. Custom ZIP add-ons can still be uploaded.';
+            if (error === 'requires_core_missing') msg = L.requires_core_missing || 'The package must declare Requires-Core.';
+            if (error === 'slug_mismatch') msg = L.slug_mismatch || 'The package slug does not match the requested add-on.';
+            if (error === 'requires_php') msg = L.requires_php || 'This add-on requires a newer PHP version.';
+            if (error === 'file_mods_disabled') msg = L.file_mods_disabled || 'File modifications are disabled for this WordPress installation.';
+            if (error === 'tmp_failed') msg = L.tmp_failed || 'Failed to create a temporary add-on folder.';
+            if (error === 'move_source') msg = L.move_source || 'The validated add-on source is missing.';
+            if (error === 'backup_failed') msg = L.backup_failed || 'Failed to backup the existing add-on.';
+            if (error === 'move_failed') msg = L.move_failed || 'Failed to install the add-on package.';
             if (/^(upload|zip|extract|package|slug_mismatch|requires_php|requires_core_missing|file_mods_disabled|tmp_failed|move_source|backup_failed|move_failed)/.test(error)) {
                 setUploadPanel(true);
             }
             if (error === 'requires_core') {
-                msg = 'This add-on requires a newer version of BotBlocker.';
-                if (errorMsg) { msg += ' Required: ' + decodeURIComponent(errorMsg) + '.'; }
-                msg += ' Please update the plugin first.';
+                msg = L.requires_core_newer || 'This add-on requires a newer version of BotBlocker.';
+                if (errorMsg) { msg += ' ' + (L.required_version || 'Required:') + ' ' + decodeURIComponent(errorMsg) + '.'; }
+                msg += ' ' + (L.update_plugin || 'Please update the plugin first.');
                 errorMsg = null;
             }
             if (errorMsg) { msg += ' ' + decodeURIComponent(errorMsg); }
@@ -139,21 +132,81 @@
 
         removeParams(['bbcs_installed','bbcs_uploaded','bbcs_addon','bbcs_updated','bbcs_updated_all','bbcs_deleted','bbcs_error','bbcs_error_msg','bbcs_requires_core']);
 
-        $(document).on('click', '[data-bbcs-toggle-upload]', function () {
-            var $panel = $('#bbcs-addon-upload-panel');
+        /* ── Highlight addon card from command palette click ── */
+        var highlight = getParam('highlight');
+        if (highlight) {
+            removeParams(['highlight']);
+            var $card = $('.bbcs-addon[data-addon-slug="' + highlight.replace(/[^a-zA-Z0-9_-]/g, '') + '"]');
+            if ($card.length) {
+                // Activate the right sidebar tab (Marketplace or Installed)
+                var $tabpanel = $card.closest('.bbcs-tabpanel');
+                if ($tabpanel.length) {
+                    var tabId = $tabpanel.data('tabpanel');
+                    activateTabByName(tabId);
+                }
+                $card.addClass('bbcs-addon--highlight');
+                setTimeout(function () {
+                    $('html, body').animate({ scrollTop: $card.offset().top - 80 }, 300);
+                }, 150);
+                setTimeout(function () {
+                    $card.removeClass('bbcs-addon--highlight');
+                }, 5000);
+            }
+        }
+
+        // Upload panel toggle
+        $(document).on('click', '#bbcs-toggle-upload', function () {
+            var $panel = $('#bbcs-upload-section');
             setUploadPanel($panel.prop('hidden'));
         });
 
+        // File name display and button toggle
         $(document).on('change', '#bbcs_addon_zip', function () {
-            var fileName = this.files && this.files.length ? this.files[0].name : 'No file selected';
-            $('[data-bbcs-upload-file-name]').text(fileName);
+            var hasFile = this.files && this.files.length > 0;
+            var fileName = hasFile ? this.files[0].name : (L.no_file_selected || 'No file selected');
+            var $nameEl = $('#bbcs-zip-name');
+            var $btnEl = $('#bbcs-install-package-btn');
+            
+            if ($nameEl.length) {
+                $nameEl.text(fileName);
+            }
+            if ($btnEl.length) {
+                $btnEl.prop('disabled', !hasFile);
+            }
         });
 
-        $(document).on('submit', 'form[action$="admin-post.php"]', function(){
+        /* ── Back to Marketplace (no page refresh) ── */
+        $(document).on('click', '[data-bbcs-back-to-marketplace]', function (e) {
+            e.preventDefault();
+            // Hide all tabpanels
+            $('.bbcs-tabpanel').attr('hidden', true).attr('aria-hidden', 'true');
+            // Show marketplace
+            var $market = $('[data-tabpanel="Marketplace"]');
+            if ($market.length) {
+                $market.removeAttr('hidden').removeAttr('aria-hidden');
+            }
+            // Remove active from snav items
+            $('.bbcs-snav-item').removeClass('is-active').attr('aria-current', 'false');
+            // Update toggle label
+            var $toggle = $('.bbcs-snav-toggle');
+            if ($toggle.length) {
+                $toggle.find('.bbcs-snav-toggle-label').text(L.marketplace || 'Marketplace');
+                $toggle.find('.bbcs-snav-toggle-icon use').attr('href', '#bbcs-i-store');
+            }
+            // Clear hash
+            try { history.replaceState(null, '', window.location.pathname + window.location.search); } catch (_) {}
+        });
+
+        // Loading overlay on addon form submit
+        $(document).on('submit', 'form[action$="admin-post.php"]', function () {
             var $f = $(this);
             var action = ($f.find('input[name="action"]').val() || '').toString();
             if (/^bbcs_(install|update|delete|toggle|upload)_addon$/.test(action) || action === 'bbcs_update_all_addons') {
-                attachCardOverlay($f);
+                var $card = $f.closest('.bbcs-addon');
+                if ($card.length) {
+                    $card.css({ opacity: 0.5, pointerEvents: 'none' });
+                    $card.find('button').prop('disabled', true);
+                }
             }
         });
     });

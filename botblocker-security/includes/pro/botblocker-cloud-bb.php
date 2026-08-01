@@ -12,12 +12,12 @@ function bbcs_handleBotblockerPro(): void {
 			if ( get_query_var( 'botblocker_cloud_api' ) == '1' ) {
 				/* phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.PHP.DevelopmentFunctions.error_log_error_log */
 				if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-				error_log( '[BBCS DEBUG] [Cloud] BotBlocker cloud api activation requested.' );
-				error_log( '[BBCS DEBUG] [Cloud] Email: ' . ( isset( $_GET['email'] ) ? sanitize_text_field( wp_unslash( $_GET['email'] ) ) : 'Not provided' ) );
-				error_log( '[BBCS DEBUG] [Cloud] API Key: ' . ( isset( $_GET['cloud_api_key'] ) ? sanitize_text_field( wp_unslash( $_GET['cloud_api_key'] ) ) : 'Not provided' ) );
-				error_log( '[BBCS DEBUG] [Cloud] API Secret: ' . ( isset( $_GET['cloud_api_secret'] ) ? sanitize_text_field( wp_unslash( $_GET['cloud_api_secret'] ) ) : 'Not provided' ) );
-				error_log( '[BBCS DEBUG] [Cloud] Cloud API Expired: ' . ( isset( $_GET['cloud_api_expired'] ) ? absint( wp_unslash( $_GET['cloud_api_expired'] ) ) : 'Not provided' ) );
-				error_log( '[BBCS DEBUG] [Cloud] Licence tier: ' . ( isset( $_GET['cloud_api_tier'] ) ? sanitize_text_field( wp_unslash( $_GET['cloud_api_tier'] ) ) : 'Not provided' ) );
+					error_log( '[BBCS DEBUG] [Cloud] BotBlocker cloud api activation requested.' );
+					error_log( '[BBCS DEBUG] [Cloud] Email: ' . ( isset( $_GET['email'] ) ? sanitize_text_field( wp_unslash( $_GET['email'] ) ) : 'Not provided' ) );
+					error_log( '[BBCS DEBUG] [Cloud] API Key: ' . ( isset( $_GET['cloud_api_key'] ) ? sanitize_text_field( wp_unslash( $_GET['cloud_api_key'] ) ) : 'Not provided' ) );
+					error_log( '[BBCS DEBUG] [Cloud] API Secret: ' . ( isset( $_GET['cloud_api_secret'] ) ? sanitize_text_field( wp_unslash( $_GET['cloud_api_secret'] ) ) : 'Not provided' ) );
+					error_log( '[BBCS DEBUG] [Cloud] Cloud API Expired: ' . ( isset( $_GET['cloud_api_expired'] ) ? absint( wp_unslash( $_GET['cloud_api_expired'] ) ) : 'Not provided' ) );
+					error_log( '[BBCS DEBUG] [Cloud] Licence tier: ' . ( isset( $_GET['cloud_api_tier'] ) ? sanitize_text_field( wp_unslash( $_GET['cloud_api_tier'] ) ) : 'Not provided' ) );
 				}
 				/* phpcs:enable WordPress.PHP.DevelopmentFunctions.error_log_error_log */
 				/* phpcs:disable WordPress.Security.NonceVerification.Recommended */
@@ -55,9 +55,9 @@ function bbcs_handleBotblockerPro(): void {
 					return;
 				}
 				if ( isset( $_GET['email'] ) && isset( $_GET['cloud_api_key'] ) && isset( $_GET['cloud_api_secret'] ) ) {
-					$email      = sanitize_text_field( wp_unslash( $_GET['email'] ) );
-					$api_key    = sanitize_text_field( wp_unslash( $_GET['cloud_api_key'] ) );
-					$api_secret = sanitize_text_field( wp_unslash( $_GET['cloud_api_secret'] ) );
+					$email               = sanitize_text_field( wp_unslash( $_GET['email'] ) );
+					$api_key             = sanitize_text_field( wp_unslash( $_GET['cloud_api_key'] ) );
+					$api_secret          = sanitize_text_field( wp_unslash( $_GET['cloud_api_secret'] ) );
 					$expected_activation = md5( $email . $api_key . $api_secret . 'BB' );
 					if ( ! hash_equals( $expected_activation, $header_secret ) ) {
 						wp_send_json_error( 'Unauthorized: invalid secret.', 403 );

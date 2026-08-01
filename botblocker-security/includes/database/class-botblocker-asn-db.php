@@ -27,8 +27,8 @@ if ( ! defined( 'BBCS_ASN_DB_OPTION_STATUS' ) ) {
 	define( 'BBCS_ASN_DB_OPTION_STATUS', 'bbcs_asn_db_status' );
 }
 
-class BotBlockerAsnDb
-{
+class BotBlockerAsnDb {
+
 	public static function dir(): string {
 		$base = BotBlockerMultisite::getUploadsDir();
 		if ( ! is_string( $base ) || $base === '' ) {
@@ -45,20 +45,7 @@ class BotBlockerAsnDb
 	}
 
 	public static function writeProtection( string $dir ): void {
-		$index = $dir . 'index.php';
-		if ( ! file_exists( $index ) ) {
-			@file_put_contents( $index, "<?php\n" );
-		}
-		$htaccess = $dir . '.htaccess';
-		if ( ! file_exists( $htaccess ) ) {
-			$rules = "<IfModule mod_authz_core.c>\nRequire all denied\n</IfModule>\n<IfModule !mod_authz_core.c>\nDeny from all\n</IfModule>\n";
-			@file_put_contents( $htaccess, $rules );
-		}
-		$webconfig = $dir . 'web.config';
-		if ( ! file_exists( $webconfig ) ) {
-			$rules = "<configuration>\n  <system.webServer>\n    <authorization>\n      <deny users=\"*\" />\n    </authorization>\n  </system.webServer>\n</configuration>\n";
-			@file_put_contents( $webconfig, $rules );
-		}
+		BotBlockerWpUtility::write_web_access_deny( $dir );
 	}
 
 	public static function path(): string {
@@ -92,6 +79,7 @@ class BotBlockerAsnDb
 			'version'         => '',
 			'database_type'   => '',
 			'build_epoch'     => 0,
+			'node_count'      => 0,
 			'sha256'          => '',
 			'size'            => 0,
 			'downloaded_at'   => 0,
@@ -203,6 +191,7 @@ class BotBlockerAsnDb
 			$metadata    = $reader->metadata();
 			$db_type     = isset( $metadata->databaseType ) ? (string) $metadata->databaseType : '';
 			$build_epoch = isset( $metadata->buildEpoch ) ? (int) $metadata->buildEpoch : 0;
+			$node_count  = isset( $metadata->nodeCount ) ? (int) $metadata->nodeCount : 0;
 			$probe       = $reader->get( '8.8.8.8' );
 			$reader->close();
 			if ( $probe !== null && ! is_array( $probe ) && ! is_scalar( $probe ) ) {
@@ -215,6 +204,7 @@ class BotBlockerAsnDb
 				'ok'            => true,
 				'database_type' => $db_type,
 				'build_epoch'   => $build_epoch,
+				'node_count'    => $node_count,
 				'size'          => $size,
 			);
 		} catch ( \Throwable $e ) {
@@ -327,6 +317,7 @@ class BotBlockerAsnDb
 			$meta = array(
 				'database_type' => $validation['database_type'],
 				'build_epoch'   => $validation['build_epoch'],
+				'node_count'    => $validation['node_count'] ?? 0,
 				'size'          => $validation['size'],
 				'sha256'        => $sha256,
 				'downloaded_at' => $now,
@@ -339,6 +330,7 @@ class BotBlockerAsnDb
 					'state'         => 'ok',
 					'database_type' => $validation['database_type'],
 					'build_epoch'   => $validation['build_epoch'],
+					'node_count'    => $validation['node_count'] ?? 0,
 					'size'          => $validation['size'],
 					'sha256'        => $sha256,
 					'downloaded_at' => $now,

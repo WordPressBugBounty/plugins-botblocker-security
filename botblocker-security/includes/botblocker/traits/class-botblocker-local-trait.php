@@ -69,7 +69,9 @@ trait BotBlockerLocalTrait {
 			wp_send_json( $payload );
 		}
 
-		if ( $this->post_start_time - $this->time > 3600 ) {
+		// Reject tokens older than 1 hour. $this->date is the page-generation timestamp
+		// sent by the client; $this->time is the current server time (set at request start).
+		if ( $this->time - (int) $this->date > 3600 ) {
 			$payload = BotBlockerStore::localCheckResult( BBCS_LOCAL_RESULT_ERROR, 'Token Expired', '' );
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
@@ -96,6 +98,28 @@ trait BotBlockerLocalTrait {
 
 		$this->processAdblockerDetect();
 		$this->processAntidetect();
+
+		if ( $this->settings->fingerprint_sticky_block == 1
+			&& is_array( $this->post_antidetect_scope )
+			&& ! empty( $this->post_antidetect_scope['browserFingerprint'] )
+		) {
+			$fp_record = BotBlockerStore::checkFingerprint( $this->post_antidetect_scope['browserFingerprint'] );
+			if ( $fp_record !== null && (string) $fp_record['status'] === 'blocked' ) {
+				$payload = BotBlockerStore::localCheckResult(
+					BBCS_LOCAL_RESULT_ERROR,
+					'Fingerprint block (sticky): ' . ( $fp_record['last_block_reason'] ?? '' ),
+					''
+				);
+				if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+					error_log( '[BBCS DEBUG] [Local] EXIT: Fingerprint sticky-block. fp=' . substr( $this->post_antidetect_scope['browserFingerprint'], 0, 8 ) );
+				}
+				if ( $this->settings->bbcs_ddos_resilience == 1 ) {
+					$payload = $this->sign_response_payload( (array) $payload );
+				}
+				wp_send_json( $payload );
+			}
+		}
 
 		$this->processReCaptchaV3();
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {

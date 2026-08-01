@@ -34,11 +34,33 @@ class BotBlockerAddons {
 	}
 
 	public static function rootDir(): string {
+		self::ensureMultisiteLoaded();
 		return BotBlockerMultisite::getAddonsDir();
 	}
 
 	public static function rootUrl(): string {
+		self::ensureMultisiteLoaded();
 		return BotBlockerMultisite::getAddonsUrl();
+	}
+
+	private static function ensureMultisiteLoaded(): void {
+		if ( class_exists( 'BotBlockerMultisite' ) ) {
+			return;
+		}
+
+		$base = dirname( __FILE__ );
+
+		// Load the multisite class (cascades to core-helpers.php).
+		$multisite_file = $base . '/class-botblocker-multisite.php';
+		if ( file_exists( $multisite_file ) ) {
+			require_once $multisite_file;
+		}
+
+		// Load upload helpers used by BotBlockerMultisite::getAddonsDir().
+		$upload_file = $base . '/inc-botblocker-upload.php';
+		if ( file_exists( $upload_file ) && ! function_exists( 'bbcs_get_protected_upload_dir' ) ) {
+			require_once $upload_file;
+		}
 	}
 
 	public static function getMarketUrl(): string {
@@ -290,7 +312,40 @@ class BotBlockerAddons {
 		);
 	}
 
+	/**
+	 * @var array<string,array>|null
+	 */
+	private static $scanCache = null;
+
 	public static function scanAll(): array {
+		if ( defined( 'WP_TESTS_DOMAIN' ) ) {
+			return self::scanAllRaw();
+		}
+
+		if ( self::$scanCache !== null ) {
+			return self::$scanCache;
+		}
+
+		if ( is_admin() ) {
+			self::$scanCache = self::scanAllRaw();
+			BotBlockerFileRenderer::renderAddons();
+			return self::$scanCache;
+		}
+
+		$dataFile = BotBlockerMultisite::getDataDir() . 'addons.php';
+		if ( file_exists( $dataFile ) ) {
+			$loaded = bbcs_safe_load_data_file( $dataFile );
+			if ( is_array( $loaded ) ) {
+				self::$scanCache = $loaded;
+				return self::$scanCache;
+			}
+		}
+
+		self::$scanCache = self::scanAllRaw();
+		return self::$scanCache;
+	}
+
+	public static function scanAllRaw(): array {
 		$dir = self::rootDir();
 		if ( ! is_dir( $dir ) ) {
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
@@ -317,6 +372,7 @@ class BotBlockerAddons {
 	}
 
 	public static function getActive(): array {
+		self::ensureMultisiteLoaded();
 		$active = BotBlockerMultisite::getOption( 'bbcs_active_addons', array() );
 		if ( ! is_array( $active ) ) {
 			return array();
@@ -339,6 +395,7 @@ class BotBlockerAddons {
 
 	public static function fileRequiresCore( string $slug ): string {
 		$slug     = sanitize_key( $slug );
+		self::ensureMultisiteLoaded();
 		$base     = trailingslashit( BotBlockerMultisite::getAddonsDir() ) . $slug . DIRECTORY_SEPARATOR;
 		$manifest = self::parseManifest( $base, $slug );
 		if ( ! empty( $manifest ) ) {
@@ -852,21 +909,14 @@ class BotBlockerAddons {
 		}
 
 		if ( ! $early_init_loaded || ! $cloud_api_active ) {
-			if ( $early_init_loaded && is_multisite() && function_exists( 'bbcs_early_init_check_consistency' ) ) {
+			if ( $early_init_loaded && function_exists( 'bbcs_early_init_check_consistency' ) ) {
 				bbcs_early_init_check_consistency();
-			} elseif ( function_exists( 'bbcs_early_init_disable_feature' ) ) {
-				bbcs_early_init_disable_feature();
+			} elseif ( method_exists( 'BotBlockerInstall', 'setEarlyInitEnabled' ) ) {
+				BotBlockerInstall::setEarlyInitEnabled( false );
 			}
 			return;
 		}
 
-		if ( function_exists( 'bbcs_early_init_check_consistency' ) ) {
-			bbcs_early_init_check_consistency();
-		}
-
-		if ( function_exists( 'bbcs_early_init_maybe_restore_wp_config' ) ) {
-			bbcs_early_init_maybe_restore_wp_config();
-		}
 	}
 
 	public static function deactivateAll(): void {

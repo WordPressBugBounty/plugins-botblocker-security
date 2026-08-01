@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
  
-<div class="tab-pane container fade" id="settings_ui"> 	
+<div class="tab-pane container fade" id="settings-ui"> 	
 	<div class="row">
 
 		<div class="col-xxl-3 col-xl-6 col-lg-6 col-sm-12 col-md-12  bbcs-info-column">

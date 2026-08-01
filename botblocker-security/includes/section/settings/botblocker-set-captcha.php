@@ -12,16 +12,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 				// REVIEWER NOTE: This image is a static plugin asset, not a user-uploaded Media Library image.
                 // phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage ?>
 				<img src="<?php echo esc_url( BOTBLOCKER_URL . 'public/icons/captcha.svg' ); ?>" 
-					alt="<?php esc_attr_e( 'BotBlocker Captcha', 'botblocker-security' ); ?>" 
-					class="img-fluid bbcs-info-image mb-3">
+					alt="<?php esc_attr_e( 'BotBlocker Captcha', 'botblocker-security' ); ?>" 					class="img-fluid bbcs-info-image mb-3">
 
 				<p class="bbcs-info-text">
-					<?php esc_html_e( 'Choose from button, color, image, shape, digit, or reCAPTCHA verification methods.', 'botblocker-security' ); ?>				
+					<?php esc_html_e( 'Choose from button, color, image, shape, digit, or reCaptcha verification methods.', 'botblocker-security' ); ?>				
 				</p>
 				<hr class="bbcs-info-hr">
 				<div class="bbcs-info-footer">
 					<i class="fa-regular fa-circle-question"></i>
-					<a href="<?php echo esc_url( BOTBLOCKER_DOCS_URL ); ?>/all-captcha-types-in-botblocker-maximum-flexibility-and-reliable-protection/" target="_blank" class="bbcs-info-footer-a"><?php esc_html_e( 'BotBlocker CAPTCHA', 'botblocker-security' ); ?></a>
+					<a href="<?php echo esc_url( BOTBLOCKER_DOCS_URL ); ?>/all-captcha-types-in-botblocker-maximum-flexibility-and-reliable-protection/" target="_blank" class="bbcs-info-footer-a"><?php esc_html_e( 'BotBlocker Captcha', 'botblocker-security' ); ?></a>
 					<a href="<?php echo esc_url( BOTBLOCKER_DOCS_URL ); ?>/recaptcha-v2-in-botblocker-an-additional-user-verification-method-and-how-to-set-up-keys/" target="_blank" class="bbcs-info-footer-a"><?php esc_html_e( 'reCaptcha v2', 'botblocker-security' ); ?></a>
 					<a href="<?php echo esc_url( BOTBLOCKER_DOCS_URL ); ?>/recaptcha-v3-in-botblocker-user-verification-and-key-setup-guide/" target="_blank" class="bbcs-info-footer-a"><?php esc_html_e( 'reCaptcha v3', 'botblocker-security' ); ?></a>
 					<a href="https://en.wikipedia.org/wiki/CAPTCHA" target="_blank" class="bbcs-info-footer-a"><?php esc_html_e( 'Captcha', 'botblocker-security' ); ?></a>
@@ -36,13 +35,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<span class="bbcs-label-input"><?php esc_html_e( 'Captcha Mode:', 'botblocker-security' ); ?></span>
 					<i class="fa-regular fa-circle-question"
 						data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top"
-						data-bs-original-title="<?php esc_attr_e( 'Select CAPTCHA type for visitor verification.', 'botblocker-security' ); ?>">
+						data-bs-original-title="<?php esc_attr_e( 'Select Captcha type for visitor verification.', 'botblocker-security' ); ?>">
 					</i>
 				</div>    			
 				<div class="bbcs_text_input_inner">
 					<select class="bbcs_select_input_input" name="bbcs_captcha_mode">
 						<option value="8" <?php selected( '8', isset( $bbcs_settings['bbcs_captcha_mode'] ) ? $bbcs_settings['bbcs_captcha_mode'] : BOTBLOCKER_CAPTCHA_MODE_DEFAULT ); ?>>
-							<?php esc_html_e( 'Silent Auto-Verify (No CAPTCHA)', 'botblocker-security' ); ?>
+							<?php esc_html_e( 'Silent Auto-Verify (No Captcha)', 'botblocker-security' ); ?>
 						</option>
 						<option value="0" <?php selected( '0', isset( $bbcs_settings['bbcs_captcha_mode'] ) ? $bbcs_settings['bbcs_captcha_mode'] : BOTBLOCKER_CAPTCHA_MODE_DEFAULT ); ?>>
 							<?php esc_html_e( 'Button - "I am not a robot"', 'botblocker-security' ); ?>
@@ -70,7 +69,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						echo ( empty( $BBCS->settings->recaptcha_key2 ) || empty( $BBCS->settings->recaptcha_secret2 ) ? 'disabled' : '' );
 						?>
 						>
-							<?php esc_html_e( 'reCAPTCHA v2 - "I am not a robot"', 'botblocker-security' ); ?>
+							<?php esc_html_e( 'reCaptcha v2 - "I am not a robot"', 'botblocker-security' ); ?>
 						</option>
 						<option value="4" 
 						<?php
@@ -78,7 +77,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						echo ( empty( $BBCS->settings->recaptcha_key2 ) || empty( $BBCS->settings->recaptcha_secret2 ) ? 'disabled' : '' );
 						?>
 						>
-							<?php esc_html_e( 'reCAPTCHA v2', 'botblocker-security' ); ?>
+							<?php esc_html_e( 'reCaptcha v2', 'botblocker-security' ); ?>
 						</option>
 
 						<option value="5" <?php selected( '5', isset( $bbcs_settings['bbcs_captcha_mode'] ) ? $bbcs_settings['bbcs_captcha_mode'] : BOTBLOCKER_CAPTCHA_MODE_DEFAULT ); ?>>
@@ -126,7 +125,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<span class="bbcs-label-input"><?php esc_html_e( 'Image Captcha Pack:', 'botblocker-security' ); ?></span>
 					<i class="fa-regular fa-circle-question"
 					data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top"
-					data-bs-original-title="<?php esc_attr_e( 'Select image theme for CAPTCHA.', 'botblocker-security' ); ?>">
+					data-bs-original-title="<?php esc_attr_e( 'Select image theme for Captcha.', 'botblocker-security' ); ?>">
 					</i>
 				</div>
 				<div class="bbcs_text_input_inner">
@@ -144,7 +143,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<div class="bbcs_label_input_box">
 					<span class="bbcs-label-input"><?php esc_html_e( 'Captcha Timeout (seconds):', 'botblocker-security' ); ?></span>
 					<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top"
-					data-bs-original-title="<?php esc_attr_e( 'Time allowed to complete CAPTCHA verification.', 'botblocker-security' ); ?>">
+					data-bs-original-title="<?php esc_attr_e( 'Time allowed to complete Captcha verification.', 'botblocker-security' ); ?>">
 					</i>
 				</div>
 				<div class="bbcs_number_input_inner">
@@ -161,7 +160,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					printf(
 						wp_kses_post(
 							// translators: %s is the URL to the reCaptcha v3 integration configuration page.
-							__( 'Combine any CAPTCHA type with reCaptcha v3. <a href="%s">Configure keys</a> in Integrations.', 'botblocker-security' )
+							__( 'Combine any Captcha type with reCaptcha v3. <a href="%s">Configure keys</a> in Integrations.', 'botblocker-security' )
 						),
 						esc_url( $BBCSA->pages_integrations ) . '#bbcs_recaptchav3'
 					);

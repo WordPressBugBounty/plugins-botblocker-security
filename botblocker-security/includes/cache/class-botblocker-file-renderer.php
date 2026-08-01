@@ -332,6 +332,372 @@ class BotBlockerFileRenderer {
 		self::atomicFileWrite( BotBlockerMultisite::getDataDir() . 'ip.php', $ip_data );
 	}
 
+	/**
+	 * Rebuild hot-bans.php from the DB - mirrors renderIps() for short-term bans.
+	 *
+	 * Queries both IPv4/IPv6 tables for active short-term bans
+	 * (disable = 0 AND expires > time() AND expires <= time() + DAY_IN_SECONDS)
+	 * and writes a fresh file. Any orphan entries (no DB row) are dropped.
+	 */
+	public static function renderHotBans(): void {
+		global $wpdb;
+
+		$now            = time();
+		$one_day_later  = $now + DAY_IN_SECONDS;
+
+		$hot = array(
+			'ipv4' => array(),
+			'ipv6' => array(),
+		);
+
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$rows_ipv4 = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT `search`, `rule`, `expires` FROM `{$wpdb->bbcs_ipv4rules}` WHERE disable = %d AND expires > %d AND expires <= %d",
+				0,
+				$now,
+				$one_day_later
+			),
+			ARRAY_A
+		);
+
+		foreach ( (array) $rows_ipv4 as $row ) {
+			$hot['ipv4'][ $row['search'] ] = array( $row['rule'], (int) $row['expires'] );
+		}
+
+		$rows_ipv6 = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT `search`, `rule`, `expires` FROM `{$wpdb->bbcs_ipv6rules}` WHERE disable = %d AND expires > %d AND expires <= %d",
+				0,
+				$now,
+				$one_day_later
+			),
+			ARRAY_A
+		);
+
+		foreach ( (array) $rows_ipv6 as $row ) {
+			$hot['ipv6'][ $row['search'] ] = array( $row['rule'], (int) $row['expires'] );
+		}
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+		$file = BotBlockerMultisite::getDataDir() . 'hot-bans.php';
+
+		$lockFp = self::acquireHotBanLock();
+		if ( ! $lockFp ) {
+			return;
+		}
+
+		$total = count( $hot['ipv4'] ) + count( $hot['ipv6'] );
+		if ( $total === 0 ) {
+			if ( file_exists( $file ) ) {
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+				@unlink( $file );
+				if ( function_exists( 'opcache_invalidate' ) ) {
+					@opcache_invalidate( $file, true );
+				}
+			}
+			self::releaseHotBanLock( $lockFp );
+			return;
+		}
+
+		self::atomicFileWrite( $file, self::buildHotBansContent( $hot ) );
+		self::releaseHotBanLock( $lockFp );
+	}
+
+	/**
+	 * Build the PHP file content for hot-bans.php from a data array.
+	 *
+	 * @param array{ipv4: array<string, array{string, int}>, ipv6: array<string, array{string, int}>} $data
+	 * @return string
+	 */
+	private static function buildHotBansContent( array $data ): string {
+		$content  = BBCS_STOP_DIRECT . " \n";
+		$content .= "return [\n";
+		$content .= "    'ipv4' => [\n";
+		foreach ( $data['ipv4'] as $ipAddr => $entry ) {
+			$content .= "        '" . addslashes( $ipAddr ) . "' => ['" . addslashes( $entry[0] ) . "', " . intval( $entry[1] ) . "],\n";
+		}
+		$content .= "    ],\n";
+		$content .= "    'ipv6' => [\n";
+		foreach ( $data['ipv6'] as $ipAddr => $entry ) {
+			$content .= "        '" . addslashes( $ipAddr ) . "' => ['" . addslashes( $entry[0] ) . "', " . intval( $entry[1] ) . "],\n";
+		}
+		$content .= "    ]\n";
+		$content .= "];\n";
+		return $content;
+	}
+
+	private static function hotBanLockFile(): string {
+		return BotBlockerMultisite::getDataDir() . '.hotbans.lock';
+	}
+
+	private static function acquireHotBanLock() {
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
+		$fp = @fopen( self::hotBanLockFile(), 'w' );
+		if ( $fp ) {
+			@flock( $fp, LOCK_EX );
+		}
+		return $fp;
+	}
+
+	private static function releaseHotBanLock( $fp ): void {
+		if ( $fp ) {
+			@flock( $fp, LOCK_UN );
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+			@fclose( $fp );
+		}
+	}
+
+	public static function syncIpBanFiles( string $ip, string $rule, int $expires ): void {
+		// Only hot-ban short-term bans (won't appear in ip.php).
+		// Permanent/long-term bans go to ip.php only via renderIps().
+		if ( $expires <= time() + DAY_IN_SECONDS ) {
+			self::appendHotBan( $ip, $rule, $expires );
+		} else {
+			self::removeHotBan( $ip );
+		}
+		self::renderIps();
+		BotBlockerCache::clearFileCache();
+	}
+
+	public static function removeHotBan( string $ip ): void {
+		$ip = trim( $ip );
+		if ( $ip === '' ) {
+			return;
+		}
+
+		$file = BotBlockerMultisite::getDataDir() . 'hot-bans.php';
+		if ( ! file_exists( $file ) ) {
+			return;
+		}
+
+		$lockFp = self::acquireHotBanLock();
+		if ( ! $lockFp ) {
+			return;
+		}
+
+		$data = bbcs_safe_load_data_file( $file );
+		if ( ! is_array( $data ) ) {
+			self::releaseHotBanLock( $lockFp );
+			return;
+		}
+
+		$key   = filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ? 'ipv6' : 'ipv4';
+		$found = false;
+		if ( isset( $data[ $key ][ $ip ] ) ) {
+			unset( $data[ $key ][ $ip ] );
+			$found = true;
+		}
+
+		if ( ! $found ) {
+			self::releaseHotBanLock( $lockFp );
+			return;
+		}
+
+		$total = count( $data['ipv4'] ?? array() ) + count( $data['ipv6'] ?? array() );
+		if ( $total === 0 ) {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+			@unlink( $file );
+			if ( function_exists( 'opcache_invalidate' ) ) {
+				@opcache_invalidate( $file, true );
+			}
+			self::releaseHotBanLock( $lockFp );
+			BotBlockerCache::clearFileCache();
+			return;
+		}
+
+		self::atomicFileWrite( $file, self::buildHotBansContent( $data ) );
+
+		self::releaseHotBanLock( $lockFp );
+		BotBlockerCache::clearFileCache();
+	}
+
+	public static function appendHotBan( string $ip, string $action, int $expires ): void {
+		$ip = trim( $ip );
+		if ( $ip === '' ) {
+			return;
+		}
+
+		$key = filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ? 'ipv6' : 'ipv4';
+
+		$file = BotBlockerMultisite::getDataDir() . 'hot-bans.php';
+
+		$lockFp = self::acquireHotBanLock();
+		if ( ! $lockFp ) {
+			return;
+		}
+
+		$existing = array( 'ipv4' => array(), 'ipv6' => array() );
+		if ( file_exists( $file ) ) {
+			$loaded = bbcs_safe_load_data_file( $file );
+			if ( is_array( $loaded ) ) {
+				$existing = $loaded;
+			}
+		}
+
+		self::pruneExpiredHotBans( $existing );
+
+		$existing[ $key ][ $ip ] = array( $action, $expires );
+
+		if ( count( $existing['ipv4'] ) + count( $existing['ipv6'] ) > 10000 ) {
+			self::releaseHotBanLock( $lockFp );
+			self::renderHotBans();
+			self::renderIps();
+			return;
+		}
+
+		// atomicFileWrite() calls bbcs_data_file_sign() again because content starts with
+		// <?php (via BBCS_STOP_DIRECT). This is safe - bbcs_data_file_verify() uses strrpos()
+		// to find the last // HASH: line and verifies against the content before it.
+		// A second hash simply overwrites the first; verification always succeeds.
+		self::atomicFileWrite( $file, self::buildHotBansContent( $existing ) );
+
+		self::releaseHotBanLock( $lockFp );
+	}
+
+	/**
+	 * Batch-add multiple entries to hot-bans.php in a single read+write.
+	 *
+	 * Only short-term bans (expires <= time() + DAY_IN_SECONDS) are stored;
+	 * permanent/long-term bans belong in ip.php only (see syncIpBanFiles).
+	 *
+	 * @param array<int, array{ip: string, action: string, expires: int}> $entries
+	 */
+	public static function appendHotBanBatch( array $entries ): void {
+		if ( empty( $entries ) ) {
+			return;
+		}
+
+		$file = BotBlockerMultisite::getDataDir() . 'hot-bans.php';
+
+		$lockFp = self::acquireHotBanLock();
+		if ( ! $lockFp ) {
+			return;
+		}
+
+		$existing = array( 'ipv4' => array(), 'ipv6' => array() );
+		if ( file_exists( $file ) ) {
+			$loaded = bbcs_safe_load_data_file( $file );
+			if ( is_array( $loaded ) ) {
+				$existing = $loaded;
+			}
+		}
+
+		// Prune expired entries inline - no extra I/O (already read the file).
+		self::pruneExpiredHotBans( $existing );
+
+		foreach ( $entries as $entry ) {
+			$ip = trim( $entry['ip'] ?? '' );
+			if ( $ip === '' ) {
+				continue;
+			}
+			// Long-term/permanent bans do not belong in hot-bans (Gap 2).
+			if ( ( $entry['expires'] ?? 0 ) > time() + DAY_IN_SECONDS ) {
+				continue;
+			}
+			$key                           = filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ? 'ipv6' : 'ipv4';
+			$existing[ $key ][ $ip ]       = array( $entry['action'], $entry['expires'] );
+		}
+
+		if ( count( $existing['ipv4'] ) + count( $existing['ipv6'] ) > 10000 ) {
+			self::releaseHotBanLock( $lockFp );
+			self::renderHotBans();
+			self::renderIps();
+			return;
+		}
+
+		self::atomicFileWrite( $file, self::buildHotBansContent( $existing ) );
+
+		self::releaseHotBanLock( $lockFp );
+	}
+
+	private static function pruneExpiredHotBans( array &$data ): bool {
+		$now     = time();
+		$changed = false;
+		foreach ( array( 'ipv4', 'ipv6' ) as $version ) {
+			if ( empty( $data[ $version ] ) ) {
+				continue;
+			}
+			foreach ( $data[ $version ] as $ip => $entry ) {
+				if ( ! is_array( $entry ) || empty( $entry[1] ) || $entry[1] <= $now ) {
+					unset( $data[ $version ][ $ip ] );
+					$changed = true;
+				}
+			}
+		}
+		return $changed;
+	}
+
+	public static function cleanupHotBans(): void {
+		$file = BotBlockerMultisite::getDataDir() . 'hot-bans.php';
+		if ( ! file_exists( $file ) ) {
+			return;
+		}
+
+		$lockFp = self::acquireHotBanLock();
+		if ( ! $lockFp ) {
+			return;
+		}
+
+		$data = bbcs_safe_load_data_file( $file );
+		if ( ! is_array( $data ) ) {
+			self::releaseHotBanLock( $lockFp );
+			return;
+		}
+
+		$changed = self::pruneExpiredHotBans( $data );
+		if ( ! $changed ) {
+			self::releaseHotBanLock( $lockFp );
+			return;
+		}
+
+		$total = count( $data['ipv4'] ?? array() ) + count( $data['ipv6'] ?? array() );
+		if ( $total === 0 ) {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+			@unlink( $file );
+			if ( function_exists( 'opcache_invalidate' ) ) {
+				@opcache_invalidate( $file, true );
+			}
+			self::releaseHotBanLock( $lockFp );
+			return;
+		}
+		self::atomicFileWrite( $file, self::buildHotBansContent( $data ) );
+
+		self::releaseHotBanLock( $lockFp );
+	}
+
+	public static function renderTlsFingerprints(): void {
+		global $wpdb;
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- intentional uncached query
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT `fingerprint`, `category`, `ua_family`, `description` FROM `{$wpdb->bbcs_tls_fingerprints}` WHERE disabled = %d ORDER BY category ASC, fingerprint ASC",
+				0
+			),
+			ARRAY_A
+		);
+	// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+		$data = BBCS_STOP_DIRECT . "\nreturn [\n";
+		$data .= "    'bbcs_tls_fingerprints' => [\n";
+		foreach ( (array) $rows as $row ) {
+			$fp    = addslashes( $row['fingerprint'] );
+			$cat   = addslashes( $row['category'] );
+			$ua    = addslashes( $row['ua_family'] );
+			$desc  = addslashes( $row['description'] );
+			$data .= "        '{$fp}' => ['category' => '{$cat}', 'ua_family' => '{$ua}', 'description' => '{$desc}'],\n";
+		}
+		$data .= "    ]\n";
+		$data .= "];\n";
+
+		self::atomicFileWrite( BotBlockerMultisite::getDataDir() . 'tls_fingerprints.php', $data );
+	}
+
+	public static function renderAddons(): void {
+		$content = BBCS_STOP_DIRECT . "\nreturn " . BotBlockerInstall::phpExport( BotBlockerAddons::scanAllRaw(), 0, true ) . ";\n";
+		self::atomicFileWrite( BotBlockerMultisite::getDataDir() . 'addons.php', bbcs_data_file_sign( $content ) );
+	}
+
 	public static function generateSettingsFile( $type = null ) {
 
 		global $wpdb;
@@ -364,7 +730,11 @@ class BotBlockerFileRenderer {
 		$settingsContent = BBCS_STOP_DIRECT . "\nreturn " . BotBlockerInstall::phpExport( $settings, 0, true ) . ";\n";
 
 		$settingsFile = BotBlockerMultisite::getDataDir() . 'settings.php';
-		self::atomicFileWrite( $settingsFile, $settingsContent );
+		$wrote        = self::atomicFileWrite( $settingsFile, $settingsContent );
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( '[BBCS DEBUG] [Early-Init] generateSettingsFile blog_id=' . get_current_blog_id() . ' file=' . $settingsFile . ' wrote=' . ( $wrote ? 'YES' : 'NO' ) . ' keys=' . count( $settings ) );
+		}
 
 		BotBlockerCache::clearFileCache();
 		if ( ! isset( $type ) ) {
@@ -373,5 +743,4 @@ class BotBlockerFileRenderer {
 			return $settings;
 		}
 	}
-
 }

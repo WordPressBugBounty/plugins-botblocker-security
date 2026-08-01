@@ -6,6 +6,14 @@
     // local flag for loading the table
     var proxyTableLoading = false;
 
+    // Register loading state for new UI tab switching guard.
+    if (typeof window.BBCS_TabLoadingRegistry !== 'undefined') {
+      window.BBCS_TabLoadingRegistry['Proxy'] = function() { return proxyTableLoading; };
+    }
+
+    var lastProxyUITab = '';
+    var proxyJustInitialized = false;
+
     // debounce / throttle params
     var switchDebounceMs = 200; // minimum interval between switches
     var _lastSwitchTs = 0;
@@ -98,10 +106,10 @@
                         width: "100px",
                         render: function (data, type, row) {
                             return (
-                                '<button class="btn btn-sm btn-default bbcs-actions-b edit-proxy" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Edit" data-id="' +
+                                '<button class="btn btn-sm btn-default bbcs-actions-b edit-proxy" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="' + bbcsProxyL10n.edit + '" data-id="' +
                                 row.id +
                                 '"><i class="fa-regular fa-edit"></i></button> ' +
-                                '<button class="btn btn-sm btn-default bbcs-actions-b delete-proxy" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Delete" data-id="' +
+                                '<button class="btn btn-sm btn-default bbcs-actions-b delete-proxy" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="' + bbcsProxyL10n.delete + '" data-id="' +
                                 row.id +
                                 '"><i class="fa-regular fa-trash-can"></i></button>'
                             );
@@ -114,48 +122,61 @@
                         className: "text-wrap",
                     },
                 ],
-                layout: {
-                    topStart: {
-                        buttons: [
-                            "copy",
-                            "csv",
-                            "excel",
-                            "pdf",
-                            "print",
-                            "colvis",
-                            {
-                                extend: "collection",
-                                text: "Length Menu",
-                                buttons: [
-                                    {
-                                        text: "10",
-                                        action: function (e, dt, node, config) {
-                                            dt.page.len(10).draw();
+                layout: (function () {
+                    var isNewUI = !!document.querySelector('.bbcs-app');
+                    return isNewUI ? {
+                        topStart: {
+                            search: {
+                                text: '',
+                                placeholder: bbcsProxyL10n.search_placeholder
+                            }
+                        },
+                        topEnd: {
+                            buttons: ['csv', 'excel']
+                        }
+                    } : {
+                        topStart: {
+                            buttons: [
+                                "copy",
+                                "csv",
+                                "excel",
+                                "pdf",
+                                "print",
+                                "colvis",
+                                {
+                                    extend: "collection",
+                                    text: "Length Menu",
+                                    buttons: [
+                                        {
+                                            text: "10",
+                                            action: function (e, dt, node, config) {
+                                                dt.page.len(10).draw();
+                                            },
                                         },
-                                    },
-                                    {
-                                        text: "25",
-                                        action: function (e, dt, node, config) {
-                                            dt.page.len(25).draw();
+                                        {
+                                            text: "25",
+                                            action: function (e, dt, node, config) {
+                                                dt.page.len(25).draw();
+                                            },
                                         },
-                                    },
-                                    {
-                                        text: "50",
-                                        action: function (e, dt, node, config) {
-                                            dt.page.len(50).draw();
+                                        {
+                                            text: "50",
+                                            action: function (e, dt, node, config) {
+                                                dt.page.len(50).draw();
+                                            },
                                         },
-                                    },
-                                    {
-                                        text: "100",
-                                        action: function (e, dt, node, config) {
-                                            dt.page.len(100).draw();
+                                        {
+                                            text: "100",
+                                            action: function (e, dt, node, config) {
+                                                dt.page.len(100).draw();
+                                            },
                                         },
-                                    },
-                                ],
-                            },
-                        ],
-                    },
-                },
+                                    ],
+                                },
+                            ],
+                        }
+                    };
+                })(),
                 drawCallback: function (settings) {
                     var api = this.api();
                     api.columns().every(function () {
@@ -174,6 +195,8 @@
                     }, 100);
                 },
             });
+
+            proxyJustInitialized = true;
         }
         return proxyTable;
     }
@@ -185,20 +208,20 @@
         var modalDialog = $('<div class="modal-dialog">');
         var modalContent = $('<div class="modal-content">');
         var modalHeader = $(
-            '<div class="modal-header"><h5 class="modal-title" id="importProxyResultModalLabel">Import Result</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>'
+            '<div class="modal-header"><h5 class="modal-title" id="importProxyResultModalLabel">' + bbcsProxyL10n.import_result + '</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>'
         );
         var modalBody = $(
             '<div class="modal-body">' +
-                "<p>Imported: " +
+                "<p>" + bbcsProxyL10n.imported + ": " +
                 result.imported +
                 "</p>" +
-                "<p>Skipped: " +
+                "<p>" + bbcsProxyL10n.skipped + ": " +
                 result.skipped +
                 "</p>" +
                 "</div>"
         );
         var modalFooter = $(
-            '<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>'
+            '<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">' + bbcsProxyL10n.close + '</button></div>'
         );
 
         modalContent.append(modalHeader, modalBody, modalFooter);
@@ -216,13 +239,13 @@
         var modalDialog = $('<div class="modal-dialog">');
         var modalContent = $('<div class="modal-content">');
         var modalHeader = $(
-            '<div class="modal-header"><h5 class="modal-title" id="confirmClearProxiesModalLabel">Clear All Proxies</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>'
+            '<div class="modal-header"><h5 class="modal-title" id="confirmClearProxiesModalLabel">' + bbcsProxyL10n.clear_all_rules + '</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>'
         );
         var modalBody = $(
-            '<div class="modal-body">Are you sure you want to remove all proxies?</div>'
+            '<div class="modal-body">' + bbcsProxyL10n.confirm_clear + '</div>'
         );
         var modalFooter = $(
-            '<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button><button type="button" class="btn btn-primary" id="confirmClearProxiesButton">Yes</button></div>'
+            '<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">' + bbcsProxyL10n.no + '</button><button type="button" class="btn btn-primary" id="confirmClearProxiesButton">' + bbcsProxyL10n.yes + '</button></div>'
         );
 
         modalContent.append(modalHeader, modalBody, modalFooter);
@@ -264,6 +287,20 @@
             }
         });
 
+        $(document).on('bbcs:tab-changed', function (e, data) {
+            if (data.tab === 'Proxy') {
+                var sameTab = (lastProxyUITab === data.tab);
+                lastProxyUITab = data.tab;
+                if (proxyTable) {
+                    proxyTable.columns.adjust();
+                    if (!sameTab && !proxyJustInitialized) {
+                        proxyTable.draw(false);
+                    }
+                    proxyJustInitialized = false;
+                }
+            }
+        });
+
         $("#editProxyForm").on("submit", function (e) {
             e.preventDefault();
             $.ajax({
@@ -277,6 +314,7 @@
                     if (response.success) {
                         $("#editProxyModal").modal("hide");
                         $("#botblocker-proxy-rules").DataTable().ajax.reload();
+                                    if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
                     } else {
                         alert(bbcsProxyL10n.failed_update + response.data);
                     }
@@ -323,6 +361,7 @@
                     success: function (response) {
                         if (response.success) {
                             $("#botblocker-proxy-rules").DataTable().ajax.reload();
+                                    if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
                         }
                     },
                 });
@@ -346,6 +385,7 @@
                     if (response.success) {
                         $("#createProxyModal").modal("hide");
                         $("#botblocker-proxy-rules").DataTable().ajax.reload();
+                                    if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
                     } else {
                         alert(bbcsProxyL10n.failed_create + response.data);
                     }
@@ -354,6 +394,35 @@
         });
 
         $("#bbcs_proxy_export").on("click", function (e) {
+            e.preventDefault();
+            $.ajax({
+                url: botblockerData.ajaxurl,
+                type: "POST",
+                data: {
+                    action: "bbcs_export_proxies",
+                    nonce: botblockerData.nonce,
+                },
+                success: function (response) {
+                    if (response.success) {
+                        var blob = new Blob(
+                            [JSON.stringify(response.data, null, 2)],
+                            { type: "application/json" }
+                        );
+                        var downloadLink = document.createElement("a");
+                        downloadLink.href = window.URL.createObjectURL(blob);
+                        downloadLink.download = "botblocker_proxies.json";
+                        document.body.appendChild(downloadLink);
+                        downloadLink.click();
+                        document.body.removeChild(downloadLink);
+                    } else {
+                        alert(bbcsProxyL10n.failed_export + response.data);
+                    }
+                },
+            });
+        });
+
+        $("#bbcs_pagehead_export").on("click", function (e) {
+            if ($('.bbcs-tab.is-active').data('tab') !== 'Proxy') return;
             e.preventDefault();
             $.ajax({
                 url: botblockerData.ajaxurl,
@@ -403,6 +472,7 @@
                                     $("#botblocker-proxy-rules")
                                         .DataTable()
                                         .ajax.reload();
+                                    if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
                                 } else {
                                     alert(
                                         bbcsProxyL10n.failed_import +
@@ -429,6 +499,7 @@
                     success: function (response) {
                         if (response.success) {
                             $("#botblocker-proxy-rules").DataTable().ajax.reload();
+                                    if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
                         } else {
                             alert(bbcsProxyL10n.failed_clear + response.data);
                         }
@@ -454,5 +525,50 @@
                 }
             });
         });
+
+        // New UI pagehead button wiring - tab-aware
+        if (document.querySelector('.bbcs-app')) {
+            $(document).on("click", "#bbcs_pagehead_add", function () {
+                var activeTab = $('.bbcs-tab.is-active').data('tab');
+                if (activeTab === 'Proxy') {
+                    $("#createProxyModal").modal("show");
+                }
+            });
+
+            $(document).on("click", "#bbcs_pagehead_import", function () {
+                var activeTab = $('.bbcs-tab.is-active').data('tab');
+                if (activeTab === 'Proxy') {
+                    var fileInput = $("<input>", {
+                        type: "file",
+                        accept: "application/json",
+                    }).on("change", function () {
+                        var file = this.files[0];
+                        if (file) {
+                            readJSONFile(file, function (data) {
+                                $.ajax({
+                                    url: botblockerData.ajaxurl,
+                                    type: "POST",
+                                    data: {
+                                        action: "bbcs_import_proxies",
+                                        proxies: JSON.stringify(data),
+                                        nonce: botblockerData.nonce,
+                                    },
+                                    success: function (response) {
+                                        if (response.success) {
+                                            showImportResultModal(response.data);
+                                            $("#botblocker-proxy-rules").DataTable().ajax.reload();
+                                    if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
+                                        } else {
+                                            alert(bbcsProxyL10n.failed_import + response.data);
+                                        }
+                                    },
+                                });
+                            });
+                        }
+                    });
+                    fileInput.click();
+                }
+            });
+        }
     });
 })(jQuery);

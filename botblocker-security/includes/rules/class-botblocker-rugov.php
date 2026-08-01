@@ -7,11 +7,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class BotBlockerRugov {
 
-	const LOCK_KEY = 'bbcs_rugov_sync_lock';
-	const LOCK_TTL = 30 * MINUTE_IN_SECONDS;
-	const STATUS_OPTION = 'bbcs_rugov_sync_status';
-	const SELF_HEAL_KEY = 'bbcs_rugov_self_heal_throttle';
-	const MIN_RANGES = 500;
+	const LOCK_KEY       = 'bbcs_rugov_sync_lock';
+	const LOCK_TTL       = 30 * MINUTE_IN_SECONDS;
+	const STATUS_OPTION  = 'bbcs_rugov_sync_status';
+	const SELF_HEAL_KEY  = 'bbcs_rugov_self_heal_throttle';
+	const MIN_RANGES     = 500;
 	const FRESHNESS_DAYS = 7;
 
 	public static function getStatus(): array {
@@ -109,9 +109,9 @@ class BotBlockerRugov {
 			$request['hash'] = $stored_hash;
 		}
 
-		$result = BotBlockerWpRequest::send_to_cloud( $request, BOTBLOCKER_API_GS_URL, 'rugov_sync' );
+		$result = BotBlockerWpRequest::send_to_cloud( $request, BOTBLOCKER_API_URL, 'rugov_sync' );
 		if ( false === $result ) {
-			$result = BotBlockerWpRequest::send_to_cloud( $request, BOTBLOCKER_API_URL, 'rugov_sync' );
+			$result = BotBlockerWpRequest::send_to_cloud( $request, BOTBLOCKER_API_GS_URL, 'rugov_sync' );
 		}
 
 		if ( ! is_array( $result ) ) {
@@ -202,10 +202,10 @@ class BotBlockerRugov {
 			return false;
 		}
 
-		$php = "<?php\nif ( ! defined( 'ABSPATH' ) ) {\n\texit;\n}\n\n";
+		$php  = "<?php\nif ( ! defined( 'ABSPATH' ) ) {\n\texit;\n}\n\n";
 		$php .= "// bbcs-rugov-data.php\n";
 		$php .= "// Auto-generated CIDR list (VK networks excluded).\n";
-		$php .= "// Source: BotBlocker Cloud API — rugov_sync\n\n";
+		$php .= "// Source: BotBlocker Cloud API - rugov_sync\n\n";
 		$php .= "return array(\n\t'bbcs_rugov' => array(\n";
 		foreach ( $result as $cidr ) {
 			$php .= "\t\t'" . addslashes( $cidr ) . "',\n";
@@ -244,12 +244,12 @@ class BotBlockerRugov {
 
 		self::setStatus(
 			array(
-				'state'        => 'ok',
-				'hash'         => $new_hash,
-				'range_count'  => count( $result ),
-				'last_sync'    => $now,
-				'last_error'   => '',
-				'failures'     => 0,
+				'state'       => 'ok',
+				'hash'        => $new_hash,
+				'range_count' => count( $result ),
+				'last_sync'   => $now,
+				'last_error'  => '',
+				'failures'    => 0,
 			)
 		);
 

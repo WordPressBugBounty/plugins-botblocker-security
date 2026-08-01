@@ -23,7 +23,7 @@ trait BotBlockerDeniedPageTrait {
 
 	private function create_denied_inline_assets(): array {
 		return array(
-			'styles'  => array(
+			'styles'           => array(
 				BotBlockerSecurityPageAssets::read( $this->dirs['public'], 'css/template.css' ),
 			),
 			'scripts'          => array(),

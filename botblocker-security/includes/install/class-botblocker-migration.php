@@ -7,32 +7,43 @@ if ( ! defined( 'ABSPATH' ) ) {
 class BotBlockerMigration {
 
 	public static function getRegistry(): array {
-		return apply_filters( 'bbcs_migrations_registry', array(
-			'2.2.0' => array(
-				'file'     => 'migration-2-2-0.php',
-				'callback' => 'bbcs_migration_2_2_0',
+		return apply_filters(
+			'bbcs_migrations_registry',
+			array(
+				'2.2.0' => array(
+					'file'     => 'migration-2-2-0.php',
+					'callback' => 'bbcs_migration_2_2_0',
+				),
+				'2.3.0' => array(
+					'file'     => 'migration-2-3-0.php',
+					'callback' => 'bbcs_migration_2_3_0',
+				),
+				'2.4.0' => array(
+					'file'     => 'migration-2-4-0.php',
+					'callback' => 'bbcs_migration_2_4_0',
+				),
+				'2.5.0' => array(
+					'file'     => 'migration-2-5-0.php',
+					'callback' => 'bbcs_migration_2_5_0',
+				),
+				'2.6.0' => array(
+					'file'     => 'migration-2-6-0.php',
+					'callback' => 'bbcs_migration_2_6_0',
+				),
+				'2.7.0' => array(
+					'file'     => 'migration-2-7-0.php',
+					'callback' => 'bbcs_migration_2_7_0',
+				),
+			'2.8.0' => array(
+				'file'     => 'migration-2-8-0.php',
+				'callback' => 'bbcs_migration_2_8_0',
 			),
-			'2.3.0' => array(
-				'file'     => 'migration-2-3-0.php',
-				'callback' => 'bbcs_migration_2_3_0',
+			'2.9.0' => array(
+				'file'     => 'migration-2-9-0.php',
+				'callback' => 'bbcs_migration_2_9_0',
 			),
-			'2.4.0' => array(
-				'file'     => 'migration-2-4-0.php',
-				'callback' => 'bbcs_migration_2_4_0',
-			),
-			'2.5.0' => array(
-				'file'     => 'migration-2-5-0.php',
-				'callback' => 'bbcs_migration_2_5_0',
-			),
-			'2.6.0' => array(
-				'file'     => 'migration-2-6-0.php',
-				'callback' => 'bbcs_migration_2_6_0',
-			),
-			'2.7.0' => array(
-				'file'     => 'migration-2-7-0.php',
-				'callback' => 'bbcs_migration_2_7_0',
-			),
-		) );
+			)
+		);
 	}
 
 	public static function loadMigration( array $entry ): bool {

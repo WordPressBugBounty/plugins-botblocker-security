@@ -42,7 +42,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<span class="bbcs_label_input_checkbox"><?php esc_html_e( 'Allow Payment Gateway Callbacks', 'botblocker-security' ); ?></span>
 				</div>
 				<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top"
-					data-bs-original-title="<?php esc_attr_e( 'When enabled, requests matching well-known payment callback patterns (paths, query keys, admin-ajax actions, signature headers) skip JS-challenge, CAPTCHA and rate-limit. Recommended for any site with WooCommerce or another e-commerce plugin.', 'botblocker-security' ); ?>"></i>
+					data-bs-original-title="<?php esc_attr_e( 'When enabled, requests matching well-known payment callback patterns (paths, query keys, admin-ajax actions, signature headers) skip JS-challenge, Captcha and rate-limit. Recommended for any site with WooCommerce or another e-commerce plugin.', 'botblocker-security' ); ?>"></i>
 			</div>
 
 			<div class="bbcs_checkbox_input mb-2">
@@ -75,7 +75,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<span class="bbcs_label_input_checkbox"><?php esc_html_e( 'Enforce IP / ASN Rules for Payment Callbacks', 'botblocker-security' ); ?></span>
 				</div>
 				<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top"
-					data-bs-original-title="<?php esc_attr_e( 'When enabled, payment callbacks still skip CAPTCHA but IP blacklists, ASN rules, path rules and country blocks remain active. A blocked IP cannot use a payment callback to bypass the block.', 'botblocker-security' ); ?>"></i>
+					data-bs-original-title="<?php esc_attr_e( 'When enabled, payment callbacks still skip Captcha but IP blacklists, ASN rules, path rules and country blocks remain active. A blocked IP cannot use a payment callback to bypass the block.', 'botblocker-security' ); ?>"></i>
 			</div>
 
 			<?php if ( BotBlockerPaymentData::detectEcommerce() ) : ?>

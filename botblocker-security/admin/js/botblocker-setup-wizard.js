@@ -568,7 +568,7 @@
                 $actions.hide();
                 $btn.prop('disabled', true);
 
-                // 'none' is always available — select immediately, no AJAX delay
+                // 'none' is always available - select immediately, no AJAX delay
                 if (!this.selectedCache || this.selectedCache === 'none') {
                     $('.bbcs-cache-card[data-cache="none"]').addClass('selected');
                     this.selectedCache = 'none';
@@ -612,7 +612,7 @@
                                     $('.bbcs-cache-card').removeClass('selected');
                                     $target.addClass('selected');
                                 } else {
-                                    // Saved selection unavailable — fall back to 'none'
+                                    // Saved selection unavailable - fall back to 'none'
                                     $('.bbcs-cache-card').removeClass('selected');
                                     $('.bbcs-cache-card[data-cache="none"]').addClass('selected');
                                     this.selectedCache = 'none';
@@ -706,14 +706,14 @@
                             $('.bbcs-wizard-final-mode').text(modeNames[this.selectedPreset] || 'Strong');
                             
                             const captchaNames = {
-                                '1': 'Color Circles',
-                                '2': 'Image Recognition',
-                                '5': 'Dynamic Shapes',
-                                '6': 'Dynamic Digits',
-                                '7': 'Hold Button',
-                                '8': 'Silent Auto-Verify'
+                                '1': 'Color Buttons',
+                                '2': 'BotBlocker Image Captcha',
+                                '5': 'Dynamic Shape Captcha',
+                                '6': 'Dynamic Digit Captcha',
+                                '7': 'Hold Button Captcha',
+                                '8': 'Silent Auto-Verify (No Captcha)'
                             };
-                            $('.bbcs-wizard-final-captcha').text(captchaNames[this.selectedCaptchaMode] || 'Silent Auto-Verify');
+                            $('.bbcs-wizard-final-captcha').text(captchaNames[this.selectedCaptchaMode] || 'Silent Auto-Verify (No Captcha)');
                             
                             const initNames = {
                                 'regular': 'Regular Plugin',

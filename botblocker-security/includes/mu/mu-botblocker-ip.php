@@ -11,15 +11,30 @@ trait BotBlockerMuIP {
 		$res = array();
 		if ( file_exists( $ip_file = $this->dirs['data'] . 'ip.php' ) ) {
 			$ip_rule_list = bbcs_safe_load_data_file( $ip_file );
-			if ( ! is_array( $ip_rule_list ) ) {
-				return array();
-			}
-			$res = $ip_rule_list[ 'ipv' . $this->ip_version ] ?? array();
-			unset( $ip_rule_list['ipv4'], $ip_rule_list['ipv6'] );
-			foreach ( $ip_rule_list as $category => $rules ) {
-				$res = array_merge( $res, $rules );
+			if ( is_array( $ip_rule_list ) ) {
+				$res = $ip_rule_list[ 'ipv' . $this->ip_version ] ?? array();
+				unset( $ip_rule_list['ipv4'], $ip_rule_list['ipv6'] );
+				foreach ( $ip_rule_list as $category => $rules ) {
+					$res = array_merge( $res, $rules );
+				}
 			}
 		}
+
+		$hotBansFile = $this->dirs['data'] . 'hot-bans.php';
+		if ( file_exists( $hotBansFile ) ) {
+			$hotData = bbcs_safe_load_data_file( $hotBansFile );
+			if ( is_array( $hotData ) ) {
+				$now = time();
+				$family = 'ipv' . $this->ip_version;
+				$entries = isset( $hotData[ $family ] ) && is_array( $hotData[ $family ] ) ? $hotData[ $family ] : array();
+				foreach ( $entries as $ip => $entry ) {
+					if ( is_array( $entry ) && ! empty( $entry[1] ) && $entry[1] > $now ) {
+						$res[ $ip ] = $entry[0];
+					}
+				}
+			}
+		}
+
 		return $res;
 	}
 

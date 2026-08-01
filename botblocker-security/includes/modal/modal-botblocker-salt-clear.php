@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<li class="bbcs-modal-li"><?php esc_html_e( 'Takes effect immediately.', 'botblocker-security' ); ?></li>
 				<li class="bbcs-modal-li"><?php esc_html_e( 'This process is irreversible.', 'botblocker-security' ); ?></li>
 			</ul>
-			<p class="bbcs-black"><?php esc_html_e( 'Are you sure you want to continue?', 'botblocker-security' ); ?></p>
+			<p class="bbcs-black"><?php esc_html_e( 'Are you sure you want to clear the security salt?', 'botblocker-security' ); ?></p>
 		</div>
 		<div class="modal-footer">
 			<button type="button" class="btn btn-secondary btn-xs" data-bs-dismiss="modal"><?php esc_html_e( 'Cancel', 'botblocker-security' ); ?></button>

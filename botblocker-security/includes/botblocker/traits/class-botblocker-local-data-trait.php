@@ -22,9 +22,6 @@ trait BotBlockerLocalDataTrait {
 				'jitter',
 				'webGLMismatch',
 				'touchEventMismatch',
-				'batteryAPIMismatch',
-				'mediaDevicesMismatch',
-				'permissionsMismatch',
 				'languageMismatch',
 				'crossbrowserIncognito',
 			);

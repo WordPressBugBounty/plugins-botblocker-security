@@ -15,10 +15,10 @@ trait BBCS_RenderRecaptchaWithoutButtonTrait {
 		return array(
 			'mode'   => 4,
 			'params' => array(
-				'confirmText'  => __( 'Confirm that you are human:', 'botblocker-security' ),
+				'confirmText'  => self::t( 'Confirm that you are human:' ),
 				'recaptchaKey' => $this->BBCS->settings->recaptcha_key2,
 				'hash'         => $hash0,
-				'loadingText'  => __( 'Loading...', 'botblocker-security' ),
+				'loadingText'  => self::t( 'Loading...' ),
 			),
 		);
 	}

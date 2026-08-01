@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
-if ( ! defined( 'ABSPATH' ) ) { exit; }
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; }
 
 class BotBlockerAjaxPaths {
 
@@ -216,7 +217,7 @@ class BotBlockerAjaxPaths {
 
 		global $wpdb;
 
-		$id   = intval( wp_unslash( $_POST['id'] ) );
+		$id = intval( wp_unslash( $_POST['id'] ) );
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' id=' . $id );
@@ -280,7 +281,7 @@ class BotBlockerAjaxPaths {
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' cap check passed' );
 		}
 
-		$id = isset($_POST['id']) ? absint(wp_unslash($_POST['id'])) : 0;
+		$id = isset( $_POST['id'] ) ? absint( wp_unslash( $_POST['id'] ) ) : 0;
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' id=' . $id );

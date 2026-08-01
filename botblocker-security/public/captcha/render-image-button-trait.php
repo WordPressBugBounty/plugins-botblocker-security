@@ -70,7 +70,7 @@ trait BBCS_RenderImageButtonTrait {
 		$blue  = wp_rand( 10, 50 );
 
 		$image_file = $img_dir . $color_ids[ $color ] . '.jpg';
-		if ( ! file_exists( $image_file ) ) {
+		if ( ! file_exists( $image_file ) || ! function_exists( 'imagecreatefromjpeg' ) ) {
 			return $this->getSimpleButtonData();
 		}
 		$image_for_check = imagecreatefromjpeg( $image_file );
@@ -105,7 +105,7 @@ trait BBCS_RenderImageButtonTrait {
 				'mode'   => 2,
 				'params' => array(
 					'targetImageData' => base64_encode( $image_data ),
-					'instruction'     => __( 'Click on the matching image', 'botblocker-security' ),
+					'instruction'     => self::t( 'Click on the matching image' ),
 					'buttonImages'    => $button_images,
 				),
 			);
@@ -115,7 +115,7 @@ trait BBCS_RenderImageButtonTrait {
 			'mode'   => 2,
 			'params' => array(
 				'targetImageData'   => base64_encode( $image_data ),
-				'instruction'       => __( 'Click on the matching image', 'botblocker-security' ),
+				'instruction'       => self::t( 'Click on the matching image' ),
 				'buttons'           => $button_elements,
 				'imageRequests'     => $image_requests,
 				'ajaxUrl'           => admin_url( 'admin-ajax.php' ),

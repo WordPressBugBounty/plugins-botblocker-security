@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class BotBlockerCheck {
 
-	public static function isEmptyUA( string $useragent ): bool {
+	public static function isNotEmptyUA( string $useragent ): bool {
 		$useragent = trim( $useragent );
 		if ( $useragent === '' || $useragent === BOTBLOCKER_EMPTY || empty( $useragent ) ) {
 			return false;
@@ -20,10 +20,10 @@ class BotBlockerCheck {
 
 	public static function isValidMethod( string $method ): bool {
 		// CONNECT and TRACE are intentionally not in allowed_methods (security risk / XST).
-		// OPTIONS is excluded — controlled separately via isValidOptionsRequest() for CORS preflight
+		// OPTIONS is excluded - controlled separately via isValidOptionsRequest() for CORS preflight
 		// and admin REST nonce (WooCommerce wizard / WP Connections).
 		$allowed_methods = array( 'GET', 'POST', 'HEAD', 'PUT', 'DELETE', 'PATCH' );
-		$method = strtoupper( trim( $method ) );
+		$method          = strtoupper( trim( $method ) );
 		if ( in_array( $method, $allowed_methods, true ) ) {
 			return true;
 		}
@@ -65,7 +65,7 @@ class BotBlockerCheck {
 		foreach ( $admin_urls as $admin_url ) {
 			$admin_host   = wp_parse_url( $admin_url, PHP_URL_HOST );
 			$referer_host = wp_parse_url( $referer, PHP_URL_HOST );
-			if ( $admin_host && $referer_host && strtolower( $admin_host ) !== strtolower( $referer_host ) ) {
+			if ( $admin_host && $referer_host && ! self::hosts_equal_www( $admin_host, $referer_host ) ) {
 				continue;
 			}
 
@@ -83,11 +83,39 @@ class BotBlockerCheck {
 	}
 
 	public static function isWpAdminPhpReferer( string $referer ): bool {
-		$referer_base    = untrailingslashit( explode( '?', $referer, 2 )[0] );
-		$allowed_admin   = untrailingslashit( admin_url( 'admin.php' ) );
+		$referer_base    = self::normalize_url_www( untrailingslashit( explode( '?', $referer, 2 )[0] ) );
+		$allowed_admin   = self::normalize_url_www( untrailingslashit( admin_url( 'admin.php' ) ) );
 		$allowed_network = is_multisite() ? untrailingslashit( network_admin_url( 'admin.php' ) ) : '';
+		$allowed_network = $allowed_network !== '' ? self::normalize_url_www( $allowed_network ) : '';
 
 		return $referer_base === $allowed_admin || ( $allowed_network !== '' && $referer_base === $allowed_network );
+	}
+
+	public static function strip_www( string $host ): string {
+		if ( strpos( $host, 'www.' ) === 0 ) {
+			return (string) substr( $host, 4 );
+		}
+		return $host;
+	}
+
+	public static function hosts_equal_www( string $a, string $b ): bool {
+		return strtolower( self::strip_www( $a ) ) === strtolower( self::strip_www( $b ) );
+	}
+
+	public static function string_contains_host_www( string $haystack, string $host ): bool {
+		$bare = self::strip_www( $host );
+		if ( $bare === '' ) {
+			return false;
+		}
+		return strpos( $haystack, $bare ) !== false || strpos( $haystack, 'www.' . $bare ) !== false;
+	}
+
+	public static function normalize_url_www( string $url ): string {
+		$host = wp_parse_url( $url, PHP_URL_HOST );
+		if ( $host === null || strpos( $host, 'www.' ) !== 0 ) {
+			return $url;
+		}
+		return preg_replace( '/' . preg_quote( $host, '/' ) . '/', self::strip_www( $host ), $url, 1 );
 	}
 
 	public static function isEmptyLanguage( ?string $accept_lang, ?string $lang ): bool {

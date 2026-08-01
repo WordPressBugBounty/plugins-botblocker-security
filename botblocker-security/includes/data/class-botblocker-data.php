@@ -125,7 +125,17 @@ class BotBlockerData {
 	}
 
 	public static function getBotSignatures(): array {
-		$bot_signatures = include BOTBLOCKER_DIR . 'data/base/bot-signatures.php';
-		return $bot_signatures;
+		static $decoded = null;
+		if ( $decoded === null ) {
+			$raw = include BOTBLOCKER_DIR . 'data/base/bot-signatures.php';
+			$decoded = array();
+			foreach ( $raw as $signature ) {
+				$s = preg_replace( '/\s+/', ' ', trim( urldecode( $signature ) ) );
+				if ( $s !== '' ) {
+					$decoded[] = $s;
+				}
+			}
+		}
+		return $decoded;
 	}
 }

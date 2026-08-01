@@ -14,18 +14,18 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @link              https://globus.studio
  * @package           botblocker-security
- * @version           1.6.21
+ * @version           1.7
  *
  * @wordpress-plugin
  * Plugin Name:       BotBlocker Security - Firewall & Bot Protection
  * Plugin URI:        https://botblocker.top/
- * Description:       Blocks bots, brute force attacks, spam and automated threats in real time. CAPTCHA, IP rules, proxy/vpn/tor detection, login protection, reCAPTCHA, customizable security rules - all in one plugin. Maximum Security for WordPress.
- * Version:           1.6.21
+ * Description:       Blocks bots, brute force attacks, spam and automated threats in real time. Captcha, IP rules, proxy/vpn/tor detection, login protection, reCAPTCHA, customizable security rules - all in one plugin. Maximum Security for WordPress.
+ * Version:           1.7
  * Author:            Yevhen Leonidov
  * Author URI:        https://leonidov.dev/
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * Requires at least: 5.0
+ * Requires at least: 5.1
  * Tested up to:      7.0
  * Requires PHP:      7.4
  * Text Domain:       botblocker-security
@@ -43,9 +43,9 @@ if ( version_compare( phpversion(), '7.4.0', '<' ) ) {
 }
 
 // Check minimum requirements (WordPress)
-if ( version_compare( $GLOBALS['wp_version'], '5.0', '<' ) ) {
+if ( version_compare( $GLOBALS['wp_version'], '5.1', '<' ) ) {
 	function bbcs_minimum_wp_version_notice(): void {
-		echo '<div class="notice notice-error"><p>' . esc_html__( 'BotBlocker requires WordPress 5.0 or later.', 'botblocker-security' ) . '</p></div>';
+		echo '<div class="notice notice-error"><p>' . esc_html__( 'BotBlocker requires WordPress 5.1 or later.', 'botblocker-security' ) . '</p></div>';
 	}
 	add_action( 'admin_notices', 'bbcs_minimum_wp_version_notice' );
 	return;
@@ -66,6 +66,9 @@ define( 'BOTBLOCKER_BASENAME', plugin_basename( __FILE__ ) );
 require_once BOTBLOCKER_DIR . 'helpers.php';
 // Include the core helpers file
 require_once BOTBLOCKER_DIR . 'core-helpers.php';
+if ( is_admin() || wp_doing_cron() ) {
+	require_once BOTBLOCKER_DIR . 'helpers-admin.php';
+}
 
 // Include license functionality
 bbcs_handleBotblockerPro();
@@ -149,13 +152,17 @@ function bbcs_run_botblocker_shield(): void {
 	/* Include active addons after database is ready */
 	BotBlockerAddons::includeAll();
 
-	// Initialize the admin functionality
-	$bbcs_admin = Botblocker_Admin::getInstance();
-	add_action( 'admin_menu', array( $bbcs_admin, 'add_admin_menu' ) );
-	$bbcs_admin->run();
-
-	// Initialize Setup Wizard (only in admin)
 	if ( is_admin() ) {
+		// Admin UI, menu registration, plugin action links
+		$bbcs_admin = Botblocker_Admin::getInstance();
+		add_action( 'admin_menu', array( $bbcs_admin, 'add_admin_menu' ) );
+		$bbcs_admin->run();
+
+		// Notification system
+		require_once BOTBLOCKER_DIR . 'includes/class-botblocker-toastify.php';
+		BBCS_Toastify::init();
+
+		// Setup Wizard
 		require_once BOTBLOCKER_DIR . 'admin/class-botblocker-setup-wizard.php';
 		$bbcs_wizard = new BotBlocker_SetupWizard();
 		$bbcs_wizard->hooks();
@@ -206,16 +213,6 @@ function bbcs_on_wp_uninitialize_site( $old_site ): void {
 
 	if ( defined( 'BOTBLOCKER_INTEGRATE_MU_PLUGINS' ) && BOTBLOCKER_INTEGRATE_MU_PLUGINS && method_exists( 'BotBlockerInstall', 'uninstallMuPlugin' ) ) {
 		BotBlockerInstall::uninstallMuPlugin();
-	}
-
-	$sec_headers_mu = trailingslashit( WPMU_PLUGIN_DIR ) . 'botblocker-security-headers.php';
-	if ( file_exists( $sec_headers_mu ) ) {
-		wp_delete_file( $sec_headers_mu );
-		clearstatcache( true );
-	}
-
-	if ( method_exists( 'BotBlockerInstall', 'removeWpConfigEarlyInitCode' ) ) {
-		BotBlockerInstall::removeWpConfigEarlyInitCode();
 	}
 
 	update_site_option( 'bbcs_sites_map_dirty', 1 );

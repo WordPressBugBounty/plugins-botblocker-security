@@ -78,6 +78,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 							href="https://github.com/serbanghita/Mobile-Detect" target="_blank">MIT License</a>.</li>
 				</ul>
 
+				<h4 class="bbcs_settings_h4">Toast Notifications:</h4>
+				<ul class="bbcs_settings_ul">
+					<li class="bbcs_settings_li"><strong class="bbcs_settings_strong">Toastify JS</strong> - Licensed under the <a
+							href="https://github.com/apvarun/toastify-js/blob/master/LICENSE" target="_blank">MIT License</a>.</li>
+				</ul>
+
 			</div>
 
 		</div>

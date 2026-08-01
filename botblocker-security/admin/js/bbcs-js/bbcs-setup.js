@@ -6,9 +6,25 @@
         if ($('#bbcsOpenOneClickSetup').length && modalEl) {
             $('#bbcsOpenOneClickSetup').on('click', function (e) {
                 e.preventDefault();
+                if ($(modalEl).hasClass('bbcs-oneclick-modal')) {
+                    $(modalEl).prop('hidden', false).attr('aria-hidden', 'false');
+                    $('body').addClass('bbcs-oneclick-modal-open');
+                    $(modalEl).find('.bbcs-oneclick-close').trigger('focus');
+                    return;
+                }
                 var m = new bootstrap.Modal(modalEl); m.show();
             });
         }
+        $(document).on('click', '[data-bbcs-oneclick-close]', function () {
+            if (!modalEl || !$(modalEl).hasClass('bbcs-oneclick-modal')) return;
+            $(modalEl).prop('hidden', true).attr('aria-hidden', 'true');
+            $('body').removeClass('bbcs-oneclick-modal-open');
+            $('#bbcsOpenOneClickSetup').trigger('focus');
+        });
+        $(document).on('keydown', function (e) {
+            if (e.key !== 'Escape' || !modalEl || modalEl.hidden) return;
+            $('[data-bbcs-oneclick-close]').first().trigger('click');
+        });
         $(document).on('click', '.bbcs-apply-profile', function (e) {
             e.preventDefault();
             
@@ -34,8 +50,8 @@
             
 
             $('.bbcs-apply-profile').prop('disabled', true).addClass('disabled');
-            $('.bbcs-profile-choice').removeClass('border-primary');
-            $card.addClass('border-primary');
+            $('.bbcs-profile-choice').removeClass('border-primary is-selected');
+            $card.addClass('border-primary is-selected');
             
             $btn.find('.bbcs-btn-text').text(bbcsSetupL10n.please_wait).removeClass('d-none');
             $btn.find('.spinner-border').removeClass('d-none');

@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * This class is responsible for all the operations against bots.
  * It handles detections, logging, and blocking of suspicious bot activities.
  *
- * @version    1.6.21
+ * @version    1.7
  * @author     BotBlocker Team
  * @package    Botblocker
  * @subpackage Botblocker/includes
@@ -37,6 +37,8 @@ require_once BOTBLOCKER_DIR . 'includes/botblocker/traits/class-botblocker-check
 require_once BOTBLOCKER_DIR . 'includes/botblocker/traits/class-botblocker-block-page-trait.php';
 require_once BOTBLOCKER_DIR . 'includes/botblocker/traits/class-botblocker-denied-page-trait.php';
 require_once BOTBLOCKER_DIR . 'includes/botblocker/traits/class-botblocker-response-signing-trait.php';
+require_once BOTBLOCKER_DIR . 'includes/botblocker/traits/class-botblocker-core-rate-trait.php';
+require_once BOTBLOCKER_DIR . 'includes/botblocker/traits/class-botblocker-tls-trait.php';
 
 class BotBlocker extends BotBlockerBase {
 
@@ -58,6 +60,8 @@ class BotBlocker extends BotBlockerBase {
 	use BotBlockerBlockPageTrait;
 	use BotBlockerDeniedPageTrait;
 	use BotBlockerResponseSigningTrait;
+	use BotBlockerCoreRateTrait;
+	use BotBlockerTlsTrait;
 
 	public static function getInstance(): self {
 		if ( self::$instance === null ) {
@@ -102,11 +106,19 @@ class BotBlocker extends BotBlockerBase {
 		if ( $this->perform_prefly_checks() ) {
 			return;
 		}
-		$this->collect_visitor_data();
+		$this->collect_basic_request_data();
 		if ( $this->addon_traffic_decision_stops_request() ) {
 			return;
 		}
+		if ( $this->check_options_preflight() ) {
+			return;
+		}
+		if ( $this->is_safe_request() ) {
+			return;
+		}
+		$this->collect_visitor_data();
 		$this->update_settings_based_on_visitor_data();
+		$this->check_tls_fingerprint();
 		do_action( 'bbcs_botblocker_after_visitor_data', $this );
 		if ( $this->apply_addon_traffic_decisions( 'after_visitor_data' ) ) {
 			return;
@@ -115,12 +127,6 @@ class BotBlocker extends BotBlockerBase {
 			if ( ! $this->payment_bypass_partial ) {
 				return;
 			}
-		}
-		if ( $this->check_options_preflight() ) {
-			return;
-		}
-		if ( $this->is_safe_request() ) {
-			return;
 		}
 
 		$this->select_request_mode();
@@ -155,6 +161,12 @@ class BotBlocker extends BotBlockerBase {
 		if ( $this->apply_addon_traffic_decisions( 'post_core_rules' ) ) {
 			return;
 		}
+		if ( $this->apply_core_rate_limit() ) {
+			return;
+		}
+		if ( $this->apply_addon_traffic_decisions( 'post_rate_limit' ) ) {
+			return;
+		}
 
 		if ( $this->payment_bypass_partial ) {
 			$this->visitorType = self::VISITOR_LEGALBOT;
@@ -179,7 +191,7 @@ class BotBlocker extends BotBlockerBase {
 
 		//if ($this->check_last_rule()) return;
 
-		if ( $this->settings->botblocker_force_check == 1 ) {
+		if ( $this->settings->botblocker_force_check == 1 && ! $this->should_show_check_page ) {
 			$this->redirect_to_dark( 'Force check event' );
 		}
 
@@ -216,7 +228,7 @@ class BotBlocker extends BotBlockerBase {
         /* phpcs:enable WordPress.PHP.DevelopmentFunctions.error_log_print_r */
 	}
 
-	// Native die() — not wp_die() — defense-in-depth: prevents third-party wp_die_handler filter bypass of the security barrier.
+	// Native die() - not wp_die() - defense-in-depth: prevents third-party wp_die_handler filter bypass of the security barrier.
 	public function process_die( string $message = '' ): void {
 		if ( apply_filters( 'bbcs_test_intercept_termination', false, $message, $this ) ) {
 			return;
@@ -225,7 +237,8 @@ class BotBlocker extends BotBlockerBase {
 			die( wp_kses_post( $message ) );
 		} elseif ( BBCS_DIE_MESSAGE ) {
 				$this->print_hive();
-				die( 'WordPress stopped by BotBlocker' );
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				die( __( 'WordPress stopped by BotBlocker', 'botblocker-security' ) );
 		} else {
 			die();
 		}

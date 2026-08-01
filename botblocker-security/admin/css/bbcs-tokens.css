@@ -1,0 +1,170 @@
+/* ============================================================
+   bbcs-tokens.css - unified design tokens
+   Change a value here - it changes everywhere in the UI.
+   No "magic numbers" in markup: only these variables.
+   ============================================================ */
+:root {
+  /* ── palette (as in WordPress admin) ── */
+  --bbcs-wp-blue: #2271b1;
+  --bbcs-wp-blue-d: #135e96;
+  --bbcs-bg: #f0f0f1;
+  --bbcs-s1: #ffffff;
+  --bbcs-s2: #f6f7f7;
+  --bbcs-s3: #eef0f1;
+  --bbcs-line: #dcdcde;
+  --bbcs-line2: #c3c4c7;
+  --bbcs-tx: #1d2327;
+  --bbcs-tx2: #50575e;
+  --bbcs-tx3: #8c8f94;
+  --bbcs-green: #00a32a;
+  --bbcs-green-dim: #edfaef;
+  --bbcs-violet: var(--bbcs-blue);
+  --bbcs-violet-dim: var(--bbcs-blue-dim);
+  --bbcs-red: #d63638;
+  --bbcs-red-dim: #fcf0f1;
+  --bbcs-amber: #ed9c28;
+  --bbcs-amber-d: #b45309;
+  --bbcs-amber-dim: #fcf9e8;
+  --bbcs-blue: #2271b1;
+  --bbcs-blue-dim: #f0f6fc;
+  --bbcs-menu: #1d2327;
+  --bbcs-menu-sub: #2c3338;
+  --bbcs-menu-tx: #f0f0f1;
+  --bbcs-menu-tx2: #a7aaad;
+  --bbcs-menu-hover: #72aee6;
+  --bbcs-overlay: rgba(29, 35, 39, .5);
+  --bbcs-blue-dim-d: #e3eef9;  /* search hover - slightly darker than blue-dim */
+  --bbcs-green-border: rgba(55, 211, 154, .25);  /* preset card border */
+  --bbcs-amber-border: rgba(240, 196, 104, .2);  /* amber card border */
+
+  /* ── spacing scale (step 4px) ── */
+  --bbcs-sp-1: 4px;
+  --bbcs-sp-2: 8px;
+  --bbcs-sp-3: 12px;
+  --bbcs-sp-4: 16px;
+  --bbcs-sp-5: 20px;
+  --bbcs-sp-6: 24px;
+  --bbcs-sp-7: 32px;
+  --bbcs-sp-8: 40px;
+  /* half steps - only where actually needed */
+  --bbcs-sp-h: 2px;   /* hair */
+  --bbcs-sp-1h: 6px;  /* 1.5 */
+  --bbcs-sp-2h: 10px; /* 2.5 */
+  --bbcs-sp-3h: 14px; /* 3.5 */
+  --bbcs-sp-4h: 18px; /* 4.5 */
+  --bbcs-sp-5h: 22px; /* 5.5 */
+  --bbcs-sp-xs: 3px;  /* micro */
+
+  /* ── border-radius scale ── */
+  --bbcs-r-xs: 3px;
+  --bbcs-r-sm: 4px;
+  --bbcs-r-md: 6px;
+  --bbcs-r-lg: 8px;
+  --bbcs-r-xl: 11px;
+  --bbcs-r-2xl: 14px;
+  --bbcs-r-pill: 999px;
+
+  /* ── font-size scale (relative-friendly) ── */
+  --bbcs-fs-2xs: .6875rem;  /* 11 */
+  --bbcs-fs-xs: .75rem;     /* 12 */
+  --bbcs-fs-sm: .8125rem;   /* 13 */
+  --bbcs-fs-md: .875rem;    /* 14 */
+  --bbcs-fs-lg: .9375rem;   /* 15 */
+  --bbcs-fs-xl: 1rem;       /* 16 */
+  --bbcs-fs-2xl: 1.1875rem; /* 19 */
+  --bbcs-fs-3xl: 1.375rem;  /* 22 */
+  --bbcs-fs-stat: 1.75rem;  /* 28 */
+
+  /* ── font weight ── */
+  --bbcs-fw-normal: 400;
+  --bbcs-fw-medium: 500;
+  --bbcs-fw-semibold: 600;
+  --bbcs-fw-bold: 700;
+  --bbcs-fw-black: 800;
+
+  /* ── letter spacing ── */
+  --bbcs-ls-tight: -.02em;   /* page headings, hero */
+  --bbcs-ls-snug: -.01em;    /* large statistics */
+
+  /* ── layout dimensions (easy to tune without breaking pages) ── */
+  --bbcs-plughead-h: 61px;
+  --bbcs-content-pad-x: clamp(16px, 2.2vw, 32px);
+  --bbcs-content-pad-y: var(--bbcs-sp-5h);
+  --bbcs-wrap-max: 1600px;
+  --bbcs-rail-w: 380px;
+
+  /* ── icon size scale ── */
+  --bbcs-ico: 1.125em; /* relative to text by default */
+
+  /* ── base card grid ── */
+  --bbcs-gap: var(--bbcs-sp-3h);
+  --bbcs-card-pad: var(--bbcs-sp-5);
+
+  /* ── shadows ── */
+  --bbcs-shadow-card: 0 1px 1px rgba(0, 0, 0, .03);
+  --bbcs-shadow-lift: 0 1px 2px rgba(0, 0, 0, .1);  /* active chip / seg */
+  --bbcs-shadow-knob: 0 1px 2px rgba(0, 0, 0, .3);  /* toggle knob */
+  --bbcs-shadow-pop: 0 10px 28px rgba(0, 0, 0, .16);
+  --bbcs-shadow-modal: 0 20px 60px rgba(0, 0, 0, .3);
+
+  /* ── transitions ── */
+  --bbcs-t-fast: .12s;
+  --bbcs-t-mid: .18s;
+
+  /* ── component sizes ── */
+  --bbcs-toggle-w: 42px;
+  --bbcs-toggle-h: 24px;
+  --bbcs-toggle-r: 13px;
+  --bbcs-toggle-knob: 18px;
+  --bbcs-gauge-sz: 84px;
+  --bbcs-gauge-inner-sz: 64px;
+  --bbcs-status-ic-sz: 17px;
+  --bbcs-pal-ic-sz: 28px;
+  --bbcs-search-mw: 560px;
+  --bbcs-tooltip-w: 232px;
+  --bbcs-tooltip-w-rules: 300px;
+  --bbcs-protect-sidebar-w: 248px;
+  --bbcs-rules-sidebar-w: 320px;
+  --bbcs-int-form-w: 460px;
+  --bbcs-form-mw: 460px;
+  --bbcs-form-mw-lg: 520px;
+  --bbcs-desc-mw: 480px;
+
+  /* ── micro font sizes (decorative labels only) ── */
+  --bbcs-fs-nano: 0.5938rem;  /* ~9.5px */
+  --bbcs-fs-micro: 0.625rem;  /* ~10px */
+  --bbcs-fs-ico: 1.3125rem;   /* ~21px icons */
+  --bbcs-fs-ico-md: 1.125rem;  /* ~18px medium icons */
+  --bbcs-fs-ico-lg: 1.875rem; /* ~30px large icons */
+
+  /* ── font families ── */
+  --bbcs-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  --bbcs-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --bbcs-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --bbcs-safe-top: env(safe-area-inset-top, 0px);
+
+  --bbcs-focus-ring: 2px;
+  --bbcs-focus-color: var(--bbcs-wp-blue);
+  --bbcs-z-select: 20;
+  --bbcs-z-tooltip: 50;
+  --bbcs-z-dropdown: 50;
+  --bbcs-z-modal: 100;
+  --bbcs-z-palette: 200;
+}
+
+/* ── reset ── */
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body {
+  font-family: var(--bbcs-font);
+  -webkit-font-smoothing: antialiased;
+  background: var(--bbcs-bg);
+  color: var(--bbcs-tx);
+  font-size: var(--bbcs-fs-sm);
+  line-height: 1.5;
+}
+*::-webkit-scrollbar { width: 12px; height: 12px; }
+*::-webkit-scrollbar-thumb { background: var(--bbcs-line2); border-radius: var(--bbcs-r-lg); border: 3px solid var(--bbcs-bg); }
+*::-webkit-scrollbar-track { background: transparent; }
+[hidden] { display: none !important; }

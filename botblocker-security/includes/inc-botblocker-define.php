@@ -11,12 +11,14 @@ if ( ! defined( 'BOTBLOCKER_TABLE_PREFIX' ) ) {
 }
 define( 'BOTBLOCKER_PREFIX', 'bb_' ); // The prefix used for settings and options
 
-define( 'BOTBLOCKER_VERSION', '1.6.21' );
+define( 'BOTBLOCKER_VERSION', '1.7' );
 // The version number of the plugin
-define( 'BOTBLOCKER_DB_VERSION', '2.7.0' ); // The database version of the plugin
+define( 'BOTBLOCKER_DB_VERSION', '2.9.0' ); // The database version of the plugin
 define( 'BOTBLOCKER_WIZARD_ON_UPDATE', false ); // Show setup wizard after plugin update
 define( 'BOTBLOCKER_MODE_STABLE', 'stable' );
 define( 'BOTBLOCKER_MODE_DEV', 'dev' );
+
+define( 'BBCS_NEW_ADMIN_UI', true );
 
 // BBCS-MULTISITE: Site-specific values moved to dynamic functions in inc-botblocker-multisite.php:
 // BotBlockerMultisite::getCurrentSiteUrl(), BotBlockerMultisite::getCurrentSiteClear(), BotBlockerMultisite::getCurrentSiteName(),
@@ -138,6 +140,7 @@ define( 'BOTBLOCKER_BASE_TOTAL', 'https://api.' . BOTBLOCKER_RESERVE_SERVER . '/
 define( 'BOTBLOCKER_PARENT_IPS_URL', 'https://api.' . BOTBLOCKER_RESERVE_SERVER . '/pool' );
 
 define( 'BOTBLOCKER_API_GS_IPV6', BOTBLOCKER_API_GS_URL . '/ip?v=6&format=json' ); // The URL of the Globus Studio API for IPv6 addresses
+define( 'BOTBLOCKER_API_IPV6', BOTBLOCKER_API_URL . '/ip?v=6&format=json' ); // The URL of the BotBlocker API for IPv6 addresses
 
 define( 'BOTBLOCKER_CLOUD_RECORDS_BATCH', 1000 ); // The number of records in a single batch for cloud requests
 define( 'BOTBLOCKER_CLOUD_REQUEST_SIZE', 5 ); // The number of batches to send in a single request to the cloud
@@ -151,8 +154,16 @@ define( 'BOTBLOCKER_CACHE_REMAINING_DAYS_TIME', DAY_IN_SECONDS ); // Cache remai
 
 define( 'BOTBLOCKER_WIDGETS', true ); // A constant to indicate that the plugin includes dashboard widgets
 
-define( 'BOTBLOCKER_CAPTCHA_MODE_DEFAULT', 8 ); // Silent Auto-Verify (no user interaction)
-define( 'BOTBLOCKER_CAPTCHA_MODE_SILENT', 8 );  // Silent Auto-Verify (no user interaction)
+define( 'BOTBLOCKER_CAPTCHA_MODE_BUTTON', 0 );              // Button - "I am not a robot"
+define( 'BOTBLOCKER_CAPTCHA_MODE_COLOR_BUTTONS', 1 );       // Color Buttons
+define( 'BOTBLOCKER_CAPTCHA_MODE_IMAGE', 2 );               // BotBlocker Image Captcha
+define( 'BOTBLOCKER_CAPTCHA_MODE_RECAPTCHA_V2_BUTTON', 3 ); // reCAPTCHA v2 - "I am not a robot"
+define( 'BOTBLOCKER_CAPTCHA_MODE_RECAPTCHA_V2', 4 );        // reCAPTCHA v2
+define( 'BOTBLOCKER_CAPTCHA_MODE_SHAPE', 5 );               // Dynamic Shape Captcha
+define( 'BOTBLOCKER_CAPTCHA_MODE_DIGIT', 6 );               // Dynamic Digit Captcha
+define( 'BOTBLOCKER_CAPTCHA_MODE_HOLD', 7 );                // Hold Button Captcha
+define( 'BOTBLOCKER_CAPTCHA_MODE_DEFAULT', 8 );             // Silent Auto-Verify (no user interaction)
+define( 'BOTBLOCKER_CAPTCHA_MODE_SILENT', 8 );              // Silent Auto-Verify (no user interaction)
 
 define( 'BOTBLOCKER_ENVATO_URL', 'https://codecanyon.net/item/botblocker/99999999' );                 // The URL of the Envato page for BotBlocker
 define( 'BOTBLOCKER_WORDPRESS_URL', 'https://wordpress.org/plugins/botblocker-security/' );           // The URL of the WordPress page for BotBlocker
@@ -166,20 +177,20 @@ define( 'BOTBLOCKER_SUPPORT_FORUM', 'https://wordpress.org/support/plugin/botblo
 // block reasons, cache operations, or fatal error recovery.
 
 // Append CAPTCHA diagnostic codes to ban comments (TD, TT, DM, HM, RM, NM)
-define( 'BBCS_CAPTCHA_DIAG', false );
+define( 'BBCS_CAPTCHA_DIAG', true );
 
-// Master debug switch — enables error_log() calls across the plugin
-define( 'BBCS_DEBUG', false );
+// Master debug switch - enables error_log() calls across the plugin
+define( 'BBCS_DEBUG', true );
 // Log cache operations to error_log (requires BBCS_DEBUG = true)
 define( 'BBCS_CACHE_DEBUG', false );
-// Show raw termination data before wp_die() — extreme debug only
+// Show raw termination data before wp_die() - extreme debug only
 define( 'BBCS_DIE_MESSAGE', false );
-// Expose internal block reason on the block page — testing only, NOT for production
-define( 'BBCS_BLOCK_REASON_VIEW', false );
+// Expose internal block reason on the block page - testing only, NOT for production
+define( 'BBCS_BLOCK_REASON_VIEW', true );
 // Emergency recovery: force-render page even on fatal errors (hive mode)
-define( 'BBCS_FATAL_ERROR_HIVE', false );
+define( 'BBCS_FATAL_ERROR_HIVE', true );
 // Write errors to wp-content/debug.log (requires BBCS_DEBUG = true)
-define( 'BBCS_LOG_TO_DEBUG', false );
+define( 'BBCS_LOG_TO_DEBUG', true );
 // Halt execution on fatal errors (off = graceful recovery attempt)
 define( 'BBCS_ERROR_EXIT', false );
 

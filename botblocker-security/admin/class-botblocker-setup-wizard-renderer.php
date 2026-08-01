@@ -403,7 +403,6 @@ class BotBlocker_SetupWizardRenderer {
 					<p class="text-center text-muted mb-4"><?php esc_html_e( 'Choose how suspicious visitors are verified.', 'botblocker-security' ); ?></p>
 					
 					<div class="bbcs-captcha-grid">
-						<?php ?>
 
 					<!-- Silent Auto-Verify (Default Selected) -->
 					<div class="bbcs-captcha-card" data-captcha="8">
@@ -509,12 +508,12 @@ class BotBlocker_SetupWizardRenderer {
 
 					<div class="alert alert-warning mt-3 mb-3" style="font-size: 13px;">
 						<i class="fa-solid fa-shield-halved me-1"></i>
-						<strong><?php esc_html_e( 'More CAPTCHA Options Available:', 'botblocker-security' ); ?></strong>
+						<strong><?php esc_html_e( 'More Captcha Options Available:', 'botblocker-security' ); ?></strong>
 							<?php
 							$integrations_url = BotBlockerMultisite::getSiteAdminPageUrl( 'bbcs_integrations' );
 							printf(
 								/* translators: %s: URL to Integrations settings page */
-								esc_html__( 'Google reCAPTCHA v2/v3 is also supported. Configure keys in %s.', 'botblocker-security' ),
+								esc_html__( 'Google reCaptcha v2/v3 is also supported. Configure keys in %s.', 'botblocker-security' ),
 								'<a href="' . esc_url( $integrations_url ) . '">' . esc_html__( 'Integrations', 'botblocker-security' ) . '</a>'
 							);
 							?>
@@ -730,7 +729,7 @@ class BotBlocker_SetupWizardRenderer {
 									<strong class="bbcs-wizard-final-mode text-primary">Strong</strong>
 								</div>
 								<div class="bbcs-summary-item">
-									<span class="bbcs-summary-label"><?php esc_html_e( 'CAPTCHA Type:', 'botblocker-security' ); ?></span>
+									<span class="bbcs-summary-label"><?php esc_html_e( 'Captcha Type:', 'botblocker-security' ); ?></span>
 									<strong class="bbcs-wizard-final-captcha text-primary"><?php esc_html_e( 'Image Recognition', 'botblocker-security' ); ?></strong>
 								</div>
 								<div class="bbcs-summary-item">

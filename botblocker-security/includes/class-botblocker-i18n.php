@@ -8,12 +8,14 @@ class Botblocker_i18n {
 
 	public function load_plugin_textdomain(): void {
 		add_filter( 'plugin_locale', array( $this, 'filter_plugin_locale' ), 10, 2 );
-		// phpcs:ignore PluginCheck.CodeAnalysis.DiscouragedFunctions.load_plugin_textdomainFound -- backward compatibility with WP <4.6
-		load_plugin_textdomain(
-			'botblocker-security',
-			false,
-			dirname( BOTBLOCKER_BASENAME ) . '/languages'
-		);
+		$locale = determine_locale();
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- core WP hook, not a custom hook
+		$locale = apply_filters( 'plugin_locale', $locale, 'botblocker-security' );
+		$mofile = WP_LANG_DIR . '/plugins/botblocker-security-' . $locale . '.mo';
+		if ( ! file_exists( $mofile ) ) {
+			$mofile = BOTBLOCKER_DIR . 'languages/botblocker-security-' . $locale . '.mo';
+		}
+		load_textdomain( 'botblocker-security', $mofile );
 	}
 
 	public function filter_plugin_locale( string $locale, string $domain ): string {

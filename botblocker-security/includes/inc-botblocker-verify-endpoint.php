@@ -88,7 +88,7 @@ add_action(
 
 		require_once BOTBLOCKER_DIR . 'includes/botblocker/class-botblocker.php';
 		BotBlockerAddons::includePreRunAddons();
-		// Intentionally new BotBlocker (not getInstance) — the singleton already ran during plugins_loaded and is in terminal state.
+		// Intentionally new BotBlocker (not getInstance) - the singleton already ran during plugins_loaded and is in terminal state.
 		// A fresh instance avoids stale flags, re-reads $_SERVER/$_POST clean, and produces a deterministic second pass.
 		$botBlocker = new BotBlocker();
 		$botBlocker->init_visitor_pages();

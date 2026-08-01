@@ -11,12 +11,12 @@ function renderMode3Captcha(params) {
         document.getElementById("content").innerHTML = `
             <div style="max-width: 302px; text-align: center;margin: 0 auto;">
                 <p>${confirmText}</p>
-                <p class="g-recaptcha" style="display: inline-block;" data-sitekey="${recaptchaKey}" data-callback="onRecaptchaSuccess">${loadingText}</p>
+                <p class="g-recaptcha" style="display: inline-block;" data-sitekey="${recaptchaKey}" data-callback="onreCaptchaSuccess">${loadingText}</p>
             </div>
         `;
     };
 
-    window.onRecaptchaSuccess = function(token) {
+    window.onreCaptchaSuccess = function(token) {
         window.data += "&g-recaptcha-response=" + token;
 
         let buttonsHtml = '';

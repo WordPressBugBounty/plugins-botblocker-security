@@ -13,7 +13,6 @@ class BBCS_Support_Button {
 	public function __construct() {
 		add_action( 'bbcs_show_support_button', array( $this, 'render_support_button' ) );
 		add_action( 'wp_ajax_bbcs_send_support', array( $this, 'handle_support_request' ) );
-		add_action( 'wp_ajax_nopriv_bbcs_send_support', array( $this, 'handle_support_request' ) );
 	}
 
 	public function render_support_button(): void {
@@ -134,9 +133,9 @@ class BBCS_Support_Button {
 			'message' => $question,
 		);
 
-		$cloud = BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_GS_URL, 'helpdesk' );
+		$cloud = BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_URL, 'helpdesk' );
 		if ( $cloud === false ) {
-			$cloud = BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_URL, 'helpdesk' );
+			$cloud = BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_GS_URL, 'helpdesk' );
 		}
 
 		if ( $cloud === false ) {

@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<p class="card-subtitle">
 			<?php esc_html_e( 'Real-time visitor geo statistics. View period:', 'botblocker-security' ); ?><?php echo esc_html( $BBCS->settings->admin_report_period ); ?>
 			<?php esc_html_e( 'days', 'botblocker-security' ); ?> (<a
-				href="<?php echo esc_url( $BBCSA->pages_settings ); ?>#settings_ui"><?php esc_html_e( 'Change', 'botblocker-security' ); ?></a>).</p>
+				href="<?php echo esc_url( $BBCSA->pages_settings ); ?>#settings-ui"><?php esc_html_e( 'Change', 'botblocker-security' ); ?></a>).</p>
 	</header>
 	<div class="card-body">
 		<div class="row">

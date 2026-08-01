@@ -26,7 +26,17 @@ function bbcs_custom_locale_display_name( string $locale ): string {
 		'de_DE' => 'Deutsch (Deutschland)',
 		'fr_FR' => 'Français (France)',
 		'es_ES' => 'Español (España)',
+		'it_IT' => 'Italiano (Italia)',
+		'ja'    => '日本語 (日本)',
 		'pl_PL' => 'Polski (Polska)',
+		'pt_BR' => 'Português (Brasil)',
+		'tr_TR' => 'Türkçe (Türkiye)',
+		'zh_CN' => '中文 (中国)',
+		'ar'    => 'العربية (السعودية)',
+		'nl_NL' => 'Nederlands',
+		'sv_SE' => 'Svenska',
+		'ko_KR' => '한국어',
+		'he_IL' => 'עברית',
 	);
 
 	return $names_native[ $locale ] ?? $locale;
@@ -34,24 +44,51 @@ function bbcs_custom_locale_display_name( string $locale ): string {
 
 function bbcs_get_lang_options_html(): void {
 	$mo_files = glob( BOTBLOCKER_DIR . 'languages/botblocker-*.mo' );
+	$items = array();
+
+	if ( is_array( $mo_files ) ) {
+		$lang_to_flag = array(
+			'ja' => 'jp',
+			'uk' => 'ua',
+			'ar' => 'sa',
+			'ko' => 'kr',
+		);
+
+		foreach ( $mo_files as $f ) {
+			$data_lang = bbcs_extract_locale_from_mo( $f, 'botblocker-security' );
+
+			if ( preg_match( '/^[a-z]{2,3}_([A-Z]{2})$/i', $data_lang, $matches ) ) {
+				$flag = strtolower( $matches[1] );
+			} elseif ( isset( $lang_to_flag[ $data_lang ] ) ) {
+				$flag = $lang_to_flag[ $data_lang ];
+			} else {
+				$flag = strtolower( $data_lang );
+			}
+
+			$items[] = array(
+				'lang' => $data_lang,
+				'flag' => $flag,
+				'name' => bbcs_custom_locale_display_name( $data_lang ),
+			);
+		}
+	}
+
+	usort($items, static function ($a, $b) {
+		if ($a['lang'] === 'en_US') return -1;
+		if ($b['lang'] === 'en_US') return 1;
+		return strcoll($a['name'], $b['name']);
+	});
 	?>    
 	<div class="content">
 		<ul>
 	<?php
-	if ( is_array( $mo_files ) ) {
-		foreach ( $mo_files as $f ) {
-			$data_lang = bbcs_extract_locale_from_mo( $f, $text_domain = 'botblocker-security' );
-
-			if ( preg_match( '/^[a-z]{2,3}_([A-Z]{2})$/i', $data_lang, $matches ) ) {
-				$flag = strtolower( $matches[1] );
-			} else {
-				$flag = strtolower( $data_lang );
-			}
+	if ( ! empty( $items ) ) {
+		foreach ( $items as $item ) {
 			?>
 			<li>
-				<a href="#" class="language-option" data-lang="<?php echo esc_attr( $data_lang ); ?>">
-					<div class="flag flag-<?php echo esc_attr( $flag ); ?>"></div>
-					<span class="title"><?php echo esc_html( bbcs_custom_locale_display_name( $data_lang ) ); ?></span>
+				<a href="#" class="language-option" data-lang="<?php echo esc_attr( $item['lang'] ); ?>">
+					<div class="flag flag-<?php echo esc_attr( $item['flag'] ); ?>"></div>
+					<span class="title"><?php echo esc_html( $item['name'] ); ?></span>
 				</a>
 			</li>
 			<?php

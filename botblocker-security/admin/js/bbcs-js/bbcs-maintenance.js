@@ -1,106 +1,241 @@
 (function ($) {
     "use strict";
 
-    function showConfirmSaltClearModal(callback) {
-        $("#confirmSaltClearModal").modal("show");
-        $("#confirmSaltClearButton").off("click").on("click", function() {
-            $("#confirmSaltClearModal").modal("hide");
-            if (typeof callback === "function") {
-                callback();
+    // ── UI mode detection ───────────────────────────────────────
+    // Detect new UI by presence of .bbcs-app wrapper.
+    // Legacy UI uses Bootstrap .modal("show") / .modal("hide");
+    // New UI uses native bbcs-modal-* show/hide via style.display.
+    var isNewUI = !!document.querySelector('.bbcs-app');
+
+    // ── Native new-UI modal helpers ─────────────────────────────
+    function modalShow(id) {
+        if (isNewUI) {
+            var el = document.getElementById(id);
+            if (el) el.style.display = 'flex';
+        } else {
+            $('#' + id).modal('show');
+        }
+    }
+
+    function modalHide(id) {
+        if (isNewUI) {
+            var el = document.getElementById(id);
+            if (el) el.style.display = 'none';
+        } else {
+            $('#' + id).modal('hide');
+        }
+    }
+
+    // Wire up data-modal-close buttons inside modal overlays.
+    // Only for new UI - legacy uses Bootstrap data-bs-dismiss.
+    if (isNewUI) {
+        document.addEventListener('click', function (e) {
+            var btn = e.target.closest('[data-modal-close]');
+            if (btn) {
+                var overlay = btn.closest('.bbcs-modal-overlay');
+                if (overlay) overlay.style.display = 'none';
             }
         });
+    }
+
+    // ── Modal callbacks ────────────────────────────────────────
+    function showConfirmSaltClearModal(callback) {
+        modalShow('confirmSaltClearModal');
+        var btn = document.getElementById('confirmSaltClearButton');
+        if (isNewUI && btn) {
+            var handler = function () {
+                btn.removeEventListener('click', handler);
+                modalHide('confirmSaltClearModal');
+                if (typeof callback === 'function') callback();
+            };
+            btn.addEventListener('click', handler);
+        } else {
+            $("#confirmSaltClearButton").off("click").on("click", function () {
+                modalHide('confirmSaltClearModal');
+                if (typeof callback === "function") callback();
+            });
+        }
     }
 
     function showConfirmLogClearModal(callback) {
-        $("#confirmLogClearModal").modal("show");
-        $("#confirmLogClearButton").off("click").on("click", function() {
-            $("#confirmLogClearModal").modal("hide");
-            if (typeof callback === "function") {
-                callback();
-            }
-        });
+        modalShow('confirmLogClearModal');
+        var btn = document.getElementById('confirmLogClearButton');
+        if (isNewUI && btn) {
+            var handler = function () {
+                btn.removeEventListener('click', handler);
+                modalHide('confirmLogClearModal');
+                if (typeof callback === 'function') callback();
+            };
+            btn.addEventListener('click', handler);
+        } else {
+            $("#confirmLogClearButton").off("click").on("click", function () {
+                modalHide('confirmLogClearModal');
+                if (typeof callback === "function") callback();
+            });
+        }
     }
 
     function showConfirmTransientClearModal(callback) {
-        $("#confirmTransientClearModal").modal("show");
-        $("#confirmTransientClearButton").off("click").on("click", function() {
-            $("#confirmTransientClearModal").modal("hide");
-            if (typeof callback === "function") {
-                callback();
-            }
-        });
+        modalShow('confirmTransientClearModal');
+        var btn = document.getElementById('confirmTransientClearButton');
+        if (isNewUI && btn) {
+            var handler = function () {
+                btn.removeEventListener('click', handler);
+                modalHide('confirmTransientClearModal');
+                if (typeof callback === 'function') callback();
+            };
+            btn.addEventListener('click', handler);
+        } else {
+            $("#confirmTransientClearButton").off("click").on("click", function () {
+                modalHide('confirmTransientClearModal');
+                if (typeof callback === "function") callback();
+            });
+        }
     }
 
     function showConfirmHitsClearModal(callback) {
-        $("#confirmHitsClearModal").modal("show");
-        $("#confirmHitsClearButton").off("click").on("click", function() {
-            $("#confirmHitsClearModal").modal("hide");
-            if (typeof callback === "function") {
-                callback();
-            }
-        });
+        modalShow('confirmHitsClearModal');
+        var btn = document.getElementById('confirmHitsClearButton');
+        if (isNewUI && btn) {
+            var handler = function () {
+                btn.removeEventListener('click', handler);
+                modalHide('confirmHitsClearModal');
+                if (typeof callback === 'function') callback();
+            };
+            btn.addEventListener('click', handler);
+        } else {
+            $("#confirmHitsClearButton").off("click").on("click", function () {
+                modalHide('confirmHitsClearModal');
+                if (typeof callback === "function") callback();
+            });
+        }
     }
 
     function showConfirmRewriteRulesModal(callback) {
-        $("#confirmRewriteRulesModal").modal("show");
-        $("#confirmRewriteRulesButton").off("click").on("click", function() {
-            $("#confirmRewriteRulesModal").modal("hide");
-            if (typeof callback === "function") {
-                callback();
-            }
-        });
+        modalShow('confirmRewriteRulesModal');
+        var btn = document.getElementById('confirmRewriteRulesButton');
+        if (isNewUI && btn) {
+            var handler = function () {
+                btn.removeEventListener('click', handler);
+                modalHide('confirmRewriteRulesModal');
+                if (typeof callback === 'function') callback();
+            };
+            btn.addEventListener('click', handler);
+        } else {
+            $("#confirmRewriteRulesButton").off("click").on("click", function () {
+                modalHide('confirmRewriteRulesModal');
+                if (typeof callback === "function") callback();
+            });
+        }
     }
 
     function showConfirmObjectCacheModal(callback) {
-        $("#confirmObjectCacheModal").modal("show");
-        $("#confirmObjectCacheButton").off("click").on("click", function() {
-            $("#confirmObjectCacheModal").modal("hide");
-            if (typeof callback === "function") {
-                callback();
-            }
-        });
+        modalShow('confirmObjectCacheModal');
+        var btn = document.getElementById('confirmObjectCacheButton');
+        if (isNewUI && btn) {
+            var handler = function () {
+                btn.removeEventListener('click', handler);
+                modalHide('confirmObjectCacheModal');
+                if (typeof callback === 'function') callback();
+            };
+            btn.addEventListener('click', handler);
+        } else {
+            $("#confirmObjectCacheButton").off("click").on("click", function () {
+                modalHide('confirmObjectCacheModal');
+                if (typeof callback === "function") callback();
+            });
+        }
     }
 
     function showDbRepairInfoModal() {
-        $("#dbRepairInfoModal").modal("show");
+        modalShow('dbRepairInfoModal');
     }
 
+    // ── Dynamically created modals (reinstall DB, backup) ──────
     function showConfirmClearModalReinstallDB(onConfirm) {
+        if (isNewUI) {
+            // New UI: use native confirm()
+            if (confirm('Are you sure you want to re-install Database?')) {
+                onConfirm();
+            }
+        } else {
+            // Legacy: Bootstrap modal
+            if ($("#confirmClearModal").length) {
+                $("#confirmClearModal").remove();
+            }
 
-        if ($("#confirmClearModal").length) {
-            $("#confirmClearModal").remove();
+            var modal = $(
+                '<div class="modal fade" id="confirmClearModal" tabindex="-1" aria-labelledby="confirmClearModalLabel" aria-hidden="true">'
+            );
+            var modalDialog = $('<div class="modal-dialog">');
+            var modalContent = $('<div class="modal-content">');
+            var modalHeader = $(
+                '<div class="modal-header"><h5 class="modal-title" id="confirmClearModalLabel">Re-install Database</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>'
+            );
+            var modalBody = $(
+                '<div class="modal-body">Are you sure you want to re-install Database?</div>'
+            );
+            var modalFooter = $(
+                '<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button><button type="button" class="btn btn-primary" id="confirmClearButton">Yes</button></div>'
+            );
+
+            modalContent.append(modalHeader, modalBody, modalFooter);
+            modalDialog.append(modalContent);
+            modal.append(modalDialog);
+            $("body").append(modal);
+
+            $("#confirmClearButton").on("click", function () {
+                $("#confirmClearModal").modal("hide");
+                onConfirm();
+            });
+
+            $("#confirmClearModal").modal("show");
         }
-
-        var modal = $(
-            '<div class="modal fade" id="confirmClearModal" tabindex="-1" aria-labelledby="confirmClearModalLabel" aria-hidden="true">'
-        );
-        var modalDialog = $('<div class="modal-dialog">');
-        var modalContent = $('<div class="modal-content">');
-        var modalHeader = $(
-            '<div class="modal-header"><h5 class="modal-title" id="confirmClearModalLabel">Re-install Database</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>'
-        );
-        var modalBody = $(
-            '<div class="modal-body">Are you sure you want to re-install Database?</div>'
-        );
-        var modalFooter = $(
-            '<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button><button type="button" class="btn btn-primary" id="confirmClearButton">Yes</button></div>'
-        );
-
-        modalContent.append(modalHeader, modalBody, modalFooter);
-        modalDialog.append(modalContent);
-        modal.append(modalDialog);
-        $("body").append(modal);
-
-        $("#confirmClearButton").on("click", function () {
-            $("#confirmClearModal").modal("hide");
-            onConfirm();
-        });
-
-        $("#confirmClearModal").modal("show");
     }
 
-    $(document).ready(function () {
+    function showConfirmClearModalBackup(onConfirm) {
+        if (isNewUI) {
+            // New UI: use native confirm()
+            if (confirm('Are you sure you want to make a backup?')) {
+                onConfirm();
+            }
+        } else {
+            // Legacy: Bootstrap modal
+            if ($("#confirmClearModal").length) {
+                $("#confirmClearModal").remove();
+            }
 
+            var modal = $(
+                '<div class="modal fade" id="confirmClearModal" tabindex="-1" aria-labelledby="confirmClearModalLabel" aria-hidden="true">'
+            );
+            var modalDialog = $('<div class="modal-dialog">');
+            var modalContent = $('<div class="modal-content">');
+            var modalHeader = $(
+                '<div class="modal-header"><h5 class="modal-title" id="confirmClearModalLabel">Backup</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>'
+            );
+            var modalBody = $(
+                '<div class="modal-body">Are you sure you want to make a backup?</div>'
+            );
+            var modalFooter = $(
+                '<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button><button type="button" class="btn btn-primary" id="confirmClearButton">Yes</button></div>'
+            );
+
+            modalContent.append(modalHeader, modalBody, modalFooter);
+            modalDialog.append(modalContent);
+            modal.append(modalDialog);
+            $("body").append(modal);
+
+            $("#confirmClearButton").on("click", function () {
+                $("#confirmClearModal").modal("hide");
+                onConfirm();
+            });
+
+            $("#confirmClearModal").modal("show");
+        }
+    }
+
+    // ── Event handlers ─────────────────────────────────────────
+    $(document).ready(function () {
         $("#bbcs-reinstall-database").on("click", function () {
             showConfirmClearModalReinstallDB(function () {
                 $.ajax({
@@ -115,9 +250,7 @@
                             alert(bbcsMaintenanceL10n.db_reinstalled);
                             location.reload();
                         } else {
-                            alert(
-                                bbcsMaintenanceL10n.failed_reinstall + response.data
-                            );
+                            alert(bbcsMaintenanceL10n.failed_reinstall + response.data);
                         }
                     },
                     error: function (xhr, status, error) {
@@ -128,42 +261,7 @@
         });
     });
 
-    function showConfirmClearModalBackup(onConfirm) {
-
-        if ($("#confirmClearModal").length) {
-            $("#confirmClearModal").remove();
-        }
-
-        var modal = $(
-            '<div class="modal fade" id="confirmClearModal" tabindex="-1" aria-labelledby="confirmClearModalLabel" aria-hidden="true">'
-        );
-        var modalDialog = $('<div class="modal-dialog">');
-        var modalContent = $('<div class="modal-content">');
-        var modalHeader = $(
-            '<div class="modal-header"><h5 class="modal-title" id="confirmClearModalLabel">Backup</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>'
-        );
-        var modalBody = $(
-            '<div class="modal-body">Are you sure you want to make a backup?</div>'
-        );
-        var modalFooter = $(
-            '<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button><button type="button" class="btn btn-primary" id="confirmClearButton">Yes</button></div>'
-        );
-
-        modalContent.append(modalHeader, modalBody, modalFooter);
-        modalDialog.append(modalContent);
-        modal.append(modalDialog);
-        $("body").append(modal);
-
-        $("#confirmClearButton").on("click", function () {
-            $("#confirmClearModal").modal("hide");
-            onConfirm();
-        });
-
-        $("#confirmClearModal").modal("show");
-    }
-
     $(document).ready(function () {
-
         $("#bbcs-backup-data-settings").on("click", function () {
             showConfirmClearModalBackup(function () {
                 $.ajax({
@@ -194,7 +292,6 @@
     });
 
     $(document).ready(function () {
-
         $("#bbcs-import-data-settings").on("click", function () {
             var fileInput = $("<input>", {
                 type: "file",
@@ -215,14 +312,10 @@
                         contentType: false,
                         success: function (response) {
                             if (response.success) {
-                                alert(
-                                    bbcsMaintenanceL10n.import_success
-                                );
+                                alert(bbcsMaintenanceL10n.import_success);
                                 window.location.reload();
                             } else {
-                                alert(
-                                    bbcsMaintenanceL10n.failed_import + response.data.message
-                                );
+                                alert(bbcsMaintenanceL10n.failed_import + response.data.message);
                             }
                         },
                         error: function (xhr, status, error) {
@@ -236,7 +329,7 @@
     });
 
     $('#bbcs-clear-cookies').on('click', function () {
-        showConfirmSaltClearModal(function() {
+        showConfirmSaltClearModal(function () {
             $.ajax({
                 url: botblockerData.ajaxurl,
                 method: 'POST',
@@ -259,9 +352,9 @@
             });
         });
     });
-    
+
     $('#bbcs-clear-wp-log').on('click', function () {
-        showConfirmLogClearModal(function() {
+        showConfirmLogClearModal(function () {
             $.ajax({
                 url: botblockerData.ajaxurl,
                 method: 'POST',
@@ -283,7 +376,7 @@
             });
         });
     });
-    
+
     $('#bbcs-download-wp-log').on('click', function () {
         $.ajax({
             url: botblockerData.ajaxurl,
@@ -317,11 +410,11 @@
     });
 
     $('#bbcs-site-health').on('click', function () {
-        window.location.href = botblockerData.adminUrl + 'site-health.php'; 
+        window.location.href = botblockerData.adminUrl + 'site-health.php';
     });
 
     $('#bbcs-clear-transients').on('click', function () {
-        showConfirmTransientClearModal(function() {
+        showConfirmTransientClearModal(function () {
             $.ajax({
                 url: botblockerData.ajaxurl,
                 method: 'POST',
@@ -345,7 +438,7 @@
     });
 
     $('#bbcs-clear-hits-database').on('click', function () {
-        showConfirmHitsClearModal(function() {
+        showConfirmHitsClearModal(function () {
             $.ajax({
                 url: botblockerData.ajaxurl,
                 method: 'POST',
@@ -368,9 +461,9 @@
             });
         });
     });
-    
+
     $('#bbcs-flush-rewrite-rules').on('click', function () {
-        showConfirmRewriteRulesModal(function() {
+        showConfirmRewriteRulesModal(function () {
             $.ajax({
                 url: botblockerData.ajaxurl,
                 method: 'POST',
@@ -394,7 +487,7 @@
     });
 
     $('#bbcs-flush-object-cache').on('click', function () {
-        showConfirmObjectCacheModal(function() {
+        showConfirmObjectCacheModal(function () {
             $.ajax({
                 url: botblockerData.ajaxurl,
                 method: 'POST',
@@ -416,11 +509,10 @@
             });
         });
     });
+
     $('#bbcs-update-asn-database').on('click', function () {
         var $btn = $(this);
-        if ($btn.prop('disabled')) {
-            return;
-        }
+        if ($btn.prop('disabled')) return;
         $btn.prop('disabled', true);
         $.ajax({
             url: botblockerData.ajaxurl,
@@ -445,11 +537,10 @@
             }
         });
     });
+
     $('#bbcs-update-rugov').on('click', function () {
         var $btn = $(this);
-        if ($btn.prop('disabled')) {
-            return;
-        }
+        if ($btn.prop('disabled')) return;
         $btn.prop('disabled', true);
         $.ajax({
             url: botblockerData.ajaxurl,
@@ -462,23 +553,22 @@
                 if (response && response.success) {
                     alert((response.data && response.data.message) || response.data || bbcsMaintenanceL10n.rugov_scheduled || 'RU-Gov list update scheduled.');
                 } else {
-                    alert((response && response.data) || 'Failed to schedule RU-Gov list update.');
+                    alert((response && response.data) || (bbcsMaintenanceL10n && bbcsMaintenanceL10n.rugov_failed) || 'Failed to schedule RU-Gov list update.');
                 }
             },
             error: function (xhr, status, error) {
                 console.error('AJAX error:', error);
-                alert('Error scheduling RU-Gov list update.');
+                alert((bbcsMaintenanceL10n && bbcsMaintenanceL10n.rugov_error) || 'Error scheduling RU-Gov list update.');
             },
             complete: function () {
                 $btn.prop('disabled', false);
             }
         });
     });
+
     $('#bbcs-sync-llm').on('click', function () {
         var $btn = $(this);
-        if ($btn.prop('disabled')) {
-            return;
-        }
+        if ($btn.prop('disabled')) return;
         $btn.prop('disabled', true);
         $.ajax({
             url: botblockerData.ajaxurl,

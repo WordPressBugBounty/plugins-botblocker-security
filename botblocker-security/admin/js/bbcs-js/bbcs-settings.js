@@ -2,26 +2,37 @@
     "use strict";
 
     function toggleImgPack() {
-        var mode = $('select[name="bbcs_captcha_mode"]').val();
-        var $pack = $('#bbcs_captcha_img_pack');
-        var $inline = $('#bbcs_captcha_img_inline');
-        if (mode === '2') {
-            $pack.prop('disabled', false);
-            $inline.prop('disabled', false);
-        } else {
-            $pack.prop('disabled', true);
-            $inline.prop('disabled', true);
-        }
+        var mode = $('input[name="bbcs_captcha_mode"]').val();
+        var enabled = mode === '2';
+
+        // Image Delivery Mode
+        var $inlineHidden = $('input[name="bbcs_captcha_img_inline"]');
+        var $inlineSelect = $inlineHidden.closest('.bbcs-field').find('.bbcs-select');
+        $inlineHidden.prop('disabled', !enabled);
+        $inlineSelect.toggleClass('is-disabled', !enabled);
+
+        // Image Captcha Pack
+        var $packHidden = $('input[name="bbcs_captcha_img_pack"]');
+        var $packSelect = $packHidden.closest('.bbcs-field').find('.bbcs-select');
+        $packHidden.prop('disabled', !enabled);
+        $packSelect.toggleClass('is-disabled', !enabled);
     }
 
-    $(document).on('change', 'select[name="bbcs_captcha_mode"]', toggleImgPack);
+    $(document).on('change', 'input[name="bbcs_captcha_mode"]', toggleImgPack);
 
     function togglePaymentSubOptions() {
-        var enabled = $('input[name="payment_bypass_enable"]').is(':checked');
+        // Check toggle button's is-on class (hidden input is never :checked).
+        var $mainBtn = $('.bbcs-toggle[data-field="payment_bypass_enable"]');
+        var enabled = $mainBtn.hasClass('is-on');
+        // Disable sub-option toggle buttons (prevent clicks) AND hidden inputs (prevent submit).
+        // Disabled inputs are excluded from form POST, matching old checkbox behavior.
+        $('.bbcs-toggle[data-field="payment_strict_method"]').prop('disabled', !enabled);
+        $('.bbcs-toggle[data-field="payment_keep_ip_rules"]').prop('disabled', !enabled);
         $('input[name="payment_strict_method"]').prop('disabled', !enabled);
         $('input[name="payment_keep_ip_rules"]').prop('disabled', !enabled);
     }
 
+    // The change event fires on the hidden input thanks to multipage.js trigger('change').
     $(document).on('change', 'input[name="payment_bypass_enable"]', togglePaymentSubOptions);
 
     $(document).ready(function () {
@@ -45,29 +56,19 @@
 (function ($) {
   "use strict";
   $(function () {
-    var $form = $('form[action$="admin-post.php"]').first();
+    var $form = $('#bbcs-settings-form');
     if (!$form.length) return;
 
-    var $saveButtons = $form.find('button[name="save_settings"]');
-    if (!$saveButtons.length) return;
+    var $saveBtn = $('#bbcs-save-settings-btn');
+    if (!$saveBtn.length) return;
+    var $unsavedLabel = $('#bbcs-unsaved-label');
 
     var initial = $form.serialize();
     var dirty = false;
-    var isSaving = false;
-
-    function ensureIndicators() {
-      $saveButtons.each(function () {
-        var $btn = $(this);
-        if (!$btn.prev('.bbcs-unsaved-label').length) {
-          $('<span class="bbcs-unsaved-label" style="font-weight: 700;margin-right:8px;color:#dc3545;display:none;">' + (window.bbcsUnsavedLabel || 'Not saved!') + '</span>').insertBefore($btn);
-        }
-      });
-    }
 
     function updateUI() {
-      var show = dirty;
-      $form.find('.bbcs-unsaved-label').css('display', show ? 'inline-block' : 'none');
-      $saveButtons.find('.bbcs-card-action').css('color', show ? '#dc3545' : '');
+      $unsavedLabel.css('display', dirty ? 'inline-block' : 'none');
+      $('[data-bbcs-reset]').prop('disabled', !dirty).toggleClass('is-disabled', !dirty);
     }
 
     function checkDirty() {
@@ -76,27 +77,235 @@
       updateUI();
     }
 
-    ensureIndicators();
+    // Set initial state: "Not saved!" hidden when form matches initial.
+    updateUI();
 
     $form.on('change input keyup', 'input, select, textarea', checkDirty);
 
-    $form.on('click', 'button[name="save_settings"]', function () {
-      isSaving = true;
+    // Disable action buttons on save to prevent double-submit and accidental navigation.
+    // The save button itself is disabled asynchronously so the form submission isn't blocked.
+    function disableActions() {
+      // Reset button (the non-submit button in the pagehead)
+      $('.bbcs-pagehead-actions button[type="button"]').prop('disabled', true).addClass('is-disabled');
+      // One-click setup link
+      $('#bbcsOpenOneClickSetup').addClass('is-disabled');
+      // Defer disabling the save button itself so the browser can submit the form
+      setTimeout(function () { $saveBtn.prop('disabled', true).addClass('is-disabled'); }, 0);
+    }
+
+    // Reset dirty immediately on save-button click (before beforeunload can fire).
+    $saveBtn.on('click', function () {
+      dirty = false;
+      updateUI();
+      disableActions();
     });
 
+    // beforeunload: only warn when dirty, but save-button has already cleared dirty.
     window.addEventListener('beforeunload', function (e) {
       if (dirty) {
         e.preventDefault();
         e.returnValue = '';
       }
     });
-
-    $form.on('submit', function () {
-      if (isSaving) {
-        dirty = false;
-        updateUI();
-        isSaving = false;
-      }
-    });
   });
 })(jQuery);
+
+/* ── Tooltip edge detection - prevents viewport overflow flicker ── */
+(function () {
+  'use strict';
+
+  var currentTip = null;
+
+  function positionTooltip(help) {
+    var tip = help.querySelector('.bbcs-help-tip');
+    if (!tip) return;
+    if (tip === currentTip) return;
+    currentTip = tip;
+
+    // Reset previous inline overrides
+    tip.classList.remove('bbcs-help-tip--left', 'bbcs-help-tip--bottom');
+    tip.style.bottom = '';
+    tip.style.top = '';
+
+    // CSS :hover has already made the tooltip display:block - measure directly
+    var rect = tip.getBoundingClientRect();
+    var vw = window.innerWidth;
+    var vh = window.innerHeight;
+
+    if (rect.left < 4) {
+      tip.classList.add('bbcs-help-tip--left');
+    }
+
+    if (rect.bottom > vh - 4) {
+      tip.style.bottom = 'auto';
+      tip.style.top = '140%';
+      tip.classList.add('bbcs-help-tip--bottom');
+    }
+  }
+
+  function resetTooltip(help) {
+    var tip = help.querySelector('.bbcs-help-tip');
+    if (!tip) return;
+    tip.classList.remove('bbcs-help-tip--left', 'bbcs-help-tip--bottom');
+    tip.style.bottom = '';
+    tip.style.top = '';
+    if (currentTip === tip) currentTip = null;
+  }
+
+  var settingsContent = document.querySelector('.bbcs-settings-content');
+  if (!settingsContent) return;
+
+  // Use mouseover/mouseout (they bubble) for delegation
+  var activeHelp = null;
+  settingsContent.addEventListener('mouseover', function (e) {
+    var help = e.target.closest('.bbcs-help');
+    if (!help || help === activeHelp) return;
+
+    // Reset previous
+    if (activeHelp) resetTooltip(activeHelp);
+    activeHelp = help;
+    positionTooltip(help);
+  }, true);
+
+  settingsContent.addEventListener('mouseout', function (e) {
+    var help = e.target.closest('.bbcs-help');
+    if (!help) return;
+
+    // Only reset if truly leaving the .bbcs-help (not entering a child)
+    var to = e.relatedTarget;
+    if (to && help.contains(to)) return;
+
+    resetTooltip(help);
+    if (activeHelp === help) activeHelp = null;
+  }, true);
+
+  // Keyboard: focusin/focusout
+  settingsContent.addEventListener('focusin', function (e) {
+    var help = e.target.closest('.bbcs-help');
+    if (!help) return;
+    if (activeHelp && activeHelp !== help) resetTooltip(activeHelp);
+    activeHelp = help;
+    positionTooltip(help);
+  }, true);
+
+  settingsContent.addEventListener('focusout', function (e) {
+    var help = e.target.closest('.bbcs-help');
+    if (!help) return;
+    var to = e.relatedTarget;
+    if (to && help.contains(to)) return;
+    resetTooltip(help);
+    if (activeHelp === help) activeHelp = null;
+  }, true);
+
+  // Reposition on resize (debounced) if a tooltip is active
+  var resizeTimer;
+  window.addEventListener('resize', function () {
+    if (!activeHelp) return;
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () {
+      if (activeHelp) positionTooltip(activeHelp);
+    }, 100);
+  });
+})();
+
+(function ($) {
+  function toggleTelegramFields() {
+    var enabled = $('input[name="telegram_notifications"]').val() === '1';
+    $('#bbcs_telegram_fields').find('input, select, textarea').prop('disabled', !enabled);
+    $('#bbcs_telegram_fields').find('.bbcs-field-box').toggleClass('bbcs-field-box--disabled', !enabled);
+  }
+  $(document).ready(function ($) {
+    toggleTelegramFields();
+    $('input[name="telegram_notifications"]').on('change', toggleTelegramFields);
+  });
+})(jQuery);
+
+(function($) {
+	function readJSONFile(file, callback) {
+		var reader = new FileReader();
+		reader.onload = function(e) {
+			try {
+				var data = JSON.parse(e.target.result);
+				callback(data);
+			} catch (err) {
+				alert(bbcsTlsL10n.invalid_json + err.message);
+			}
+		};
+		reader.readAsText(file);
+	}
+
+	$("#bbcs_tls_import").on("click", function() {
+		var fileInput = $("<input>", {
+			type: "file",
+			accept: "application/json",
+		}).on("change", function() {
+			var file = this.files[0];
+			if (file) {
+				readJSONFile(file, function(data) {
+					$.ajax({
+						url: botblockerData.ajaxurl,
+						type: "POST",
+						data: {
+							action: "bbcs_import_tls_fingerprints",
+							fingerprints: JSON.stringify(data),
+							nonce: botblockerData.nonce,
+						},
+						success: function(response) {
+							if (response.success) {
+								alert(bbcsTlsL10n.import_success + ': ' + response.data.imported + ' ' + (bbcsTlsL10n.imported || 'imported') + ', ' + response.data.skipped + ' ' + (bbcsTlsL10n.skipped || 'skipped') + '.');
+							} else {
+								alert(bbcsTlsL10n.failed_import + response.data);
+							}
+						},
+					});
+				});
+			}
+		});
+		fileInput.click();
+	});
+
+	$("#bbcs_tls_clear").on("click", function() {
+		if (confirm(bbcsTlsL10n.confirm_ask)) {
+			$.ajax({
+				url: botblockerData.ajaxurl,
+				type: "POST",
+				data: {
+					action: "bbcs_clear_all_tls_fingerprints",
+					nonce: botblockerData.nonce,
+				},
+				success: function(response) {
+					if (response.success) {
+						alert(bbcsTlsL10n.cleared);
+					} else {
+						alert(bbcsTlsL10n.failed_clear + response.data);
+					}
+				},
+			});
+		}
+	});
+
+	$("#bbcs_tls_sync").on("click", function() {
+		var btn = $(this);
+		btn.prop("disabled", true).html('<i class="fa-solid fa-sync"></i> ' + bbcsTlsL10n.syncing_process);
+		$.ajax({
+			url: botblockerData.ajaxurl,
+			type: "POST",
+			data: {
+				action: "bbcs_sync_tls_fingerprints",
+				nonce: botblockerData.nonce,
+			},
+			success: function(response) {
+				if (response.success) {
+					alert(bbcsTlsL10n.sync_success + ' (' + response.data.fingerprint_count + ' fingerprints)');
+				} else {
+					alert(bbcsTlsL10n.failed_sync + response.data);
+				}
+			},
+			complete: function() {
+				btn.prop("disabled", false).html('<i class="fa-solid fa-sync"></i> ' + bbcsTlsL10n.sync_now);
+			},
+		});
+	});
+})(jQuery);
+
+

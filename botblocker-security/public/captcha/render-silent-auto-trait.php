@@ -15,7 +15,7 @@ trait BBCS_RenderSilentAutoTrait {
 		return array(
 			'mode'   => 8,
 			'params' => array(
-				'deniedText' => __( 'Access denied. Please enable JavaScript and cookies.', 'botblocker-security' ),
+				'deniedText' => self::t( 'Access denied. Please enable JavaScript and cookies.' ),
 				'silentHash' => $hash,
 			),
 		);

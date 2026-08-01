@@ -12,14 +12,7 @@ trait BotBlockerCheckPageTrait {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [CheckPage] render_check_page() called. Mode=' . (int) $this->settings->bbcs_captcha_mode . ' SecureMode=' . (int) $this->settings->secure_mode . ' DDoS=' . (int) $this->settings->bbcs_ddos_resilience );
 			}
-			$this->template_data_check = array(
-				'extra_data'  => $this->ip,
-				'h1_title'    => __( 'Please turn JavaScript on and reload the page', 'botblocker-security' ),
-				'h2_title'    => __( 'Verifying your browser', 'botblocker-security' ),
-				'plugin_name' => __( 'BotBlocker security plugin', 'botblocker-security' ),
-			);
-			$this->prepare_check_js_data();
-			$this->prepare_captcha_js_data();
+			$this->assemble_check_page();
 			$this->load_check_template();
 			$this->process_die();
 		}
@@ -31,7 +24,7 @@ trait BotBlockerCheckPageTrait {
 		$renderer                       = new BotBlockerCaptchaRenderer( $botblocker_check_function_name );
 
 		$this->captcha_data = $renderer->getCaptchaData();
-		$token = $renderer->getChallengeToken();
+		$token              = $renderer->getChallengeToken();
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 			error_log( '[BBCS DEBUG] [CheckPage] prepare_captcha_js_data: mode=' . $this->captcha_data['mode'] . ' token_len=' . strlen( $token ) . ' params_keys=' . implode( ',', array_keys( $this->captcha_data['params'] ?? array() ) ) );
@@ -52,6 +45,7 @@ trait BotBlockerCheckPageTrait {
 	}
 
 	private function prepare_check_js_data(): void {
+		require_once $this->dirs['public'] . 'class-botblocker-captcha-renderer.php';
 
 		$botblocker_parse_url = wp_parse_url( $this->uri );
 		$botblocker_output    = array();
@@ -92,25 +86,26 @@ trait BotBlockerCheckPageTrait {
 			'hostBase64'         => base64_encode( $this->host ),
 			'hostNoPortBase64'   => base64_encode( $host_no_port ),
 			'redirectUrlBase64'  => base64_encode( esc_url_raw( $this->scheme . '://' . $this->host . $this->uri ) ),
-			'loadingText'        => __( 'Loading...', 'botblocker-security' ),
-			'testHash'           => hash( 'sha256', $this->useragent . $this->ip . $this->time . $this->country . $this->ptr . $this->settings->salt ),
-			'h1Hash'             => hash( 'sha256', $this->settings->cloud_api_email . $this->settings->cloud_api_pass . $this->host . $this->useragent . $this->ip . $this->time ),
-			'time'               => $this->time,
-			'hosting'            => $this->hosting,
-			'country'            => $this->country,
-			'ip'                 => $this->ip,
-			'cid'                => $this->cid,
-			'ptr'                => $this->ptr,
-			'httpAccept'         => urlencode( $this->http_accept ),
-			'ipVersion'          => $this->ip_version,
-			'recaptchaEnabled'   => ( $this->settings->recaptcha_check == 1 && ! empty( $this->settings->recaptcha_key3 ) ),
-			'recaptchaKey3'      => $this->settings->recaptcha_key3,
-			'apiGsIpv6'          => BOTBLOCKER_API_GS_IPV6,
-			'emptyValue'         => BOTBLOCKER_EMPTY,
-			'jsAdminEnabled'     => ( defined( 'BOTBLOCKER_JS_ADMIN' ) && BOTBLOCKER_JS_ADMIN == true ),
-			'jsErrorMessage'     => $this->js_error_message,
-			'cookieDisabledText' => __( 'Cookies are disabled in your browser. Enable cookies to continue.', 'botblocker-security' ),
-			'jsDisabledText'     => __( 'JavaScript is disabled in your browser. Enable JavaScript to continue.', 'botblocker-security' ),
+			'loadingText'           => BotBlockerCaptchaRenderer::t( 'Loading...' ),
+			'testHash'              => hash( 'sha256', $this->useragent . $this->ip . $this->time . $this->country . $this->ptr . $this->settings->salt ),
+			'h1Hash'                => hash( 'sha256', $this->settings->cloud_api_email . $this->settings->cloud_api_pass . $this->host . $this->useragent . $this->ip . $this->time ),
+			'time'                  => $this->time,
+			'hosting'               => $this->hosting,
+			'country'               => $this->country,
+			'ip'                    => $this->ip,
+			'cid'                   => $this->cid,
+			'ptr'                   => $this->ptr,
+			'httpAccept'            => urlencode( $this->http_accept ),
+			'ipVersion'             => $this->ip_version,
+			'recaptchaEnabled'      => ( $this->settings->recaptcha_check == 1 && ! empty( $this->settings->recaptcha_key3 ) ),
+			'recaptchaKey3'         => $this->settings->recaptcha_key3,
+			'apiIpv6'               => BOTBLOCKER_API_IPV6,
+			'apiGsIpv6'             => BOTBLOCKER_API_GS_IPV6,
+			'emptyValue'            => BOTBLOCKER_EMPTY,
+			'jsAdminEnabled'        => ( defined( 'BOTBLOCKER_JS_ADMIN' ) && BOTBLOCKER_JS_ADMIN == true ),
+			'jsErrorMessage'        => $this->js_error_message,
+			'cookieDisabledText'    => BotBlockerCaptchaRenderer::t( 'Cookies are disabled in your browser. Enable cookies to continue.' ),
+			'jsDisabledText'        => BotBlockerCaptchaRenderer::t( 'JavaScript is disabled in your browser. Enable JavaScript to continue.' ),
 			'redirectUrl'        => esc_js( esc_url_raw( $bot_blocker_redirect_url ) ),
 			'checkFunctionName'  => $botblocker_check_function_name,
 			'selectRequestMode'  => $this->select_request_mode,
@@ -122,13 +117,13 @@ trait BotBlockerCheckPageTrait {
 			'samesite'           => self::effective_samesite( $this->settings->samesite ),
 			'cookieLifetime'     => (int) $this->settings->cookie_lifetime,
 			'botblockerUrl'      => $this->botblockerUrl,
-			'railsJsUrl'         => esc_url( $this->botblockerUrl . 'public/js/rails.js?bannerid=' . $this->time ),
-			'detectionUtilsUrl'  => esc_url( $this->botblockerUrl . 'public/js/detection-utils.js?ver=' . $this->time ),
-			'bbidentfuncUrl'     => esc_url( $this->botblockerUrl . 'public/js/bbidentfunc.js?ver=' . $this->time ),
 			'captchaURL'         => esc_url( 'https://www.google.com/recaptcha/api.js?render=' . $this->settings->recaptcha_key3 ),
 			'silentMode'         => ( (int) $this->settings->bbcs_captcha_mode === BOTBLOCKER_CAPTCHA_MODE_SILENT ),
-			'approvedText'       => __( 'Access approved. Redirecting...', 'botblocker-security' ),
-			'ddosResilience'     => ( $this->settings->bbcs_ddos_resilience == 1 ),
+			'approvedText'           => BotBlockerCaptchaRenderer::t( 'Access approved. Redirecting...' ),
+			'verifyingText'          => BotBlockerCaptchaRenderer::t( 'Verifying...' ),
+			'retryingText'           => BotBlockerCaptchaRenderer::t( 'Retrying...' ),
+			'verificationFailedText' => BotBlockerCaptchaRenderer::t( 'Verification failed. Please complete the challenge below.' ),
+			'ddosResilience'         => ( $this->settings->bbcs_ddos_resilience == 1 ),
 		);
 	}
 
@@ -172,39 +167,52 @@ trait BotBlockerCheckPageTrait {
 	private function create_check_inline_assets(): array {
 		$captcha_mode = isset( $this->settings->bbcs_captcha_mode ) ? (int) $this->settings->bbcs_captcha_mode : 0;
 		$external     = array();
-		$scripts      = array(
+		$styles       = array(
+			BotBlockerSecurityPageAssets::read( $this->dirs['public'], 'css/template.css' ),
+			$this->create_custom_check_style(),
+		);
+
+		$scripts = array(
+			'var bbcsJsData = ' . BotBlockerSecurityPageAssets::json( $this->js_data ) . ';',
 			'window.adb_var = 1;',
 			BotBlockerSecurityPageAssets::read( $this->dirs['public'], 'js/rails.js' ),
 			BotBlockerSecurityPageAssets::read( $this->dirs['public'], 'js/detection-utils.js' ),
 			BotBlockerSecurityPageAssets::read( $this->dirs['public'], 'js/bbidentfunc.js' ),
-			'var bbcsCaptchaData = ' . BotBlockerSecurityPageAssets::json( $this->captcha_data ) . ';',
-			BotBlockerSecurityPageAssets::read( $this->dirs['public'], 'captcha-js/captcha.js' ),
-			BotBlockerSecurityPageAssets::read( $this->dirs['public'], 'captcha-js/mode' . $captcha_mode . '.js' ),
 		);
 
 		if ( ! empty( $this->js_data['recaptchaEnabled'] ) ) {
 			$external[] = $this->js_data['captchaURL'];
 		}
-
 		if ( $this->settings->bbcs_ddos_resilience == 1 ) {
 			$scripts[] = BotBlockerSecurityPageAssets::read( $this->dirs['public'], 'js/bbcs-circuit-breaker.js' );
 		}
+		$scripts[] = 'var bbcsCaptchaData = ' . BotBlockerSecurityPageAssets::json( $this->captcha_data ) . ';';
+		$scripts[] = BotBlockerSecurityPageAssets::read( $this->dirs['public'], 'captcha-js/captcha.js' );
+		$scripts[] = BotBlockerSecurityPageAssets::read( $this->dirs['public'], 'captcha-js/mode' . $captcha_mode . '.js' );
 
-		$scripts[] = 'var bbcsJsData = ' . BotBlockerSecurityPageAssets::json( $this->js_data ) . ';';
-		$scripts[] = BotBlockerSecurityPageAssets::read( $this->dirs['public'], 'js/template.js' );
+		$scripts[] = BotBlockerSecurityPageAssets::read( $this->dirs['public'], 'js/check-core.js' );
 
 		return array(
-			'styles'  => array(
-				BotBlockerSecurityPageAssets::read( $this->dirs['public'], 'css/template.css' ),
-				$this->create_custom_check_style(),
-			),
+			'styles'           => $styles,
 			'scripts'          => $scripts,
 			'external_scripts' => $external,
 		);
 	}
 
+	private function assemble_check_page(): void {
+		$this->prepare_check_js_data();
+		$this->prepare_captcha_js_data();
+
+		$this->template_data_check = array(
+			'plugin_name' => BotBlockerCaptchaRenderer::t( 'BotBlocker security plugin' ),
+			'h1_title'    => BotBlockerCaptchaRenderer::t( 'Please enable JavaScript and reload the page' ),
+			'h2_title'    => BotBlockerCaptchaRenderer::t( 'Checking your browser before accessing the site' ),
+			'extra_data'  => $this->ip,
+		);
+	}
+
 	private function load_check_template(): void {
-		$template_path = BOTBLOCKER_DIR . 'public/templates/check-page.php';
+		$template_path = BOTBLOCKER_DIR . 'public/check-page.php';
 		if ( file_exists( $template_path ) ) {
 			$data                  = $this->template_data_check;
 			$data['inline_assets'] = $this->create_check_inline_assets();

@@ -145,9 +145,9 @@ trait BotBlockerMuUtils {
 		if ( DIRECTORY_SEPARATOR === '\\' ) {
 			$allowed .= ':'; // keep drive letter colon on Windows
 		}
-		$docRoot    = preg_replace( '~[^' . $allowed . ']~', '', $docRoot );
-		$pluginAbs  = str_replace( '\\', '/', __DIR__ );
-		$relPath    = '';
+		$docRoot   = preg_replace( '~[^' . $allowed . ']~', '', $docRoot );
+		$pluginAbs = str_replace( '\\', '/', __DIR__ );
+		$relPath   = '';
 		if ( $docRoot !== '' && substr( $pluginAbs, 0, strlen( $docRoot ) ) === $docRoot ) {
 			$relPath = substr( $pluginAbs, strlen( $docRoot ) );
 		} elseif ( defined( 'ABSPATH' ) ) {

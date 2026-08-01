@@ -7,8 +7,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once BOTBLOCKER_DIR . 'core-helpers.php';
 
-class BotBlockerLoginBruteForce
-{
+class BotBlockerLoginBruteForce {
+
 	public static function getIp(): string {
 		$BBCS = BotBlocker::getInstance();
 		return $BBCS->ip;
@@ -94,6 +94,12 @@ class BotBlockerLoginBruteForce
 					array( 'expires' => $expires ),
 					array( 'id' => $exists )
 				);
+				BotBlockerFileRenderer::appendHotBan( $ip, 'block', $expires );
+				if ( ! get_transient( 'bbcs_ip_render_throttle' ) ) {
+					BotBlockerFileRenderer::renderIps();
+					BotBlockerCache::clearFileCache();
+					set_transient( 'bbcs_ip_render_throttle', 1, 15 );
+				}
 				return true;
 			}
 
@@ -132,6 +138,12 @@ class BotBlockerLoginBruteForce
 					array( 'expires' => $expires ),
 					array( 'id' => $exists )
 				);
+				BotBlockerFileRenderer::appendHotBan( $ip, 'block', $expires );
+				if ( ! get_transient( 'bbcs_ip_render_throttle' ) ) {
+					BotBlockerFileRenderer::renderIps();
+					BotBlockerCache::clearFileCache();
+					set_transient( 'bbcs_ip_render_throttle', 1, 15 );
+				}
 				return true;
 			}
 
@@ -152,6 +164,7 @@ class BotBlockerLoginBruteForce
 		}
 
 		if ( $result !== false ) {
+			BotBlockerFileRenderer::appendHotBan( $ip, 'block', $expires );
 			if ( ! get_transient( 'bbcs_ip_render_throttle' ) ) {
 				BotBlockerFileRenderer::renderIps();
 				BotBlockerCache::clearFileCache();

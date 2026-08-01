@@ -26,6 +26,7 @@ class Cyber_Secure_Botblocker {
 	private function load_dependencies(): void {
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-botblocker-loader.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-botblocker-i18n.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/components/component-loader.php';
 		require_once plugin_dir_path( __DIR__ ) . 'admin/class-botblocker-admin.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/botblocker/class-botblocker.php';
 		$this->loader = new Botblocker_Loader();

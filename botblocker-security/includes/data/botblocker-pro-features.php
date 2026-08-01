@@ -41,7 +41,7 @@ if ( ! function_exists( 'bbcs_get_pro_comparison' ) ) {
 				'pro'     => true,
 			),
 			array(
-				'feature' => __( 'Built-in CAPTCHA', 'botblocker-security' ),
+				'feature' => __( 'Built-in Captcha', 'botblocker-security' ),
 				'free'    => true,
 				'pro'     => true,
 			),
@@ -51,7 +51,7 @@ if ( ! function_exists( 'bbcs_get_pro_comparison' ) ) {
 				'pro'     => true,
 			),
 			array(
-				'feature' => __( 'reCAPTCHA, Redis, Memcached integrations', 'botblocker-security' ),
+				'feature' => __( 'reCaptcha, Redis, Memcached integrations', 'botblocker-security' ),
 				'free'    => true,
 				'pro'     => true,
 			),

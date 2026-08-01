@@ -6,14 +6,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 function bbcs_get_botblocker_news( $atts ): string {
-	if ( BOTBLOCKER_CACHE_NEWS == true ) {
-		$cache_key   = 'bbcs_botblocker_news_feed';
-		$cached_feed = get_transient( $cache_key );
-		if ( $cached_feed ) {
-			return $cached_feed;
-		}
-	}
-
 	$atts = shortcode_atts(
 		array(
 			'count' => 5,
@@ -21,49 +13,28 @@ function bbcs_get_botblocker_news( $atts ): string {
 		$atts
 	);
 
-	$attempt      = 0;
-	$max_attempts = 3;
-	$rss          = null;
-
-	while ( $attempt < $max_attempts ) {
-		$rss = fetch_feed( BOTBLOCKER_FEED_URL );
-		if ( ! is_wp_error( $rss ) ) {
-			break;
-		}
-		++$attempt;
-		sleep( 1 );
-	}
-
-	if ( is_wp_error( $rss ) ) {
-		return 'Error fetching news: ' . esc_html( $rss->get_error_message() );
-	}
-	$maxitems = $rss->get_item_quantity( 0 );
-	if ( $maxitems == 0 ) {
+	if ( ! function_exists( 'bbcs_get_news_items' ) ) {
 		return esc_html__( 'No news items available', 'botblocker-security' );
 	}
 
-	$rss_items = $rss->get_items( 0, $maxitems );
-	usort(
-		$rss_items,
-		function ( $a, $b ) {
-			return $b->get_date( 'U' ) - $a->get_date( 'U' );
-		}
-	);
+	$error = null;
+	$items = bbcs_get_news_items( (int) $atts['count'], $error );
 
-	$rss_items = array_slice( $rss_items, 0, (int) $atts['count'] );
+	if ( empty( $items ) ) {
+		if ( $error ) {
+			return esc_html( 'Error fetching news: ' . $error );
+		}
+		return esc_html__( 'No news items available', 'botblocker-security' );
+	}
 
 	$output = '<ul class="bbcs_botblocker-news">';
-	foreach ( $rss_items as $item ) {
+	foreach ( $items as $item ) {
 		$output .= '<li class="bbcs_news-item">';
-		$output .= '<a href="' . esc_url( $item->get_link() ) . '" target="_blank" class="bbcs_news_a">' . esc_html( $item->get_title() ) . '</a>';
-		$output .= '<span class="bbcs_news-date">' . esc_html( $item->get_date( 'j F Y' ) ) . ' at ' . esc_html( $item->get_date( 'H:i' ) ) . '</span>';
+		$output .= '<a href="' . esc_url( $item['link'] ) . '" target="_blank" class="bbcs_news_a">' . esc_html( $item['title'] ) . '</a>';
+		$output .= '<span class="bbcs_news-date">' . esc_html( $item['date'] ) . ' at ' . esc_html( $item['time'] ) . '</span>';
 		$output .= '</li>';
 	}
 	$output .= '</ul>';
-
-	if ( BOTBLOCKER_CACHE_NEWS == true ) {
-		set_transient( $cache_key, $output, BOTBLOCKER_CACHE_NEWS_TIME );
-	}
 
 	return $output;
 }
@@ -150,25 +121,23 @@ function bbcs_system_status_view(): string {
 	if ( ! current_user_can( BotBlockerMultisite::canManage() ) ) {
 		return esc_html__( 'You do not have permission to view this information.', 'botblocker-security' );
 	}
-	global $wpdb;
+
+	$info = BotBlockerSystemInfoData::getInstance();
 
 	$output  = '<pre class="bbcs_pre">';
-	$output .= 'OS: ' . php_uname( 's' ) . ' ' . php_uname( 'r' ) . "\n";
-	$output .= 'Web: ' . ( isset( $_SERVER['SERVER_SOFTWARE'] ) ? sanitize_text_field( wp_unslash( $_SERVER['SERVER_SOFTWARE'] ) ) : esc_html__( 'Unknown', 'botblocker-security' ) ) . "\n";
-	$output .= 'DB v.' . $wpdb->db_version() . "\n";
-	$output .= 'PHP v.' . phpversion() . "\n";
-
-	$output .= "\nWordPress v." . get_bloginfo( 'version' ) . "\n";
-	if ( defined( 'BOTBLOCKER_VERSION' ) ) {
-		$output .= 'BotBlocker v.' . BOTBLOCKER_VERSION . "\n";
+	$output .= 'OS: ' . esc_html( $info->os ) . "\n";
+	$output .= 'Web: ' . esc_html( $info->web ) . "\n";
+	$output .= 'DB v.' . esc_html( $info->db_version ) . "\n";
+	$output .= 'PHP v.' . esc_html( $info->php ) . "\n";
+	$output .= "\nWordPress v." . esc_html( $info->wp ) . "\n";
+	if ( ! empty( $info->bb_version ) ) {
+		$output .= 'BotBlocker v.' . esc_html( $info->bb_version ) . "\n";
 	}
-
 	$output .= "\nPHP vars:\n";
-	$output .= 'memory_limit: ' . ini_get( 'memory_limit' ) . "\n";
-	$output .= 'max_execution_time: ' . ini_get( 'max_execution_time' ) . "\n";
-	$output .= 'post_max_size: ' . ini_get( 'post_max_size' ) . "\n";
-	$output .= 'upload_max_filesize: ' . ini_get( 'upload_max_filesize' ) . "\n";
-
+	$output .= 'memory_limit: ' . esc_html( $info->memory ) . "\n";
+	$output .= 'max_execution_time: ' . esc_html( $info->max_exec ) . "\n";
+	$output .= 'post_max_size: ' . esc_html( $info->post_max ) . "\n";
+	$output .= 'upload_max_filesize: ' . esc_html( $info->upload_max ) . "\n";
 	$output .= '</pre>';
 	return $output;
 }
@@ -176,22 +145,12 @@ add_shortcode( 'bbcs_system_status', 'bbcs_system_status_view' );
 
 
 function bbcs_blockedToday(): string {
-	$BBCS = BotBlocker::getInstance();
-	if ( ! empty( $BBCS->statistics['today_blocked'] ) && $BBCS->statistics['today_blocked'] !== BOTBLOCKER_EMPTY ) {
-		return $BBCS->statistics['today_blocked'];
-	} else {
-		return '0';
-	}
+	return BotBlockerStats::blockedToday();
 }
 add_shortcode( 'bbcs_blocked_today', 'bbcs_blockedToday' );
 
 function bbcs_blockedTotal(): string {
-	$BBCS = BotBlocker::getInstance();
-	if ( ! empty( $BBCS->statistics['total_blocked'] ) && $BBCS->statistics['total_blocked'] !== BOTBLOCKER_EMPTY ) {
-		return $BBCS->statistics['total_blocked'];
-	} else {
-		return '0';
-	}
+	return BotBlockerStats::blockedTotal();
 }
 add_shortcode( 'bbcs_blocked_total', 'bbcs_blockedTotal' );
 

@@ -35,16 +35,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</div>
 		</div>
 		<div class="col-xxl-6 col-xl-6 col-lg-6 col-sm-12 col-md-12">
-		<h3 class="bbcs_settings_h3"><?php esc_html_e( 'Support via tickets', 'botblocker-security' ); ?></h3>
-			<?php
-			$bbcs_crm_host = defined( 'BOTBLOCKER_SERVER' ) ? BOTBLOCKER_SERVER : '';
-			$bbcs_crm_host = preg_replace( '~^https?://~i', '', $bbcs_crm_host );
-			$bbcs_crm_url  = 'https://crm.' . ltrim( $bbcs_crm_host, '.' );
-			?>
-			<a href="<?php echo esc_url( $bbcs_crm_url ); ?>"
-			class="btn btn-xs"><i class="fa-regular fa-square-check"></i>&nbsp;
-				<?php esc_html_e( 'BotBlocker CRM', 'botblocker-security' ); ?>
-			</a>
 		<h3 class="bbcs_settings_h3"><?php esc_html_e( 'BotBlocker pages', 'botblocker-security' ); ?></h3>
 
 			<!-- <a href="<?php //echo esc_url(BOTBLOCKER_ENVATO_URL) ?>" 

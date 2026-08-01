@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1"
+     xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 512 512">
+
+    <!-- Background -->
+    <circle cx="256" cy="256" r="256" fill="#4FBF9F"/>
+
+    <!-- Gauge -->
+    <path d="M126 300 A130 130 0 0 1 386 300"
+          fill="none"
+          stroke="#FFFFFF"
+          stroke-width="30"
+          stroke-linecap="round"/>
+
+    <!-- Tick marks -->
+    <line x1="121" y1="300" x2="101" y2="300"
+          stroke="#193651"
+          stroke-width="10"
+          stroke-linecap="round"/>
+
+    <line x1="160" y1="205" x2="146" y2="191"
+          stroke="#193651"
+          stroke-width="10"
+          stroke-linecap="round"/>
+
+    <line x1="256" y1="165" x2="256" y2="145"
+          stroke="#193651"
+          stroke-width="10"
+          stroke-linecap="round"/>
+
+    <line x1="352" y1="205" x2="366" y2="191"
+          stroke="#193651"
+          stroke-width="10"
+          stroke-linecap="round"/>
+
+    <line x1="391" y1="300" x2="411" y2="300"
+          stroke="#193651"
+          stroke-width="10"
+          stroke-linecap="round"/>
+
+    <!-- Rate limit marker -->
+    <line x1="320" y1="180" x2="320" y2="285"
+          stroke="#FFFFFF"
+          stroke-width="12"
+          stroke-linecap="round"/>
+
+    <!-- Needle -->
+    <line x1="256" y1="300"
+          x2="304" y2="230"
+          stroke="#193651"
+          stroke-width="12"
+          stroke-linecap="round"/>
+
+    <!-- Center -->
+    <circle cx="256" cy="300" r="16" fill="#193651"/>
+
+    <!-- Limit bar -->
+    <rect x="176"
+          y="350"
+          width="160"
+          height="20"
+          rx="10"
+          fill="#FFFFFF"/>
+
+    <!-- Small blocks representing requests -->
+    <rect x="176" y="390" width="26" height="26" rx="5" fill="#193651"/>
+    <rect x="212" y="390" width="26" height="26" rx="5" fill="#193651"/>
+    <rect x="248" y="390" width="26" height="26" rx="5" fill="#193651"/>
+    <rect x="284" y="390" width="26" height="26" rx="5" fill="#193651"/>
+    <rect x="320" y="390" width="26" height="26" rx="5" fill="#FFFFFF" stroke="#193651" stroke-width="6"/>
+
+</svg>

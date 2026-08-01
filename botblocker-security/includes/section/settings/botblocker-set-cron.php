@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<hr class="bbcs-info-hr">
 				<div class="bbcs-info-footer">
 					<i class="fa-regular fa-circle-question"></i>
-					<a href="https://developer.wordpress.org/plugins/cron/" target="_blank" class="bbcs-info-footer-a"><?php esc_html_e( 'WP-cron', 'botblocker-security' ); ?></a>
+					<a href="https://developer.wordpress.org/plugins/cron/" target="_blank" class="bbcs-info-footer-a"><?php esc_html_e( 'WP-Cron', 'botblocker-security' ); ?></a>
 					<a href="https://en.wikipedia.org/wiki/Cron" target="_blank" class="bbcs-info-footer-a"><?php esc_html_e( 'Cron', 'botblocker-security' ); ?></a>
 					<a href="https://docs.cpanel.net/cpanel/advanced/cron-jobs/" target="_blank" class="bbcs-info-footer-a"><?php esc_html_e( 'cPanel Cron Jobs', 'botblocker-security' ); ?></a>
 					<a href="https://docs.plesk.com/en-US/obsidian/administrator-guide/server-administration/scheduling-tasks.64993/" target="_blank" class="bbcs-info-footer-a"><?php esc_html_e( 'Plesk Cron', 'botblocker-security' ); ?></a>
@@ -62,15 +62,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<span class="bbcs-label-input"><?php esc_html_e( 'cURL Command:', 'botblocker-security' ); ?></span>
 					<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e( 'Copy this command to your server crontab.', 'botblocker-security' ); ?>"></i>
 				</div>
-				<div class="bbcs_text_input_inner" style="position: relative;">
+				<div class="bbcs_text_input_inner bbcs-input-copy">
 					<input type="text" 
 					class="bbcs_text_input_input" 
 					name="cron_curl" 
 					id="cron-curl" 
 					value="<?php echo esc_attr( $bbcs_curl_cmd ); ?>" readonly style="width:100%">
-						<button type="button" class="bbcs_copy_button" onclick="copyToClipboard(this)">
-							<i class="fa-regular fa-copy" data-bs-toggle="tooltip"
-								title="<?php esc_attr_e( 'Copy to clipboard', 'botblocker-security' ); ?>"></i>
+						<button type="button" class="bbcs_copy_button" onclick="copyToClipboard(this)" title="<?php esc_attr_e( 'Copy to clipboard', 'botblocker-security' ); ?>">
+							<i class="fa-regular fa-copy"></i>
 						</button>
 				</div>
 			</div>
@@ -80,15 +79,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<span class="bbcs-label-input"><?php esc_html_e( 'Wget Command:', 'botblocker-security' ); ?></span>
 					<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e( 'Copy this command to your server crontab.', 'botblocker-security' ); ?>"></i>
 				</div>
-				<div class="bbcs_text_input_inner" style="position: relative;">
+				<div class="bbcs_text_input_inner bbcs-input-copy">
 					<input type="text" 
 					class="bbcs_text_input_input" 
 					name="cron_wget" 
 					id="cron-wget" 
 					value="<?php echo esc_attr( $bbcs_wget_cmd ); ?>" readonly style="width:100%">
-						<button type="button" class="bbcs_copy_button" onclick="copyToClipboard(this)">
-							<i class="fa-regular fa-copy" data-bs-toggle="tooltip"
-								title="<?php esc_attr_e( 'Copy to clipboard', 'botblocker-security' ); ?>"></i>
+						<button type="button" class="bbcs_copy_button" onclick="copyToClipboard(this)" title="<?php esc_attr_e( 'Copy to clipboard', 'botblocker-security' ); ?>">
+							<i class="fa-regular fa-copy"></i>
 						</button>
 				</div>
 			</div>

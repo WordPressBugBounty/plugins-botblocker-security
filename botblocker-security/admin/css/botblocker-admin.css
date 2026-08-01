@@ -180,21 +180,6 @@ body.botblocker_page_bbcs_addons #wpbody {
   height: auto;
 }
 
-body.toplevel_page_bbcs_dashboard #wpbody,
-body.botblocker_page_bbcs_settings #wpbody,
-body.botblocker_page_bbcs_integrations #wpbody,
-body.botblocker_page_bbcs_reports #wpbody,
-body.botblocker_page_bbcs_rules #wpbody,
-body.botblocker_page_bbcs_tools #wpbody,
-body.botblocker_page_bbcs_maintenance #wpbody,
-body.botblocker_page_bbcs_cloud_api #wpbody,
-body.botblocker_page_bbcs_setup_guide #wpbody,
-body.botblocker_page_bbcs_about #wpbody,
-body.botblocker_page_bbcs_addons #wpbody {
-  min-height: 100vh;
-  height: auto; 
-}
-
 .language-menu {
   width: 200px;
 }
@@ -886,12 +871,29 @@ svg > g:last-child > g.google-visualization-tooltip {
 
 .bbcs_copy_button {
   position: absolute;
-  right: 5px;
+  right: 4px;
   top: 50%;
   transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
   outline: none;
-  border: 0px;
-  padding: 0px 7px;
+  transition: background 0.15s, color 0.15s;
+}
+.bbcs_copy_button:hover {
+  color: #111827;
+  background: rgba(0,0,0,0.06);
+}
+.bbcs_text_input_inner input {
+  padding-right: 2.6rem;
 }
 
 .bbcs-cloud-api-column {
@@ -1061,6 +1063,7 @@ code.bbcs-malware-code {
   background: none !important;
 }
 
+/* Progress section header row */
 .bbcs-malware-progress-header {
   display: flex;
   align-items: center;
@@ -1068,10 +1071,137 @@ code.bbcs-malware-code {
   font-size: 0.95em;
 }
 
+/* Spinning refresh icon */
+.bbcs-ico--spin {
+  animation: bbcs-spin 1.4s linear infinite;
+}
+@keyframes bbcs-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Phase label */
+.bbcs-malware-phase-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.92em;
+  min-height: 1.4em;
+  margin-bottom: 4px;
+  color: #343a40;
+}
+.bbcs-malware-phase-label strong {
+  font-weight: 600;
+}
+.bbcs-malware-phase--integrity .bbcs-malware-pulse { background-color: #6610f2; }
+.bbcs-malware-phase--db       .bbcs-malware-pulse { background-color: #198754; }
+.bbcs-malware-phase--done     .bbcs-malware-pulse { background-color: #198754; animation: none; }
+
+/* Animated pulse dot */
+.bbcs-malware-pulse {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background-color: #0d6efd;
+  flex-shrink: 0;
+  animation: bbcs-pulse-dot 1.4s ease-in-out infinite;
+}
+@keyframes bbcs-pulse-dot {
+  0%, 100% { opacity: 0.35; transform: scale(0.75); }
+  50%       { opacity: 1;    transform: scale(1.15); }
+}
+
+/* Current file ticker */
+.bbcs-malware-phase-file {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  font-size: 0.82em;
+  color: #6c757d;
+  margin-bottom: 6px;
+  overflow: hidden;
+  word-break: break-all;
+}
+.bbcs-malware-file-arrow {
+  color: #adb5bd;
+  font-size: 1.1em;
+  flex-shrink: 0;
+}
+.bbcs-malware-file-path {
+  font-size: 0.9em;
+  color: #495057;
+  background: transparent;
+  padding: 0;
+  border: none;
+  word-break: break-all;
+  overflow-wrap: anywhere;
+}
+
+/* Live stats bar */
+.bbcs-malware-stats-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px 2px;
+  font-size: 0.82em;
+  color: #6c757d;
+  margin-top: 5px;
+  min-height: 1.4em;
+}
+.bbcs-malware-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: #495057;
+}
+.bbcs-malware-stat-val {
+  font-weight: 700;
+  color: #212529;
+  font-variant-numeric: tabular-nums;
+}
+.bbcs-malware-stat--findings .bbcs-malware-stat-val {
+  color: #dc3545;
+}
+.bbcs-malware-stat--init {
+  color: #adb5bd;
+  font-style: italic;
+}
+.bbcs-malware-stat-sep {
+  color: #ced4da;
+  padding: 0 3px;
+}
+
+/* Elapsed time badge */
+.bbcs-malware-elapsed {
+  color: #6c757d;
+  font-size: 0.82em;
+}
+
 .bbcs-malware-progress {
   margin-bottom: 4px;
   border-radius: 4px;
   background-color: #e9ecef;
+  position: relative;
+  overflow: hidden;
+}
+
+.bbcs-malware-progress::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -40%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  animation: bbcs-scan-beam 1.8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes bbcs-scan-beam {
+  0% { left: -40%; }
+  100% { left: 100%; }
 }
 
 #bbcs-malware-progress-detail {

@@ -1,12 +1,12 @@
 <?php
 /**
  * Backward-compatibility wrappers for WordPress core functions that are newer
- * than the plugin's declared "Requires at least: 5.0".
+ * than the plugin's declared "Requires at least: 5.1".
  *
  * Each wrapper uses the native function when available (modern WordPress) and
  * degrades gracefully on older installs. Calls are dispatched through a
- * variable so the literal newer-than-5.0 function name does not appear in the
- * plugin source, keeping the codebase compatible with WP 5.0.
+ * variable so the literal newer-than-5.1 function name does not appear in the
+ * plugin source, keeping the codebase compatible with WP 5.1.
  *
  * @package BotBlocker
  */
@@ -46,6 +46,33 @@ if ( ! function_exists( 'bbcs_wp_date' ) ) {
 	}
 }
 
+if ( ! function_exists( 'bbcs_wp_timezone_string' ) ) {
+
+	function bbcs_wp_timezone_string(): string {
+		$fn = 'wp_timezone_string';
+		if ( function_exists( $fn ) ) {
+			return $fn();
+		}
+
+		$timezone_string = get_option( 'timezone_string' );
+		if ( ! empty( $timezone_string ) ) {
+			return $timezone_string;
+		}
+
+		$offset = (float) get_option( 'gmt_offset', 0 );
+		if ( $offset >= 0 ) {
+			$prefix = '+';
+		} else {
+			$prefix = '-';
+			$offset = abs( $offset );
+		}
+		$hours   = (int) floor( $offset );
+		$minutes = (int) round( ( $offset - $hours ) * 60 );
+
+		return sprintf( '%s%02d:%02d', $prefix, $hours, $minutes );
+	}
+}
+
 if ( ! function_exists( 'bbcs_is_using_https' ) ) {
 	/**
 	 * Whether the site is configured to use HTTPS.
@@ -69,39 +96,15 @@ if ( ! function_exists( 'bbcs_get_scheduled_event' ) ) {
 	/**
 	 * Retrieve a scheduled cron event.
 	 *
-	 * Wraps wp_get_scheduled_event() (WP 5.1+) and falls back to scanning the
-	 * cron array on older WP.
+	 * Wraps wp_get_scheduled_event() (WP 5.1+). Since the plugin minimum
+	 * is WP 5.1, this always delegates to the native function.
 	 *
 	 * @param string $hook Action hook of the event.
 	 * @param array  $args Optional arguments passed to the hook's callback.
 	 * @return object|false Event object or false if not found.
 	 */
 	function bbcs_get_scheduled_event( string $hook, array $args = array() ) {
-		$fn = 'wp_get_scheduled_event';
-		if ( function_exists( $fn ) ) {
-			return $fn( $hook, $args );
-		}
-
-		$crons = _get_cron_array();
-		if ( empty( $crons ) ) {
-			return false;
-		}
-
-		$key = md5( serialize( $args ) );
-		foreach ( $crons as $timestamp => $cron ) {
-			if ( isset( $cron[ $hook ][ $key ] ) ) {
-				$data = $cron[ $hook ][ $key ];
-				return (object) array(
-					'hook'      => $hook,
-					'timestamp' => (int) $timestamp,
-					'schedule'  => isset( $data['schedule'] ) ? $data['schedule'] : false,
-					'args'      => isset( $data['args'] ) ? $data['args'] : array(),
-					'interval'  => isset( $data['interval'] ) ? $data['interval'] : null,
-				);
-			}
-		}
-
-		return false;
+		return wp_get_scheduled_event( $hook, $args );
 	}
 }
 

@@ -4,8 +4,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class BotBlockerCache
-{
+class BotBlockerCache {
+
 	/**
 	 * Log debug message if debug and cache debug modes are enabled
 	 *
@@ -39,34 +39,41 @@ class BotBlockerCache
 					$BBCS->settings->redis_host ?? '127.0.0.1',
 					$BBCS->settings->redis_port ?? 6379,
 					$BBCS->settings->redis_password ?? '',
-					$BBCS->settings->redis_prefix ?? 'bbcs_'
+					$BBCS->settings->redis_prefix ?? 'bbcs_',
+					$BBCS->settings->redis_database ?? 0
 				);
 
 				if ( $redis && $redis->isAvailable() ) {
 					return $redis;
 				}
 
-				$lastError = 'Redis connection failed: ' . $redis->getLastError();
-				// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-				$wpdb->update( $wpdb->bbcs_settings, array( 'value' => 0 ), array( 'key' => 'redis_enable' ) );
-				$BBCS->settings->redis_enable = 0;
+			$was_enabled                = ( $BBCS->settings->redis_enable == 1 );
+			$lastError = 'Redis connection failed: ' . $redis->getLastError();
+			// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->update( $wpdb->bbcs_settings, array( 'value' => 0 ), array( 'key' => 'redis_enable' ) );
+			$BBCS->settings->redis_enable = 0;
 
+			if ( $was_enabled ) {
 				BotBlockerFileRenderer::generateSettingsFile();
+			}
 
-				self::logDebug( $lastError );
-				self::logDebug( 'Redis disabled, falling back to Memcached if enabled' );
-			} catch ( \Exception $e ) {
-				$lastError = 'Redis exception: ' . $e->getMessage();
-				// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-				$wpdb->update( $wpdb->bbcs_settings, array( 'value' => 0 ), array( 'key' => 'redis_enable' ) );
-				$BBCS->settings->redis_enable = 0;
+			self::logDebug( $lastError );
+			self::logDebug( 'Redis disabled, falling back to Memcached if enabled' );
+		} catch ( \Exception $e ) {
+			$was_enabled = ( $BBCS->settings->redis_enable == 1 );
+			$lastError = 'Redis exception: ' . $e->getMessage();
+			// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->update( $wpdb->bbcs_settings, array( 'value' => 0 ), array( 'key' => 'redis_enable' ) );
+			$BBCS->settings->redis_enable = 0;
 
+			if ( $was_enabled ) {
 				BotBlockerFileRenderer::generateSettingsFile();
+			}
 
-				self::logDebug( $lastError );
-				self::logDebug( 'Redis disabled due to exception, falling back to Memcached if enabled' );
+			self::logDebug( $lastError );
+			self::logDebug( 'Redis disabled due to exception, falling back to Memcached if enabled' );
 			}
 		}
 
@@ -84,23 +91,29 @@ class BotBlockerCache
 					return $mmc;
 				}
 
-				$lastError = 'Memcached connection failed: ' . $mmc->getLastError();
-				// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-				$wpdb->update( $wpdb->bbcs_settings, array( 'value' => 0 ), array( 'key' => 'memcached_enable' ) );
+			$was_enabled                   = ( $BBCS->settings->memcached_enable === 1 );
+			$lastError = 'Memcached connection failed: ' . $mmc->getLastError();
+			// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->update( $wpdb->bbcs_settings, array( 'value' => 0 ), array( 'key' => 'memcached_enable' ) );
+			if ( $was_enabled ) {
 				BotBlockerFileRenderer::generateSettingsFile();
+			}
 
-				self::logDebug( $lastError );
-				self::logDebug( 'Memcached disabled, falling back to transients' );
-			} catch ( \Exception $e ) {
-				$lastError = 'Memcached exception: ' . $e->getMessage();
-				// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-				$wpdb->update( $wpdb->bbcs_settings, array( 'value' => 0 ), array( 'key' => 'memcached_enable' ) );
+			self::logDebug( $lastError );
+			self::logDebug( 'Memcached disabled, falling back to transients' );
+		} catch ( \Exception $e ) {
+			$was_enabled = ( $BBCS->settings->memcached_enable === 1 );
+			$lastError = 'Memcached exception: ' . $e->getMessage();
+			// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->update( $wpdb->bbcs_settings, array( 'value' => 0 ), array( 'key' => 'memcached_enable' ) );
+			if ( $was_enabled ) {
 				BotBlockerFileRenderer::generateSettingsFile();
+			}
 
-				self::logDebug( $lastError );
-				self::logDebug( 'Memcached disabled due to exception, falling back to transients' );
+			self::logDebug( $lastError );
+			self::logDebug( 'Memcached disabled due to exception, falling back to transients' );
 			}
 		}
 
@@ -116,7 +129,8 @@ class BotBlockerCache
 				$BBCS->settings->redis_host ?? '127.0.0.1',
 				$BBCS->settings->redis_port ?? 6379,
 				$BBCS->settings->redis_password ?? '',
-				$BBCS->settings->redis_prefix ?? 'bbcs_'
+				$BBCS->settings->redis_prefix ?? 'bbcs_',
+				$BBCS->settings->redis_database ?? 0
 			);
 
 			$available = $redis && $redis->isAvailable();
@@ -167,7 +181,8 @@ class BotBlockerCache
 				$BBCS->settings->redis_host ?? '127.0.0.1',
 				$BBCS->settings->redis_port ?? 6379,
 				$BBCS->settings->redis_password ?? '',
-				$BBCS->settings->redis_prefix ?? 'bbcs_'
+				$BBCS->settings->redis_prefix ?? 'bbcs_',
+				$BBCS->settings->redis_database ?? 0
 			);
 
 			if ( $redis && $redis->isAvailable() ) {
@@ -411,7 +426,8 @@ class BotBlockerCache
 					$BBCS->settings->redis_host ?? '127.0.0.1',
 					$BBCS->settings->redis_port ?? 6379,
 					$BBCS->settings->redis_password ?? '',
-					$BBCS->settings->redis_prefix ?? 'bbcs_'
+					$BBCS->settings->redis_prefix ?? 'bbcs_',
+					$BBCS->settings->redis_database ?? 0
 				);
 
 				if ( $redis && ! $redis->isAvailable() ) {

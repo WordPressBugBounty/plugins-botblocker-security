@@ -17,6 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
 									<span class="bbcs-label-input"><?php esc_html_e( 'Priority', 'botblocker-security' ); ?></span>
+								<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'ASN rule priority (1-100)', 'botblocker-security' ); ?></span></span>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<input type="range" class="bbcs_text_input_input" id="editAsnPriority" name="priority" min="1" max="100" required>
@@ -28,6 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
 									<span class="bbcs-label-input"><?php esc_html_e( 'Rule', 'botblocker-security' ); ?></span>
+								<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Action for this ASN', 'botblocker-security' ); ?></span></span>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<select class="bbcs_select_input_input" id="editAsnRule" name="rule" required>
@@ -45,6 +47,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
 									<span class="bbcs-label-input"><?php esc_html_e( 'ASN Number', 'botblocker-security' ); ?></span>
+								<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Autonomous System Number', 'botblocker-security' ); ?></span></span>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<input type="number" class="bbcs_text_input_input" id="editAsnNum" name="asnum" min="1" required>
@@ -55,6 +58,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
 									<span class="bbcs-label-input"><?php esc_html_e( 'AS Name', 'botblocker-security' ); ?></span>
+								<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Autonomous System Name (optional)', 'botblocker-security' ); ?></span></span>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<input type="text" class="bbcs_text_input_input" id="editAsnName" name="asname">
@@ -67,6 +71,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
 									<span class="bbcs-label-input"><?php esc_html_e( 'Comment', 'botblocker-security' ); ?></span>
+								<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Optional comment for this ASN rule', 'botblocker-security' ); ?></span></span>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<textarea class="bbcs_text_input_input" id="editAsnComment" name="comment" rows="2"></textarea>
@@ -78,7 +83,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary btn-xs" data-bs-dismiss="modal"><?php esc_html_e( 'Close', 'botblocker-security' ); ?></button>
-				<button type="submit" form="editAsnForm" class="btn btn-primary btn-xs"><?php esc_html_e( 'Save changes', 'botblocker-security' ); ?></button>
+				<button type="submit" form="editAsnForm" class="btn btn-primary btn-xs"><?php esc_html_e( 'Save', 'botblocker-security' ); ?></button>
 			</div>
 		</div>
 	</div>

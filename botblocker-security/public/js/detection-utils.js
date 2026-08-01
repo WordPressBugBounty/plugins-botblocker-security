@@ -154,11 +154,6 @@ function bbcs_detectUnsupportedFeatures() {
         return true;
     }
 
-    if (typeof Worker !== 'undefined' && typeof SharedWorker === 'undefined' && 
-        !navigator.userAgent.includes('Firefox')) {
-        return true;
-    }
-
     const asyncStorage = !window.indexedDB && window.localStorage;
     if (asyncStorage) {
         return true;
@@ -179,13 +174,6 @@ function bbcs_detectUnsupportedFeatures() {
         }
     }
 
-    const hasCanvas = typeof HTMLCanvasElement !== 'undefined';
-    const hasAudio = typeof AudioContext !== 'undefined' || typeof webkitAudioContext !== 'undefined';
-    
-    if (hasCanvas && !hasAudio && !navigator.userAgent.includes('Mobile')) {
-        return true;
-    }
-    
     return false;
 }
 
@@ -291,6 +279,22 @@ function bbcs_detectFontRenderMismatch() {
         if (allZero || allFF) {
             return true;
         }
+
+        var subPixels = ctx.getImageData(0, 0, 60, 40).data;
+        var rValues = [];
+        var rSum = 0;
+        for (var i = 0; i < subPixels.length; i += 4) {
+            rValues.push(subPixels[i]);
+            rSum += subPixels[i];
+        }
+        var rAvg = rSum / rValues.length;
+        var sameCount = 0;
+        for (var i = 0; i < rValues.length; i++) {
+            if (rValues[i] === Math.round(rAvg)) sameCount++;
+        }
+        if (sameCount / rValues.length > 0.9) {
+            return true;
+        }
     } catch(e) {
         return true;
     }
@@ -339,7 +343,6 @@ function bbcs_detectChromiumProperties() {
         '__fxdriver_unwrapped',
         '__webdriver_script_func',
         '$chrome_asyncScriptInfo',
-        '$cdc_asdjflasutopfhvcZLmcfl_',
         '__puppeteer_evaluation_script__',
         '__playwright_evaluation_script__',
         '_WEBDRIVER_ELEM_CACHE',
@@ -348,24 +351,35 @@ function bbcs_detectChromiumProperties() {
         '__lastWatirAlert',
         '__lastWatirConfirm',
         '__lastWatirPrompt',
-        'webdriver'
+        'webdriver',
+        '__pw_manual',
+        '__pw_traverse',
+        '__playwright__binding__'
     ];
     
     if (anomalyProps.some(prop => prop in window)) {
         return true;
     }
 
+    var cdcFound = Object.getOwnPropertyNames(window).some(function(k) {
+        return /^\$cdc_/.test(k);
+    });
+    if (cdcFound) return true;
+
     try {
-        if ('$cdc_asdjflasutopfhvcZLmcfl_' in document ||
-            'domAutomationController' in document ||
+        if ('domAutomationController' in document ||
             '__webdriver_evaluate' in document) {
             return true;
         }
+        if (Object.getOwnPropertyNames(document).some(function(k) {
+            return /^\$cdc_/.test(k);
+        })) return true;
     } catch (e) {}
 
     try {
-        if (navigator.permissions && navigator.permissions.query) {
-            const fnStr = Function.prototype.toString.call(navigator.permissions.query);
+        var desc = Object.getOwnPropertyDescriptor(Navigator.prototype, 'webdriver');
+        if (desc && desc.get) {
+            var fnStr = Function.prototype.toString.call(desc.get);
             if (typeof fnStr === 'string' && !/\[native code\]/.test(fnStr)) {
                 return true;
             }
@@ -381,6 +395,16 @@ function bbcs_detectChromiumProperties() {
         !CSS.supports('-moz-appearance', 'none')) {
         return true;
     }
+
+    var hasBrowserStack = Object.getOwnPropertyNames(window).some(function(k) {
+        return /^__BROWSERSTACK_/.test(k);
+    });
+    if (hasBrowserStack) return true;
+
+    var hasLighthouse = Object.getOwnPropertyNames(window).some(function(k) {
+        return /^__LIGHTHOUSE_/.test(k);
+    });
+    if (hasLighthouse) return true;
     
     return false;
 }
@@ -406,8 +430,28 @@ function bbcs_detectWebGL() {
     if (debugInfo) {
         renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) || '';
         vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL) || '';
-    } else {
-        return false; 
+    }
+    
+    if (!renderer || !vendor) {
+        try {
+            renderer = gl.getParameter(gl.RENDERER) || '';
+            vendor = gl.getParameter(gl.VENDOR) || '';
+        } catch (e) {}
+    }
+    
+    if (!renderer && !vendor) {
+        try {
+            var ext = gl.getSupportedExtensions();
+            if (ext) {
+                var softwareExts = ['swiftshader', 'mesa', 'llvmpipe', 'softpipe'];
+                for (var i = 0; i < ext.length; i++) {
+                    for (var j = 0; j < softwareExts.length; j++) {
+                        if (ext[i].toLowerCase().indexOf(softwareExts[j]) !== -1) return true;
+                    }
+                }
+            }
+        } catch (e) {}
+        return false;
     }
     
     if (renderer && vendor) {
@@ -422,7 +466,7 @@ function bbcs_detectWebGL() {
             return true;
         }
         
-        const blacklistedRenderers = ['SwiftShader', 'VirtualBox', 'VMware', 'llvmpipe', 'Software Rasterizer', 'Microsoft Basic Render'];
+        const blacklistedRenderers = ['SwiftShader', 'Google SwiftShader', 'VirtualBox', 'VMware', 'llvmpipe', 'Software Rasterizer', 'Microsoft Basic Render'];
         const isEmulated = blacklistedRenderers.some(r => renderer.includes(r));
         
         if (isEmulated) {
@@ -467,88 +511,6 @@ function bbcs_detectTouchEvent() {
     }
     
     if (hasTouch && navigator.maxTouchPoints === 1 && !mobileUA) {
-        return true;
-    }
-    
-    return false;
-}
-
-function bbcs_detectBatteryAPI() {
-    if (!('getBattery' in navigator) && !('battery' in navigator)) {
-        const modernBrowser = typeof fetch === 'function' && 
-                             typeof Promise === 'function' &&
-                             typeof Symbol === 'function';
-        
-        const isModernMobile = /Android|iPhone|iPad/.test(navigator.userAgent) && 
-                              parseInt(navigator.userAgent.match(/Chrome\/(\d+)/)?.[1] || '0', 10) >= 60;
-                              
-        if (modernBrowser && isModernMobile) {
-            return true;
-        }
-        
-        return false;
-    }
-    
-    try {
-        const battery = navigator.battery || {};
-        
-        if (typeof battery !== 'object') {
-            return true;
-        }
-        
-        if ('level' in battery) {
-            const level = battery.level;
-            if (typeof level !== 'number' || level < 0 || level > 1) {
-                return true;
-            }
-        }
-        
-        if ('charging' in battery && typeof battery.charging !== 'boolean') {
-            return true;
-        }
-        
-        if (!('addEventListener' in battery) && 'getBattery' in navigator) {
-            return true;
-        }
-    } catch (e) {}
-    
-    return false;
-}
-
-function bbcs_detectMediaDevices() {
-    if (!('mediaDevices' in navigator)) {
-        return false;
-    }
-    
-    const mediaDevices = navigator.mediaDevices;
-    
-    if (typeof mediaDevices.enumerateDevices !== 'function') {
-        return true;
-    }
-    
-    const getUserMediaFn = mediaDevices.getUserMedia;
-    if (typeof getUserMediaFn !== 'function') {
-        return true;
-    }
-    
-    try {
-        let descriptor = Object.getOwnPropertyDescriptor(mediaDevices, 'enumerateDevices');
-        if (descriptor && !descriptor.configurable) {
-            return true;
-        }
-    } catch (e) {}
-    
-    return false;
-}
-
-function bbcs_detectPermissions() {
-    if (!('permissions' in navigator)) {
-        return false;
-    }
-    
-    const permissions = navigator.permissions;
-    
-    if (typeof permissions.query !== 'function') {
         return true;
     }
     
@@ -673,9 +635,6 @@ window.bbcs_detectFontRenderMismatch = bbcs_detectFontRenderMismatch;
 window.bbcs_detectChromiumProperties = bbcs_detectChromiumProperties;
 window.bbcs_detectWebGL = bbcs_detectWebGL;
 window.bbcs_detectTouchEvent = bbcs_detectTouchEvent;
-window.bbcs_detectBatteryAPI = bbcs_detectBatteryAPI;
-window.bbcs_detectMediaDevices = bbcs_detectMediaDevices;
-window.bbcs_detectPermissions = bbcs_detectPermissions;
 window.bbcs_detectLanguageMismatch = bbcs_detectLanguageMismatch;
 window.bbcs_isIncognito = bbcs_isIncognito;
 window.bbcs_clean_and_decode_base64_to_utf8 = bbcs_clean_and_decode_base64_to_utf8;

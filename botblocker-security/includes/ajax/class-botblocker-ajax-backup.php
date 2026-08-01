@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
-if ( ! defined( 'ABSPATH' ) ) { exit; }
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; }
 
 class BotBlockerAjaxBackup {
 
@@ -61,11 +62,19 @@ class BotBlockerAjaxBackup {
 			$wp_filesystem->mkdir( $temp_dir, defined( 'FS_CHMOD_DIR' ) ? FS_CHMOD_DIR : 0755 );
 		}
 
-		$token    = bin2hex( random_bytes( 16 ) );
+		$token = bin2hex( random_bytes( 16 ) );
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' token=' . $token );
 		}
+		if ( ! extension_loaded( 'zip' ) ) {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' zip extension not available' );
+			}
+			wp_send_json_error( array( 'message' => __( 'PHP zip extension is required for backups.', 'botblocker-security' ) ) );
+		}
+
 		$zip_file = $temp_dir . '/botblocker_backup_' . $token . '.zip';
 		$zip      = new \ZipArchive();
 		if ( $zip->open( $zip_file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE ) !== true ) {
@@ -204,7 +213,11 @@ class BotBlockerAjaxBackup {
 		header( 'Content-Length: ' . filesize( $zip_file ) );
 		header( 'X-Robots-Tag: noindex' );
 
-		readfile( $zip_file );    // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile
+		$sent = readfile( $zip_file );    // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile
+		if ( $sent === false ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( '[BBCS] Backup download failed for: ' . $zip_file );
+		}
 
 		wp_delete_file( $zip_file );
 		wp_die();
@@ -266,6 +279,14 @@ class BotBlockerAjaxBackup {
 				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' invalid upload: ' . $zip_file );
 			}
 			wp_send_json_error( array( 'message' => __( 'Invalid upload.', 'botblocker-security' ) ) );
+		}
+
+		if ( ! extension_loaded( 'zip' ) ) {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' zip extension not available' );
+			}
+			wp_send_json_error( array( 'message' => __( 'PHP zip extension is required for imports.', 'botblocker-security' ) ) );
 		}
 
 		$zip = new \ZipArchive();

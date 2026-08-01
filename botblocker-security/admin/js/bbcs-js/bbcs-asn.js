@@ -5,6 +5,14 @@
     var asnTable = null;
     var asnTableLoading = false;
 
+    // Register loading state for new UI tab switching guard.
+    if (typeof window.BBCS_TabLoadingRegistry !== 'undefined') {
+      window.BBCS_TabLoadingRegistry['ASN'] = function() { return asnTableLoading; };
+    }
+
+    var lastAsnUITab = '';
+    var asnJustInitialized = false;
+
     var switchDebounceMs = 200;
     var _lastSwitchTs = 0;
 
@@ -72,15 +80,15 @@
                         width: "100px",
                         render: function (data, type, row) {
                             return (
-                                '<button class="btn btn-sm btn-default bbcs-actions-b edit-asn" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Edit" data-id="' +
+                                '<button class="btn btn-sm btn-default bbcs-actions-b edit-asn" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="' + bbcsAsnL10n.edit + '" data-id="' +
                                 row.id +
                                 '"><i class="fa-regular fa-edit"></i></button> ' +
-                                '<button class="btn btn-sm btn-default bbcs-actions-b delete-asn" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Delete" data-id="' +
+                                '<button class="btn btn-sm btn-default bbcs-actions-b delete-asn" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="' + bbcsAsnL10n.delete + '" data-id="' +
                                 row.id +
                                 '"><i class="fa-regular fa-trash-can"></i></button> ' +
                                 '<button class="btn btn-sm bbcs-actions-b ' +
                                 (row.disable == 0 ? "btn-default" : "btn-warning") +
-                                ' toggle-asn" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Toggle On/Off" data-id="' +
+                                ' toggle-asn" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="' + bbcsAsnL10n.toggle + '" data-id="' +
                                 row.id +
                                 '"><i class="fas ' +
                                 (row.disable == 0 ? "fa-stop" : "fa-play") +
@@ -96,28 +104,38 @@
                     },
                 ],
                 createdRow: function (row, data) {
-                    $(row).css(
-                        "background-color",
-                        data.disable == 0 ? "rgba(0, 255, 0, 0.1)" : "rgba(255, 0, 0, 0.1)"
-                    );
+                    $(row).addClass(data.disable == 0 ? "bbcs-rule-row--active" : "bbcs-rule-row--disabled");
                 },
-                layout: {
-                    topStart: {
-                        buttons: [
-                            "copy", "csv", "excel", "pdf", "print", "colvis",
-                            {
-                                extend: "collection",
-                                text: "Length Menu",
-                                buttons: [
-                                    { text: "10", action: function (e, dt) { dt.page.len(10).draw(); } },
-                                    { text: "25", action: function (e, dt) { dt.page.len(25).draw(); } },
-                                    { text: "50", action: function (e, dt) { dt.page.len(50).draw(); } },
-                                    { text: "100", action: function (e, dt) { dt.page.len(100).draw(); } }
-                                ]
+                layout: (function () {
+                    var isNewUI = !!document.querySelector('.bbcs-app');
+                    return isNewUI ? {
+                        topStart: {
+                            search: {
+                                text: '',
+                                placeholder: bbcsAsnL10n.search_placeholder
                             }
-                        ]
-                    }
-                },
+                        },
+                        topEnd: {
+                            buttons: ['csv', 'excel']
+                        }
+                    } : {
+                        topStart: {
+                            buttons: [
+                                "copy", "csv", "excel", "pdf", "print", "colvis",
+                                {
+                                    extend: "collection",
+                                    text: "Length Menu",
+                                    buttons: [
+                                        { text: "10", action: function (e, dt) { dt.page.len(10).draw(); } },
+                                        { text: "25", action: function (e, dt) { dt.page.len(25).draw(); } },
+                                        { text: "50", action: function (e, dt) { dt.page.len(50).draw(); } },
+                                        { text: "100", action: function (e, dt) { dt.page.len(100).draw(); } }
+                                    ]
+                                }
+                            ]
+                        }
+                    };
+                })(),
                 drawCallback: function () {
                     var api = this.api();
                     api.columns().every(function () {
@@ -134,6 +152,8 @@
                     }, 100);
                 },
             });
+
+            asnJustInitialized = true;
 
             $(document).on("click", "#botblocker-asn-rules .toggle-asn", function (e) {
                 e.preventDefault();
@@ -158,6 +178,7 @@
                             var rowData = asnTable.row($button.closest("tr")).data();
                             rowData.disable = rowData.disable == 0 ? 1 : 0;
                             asnTable.row($button.closest("tr")).data(rowData).draw(false);
+                            if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
                         }
                     },
                     complete: function () {
@@ -174,9 +195,9 @@
         var modal = $('<div class="modal fade" id="importAsnResultModal" tabindex="-1" aria-labelledby="importAsnResultModalLabel" aria-hidden="true">');
         var modalDialog = $('<div class="modal-dialog">');
         var modalContent = $('<div class="modal-content">');
-        var modalHeader = $('<div class="modal-header"><h5 class="modal-title" id="importAsnResultModalLabel">Import Result</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>');
-        var modalBody = $('<div class="modal-body"><p>Imported: ' + result.imported + '</p><p>Skipped: ' + result.skipped + '</p></div>');
-        var modalFooter = $('<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>');
+        var modalHeader = $('<div class="modal-header"><h5 class="modal-title" id="importAsnResultModalLabel">' + bbcsAsnL10n.import_result + '</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>');
+        var modalBody = $('<div class="modal-body"><p>' + bbcsAsnL10n.imported + ': ' + result.imported + '</p><p>' + bbcsAsnL10n.skipped + ': ' + result.skipped + '</p></div>');
+        var modalFooter = $('<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">' + bbcsAsnL10n.close + '</button></div>');
 
         modalContent.append(modalHeader, modalBody, modalFooter);
         modalDialog.append(modalContent);
@@ -190,9 +211,9 @@
         var modal = $('<div class="modal fade" id="confirmClearAsnModal" tabindex="-1" aria-labelledby="confirmClearAsnModalLabel" aria-hidden="true">');
         var modalDialog = $('<div class="modal-dialog">');
         var modalContent = $('<div class="modal-content">');
-        var modalHeader = $('<div class="modal-header"><h5 class="modal-title" id="confirmClearAsnModalLabel">Clear All ASN Rules</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>');
-        var modalBody = $('<div class="modal-body">Are you sure you want to remove all ASN rules?</div>');
-        var modalFooter = $('<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button><button type="button" class="btn btn-primary" id="confirmClearAsnButton">Yes</button></div>');
+        var modalHeader = $('<div class="modal-header"><h5 class="modal-title" id="confirmClearAsnModalLabel">' + bbcsAsnL10n.clear_all_rules + '</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>');
+        var modalBody = $('<div class="modal-body">' + bbcsAsnL10n.confirm_clear + '</div>');
+        var modalFooter = $('<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">' + bbcsAsnL10n.no + '</button><button type="button" class="btn btn-primary" id="confirmClearAsnButton">' + bbcsAsnL10n.yes + '</button></div>');
 
         modalContent.append(modalHeader, modalBody, modalFooter);
         modalDialog.append(modalContent);
@@ -233,6 +254,21 @@
             }
         });
 
+        $(document).on('bbcs:tab-changed', function (e, data) {
+            if (data.tab === 'ASN') {
+                var sameTab = (lastAsnUITab === data.tab);
+                lastAsnUITab = data.tab;
+                initializeAsnTable();
+                if (asnTable) {
+                    asnTable.columns.adjust();
+                    if (!sameTab && !asnJustInitialized) {
+                        asnTable.draw(false);
+                    }
+                    asnJustInitialized = false;
+                }
+            }
+        });
+
         if ($('#bbcs_asn_list').hasClass('active')) {
             initializeAsnTable();
             if (asnTable) {
@@ -241,6 +277,13 @@
                 }, 150);
             }
         }
+
+        $(document).on("input", "#asnPriority", function () {
+            $(this).siblings("#asnPriorityValue").val(this.value);
+        });
+        $(document).on("input", "#editAsnPriority", function () {
+            $(this).siblings("#editAsnPriorityValue").val(this.value);
+        });
 
         $("#editAsnForm").on("submit", function (e) {
             e.preventDefault();
@@ -252,6 +295,7 @@
                     if (response.success) {
                         $("#editAsnModal").modal("hide");
                         $("#botblocker-asn-rules").DataTable().ajax.reload();
+                                    if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
                     } else {
                         alert(bbcsAsnL10n.failed_update + response.data);
                     }
@@ -274,7 +318,7 @@
                         var data = response.data;
                         $("#editAsnForm").find('[name="id"]').val(data.id);
                         $("#editAsnForm").find('[name="priority"]').val(data.priority);
-                        $("#editAsnPriorityValue").val(data.priority);
+                        $("#editAsnForm").find("#editAsnPriorityValue").val(data.priority);
                         $("#editAsnForm").find('[name="rule"]').val(data.rule);
                         $("#editAsnForm").find('[name="asnum"]').val(data.asnum);
                         $("#editAsnForm").find('[name="asname"]').val(data.asname);
@@ -301,6 +345,7 @@
                     success: function (response) {
                         if (response.success) {
                             $("#botblocker-asn-rules").DataTable().ajax.reload();
+                                    if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
                         }
                     },
                 });
@@ -321,6 +366,7 @@
                     if (response.success) {
                         $("#createAsnModal").modal("hide");
                         $("#botblocker-asn-rules").DataTable().ajax.reload();
+                                    if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
                     } else {
                         alert(bbcsAsnL10n.failed_create + response.data);
                     }
@@ -329,6 +375,32 @@
         });
 
         $("#bbcs_asn_export").on("click", function (e) {
+            e.preventDefault();
+            $.ajax({
+                url: botblockerData.ajaxurl,
+                type: "POST",
+                data: {
+                    action: "bbcs_export_asn",
+                    nonce: botblockerData.nonce,
+                },
+                success: function (response) {
+                    if (response.success) {
+                        var blob = new Blob([JSON.stringify(response.data, null, 2)], { type: "application/json" });
+                        var downloadLink = document.createElement("a");
+                        downloadLink.href = window.URL.createObjectURL(blob);
+                        downloadLink.download = "botblocker_asn_rules.json";
+                        document.body.appendChild(downloadLink);
+                        downloadLink.click();
+                        document.body.removeChild(downloadLink);
+                    } else {
+                        alert(bbcsAsnL10n.failed_export + response.data);
+                    }
+                },
+            });
+        });
+
+        $("#bbcs_pagehead_export").on("click", function (e) {
+            if ($('.bbcs-tab.is-active').data('tab') !== 'ASN') return;
             e.preventDefault();
             $.ajax({
                 url: botblockerData.ajaxurl,
@@ -373,6 +445,7 @@
                                 if (response.success) {
                                     showImportResultModal(response.data);
                                     $("#botblocker-asn-rules").DataTable().ajax.reload();
+                                    if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
                                 } else {
                                     alert(bbcsAsnL10n.failed_import + response.data);
                                 }
@@ -396,6 +469,7 @@
                     success: function (response) {
                         if (response.success) {
                             $("#botblocker-asn-rules").DataTable().ajax.reload();
+                                    if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
                         } else {
                             alert(bbcsAsnL10n.failed_clear + response.data);
                         }
@@ -418,5 +492,50 @@
                 },
             });
         });
+
+        // New UI pagehead button wiring - tab-aware
+        if (document.querySelector('.bbcs-app')) {
+            $(document).on("click", "#bbcs_pagehead_add", function () {
+                var activeTab = $('.bbcs-tab.is-active').data('tab');
+                if (activeTab === 'ASN') {
+                    $("#createAsnModal").modal("show");
+                }
+            });
+
+            $(document).on("click", "#bbcs_pagehead_import", function () {
+                var activeTab = $('.bbcs-tab.is-active').data('tab');
+                if (activeTab === 'ASN') {
+                    var fileInput = $("<input>", {
+                        type: "file",
+                        accept: "application/json",
+                    }).on("change", function () {
+                        var file = this.files[0];
+                        if (file) {
+                            readJSONFile(file, function (data) {
+                                $.ajax({
+                                    url: botblockerData.ajaxurl,
+                                    type: "POST",
+                                    data: {
+                                        action: "bbcs_import_asn",
+                                        asn_rules: JSON.stringify(data),
+                                        nonce: botblockerData.nonce,
+                                    },
+                                    success: function (response) {
+                                        if (response.success) {
+                                            showImportResultModal(response.data);
+                                            $("#botblocker-asn-rules").DataTable().ajax.reload();
+                                    if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
+                                        } else {
+                                            alert(bbcsAsnL10n.failed_import + response.data);
+                                        }
+                                    },
+                                });
+                            });
+                        }
+                    });
+                    fileInput.click();
+                }
+            });
+        }
     });
 })(jQuery);

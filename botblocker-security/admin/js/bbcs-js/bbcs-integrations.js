@@ -8,7 +8,7 @@
 
 (function($) {
   document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('form[action$="admin-post.php"]').forEach(function (form) {
+    document.querySelectorAll('#bbcs-integrations-form').forEach(function (form) {
       form.addEventListener('submit', function () {
         var fld = form.querySelector('input[name="bbcs_anchor"]');
         if (fld) { fld.value = (window.location.hash || '').replace(/^#/, ''); }
@@ -43,6 +43,7 @@
       var show = dirty;
       $form.find('.bbcs-unsaved-label').css('display', show ? 'inline-block' : 'none');
       $saveButtons.find('.bbcs-card-action').css('color', show ? '#dc3545' : '');
+      $('[data-bbcs-reset]').prop('disabled', !dirty).toggleClass('is-disabled', !dirty);
     }
 
     function checkDirty() {
@@ -52,6 +53,7 @@
     }
 
     ensureIndicators();
+    updateUI();
 
     $form.on('change input keyup', 'input, select, textarea', checkDirty);
 

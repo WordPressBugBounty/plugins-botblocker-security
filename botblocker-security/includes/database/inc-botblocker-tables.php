@@ -23,6 +23,8 @@ $bbcs_tables = array(
 	'bbcs_asn'             => 'asn',
 	'bbcs_self_ips'        => 'self_ips', //! Deprecated in 2.2.0, only used to drop in migrations
 	'bbcs_llm_trusted'     => 'llm_trusted',
+	'bbcs_tls_fingerprints' => 'tls_fingerprints',
+	'bbcs_fingerprint'     => 'fingerprint',
 );
 
 foreach ( $bbcs_tables as $bbcs_prop => $bbcs_suffix ) {

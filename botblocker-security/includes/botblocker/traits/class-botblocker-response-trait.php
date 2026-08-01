@@ -224,7 +224,7 @@ trait BotBlockerResponseTrait {
 			$error_tpl = ob_get_clean();
 			$error_tpl = str_replace( '<!--error-->', esc_html( $this->ip ) . ' ' . esc_html( gmdate( 'd.m.Y H:i:s', $this->time ) ), $error_tpl );
 
-			$denied_message = esc_html( __( 'Sorry, your request has been denied', 'botblocker-security' ) );
+			$denied_message = esc_html( BotBlockerCaptchaRenderer::t( 'Sorry, your request has been denied' ) );
 			$error_tpl      = str_replace( '<!--denied_message-->', $denied_message, $error_tpl );
 
 			$error_code_text = 'Error Code: ' . esc_html( $this->error_headers[ $this->settings->header_error_code ] );
@@ -265,10 +265,10 @@ trait BotBlockerResponseTrait {
 		if ( $this->settings->secure_mode == self::SECURE_MODE_FULL ) {
 			$template_file = $this->dirs['public'] . 'template-botblocker-denied.php';
 			if ( ! file_exists( $template_file ) ) {
-			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-				error_log( '[BBCS DEBUG] [Response] Block template file not found: ' . $template_file );
-			}
+				if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+					error_log( '[BBCS DEBUG] [Response] Block template file not found: ' . $template_file );
+				}
 				echo '<h1>Access Denied</h1><p>' . esc_html( $this->ip ) . ' ' . esc_html( gmdate( 'd.m.Y H:i:s', $this->time ) ) . '</p>';
 				return;
 			}
@@ -353,74 +353,8 @@ trait BotBlockerResponseTrait {
 				$this->test_page_language = $this->lang;
 			}
 
-			$tpl    = '';
-			$tpl_js = '';
-
-			try {
-				ob_start();
-				$html_template = $this->dirs['public'] . 'template-botblocker-html.php';
-				if ( file_exists( $html_template ) ) {
-					require_once $html_template;
-					$tpl = ob_get_clean();
-				} else {
-					ob_end_clean();
-					return false;
-				}
-			} catch ( Exception $e ) {
-				if ( ob_get_level() > 0 ) {
-					ob_end_clean();
-				}
-				if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
-					error_log( '[BBCS DEBUG] [Response] Template HTML error: ' . $e->getMessage() );
-				}
-				return false;
-			}
-
-			try {
-				ob_start();
-				$js_template = $this->dirs['public'] . 'template-botblocker-js.php';
-				if ( file_exists( $js_template ) ) {
-					require_once $js_template;
-					$tpl_js = ob_get_clean();
-				} else {
-					ob_end_clean();
-					$tpl_js = '';
-				}
-			} catch ( Exception $e ) {
-				if ( ob_get_level() > 0 ) {
-					ob_end_clean();
-				}
-				if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
-					error_log( '[BBCS DEBUG] [Response] Template JS error: ' . $e->getMessage() );
-				}
-				$tpl_js = '';
-			}
-
-			if ( strpos( $tpl, '</body><!--TPLJS-->' ) !== false ) {
-				$tpl = str_replace( '</body><!--TPLJS-->', $tpl_js . '</body>', $tpl );
-			} else {
-				// All variables inside $tpl_js are already escaped (esc_html/esc_url/esc_attr/wp_kses).
-                // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				$tpl = str_replace( '</body>', $tpl_js . '</body>', $tpl );
-			}
-
-			$time         = $this->time ?? time();
-			$replacements = array(
-				'botblocker-btn-success' => 's' . md5( 'botblocker-btn-success' . $time ),
-				'botblocker-btn-color'   => 's' . md5( 'botblocker-btn-color' . $time ),
-			);
-
-			foreach ( $replacements as $search => $replace ) {
-				$tpl = str_replace( $search, $replace, $tpl );
-			}
-			// All variables inside $tpl are already escaped (esc_html/esc_url/esc_attr/wp_kses).
-            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $tpl;
-			unset( $tpl );
-
-			return true;
+			$this->assemble_check_page();
+			$this->load_check_template();
 		}
 	}
 

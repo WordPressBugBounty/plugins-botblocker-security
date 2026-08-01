@@ -7,6 +7,7 @@ if ( ! defined( 'WPINC' ) || ! defined( 'BOTBLOCKER' ) ) {
 }
 
 $BBCS = BotBlocker::getInstance();
+require_once __DIR__ . '/class-botblocker-captcha-renderer.php';
 
 ?>
 <!DOCTYPE html>
@@ -14,13 +15,13 @@ $BBCS = BotBlocker::getInstance();
 
 <head>
 	<meta charset="utf-8" />
-	<meta name="generator" content="BotBlocker v. <?php echo esc_attr( $BBCS->version ); ?>" />
-	<meta name="author" content="BotBlocker project by GLOBUS.studio" />
+	<meta name="generator" content="<?php echo esc_attr( sprintf( BotBlockerCaptchaRenderer::t( 'BotBlocker v. %s' ), $BBCS->version ) ); ?>" />
+	<meta name="author" content="<?php echo esc_attr( BotBlockerCaptchaRenderer::t( 'BotBlocker project by GLOBUS.studio' ) ); ?>" />
 	<meta name="referrer" content="unsafe-url" />
 	<meta name="robots" content="noindex" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 	<link rel="icon" href="data:,">
-	<title><?php echo esc_html__( 'BotBlocker security plugin', 'botblocker-security' ); ?></title>
+	<title><?php echo esc_html( BotBlockerCaptchaRenderer::t( 'BotBlocker security plugin' ) ); ?></title>
 	<style>
 		html,
 		body {
@@ -208,19 +209,19 @@ $BBCS = BotBlocker::getInstance();
 		<?php
 		// REVIEWER NOTE: This image is a static plugin asset, not a user-uploaded Media Library image.
     	// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage ?>
-		<img src="<?php echo esc_url( $BBCS->media_logo_botblocker ); ?>" alt="BotBlocker WordPress Plugin" class="logo">
+		<img src="<?php echo esc_url( $BBCS->media_logo_botblocker ); ?>" alt="<?php echo esc_attr( BotBlockerCaptchaRenderer::t( 'BotBlocker WordPress Plugin' ) ); ?>" class="logo">
 	</header>
 
 	<div class="content">
 		<noscript>
-			<h1><?php echo esc_html__( 'Please turn JavaScript on and reload the page', 'botblocker-security' ); ?></h1>
+			<h1><?php echo esc_html( BotBlockerCaptchaRenderer::t( 'Please enable JavaScript and reload the page' ) ); ?></h1>
 		</noscript>
 
 		<div class="bbcs-icon">
 		<?php
 		// REVIEWER NOTE: This image is a static plugin asset, not a user-uploaded Media Library image.
     	// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage ?>
-		<img src="<?php echo esc_url( $BBCS->media_icon_stop ); ?>" alt="<?php echo esc_attr__( 'Stop Visitor Icon', 'botblocker-security' ); ?>" class="logo">
+		<img src="<?php echo esc_url( $BBCS->media_icon_stop ); ?>" alt="<?php echo esc_attr( BotBlockerCaptchaRenderer::t( 'Stop Visitor Icon' ) ); ?>" class="logo">
 		</div>
 		<br />
 
@@ -232,17 +233,20 @@ $BBCS = BotBlocker::getInstance();
 		</div>
 
 		<div class="user-data">
-			<span class=""><?php echo esc_html__( 'Connection info:', 'botblocker-security' ); ?> <?php echo esc_html( $BBCS->ip ); ?></span>
-			<span class="con-center"><?php echo esc_html__( 'Connection ID:', 'botblocker-security' ); ?> <?php echo esc_html( $BBCS->uid . ' ~ ' . $BBCS->cid ); ?></span>
+			<span class=""><?php echo esc_html( BotBlockerCaptchaRenderer::t( 'Connection info:' ) ); ?> <?php echo esc_html( $BBCS->ip ); ?></span>
+			<span class="con-center"><?php echo esc_html( BotBlockerCaptchaRenderer::t( 'Connection ID:' ) ); ?> <?php echo esc_html( $BBCS->uid . ' ~ ' . $BBCS->cid ); ?></span>
 		</div>
 	</div>
 
 	<footer class="footer">
-		<small><a href="https://botblocker.top/" title="BotBlocker plugin for WordPress" target="_blank">Protected by <b>BotBlocker</b> plugin</a></small>
-		<small><a href="https://globus.studio" title="Project by GLOBUS.studio" target="_blank">BotBlocker is <b>GLOBUS.studio</b> project</a></small>
+		<?php // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
+		<small><a href="https://botblocker.top/" title="BotBlocker plugin for WordPress" target="_blank"><?php echo BotBlockerCaptchaRenderer::t( 'Protected by <b>BotBlocker</b> plugin' ); ?></a></small>
+		<small><a href="https://globus.studio" title="Project by GLOBUS.studio" target="_blank"><?php echo BotBlockerCaptchaRenderer::t( 'BotBlocker is <b>GLOBUS.studio</b> project' ); ?></a></small>
+		<?php // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		<?php
 		//TODO PRO version motto
 		/* if (isset($BBCS->pro_motto)) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML
 			echo $BBCS->pro_motto;
 		}*/
 		?>

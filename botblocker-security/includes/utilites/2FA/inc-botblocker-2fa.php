@@ -121,7 +121,13 @@ class BBCS_GoogleAuthenticator {
 			'&period=30';
 
 		if ( class_exists( '\\BotBlocker\\Vendor\\GlobusStudio\\QRCode\\QRCode' ) ) {
-			$svg = \BotBlocker\Vendor\GlobusStudio\QRCode\QRCode::svg( $otpauthUrl, array( 'size' => 4, 'margin' => 2 ) );
+			$svg = \BotBlocker\Vendor\GlobusStudio\QRCode\QRCode::svg(
+				$otpauthUrl,
+				array(
+					'size'   => 4,
+					'margin' => 2,
+				)
+			);
 			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 			return 'data:image/svg+xml;base64,' . base64_encode( $svg );
 		}
@@ -258,7 +264,7 @@ if ( ! empty( $bbcs_missing ) ) {
 
 $bbcs_google_auth = new BBCS_GoogleAuthenticator();
 
-	function bbcs_is_2fa_required_for_user( $user_id ): bool {
+function bbcs_is_2fa_required_for_user( $user_id ): bool {
 	global $bbcs_google_auth;
 	$bbcs_saved_settings = $bbcs_google_auth->get_settings();
 
@@ -423,7 +429,7 @@ function bbcs_ajax_reset_2fa(): void {
 	delete_user_meta( $user_id, '_2fa_secret_temp' );
 	delete_user_meta( $user_id, '_2fa_backup_codes_temp' );
 
-	// New secret — atomic insert to prevent race on double-submit
+	// New secret - atomic insert to prevent race on double-submit
 	$bbcs_new_secret = $bbcs_google_auth->createSecret();
 	$bbcs_saved      = add_user_meta( $user_id, '_2fa_secret_temp', $bbcs_new_secret, true );
 	if ( $bbcs_saved ) {
@@ -432,9 +438,9 @@ function bbcs_ajax_reset_2fa(): void {
 		$secret = get_user_meta( $user_id, '_2fa_secret_temp', true );
 	}
 
-	// Backup codes — same atomic pattern
-	$bbcs_new_codes      = bbcs_generate_backup_codes();
-	$bbcs_saved          = add_user_meta( $user_id, '_2fa_backup_codes_temp', $bbcs_new_codes, true );
+	// Backup codes - same atomic pattern
+	$bbcs_new_codes = bbcs_generate_backup_codes();
+	$bbcs_saved     = add_user_meta( $user_id, '_2fa_backup_codes_temp', $bbcs_new_codes, true );
 	if ( $bbcs_saved ) {
 		$backup_codes = $bbcs_new_codes;
 	} else {

@@ -28,8 +28,8 @@ $bbcs_contact_email_collected = (int) BotBlockerMultisite::getOption( 'bbcs_cont
 	</header>
 	<div class="card-body">
 		<div class="bbcs_status_main">
-			<i class="fa-solid fa-2x fa-shield-halved bbcs_color_green"></i>
-			<span class="bbcs_status_text"><?php esc_html_e( 'Active', 'botblocker-security' ); ?></span>
+			<i class="fa-solid fa-2x <?php echo ! $BBCS->isDisabled ? 'fa-shield-halved bbcs_color_green' : 'fa-circle-xmark bbcs_color_red'; ?>"></i>
+			<span class="bbcs_status_text"><?php echo ! $BBCS->isDisabled ? esc_html__( 'Active', 'botblocker-security' ) : esc_html__( 'Protection paused', 'botblocker-security' ); ?></span>
 		</div>
 
 		<div class="bbcs_switch_container">

@@ -70,7 +70,9 @@ class BotBlockerStore {
 			'browser'      => sanitize_text_field( $BBCS->browser ?? BOTBLOCKER_EMPTY ),
 			'os'           => sanitize_text_field( $BBCS->os ?? BOTBLOCKER_EMPTY ),
 			'device'       => sanitize_text_field( $BBCS->device ?? BOTBLOCKER_EMPTY ),
-			'fp'           => sanitize_text_field( $BBCS->post_antidetect_scope ?? BOTBLOCKER_EMPTY ),
+			'fp'           => is_array( $BBCS->post_antidetect_scope )
+				? wp_json_encode( $BBCS->post_antidetect_scope, JSON_UNESCAPED_UNICODE )
+				: sanitize_text_field( $BBCS->post_antidetect_scope ?? BOTBLOCKER_EMPTY ),
 			'wbot'         => sanitize_text_field( $BBCS->white_bot ?? BOTBLOCKER_EMPTY ),
 		);
 
@@ -82,6 +84,15 @@ class BotBlockerStore {
 			$wpdb->insert( $table_name, $query_data );
 		}
 		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		if ( is_array( $BBCS->post_antidetect_scope ) && ! empty( $BBCS->post_antidetect_scope['browserFingerprint'] ) ) {
+			self::trackFingerprint(
+				$BBCS->post_antidetect_scope['browserFingerprint'],
+				$BBCS->ip,
+				$reason === null ? 0 : (int) $reason,
+				$BBCS->country ?? ''
+			);
+		}
 	}
 
 	public static function localCheckResult( string $status, string $msg, ?string $cookie = null ): array {
@@ -158,5 +169,72 @@ class BotBlockerStore {
 		}
 
 		return $payload;
+	}
+
+	public static function trackFingerprint( string $fp, string $ip, int $reason, string $country ): void {
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$existing = $wpdb->get_row( $wpdb->prepare(
+			"SELECT * FROM `{$wpdb->bbcs_fingerprint}` WHERE fingerprint = %s", $fp
+		) );
+
+		$now      = time();
+		$code     = bbcs_codeList( $reason );
+		$is_block = ( $reason > 0 && ! empty( $code ) && ! $code['allow'] );
+
+		if ( $existing ) {
+			$update = array(
+				'last_seen' => $now,
+				'ip'        => $ip,
+			);
+
+			$existing_block_count = (int) $existing->block_count;
+			$existing_allow_count = (int) $existing->allow_count;
+			$existing_status      = (string) $existing->status;
+
+			if ( $is_block ) {
+				$update['block_count']       = $existing_block_count + 1;
+				$update['last_block_reason'] = ! empty( $code['msg'] ) ? $code['msg'] : '';
+				$update['last_country']      = $country;
+			} else {
+				$update['allow_count'] = $existing_allow_count + 1;
+			}
+
+			$new_allow = $is_block ? $existing_allow_count : $existing_allow_count + 1;
+			$new_block = $is_block ? $existing_block_count + 1 : $existing_block_count;
+
+			if ( $new_allow > 10 && $existing_status !== 'blocked' ) {
+				$update['status'] = 'trusted';
+			} elseif ( $new_block >= 3 ) {
+				$update['status'] = 'blocked';
+			}
+
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->update( $wpdb->bbcs_fingerprint, $update, array( 'fingerprint' => $fp ) );
+		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->insert( $wpdb->bbcs_fingerprint, array(
+				'fingerprint'       => $fp,
+				'ip'                => $ip,
+				'first_seen'        => $now,
+				'last_seen'         => $now,
+				'block_count'       => $is_block ? 1 : 0,
+				'allow_count'       => $is_block ? 0 : 1,
+				'last_block_reason' => ( $is_block && ! empty( $code['msg'] ) ) ? $code['msg'] : '',
+				'last_country'      => $country,
+				'status'            => 'watch',
+			) );
+		}
+	}
+
+	public static function checkFingerprint( string $fp ): ?array {
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$row = $wpdb->get_row( $wpdb->prepare(
+			"SELECT status, block_count, last_block_reason FROM `{$wpdb->bbcs_fingerprint}` WHERE fingerprint = %s",
+			$fp
+		), ARRAY_A );
+		return $row ?: null;
 	}
 }

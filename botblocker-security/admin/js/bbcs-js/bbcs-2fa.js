@@ -2,8 +2,8 @@
     'use strict';
 
     const SELECTORS = {
-        input: '#bbcs_2fa_code_input',
-        button: '#bbcs_2fa_submit_btn',
+        input: '#bbcs-2fa-code-input',
+        button: '#bbcs-2fa-submit-btn',
         verified: '.bbcs-2fa-verified',
         reset: '.bbcs-2fa-reset',
         message: '#bbcs-2fa-message'
@@ -21,7 +21,7 @@
                     .html('<i class="fas fa-check me-1"></i>Activate');
             }
         },
-        // Marks the input as invalid and shows an optional message
+        // Marks the input as invalid and shows an optional message via toast
         markInputInvalid(message = null) {
             const $input = $(SELECTORS.input);
 
@@ -55,18 +55,20 @@
                 .css('display', 'none');
         },
 
-        showMessage(type, message) {
-            const $msg = $(SELECTORS.message);
-            if (!$msg.length) return;
-
-            const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
-            const icon = type === 'success' ? 'check' : 'exclamation';
-
-            $msg
-                .removeClass('alert-success alert-danger')
-                .addClass(`alert ${alertClass}`)
-                .html(`<i class="fas fa-${icon}-circle me-2"></i>${message}`)
-                .show();
+        showToast(type, message) {
+            const className = type === 'success' ? 'toast-success' : 'toast-error';
+            const el = document.querySelector('.bbcs-app') || document.body;
+            Toastify({
+                text: message,
+                duration: 6000,
+                close: true,
+                gravity: 'top',
+                position: 'right',
+                offset: { y: 65 },
+                className: className,
+                stopOnFocus: true,
+                selector: el
+            }).showToast();
         },
 
         toggleVerifiedState() {
@@ -129,10 +131,9 @@
         const code = $input.val().trim();
 
         if (!isValidCode(code)) {
-            UI.markInputInvalid(
-                'Please enter a valid 6-digit code.'
-            );
-            UI.showMessage('error', 'Invalid code format.');
+            const msg = (window.bbcs2faL10n && window.bbcs2faL10n.invalid_format) || 'Please enter a valid 6-digit code.';
+            UI.markInputInvalid(msg);
+            UI.showToast('error', msg);
             return;
         }
 
@@ -152,18 +153,21 @@
             .done(function (response) {               
                 if (response.success) {
                     UI.toggleVerifiedState();
-                    UI.showMessage(
+                    const msg = (window.bbcs2faL10n && window.bbcs2faL10n.enabled) || 'Two-Factor Authentication enabled.';
+                    UI.showToast(
                         'success',
-                        response.data?.message || 'Two-Factor Authentication enabled.'
+                        response.data?.message || msg
                     );
                 } else {
+                    const errMsg = (window.bbcs2faL10n && window.bbcs2faL10n.invalid_code) || 'Invalid verification code.';
+                    const failMsg = (window.bbcs2faL10n && window.bbcs2faL10n.verify_failed) || 'Verification failed.';
                     UI.markInputInvalid(
-                        response.data?.message || 'Invalid verification code.'
+                        response.data?.message || errMsg
                     );
 
-                    UI.showMessage(
+                    UI.showToast(
                         'error',
-                        response.data?.message || 'Verification failed.'
+                        response.data?.message || failMsg
                     );
                 }
 
@@ -172,20 +176,22 @@
             .fail(function (xhr) {
                 console.error('AJAX Error:', xhr);
 
-                let errorMessage = 'Connection error. Please try again.';
+                const connErr = (window.bbcs2faL10n && window.bbcs2faL10n.connection_error) || 'Connection error. Please try again.';
+                let errorMessage = connErr;
 
                 if (xhr.responseText) {
                     try {
                         const errorData = JSON.parse(xhr.responseText);
-                        errorMessage = errorData?.data?.message || errorMessage;
+                        const invCode = (window.bbcs2faL10n && window.bbcs2faL10n.invalid_code) || 'Invalid verification code.';
+                        errorMessage = errorData?.data?.message || connErr;
                     } catch (e) {
                         errorMessage += ` (Status: ${xhr.status})`;
                     }
                 }
 
-                UI.markInputInvalid( 'Invalid verification code.');
+                UI.markInputInvalid(errorMessage);
 
-                UI.showMessage('error', errorMessage);
+                UI.showToast('error', errorMessage);
                 resetFormState();
             });
     }
@@ -218,7 +224,8 @@
 
             resetFormState();
             UI.resetVerifiedState();
-            UI.showMessage('success', 'Two-Factor Authentication has been reset.');
+            const resetMsg = (window.bbcs2faL10n && window.bbcs2faL10n.reset_success) || 'Two-Factor Authentication has been reset.';
+            UI.showToast('success', resetMsg);
         });
     }
 
@@ -229,7 +236,7 @@
 
     // Reset 2FA
     function get2FACardBody() {        
-        const $tab = $('#bbcs_2fa');
+        const $tab = $('#bbcs-2fa');
         return $tab.length ? $tab : $('.card-body');
     }
 
@@ -292,7 +299,7 @@
                 }
 
                 if (res.data.bbcs_qr_code) {
-                    $('#bbcs_2fa_qr-code').attr('src', res.data.bbcs_qr_code);
+                    $('#bbcs-2fa-qr-code').attr('src', res.data.bbcs_qr_code);
                 }
 
                 if (Array.isArray(res.data.bbcs_backup_codes)) {

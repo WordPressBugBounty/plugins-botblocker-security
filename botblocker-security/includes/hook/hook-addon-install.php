@@ -69,11 +69,12 @@ function bbcs_move_addon_into_runtime( string $source_dir, string $slug, array $
 		return new WP_Error( 'move_failed', __( 'Failed to install add-on package.', 'botblocker-security' ) );
 	}
 
+	bbcs_addon_install_debug_log( 'move_addon[' . $slug . ']: OK placed at ' . $folder );
+
+	// Post-move probe: verify a key file exists (catches partial copies on restrictive hosts).
 	$data_probe = $folder . '/inc/bbcs-data-file.php';
-	if ( $slug === 'bbcs-early-init' && ! file_exists( $data_probe ) ) {
-		bbcs_addon_install_debug_log( 'move_addon[' . $slug . ']: WARNING move reported success but expected file missing at ' . $data_probe . ' (partial copy?)' );
-	} else {
-		bbcs_addon_install_debug_log( 'move_addon[' . $slug . ']: OK placed at ' . $folder );
+	if ( 'bbcs-early-init' === $slug && ! file_exists( $data_probe ) ) {
+		bbcs_addon_install_debug_log( 'move_addon[' . $slug . ']: WARNING - bbcs-data-file.php missing after move at ' . $data_probe );
 	}
 
 	if ( $backed_up && is_dir( $backup ) ) {

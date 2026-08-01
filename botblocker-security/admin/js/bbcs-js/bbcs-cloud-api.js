@@ -20,8 +20,12 @@
                 },
                 success: function (response) {
                     if (response.success) {
-                        $('#bbcs_remaining_hits').val(response.data.remaining_hits);
-                        $('#bbcs_remaining_days').val(response.data.remaining_days);
+                        var hits = response.data.remaining_hits;
+                        var days = response.data.remaining_days;
+                        $('#bbcs_remaining_hits').val(hits);
+                        $('#bbcs_remaining_days').val(days);
+                        $('#bbcs_stat_hits').text(Number(hits).toLocaleString());
+                        $('#bbcs_stat_days').text(days);
                         if (!isAutomaticRefresh) {
                             alert(bbcsCloudApiL10n.refreshed);
                         }
@@ -77,9 +81,14 @@
                 action: 'bbcs_fetch_cloud_api_key',
                 nonce: nonce
             }, function (response) {
+                if (response.success) {
+                    location.reload();
+                    return;
+                }
+                alert(response.data.message);
                 $btn.prop('disabled', false);
-                if (response.success) location.reload();
-                else alert(response.data.message);
+            }).fail(function() {
+                $btn.prop('disabled', false);
             });
         });
 
@@ -96,9 +105,13 @@
                     action: 'bbcs_deactivate_cloud_api',
                     nonce: nonce
                 }, function (response) {
-                    if (response.success) location.reload();
-                    else alert(response.data.message);
-                }).always(function() {
+                    if (response.success) {
+                        location.reload();
+                        return;
+                    }
+                    alert(response.data.message);
+                    $btn.prop('disabled', false);
+                }).fail(function() {
                     $btn.prop('disabled', false);
                 });
             } else {
@@ -110,9 +123,13 @@
                     api_key: apiKey,
                     nonce: nonce
                 }, function (response) {
-                    if (response.success) location.reload();
-                    else alert(response.data.message);
-                }).always(function() {
+                    if (response.success) {
+                        location.reload();
+                        return;
+                    }
+                    alert(response.data.message);
+                    $btn.prop('disabled', false);
+                }).fail(function() {
                     $btn.prop('disabled', false);
                 });
             }

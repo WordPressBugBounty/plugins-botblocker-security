@@ -11,7 +11,7 @@ trait BotBlockerBlockPageTrait {
 			$title_string              = $this->ip . ' ' . gmdate( 'd.m.Y H:i:s', $this->time );
 			$this->template_data_block = array(
 				'extra_data'  => $this->ip,
-				'h1_title'    => __( 'Please turn JavaScript on and reload the page', 'botblocker-security' ),
+				'h1_title'    => __( 'Please enable JavaScript and reload the page', 'botblocker-security' ),
 				//'message' => __('Sorry, your request has been blocked', 'botblocker-security'),
 				'block_title' => __( 'BotBlocker security plugin', 'botblocker-security' ) . $title_string,
 				'block_data'  => $this->block_data,
@@ -37,7 +37,7 @@ trait BotBlockerBlockPageTrait {
 
 	private function create_block_inline_assets(): array {
 		return array(
-			'styles'  => array(
+			'styles'           => array(
 				BotBlockerSecurityPageAssets::read( $this->dirs['public'], 'css/template.css' ),
 			),
 			'scripts'          => array(

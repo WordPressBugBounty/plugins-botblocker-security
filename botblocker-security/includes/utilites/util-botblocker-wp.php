@@ -159,4 +159,44 @@ class BotBlockerWpUtility {
 		wp_safe_redirect( home_url( '/' ) );
 		exit;
 	}
+
+	public static function write_web_access_deny( string $dir ): void {
+		$dir   = trailingslashit( $dir );
+		$files = array(
+			$dir . '.htaccess'  => "<IfModule mod_authz_core.c>\n    Require all denied\n</IfModule>\n<IfModule !mod_authz_core.c>\n    Deny from all\n</IfModule>\n",
+			$dir . 'web.config' => "<configuration>\n  <system.webServer>\n    <authorization>\n      <deny users=\"*\" />\n    </authorization>\n  </system.webServer>\n</configuration>\n",
+			$dir . 'index.php'  => "<?php // Silence is golden.\n",
+		);
+		foreach ( $files as $path => $content ) {
+			if ( ! file_exists( $path ) ) {
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents,WordPress.PHP.NoSilencedErrors.Discouraged
+				@file_put_contents( $path, $content, LOCK_EX );
+			}
+		}
+	}
+
+	/**
+	 * Returns $_POST[$key] as an unslashed string array, or [] if missing/not an array.
+	 * Values are NOT sanitized - caller must sanitize each value for its specific context
+	 * (e.g. sanitize_text_field, sanitize_key, absint, esc_url_raw) before use or storage.
+	 */
+	public static function get_post_raw_array( string $key ): array {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- utility function; caller must verify nonce
+		if ( ! isset( $_POST[ $key ] ) || ! is_array( $_POST[ $key ] ) ) {
+			return array();
+		}
+		return array_map(
+			function ( $v ) {
+				return wp_unslash( (string) $v ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			},
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.NonceVerification.Missing -- values unslashed in array_map callback; utility function
+			$_POST[ $key ]
+		);
+	}
+
+	public static function normalizePath( string $path ): string {
+		$path = str_replace( '\\', '/', $path );
+		$path = preg_replace( '#/+#', '/', $path );
+		return rtrim( $path, '/' );
+	}
 }

@@ -1,10 +1,16 @@
 <?php
 declare(strict_types=1);
 
+use BotBlocker\Component\CountersGrid;
+use BotBlocker\Component\HealthGauge;
+
+require_once BOTBLOCKER_DIR . 'includes/services/class-botblocker-health-service.php';
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
+// Health gauge canvas uses a fixed id and must be rendered at most once // per page.
 function bbcs_healthGaugeShortcode( $atts ): string {
 	$defaults = array(
 		'id'                     => 'gauge_' . uniqid(),
@@ -14,21 +20,10 @@ function bbcs_healthGaugeShortcode( $atts ): string {
 		'decimals'               => 0,
 		'gauge_width_scale'      => 0.6,
 		'label'                  => 'Security Score',
-		'symbol'                 => '%',
-		'pointer'                => 'true',
-		'pointer_top_length'     => -15,
-		'pointer_bottom_length'  => 10,
-		'pointer_bottom_width'   => 12,
-		'pointer_color'          => '#8e8e93',
-		'pointer_stroke'         => '#ffffff',
-		'pointer_stroke_width'   => 3,
-		'pointer_stroke_linecap' => 'round',
-		'level_colors'           => '["#ff3b30", "#d8ca00", "#43bf58"]',
 	);
 
 	$userProvidedLabel = is_array( $atts ) && array_key_exists( 'label', $atts );
 	$atts              = shortcode_atts( $defaults, $atts, 'bbcs_health_gauge' );
-	$atts['pointer']   = filter_var( $atts['pointer'], FILTER_VALIDATE_BOOLEAN ) ? 'true' : 'false';
 	$score             = (float) $atts['value'];
 
 	if ( ! $userProvidedLabel ) {
@@ -45,17 +40,12 @@ function bbcs_healthGaugeShortcode( $atts ): string {
 		}
 	}
 
-	$unique_id = esc_attr( $atts['id'] );
-	// NOTE FOR REVIEWERS: $unique_id is intentionally not used for the canvas
-	// element id below because this shortcode is designed to appear at most once
-	// per page. The hard‑coded id "bbcs-health_gauge" is consumed by the gauge
-	// JS which also expects a single instance.
-
-	$display_value = esc_attr( number_format( (float) $score, (int) $atts['decimals'] ) );
-	$html = '<canvas id="bbcs-health_gauge" data-health-value="' . $display_value . '" data-bbcs-label="' . esc_attr( $atts['label'] ) . '" style="width: 100%; height: auto; padding-left: 10px;
-    padding-right: 10px;"></canvas>';
-
-	return $html;
+	return HealthGauge::make()
+		->withValue( $atts['value'] )
+		->withMax( $atts['max'] )
+		->withLabel( $atts['label'] )
+		->withDecimals( (int) $atts['decimals'] )
+		->render( true );
 }
 add_shortcode( 'bbcs_health_gauge', 'bbcs_healthGaugeShortcode' );
 
@@ -74,7 +64,7 @@ function bbcs_generateSiteHealthList(): string {
 	}
 
 	$variables_affecting_weight = array(
-		'bbcs_captcha_mode'  => __( 'CAPTCHA mode enabled', 'botblocker-security' ),
+		'bbcs_captcha_mode'  => __( 'Captcha mode enabled', 'botblocker-security' ),
 		'block_empty_ua'     => __( 'Blocking empty User-Agent', 'botblocker-security' ),
 		'block_empty_lang'   => __( 'Blocking empty language', 'botblocker-security' ),
 		'block_nojs_users'   => __( 'Blocking users without JavaScript', 'botblocker-security' ),
@@ -82,7 +72,7 @@ function bbcs_generateSiteHealthList(): string {
 		'block_fake_ref'     => __( 'Blocking fake referrers', 'botblocker-security' ),
 		'block_proxy_users'  => __( 'Blocking proxy users', 'botblocker-security' ),
 		'block_http10_users' => __( 'Blocking HTTP/1.0 users', 'botblocker-security' ),
-		'recaptcha_check'    => __( 'reCAPTCHA enabled', 'botblocker-security' ),
+		'recaptcha_check'    => __( 'reCaptcha enabled', 'botblocker-security' ),
 		'time_ban'           => __( 'Time ban enabled', 'botblocker-security' ),
 		'time_ban_2'         => __( 'Secondary time ban enabled', 'botblocker-security' ),
 	);
@@ -167,6 +157,10 @@ add_shortcode( 'botblocker_generateSiteHealthList', 'bbcs_generateSiteHealthList
 function bbcs_calculateSiteHealth(): int {
 	$BBCS = BotBlocker::getInstance();
 
+	if ( $BBCS->isDisabled ) {
+		return 0;
+	}
+
 	if ( $BBCS->settings->cache_ui_data == 1 ) {
 		$transient_key = 'bbcs_site_health';
 		$cached_health = get_transient( $transient_key );
@@ -174,88 +168,15 @@ function bbcs_calculateSiteHealth(): int {
 			return (int) $cached_health;
 		}
 	}
-	$health = 0;
 
-	if ( ! $BBCS->isDisabled ) {
-		$variables_affecting_weight = array(
-			'bbcs_captcha_mode'  => function ( $value ) {
-				return $value != -1; },
-			'block_empty_ua'     => function ( $value ) {
-				return $value == 1; },
-			'block_empty_lang'   => function ( $value ) {
-				return $value == 1; },
-			'block_nojs_users'   => function ( $value ) {
-				return $value == 1; },
-			'block_simplebot_ua' => function ( $value ) {
-				return $value == 1; },
-			'block_fake_ref'     => function ( $value ) {
-				return $value == 1; },
-		'block_proxy_users'  => function ( $value ) {
-			return $value == 1; },
-		'block_http10_users' => function ( $value ) {
-				return $value == 1; },
-			'recaptcha_check'    => function ( $value ) use ( $BBCS ) {
-				return $value == 1 && ! empty( $BBCS->settings->recaptcha_key3 ) && ! empty( $BBCS->settings->recaptcha_secret3 );
-			},
-			'time_ban'           => function ( $value ) {
-				return $value > 0; },
-			'time_ban_2'         => function ( $value ) {
-				return $value > 0; },
-		);
+	$settings       = $BBCS->settings;
+	$recaptchaReady = ! empty( $settings->recaptcha_key3 ) && ! empty( $settings->recaptcha_secret3 );
+	$health         = BotBlockerHealthService::calculateHealthScore( $settings, $recaptchaReady );
 
-		$num_variables       = count( $variables_affecting_weight );
-		$weight_per_variable = 75 / $num_variables;
-
-		foreach ( $variables_affecting_weight as $key => $isEnabledFunc ) {
-			$value = isset( $BBCS->settings->$key ) ? $BBCS->settings->$key : null;
-			if ( $isEnabledFunc( $value ) ) {
-				$health += $weight_per_variable;
-			}
-		}
-
-		$cloud_api_variables_affecting_weight = array(
-			'check'                    => function ( $value ) {
-				return $value == 1; },
-			'unresponsive'             => function ( $value ) {
-				return $value == 1; },
-			'block_vpn_users'          => function ( $value ) {
-				return $value == 1; },
-			'block_tor_users'          => function ( $value ) {
-				return $value == 1; },
-			'block_override'           => function ( $value ) {
-				return $value == 1; },
-			'block_web_engine_options' => function ( $value ) {
-				return $value == 1; },
-			'block_device_options'     => function ( $value ) {
-				return $value == 1; },
-			'hosting_block'            => function ( $value ) {
-				return $value == 1; },
-		);
-
-		if ( isset( $BBCS->settings->check ) && $BBCS->settings->check == 1 ) {
-			$health += 12.5;
-		}
-
-		$cloud_api_variables_rest      = array_slice( $cloud_api_variables_affecting_weight, 1 );
-		$num_cloud_api_rest            = count( $cloud_api_variables_rest );
-		$weight_per_cloud_api_variable = 12.5 / $num_cloud_api_rest;
-
-		foreach ( $cloud_api_variables_rest as $key => $isEnabledFunc ) {
-			$value = isset( $BBCS->settings->$key ) ? $BBCS->settings->$key : null;
-			if ( $isEnabledFunc( $value ) ) {
-				$health += $weight_per_cloud_api_variable;
-			}
-		}
-
-		$normalizedHealth = min( 100, max( 0, $health ) );
-		$final_health     = round( $normalizedHealth );
-		if ( $BBCS->settings->cache_ui_data == 1 ) {
-			set_transient( $transient_key, $final_health, $BBCS->settings->cache_ui_duration );
-		}
-		return (int) $final_health;
-	} else {
-		return 0;
+	if ( $BBCS->settings->cache_ui_data == 1 ) {
+		set_transient( $transient_key, $health, $BBCS->settings->cache_ui_duration );
 	}
+	return $health;
 }
 
 function bbcs_collect_statistic_data(): void {
@@ -268,21 +189,9 @@ function bbcs_collect_statistic_data(): void {
 }
 
 function bbcs_render_counters_grid(): string {
-	$BBCS = BotBlocker::getInstance();
-
-	if ( ! $BBCS->statistics ) {
-		return '<div class="bbcs-counters-grid">' . esc_html__( 'No data available.', 'botblocker-security' ) . '</div>';
-	}
-	$output  = '<div class="bbcs-counters-grid">';
-	$output .= '<div><span class="bbcs-h-today">' . esc_html( $BBCS->statistics['today_hits'] ) . '</span><span class="bbcs-h-today-text">' . esc_html__( 'Today hits', 'botblocker-security' ) . '</span></div>';
-	$output .= '<div><span class="bbcs-h-today-block">' . esc_html( $BBCS->statistics['today_blocked'] ) . '</span><span class="bbcs-h-today-block-text">' . esc_html__( 'Today blocked', 'botblocker-security' ) . '</span></div>';
-	$output .= '<div><span class="bbcs-h-total">' . esc_html( $BBCS->statistics['total_hits'] ) . '</span><span class="bbcs-h-total-text">' . esc_html__( 'Total hits', 'botblocker-security' ) . '</span></div>';
-	$output .= '<div><span class="bbcs-h-total-block">' . esc_html( $BBCS->statistics['total_blocked'] ) . '</span><span class="bbcs-h-total-block-text">' . esc_html__( 'Total blocked', 'botblocker-security' ) . '</span></div>';
-	$output .= '<div><span class="bbcs-h-se">' . esc_html( $BBCS->statistics['search_engine_visits'] ) . '</span><span class="bbcs-h-se-text">' . esc_html__( 'Search engine visits', 'botblocker-security' ) . '</span></div>';
-	$output .= '<div><span class="bbcs-h-percent-eff">' . esc_html( $BBCS->statistics['percent_requests_blocked'] ) . '%</span><span class="bbcs-h-percent-eff-text">' . esc_html__( 'Requests blocked', 'botblocker-security' ) . '</span></div>';
-	$output .= '</div>';
-
-	return $output;
+	return CountersGrid::make()
+		->withData( BotBlockerStats::getCountersGridData() )
+		->render( true );
 }
 
 add_shortcode( 'bbcs_counters_grid', 'bbcs_render_counters_grid' );

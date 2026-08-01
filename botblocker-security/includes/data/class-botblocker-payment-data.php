@@ -1210,5 +1210,4 @@ class BotBlockerPaymentData {
 		}
 		return false;
 	}
-
 }

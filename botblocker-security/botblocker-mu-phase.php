@@ -333,7 +333,7 @@ class BotBlockerMuPhase {
 
   <div class="content">
     <noscript>
-      <h1 style="color:#bd2426;">Please turn JavaScript on and reload the page</h1>
+      <h1 style="color:#bd2426;">Please enable JavaScript and reload the page</h1>
     </noscript>
 
     <div class="bbcs-icon">

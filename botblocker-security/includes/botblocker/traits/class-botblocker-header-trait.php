@@ -74,14 +74,18 @@ trait BotBlockerHeaderTrait {
 			$request_origin = esc_url_raw( wp_unslash( $_SERVER['HTTP_ORIGIN'] ) );
 			$site_host      = wp_parse_url( home_url(), PHP_URL_HOST );
 			$origin_host    = wp_parse_url( $request_origin, PHP_URL_HOST );
-			if ( $site_host && $origin_host === $site_host ) {
+			if ( $site_host && $origin_host && BotBlockerCheck::hosts_equal_www( $site_host, $origin_host ) ) {
 				header( 'Access-Control-Allow-Origin: ' . $request_origin );
 				header( 'Access-Control-Allow-Credentials: true' );
 				header( 'Vary: Origin', false );
 			}
 		}
 		header( 'Access-Control-Allow-Methods: POST' );
-		header( 'Access-Control-Allow-Headers: *' );
+		if ( ! empty( $this->settings->bbcs_cors_strict_headers ) ) {
+			header( 'Access-Control-Allow-Headers: Content-Type, X-Requested-With' );
+		} else {
+			header( 'Access-Control-Allow-Headers: *' );
+		}
 		header( 'X-Robots-Tag: noindex' );
 		$this->dispatch_security_headers_addon();
 	}

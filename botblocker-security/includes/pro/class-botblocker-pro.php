@@ -31,7 +31,7 @@ class BotBlockerPro {
 			}
 		}
 
-		$status_key   = 'bbcs_cloud_api_status_transient';
+		$status_key      = 'bbcs_cloud_api_status_transient';
 		$cached_settings = BotBlockerCache::getCacheData( $status_key );
 		if ( $cached_settings !== null ) {
 			return $cached_settings;
@@ -131,6 +131,11 @@ class BotBlockerPro {
 
 	public static function setRemainingHits( $hits ): bool {
 		return set_transient( 'bbcs_remaining_hits', $hits, BOTBLOCKER_CACHE_REMAINING_HITS_TIME );
+	}
+
+	public static function clearCache(): void {
+		delete_transient( 'bbcs_remaining_hits' );
+		delete_transient( 'bbcs_remaining_days' );
 	}
 
 	public static function checkExpiry(): void {

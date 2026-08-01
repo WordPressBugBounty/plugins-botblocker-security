@@ -192,15 +192,7 @@ final class BotBlockerMultisite {
 	}
 
 	public static function getAdminPageUrl( string $path = '' ): string {
-		$network = is_multisite() && self::isNetworkActive();
-		if ( $network && ! is_network_admin() ) {
-			$ref = wp_get_referer();
-			if ( $ref && strpos( $ref, '/network/' ) !== false ) {
-				$network = true;
-			} else {
-				$network = false;
-			}
-		}
+		$network = is_multisite() && self::isNetworkActive() && is_network_admin();
 		$base = $network
 			? network_admin_url( 'admin.php' )
 			: admin_url( 'admin.php' );

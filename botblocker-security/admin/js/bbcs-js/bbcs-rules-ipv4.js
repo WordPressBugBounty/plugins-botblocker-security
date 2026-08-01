@@ -4,6 +4,14 @@
     // local flag for loading the table
     var ipv4TableLoading = false;
 
+    // Register loading state for new UI tab switching guard.
+    if (typeof window.BBCS_TabLoadingRegistry !== 'undefined') {
+      window.BBCS_TabLoadingRegistry['IPv4 List'] = function() { return ipv4TableLoading; };
+    }
+
+    var lastIpv4UITab = '';
+    var ipv4JustInitialized = false;
+
     // debounce / throttle params
     var switchDebounceMs = 200; // minimum interval between switches
     var _lastSwitchTs = 0;
@@ -91,10 +99,10 @@
                         width: "100px",
                         render: function (data, type, row) {
                             return (
-                                '<button class="btn btn-sm btn-default bbcs-actions-b edit-ipv4-rule" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Edit" data-id="' +
+                                '<button class="btn btn-sm btn-default bbcs-actions-b edit-ipv4-rule" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="' + bbcsIpv4L10n.edit + '" data-id="' +
                                 row.id +
                                 '"><i class="fa-regular fa-edit"></i></button> ' +
-                                '<button class="btn btn-sm btn-default bbcs-actions-b delete-ipv4-rule" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Delete" data-id="' +
+                                '<button class="btn btn-sm btn-default bbcs-actions-b delete-ipv4-rule" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="' + bbcsIpv4L10n.delete + '" data-id="' +
                                 row.id +
                                 '"><i class="fa-regular fa-trash-can"></i></button>'
                             );
@@ -107,59 +115,68 @@
                         className: "text-wrap",
                     },
                 ],
-                layout: {
-                    topStart: {
-                        buttons: [
-                            "copy",
-                            "csv",
-                            "excel",
-                            "pdf",
-                            "print",
-                            "colvis",
-                            {
-                                extend: "collection",
-                                text: "Length Menu",
-                                buttons: [
-                                    {
-                                        text: "10",
-                                        action: function (e, dt, node, config) {
-                                            dt.page.len(10).draw();
+                layout: (function () {
+                    var isNewUI = !!document.querySelector('.bbcs-app');
+                    return isNewUI ? {
+                        topStart: {
+                            search: {
+                                text: '',
+                                placeholder: bbcsIpv4L10n.search_placeholder
+                            }
+                        },
+                        topEnd: {
+                            buttons: ['csv', 'excel']
+                        }
+                    } : {
+                        topStart: {
+                            buttons: [
+                                "copy",
+                                "csv",
+                                "excel",
+                                "pdf",
+                                "print",
+                                "colvis",
+                                {
+                                    extend: "collection",
+                                    text: "Length Menu",
+                                    buttons: [
+                                        {
+                                            text: "10",
+                                            action: function (e, dt, node, config) {
+                                                dt.page.len(10).draw();
+                                            },
                                         },
-                                    },
-                                    {
-                                        text: "25",
-                                        action: function (e, dt, node, config) {
-                                            dt.page.len(25).draw();
+                                        {
+                                            text: "25",
+                                            action: function (e, dt, node, config) {
+                                                dt.page.len(25).draw();
+                                            },
                                         },
-                                    },
-                                    {
-                                        text: "50",
-                                        action: function (e, dt, node, config) {
-                                            dt.page.len(50).draw();
+                                        {
+                                            text: "50",
+                                            action: function (e, dt, node, config) {
+                                                dt.page.len(50).draw();
+                                            },
                                         },
-                                    },
-                                    {
-                                        text: "100",
-                                        action: function (e, dt, node, config) {
-                                            dt.page.len(100).draw();
+                                        {
+                                            text: "100",
+                                            action: function (e, dt, node, config) {
+                                                dt.page.len(100).draw();
+                                            },
                                         },
-                                    },
-                                ],
-                            },
-                        ],
-                    },
-                },
+                                    ],
+                                },
+                            ],
+                        }
+                    };
+                })(),
                 createdRow: function (row, data, dataIndex) {
-                    $(row).css(
-                        "background-color",
-                        data.rule === "allow"
-                            ? "rgba(0, 255, 0, 0.1)"
-                            : "rgba(255, 0, 0, 0.1)"
-                    );
+                    $(row).addClass(data.rule === "allow" ? "bbcs-rule-row--allow" : "bbcs-rule-row--block");
                 },
             });
             table.draw();
             table.columns.adjust();
+            ipv4JustInitialized = true;
         }
     }
 
@@ -170,20 +187,20 @@
         var modalDialog = $('<div class="modal-dialog">');
         var modalContent = $('<div class="modal-content">');
         var modalHeader = $(
-            '<div class="modal-header"><h5 class="modal-title" id="importResultModalLabel">Import Result</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>'
+            '<div class="modal-header"><h5 class="modal-title" id="importResultModalLabel">' + bbcsIpv4L10n.import_result + '</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>'
         );
         var modalBody = $(
             '<div class="modal-body">' +
-                "<p>Imported: " +
+                "<p>" + bbcsIpv4L10n.imported + ": " +
                 result.imported +
                 "</p>" +
-                "<p>Skipped: " +
+                "<p>" + bbcsIpv4L10n.skipped + ": " +
                 result.skipped +
                 "</p>" +
                 "</div>"
         );
         var modalFooter = $(
-            '<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>'
+            '<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">' + bbcsIpv4L10n.close + '</button></div>'
         );
 
         modalContent.append(modalHeader, modalBody, modalFooter);
@@ -201,13 +218,13 @@
         var modalDialog = $('<div class="modal-dialog">');
         var modalContent = $('<div class="modal-content">');
         var modalHeader = $(
-            '<div class="modal-header"><h5 class="modal-title" id="confirmClearModalLabel">Clear All Rules</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>'
+            '<div class="modal-header"><h5 class="modal-title" id="confirmClearModalLabel">' + bbcsIpv4L10n.clear_all_rules + '</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>'
         );
         var modalBody = $(
-            '<div class="modal-body">Are you sure you want to remove all rules?</div>'
+            '<div class="modal-body">' + bbcsIpv4L10n.confirm_clear + '</div>'
         );
         var modalFooter = $(
-            '<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button><button type="button" class="btn btn-primary" id="confirmClearButton">Yes</button></div>'
+            '<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">' + bbcsIpv4L10n.no + '</button><button type="button" class="btn btn-primary" id="confirmClearButton">' + bbcsIpv4L10n.yes + '</button></div>'
         );
 
         modalContent.append(modalHeader, modalBody, modalFooter);
@@ -244,12 +261,28 @@
             }
         });
 
+        $(document).on('bbcs:tab-changed', function (e, data) {
+            if (data.tab === 'IPv4 List') {
+                var sameTab = (lastIpv4UITab === data.tab);
+                lastIpv4UITab = data.tab;
+                loadIpv4RulesTable();
+                if ($.fn.DataTable.isDataTable('#botblocker-ipv4-rules')) {
+                    var dt = $('#botblocker-ipv4-rules').DataTable();
+                    dt.columns.adjust();
+                    if (!sameTab && !ipv4JustInitialized) {
+                        dt.draw(false);
+                    }
+                    ipv4JustInitialized = false;
+                }
+            }
+        });
+
         if ($('#bbcs_IPv4_list').hasClass('active')) {
             loadIpv4RulesTable();
         }
 
-        $("#priority").on("input", function () {
-            $("#priorityValue").val(this.value);
+        $(document).on("input", "#priority", function () {
+            $(this).siblings("#priorityValue").val(this.value);
         });
 
         $("#botblocker-ipv4-rules").on("click", ".edit-ipv4-rule", function () {
@@ -308,6 +341,7 @@
                     if (response.success) {
                         $("#editIPv4Modal").modal("hide");
                         $("#botblocker-ipv4-rules").DataTable().ajax.reload();
+                                    if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
                     } else {
                         alert(bbcsIpv4L10n.failed_update + response.data);
                     }
@@ -333,9 +367,10 @@
                         },
                         success: function (response) {
                             if (response.success) {
-                                $("#botblocker-ipv4-rules")
+                                 $("#botblocker-ipv4-rules")
                                     .DataTable()
                                     .ajax.reload();
+                                if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
                             }
                         },
                     });
@@ -374,6 +409,7 @@
                     if (response.success) {
                         $("#addIPv4Modal").modal("hide");
                         $("#botblocker-ipv4-rules").DataTable().ajax.reload();
+                                    if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
                     } else {
                         alert(bbcsIpv4L10n.failed_create + response.data);
                     }
@@ -382,6 +418,35 @@
         });
 
         $("#bbcs_ipv4_export").on("click", function (e) {
+            e.preventDefault();
+            $.ajax({
+                url: botblockerData.ajaxurl,
+                type: "POST",
+                data: {
+                    action: "bbcs_export_ipv4_rules",
+                    nonce: botblockerData.nonce,
+                },
+                success: function (response) {
+                    if (response.success) {
+                        var blob = new Blob(
+                            [JSON.stringify(response.data, null, 2)],
+                            { type: "application/json" }
+                        );
+                        var downloadLink = document.createElement("a");
+                        downloadLink.href = window.URL.createObjectURL(blob);
+                        downloadLink.download = "botblocker_ipv4_rules.json";
+                        document.body.appendChild(downloadLink);
+                        downloadLink.click();
+                        document.body.removeChild(downloadLink);
+                    } else {
+                        alert(bbcsIpv4L10n.failed_export + response.data);
+                    }
+                },
+            });
+        });
+
+        $("#bbcs_pagehead_export").on("click", function (e) {
+            if ($('.bbcs-tab.is-active').data('tab') !== 'IPv4 List') return;
             e.preventDefault();
             $.ajax({
                 url: botblockerData.ajaxurl,
@@ -431,6 +496,7 @@
                                     $("#botblocker-ipv4-rules")
                                         .DataTable()
                                         .ajax.reload();
+                                    if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
                                 } else {
                                     alert(
                                         bbcsIpv4L10n.failed_import +
@@ -459,6 +525,7 @@
                             $("#botblocker-ipv4-rules")
                                 .DataTable()
                                 .ajax.reload();
+                            if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
                         } else {
                             alert(
                                 bbcsIpv4L10n.failed_clear + response.data
@@ -501,6 +568,7 @@
                                     $("#botblocker-ipv4-rules")
                                         .DataTable()
                                         .ajax.reload();
+                                    if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
                                 } else {
                                     alert(
                                         bbcsIpv4L10n['failed_import_' + listType] +
@@ -530,5 +598,60 @@
                 },
             });
         });
+
+        // New UI pagehead button wiring - tab-aware
+        if (document.querySelector('.bbcs-app')) {
+            $(document).on("click", "#bbcs_pagehead_add", function () {
+                var activeTab = $('.bbcs-tab.is-active').data('tab');
+                if (activeTab === 'IPv4 List') {
+                    $("#addIPv4Modal").modal("show");
+                    var form = document.getElementById("addIPv4Form");
+                    var expiresInput = form.querySelector("#addExpires");
+                    var now = new Date();
+                    now.setDate(now.getDate() + 1);
+                    var year = now.getFullYear();
+                    var month = String(now.getMonth() + 1).padStart(2, "0");
+                    var day = String(now.getDate()).padStart(2, "0");
+                    var hours = String(now.getHours()).padStart(2, "0");
+                    var minutes = String(now.getMinutes()).padStart(2, "0");
+                    expiresInput.value = year + "-" + month + "-" + day + "T" + hours + ":" + minutes;
+                }
+            });
+
+            $(document).on("click", "#bbcs_pagehead_import", function () {
+                var activeTab = $('.bbcs-tab.is-active').data('tab');
+                if (activeTab === 'IPv4 List') {
+                    var fileInput = $("<input>", {
+                        type: "file",
+                        accept: "application/json",
+                    }).on("change", function () {
+                        var file = this.files[0];
+                        if (file) {
+                            readJSONFile(file, function (data) {
+                                $.ajax({
+                                    url: botblockerData.ajaxurl,
+                                    type: "POST",
+                                    data: {
+                                        action: "bbcs_import_ipv4_rules",
+                                        rules: JSON.stringify(data),
+                                        nonce: botblockerData.nonce,
+                                    },
+                                    success: function (response) {
+                                        if (response.success) {
+                                            showImportResultModal(response.data);
+                                            $("#botblocker-ipv4-rules").DataTable().ajax.reload();
+                                    if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
+                                        } else {
+                                            alert(bbcsIpv4L10n.failed_import + response.data);
+                                        }
+                                    },
+                                });
+                            });
+                        }
+                    });
+                    fileInput.click();
+                }
+            });
+        }
     });
 })(jQuery);

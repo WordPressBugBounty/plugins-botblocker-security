@@ -5,6 +5,14 @@
     // local flag for loading the table
     var whiteTableLoading = false;
 
+    // Register loading state for new UI tab switching guard.
+    if (typeof window.BBCS_TabLoadingRegistry !== 'undefined') {
+      window.BBCS_TabLoadingRegistry['Trusted Bots'] = function() { return whiteTableLoading; };
+    }
+
+    var lastWhiteUITab = '';
+    var whiteJustInitialized = false;
+
     // debounce / throttle params
     var switchDebounceMs = 200; // minimum interval between switches
     var _lastSwitchTs = 0;
@@ -93,15 +101,15 @@
               width: "100px",
               render: function (data, type, row) {
                 return (
-                  '<button class="btn btn-sm btn-default bbcs-actions-b edit-white" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Edit" data-id="' +
+                  '<button class="btn btn-sm btn-default bbcs-actions-b edit-white" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="' + bbcsWhiteL10n.edit + '" data-id="' +
                   row.id +
                   '"><i class="fa-regular fa-edit"></i></button> ' +
-                  '<button class="btn btn-sm btn-default bbcs-actions-b delete-white"  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Delete" data-id="' +
+                  '<button class="btn btn-sm btn-default bbcs-actions-b delete-white"  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="' + bbcsWhiteL10n.delete + '" data-id="' +
                   row.id +
                   '"><i class="fa-regular fa-trash-can"></i></button> ' +
                   '<button class="btn btn-sm bbcs-actions-b ' +
                   (row.disable == 0 ? "btn-default" : "btn-warning") +
-                  ' toggle-white"  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Toggle On/Off" data-id="' +
+                  ' toggle-white"  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="' + bbcsWhiteL10n.toggle + '" data-id="' +
                   row.id +
                   '"><i class="fas ' +
                   (row.disable == 0 ? "fa-stop" : "fa-play") +
@@ -117,28 +125,38 @@
             },
           ],
           createdRow: function (row, data, dataIndex) {
-            $(row).css(
-              "background-color",
-              data.disable == 0 ? "rgba(0, 255, 0, 0.1)" : "rgba(255, 0, 0, 0.1)"
-            );
+            $(row).addClass(data.disable == 0 ? "bbcs-rule-row--active" : "bbcs-rule-row--disabled");
           },
-          layout: {
-            topStart: {
-              buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print', 'colvis',
-                {
-                  extend: 'collection',
-                  text: 'Length Menu',
-                  buttons: [
-                    { text: '10', action: function ( e, dt, node, config ) { dt.page.len(10).draw(); } },
-                    { text: '25', action: function ( e, dt, node, config ) { dt.page.len(25).draw(); } },
-                    { text: '50', action: function ( e, dt, node, config ) { dt.page.len(50).draw(); } },
-                    { text: '100', action: function ( e, dt, node, config ) { dt.page.len(100).draw(); } }
-                  ]
+          layout: (function () {
+            var isNewUI = !!document.querySelector('.bbcs-app');
+            return isNewUI ? {
+              topStart: {
+                search: {
+                  text: '',
+                  placeholder: bbcsWhiteL10n.search_placeholder
                 }
-              ]
-            }
-          },
+              },
+              topEnd: {
+                buttons: ['csv', 'excel']
+              }
+            } : {
+              topStart: {
+                buttons: [
+                  'copy', 'csv', 'excel', 'pdf', 'print', 'colvis',
+                  {
+                    extend: 'collection',
+                    text: 'Length Menu',
+                    buttons: [
+                      { text: '10', action: function ( e, dt, node, config ) { dt.page.len(10).draw(); } },
+                      { text: '25', action: function ( e, dt, node, config ) { dt.page.len(25).draw(); } },
+                      { text: '50', action: function ( e, dt, node, config ) { dt.page.len(50).draw(); } },
+                      { text: '100', action: function ( e, dt, node, config ) { dt.page.len(100).draw(); } }
+                    ]
+                  }
+                ]
+              }
+            };
+          })(),
           drawCallback: function (settings) {
             var api = this.api();
             api.columns().every(function () {
@@ -155,6 +173,8 @@
             api.columns.adjust();
           },
         });
+
+        whiteJustInitialized = true;
 
         // Toggle white bot
         $(document).on("click", "#botblocker-white .toggle-white", function (e) {
@@ -180,6 +200,7 @@
                 var rowData = table.row($button.closest("tr")).data();
                 rowData.disable = rowData.disable == 0 ? 1 : 0;
                 table.row($button.closest("tr")).data(rowData).draw(false);
+                if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
               }
             },
             complete: function () {
@@ -195,12 +216,12 @@
         var modal = $('<div class="modal fade" id="importResultModal" tabindex="-1" aria-labelledby="importResultModalLabel" aria-hidden="true">');
         var modalDialog = $('<div class="modal-dialog">');
         var modalContent = $('<div class="modal-content">');
-        var modalHeader = $('<div class="modal-header"><h5 class="modal-title" id="importResultModalLabel">Import Result</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>');
+        var modalHeader = $('<div class="modal-header"><h5 class="modal-title" id="importResultModalLabel">' + bbcsWhiteL10n.import_result + '</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>');
         var modalBody = $('<div class="modal-body">' + 
-                          '<p>Imported: ' + result.imported + '</p>' +
-                          '<p>Skipped: ' + result.skipped + '</p>' +
+                          '<p>' + bbcsWhiteL10n.imported + ': ' + result.imported + '</p>' +
+                          '<p>' + bbcsWhiteL10n.skipped + ': ' + result.skipped + '</p>' +
                           '</div>');
-        var modalFooter = $('<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>');
+        var modalFooter = $('<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">' + bbcsWhiteL10n.close + '</button></div>');
     
         modalContent.append(modalHeader, modalBody, modalFooter);
         modalDialog.append(modalContent);
@@ -214,9 +235,9 @@
         var modal = $('<div class="modal fade" id="confirmClearModal" tabindex="-1" aria-labelledby="confirmClearModalLabel" aria-hidden="true">');
         var modalDialog = $('<div class="modal-dialog">');
         var modalContent = $('<div class="modal-content">');
-        var modalHeader = $('<div class="modal-header"><h5 class="modal-title" id="confirmClearModalLabel">Clear All White Bots</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>');
-        var modalBody = $('<div class="modal-body">Are you sure you want to remove all white bots?</div>');
-        var modalFooter = $('<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button><button type="button" class="btn btn-primary" id="confirmClearButton">Yes</button></div>');
+        var modalHeader = $('<div class="modal-header"><h5 class="modal-title" id="confirmClearModalLabel">' + bbcsWhiteL10n.clear_all_rules + '</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>');
+        var modalBody = $('<div class="modal-body">' + bbcsWhiteL10n.confirm_clear + '</div>');
+        var modalFooter = $('<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">' + bbcsWhiteL10n.no + '</button><button type="button" class="btn btn-primary" id="confirmClearButton">' + bbcsWhiteL10n.yes + '</button></div>');
     
         modalContent.append(modalHeader, modalBody, modalFooter);
         modalDialog.append(modalContent);
@@ -253,12 +274,28 @@
         }
       });
 
+      $(document).on('bbcs:tab-changed', function (e, data) {
+        if (data.tab === 'Trusted Bots') {
+          var sameTab = (lastWhiteUITab === data.tab);
+          lastWhiteUITab = data.tab;
+          initializeWhiteTable();
+          if ($.fn.DataTable.isDataTable('#botblocker-white')) {
+            var dt = $('#botblocker-white').DataTable();
+            dt.columns.adjust();
+            if (!sameTab && !whiteJustInitialized) {
+              dt.draw(false);
+            }
+            whiteJustInitialized = false;
+          }
+        }
+      });
+
         if ($('#bbcs_white_bots').hasClass('active')) {
             initializeWhiteTable();
         }
 
-        $("#priority").on("input", function () {
-            $("#priorityValue").val(this.value);
+        $(document).on("input", "#priority", function () {
+            $(this).siblings("#priorityValue").val(this.value);
         });
 
         $("#editWhiteForm").on("submit", function (e) {
@@ -274,6 +311,7 @@
                 if (response.success) {
                   $("#editWhiteModal").modal("hide");
                   $("#botblocker-white").DataTable().ajax.reload();
+                                    if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
                 } else {
                   alert(bbcsWhiteL10n.failed_update + response.data);
                 }
@@ -296,7 +334,7 @@
                   var data = response.data;
                   $("#editWhiteForm").find('[name="id"]').val(data.id);
                   $("#editWhiteForm").find('[name="priority"]').val(data.priority);
-                  $("#priorityValue").val(data.priority);
+                  $("#editWhiteForm").find("#priorityValue").val(data.priority);
                   $("#editWhiteForm").find('[name="search"]').val(data.search);
                   $("#editWhiteForm").find('[name="data"]').val(data.data);
                   $("#editWhiteForm").find('[name="rule"]').val(data.rule);
@@ -324,6 +362,7 @@
                 success: function (response) {
                   if (response.success) {
                     $("#botblocker-white").DataTable().ajax.reload();
+                                    if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
                   }
                 },
               });
@@ -344,6 +383,7 @@
                 if (response.success) {
                   $("#createWhiteModal").modal("hide");
                   $("#botblocker-white").DataTable().ajax.reload();
+                                    if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
                 } else {
                   alert(bbcsWhiteL10n.failed_create + response.data);
                 }
@@ -352,6 +392,32 @@
         });
 
         $("#bbcs_se_export").on("click", function(e) {
+            e.preventDefault();
+            $.ajax({
+              url: botblockerData.ajaxurl,
+              type: "POST",
+              data: {
+                action: "bbcs_export_white",
+                nonce: botblockerData.nonce,
+              },
+              success: function(response) {
+                if (response.success) {
+                  var blob = new Blob([JSON.stringify(response.data, null, 2)], { type: "application/json" });
+                  var downloadLink = document.createElement("a");
+                  downloadLink.href = window.URL.createObjectURL(blob);
+                  downloadLink.download = "botblocker_white_bots.json";
+                  document.body.appendChild(downloadLink);
+                  downloadLink.click();
+                  document.body.removeChild(downloadLink);
+                } else {
+                  alert(bbcsWhiteL10n.failed_export + response.data);
+                }
+              },
+            });
+        });
+
+        $("#bbcs_pagehead_export").on("click", function(e) {
+            if ($('.bbcs-tab.is-active').data('tab') !== 'Trusted Bots') return;
             e.preventDefault();
             $.ajax({
               url: botblockerData.ajaxurl,
@@ -396,6 +462,7 @@
                       if (response.success) {
                         showImportResultModal(response.data);
                         $("#botblocker-white").DataTable().ajax.reload();
+                                    if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
                       } else {
                         alert(bbcsWhiteL10n.failed_import + response.data);
                       }
@@ -419,6 +486,7 @@
                 success: function(response) {
                   if (response.success) {
                     $("#botblocker-white").DataTable().ajax.reload();
+                                    if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
                   } else {
                     alert(bbcsWhiteL10n.failed_clear + response.data);
                   }
@@ -441,5 +509,50 @@
                 },
             });
         });
+
+        // New UI pagehead button wiring - tab-aware
+        if (document.querySelector('.bbcs-app')) {
+            $(document).on("click", "#bbcs_pagehead_add", function () {
+                var activeTab = $('.bbcs-tab.is-active').data('tab');
+                if (activeTab === 'Trusted Bots') {
+                    $("#createWhiteModal").modal("show");
+                }
+            });
+
+            $(document).on("click", "#bbcs_pagehead_import", function () {
+                var activeTab = $('.bbcs-tab.is-active').data('tab');
+                if (activeTab === 'Trusted Bots') {
+                    var fileInput = $("<input>", {
+                        type: "file",
+                        accept: "application/json",
+                    }).on("change", function () {
+                        var file = this.files[0];
+                        if (file) {
+                            readJSONFile(file, function (data) {
+                                $.ajax({
+                                    url: botblockerData.ajaxurl,
+                                    type: "POST",
+                                    data: {
+                                        action: "bbcs_import_white",
+                                        white_bots: JSON.stringify(data),
+                                        nonce: botblockerData.nonce,
+                                    },
+                                    success: function (response) {
+                                        if (response.success) {
+                                            showImportResultModal(response.data);
+                                            $("#botblocker-white").DataTable().ajax.reload();
+                                    if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
+                                        } else {
+                                            alert(bbcsWhiteL10n.failed_import + response.data);
+                                        }
+                                    },
+                                });
+                            });
+                        }
+                    });
+                    fileInput.click();
+                }
+            });
+        }
     });      
 })(jQuery);

@@ -114,7 +114,7 @@ trait BotBlockerAddonDecisionTrait {
 			do_action( 'bbcs_botblocker_redirected_request', $decision, $this, $stage, $provider );
 			wp_safe_redirect( $url, (int) $decision['status'] );
 			// @codeCoverageIgnoreStart
-			exit; 
+			exit;
 			// @codeCoverageIgnoreEnd
 		}
 

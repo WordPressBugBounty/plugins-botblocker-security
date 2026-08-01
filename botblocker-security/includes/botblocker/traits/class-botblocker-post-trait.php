@@ -14,13 +14,27 @@ trait BotBlockerPostTrait {
 			$this->uid = preg_replace( '/[^a-zA-Z0-9]/', '', sanitize_text_field( wp_unslash( $_COOKIE[ $this->settings->cookie ] ) ) );
 		}
 
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+			error_log( '[BBCS DEBUG] [Post] processPostRequest: entry. captcha_mode=' . $this->settings->bbcs_captcha_mode . ' has_challenge_token=' . ( empty( $_POST['challenge_token'] ) ? 'NO' : 'YES' ) . ' has_recaptcha=' . ( empty( $_POST['g-recaptcha-response'] ) ? 'NO' : 'YES' ) . ' post_data_keys=' . implode( ',', array_keys( $_POST ) ) );
+		}
+
 		global $wpdb;
 		ignore_user_abort( true );
 		if ( function_exists( 'set_time_limit' ) ) {
 			@set_time_limit( 30 );    // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
 		}
 
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+			error_log( '[BBCS DEBUG] [Post] STEP: start_input_validation' );
+		}
+
 		if ( ! isset( $_SERVER['REQUEST_METHOD'] ) || $_SERVER['REQUEST_METHOD'] !== 'POST' ) {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [Post] STEP_DIE: NoPost' );
+			}
 			$payload = array( 'error' => 'Error NoPost' );
 			if ( $this->settings->bbcs_ddos_resilience == 1 ) {
 				$payload = $this->sign_response_payload( $payload );
@@ -31,6 +45,10 @@ trait BotBlockerPostTrait {
 		if ( isset( $_POST['cid'] ) ) {
 			$this->cid = trim( preg_replace( '/[^0-9\.]/', '', sanitize_text_field( wp_unslash( $_POST['cid'] ) ) ) );
 		} else {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [Post] STEP_DIE: CID not set' );
+			}
 			$payload = array( 'error' => 'CID not set' );
 			if ( $this->settings->bbcs_ddos_resilience == 1 ) {
 				$payload = $this->sign_response_payload( $payload );
@@ -47,6 +65,10 @@ trait BotBlockerPostTrait {
 		if ( isset( $_POST['ip'] ) ) {
 			$post_ip = trim( preg_replace( '/[^0-9a-zA-Z\.\:]/', '', sanitize_text_field( wp_unslash( $_POST['ip'] ) ) ) );
 		} else {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [Post] STEP_DIE: IP not set' );
+			}
 			$payload = array( 'error' => 'IP not set' );
 			if ( $this->settings->bbcs_ddos_resilience == 1 ) {
 				$payload = $this->sign_response_payload( $payload );
@@ -57,6 +79,10 @@ trait BotBlockerPostTrait {
 		if ( isset( $_POST['xxx'] ) ) {
 			$post_xxx = trim( wp_strip_all_tags( wp_unslash( $_POST['xxx'] ) ) );
 		} else {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [Post] STEP_DIE: XXX not set' );
+			}
 			$payload = array( 'error' => 'XXX not set' );
 			if ( $this->settings->bbcs_ddos_resilience == 1 ) {
 				$payload = $this->sign_response_payload( $payload );
@@ -67,6 +93,10 @@ trait BotBlockerPostTrait {
 		if ( isset( $_POST['date'] ) ) {
 			$post_date = (int) trim( wp_strip_all_tags( wp_unslash( $_POST['date'] ) ) );
 		} else {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [Post] STEP_DIE: DATE not set' );
+			}
 			$payload = array( 'error' => 'DATE not set' );
 			if ( $this->settings->bbcs_ddos_resilience == 1 ) {
 				$payload = $this->sign_response_payload( $payload );
@@ -96,6 +126,10 @@ trait BotBlockerPostTrait {
 				$this->referer = ( $ref_raw && in_array( $sch, array( 'http', 'https' ), true ) ) ? $ref_raw : '';
 			} else {
 				$this->referer = '';
+				if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+					error_log( '[BBCS DEBUG] [Post] STEP_DIE: Referer not set (ref_raw empty)' );
+				}
 				$payload       = array( 'error' => 'Referer not set' );
 				if ( $this->settings->bbcs_ddos_resilience == 1 ) {
 					$payload = $this->sign_response_payload( $payload );
@@ -103,6 +137,10 @@ trait BotBlockerPostTrait {
 				$this->process_die( wp_json_encode( $payload ) );
 			}
 		} else {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [Post] STEP_DIE: Referer not set (HTTP_REFERER missing)' );
+			}
 			$referer = '';
 			$payload = array( 'error' => 'Referer not set' );
 			if ( $this->settings->bbcs_ddos_resilience == 1 ) {
@@ -123,6 +161,10 @@ trait BotBlockerPostTrait {
 		*/
 
 		if ( $post_date > $this->time ) {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [Post] STEP_DIE: timeout (post_date > time)' );
+			}
 			$payload = array( 'error' => 'timeout' );
 			if ( $this->settings->bbcs_ddos_resilience == 1 ) {
 				$payload = $this->sign_response_payload( $payload );
@@ -133,6 +175,10 @@ trait BotBlockerPostTrait {
 		if ( $this->time - $post_date > $this->settings->bbcs_captcha_wait
 			&& (int) $this->settings->bbcs_captcha_mode !== BOTBLOCKER_CAPTCHA_MODE_SILENT
 		) {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [Post] STEP_DIE: timeout (date diff=' . ( $this->time - $post_date ) . ' > captcha_wait=' . $this->settings->bbcs_captcha_wait . ')' );
+			}
 			$payload = array( 'error' => 'timeout' );
 			if ( $this->settings->bbcs_ddos_resilience == 1 ) {
 				$payload = $this->sign_response_payload( $payload );
@@ -140,7 +186,16 @@ trait BotBlockerPostTrait {
 			$this->process_die( wp_json_encode( $payload ) );
 		}
 
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+			error_log( '[BBCS DEBUG] [Post] STEP: before_recaptcha_siteverify' );
+		}
+
 		if ( $this->settings->bbcs_captcha_mode == 3 || $this->settings->bbcs_captcha_mode == 4 ) {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [Post] STEP: inside_recaptcha_branch' );
+			}
 
 			$g_recaptcha_response = isset( $_POST['g-recaptcha-response'] )
 				? sanitize_text_field( wp_unslash( $_POST['g-recaptcha-response'] ) )
@@ -160,12 +215,24 @@ trait BotBlockerPostTrait {
 				'sslverify' => true,
 			);
 
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [Post] STEP: before_wp_remote_post' );
+			}
 			$resp = wp_remote_post( 'https://www.google.com/recaptcha/api/siteverify', $args );
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [Post] STEP: after_wp_remote_post' );
+			}
 
 			if ( is_wp_error( $resp ) ) {
 				if ( defined( 'BBCS_CAPTCHA_DIAG' ) && BBCS_CAPTCHA_DIAG ) {
 					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 					error_log( 'BBCS reCAPTCHA siteverify WP_Error: ' . $resp->get_error_message() );
+				}
+				if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+					error_log( '[BBCS DEBUG] [Post] STEP: recaptcha_wp_error_fallthrough' );
 				}
 				$this->settings->bbcs_captcha_mode = 1;
 				if ( $this->settings->time_ban < 1 ) {
@@ -180,17 +247,40 @@ trait BotBlockerPostTrait {
 					error_log( 'BBCS reCAPTCHA secret last4: ' . substr( $this->settings->recaptcha_secret2, -4 ) );
 					// phpcs:enable WordPress.PHP.DevelopmentFunctions.error_log_error_log
 				}
+				if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+					error_log( '[BBCS DEBUG] [Post] STEP: recaptcha_success_ok=' . ( isset( $re['success'] ) ? (int) $re['success'] : 'n/a' ) );
+				}
 				if ( isset( $re['success'] ) && (int) $re['success'] !== 1 ) {
+					if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+						// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+						error_log( '[BBCS DEBUG] [Post] STEP: recaptcha_success_false_fallthrough' );
+					}
 					$this->settings->bbcs_captcha_mode = 1;
 					if ( $this->settings->time_ban < 1 ) {
 						$this->settings->time_ban = '1';
 					}
 				}
 			}
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [Post] reCAPTCHA siteverify done. success=' . ( isset( $re['success'] ) ? (int) $re['success'] : 'n/a' ) . ' mode_after=' . $this->settings->bbcs_captcha_mode );
+			}
+		} elseif ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+			error_log( '[BBCS DEBUG] [Post] STEP: recaptcha_branch_skipped_mode=' . $this->settings->bbcs_captcha_mode );
 		}
 
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+			error_log( '[BBCS DEBUG] [Post] STEP: before_challenge_token_check' );
+		}
 		$challenge_token_raw = isset( $_POST['challenge_token'] ) ? sanitize_text_field( wp_unslash( $_POST['challenge_token'] ) ) : '';
 		if ( ! empty( $challenge_token_raw ) ) {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [Post] STEP: challenge_token_present' );
+			}
 			require_once dirname( __DIR__, 3 ) . '/public/class-botblocker-captcha-renderer.php';
 			if ( defined( 'BBCS_CAPTCHA_DIAG' ) && BBCS_CAPTCHA_DIAG ) {
 				$ct_diag = BotBlockerCaptchaRenderer::verifyChallengeTokenDiag(
@@ -201,6 +291,10 @@ trait BotBlockerPostTrait {
 					sanitize_text_field( wp_unslash( $post_ip ) )
 				);
 				if ( $ct_diag['ok'] === false ) {
+					if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+						// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+						error_log( '[BBCS DEBUG] [Post] STEP_DIE: wrong_click ct_diag=' . $ct_diag['reason'] );
+					}
 					$this->process_wrong_click( $ct_diag['reason'] );
 				}
 				$ct_result = $ct_diag['data'];
@@ -213,29 +307,61 @@ trait BotBlockerPostTrait {
 					sanitize_text_field( wp_unslash( $post_ip ) )
 				);
 				if ( $ct_result === false ) {
+					if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+						// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+						error_log( '[BBCS DEBUG] [Post] STEP_DIE: wrong_click ct_result_false' );
+					}
 					$this->process_wrong_click();
 				}
 			}
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [Post] STEP: challenge_token_passed' );
+			}
 			// If reCAPTCHA verification changed the mode (failed), reject
 			$token_mode = isset( $ct_result['m'] ) ? (int) $ct_result['m'] : -1;
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [Post] STEP: token_mode=' . $token_mode . ' captcha_mode=' . $this->settings->bbcs_captcha_mode );
+			}
 			if ( in_array( $token_mode, array( 3, 4 ) ) && (int) $this->settings->bbcs_captcha_mode !== $token_mode ) {
+				if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+					error_log( '[BBCS DEBUG] [Post] STEP_DIE: wrong_click mode_mismatch' );
+				}
 				$this->process_wrong_click( defined( 'BBCS_CAPTCHA_DIAG' ) && BBCS_CAPTCHA_DIAG ? 'RM' : '' );
 			}
 		} elseif ( (int) $this->settings->bbcs_captcha_mode === BOTBLOCKER_CAPTCHA_MODE_SILENT ) {
 			// Silent mode but challenge_token is missing (WAF/CDN stripped it, or cached page)
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [Post] STEP_DIE: silent_no_challenge_token' );
+			}
 			$payload = array( 'error' => 'timeout' );
 			if ( $this->settings->bbcs_ddos_resilience == 1 ) {
 				$payload = $this->sign_response_payload( $payload );
 			}
 			$this->process_die( wp_json_encode( $payload ) );
 		} elseif ( $this->settings->bbcs_captcha_mode == 3 || $this->settings->bbcs_captcha_mode == 4 ) {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [Post] STEP: no_challenge_token_mode34' );
+			}
 			$date_from_post = isset( $post_date ) ? sanitize_text_field( wp_unslash( (string) $post_date ) ) : '';
 			$xxx_from_post  = isset( $post_xxx ) ? sanitize_text_field( wp_unslash( $post_xxx ) ) : '';
 			$hash0          = '1|' . hash( 'sha256', $this->settings->salt . $date_from_post . $this->settings->cloud_api_pass );
 			if ( ! hash_equals( $hash0, $xxx_from_post ) ) {
+				if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+					error_log( '[BBCS DEBUG] [Post] STEP_DIE: wrong_click hash_mismatch' );
+				}
 				$this->process_wrong_click( defined( 'BBCS_CAPTCHA_DIAG' ) && BBCS_CAPTCHA_DIAG ? 'HM' : '' );
 			}
 		} elseif ( $this->settings->bbcs_captcha_mode == 2 ) {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [Post] STEP: no_challenge_token_mode2' );
+			}
 			$xxx2 = explode( '|', sanitize_text_field( wp_unslash( $post_xxx ) ) );
 			if ( ! isset( $xxx2[1] ) ) {
 				$payload = array( 'error' => 'Error NoPost 1' );
@@ -247,6 +373,10 @@ trait BotBlockerPostTrait {
 			$post_color      = $xxx2[0];
 			$post_color_hash = $xxx2[1];
 			if ( ! isset( $post_color, $post_color_hash, $post_date, $post_ip ) ) {
+				if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+					error_log( '[BBCS DEBUG] [Post] STEP_DIE: mode2_missing_data' );
+				}
 				$payload = array( 'error' => 'Missing required POST data' );
 				if ( $this->settings->bbcs_ddos_resilience == 1 ) {
 					$payload = $this->sign_response_payload( $payload );
@@ -266,6 +396,10 @@ trait BotBlockerPostTrait {
 				$this->process_wrong_click( defined( 'BBCS_CAPTCHA_DIAG' ) && BBCS_CAPTCHA_DIAG ? 'HM' : '' );
 			}
 		} else {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [Post] STEP_DIE: wrong_click no_mode_match' );
+			}
 			$this->process_wrong_click( defined( 'BBCS_CAPTCHA_DIAG' ) && BBCS_CAPTCHA_DIAG ? 'NM' : '' );
 		}
 
@@ -306,7 +440,16 @@ trait BotBlockerPostTrait {
 			// bbcs_process_hit('2');
 		}
 
-		$hash    = $this->create_session_token() . '-' . $this->time;
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+			error_log( '[BBCS DEBUG] [Post] STEP: reached_success_exit' );
+		}
+
+		$hash = $this->create_session_token() . '-' . $this->time;
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+			error_log( '[BBCS DEBUG] [Post] EXIT: SUCCESS. Setting cookie. ddos_resilience=' . $this->settings->bbcs_ddos_resilience . ' xbbcs_header=' . ( ( $this->settings->bbcs_ddos_resilience == 1 && ! empty( $this->uid ) ) ? 'YES' : 'NO' ) );
+		}
 		if ( $this->settings->bbcs_ddos_resilience == 1 ) {
 			$payload = $this->sign_response_payload( array( 'cookie' => $hash ) );
 			if ( ! headers_sent() && ! empty( $this->uid ) ) {
@@ -328,6 +471,10 @@ trait BotBlockerPostTrait {
 		if ( defined( 'BBCS_CAPTCHA_DIAG' ) && BBCS_CAPTCHA_DIAG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 			error_log( 'BBCS process_wrong_click reason: ' . $reason );
+		}
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+			error_log( '[BBCS DEBUG] [Post] EXIT: WRONG CLICK (CAPTCHA fail -> ban)' . ( $reason !== '' ? ' reason=' . $reason : '' ) );
 		}
 		check_ajax_referer( 'botblocker_nonce', 'nonce' );
 
@@ -418,7 +565,7 @@ trait BotBlockerPostTrait {
 				array( 'search' => $ip )
 			);
 		} else {
-			$ip2ban = $this->ip_version == 4 ? BotBlockerIp::toNumeric( $ip ) : BotBlockerIp::toBinary( $ip );
+			$ip2ban              = $this->ip_version == 4 ? BotBlockerIp::toNumeric( $ip ) : BotBlockerIp::toBinary( $ip );
 			$country_transformed = isset( $_POST['country'] ) ? strtoupper( trim( preg_replace( '/[^A-Za-z]/', '', sanitize_text_field( wp_unslash( $_POST['country'] ) ) ) ) ) : '';
 			$data                = array(
 				'priority' => '1',
@@ -433,6 +580,8 @@ trait BotBlockerPostTrait {
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->insert( $table_name, $data );
 		}
+
+		BotBlockerFileRenderer::syncIpBanFiles( $ip, 'block', $expires );
 
 		if ( $this->settings->botblocker_log_tests == 1 ) {
 

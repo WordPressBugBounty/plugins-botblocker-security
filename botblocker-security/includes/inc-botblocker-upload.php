@@ -67,29 +67,15 @@ function bbcs_create_protected_upload_dir( bool $return_url = false ) {
 		}
 	}
 
-	$htaccess = "<IfModule mod_authz_core.c>\n    Require all denied\n</IfModule>\n<IfModule !mod_authz_core.c>\n    Deny from all\n</IfModule>\n";
-	$indexphp = '<?php exit;';
-	$webconf  = "<configuration>\n  <system.webServer>\n    <authorization>\n      <deny users=\"*\" />\n    </authorization>\n  </system.webServer>\n</configuration>\n";
-
 	$marker_name    = 'bbcs-owner.txt';
 	$marker_content = 'botblocker|' . ( defined( 'BOTBLOCKER_VERSION' ) ? BOTBLOCKER_VERSION : 'unknown' ) . '|' . "\n";
 
-	$targets = array( $dir, $addons_dir, $data_dir );
-
-	foreach ( $targets as $base ) {
-		$files = array(
-			$base . '.htaccess'  => $htaccess,
-			$base . 'index.php'  => $indexphp,
-			$base . 'web.config' => $webconf,
-			$base . $marker_name => $marker_content,
-		);
-
-		foreach ( $files as $path => $content ) {
-			if ( file_exists( $path ) ) {
-				continue;
-			}
-			if ( false === file_put_contents( $path, $content, LOCK_EX ) ) {
-				return new WP_Error( 'write_failed', 'Failed to write protection file: ' . basename( $path ) );
+	foreach ( array( $dir, $addons_dir, $data_dir ) as $base ) {
+		BotBlockerWpUtility::write_web_access_deny( $base );
+		$marker = trailingslashit( $base ) . $marker_name;
+		if ( ! file_exists( $marker ) ) {
+			if ( false === file_put_contents( $marker, $marker_content, LOCK_EX ) ) {
+				return new WP_Error( 'write_failed', 'Failed to write protection file: ' . $marker_name );
 			}
 		}
 	}

@@ -1,7 +1,7 @@
 (function($) {
  
   document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('section.content-body > form').forEach(function (form) {
+    document.querySelectorAll('#bbcs-tools-form').forEach(function (form) {
       form.addEventListener('submit', function () {
         var fld = form.querySelector('input[name="bbcs_anchor"]');
         if (fld) { fld.value = (window.location.hash || '').replace(/^#/, ''); }
@@ -13,7 +13,7 @@
 (function ($) {
   "use strict";
   $(function () {
-    var $form = $('section.content-body > form').first();
+    var $form = $('#bbcs-tools-form');
     if (!$form.length) return;
 
     var $saveButtons = $form.find('button[name="save_settings"]');
@@ -47,6 +47,7 @@
       var show = dirty;
       $form.find('.bbcs-unsaved-label').css('display', show ? 'inline-block' : 'none');
       $saveButtons.find('.bbcs-card-action').css('color', show ? '#dc3545' : '');
+      $('[data-bbcs-reset]').prop('disabled', !dirty).toggleClass('is-disabled', !dirty);
     }
 
     function checkDirty() {
@@ -56,6 +57,7 @@
     }
 
     ensureIndicators();
+    updateUI();
 
     $form.on('change input keyup', 'input:not([data-bbcs-no-dirty]), select:not([data-bbcs-no-dirty]), textarea:not([data-bbcs-no-dirty])', checkDirty);
 

@@ -71,11 +71,13 @@ trait BotBlockerLocalValidationTrait {
 			wp_send_json( $payload );
 		}
 		if ( $this->accept_lang == '' ) {
-			$payload = BotBlockerStore::localCheckResult( BBCS_LOCAL_RESULT_ERROR, 'Empty Lang', '' );
-			if ( $this->settings->bbcs_ddos_resilience == 1 ) {
-				$payload = $this->sign_response_payload( (array) $payload );
+			if ( empty( $this->settings->bbcs_allow_empty_accept_lang ) ) {
+				$payload = BotBlockerStore::localCheckResult( BBCS_LOCAL_RESULT_ERROR, 'Empty Lang', '' );
+				if ( $this->settings->bbcs_ddos_resilience == 1 ) {
+					$payload = $this->sign_response_payload( (array) $payload );
+				}
+				wp_send_json( $payload );
 			}
-			wp_send_json( $payload );
 		}
 
 		if ( $this->post_hosting_detected == 1 ) {
@@ -109,7 +111,9 @@ trait BotBlockerLocalValidationTrait {
 			wp_send_json( $payload );
 		}
 
-		if ( $this->post_start_time - $this->time > 20 ) {
+		// Reject requests taking longer than 20 seconds from page generation to submission.
+		// $this->date is client-supplied; $this->time is current server time.
+		if ( $this->time - (int) $this->date > 20 ) {
 			$payload = BotBlockerStore::localCheckResult( BBCS_LOCAL_RESULT_ERROR, 'Long Request Error', '' );
 			if ( $this->settings->bbcs_ddos_resilience == 1 ) {
 				$payload = $this->sign_response_payload( (array) $payload );
@@ -120,7 +124,7 @@ trait BotBlockerLocalValidationTrait {
 
 	private function processAdblockerDetect() {
 		if ( $this->settings->block_adblocker_users == 1 && $this->post_adblocker_found == 1 ) {
-			$payload = BotBlockerStore::localCheckResult( BBCS_LOCAL_RESULT_ERROR, 'Ads blocking software is strong disabled', '' );
+			$payload = BotBlockerStore::localCheckResult( BBCS_LOCAL_RESULT_ERROR, 'Ad blocking software detected', '' );
 			if ( $this->settings->bbcs_ddos_resilience == 1 ) {
 				$payload = $this->sign_response_payload( (array) $payload );
 			}
@@ -133,8 +137,8 @@ trait BotBlockerLocalValidationTrait {
 			'block_incognito_users'    => array( 'crossbrowserIncognito' ),
 			'block_simple_antidetect'  => array( 'navigatorMismatch', 'chromiumProperties' ),
 			'block_override'           => array( 'fakePlugins', 'fontRenderMismatch', 'languageMismatch' ),
-			'block_web_engine_options' => array( 'unsupportedFeatures', 'webGLMismatch', 'permissionsMismatch' ),
-			'block_device_options'     => array( 'touchEventMismatch', 'batteryAPIMismatch', 'mediaDevicesMismatch', 'jitter' ),
+			'block_web_engine_options' => array( 'unsupportedFeatures', 'webGLMismatch' ),
+			'block_device_options'     => array( 'touchEventMismatch', 'jitter' ),
 		);
 
 		$checkWeights = array(
@@ -146,9 +150,6 @@ trait BotBlockerLocalValidationTrait {
 			'jitter'                => 1,
 			'webGLMismatch'         => 2,
 			'touchEventMismatch'    => 2,
-			'batteryAPIMismatch'    => 1,
-			'mediaDevicesMismatch'  => 2,
-			'permissionsMismatch'   => 1,
 			'languageMismatch'      => 3,
 			'crossbrowserIncognito' => 2,
 		);
@@ -157,8 +158,8 @@ trait BotBlockerLocalValidationTrait {
 			'block_incognito_users'    => 2,
 			'block_simple_antidetect'  => 4,
 			'block_override'           => 5,
-			'block_web_engine_options' => 4,
-			'block_device_options'     => 4,
+			'block_web_engine_options' => 3,
+			'block_device_options'     => 2,
 		);
 
 		$minGroupsToBlock = 2;
@@ -237,6 +238,7 @@ trait BotBlockerLocalValidationTrait {
 			array( 'navigatorMismatch', 'webGLMismatch', 'critical_combination_navigator_webgl' ),
 			array( 'fakePlugins', 'chromiumProperties', 'critical_combination_plugins_chrome' ),
 			array( 'fontRenderMismatch', 'languageMismatch', 'critical_combination_font_language' ),
+			array( 'chromiumProperties', 'jitter', 'critical_combination_chrome_jitter' ),
 		);
 
 		foreach ( $criticalCombinations as $combination ) {
@@ -335,14 +337,14 @@ trait BotBlockerLocalValidationTrait {
 							$payload = $this->sign_response_payload( (array) $payload );
 						}
 						wp_send_json( $payload );
-								} elseif ( $echo['rule'] == BBCS_RULE_BLOCK ) {
+					} elseif ( $echo['rule'] == BBCS_RULE_BLOCK ) {
 						$payload = BotBlockerStore::localCheckResult( BBCS_LOCAL_RESULT_ERROR, 'BLOCK By rule: timezone=' . $this->post_timezone, '' );
 						if ( $this->settings->bbcs_ddos_resilience == 1 ) {
 							$payload = $this->sign_response_payload( (array) $payload );
 						}
 						wp_send_json( $payload );
-								} elseif ( $echo['rule'] == BBCS_RULE_ALLOW ) {
-		$this->post_hash_cookie = $this->create_session_token( $this->time, $this->ip, $this->uid ) . '-' . $this->time;
+					} elseif ( $echo['rule'] == BBCS_RULE_ALLOW ) {
+						$this->post_hash_cookie = $this->create_session_token( $this->time, $this->ip, $this->uid ) . '-' . $this->time;
 						$payload                = BotBlockerStore::localCheckResult( BBCS_LOCAL_RESULT_COOKIE, 'ALLOW By rule: timezone=' . $this->post_timezone, $this->post_hash_cookie );
 						if ( $this->settings->bbcs_ddos_resilience == 1 ) {
 							$payload = $this->sign_response_payload( (array) $payload );
@@ -351,7 +353,7 @@ trait BotBlockerLocalValidationTrait {
 							}
 						}
 						wp_send_json( $payload );
-								} elseif ( $echo['rule'] == BBCS_RULE_GRAY ) {
+					} elseif ( $echo['rule'] == BBCS_RULE_GRAY ) {
 						$this->post_from_suspect = 1;
 						$this->result_of_action  = 'GRAY by RULE';
 					}

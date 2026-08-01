@@ -216,8 +216,9 @@ trait BotBlockerRulesTrait {
 		if ( method_exists( $this, 'lazy_load_paths' ) ) {
 			$this->lazy_load_paths();
 		}
+		$path_only = strtok( $this->uri, '?' );
 		foreach ( $this->bbcs_path as $bbcs_line => $bbcs_sign ) {
-			if ( stripos( $this->uri, $bbcs_line ) !== false ) {
+			if ( stripos( $path_only, $bbcs_line ) !== false ) {
 				$bbcs_sign = $this->effective_sign( $bbcs_sign );
 				if ( $bbcs_sign === BBCS_RULE_BLOCK ) {
 					$this->redirect_to_block( 6, 'BLOCK By rule (url part): ' . $bbcs_line );
@@ -267,7 +268,7 @@ trait BotBlockerRulesTrait {
 				break;
 			} elseif ( $rule === BBCS_RULE_ALLOW ) {
 				if ( strtolower( (string) $bbcs_line ) === 'whatsapp' ) {
-					if ( empty( $this->settings->whitelist_whatsapp_preview ) ) {
+					if ( $this->settings->whitelist_whatsapp_preview != 1 ) {
 						continue;
 					}
 
@@ -533,8 +534,28 @@ trait BotBlockerRulesTrait {
 			}
 		}
 
+		$hotBansFile = BotBlockerMultisite::getDataDir() . 'hot-bans.php';
+		if ( file_exists( $hotBansFile ) ) {
+			$hotData = bbcs_safe_load_data_file( $hotBansFile );
+			if ( is_array( $hotData ) ) {
+				$family = 'ipv' . $this->ip_version;
+				$entries = isset( $hotData[ $family ] ) && is_array( $hotData[ $family ] ) ? $hotData[ $family ] : array();
+				if ( isset( $entries[ $this->ip ] ) && is_array( $entries[ $this->ip ] ) ) {
+					$entry = $entries[ $this->ip ];
+					if ( ! empty( $entry[1] ) && $entry[1] > $this->time ) {
+						$hotSign = $this->effective_sign( $entry[0] );
+						if ( $hotSign === BBCS_RULE_BLOCK ) {
+							$this->redirect_to_block( 6, 'BLOCK by hot-ban: ' . $this->ip );
+						} elseif ( $hotSign === BBCS_RULE_DARK ) {
+							$this->redirect_to_dark( 'DARK by hot-ban: ' . $this->ip );
+						}
+					}
+				}
+			}
+		}
+
 		if ( $this->visitorType === self::VISITOR_HUMAN ) {
-			BotBlockerStore::storeData( null, 4 );
+			BotBlockerStore::storeData( 'Allow by session cookie (auto check)', 4 );
 			BotBlockerCounters::processHit( 4 );
 			return true;
 		}

@@ -42,6 +42,10 @@ trait BBCS_RenderColorButtonTrait {
 		}
 		shuffle( $buttonData );
 
+		if ( ! function_exists( 'imagecreatetruecolor' ) ) {
+			return $this->getSimpleButtonData();
+		}
+
 		$imageForCheck = imagecreatetruecolor( wp_rand( 1, 30 ), wp_rand( 1, 30 ) );
 
 		$color_code = array(
@@ -67,7 +71,7 @@ trait BBCS_RenderColorButtonTrait {
 			'mode'   => 1,
 			'params' => array(
 				'buttons'        => $buttonData,
-				'instruction'    => __( 'Click on the matching color', 'botblocker-security' ),
+				'instruction'    => self::t( 'Click on the matching color' ),
 				'colorImageData' => $targetImgData,
 				'colorClass'     => $colorClass,
 			),

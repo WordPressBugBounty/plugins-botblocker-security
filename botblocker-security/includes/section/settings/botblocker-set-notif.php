@@ -47,17 +47,46 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<div class="bbcs_checkbox_input mb-2 mt-2">
 				<div class="bbcs_label_checkbox_box">
-					<input type="checkbox" name="telegram_notifications" class="bbcs_checkbox_input_input" <?php checked( 1, isset( $bbcs_settings['telegram_notifications'] ) ? $bbcs_settings['telegram_notifications'] : 0 ); ?> value="1" disabled>
+					<input type="checkbox" name="telegram_notifications" class="bbcs_checkbox_input_input" <?php checked( 1, isset( $bbcs_settings['telegram_notifications'] ) ? $bbcs_settings['telegram_notifications'] : 0 ); ?> value="1">
 					<span class="bbcs_label_input_checkbox"><?php esc_html_e( 'Telegram', 'botblocker-security' ); ?></span>
-					<small class="text-muted bbcs-ps-5">
-						<?php esc_html_e( 'Coming soon', 'botblocker-security' ); ?> (<a href="<?php echo esc_url( $BBCSA->pages_addons ); ?>"><?php esc_html_e( 'Add-ons', 'botblocker-security' ); ?></a>)
-					</small>
 				</div>
 				<i class="fa-regular fa-circle-question"
 					data-bs-toggle="tooltip" data-bs-html="true"
 					data-bs-placement="top"
 					data-bs-original-title="<?php echo esc_attr__( 'Receive security alerts via Telegram.', 'botblocker-security' ); ?>">
 				</i>
+			</div>
+
+			<div class="bbcs-telegram-fields" id="bbcs_telegram_fields" style="display:<?php echo ( isset( $bbcs_settings['telegram_notifications'] ) && $bbcs_settings['telegram_notifications'] == 1 ) ? 'block' : 'none'; ?>; padding-left:24px;">
+				<div class="bbcs_text_input mb-2">
+					<div class="bbcs_label_input_box">
+						<span class="bbcs-label-input"><?php esc_html_e( 'Bot Token', 'botblocker-security' ); ?></span>
+						<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"
+							data-bs-placement="top"
+							data-bs-original-title="<?php echo esc_attr__( 'Your Telegram bot token from @BotFather.', 'botblocker-security' ); ?>">
+						</i>
+					</div>
+					<div class="bbcs_text_input_inner">
+						<input type="text" class="bbcs_text_input_input" name="telegram_bot_token"
+							value="<?php echo isset( $bbcs_settings['telegram_bot_token'] ) ? esc_attr( $bbcs_settings['telegram_bot_token'] ) : ''; ?>"
+							placeholder="<?php esc_attr_e( '123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11', 'botblocker-security' ); ?>">
+					</div>
+				</div>
+
+				<div class="bbcs_text_input mb-2">
+					<div class="bbcs_label_input_box">
+						<span class="bbcs-label-input"><?php esc_html_e( 'Chat ID', 'botblocker-security' ); ?></span>
+						<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"
+							data-bs-placement="top"
+							data-bs-original-title="<?php echo esc_attr__( 'Your Telegram chat ID (user or group).', 'botblocker-security' ); ?>">
+						</i>
+					</div>
+					<div class="bbcs_text_input_inner">
+						<input type="text" class="bbcs_text_input_input" name="telegram_chat_id"
+							value="<?php echo isset( $bbcs_settings['telegram_chat_id'] ) ? esc_attr( $bbcs_settings['telegram_chat_id'] ) : ''; ?>"
+							placeholder="<?php esc_attr_e( '-1001234567890', 'botblocker-security' ); ?>">
+					</div>
+				</div>
 			</div>
 
 			<div class="bbcs_checkbox_input mb-2 mt-2">

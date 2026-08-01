@@ -23,11 +23,11 @@ class BBCS_MemcachedStorage extends BBCS_ObjectCacheStorage {
 			throw new \Exception( $this->lastError );
 		}
 
-		$this->host      = $host;
-		$this->port      = $port;
-		$this->prefix    = $prefix;
+		$this->host       = $host;
+		$this->port       = $port;
+		$this->prefix     = $prefix;
 		$this->sitePrefix = self::buildSitePrefix();
-		$this->memcached = new \Memcached();
+		$this->memcached  = new \Memcached();
 		$this->connect();
 	}
 
@@ -44,7 +44,7 @@ class BBCS_MemcachedStorage extends BBCS_ObjectCacheStorage {
 					self::$instance->logDebug( 'BBCS_MemcachedStorage Error: ' . $e->getMessage() );
 				} elseif ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG && defined( 'BBCS_CACHE_DEBUG' ) && BBCS_CACHE_DEBUG ) {
 					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-						error_log('[BBCS DEBUG] [Cache] BBCS_MemcachedStorage Error: ' . $e->getMessage());
+						error_log( '[BBCS DEBUG] [Cache] BBCS_MemcachedStorage Error: ' . $e->getMessage() );
 
 				}
 				throw $e;

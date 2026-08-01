@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="createPathModalLabel"><?php esc_html_e( 'Create Path', 'botblocker-security' ); ?></h5>
+				<h5 class="modal-title" id="createPathModalLabel"><?php esc_html_e( 'Add Path Rule', 'botblocker-security' ); ?></h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
@@ -15,8 +15,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-6">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-									<span class="bbcs-label-input"><?php esc_html_e( 'Priority', 'botblocker-security' ); ?></span>
-									<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e( 'Path rule priority (1-100)', 'botblocker-security' ); ?>"></i>
+								<span class="bbcs-label-input"><?php esc_html_e( 'Priority', 'botblocker-security' ); ?></span>
+								<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Path rule priority (1-100)', 'botblocker-security' ); ?></span></span>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<input type="range" class="bbcs_text_input_input" id="priority" name="priority" min="1" max="100" required>
@@ -27,8 +27,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-6">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-									<span class="bbcs-label-input"><?php esc_html_e( 'Rule', 'botblocker-security' ); ?></span>
-									<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e( 'Action for this path', 'botblocker-security' ); ?>"></i>
+								<span class="bbcs-label-input"><?php esc_html_e( 'Rule', 'botblocker-security' ); ?></span>
+								<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Action for this path', 'botblocker-security' ); ?></span></span>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<select class="bbcs_select_input_input" id="rule" name="rule" required>
@@ -46,9 +46,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-6">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-									<span class="bbcs-label-input"><?php esc_html_e( 'Path (URL)', 'botblocker-security' ); ?></span>
-									<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" 
-									data-bs-original-title="<?php esc_attr_e( 'Path substring or pattern to match', 'botblocker-security' ); ?>"></i>
+								<span class="bbcs-label-input"><?php esc_html_e( 'Path (URL)', 'botblocker-security' ); ?></span>
+								<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Path substring or pattern to match', 'botblocker-security' ); ?></span></span>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<textarea class="bbcs_text_input_input" id="search" name="search" rows="3" required></textarea>
@@ -58,8 +57,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-6">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-									<span class="bbcs-label-input"><?php esc_html_e( 'Comment', 'botblocker-security' ); ?></span>
-									<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e( 'Comment for this path rule', 'botblocker-security' ); ?>"></i>
+								<span class="bbcs-label-input"><?php esc_html_e( 'Comment', 'botblocker-security' ); ?></span>
+								<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Comment for this path rule', 'botblocker-security' ); ?></span></span>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<textarea class="bbcs_text_input_input" id="comment" name="comment" rows="3"></textarea>
@@ -71,7 +70,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary btn-xs" data-bs-dismiss="modal"><?php esc_html_e( 'Close', 'botblocker-security' ); ?></button>
-				<button type="submit" form="createPathForm" class="btn btn-primary btn-xs"><?php esc_html_e( 'Save', 'botblocker-security' ); ?></button>
+				<button type="submit" form="createPathForm" class="btn btn-primary btn-xs"><?php esc_html_e( 'Add', 'botblocker-security' ); ?></button>
 			</div>
 		</div>
 	</div>

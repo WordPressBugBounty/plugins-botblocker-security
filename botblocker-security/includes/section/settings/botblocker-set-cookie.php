@@ -35,7 +35,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</div>
 
 		<div class="col-xxl-3 col-xl-6 col-lg-6 col-sm-12 col-md-12">
-			<h3 class="bbcs_settings_h3"><?php esc_html_e( 'Cookies Settings', 'botblocker-security' ); ?></h3>
+			<h3 class="bbcs_settings_h3"><?php esc_html_e( 'Cookie Settings', 'botblocker-security' ); ?></h3>
 			<div class="bbcs_text_input mb-2">
 				<div class="bbcs_label_input_box">
 					<span class="bbcs-label-input"><?php esc_html_e( 'Cookie Name', 'botblocker-security' ); ?></span>
@@ -94,7 +94,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<span class="bbcs-label-input"><?php esc_html_e( 'Session Token Verification', 'botblocker-security' ); ?></span>
 					<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"
 						data-bs-placement="top"
-						data-bs-original-title="<?php esc_attr_e( 'Replaces IP/host/UA-bound cookie hash with a session token. Eliminates CAPTCHA loops for VPN/proxy users. Disable only if experiencing issues.', 'botblocker-security' ); ?>"></i>
+						data-bs-original-title="<?php esc_attr_e( 'Replaces IP/host/UA-bound cookie hash with a session token. Eliminates Captcha loops for VPN/proxy users. Disable only if experiencing issues.', 'botblocker-security' ); ?>"></i>
 				</div>
 				<div class="bbcs_text_input_inner">
 					<select class="bbcs_select_input_input" name="session_token_enabled">
@@ -168,6 +168,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 					</select>
 				</div>
 			</div>
+			</div>
+			<div class="bbcs_text_input mb-2">
+				<div class="bbcs_label_input_box">
+					<span class="bbcs-label-input"><?php esc_html_e( 'Strict CORS Headers', 'botblocker-security' ); ?></span>
+					<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"
+						data-bs-placement="top"
+						data-bs-original-title="<?php esc_attr_e( 'Use explicit CORS headers (Content-Type, X-Requested-With) instead of wildcard (*). Fixes Fetch-spec violation when Access-Control-Allow-Credentials is active. Enable only if CAPTCHA verification breaks in browsers.', 'botblocker-security' ); ?>"></i>
+				</div>
+				<div class="bbcs_text_input_inner">
+					<select class="bbcs_select_input_input" name="bbcs_cors_strict_headers">
+						<option value="0"
+							<?php selected( 0, isset( $bbcs_settings['bbcs_cors_strict_headers'] ) ? (int) $bbcs_settings['bbcs_cors_strict_headers'] : 0 ); ?>>
+							<?php esc_html_e( 'Disabled (Wildcard *)', 'botblocker-security' ); ?></option>
+						<option value="1"
+							<?php selected( 1, isset( $bbcs_settings['bbcs_cors_strict_headers'] ) ? (int) $bbcs_settings['bbcs_cors_strict_headers'] : 0 ); ?>>
+							<?php esc_html_e( 'Enabled (Explicit headers)', 'botblocker-security' ); ?></option>
+					</select>
+				</div>
+			</div>
 		</div>
-	</div>
 </div>

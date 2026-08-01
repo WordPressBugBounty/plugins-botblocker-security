@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 return array(
 	'bbcs_proxy' => array(
-		// CloudFlare IPv4
+		// Cloudflare IPv4
 		'173.245.48.0/20'  => 'HTTP_CF_CONNECTING_IP',
 		'103.21.244.0/22'  => 'HTTP_CF_CONNECTING_IP',
 		'103.22.200.0/22'  => 'HTTP_CF_CONNECTING_IP',
@@ -22,7 +22,7 @@ return array(
 		'172.64.0.0/13'    => 'HTTP_CF_CONNECTING_IP',
 		'131.0.72.0/22'    => 'HTTP_CF_CONNECTING_IP',
 
-		// CloudFlare IPv6
+		// Cloudflare IPv6
 		'2400:cb00::/32'   => 'HTTP_CF_CONNECTING_IP',
 		'2606:4700::/32'   => 'HTTP_CF_CONNECTING_IP',
 		'2803:f800::/32'   => 'HTTP_CF_CONNECTING_IP',

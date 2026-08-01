@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
-if ( ! defined( 'ABSPATH' ) ) { exit; }
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; }
 
 class BotBlockerAjaxDebug {
 
@@ -30,7 +31,7 @@ class BotBlockerAjaxDebug {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' start_files=' . ( $bbcs_start_files ? 'true' : 'false' ) );
 		}
-		$result           = BotBlockerInstall::createSaltFile( $bbcs_start_files );
+		$result = BotBlockerInstall::createSaltFile( $bbcs_start_files );
 
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
@@ -86,11 +87,9 @@ class BotBlockerAjaxDebug {
 			}
 			// phpcs:ignore PluginCheck.CodeAnalysis.WriteFile.PluginDirectoryWrite
 			$result = file_put_contents( $debug_log_path, '' );
-		} else {
-			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+		} elseif ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' log file not found' );
-			}
 		}
 
 		if ( $result !== false ) {
@@ -234,7 +233,11 @@ class BotBlockerAjaxDebug {
 		header( 'Content-Length: ' . filesize( $log_path ) );
 		header( 'X-Robots-Tag: noindex' );
 
-		readfile( $log_path );    // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile
+		$sent = readfile( $log_path );    // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile
+		if ( $sent === false ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( '[BBCS] Debug log download failed for: ' . $log_path );
+		}
 		wp_die();
 	}
 }

@@ -1,7 +1,26 @@
 (function ($) {
     "use strict";
 
+    var KPI_SWAP_MS = 5000;
+
+    function initKpiSwap() {
+        var $cards = $("[data-bbcs-kpi-swap]");
+
+        if (!$cards.length) {
+            return;
+        }
+
+        var showingAlt = false;
+
+        setInterval(function () {
+            showingAlt = !showingAlt;
+            $cards.toggleClass("bbcs-kpi-swap--alt", showingAlt);
+        }, KPI_SWAP_MS);
+    }
+
     $(document).ready(function () {
+        initKpiSwap();
+
         $('#bbcs-send-email').on('click', function (e) {
             e.preventDefault();
             $.ajax({

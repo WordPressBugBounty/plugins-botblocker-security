@@ -12,20 +12,20 @@ trait BBCS_RenderMovingShapesButtonTrait {
 		$shapes = array( 'circle', 'square', 'triangle', 'star', 'hexagon' );
 		$colors = array( 'red', 'blue', 'green', 'purple', 'orange' );
 
-		$shape_translations = array(
-			'circle'   => __( 'Circle', 'botblocker-security' ),
-			'square'   => __( 'Square', 'botblocker-security' ),
-			'triangle' => __( 'Triangle', 'botblocker-security' ),
-			'star'     => __( 'Star', 'botblocker-security' ),
-			'hexagon'  => __( 'Hexagon', 'botblocker-security' ),
+		$shape_labels = array(
+			'circle'   => self::t( 'Circle' ),
+			'square'   => self::t( 'Square' ),
+			'triangle' => self::t( 'Triangle' ),
+			'star'     => self::t( 'Star' ),
+			'hexagon'  => self::t( 'Hexagon' ),
 		);
 
-		$color_translations = array(
-			'red'    => __( 'Red', 'botblocker-security' ),
-			'blue'   => __( 'Blue', 'botblocker-security' ),
-			'green'  => __( 'Green', 'botblocker-security' ),
-			'purple' => __( 'Purple', 'botblocker-security' ),
-			'orange' => __( 'Orange', 'botblocker-security' ),
+		$color_labels = array(
+			'red'    => self::t( 'Red' ),
+			'blue'   => self::t( 'Blue' ),
+			'green'  => self::t( 'Green' ),
+			'purple' => self::t( 'Purple' ),
+			'orange' => self::t( 'Orange' ),
 		);
 
 		shuffle( $shapes );
@@ -69,10 +69,10 @@ trait BBCS_RenderMovingShapesButtonTrait {
 
 		shuffle( $shapesData );
 
-		$findShapeText = __( 'Find the shape:', 'botblocker-security' ) . ' ';
-		$shapeText     = $shape_translations[ $correctShape ] . ', ';
-		$withColorText = __( 'with color:', 'botblocker-security' ) . ' ';
-		$colorText     = $color_translations[ $correctColor ];
+		$findShapeText = self::t( 'Find the shape: ' );
+		$shapeText     = $shape_labels[ $correctShape ] . ', ';
+		$withColorText = self::t( 'with color: ' );
+		$colorText     = $color_labels[ $correctColor ];
 
 		$instruction = "{$findShapeText} {$shapeText} {$withColorText} {$colorText}";
 

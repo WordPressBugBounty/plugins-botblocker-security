@@ -114,11 +114,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</div>
 
 			<?php
-			$bbcs_rugov_status     = class_exists( 'BotBlockerRugov' ) ? BotBlockerRugov::getStatus() : array();
-			$bbcs_rugov_state      = isset( $bbcs_rugov_status['state'] ) ? (string) $bbcs_rugov_status['state'] : 'absent';
-			$bbcs_rugov_last_sync  = isset( $bbcs_rugov_status['last_sync'] ) ? (int) $bbcs_rugov_status['last_sync'] : 0;
+			$bbcs_rugov_status      = class_exists( 'BotBlockerRugov' ) ? BotBlockerRugov::getStatus() : array();
+			$bbcs_rugov_state       = isset( $bbcs_rugov_status['state'] ) ? (string) $bbcs_rugov_status['state'] : 'absent';
+			$bbcs_rugov_last_sync   = isset( $bbcs_rugov_status['last_sync'] ) ? (int) $bbcs_rugov_status['last_sync'] : 0;
 			$bbcs_rugov_range_count = isset( $bbcs_rugov_status['range_count'] ) ? (int) $bbcs_rugov_status['range_count'] : 0;
-			$bbcs_rugov_present    = class_exists( 'BotBlockerRugov' ) ? BotBlockerRugov::isFilePresent() : false;
+			$bbcs_rugov_present     = class_exists( 'BotBlockerRugov' ) ? BotBlockerRugov::isFilePresent() : false;
 			?>
 			<div class="bbcs_settings_button">
 				<button type="button" id="bbcs-update-rugov" class="mb-1 btn btn-xs btn-default">

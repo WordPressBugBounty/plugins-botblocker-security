@@ -38,12 +38,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<div class="bbcs_label_checkbox_box">
 					<input type="checkbox" name="get_browser_type" class="bbcs_checkbox_input_input" value="1"
 						<?php checked( 1, isset( $bbcs_settings['get_browser_type'] ) ? $bbcs_settings['get_browser_type'] : 0 ); ?>>        		
-						<span class="bbcs_label_input_checkbox"><?php esc_html_e( 'Get Browser Type', 'botblocker-security' ); ?></span>
+						<span class="bbcs_label_input_checkbox"><?php esc_html_e( 'Record Browser Type', 'botblocker-security' ); ?></span>
 				</div>
 				<i class="fa-regular fa-circle-question"
 				data-bs-toggle="tooltip" data-bs-html="true" 
 				data-bs-placement="top"
-				data-bs-original-title="<?php esc_attr_e( 'Record visitor browser type.', 'botblocker-security' ); ?>">
+				data-bs-original-title="<?php esc_attr_e( 'Extract and store visitor browser name and version from User-Agent header.', 'botblocker-security' ); ?>">
 				</i>
 			</div>
 
@@ -51,12 +51,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<div class="bbcs_label_checkbox_box">
 					<input type="checkbox" name="get_os_type" class="bbcs_checkbox_input_input" value="1"
 						<?php checked( 1, isset( $bbcs_settings['get_os_type'] ) ? $bbcs_settings['get_os_type'] : 0 ); ?>>        			
-						<span class="bbcs_label_input_checkbox"><?php esc_html_e( 'Get OS Type', 'botblocker-security' ); ?></span>
+						<span class="bbcs_label_input_checkbox"><?php esc_html_e( 'Record OS Type', 'botblocker-security' ); ?></span>
 				</div>
 				<i class="fa-regular fa-circle-question"
 					data-bs-toggle="tooltip" data-bs-html="true" 
 					data-bs-placement="top"
-					data-bs-original-title="<?php esc_attr_e( 'Record visitor operating system.', 'botblocker-security' ); ?>">
+					data-bs-original-title="<?php esc_attr_e( 'Extract and store visitor operating system from User-Agent header.', 'botblocker-security' ); ?>">
 				</i>
 			</div>
 
@@ -64,20 +64,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<div class="bbcs_label_checkbox_box">
 					<input type="checkbox" name="get_device_type" class="bbcs_checkbox_input_input" value="1"
 						<?php checked( 1, isset( $bbcs_settings['get_device_type'] ) ? $bbcs_settings['get_device_type'] : 0 ); ?>>        			
-						<span class="bbcs_label_input_checkbox"><?php esc_html_e( 'Get Device Type', 'botblocker-security' ); ?></span>
+						<span class="bbcs_label_input_checkbox"><?php esc_html_e( 'Record Device Type', 'botblocker-security' ); ?></span>
 				</div>
 				<i class="fa-regular fa-circle-question"
 					data-bs-toggle="tooltip" data-bs-html="true" 
 					data-bs-placement="top"
-					data-bs-original-title="<?php esc_attr_e( 'Record visitor device type (mobile, desktop, tablet).', 'botblocker-security' ); ?>">
+					data-bs-original-title="<?php esc_attr_e( 'Extract and store visitor device category (PC, Phone, Tablet, TV, Box) from User-Agent header.', 'botblocker-security' ); ?>">
 				</i>
 			</div>
 
 			<div class="bbcs_text_input mb-2">
 				<div class="bbcs_label_input_box">        			
-					<span class="bbcs-label-input"><?php esc_html_e( 'Store Period:', 'botblocker-security' ); ?></span>
+					<span class="bbcs-label-input"><?php esc_html_e( 'Log Retention Period:', 'botblocker-security' ); ?></span>
 					<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top" 
-					data-bs-original-title="<?php esc_attr_e( 'How long to keep raw log data.', 'botblocker-security' ); ?>"></i>
+					data-bs-original-title="<?php esc_attr_e( 'How many days to keep raw visitor log data before automatic cleanup.', 'botblocker-security' ); ?>"></i>
 				</div>
 				<div class="bbcs_text_input_inner">
 					<select class="bbcs_select_input_input" name="admin_store_period">
@@ -96,12 +96,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<div class="bbcs_label_checkbox_box">
 					<input type="checkbox" name="daylight_saving_time" class="bbcs_checkbox_input_input" value="1"
 						<?php checked( 1, isset( $bbcs_settings['daylight_saving_time'] ) ? $bbcs_settings['daylight_saving_time'] : 0 ); ?>>
-					<span class="bbcs_label_input_checkbox"><?php esc_html_e( 'Daylight Saving Time', 'botblocker-security' ); ?></span>
+					<span class="bbcs_label_input_checkbox"><?php esc_html_e( 'Adjust for Daylight Saving Time', 'botblocker-security' ); ?></span>
 				</div>
 				<i class="fa-regular fa-circle-question"
 					data-bs-toggle="tooltip" data-bs-html="true" 
 					data-bs-placement="top"
-					data-bs-original-title="<?php esc_attr_e( 'Adjust timestamps for daylight saving time.', 'botblocker-security' ); ?>">
+					data-bs-original-title="<?php esc_attr_e( 'Adjust recorded timestamps for your timezone\'s daylight saving time. Ensures visit times display correctly in logs and reports year-round.', 'botblocker-security' ); ?>">
 				</i>
 			</div>
 

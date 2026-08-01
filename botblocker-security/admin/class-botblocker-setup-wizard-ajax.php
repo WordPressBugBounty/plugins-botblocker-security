@@ -66,14 +66,20 @@ trait BotBlocker_SetupWizardAjaxTrait {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom table, write-through to settings.
 		$wpdb->replace(
 			$wpdb->bbcs_settings,
-			array( 'key' => 'autosave_admin_ip', 'value' => $exclude_admins ? '1' : '0' ),
+			array(
+				'key'   => 'autosave_admin_ip',
+				'value' => $exclude_admins ? '1' : '0',
+			),
 			array( '%s', '%s' )
 		);
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom table, write-through to settings.
 		$wpdb->replace(
 			$wpdb->bbcs_settings,
-			array( 'key' => 'allow_self_ip_req', 'value' => $exclude_cron ? '1' : '0' ),
+			array(
+				'key'   => 'allow_self_ip_req',
+				'value' => $exclude_cron ? '1' : '0',
+			),
 			array( '%s', '%s' )
 		);
 
@@ -119,7 +125,7 @@ trait BotBlocker_SetupWizardAjaxTrait {
 
 		// Valid CAPTCHA modes: 0-8 (based on botblocker-set-captcha.php)
 		if ( ! in_array( $captcha_mode, array( 0, 1, 2, 3, 4, 5, 6, 7, 8 ) ) ) {
-			wp_send_json_error( __( 'Invalid CAPTCHA mode.', 'botblocker-security' ) );
+			wp_send_json_error( __( 'Invalid Captcha mode.', 'botblocker-security' ) );
 		}
 
 		// Save CAPTCHA mode to settings
@@ -163,6 +169,16 @@ trait BotBlocker_SetupWizardAjaxTrait {
 			wp_send_json_error( __( 'Early initialization requires PRO license.', 'botblocker-security' ) );
 		}
 
+		// Early Init also requires the Early Init addon to be active
+		if ( $init_mode === 'early' ) {
+			$early_addon_active = class_exists( 'BotBlockerAddons' )
+				? BotBlockerAddons::hasActiveProvider( 'early_init_provider', 'bbcs_early_init_provider_active' )
+				: false;
+			if ( ! $early_addon_active ) {
+				wp_send_json_error( __( 'Early Init requires the Early Init addon to be enabled. Please enable it on the Addons page.', 'botblocker-security' ) );
+			}
+		}
+
 		global $wpdb;
 
 		// Save MU mode setting
@@ -178,38 +194,23 @@ trait BotBlocker_SetupWizardAjaxTrait {
 			array( '%s', '%s' )
 		);
 
-		// Save Early Init setting (only if PRO active)
+		// Save Early Init setting and perform file system cleanup for the selected mode
 		if ( $init_mode === 'early' && BotBlockerPro::isActive() ) {
-			// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$wpdb->replace(
-				$wpdb->bbcs_settings,
-				array(
-					'key'   => 'early_init_enable',
-					'value' => '1',
-				),
-				array( '%s', '%s' )
-			);
+			if ( ! BotBlockerInstall::setEarlyInitEnabled( true ) ) {
+				wp_send_json_error( __( 'Failed to configure Early Init. Check filesystem permissions and try again, or set up Early Init manually.', 'botblocker-security' ) );
+			}
+		} elseif ( $init_mode === 'mu' ) {
+			BotBlockerInstall::setEarlyInitEnabled( false );
+			// Install MU plugin file so MU mode actually works
+			if ( method_exists( 'BotBlockerInstall', 'installMuPlugin' ) ) {
+				BotBlockerInstall::installMuPlugin();
+			}
+		} else {
+			BotBlockerInstall::setEarlyInitEnabled( false );
+			// Remove MU plugin file if MU mode was previously enabled
 			if ( method_exists( 'BotBlockerInstall', 'uninstallMuPlugin' ) ) {
 				BotBlockerInstall::uninstallMuPlugin();
 			}
-			if ( function_exists( 'bbcs_insertCodeToWpConfig' ) ) {
-				bbcs_insertCodeToWpConfig();
-			}
-			if ( function_exists( 'bbcs_generateSitesMapFile' ) ) {
-				bbcs_generateSitesMapFile();
-			}
-		} else {
-			// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$wpdb->replace(
-				$wpdb->bbcs_settings,
-				array(
-					'key'   => 'early_init_enable',
-					'value' => '0',
-				),
-				array( '%s', '%s' )
-			);
 		}
 
 		// Regenerate settings file
@@ -345,14 +346,20 @@ trait BotBlocker_SetupWizardAjaxTrait {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom table, write-through to settings.
 		$wpdb->replace(
 			$wpdb->bbcs_settings,
-			array( 'key' => 'email_notifications', 'value' => $notify_daily ? '1' : '0' ),
+			array(
+				'key'   => 'email_notifications',
+				'value' => $notify_daily ? '1' : '0',
+			),
 			array( '%s', '%s' )
 		);
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom table, write-through to settings.
 		$wpdb->replace(
 			$wpdb->bbcs_settings,
-			array( 'key' => 'critical_load_notifications', 'value' => $notify_brute_force ? '1' : '0' ),
+			array(
+				'key'   => 'critical_load_notifications',
+				'value' => $notify_brute_force ? '1' : '0',
+			),
 			array( '%s', '%s' )
 		);
 
@@ -360,7 +367,10 @@ trait BotBlocker_SetupWizardAjaxTrait {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom table, write-through to settings.
 		$wpdb->replace(
 			$wpdb->bbcs_settings,
-			array( 'key' => 'regular_notifications_frequency', 'value' => $frequency ),
+			array(
+				'key'   => 'regular_notifications_frequency',
+				'value' => $frequency,
+			),
 			array( '%s', '%s' )
 		);
 
@@ -463,7 +473,7 @@ trait BotBlocker_SetupWizardAjaxTrait {
 		if ( class_exists( 'BotBlocker' ) ) {
 			$instance = BotBlocker::getInstance();
 			if ( $instance && $instance instanceof BotBlocker ) {
-				$disabled = $instance->settings->disable ?? 1;
+				$disabled    = $instance->settings->disable ?? 1;
 				$secure_mode = (int) ( $instance->settings->secure_mode ?? 0 );
 
 				if ( ! $disabled ) {
@@ -537,7 +547,10 @@ trait BotBlocker_SetupWizardAjaxTrait {
 			}
 			$code = (int) wp_remote_retrieve_response_code( $response );
 			if ( $code >= 200 && $code < 400 ) {
-				$results[ $name ] = array( 'status' => 'ok', 'message' => '' );
+				$results[ $name ] = array(
+					'status'  => 'ok',
+					'message' => '',
+				);
 			} else {
 				$results[ $name ] = array(
 					'status'  => 'error',

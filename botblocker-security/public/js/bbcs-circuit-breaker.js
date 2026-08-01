@@ -4,8 +4,7 @@ window.bbcsCircuitBreaker = {
 	cooldownMs: 30000,
 	openUntil: 0,
 	_countdownId: 0,
-	// Session storage is not used in the current implementation, but the code is left here for future use if needed.
-/*	_key: 'bbcs_cb',
+	_key: 'bbcs_cb',
 
 	_save: function () {
 		try {
@@ -23,20 +22,22 @@ window.bbcsCircuitBreaker = {
 		} catch (e) {}
 		if (this.isOpen()) {
 			this.showFallback();
-		} else {
-			this.failures = 0;
-			this.openUntil = 0;
-			this._save();
 		}
 	},
-*/
+
 	recordFailure: function () {
 		this.failures++;
 		if (this.failures >= this.threshold) {
 			this.openUntil = Date.now() + this.cooldownMs;
 			this.showFallback();
 		}
-	//	this._save();
+		this._save();
+	},
+
+	recordSuccess: function () {
+		this.failures = 0;
+		this.openUntil = 0;
+		this._save();
 	},
 
 	isOpen: function () {
@@ -44,7 +45,7 @@ window.bbcsCircuitBreaker = {
 			if (this.openUntil > 0) {
 				this.failures = 0;
 				this.openUntil = 0;
-	//			this._save();
+				this._save();
 			}
 			return false;
 		}
@@ -53,7 +54,7 @@ window.bbcsCircuitBreaker = {
 
 	showFallback: function () {
 		if (typeof bbcsCheckUI !== 'undefined') {
-			bbcsCheckUI.showFallback();
+			bbcsCheckUI.hide();
 		}
 		var el = document.getElementById('content');
 		if (el) {
@@ -83,4 +84,4 @@ window.bbcsCircuitBreaker = {
 		}
 	}
 };
-//window.bbcsCircuitBreaker._restore();
+window.bbcsCircuitBreaker._restore();

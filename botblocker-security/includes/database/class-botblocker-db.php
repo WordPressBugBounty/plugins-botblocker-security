@@ -113,7 +113,10 @@ class BotBlockerDb {
 		} else {
 			$updated = $wpdb->insert(
 				$wpdb->bbcs_settings,
-				array( 'key' => 'disable', 'value' => $state ),
+				array(
+					'key'   => 'disable',
+					'value' => $state,
+				),
 				array( '%s', '%d' )
 			);
 		}
@@ -154,6 +157,8 @@ class BotBlockerDb {
 		BotBlockerFileRenderer::renderAsn();
 		BotBlockerFileRenderer::renderIps();
 		BotBlockerFileRenderer::renderProxy();
+		BotBlockerFileRenderer::renderTlsFingerprints();
+		BotBlockerFileRenderer::generateSettingsFile();
 
 		BotBlockerCache::clearFileCache();
 		return true;

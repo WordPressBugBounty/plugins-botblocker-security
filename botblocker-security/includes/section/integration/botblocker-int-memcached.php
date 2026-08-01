@@ -43,7 +43,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<div class="bbcs_text_input mb-2">
 				<div class="bbcs_label_input_box">
-					<span class="bbcs-label-input"><?php esc_html_e( 'Memcached Host Address:', 'botblocker-security' ); ?></span>
+					<span class="bbcs-label-input"><?php esc_html_e( 'Server Host:', 'botblocker-security' ); ?></span>
 					<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e( 'Specify the Memcached server hostname or IP address. Default is localhost (127.0.0.1) for local installations.', 'botblocker-security' ); ?>"></i>
 				</div>
 				<div class="bbcs_text_input_inner">
@@ -54,7 +54,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<div class="bbcs_text_input mb-2">
 				<div class="bbcs_label_input_box">
-					<span class="bbcs-label-input"><?php esc_html_e( 'Memcached Port Number:', 'botblocker-security' ); ?></span>
+					<span class="bbcs-label-input"><?php esc_html_e( 'Server Port:', 'botblocker-security' ); ?></span>
 					<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e( 'Enter the Memcached server port number. Standard port is 11211 for most Memcached installations.', 'botblocker-security' ); ?>"></i>
 				</div>
 				<div class="bbcs_text_input_inner">
@@ -66,7 +66,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<div class="bbcs_text_input mb-2">
 				<div class="bbcs_label_input_box">
-					<span class="bbcs-label-input"><?php esc_html_e( 'Cache Key Prefix:', 'botblocker-security' ); ?></span>
+					<span class="bbcs-label-input"><?php esc_html_e( 'Key Prefix:', 'botblocker-security' ); ?></span>
 					<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e( 'Define a unique prefix for all Memcached keys to avoid conflicts with other applications using the same cache server.', 'botblocker-security' ); ?>"></i>
 				</div>
 				<div class="bbcs_text_input_inner">

@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
-if ( ! defined( 'ABSPATH' ) ) { exit; }
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; }
 
 trait BotBlockerAjaxIpRulesTrait {
 
@@ -62,7 +63,7 @@ trait BotBlockerAjaxIpRulesTrait {
 
 		if ( $search !== '' ) {
 			$like = '%' . $wpdb->esc_like( $search ) . '%';
-			
+
 			// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
 	        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$records_filtered = (int) $wpdb->get_var(
@@ -189,10 +190,11 @@ trait BotBlockerAjaxIpRulesTrait {
 			error_log( '[BBCS DEBUG] [AJAX] ' . $ip_label . '_delete_rule id=' . $id . ' table=' . $table );
 		}
 
-		// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-	    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// Retrieve rule before deletion for firing the action hook
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$rule = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `{$table}` WHERE id = %d", $id ) );
 		$result = $wpdb->delete( $table, array( 'id' => $id ) );
-	    // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log, WordPress.PHP.DevelopmentFunctions.error_log_var_export -- guarded by BBCS_DEBUG
@@ -204,6 +206,24 @@ trait BotBlockerAjaxIpRulesTrait {
 		}
 
 		if ( $result !== false ) {
+			if ( $rule && ! empty( $rule->search ) ) {
+				delete_transient( 'bbcs_fr_' . md5( $rule->search ) );
+
+				$mask_parts = bbcs_parse_rate_subnet_mask( BotBlocker::getInstance()->settings->bbcs_rate_subnet_mask ?? '' );
+				if ( $mask_parts[0] > 0 && $mask_parts[1] > 0 ) {
+					$ip_version  = BotBlockerIp::getVersion( $rule->search );
+					if ( $ip_version ) {
+						$subnet_cidr = BotBlockerIp::computePtrSubnet( $rule->search, $ip_version, $mask_parts[0], $mask_parts[1] );
+						delete_transient( 'bbcs_fr_subnet_' . md5( $subnet_cidr ) );
+					}
+				}
+
+				do_action( 'bbcs_ip_rule_deleted', $rule->search );
+
+				// Remove from hot-bans immediately so file-based layers stop enforcing.
+				BotBlockerFileRenderer::removeHotBan( $rule->search );
+			}
+
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log, WordPress.PHP.DevelopmentFunctions.error_log_var_export -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [AJAX] ' . $ip_label . '_delete_rule DB delete OK, rendering files' );
@@ -284,12 +304,13 @@ trait BotBlockerAjaxIpRulesTrait {
 
 		// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
 	    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$current = $wpdb->get_var(
-			$wpdb->prepare( "SELECT disable FROM `{$table}` WHERE id = %d", $id )
+		$row = $wpdb->get_row(
+			$wpdb->prepare( "SELECT search, rule, expires, disable FROM `{$table}` WHERE id = %d", $id ),
+			ARRAY_A
 		);
 	    // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
-		if ( null === $current ) {
+		if ( null === $row ) {
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log, WordPress.PHP.DevelopmentFunctions.error_log_var_export -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [AJAX] ' . $ip_label . '_toggle_rule rule NOT FOUND for id=' . $id );
@@ -297,6 +318,7 @@ trait BotBlockerAjaxIpRulesTrait {
 			wp_send_json_error( __( 'Rule not found.', 'botblocker-security' ) );
 		}
 
+		$current = $row['disable'];
 		$new = (int) ! (int) $current;
 
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
@@ -317,17 +339,16 @@ trait BotBlockerAjaxIpRulesTrait {
 
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log, WordPress.PHP.DevelopmentFunctions.error_log_var_export -- guarded by BBCS_DEBUG
-			error_log( '[BBCS DEBUG] [AJAX] ' . $ip_label . '_toggle_rule update done, rendering files' );
+			error_log( '[BBCS DEBUG] [AJAX] ' . $ip_label . '_toggle_rule update done, syncing files (enable=' . ( $new === 0 ? 'YES' : 'NO' ) . ')' );
 		}
 
-		BotBlockerFileRenderer::renderIps();
-
-		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log, WordPress.PHP.DevelopmentFunctions.error_log_var_export -- guarded by BBCS_DEBUG
-			error_log( '[BBCS DEBUG] [AJAX] ' . $ip_label . '_toggle_rule renderIps done, clearing cache' );
+		if ( $new === 0 ) {
+			BotBlockerFileRenderer::syncIpBanFiles( $row['search'], $row['rule'], (int) $row['expires'] );
+		} else {
+			BotBlockerFileRenderer::removeHotBan( $row['search'] );
+			BotBlockerFileRenderer::renderIps();
+			BotBlockerCache::clearFileCache();
 		}
-
-		BotBlockerCache::clearFileCache();
 
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log, WordPress.PHP.DevelopmentFunctions.error_log_var_export -- guarded by BBCS_DEBUG
@@ -443,7 +464,7 @@ trait BotBlockerAjaxIpRulesTrait {
 		);
 		if ( $data['rule'] === 'permanently_ban' ) {
 			$data['rule']    = BBCS_RULE_BLOCK;
-			$data['expires'] = strtotime( '+200 years' );
+			$data['expires'] = BOTBLOCKER_EXP_INF;
 		}
 
 	    /* phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotValidated */
@@ -459,7 +480,7 @@ trait BotBlockerAjaxIpRulesTrait {
 		}
 		// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
 	    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
-		$ph = static::getOverlapPlaceholder();
+		$ph      = static::getOverlapPlaceholder();
 		$overlap = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT search FROM `{$table}`
@@ -500,17 +521,10 @@ trait BotBlockerAjaxIpRulesTrait {
 		if ( $result !== false ) {
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log, WordPress.PHP.DevelopmentFunctions.error_log_var_export -- guarded by BBCS_DEBUG
-				error_log( '[BBCS DEBUG] [AJAX] ' . $ip_label . '_create_rule insert OK, rendering files' );
+				error_log( '[BBCS DEBUG] [AJAX] ' . $ip_label . '_create_rule insert OK, syncing ban files' );
 			}
 
-			BotBlockerFileRenderer::renderIps();
-
-			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log, WordPress.PHP.DevelopmentFunctions.error_log_var_export -- guarded by BBCS_DEBUG
-				error_log( '[BBCS DEBUG] [AJAX] ' . $ip_label . '_create_rule renderIps done, clearing cache' );
-			}
-
-			BotBlockerCache::clearFileCache();
+			BotBlockerFileRenderer::syncIpBanFiles( $ip, $data['rule'], (int) $data['expires'] );
 
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log, WordPress.PHP.DevelopmentFunctions.error_log_var_export -- guarded by BBCS_DEBUG
@@ -639,7 +653,7 @@ trait BotBlockerAjaxIpRulesTrait {
 		);
 		if ( $data['rule'] === 'permanently_ban' ) {
 			$data['rule']    = BBCS_RULE_BLOCK;
-			$data['expires'] = strtotime( '+200 years' );
+			$data['expires'] = BOTBLOCKER_EXP_INF;
 		}
 	    /* phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotValidated */
 
@@ -655,7 +669,7 @@ trait BotBlockerAjaxIpRulesTrait {
 
 		// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
 	    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
-		$ph = static::getOverlapPlaceholder();
+		$ph      = static::getOverlapPlaceholder();
 		$overlap = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT search FROM `{$table}`
@@ -698,17 +712,10 @@ trait BotBlockerAjaxIpRulesTrait {
 		if ( $result !== false ) {
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log, WordPress.PHP.DevelopmentFunctions.error_log_var_export -- guarded by BBCS_DEBUG
-				error_log( '[BBCS DEBUG] [AJAX] ' . $ip_label . '_update_rule update OK, rendering files' );
+				error_log( '[BBCS DEBUG] [AJAX] ' . $ip_label . '_update_rule update OK, syncing ban files' );
 			}
 
-			BotBlockerFileRenderer::renderIps();
-
-			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log, WordPress.PHP.DevelopmentFunctions.error_log_var_export -- guarded by BBCS_DEBUG
-				error_log( '[BBCS DEBUG] [AJAX] ' . $ip_label . '_update_rule renderIps done, clearing cache' );
-			}
-
-			BotBlockerCache::clearFileCache();
+			BotBlockerFileRenderer::syncIpBanFiles( $ip, $data['rule'], (int) $data['expires'] );
 
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log, WordPress.PHP.DevelopmentFunctions.error_log_var_export -- guarded by BBCS_DEBUG
@@ -822,16 +829,25 @@ trait BotBlockerAjaxIpRulesTrait {
 		if ( is_array( $rules ) ) {
 			$imported = 0;
 			$skipped  = 0;
+			$hot_bans = array();
 			foreach ( $rules as $i => $rule ) {
-				$search = sanitize_text_field( $rule['search'] );
+				$search   = sanitize_text_field( $rule['search'] ?? '' );
+				$priority = intval( $rule['priority'] ?? 50 );
+				$ip1      = static::decodeImportedIpField( $rule['ip1'] ?? '' );
+				$ip2      = static::decodeImportedIpField( $rule['ip2'] ?? '' );
+				$expires  = intval( $rule['expires'] ?? 0 );
+				$disable  = intval( $rule['disable'] ?? 0 );
+				$rule_val = sanitize_text_field( $rule['rule'] ?? '' );
+				$comment  = sanitize_textarea_field( $rule['comment'] ?? '' );
+				$readonly = intval( $rule['readonly'] ?? 0 );
 				// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
 	        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			$existing = $wpdb->get_var(
-				$wpdb->prepare(
-					"SELECT COUNT(*) FROM `{$table}` WHERE search = %s",
-					$search
-				)
-			);
+				$existing = $wpdb->get_var(
+					$wpdb->prepare(
+						"SELECT COUNT(*) FROM `{$table}` WHERE search = %s",
+						$search
+					)
+				);
 	        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 				if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
@@ -842,14 +858,14 @@ trait BotBlockerAjaxIpRulesTrait {
 				if ( $existing == 0 ) {
 					$data = array(
 						'search'   => $search,
-						'priority' => intval( $rule['priority'] ),
-						'ip1'      => static::decodeImportedIpField( $rule['ip1'] ),
-						'ip2'      => static::decodeImportedIpField( $rule['ip2'] ),
-						'expires'  => intval( $rule['expires'] ),
-						'disable'  => intval( $rule['disable'] ),
-						'rule'     => sanitize_text_field( $rule['rule'] ),
-						'comment'  => sanitize_textarea_field( $rule['comment'] ),
-						'readonly' => intval( $rule['readonly'] ),
+						'priority' => $priority,
+						'ip1'      => $ip1,
+						'ip2'      => $ip2,
+						'expires'  => $expires,
+						'disable'  => $disable,
+						'rule'     => $rule_val,
+						'comment'  => $comment,
+						'readonly' => $readonly,
 					);
 					// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
 	                // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -860,11 +876,22 @@ trait BotBlockerAjaxIpRulesTrait {
 						error_log( '[BBCS DEBUG] [AJAX] ' . $ip_label . '_import rule[' . $i . '] insert result=' . var_export( $result, true ) );
 					}
 					if ( $result !== false ) {
+						// Collect for single batched hot-ban write instead of O(N) file I/O.
+						$hot_bans[] = array(
+							'ip'      => $search,
+							'action'  => $data['rule'],
+							'expires' => $data['expires'],
+						);
 						++$imported;
 					}
 				} else {
 					++$skipped;
 				}
+			}
+
+			// Single batched write to hot-bans.php.
+			if ( ! empty( $hot_bans ) ) {
+				BotBlockerFileRenderer::appendHotBanBatch( $hot_bans );
 			}
 
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
@@ -933,6 +960,7 @@ trait BotBlockerAjaxIpRulesTrait {
 
 		$table = $wpdb->{static::getTableName()};
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$cleared_ips = $wpdb->get_col( "SELECT `search` FROM `{$table}`" );
 		$result = $wpdb->query( "TRUNCATE TABLE `{$table}`" );
 		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
@@ -944,6 +972,32 @@ trait BotBlockerAjaxIpRulesTrait {
 		}
 
 		if ( $result !== false ) {
+			if ( ! empty( $cleared_ips ) ) {
+				$mask_parts = array( 0, 0 );
+				if ( class_exists( 'BotBlocker' ) && ! empty( BotBlocker::getInstance()->settings ) ) {
+					$mask_parts = bbcs_parse_rate_subnet_mask( BotBlocker::getInstance()->settings->bbcs_rate_subnet_mask ?? '' );
+				}
+
+				$do_subnet = $mask_parts[0] > 0 && $mask_parts[1] > 0;
+
+				foreach ( $cleared_ips as $cleared_ip ) {
+					delete_transient( 'bbcs_fr_' . md5( $cleared_ip ) );
+
+					// Remove from hot-bans.php so short-term bans don't persist after DB clear.
+					BotBlockerFileRenderer::removeHotBan( $cleared_ip );
+
+					if ( $do_subnet && class_exists( 'BotBlockerIp' ) ) {
+						$ip_version = BotBlockerIp::getVersion( $cleared_ip );
+						if ( $ip_version ) {
+							$subnet_cidr = BotBlockerIp::computePtrSubnet( $cleared_ip, $ip_version, $mask_parts[0], $mask_parts[1] );
+							delete_transient( 'bbcs_fr_subnet_' . md5( $subnet_cidr ) );
+						}
+					}
+				}
+
+				do_action( 'bbcs_ip_rule_deleted', $cleared_ips );
+			}
+
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log, WordPress.PHP.DevelopmentFunctions.error_log_var_export -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [AJAX] ' . $ip_label . '_clear_all truncate OK, rendering files' );
@@ -1072,10 +1126,11 @@ trait BotBlockerAjaxIpRulesTrait {
 			}
 
 			BotBlockerFileRenderer::renderIps();
+			BotBlockerFileRenderer::renderHotBans();
 
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log, WordPress.PHP.DevelopmentFunctions.error_log_var_export -- guarded by BBCS_DEBUG
-				error_log( '[BBCS DEBUG] [AJAX] ' . $ip_label . '_regenerate_file renderIps done, sending success' );
+				error_log( '[BBCS DEBUG] [AJAX] ' . $ip_label . '_regenerate_file renderIps + renderHotBans done, sending success' );
 			}
 
 			// translators: %s is the IP version label (IPv4 or IPv6).

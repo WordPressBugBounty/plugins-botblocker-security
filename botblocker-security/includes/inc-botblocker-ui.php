@@ -174,6 +174,12 @@ class BotBlockerUI {
 		return preg_replace( '/\.zip$/', '', $b );
 	}
 
+	protected static function filter_market_addons( array $addons ): array {
+		return array_values( array_filter( $addons, function ( $item ) {
+			return ( $item['enabled'] ?? true ) !== false;
+		} ) );
+	}
+
 	protected static function load_market(): array {
 		$market    = array();
 		$marketUrl = class_exists( 'BotBlockerAddons' ) ? BotBlockerAddons::getMarketUrl() : ( defined( 'BOTBLOCKER_ADDONS' ) ? BOTBLOCKER_ADDONS : '' );
@@ -182,7 +188,7 @@ class BotBlockerUI {
 			if ( ! is_wp_error( $res ) && wp_remote_retrieve_response_code( $res ) === 200 ) {
 				$json = json_decode( wp_remote_retrieve_body( $res ), true );
 				if ( is_array( $json ) && isset( $json['addons'] ) && is_array( $json['addons'] ) ) {
-					$market = $json['addons']; }
+					$market = self::filter_market_addons( $json['addons'] ); }
 			}
 		}
 		if ( empty( $market ) ) {
@@ -191,7 +197,7 @@ class BotBlockerUI {
 			if ( file_exists( $local ) ) {
 				$json = json_decode( file_get_contents( $local ), true );
 				if ( is_array( $json ) && isset( $json['addons'] ) && is_array( $json['addons'] ) ) {
-					$market = $json['addons']; }
+					$market = self::filter_market_addons( $json['addons'] ); }
 			}
 		}
 		if ( empty( $market ) ) {
@@ -201,7 +207,7 @@ class BotBlockerUI {
 			if ( ! is_wp_error( $res ) && wp_remote_retrieve_response_code( $res ) === 200 ) {
 				$json = json_decode( wp_remote_retrieve_body( $res ), true );
 				if ( is_array( $json ) && isset( $json['addons'] ) && is_array( $json['addons'] ) ) {
-					$market = $json['addons']; }
+					$market = self::filter_market_addons( $json['addons'] ); }
 			}
 		}
 		return $market;

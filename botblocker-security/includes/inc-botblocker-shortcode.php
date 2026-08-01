@@ -5,6 +5,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
+use BotBlocker\Component\TopList;
+use \BotBlocker\Component\LatestHitsTable;
+
 require_once BOTBLOCKER_DIR . 'includes/shortcode/botblocker-shortcode-header.php';
 require_once BOTBLOCKER_DIR . 'includes/shortcode/botblocker-shortcode-tasks.php';
 require_once BOTBLOCKER_DIR . 'includes/shortcode/botblocker-shortcode-health.php';
@@ -21,61 +24,46 @@ require_once BOTBLOCKER_DIR . 'includes/shortcode/charts/chart-botblocker-stat.p
 function bbcs_render_top_list( string $type, int $limit, int $days ): string {
 	$data = BotBlockerStats::getTopData( $type, $limit, $days );
 
-	if ( empty( $data ) ) {
-		return '<p>' . esc_html__( 'No data available.', 'botblocker-security' ) . '</p>';
+	$title = '';
+	switch ( $type ) {
+		case 'ip':
+			// translators: %d is the number of top IP addresses to display.
+			$title = sprintf( __( 'Top-%d IPs', 'botblocker-security' ), $limit );
+			break;
+		case 'country':
+			// translators: %d is the number of top countries to display.
+			$title = sprintf( __( 'Top %d Countries', 'botblocker-security' ), $limit );
+			break;
+		case 'device':
+			// translators: %d is the number of top devices to display.
+			$title = sprintf( __( 'Top %d Devices', 'botblocker-security' ), $limit );
+			break;
+		case 'browser':
+			// translators: %d is the number of top browsers to display.
+			$title = sprintf( __( 'Top %d Browsers', 'botblocker-security' ), $limit );
+			break;
 	}
 
-	$output = '<ul class="bbcs-top-ul">';
-	foreach ( $data as $item ) {
-		$key   = esc_html( $item[ $type ] );
-		$flag  = strtolower( $key );
-		$count = esc_html( $item['count'] );
-		if ( $type == 'country' ) {
-			$output .= "<li class='bbcs-top-li'>
-                            <span class='bbcs-top-span'>
-                                <div class='bbcs-flag-wrapper'>
-                                    <div class='flag flag-$flag bbcs-flag-scale'></div>
-                                </div>
-                                <div class='ms-2 text-truncate' style='max-width:100%; display:inline-block; vertical-align:middle;' data-bs-toggle='tooltip' title=\"{$key} - " . bbcs_get_country_by_code( $key ) . "\">
-                                    {$key} - " . bbcs_get_country_by_code( $key ) . " (<b>{$count}</b>)
-                                </div>
-                            </span>
-                        </li>";
-		} else {
-			$output .= "<li class='bbcs-top-li'><span class='bbcs-top-span text-truncate' style='max-width:100%; display:inline-block; vertical-align:middle;' data-bs-toggle='tooltip' title=\"{$key}\">{$key} (<b>{$count}</b>)</span></li>";
-		}
-	}
-	$output .= '</ul>';
-
-	return $output;
+	return TopList::make()
+		->withTitle( $title )
+		->withItems( $data )
+		->withType( $type )
+		->render( true );
 }
 
 add_shortcode(
 	'bbcs_top_ips',
 	function ( $atts ) {
 		$BBCS = BotBlocker::getInstance();
+		$cache_key = 'bbcs_top_ips';
 		if ( $BBCS->settings->cache_ui_data == 1 ) {
-			$cache_key    = 'bbcs_top_ips';
-			$bbcs_top_ips = get_transient( $cache_key );
-			if ( $bbcs_top_ips ) {
-				return $bbcs_top_ips;
+			$cached = get_transient( $cache_key );
+			if ( $cached ) {
+				return $cached;
 			}
 		}
-		$atts = shortcode_atts(
-			array(
-				'limit' => 5,
-				'days'  => 7,
-			),
-			$atts,
-			'bbcs_top_ips'
-		);
-		// $html = '<div class="bbcs-statistics-chart-title-div-start"><span class="bbcs-statistics-chart-title">Top-' . intval($atts['limit']) . ' IPs</span></div>';
-		// translators: %d is the number of top IP addresses to display.
-		$bbcs_ips_title = sprintf( __( 'Top-%d IPs', 'botblocker-security' ), intval( $atts['limit'] ) );
-		$html           = '<div class="bbcs-statistics-chart-title-div-start">
-                <span class="bbcs-statistics-chart-title">' . esc_html( $bbcs_ips_title ) . '</span>
-            </div>';
-		$output         = $html . bbcs_render_top_list( 'ip', intval( $atts['limit'] ), intval( $atts['days'] ) );
+		$atts   = shortcode_atts( array( 'limit' => 5, 'days' => 7 ), $atts, 'bbcs_top_ips' );
+		$output = bbcs_render_top_list( 'ip', intval( $atts['limit'] ), intval( $atts['days'] ) );
 		if ( $BBCS->settings->cache_ui_data == 1 ) {
 			set_transient( $cache_key, $output, $BBCS->settings->cache_ui_duration );
 		}
@@ -87,28 +75,17 @@ add_shortcode(
 	'bbcs_top_countries',
 	function ( $atts ) {
 		$BBCS = BotBlocker::getInstance();
+
+		$cache_key          = 'bbcs_top_countries';
+
 		if ( $BBCS->settings->cache_ui_data == 1 ) {
-			$cache_key          = 'bbcs_top_countries';
-			$bbcs_top_countries = get_transient( $cache_key );
-			if ( $bbcs_top_countries ) {
-				return $bbcs_top_countries;
+			$cached = get_transient( $cache_key );
+			if ( $cached ) {
+				return $cached;
 			}
 		}
-		$atts = shortcode_atts(
-			array(
-				'limit' => 5,
-				'days'  => 7,
-			),
-			$atts,
-			'bbcs_top_countries'
-		);
-		// $html = '<div class="bbcs-statistics-chart-title-div-start"><span class="bbcs-statistics-chart-title">Top-' . intval($atts['limit']) . ' countries</span></div>';
-		// translators: %d is the number of top countries to display.
-		$bbcs_countries_title = sprintf( __( 'Top %d Countries', 'botblocker-security' ), intval( $atts['limit'] ) );
-		$html                 = '<div class="bbcs-statistics-chart-title-div-start">
-                <span class="bbcs-statistics-chart-title">' . esc_html( $bbcs_countries_title ) . '</span>
-            </div>';
-		$output               = $html . bbcs_render_top_list( 'country', intval( $atts['limit'] ), intval( $atts['days'] ) );
+		$atts   = shortcode_atts( array( 'limit' => 5, 'days' => 7 ), $atts, 'bbcs_top_countries' );
+		$output = bbcs_render_top_list( 'country', intval( $atts['limit'] ), intval( $atts['days'] ) );
 		if ( $BBCS->settings->cache_ui_data == 1 ) {
 			set_transient( $cache_key, $output, $BBCS->settings->cache_ui_duration );
 		}
@@ -120,28 +97,16 @@ add_shortcode(
 	'bbcs_top_devices',
 	function ( $atts ) {
 		$BBCS = BotBlocker::getInstance();
+		$cache_key          = 'bbcs_top_devices';
+
 		if ( $BBCS->settings->cache_ui_data == 1 ) {
-			$cache_key        = 'bbcs_top_devices';
-			$bbcs_top_devices = get_transient( $cache_key );
-			if ( $bbcs_top_devices ) {
-				return $bbcs_top_devices;
+			$cached = get_transient( $cache_key );
+			if ( $cached ) {
+				return $cached;
 			}
 		}
-		$atts = shortcode_atts(
-			array(
-				'limit' => 5,
-				'days'  => 7,
-			),
-			$atts,
-			'bbcs_top_devices'
-		);
-		// $html = '<div class="bbcs-statistics-chart-title-div-start"><span class="bbcs-statistics-chart-title">Top-' . intval($atts['limit']) . ' devices</span></div>';
-		// translators: %d is the number of top devices to display.
-		$bbcs_devices_title = sprintf( __( 'Top %d Devices', 'botblocker-security' ), intval( $atts['limit'] ) );
-		$html               = '<div class="bbcs-statistics-chart-title-div-start">
-                <span class="bbcs-statistics-chart-title">' . esc_html( $bbcs_devices_title ) . '</span>
-            </div>';
-		$output             = $html . bbcs_render_top_list( 'device', intval( $atts['limit'] ), intval( $atts['days'] ) );
+		$atts   = shortcode_atts( array( 'limit' => 5, 'days' => 7 ), $atts, 'bbcs_top_devices' );
+		$output = bbcs_render_top_list( 'device', intval( $atts['limit'] ), intval( $atts['days'] ) );
 		if ( $BBCS->settings->cache_ui_data == 1 ) {
 			set_transient( $cache_key, $output, $BBCS->settings->cache_ui_duration );
 		}
@@ -153,28 +118,16 @@ add_shortcode(
 	'bbcs_top_browsers',
 	function ( $atts ) {
 		$BBCS = BotBlocker::getInstance();
+		$cache_key          = 'bbcs_top_browsers';
+
 		if ( $BBCS->settings->cache_ui_data == 1 ) {
-			$cache_key         = 'bbcs_top_browsers';
-			$bbcs_top_browsers = get_transient( $cache_key );
-			if ( $bbcs_top_browsers ) {
-				return $bbcs_top_browsers;
+			$cached = get_transient( $cache_key );
+			if ( $cached ) {
+				return $cached;
 			}
 		}
-		$atts = shortcode_atts(
-			array(
-				'limit' => 5,
-				'days'  => 7,
-			),
-			$atts,
-			'bbcs_top_browsers'
-		);
-		// $html = '<div class="bbcs-statistics-chart-title-div-start"><span class="bbcs-statistics-chart-title">Top-' . intval($atts['limit']) . ' browsers</span></div>';
-		// translators: %d is the number of top browsers to display.
-		$bbcs_browsers_title = sprintf( __( 'Top %d Browsers', 'botblocker-security' ), intval( $atts['limit'] ) );
-		$html                = '<div class="bbcs-statistics-chart-title-div-start">
-                <span class="bbcs-statistics-chart-title">' . esc_html( $bbcs_browsers_title ) . '</span>
-            </div>';
-		$output              = $html . bbcs_render_top_list( 'browser', intval( $atts['limit'] ), intval( $atts['days'] ) );
+		$atts   = shortcode_atts( array( 'limit' => 5, 'days' => 7 ), $atts, 'bbcs_top_browsers' );
+		$output = bbcs_render_top_list( 'browser', intval( $atts['limit'] ), intval( $atts['days'] ) );
 		if ( $BBCS->settings->cache_ui_data == 1 ) {
 			set_transient( $cache_key, $output, $BBCS->settings->cache_ui_duration );
 		}
@@ -183,105 +136,25 @@ add_shortcode(
 );
 
 function bbcs_latest_hits_shortcode(): string {
-	global $wpdb;
-	$BBCS                        = BotBlocker::getInstance();
-	[$ip_not_in_sql, $ip_params] = BotBlockerDb::getIPNotLikeSQL();
+	$BBCS = BotBlocker::getInstance();
+	$cache_key		  = 'bbcs_latest_hits_shortcode';
 	if ( $BBCS->settings->cache_ui_data == 1 ) {
-		$cache_key                  = 'bbcs_latest_hits_shortcode';
-		$bbcs_latest_hits_shortcode = null;
-
-		$bbcs_latest_hits_shortcode = get_transient( $cache_key );
-
-		if ( $bbcs_latest_hits_shortcode ) {
-			return $bbcs_latest_hits_shortcode;
+		$cached = get_transient( $cache_key );
+		if ( $cached ) {
+			return $cached;
 		}
 	}
+
+	$rows       = BotBlockerStats::getLatestHitsData();
 	$gmt_offset = isset( $BBCS->settings->admin_gmt_offset ) ? floatval( $BBCS->settings->admin_gmt_offset ) : 0;
 
-	// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared when self-IPs are present.
-	// $ip_not_in_sql contains only a hardcoded 'ip' column name; IP values are bound via $wpdb->prepare().
-    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared
-	$sql        = "
-        SELECT r.date, r.ip, r.country, r.lang, r.device, r.os FROM (
-            (SELECT ch.date, ch.ip, ch.country, ch.lang, ch.device, ch.os
-             FROM `{$wpdb->bbcs_hits}` AS ch
-             LEFT JOIN `{$wpdb->bbcs_page_filters}` AS pf ON ch.page LIKE pf.pattern
-             WHERE pf.pattern IS NULL{$ip_not_in_sql}
-             ORDER BY ch.date DESC LIMIT 10)
-            UNION ALL
-            (SELECT ch.date, ch.ip, ch.country, ch.lang, ch.device, ch.os
-             FROM `{$wpdb->bbcs_hits_suspicious}` AS ch
-             LEFT JOIN `{$wpdb->bbcs_page_filters}` AS pf ON ch.page LIKE pf.pattern
-             WHERE pf.pattern IS NULL{$ip_not_in_sql}
-             ORDER BY ch.date DESC LIMIT 10)
-        ) AS r ORDER BY r.date DESC LIMIT 10
-    ";
-	$all_params = array_merge( $ip_params, $ip_params );
-	$results    = $wpdb->get_results(
-		empty( $all_params ) ? $sql : $wpdb->prepare( $sql, ...$all_params ),
-		ARRAY_A
-	);
-    // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared
+	$output = LatestHitsTable::make()
+		->withRows( $rows )
+		->withGmtOffset( $gmt_offset )
+		->render( true );
 
-	if ( empty( $results ) ) {
-		return '<p>' . esc_html__( 'No data available.', 'botblocker-security' ) . '</p>';
-	}
-
-	ob_start();
-	?>
-	<table class="bbcs-table">
-		<thead>
-			<tr>
-				<th><?php esc_html_e( 'Date/Time', 'botblocker-security' ); ?></th>
-				<th><?php esc_html_e( 'IP Address', 'botblocker-security' ); ?></th>
-				<th><?php esc_html_e( 'Country', 'botblocker-security' ); ?></th>
-				<th><?php esc_html_e( 'Language', 'botblocker-security' ); ?></th>
-				<th><?php esc_html_e( 'Device', 'botblocker-security' ); ?></th>
-				<th><?php esc_html_e( 'Operating System', 'botblocker-security' ); ?></th>
-			</tr>
-		</thead>
-		<tbody>
-			<?php foreach ( $results as $row ) : ?>
-				<tr>
-					<td>
-						<?php
-						$datetime = new \DateTime( "@{$row['date']}", new \DateTimeZone( 'UTC' ) );
-						if ( $gmt_offset != 0 ) {
-							$hours         = floor( abs( $gmt_offset ) );
-							$minutes       = ( abs( $gmt_offset ) * 60 ) % 60;
-							$interval_spec = 'PT' . $hours . 'H' . $minutes . 'M';
-							$interval      = new \DateInterval( $interval_spec );
-							if ( $gmt_offset > 0 ) {
-								$datetime->add( $interval );
-							} else {
-								$datetime->sub( $interval );
-							}
-						}
-						echo esc_html( $datetime->format( 'Y-m-d H:i:s' ) );
-						?>
-					</td>
-					<td><?php echo esc_html( $row['ip'] ); ?></td>
-					<td>
-						<span class="bbcs-top-span">
-							<div class="bbcs-flag-wrapper">
-								<div class="flag flag-<?php echo esc_attr( strtolower( $row['country'] ) ); ?> bbcs-flag-scale"></div>
-							</div>
-							<div class="ms-2"><?php echo esc_html( $row['country'] ); ?></div>
-						</span>
-					</td>
-					<td><?php echo esc_html( $row['lang'] ); ?></td>
-					<td><?php echo esc_html( $row['device'] ); ?></td>
-					<td><?php echo esc_html( $row['os'] ); ?></td>
-				</tr>
-			<?php endforeach; ?>
-		</tbody>
-	</table>
-	<?php
-	$output = ob_get_clean();
 	if ( $BBCS->settings->cache_ui_data == 1 ) {
-
 		set_transient( $cache_key, $output, $BBCS->settings->cache_ui_duration );
-
 	}
 	return $output;
 }

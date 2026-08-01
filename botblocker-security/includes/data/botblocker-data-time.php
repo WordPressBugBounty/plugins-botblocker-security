@@ -43,12 +43,31 @@ function bbcs_get_ptr_lifetimes(): array {
 	);
 }
 
-function bbcs_get_ptrcache_subnet_options(): array {
+function bbcs_get_subnet_mask_options(): array {
 	return array(
 		'32-128' => __( '/32 - /128 (single IP)', 'botblocker-security' ),
 		'28-64'  => __( '/28 - /64 (small subnet)', 'botblocker-security' ),
 		'24-64'  => __( '/24 - /64 (standard)', 'botblocker-security' ),
 	);
+}
+
+function bbcs_get_rate_subnet_mask_options(): array {
+	return array(
+		'28-64'   => __( '/28 - /64 (small subnet)', 'botblocker-security' ),
+		'24-64'   => __( '/24 - /64 (standard)', 'botblocker-security' ),
+		'20-64'   => __( '/20 - /64 (large ISP range)', 'botblocker-security' ),
+		'ipv6-56' => __( 'IPv6 /56 (ISP site)', 'botblocker-security' ),
+		'ipv6-48' => __( 'IPv6 /48 (large allocation)', 'botblocker-security' ),
+	);
+}
+
+function bbcs_parse_rate_subnet_mask( string $mask = '24-64' ): array {
+	$parts = explode( '-', $mask );
+	if ( isset( $parts[0] ) && $parts[0] === 'ipv6' ) {
+		// IPv4 mask unused for these rows; placeholder kept for return-shape consistency.
+		return array( 24, isset( $parts[1] ) ? (int) $parts[1] : 64 );
+	}
+	return array( isset( $parts[0] ) ? (int) $parts[0] : 24, isset( $parts[1] ) ? (int) $parts[1] : 64 );
 }
 
 function bbcs_get_ptrcache_rule_ttl_options(): array {

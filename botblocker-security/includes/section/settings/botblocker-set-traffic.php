@@ -85,7 +85,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 				data-bs-original-title="<?php esc_attr_e( 'Prevent search engines from indexing UTM pages to avoid duplicate content.', 'botblocker-security' ); ?>">
 				</i>
 			</div>
-
 		</div>
 	</div>
 </div>

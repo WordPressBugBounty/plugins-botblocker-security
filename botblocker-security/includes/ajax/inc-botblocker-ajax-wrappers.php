@@ -20,6 +20,7 @@ add_action( 'wp_ajax_bbcs_flush_object_cache', array( 'BotBlockerAjaxMaintenance
 // CACHE
 add_action( 'wp_ajax_bbcs_toggle_redis_and_memcached', array( 'BotBlockerAjaxCache', 'handleToggleRedisMemcached' ) );
 add_action( 'wp_ajax_bbcs_switch_ptr_cache_in_db', array( 'BotBlockerAjaxCache', 'handleSwitchPtrCacheInDb' ) );
+add_action( 'wp_ajax_bbcs_switch_ui_cache_in_db', array( 'BotBlockerAjaxCache', 'handleSwitchUiCacheInDb' ) );
 
 // EARLY PHASE
 add_action( 'wp_ajax_bbcs_toggle_early_phase_in_db', array( 'BotBlockerAjaxEarlyPhase', 'handleToggleEarlyPhase' ) );
@@ -144,5 +145,13 @@ add_action( 'wp_ajax_bbcs_get_llm_sync_status', array( 'BotBlockerAjaxLlm', 'han
 add_action( 'wp_ajax_bbcs_export_llm_json', array( 'BotBlockerAjaxLlm', 'handleExportJson' ) );
 add_action( 'wp_ajax_bbcs_llm_to_php', array( 'BotBlockerAjaxLlm', 'handleRegenerateFile' ) );
 
+// TLS FINGERPRINTS
+add_action( 'wp_ajax_bbcs_import_tls_fingerprints', array( 'BotBlockerAjaxTlsFingerprints', 'handleImport' ) );
+add_action( 'wp_ajax_bbcs_clear_all_tls_fingerprints', array( 'BotBlockerAjaxTlsFingerprints', 'handleClearAll' ) );
+add_action( 'wp_ajax_bbcs_sync_tls_fingerprints', array( 'BotBlockerAjaxTlsFingerprints', 'handleSyncCloud' ) );
+
 // RUGOV
 add_action( 'wp_ajax_bbcs_update_rugov', array( 'BotBlockerAjaxRuGov', 'handleUpdate' ) );
+
+// RULES STATS
+add_action( 'wp_ajax_bbcs_refresh_rules_stats', array( 'BotBlockerAjaxRulesStats', 'handleRefreshStats' ) );

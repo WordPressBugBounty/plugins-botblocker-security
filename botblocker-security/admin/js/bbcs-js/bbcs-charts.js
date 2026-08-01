@@ -34,8 +34,13 @@
             var colors = buildColors(labels.length);
             new Chart(ctx, {
                 type: chartType,
-                data: { labels: labels, datasets: [{ data: values, backgroundColor: colors, borderColor: colors, borderWidth: 1 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: false } }, cutout: isDonut ? '40%' : undefined }
+                data: { labels: labels, datasets: [{ data: values, backgroundColor: colors, borderColor: '#ffffff', borderWidth: 2 }] },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, title: { display: false } },
+                    cutout: isDonut ? '55%' : undefined,
+                    animation: { animateRotate: true, duration: 600, easing: 'easeOutQuart' }
+                }
             });
         }
 
@@ -56,10 +61,46 @@
             var values = parseJSONAttr(node, 'data-bbcs-values') || [];
             var canvas = createCanvas(node);
             var ctx = canvas.getContext('2d');
+            var barGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            barGrad.addColorStop(0, 'rgba(34, 113, 177, 0.85)');
+            barGrad.addColorStop(1, 'rgba(34, 113, 177, 0.35)');
             new Chart(ctx, {
                 type: 'bar',
-                data: { labels: labels, datasets: [{ data: values, backgroundColor: '#4285F4' }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: false } }, scales: { x: { ticks: { maxRotation: 45, minRotation: 45, font: { size: 10 } } }, y: { beginAtZero: true, ticks: { display: false }, grid: { display: false }, border: { display: false } } } }
+                data: { labels: labels, datasets: [{
+                    data: values,
+                    backgroundColor: barGrad,
+                    hoverBackgroundColor: 'rgba(34, 113, 177, 0.95)',
+                    borderRadius: 3,
+                    borderSkipped: false
+                }] },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }, title: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1d2327',
+                            titleFont: { size: 12, weight: '600' },
+                            bodyFont: { size: 11 },
+                            cornerRadius: 4,
+                            padding: { x: 10, y: 6 },
+                            displayColors: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { maxRotation: 45, minRotation: 45, font: { size: 10 }, color: '#8c8f94' },
+                            grid: { display: false },
+                            border: { display: false }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: { font: { size: 10 }, color: '#c3c4c7', padding: 6, maxTicksLimit: 5 },
+                            grid: { color: 'rgba(220, 220, 222, 0.5)', drawTicks: false },
+                            border: { display: false, dash: [3, 3] }
+                        }
+                    },
+                    animation: { duration: 600, easing: 'easeOutQuart' }
+                }
             });
         }
 
@@ -268,7 +309,7 @@
         }
 
         function buildColors(n) {
-            var palette = ['#4e79a7','#f28e2b','#e15759','#76b7b2','#59a14f','#edc948','#b07aa1','#ff9da7','#9c755f','#bab0ab'];
+            var palette = ['#2271b1','#3b82f6','#6366f1','#8b5cf6','#06b6d4','#10b981','#f59e0b','#ef4444','#ec4899','#8c8f94'];
             var out = [];
             for (var i = 0; i < n; i++) out.push(palette[i % palette.length]);
             return out;

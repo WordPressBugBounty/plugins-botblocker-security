@@ -40,7 +40,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<span class="bbcs_label_input_checkbox"><?php esc_html_e( 'Log Manual Verification Requests', 'botblocker-security' ); ?></span>
 			</div>
 			<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top" 
-			data-bs-original-title="<?php esc_attr_e( 'Log visitors sent to CAPTCHA verification.', 'botblocker-security' ); ?>">
+			data-bs-original-title="<?php esc_attr_e( 'Record visitors sent to Captcha challenges. Useful for analysing bot detection effectiveness.', 'botblocker-security' ); ?>">
 			</i>
 			</div>
 
@@ -50,7 +50,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<span class="bbcs_label_input_checkbox"><?php esc_html_e( 'Log Verified Local Visitors', 'botblocker-security' ); ?></span>
 			</div>
 			<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top" 
-			data-bs-original-title="<?php esc_attr_e( 'Log previously verified visitors (by IP or cookie).', 'botblocker-security' ); ?>">
+			data-bs-original-title="<?php esc_attr_e( 'Track returning verified visitors. Helps identify repeat traffic patterns and false positives.', 'botblocker-security' ); ?>">
 			</i>
 			</div>
 
@@ -60,7 +60,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<span class="bbcs_label_input_checkbox"><?php esc_html_e( 'Log Allowed Visitors', 'botblocker-security' ); ?></span>
 			</div>
 			<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top" 
-			data-bs-original-title="<?php esc_attr_e( 'Log visitors that pass all security checks.', 'botblocker-security' ); ?>">
+			data-bs-original-title="<?php esc_attr_e( 'Record visitors who pass all security checks. Useful for traffic analysis and audit trails.', 'botblocker-security' ); ?>">
 			</i>
 			</div>
 
@@ -70,7 +70,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<span class="bbcs_label_input_checkbox"><?php esc_html_e( 'Log Suspected Fake Bots', 'botblocker-security' ); ?></span>
 			</div>
 			<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top" 
-			data-bs-original-title="<?php esc_attr_e( 'Log visitors suspected of data spoofing.', 'botblocker-security' ); ?>">
+			data-bs-original-title="<?php esc_attr_e( 'Record visitors detected as likely bots via fingerprinting inconsistencies.', 'botblocker-security' ); ?>">
 			</i>
 			</div>
 
@@ -80,7 +80,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<span class="bbcs_label_input_checkbox"><?php esc_html_e( 'Log Known Good IPs', 'botblocker-security' ); ?></span>
 			</div>
 			<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top" 
-			data-bs-original-title="<?php esc_attr_e( 'Log visits from whitelisted IPs.', 'botblocker-security' ); ?>">
+			data-bs-original-title="<?php esc_attr_e( 'Record traffic from whitelisted IPs to verify rule effectiveness.', 'botblocker-security' ); ?>">
 			</i>
 			</div>
 
@@ -90,7 +90,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<span class="bbcs_label_input_checkbox"><?php esc_html_e( 'Log Blocked Visitors', 'botblocker-security' ); ?></span>
 			</div>
 			<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top" 
-			data-bs-original-title="<?php esc_attr_e( 'Log blocked visitors.', 'botblocker-security' ); ?>">
+			data-bs-original-title="<?php esc_attr_e( 'Record blocked visitor data for attack pattern analysis and threat intelligence.', 'botblocker-security' ); ?>">
 			</i>
 			</div>
 
@@ -105,7 +105,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<span class="bbcs_label_input_checkbox"><?php esc_html_e( 'Log Actions in WordPress Admin Panel', 'botblocker-security' ); ?></span>
 			</div>
 			<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top" 
-			data-bs-original-title="<?php esc_attr_e( 'Log WordPress admin panel actions.', 'botblocker-security' ); ?>">
+			data-bs-original-title="<?php esc_attr_e( 'Track admin panel activity for security auditing and multi-user accountability.', 'botblocker-security' ); ?>">
 			</i>
 			</div>			
 
@@ -115,7 +115,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<span class="bbcs_label_input_checkbox"><?php esc_html_e( 'Log BotBlocker Page Visits', 'botblocker-security' ); ?></span>
 			</div>
 			<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top" 
-			data-bs-original-title="<?php esc_attr_e( 'Log visits to BotBlocker CAPTCHA and verification pages.', 'botblocker-security' ); ?>">
+			data-bs-original-title="<?php esc_attr_e( 'Record challenge page visits. Helps monitor bot traffic that reaches verification stage.', 'botblocker-security' ); ?>">
 			</i>
 			</div> 
 			
@@ -125,7 +125,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<span class="bbcs_label_input_checkbox"><?php esc_html_e( 'Log WordPress Actions', 'botblocker-security' ); ?></span>
 			</div>
 			<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top" 
-			data-bs-original-title="<?php esc_attr_e( 'Log site-level actions and blocked access attempts.', 'botblocker-security' ); ?>">
+			data-bs-original-title="<?php esc_attr_e( 'Record WordPress events such as logins, password resets, and blocked access attempts.', 'botblocker-security' ); ?>">
 			</i>
 			</div>  
 
@@ -137,7 +137,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<span class="bbcs_label_input_checkbox"><?php esc_html_e( 'Log BotBlocker Errors', 'botblocker-security' ); ?></span>
 			</div>
 			<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top" 
-			data-bs-original-title="<?php esc_attr_e( 'Log BotBlocker errors and system issues.', 'botblocker-security' ); ?>">
+			data-bs-original-title="<?php esc_attr_e( 'Record internal errors for debugging and support troubleshooting.', 'botblocker-security' ); ?>">
 			</i>
 			</div>   
 
@@ -149,7 +149,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<span class="bbcs_label_input_checkbox"><?php esc_html_e( 'Log CLI requests', 'botblocker-security' ); ?></span>
 			</div>
 			<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top" 
-			data-bs-original-title="<?php esc_attr_e( 'Log CLI and automated script requests.', 'botblocker-security' ); ?>">
+			data-bs-original-title="<?php esc_attr_e( 'Track WP-CLI and cron execution. Helps detect automated exploitation attempts.', 'botblocker-security' ); ?>">
 			</i>
 			</div>        
 
@@ -159,7 +159,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<span class="bbcs_label_input_checkbox"><?php esc_html_e( 'Log Visits When BotBlocker Protection is Disabled', 'botblocker-security' ); ?></span>
 			</div>
 			<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top" 
-			data-bs-original-title="<?php esc_attr_e( 'Log visits when BotBlocker protection is off.', 'botblocker-security' ); ?>">
+			data-bs-original-title="<?php esc_attr_e( 'Record traffic during maintenance windows or when protection is intentionally disabled.', 'botblocker-security' ); ?>">
 			</i>
 			</div> 			
 

@@ -8,8 +8,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 class BotBlockerInstall {
 
 	public static function checkInstall(): void {
-		if ( get_option( 'bbcs_db_version' ) === BOTBLOCKER_DB_VERSION && self::tablesExist() ) {
-			return;
+		if ( get_option( 'bbcs_db_version' ) === BOTBLOCKER_DB_VERSION ) {
+			if ( get_transient( 'bbcs_tables_verified' ) ) {
+				return;
+			}
+			if ( self::tablesExist() ) {
+				set_transient( 'bbcs_tables_verified', true, HOUR_IN_SECONDS );
+				return;
+			}
 		}
 
 		if ( ! self::tablesExist() ) {
@@ -39,7 +45,7 @@ class BotBlockerInstall {
 		BotBlockerInstallIp::addServerIPs();
 		BotBlockerInstallIp::addAdminIPs();
 		BotBlockerInstallIp::fetchAndStoreParentIPs();
-		BotBlockerSeedData::insertInitialData( BotBlockerInstall::createSaltFile( true ) );
+		BotBlockerSeedData::insertInitialData( self::createSaltFile( true ) );
 		BotBlockerDb::generateAllFiles();
 		BotBlockerFileRenderer::generateSettingsFile();
 		BotBlockerLlmSync::scheduleSync( 'install', 60 );
@@ -95,9 +101,9 @@ class BotBlockerInstall {
 			'site_url' => BotBlockerMultisite::getCurrentSiteUrl(),
 		);
 
-		$cloud = BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_GS_URL, 'activation' );
+		$cloud = BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_URL, 'activation' );
 		if ( $cloud === false ) {
-			BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_URL, 'activation' );
+			BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_GS_URL, 'activation' );
 		}
 	}
 
@@ -220,9 +226,11 @@ class BotBlockerInstall {
 		self::createProxyTable();
 		self::createPtrcacheTable();
 		self::createLlmTrustedTable();
+		self::createTlsFingerprintsTable();
 		self::createCountersTable();
 		self::createDailySummaryTable();
 		self::createPageFiltersTable();
+		self::createFingerprintTable();
 	}
 
 	public static function createHitsTable(): void {
@@ -273,7 +281,7 @@ class BotBlockerInstall {
 	        `tor` TEXT NOT NULL,
 	        `vpn` TEXT NOT NULL,
 	        `carrier` TEXT NOT NULL,
-	        `useragent` TEXT NOT NULL default '',
+	        `useragent` TEXT NOT NULL,
 	        `adblock` INTEGER NOT NULL,
 	        `lat` TEXT NOT NULL,
 	        `lon` TEXT NOT NULL,
@@ -291,7 +299,7 @@ class BotBlockerInstall {
 	        KEY i_date (`date`)
 	    ";
 
-		dbDelta( "CREATE TABLE IF NOT EXISTS `{$wpdb->bbcs_hits}` ($structure) $charset_collate;" );
+		dbDelta( "CREATE TABLE `{$wpdb->bbcs_hits}` ($structure) $charset_collate;" );
 	}
 
 	public static function createHitsSuspiciousTable(): void {
@@ -342,7 +350,7 @@ class BotBlockerInstall {
 	        `tor` TEXT NOT NULL,
 	        `vpn` TEXT NOT NULL,
 	        `carrier` TEXT NOT NULL,
-	        `useragent` TEXT NOT NULL default '',
+	        `useragent` TEXT NOT NULL,
 	        `adblock` INTEGER NOT NULL,
 	        `lat` TEXT NOT NULL,
 	        `lon` TEXT NOT NULL,
@@ -360,7 +368,7 @@ class BotBlockerInstall {
 	        KEY i_date (`date`)
 	    ";
 
-		dbDelta( "CREATE TABLE IF NOT EXISTS `{$wpdb->bbcs_hits_suspicious}` ($structure) $charset_collate;" );
+		dbDelta( "CREATE TABLE `{$wpdb->bbcs_hits_suspicious}` ($structure) $charset_collate;" );
 	}
 
 	public static function createHitsCloudTable(): void {
@@ -411,7 +419,7 @@ class BotBlockerInstall {
 	        `tor` TEXT NOT NULL,
 	        `vpn` TEXT NOT NULL,
 	        `carrier` TEXT NOT NULL,
-	        `useragent` TEXT NOT NULL default '',
+	        `useragent` TEXT NOT NULL,
 	        `adblock` INTEGER NOT NULL,
 	        `lat` TEXT NOT NULL,
 	        `lon` TEXT NOT NULL,
@@ -429,7 +437,7 @@ class BotBlockerInstall {
 	        KEY i_date (`date`)
 	    ";
 
-		dbDelta( "CREATE TABLE IF NOT EXISTS `{$wpdb->bbcs_hits_cloud}` ($structure) $charset_collate;" );
+		dbDelta( "CREATE TABLE `{$wpdb->bbcs_hits_cloud}` ($structure) $charset_collate;" );
 	}
 
 	public static function createSeTable(): void {
@@ -437,14 +445,15 @@ class BotBlockerInstall {
 		$charset_collate = $wpdb->get_charset_collate();
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-		$sql = "CREATE TABLE IF NOT EXISTS `{$wpdb->bbcs_se}` (
-	        `id` INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+		$sql = "CREATE TABLE `{$wpdb->bbcs_se}` (
+	        `id` INTEGER NOT NULL AUTO_INCREMENT,
 	        `priority` INTEGER NOT NULL DEFAULT 100,
 	        `search` TEXT NOT NULL,
 	        `data` TEXT NOT NULL,
 	        `rule` TEXT NOT NULL,
 	        `comment` TEXT NOT NULL,
 	        `disable` INTEGER NOT NULL,
+	        PRIMARY KEY  (`id`),
 	        UNIQUE KEY search (search(191))
 	    		) $charset_collate;";
 
@@ -456,8 +465,9 @@ class BotBlockerInstall {
 		$charset_collate = $wpdb->get_charset_collate();
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-		$sql = "CREATE TABLE IF NOT EXISTS `{$wpdb->bbcs_ipv4rules}` (
-	        `id` BIGINT(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+		$sql = "CREATE TABLE `{$wpdb->bbcs_ipv4rules}` (
+	        `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+	        PRIMARY KEY  (`id`),
 	        `priority` INTEGER NOT NULL DEFAULT 100,
 	        `search` TEXT NOT NULL,
 	        `ip1` VARCHAR(11) NOT NULL DEFAULT '',
@@ -479,8 +489,9 @@ class BotBlockerInstall {
 		$charset_collate = $wpdb->get_charset_collate();
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-		$sql = "CREATE TABLE IF NOT EXISTS `{$wpdb->bbcs_ipv6rules}` (
-	        `id` BIGINT(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+		$sql = "CREATE TABLE `{$wpdb->bbcs_ipv6rules}` (
+	        `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+	        PRIMARY KEY  (`id`),
 	        `priority` INTEGER NOT NULL DEFAULT 100,
 	        `search` TEXT NOT NULL,
 	        `ip1` BINARY(16) NOT NULL,
@@ -502,8 +513,9 @@ class BotBlockerInstall {
 		$charset_collate = $wpdb->get_charset_collate();
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-		$sql = "CREATE TABLE IF NOT EXISTS `{$wpdb->bbcs_path}` (
-	        `id` INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+		$sql = "CREATE TABLE `{$wpdb->bbcs_path}` (
+	        `id` INTEGER NOT NULL AUTO_INCREMENT,
+	        PRIMARY KEY  (`id`),
 	        `priority` INT(11) NOT NULL DEFAULT 100,
 	        `search` TEXT NOT NULL,
 	        `rule` TEXT NOT NULL,
@@ -520,8 +532,9 @@ class BotBlockerInstall {
 		$charset_collate = $wpdb->get_charset_collate();
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-		$sql = "CREATE TABLE IF NOT EXISTS `{$wpdb->bbcs_rules}` (
-	        `id` INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+		$sql = "CREATE TABLE `{$wpdb->bbcs_rules}` (
+	        `id` INTEGER NOT NULL AUTO_INCREMENT,
+	        PRIMARY KEY  (`id`),
 	        `search` VARCHAR(255) AS (CONCAT(`type`, '=', `data`)) STORED UNIQUE,
 	        `priority` INTEGER NOT NULL DEFAULT 1,
 	        `type` TEXT NOT NULL,
@@ -538,10 +551,16 @@ class BotBlockerInstall {
 
 	public static function createSettingsTable(): void {
 		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->bbcs_settings ) ) === $wpdb->bbcs_settings ) {
+			return;
+		}
+
 		$charset_collate = $wpdb->get_charset_collate();
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-		$sql = "CREATE TABLE IF NOT EXISTS `{$wpdb->bbcs_settings}` (
+		$sql = "CREATE TABLE `{$wpdb->bbcs_settings}` (
 	        `key` VARCHAR(191) NOT NULL UNIQUE,
 	        `value` TEXT NOT NULL
 	    ) $charset_collate;";
@@ -551,14 +570,21 @@ class BotBlockerInstall {
 
 	public static function createProxyTable(): void {
 		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->bbcs_proxy ) ) === $wpdb->bbcs_proxy ) {
+			return;
+		}
+
 		$charset_collate = $wpdb->get_charset_collate();
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-		$sql = "CREATE TABLE IF NOT EXISTS `{$wpdb->bbcs_proxy}` (
-	        `id` INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	        `key` TEXT NOT NULL default '',
-	        `value` TEXT NOT NULL default '',
-	        `comment` TEXT NOT NULL default '',
+		$sql = "CREATE TABLE `{$wpdb->bbcs_proxy}` (
+	        `id` INTEGER NOT NULL AUTO_INCREMENT,
+	        PRIMARY KEY  (`id`),
+ 			`key` TEXT NOT NULL,
+        	`value` TEXT NOT NULL,
+        	`comment` TEXT NOT NULL,
 	        UNIQUE KEY uniq_key (`key`(191))
 	    ) $charset_collate;";
 
@@ -570,7 +596,7 @@ class BotBlockerInstall {
 		$charset_collate = $wpdb->get_charset_collate();
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-		$sql = "CREATE TABLE IF NOT EXISTS `{$wpdb->bbcs_ptrcache}` (
+		$sql = "CREATE TABLE `{$wpdb->bbcs_ptrcache}` (
 	        `ip` VARCHAR(45) NOT NULL DEFAULT '',
 	        `ptr` VARCHAR(255) NOT NULL DEFAULT '',
 	        `date` INTEGER NOT NULL DEFAULT 0,
@@ -586,8 +612,9 @@ class BotBlockerInstall {
 		$charset_collate = $wpdb->get_charset_collate();
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-		$sql = "CREATE TABLE IF NOT EXISTS `{$wpdb->bbcs_llm_trusted}` (
-			`id` INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+		$sql = "CREATE TABLE `{$wpdb->bbcs_llm_trusted}` (
+			`id` INTEGER NOT NULL AUTO_INCREMENT,
+			PRIMARY KEY  (`id`),
 			`provider` VARCHAR(64) NOT NULL DEFAULT '',
 			`provider_label` VARCHAR(128) NOT NULL DEFAULT '',
 			`search` TEXT NOT NULL,
@@ -599,13 +626,33 @@ class BotBlockerInstall {
 		dbDelta( $sql );
 	}
 
+	public static function createTlsFingerprintsTable(): void {
+		global $wpdb;
+		$charset_collate = $wpdb->get_charset_collate();
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+
+		$sql = "CREATE TABLE `{$wpdb->bbcs_tls_fingerprints}` (
+			`id` INTEGER NOT NULL AUTO_INCREMENT,
+			PRIMARY KEY  (`id`),
+			`fingerprint` VARCHAR(255) NOT NULL DEFAULT '',
+			`category` VARCHAR(32) NOT NULL DEFAULT 'unknown',
+			`ua_family` VARCHAR(64) NOT NULL DEFAULT '',
+			`description` VARCHAR(255) NOT NULL DEFAULT '',
+			`disabled` TINYINT NOT NULL DEFAULT 0,
+			UNIQUE KEY fingerprint (fingerprint(191))
+		) ENGINE=InnoDB $charset_collate;";
+
+		dbDelta( $sql );
+	}
+
 	public static function createCountersTable(): void {
 		global $wpdb;
 		$charset_collate = $wpdb->get_charset_collate();
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-		$sql = "CREATE TABLE IF NOT EXISTS `{$wpdb->bbcs_counters}` (
-	        `id` INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+		$sql = "CREATE TABLE `{$wpdb->bbcs_counters}` (
+	        `id` INTEGER NOT NULL AUTO_INCREMENT,
+	        PRIMARY KEY  (`id`),
 	        `today_hits` INT(11) NOT NULL DEFAULT 0,
 	        `today_blocked` INT(11) NOT NULL DEFAULT 0,
 	        `total_hits` INT(11) NOT NULL DEFAULT 0,
@@ -623,7 +670,7 @@ class BotBlockerInstall {
 		$charset_collate = $wpdb->get_charset_collate();
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-		$sql = "CREATE TABLE IF NOT EXISTS `{$wpdb->bbcs_daily_summary}` (
+		$sql = "CREATE TABLE `{$wpdb->bbcs_daily_summary}` (
 	        `date_key` date NOT NULL,
 	        `metric` varchar(32) NOT NULL,
 	        `dim_key` varchar(128) NOT NULL DEFAULT '',
@@ -664,6 +711,7 @@ class BotBlockerInstall {
 			$wpdb->bbcs_daily_summary,
 			$wpdb->bbcs_asn,
 			$wpdb->bbcs_llm_trusted,
+			$wpdb->bbcs_tls_fingerprints,
 		);
 
 		$requiredTables = array_values( array_unique( array_filter( $requiredTables, 'is_string' ) ) );
@@ -724,8 +772,9 @@ class BotBlockerInstall {
 		$charset_collate = $wpdb->get_charset_collate();
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-		$sql = "CREATE TABLE IF NOT EXISTS `{$wpdb->bbcs_page_filters}` (
-	        `id` INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+		$sql = "CREATE TABLE `{$wpdb->bbcs_page_filters}` (
+	        `id` INTEGER NOT NULL AUTO_INCREMENT,
+	        PRIMARY KEY  (`id`),
 	        `pattern` VARCHAR(191) NOT NULL,
 	        `category` VARCHAR(32) NOT NULL,
 	        UNIQUE KEY `pattern` (`pattern`)
@@ -739,8 +788,9 @@ class BotBlockerInstall {
 		$charset_collate = $wpdb->get_charset_collate();
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-		$sql = "CREATE TABLE IF NOT EXISTS `{$wpdb->bbcs_asn}` (
-	        `id` INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+		$sql = "CREATE TABLE `{$wpdb->bbcs_asn}` (
+	        `id` INTEGER NOT NULL AUTO_INCREMENT,
+	        PRIMARY KEY  (`id`),
 	        `priority` INTEGER NOT NULL DEFAULT 50,
 	        `asnum` INTEGER NOT NULL,
 	        `asname` VARCHAR(255) NOT NULL DEFAULT '',
@@ -751,6 +801,30 @@ class BotBlockerInstall {
 	    ) $charset_collate;";
 
 		dbDelta( $sql );
+	}
+
+	public static function createFingerprintTable(): void {
+		global $wpdb;
+		$charset_collate = $wpdb->get_charset_collate();
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+
+		$structure = "
+	        `fingerprint` VARCHAR(64) NOT NULL,
+	        `ip` VARCHAR(45) NOT NULL,
+	        `first_seen` INTEGER NOT NULL DEFAULT 0,
+	        `last_seen` INTEGER NOT NULL DEFAULT 0,
+	        `block_count` INTEGER NOT NULL DEFAULT 0,
+	        `allow_count` INTEGER NOT NULL DEFAULT 0,
+	        `last_block_reason` TEXT NOT NULL,
+	        `last_country` VARCHAR(2) NOT NULL DEFAULT '',
+	        `status` VARCHAR(16) NOT NULL DEFAULT 'watch',
+	        UNIQUE KEY fingerprint (fingerprint),
+	        KEY i_ip (ip),
+	        KEY i_block_count (block_count),
+	        KEY i_status (status)
+	    ";
+
+		dbDelta( "CREATE TABLE `{$wpdb->bbcs_fingerprint}` ($structure) $charset_collate;" );
 	}
 
 	public static function createSaltFile( $return_salt_bb = false ) {
@@ -865,70 +939,6 @@ class BotBlockerInstall {
 		}
 	}
 
-	public static function removeWpConfigEarlyInitCode(): bool {
-		if ( get_site_transient( 'bbcs_wpconfig_writing' ) ) {
-			return false;
-		}
-		set_site_transient( 'bbcs_wpconfig_writing', 1, 30 );
-
-		$wp_config_file = ABSPATH . 'wp-config.php';
-
-		if ( ! file_exists( $wp_config_file ) ) {
-			delete_site_transient( 'bbcs_wpconfig_writing' );
-			return false;
-		}
-
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-		$config_contents = file_get_contents( $wp_config_file );
-		if ( $config_contents === false ) {
-			delete_site_transient( 'bbcs_wpconfig_writing' );
-			return false;
-		}
-
-		if ( substr( $config_contents, 0, 3 ) === "\xEF\xBB\xBF" ) {
-			$config_contents = substr( $config_contents, 3 );
-		}
-
-		$marker_start   = '/* BBCS Start */';
-		$marker_end     = '/* BBCS End */';
-		$start_position = strpos( $config_contents, $marker_start );
-		$end_position   = strpos( $config_contents, $marker_end );
-
-		if ( $start_position === false || $end_position === false ) {
-			delete_site_transient( 'bbcs_wpconfig_writing' );
-			return false;
-		}
-
-		$end_position += strlen( $marker_end );
-
-		$new_config_contents = substr( $config_contents, 0, $start_position ) . substr( $config_contents, $end_position );
-
-		$backup = $wp_config_file . '.bbcs.bak';
-		// phpcs:ignore PluginCheck.CodeAnalysis.WriteFile.ABSPATHDetected
-		if ( ! copy( $wp_config_file, $backup ) ) {
-			delete_site_transient( 'bbcs_wpconfig_writing' );
-			return false;
-		}
-
-		$tmp = $wp_config_file . '.bbcs.tmp';
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents, PluginCheck.CodeAnalysis.WriteFile.ABSPATHDetected
-		$written = ( file_put_contents( $tmp, $new_config_contents, LOCK_EX ) !== false );
-
-		if ( $written ) {
-			// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename, PluginCheck.CodeAnalysis.WriteFile.ABSPATHDetected
-			$written = rename( $tmp, $wp_config_file );
-		}
-
-		if ( ! $written && file_exists( $tmp ) ) {
-			wp_delete_file( $tmp );
-		}
-
-		delete_site_transient( 'bbcs_wpconfig_writing' );
-		BotBlockerCache::clearFileCache();
-
-		return $written;
-	}
-
 	public static function deleteRuleFiles(): void {
 		$files = array(
 			BotBlockerMultisite::getDataDir() . 'search_engines.php',
@@ -943,5 +953,43 @@ class BotBlockerInstall {
 				clearstatcache( true );
 			}
 		}
+	}
+
+	public static function setEarlyInitEnabled( bool $enabled ): bool {
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->replace(
+			$wpdb->bbcs_settings,
+			array(
+				'key'   => 'early_init_enable',
+				'value' => $enabled ? '1' : '0',
+			),
+			array( '%s', '%s' )
+		);
+
+		// Mutual exclusivity: enabling early-init disables MU mode.
+		if ( $enabled ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->replace(
+				$wpdb->bbcs_settings,
+				array(
+					'key'   => 'mu_enable',
+					'value' => '0',
+				),
+				array( '%s', '%s' )
+			);
+			self::uninstallMuPlugin();
+		}
+
+		do_action( 'bbcs_early_init_toggle', $enabled );
+
+		$files_ok = apply_filters( 'bbcs_early_init_files_ok', true, $enabled );
+
+		if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
+			BotBlockerFileRenderer::generateSettingsFile();
+		}
+
+		return $files_ok;
 	}
 }

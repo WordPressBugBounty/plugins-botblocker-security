@@ -5,10 +5,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class BotBlockerLlmSync
-{
-	const LOCK_KEY = 'bbcs_llm_sync_lock';
-	const LOCK_TTL = 30 * MINUTE_IN_SECONDS;
+class BotBlockerLlmSync {
+
+	const LOCK_KEY      = 'bbcs_llm_sync_lock';
+	const LOCK_TTL      = 30 * MINUTE_IN_SECONDS;
 	const STATUS_OPTION = 'bbcs_llm_sync_status';
 	const SELF_HEAL_KEY = 'bbcs_llm_sync_self_heal_throttle';
 
@@ -250,9 +250,9 @@ class BotBlockerLlmSync
 			$request['hash'] = $stored_hash;
 		}
 
-		$result = BotBlockerWpRequest::send_to_cloud( $request, BOTBLOCKER_API_GS_URL, 'llm_providers_sync' );
+		$result = BotBlockerWpRequest::send_to_cloud( $request, BOTBLOCKER_API_URL, 'llm_providers_sync' );
 		if ( false === $result ) {
-			$result = BotBlockerWpRequest::send_to_cloud( $request, BOTBLOCKER_API_URL, 'llm_providers_sync' );
+			$result = BotBlockerWpRequest::send_to_cloud( $request, BOTBLOCKER_API_GS_URL, 'llm_providers_sync' );
 		}
 
 		if ( ! is_array( $result ) ) {

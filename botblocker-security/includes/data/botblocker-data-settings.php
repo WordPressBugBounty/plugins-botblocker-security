@@ -28,6 +28,7 @@ function bbcs_get_allowed_fields(): array {
 		'block_cf_users',
 		'block_device_options',
 		'block_empty_lang',
+		'bbcs_allow_empty_accept_lang',
 		'block_empty_ua',
 		'block_fake_ref',
 		'block_http10_users',
@@ -66,8 +67,6 @@ function bbcs_get_allowed_fields(): array {
 		'cookie',
 		'cookie_lifetime',
 		'critical_load_notifications',
-		'cron_curl',
-		'cron_wget',
 		'daylight_saving_time',
 		'disable',
 		'early_init_enable',
@@ -117,6 +116,7 @@ function bbcs_get_allowed_fields(): array {
 		'recaptcha_secret3',
 		'recaptcha_tresshold',
 		'recaptcha_v3_ipv6_block',
+		'redis_database',
 		'redis_enable',
 		'redis_host',
 		'redis_password',
@@ -128,15 +128,34 @@ function bbcs_get_allowed_fields(): array {
 		'samesite',
 		'secret_botblocker_get_param',
 		'session_token_enabled',
+		'tls_fingerprint_check',
+		'tls_fingerprint_header_ja3',
+		'tls_fingerprint_header_ja4',
+		'tls_fingerprint_trusted_proxy',
 		'telegram_notifications',
+		'telegram_bot_token',
+		'telegram_chat_id',
 		'time_ban',
 		'time_ban_2',
 		'unresponsive',
 		'utm_noindex',
 		'utm_referrer',
 		'vary_cookie',
+		'bbcs_cors_strict_headers',
 		'whitelist_whatsapp_preview',
 		'x_robots_directives',
+
+		'bbcs_rate_check_enabled',
+		'bbcs_rate_captcha_rpm',
+		'bbcs_rate_block_rpm',
+		'bbcs_rate_window_minutes',
+		'bbcs_rate_subnet_enabled',
+		'bbcs_rate_subnet_multiplier',
+		'bbcs_rate_floor_percent',
+		'bbcs_rate_subnet_mask',
+		'bbcs_rate_block_duration',
+
+		'fingerprint_sticky_block',
 	);
 }
 
@@ -154,6 +173,7 @@ function bbcs_loadDefaultSettings(): array {
 
 		'block_empty_ua'                       => 1,
 		'block_empty_lang'                     => 1,
+		'bbcs_allow_empty_accept_lang'         => 0,
 		'block_nojs_users'                     => 1,
 		'block_proxy_users'                    => 1,
 		'block_vpn_users'                      => 1,
@@ -167,6 +187,7 @@ function bbcs_loadDefaultSettings(): array {
 		'block_override'                       => 0,
 		'block_web_engine_options'             => 0,
 		'block_device_options'                 => 0,
+		'fingerprint_sticky_block'             => 0,
 		'block_cf_users'                       => 0,
 		'block_incorrect_lang_users'           => 0,
 		'block_rkn'                            => 0,
@@ -231,6 +252,7 @@ function bbcs_loadDefaultSettings(): array {
 		'bbcs_api_url'                         => BOTBLOCKER_API_URL,
 		'bbcs_api_gs_url'                      => BOTBLOCKER_API_GS_URL,
 
+		'redis_database'                       => 0,
 		'redis_host'                           => '127.0.0.1',
 		'redis_port'                           => 6379,
 		'redis_prefix'                         => BOTBLOCKER_PREFIX,
@@ -252,6 +274,7 @@ function bbcs_loadDefaultSettings(): array {
 		'session_token_enabled'                => 1,
 		'cloud_api_timeout'                    => 5,
 		'vary_cookie'                          => 0,
+		'bbcs_cors_strict_headers'             => 0,
 
 		'payment_bypass_enable'                => 0,
 		'payment_bypass_log'                   => 1,
@@ -259,6 +282,8 @@ function bbcs_loadDefaultSettings(): array {
 		'payment_keep_ip_rules'                => 0,
 
 		'telegram_notifications'               => 0,
+		'telegram_bot_token'                   => '',
+		'telegram_chat_id'                     => '',
 		'email_notifications'                  => 0,
 		'pusher_notifications'                 => 0,
 		'critical_load_notifications'          => 0,
@@ -271,6 +296,21 @@ function bbcs_loadDefaultSettings(): array {
 		'login_brutforce_secondary_block_time' => 1800,
 
 		'bbcs_2fa_enable'                      => 0,
+
+		'tls_fingerprint_check'                => 0,
+		'tls_fingerprint_header_ja3'           => 'X-TLS-JA3',
+		'tls_fingerprint_header_ja4'           => 'X-TLS-JA4',
+		'tls_fingerprint_trusted_proxy'        => '',
+
+		'bbcs_rate_check_enabled'              => 1,
+		'bbcs_rate_captcha_rpm'                => 30,
+		'bbcs_rate_block_rpm'                  => 50,
+		'bbcs_rate_window_minutes'             => 5,
+		'bbcs_rate_subnet_enabled'             => 1,
+		'bbcs_rate_subnet_multiplier'          => 3.0,
+		'bbcs_rate_floor_percent'              => 0.1,
+		'bbcs_rate_subnet_mask'                => '24-64',
+		'bbcs_rate_block_duration'             => 600,
 	);
 }
 
@@ -281,6 +321,7 @@ function bbcs_loadLightSecurity(): array {
 
 		'block_empty_ua'                       => 1,
 		'block_empty_lang'                     => 1,
+		'bbcs_allow_empty_accept_lang'         => 0,
 		'block_nojs_users'                     => 1,
 		'block_proxy_users'                    => 1,
 		'block_ipv6_users'                     => 0,
@@ -327,6 +368,7 @@ function bbcs_loadLightSecurity(): array {
 		'session_token_enabled'                => 1,
 		'cloud_api_timeout'                    => 5,
 		'vary_cookie'                          => 0,
+		'bbcs_cors_strict_headers'             => 0,
 		'options_preflight'                    => 1,
 
 		'login_brutforce_enabled'              => 1,
@@ -335,6 +377,16 @@ function bbcs_loadLightSecurity(): array {
 		'login_brutforce_primary_block_time'   => 900,
 		'login_brutforce_secondary_block_time' => 1800,
 		'force_cloud_validation'               => 0,
+
+		'bbcs_rate_window_minutes'             => 5,
+		'bbcs_rate_captcha_rpm'                => 60,
+		'bbcs_rate_block_rpm'                  => 120,
+		'bbcs_rate_subnet_enabled'             => 0,
+		'bbcs_rate_subnet_multiplier'          => 3.0,
+		'bbcs_rate_floor_percent'              => 0.2,
+		'bbcs_rate_check_enabled'              => 1,
+		'bbcs_rate_subnet_mask'                => '24-64',
+		'bbcs_rate_block_duration'             => 300,
 
 		// pro
 		'check'                                => 0,
@@ -355,6 +407,7 @@ function bbcs_loadStrongSecurity(): array {
 
 		'block_empty_ua'                       => 1,
 		'block_empty_lang'                     => 1,
+		'bbcs_allow_empty_accept_lang'         => 0,
 		'block_nojs_users'                     => 1,
 		'block_proxy_users'                    => 1,
 		'block_ipv6_users'                     => 0,
@@ -401,6 +454,7 @@ function bbcs_loadStrongSecurity(): array {
 		'session_token_enabled'                => 1,
 		'cloud_api_timeout'                    => 5,
 		'vary_cookie'                          => 0,
+		'bbcs_cors_strict_headers'             => 0,
 		'options_preflight'                    => 1,
 
 		'login_brutforce_enabled'              => 1,
@@ -410,6 +464,16 @@ function bbcs_loadStrongSecurity(): array {
 		'login_brutforce_secondary_block_time' => 1800,
 
 		'force_cloud_validation'               => 0,
+
+		'bbcs_rate_window_minutes'             => 5,
+		'bbcs_rate_captcha_rpm'                => 30,
+		'bbcs_rate_block_rpm'                  => 50,
+		'bbcs_rate_subnet_enabled'             => 1,
+		'bbcs_rate_subnet_multiplier'          => 3.0,
+		'bbcs_rate_floor_percent'              => 0.1,
+		'bbcs_rate_check_enabled'              => 1,
+		'bbcs_rate_subnet_mask'                => '24-64',
+		'bbcs_rate_block_duration'             => 900,
 
 		// pro
 		'check'                                => 0,
@@ -429,6 +493,7 @@ function bbcs_loadFullSecurity(): array {
 
 		'block_empty_ua'                       => 1,
 		'block_empty_lang'                     => 1,
+		'bbcs_allow_empty_accept_lang'         => 0,
 		'block_nojs_users'                     => 1,
 		'block_proxy_users'                    => 1,
 		'block_ipv6_users'                     => 0,
@@ -475,6 +540,7 @@ function bbcs_loadFullSecurity(): array {
 		'session_token_enabled'                => 1,
 		'cloud_api_timeout'                    => 5,
 		'vary_cookie'                          => 0,
+		'bbcs_cors_strict_headers'             => 0,
 		'options_preflight'                    => 1,
 
 		'login_brutforce_enabled'              => 1,
@@ -484,6 +550,16 @@ function bbcs_loadFullSecurity(): array {
 		'login_brutforce_secondary_block_time' => 1800,
 
 		'force_cloud_validation'               => 0,
+
+		'bbcs_rate_window_minutes'             => 10,
+		'bbcs_rate_captcha_rpm'                => 20,
+		'bbcs_rate_block_rpm'                  => 30,
+		'bbcs_rate_subnet_enabled'             => 1,
+		'bbcs_rate_subnet_multiplier'          => 2.0,
+		'bbcs_rate_floor_percent'              => 0.1,
+		'bbcs_rate_check_enabled'              => 1,
+		'bbcs_rate_subnet_mask'                => '28-64',
+		'bbcs_rate_block_duration'             => 1800,
 
 		// pro
 		'check'                                => 1,

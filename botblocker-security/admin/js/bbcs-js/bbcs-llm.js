@@ -3,6 +3,14 @@
 
     var llmTableLoading = false;
 
+    // Register loading state for new UI tab switching guard.
+    if (typeof window.BBCS_TabLoadingRegistry !== 'undefined') {
+      window.BBCS_TabLoadingRegistry['LLM'] = function() { return llmTableLoading; };
+    }
+
+    var lastLlmUITab = '';
+    var llmJustInitialized = false;
+
     var switchDebounceMs = 200;
     var _lastSwitchTs = 0;
 
@@ -29,37 +37,44 @@
     });
 
     function syncFromCloud($btn) {
-        $btn.prop('disabled', true).html('<i class="fa-solid fa-circle-notch fa-spin"></i>');
+        if (!$btn.data('bbcs-original-html')) {
+            $btn.data('bbcs-original-html', $btn.html());
+        }
+        $btn.prop('disabled', true).text('\u23F3');
         $.ajax({
             url:  botblockerData.ajaxurl,
             type: 'POST',
             data: { action: 'bbcs_sync_llm_cloud', nonce: botblockerData.nonce },
             success: function (response) {
-                $btn.prop('disabled', false).html('<i class="fa-solid fa-cloud-arrow-down"></i>');
+                $btn.prop('disabled', false).html($btn.data('bbcs-original-html'));
                 if (response.success) {
                     alert(response.data.message || bbcsLLML10n.sync_scheduled);
                     if ($.fn.DataTable.isDataTable('#botblocker-llm')) {
                         $('#botblocker-llm').DataTable().ajax.reload(null, false);
+                    if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
                     }
                 } else {
                     alert(bbcsLLML10n.sync_failed + (response.data || ''));
                 }
             },
             error: function () {
-                $btn.prop('disabled', false).html('<i class="fa-solid fa-cloud-arrow-down"></i>');
+                $btn.prop('disabled', false).html($btn.data('bbcs-original-html'));
                 alert(bbcsLLML10n.sync_failed);
             }
         });
     }
 
     function downloadJson($btn) {
-        $btn.prop('disabled', true).html('<i class="fa-solid fa-circle-notch fa-spin"></i>');
+        if (!$btn.data('bbcs-original-html')) {
+            $btn.data('bbcs-original-html', $btn.html());
+        }
+        $btn.prop('disabled', true).text('\u23F3');
         $.ajax({
             url:  botblockerData.ajaxurl,
             type: 'POST',
             data: { action: 'bbcs_export_llm_json', nonce: botblockerData.nonce },
             success: function (response) {
-                $btn.prop('disabled', false).html('<i class="fa-solid fa-download"></i>');
+                $btn.prop('disabled', false).html($btn.data('bbcs-original-html'));
                 if (response.success && response.data) {
                     var json = JSON.stringify(response.data, null, 2);
                     var blob = new Blob([json], { type: 'application/json' });
@@ -76,7 +91,7 @@
                 }
             },
             error: function () {
-                $btn.prop('disabled', false).html('<i class="fa-solid fa-download"></i>');
+                $btn.prop('disabled', false).html($btn.data('bbcs-original-html'));
                 alert(bbcsLLML10n.failed_update);
             }
         });
@@ -151,28 +166,38 @@
             ],
             order: [[0, "asc"]],
             createdRow: function (row, data) {
-                $(row).css(
-                    "background-color",
-                    data.disabled == 1 ? "rgba(255, 0, 0, 0.1)" : "rgba(0, 255, 0, 0.1)"
-                );
+                $(row).addClass(data.disabled == 1 ? "bbcs-rule-row--disabled" : "bbcs-rule-row--active");
             },
-            layout: {
-                topStart: {
-                    buttons: [
-                        "copy", "csv", "excel", "pdf", "print", "colvis",
-                        {
-                            extend: "collection",
-                            text: "Length Menu",
-                            buttons: [
-                                { text: "10", action: function (e, dt) { dt.page.len(10).draw(); } },
-                                { text: "25", action: function (e, dt) { dt.page.len(25).draw(); } },
-                                { text: "50", action: function (e, dt) { dt.page.len(50).draw(); } },
-                                { text: "100", action: function (e, dt) { dt.page.len(100).draw(); } }
-                            ]
+            layout: (function () {
+                var isNewUI = !!document.querySelector('.bbcs-app');
+                return isNewUI ? {
+                    topStart: {
+                        search: {
+                            text: '',
+                            placeholder: bbcsLLML10n.search_placeholder
                         }
-                    ]
-                }
-            },
+                    },
+                    topEnd: {
+                        buttons: ['csv', 'excel']
+                    }
+                } : {
+                    topStart: {
+                        buttons: [
+                            "copy", "csv", "excel", "pdf", "print", "colvis",
+                            {
+                                extend: "collection",
+                                text: "Length Menu",
+                                buttons: [
+                                    { text: "10", action: function (e, dt) { dt.page.len(10).draw(); } },
+                                    { text: "25", action: function (e, dt) { dt.page.len(25).draw(); } },
+                                    { text: "50", action: function (e, dt) { dt.page.len(50).draw(); } },
+                                    { text: "100", action: function (e, dt) { dt.page.len(100).draw(); } }
+                                ]
+                            }
+                        ]
+                    }
+                };
+            })(),
             drawCallback: function (settings) {
                 var api = this.api();
                 api.columns().every(function () {
@@ -187,6 +212,8 @@
                 api.columns.adjust();
             }
         });
+
+        llmJustInitialized = true;
     }
 
     $(document).ready(function () {
@@ -195,6 +222,22 @@
             var target = $(e.target).attr('href');
             if (target === '#bbcs_llm_list') {
                 initializeLLMTable();
+            }
+        });
+
+        $(document).on('bbcs:tab-changed', function (e, data) {
+            if (data.tab === 'LLM') {
+                var sameTab = (lastLlmUITab === data.tab);
+                lastLlmUITab = data.tab;
+                initializeLLMTable();
+                if ($.fn.DataTable.isDataTable('#botblocker-llm')) {
+                    var dt = $('#botblocker-llm').DataTable();
+                    dt.columns.adjust();
+                    if (!sameTab && !llmJustInitialized) {
+                        dt.draw(false);
+                    }
+                    llmJustInitialized = false;
+                }
             }
         });
 
@@ -208,6 +251,16 @@
         });
 
         $('#bbcs_llm_download_json').on('click', function (e) {
+            e.preventDefault();
+            downloadJson($(this));
+        });
+
+        $('#bbcs_pagehead_llm_sync').on('click', function (e) {
+            e.preventDefault();
+            syncFromCloud($(this));
+        });
+
+        $('#bbcs_pagehead_llm_download').on('click', function (e) {
             e.preventDefault();
             downloadJson($(this));
         });
@@ -234,6 +287,7 @@
                     $btn.prop('disabled', false);
                     if (response.success) {
                         $('#botblocker-llm').DataTable().ajax.reload(null, false);
+                    if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
                     } else {
                         alert(response.data || bbcsLLML10n.failed_update);
                     }

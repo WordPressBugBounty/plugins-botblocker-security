@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
-if ( ! defined( 'ABSPATH' ) ) { exit; }
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; }
 
 class BotBlockerAjaxCache {
 
@@ -120,6 +121,33 @@ class BotBlockerAjaxCache {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' cache flushed, sending success' );
 		}
+
+		wp_send_json_success( array( 'message' => __( 'Success!', 'botblocker-security' ) ) );
+	}
+
+	public static function handleSwitchUiCacheInDb(): void {
+		$bbcs_action = 'cache_switch_ui';
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' called' );
+		}
+		check_ajax_referer( 'botblocker_nonce', 'nonce' );
+		if ( ! current_user_can( BotBlockerMultisite::canManage() ) ) {
+			wp_send_json_error( array( 'message' => __( 'Unauthorized.', 'botblocker-security' ) ) );
+		}
+
+		global $wpdb;
+
+		if ( ! isset( $_POST['cache_ui_data'] ) ) {
+			wp_send_json_error( array( 'message' => __( 'Invalid request.', 'botblocker-security' ) ) );
+		}
+
+		$cache_ui_data = intval( wp_unslash( $_POST['cache_ui_data'] ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->update( $wpdb->bbcs_settings, array( 'value' => $cache_ui_data ), array( 'key' => 'cache_ui_data' ) );
+
+		BotBlockerFileRenderer::generateSettingsFile();
+		BotBlockerCache::flush();
 
 		wp_send_json_success( array( 'message' => __( 'Success!', 'botblocker-security' ) ) );
 	}

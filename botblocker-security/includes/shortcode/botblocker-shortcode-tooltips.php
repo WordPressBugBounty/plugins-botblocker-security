@@ -34,7 +34,7 @@ function bbcs_generate_recommendations(): string {
 	if ( ! $has_recaptcha ) {
 		$recommendations[] = array(
 			'icon'     => 'fa-shield-halved',
-			'text'     => __( 'Configure reCAPTCHA', 'botblocker-security' ),
+			'text'     => __( 'Configure reCaptcha', 'botblocker-security' ),
 			'url'      => $BBCSA->pages_integrations . '#bbcs_recaptchav3',
 			'priority' => 'medium',
 		);
@@ -103,7 +103,7 @@ function bbcs_generate_recommendations(): string {
 		$recommendations[] = array(
 			'icon'     => 'fa-lock',
 			'text'     => __( 'Enable Two-Factor Authentication', 'botblocker-security' ),
-			'url'      => $BBCSA->pages_integrations . '#bbcs_2fa',
+			'url'      => $BBCSA->pages_integrations . '#bbcs-2fa',
 			'priority' => 'medium',
 		);
 	}

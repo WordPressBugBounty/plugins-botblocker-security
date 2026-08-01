@@ -14,9 +14,11 @@ class BBCS_RedisStorage extends BBCS_ObjectCacheStorage {
 	/** @var string */
 	private $password;
 	/** @var int */
-	private $connectionTimeout     = 2;
+	private $database = 0;
 	/** @var int */
-	private $retryInterval         = 60;
+	private $connectionTimeout = 2;
+	/** @var int */
+	private $retryInterval = 60;
 	/** @var int */
 	private $lastConnectionAttempt = 0;
 
@@ -24,7 +26,8 @@ class BBCS_RedisStorage extends BBCS_ObjectCacheStorage {
 		string $host,
 		int $port,
 		string $password,
-		string $prefix
+		string $prefix,
+		int $database = 0
 	) {
 		if ( ! extension_loaded( 'redis' ) ) {
 			$this->lastError = 'Redis PHP extension is not installed.';
@@ -32,10 +35,11 @@ class BBCS_RedisStorage extends BBCS_ObjectCacheStorage {
 			throw new \Exception( $this->lastError );
 		}
 
-		$this->host     = $host;
-		$this->port     = $port;
-		$this->password = $password;
-		$this->prefix   = $prefix;
+		$this->host       = $host;
+		$this->port       = $port;
+		$this->password   = $password;
+		$this->prefix     = $prefix;
+		$this->database   = $database;
 		$this->sitePrefix = self::buildSitePrefix();
 		$this->connect();
 	}
@@ -44,15 +48,16 @@ class BBCS_RedisStorage extends BBCS_ObjectCacheStorage {
 		string $host = '127.0.0.1',
 		int $port = 6379,
 		string $password = '',
-		string $prefix = 'bbcs_req_'
+		string $prefix = 'bbcs_req_',
+		int $database = 0
 	): BBCS_RedisStorage {
 		if ( self::$instance === null ) {
 			try {
-				self::$instance = new BBCS_RedisStorage( $host, $port, $password, $prefix );
+				self::$instance = new BBCS_RedisStorage( $host, $port, $password, $prefix, $database );
 			} catch ( \Exception $e ) {
 				if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG && defined( 'BBCS_CACHE_DEBUG' ) && BBCS_CACHE_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-					error_log('[BBCS DEBUG] [Cache] BBCS_RedisStorage Error: ' . $e->getMessage());
+					error_log( '[BBCS DEBUG] [Cache] BBCS_RedisStorage Error: ' . $e->getMessage() );
 				}
 				throw $e;
 			}
@@ -79,7 +84,9 @@ class BBCS_RedisStorage extends BBCS_ObjectCacheStorage {
 		$this->lastConnectionAttempt = $currentTime;
 
 		try {
-			$this->redis = new \Redis();
+			if ( $this->redis === null ) {
+				$this->redis = new \Redis();
+			}
 			$connected   = $this->redis->connect( $this->host, $this->port, $this->connectionTimeout );
 
 			if ( ! $connected ) {
@@ -91,6 +98,14 @@ class BBCS_RedisStorage extends BBCS_ObjectCacheStorage {
 			if ( ! empty( $this->password ) ) {
 				if ( ! $this->redis->auth( $this->password ) ) {
 					$this->lastError = 'Redis authentication failed';
+					$this->logDebug( $this->lastError );
+					return false;
+				}
+			}
+
+			if ( $this->database > 0 ) {
+				if ( ! $this->redis->select( $this->database ) ) {
+					$this->lastError = 'Redis database selection failed for index: ' . $this->database;
 					$this->logDebug( $this->lastError );
 					return false;
 				}
@@ -322,6 +337,10 @@ class BBCS_RedisStorage extends BBCS_ObjectCacheStorage {
 		}
 
 		return $status;
+	}
+
+	public function getSelectedDatabase(): int {
+		return $this->database;
 	}
 
 	public function disconnect(): void {

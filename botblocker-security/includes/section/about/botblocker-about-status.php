@@ -108,7 +108,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</div>
 			<?php if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) : ?>
 			<h3 class="bbcs_settings_h3 mt-3"><?php esc_html_e( 'BotBlocker Hive Snapshot', 'botblocker-security' ); ?></h3>
-				<?php $BBCS->print_hive(); ?>
+				<?php BotBlocker::getInstance()->print_hive(); ?>
 			<?php endif; ?>
 		</div>
 	</div>

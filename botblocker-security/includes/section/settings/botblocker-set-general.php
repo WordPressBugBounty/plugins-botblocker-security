@@ -102,7 +102,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</div>
 				<div class="bbcs_text_input_inner">
 					<select class="bbcs_select_input_input" name="ptrcache_subnet">
-						<?php foreach ( bbcs_get_ptrcache_subnet_options() as $bbcs_val => $bbcs_label ) : ?>
+						<?php foreach ( bbcs_get_subnet_mask_options() as $bbcs_val => $bbcs_label ) : ?>
 				<option value="<?php echo esc_attr( $bbcs_val ); ?>" <?php selected( $bbcs_val, isset( $bbcs_settings['ptrcache_subnet'] ) ? $bbcs_settings['ptrcache_subnet'] : '24-64' ); ?>>
 							<?php echo esc_html( $bbcs_label ); ?>
 				</option>

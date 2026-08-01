@@ -90,7 +90,7 @@ $bbcs_is_ultimate = BotBlockerPro::isUltimate();
 					</span>
 				</div>
 				<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top"
-					data-bs-original-title="<?php esc_attr_e( 'When cloud API returns unexpected data — block the visitor and invalidate cache instead of silent pass.', 'botblocker-security' ); ?>">
+					data-bs-original-title="<?php esc_attr_e( 'When cloud API returns unexpected data - block the visitor and invalidate cache instead of silent pass.', 'botblocker-security' ); ?>">
 				</i>
 			</div>
 
@@ -100,7 +100,7 @@ $bbcs_is_ultimate = BotBlockerPro::isUltimate();
 					<span class="bbcs_label_input_checkbox"><?php esc_html_e( 'Force Verification for All', 'botblocker-security' ); ?></span>
 				</div>
 				<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true"  data-bs-placement="top"
-					data-bs-original-title="<?php esc_attr_e( 'Show CAPTCHA to all visitors, bypassing other checks.', 'botblocker-security' ); ?>">
+					data-bs-original-title="<?php esc_attr_e( 'Show Captcha to all visitors, bypassing other checks.', 'botblocker-security' ); ?>">
 				</i>
 			</div>
 

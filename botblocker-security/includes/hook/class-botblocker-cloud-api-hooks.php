@@ -36,9 +36,9 @@ class BotBlockerCloudApiHooks {
 
 		$data = array();
 
-		$cloud = BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_GS_URL, 'fetch_api_key' );
+		$cloud = BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_URL, 'fetch_api_key' );
 		if ( $cloud === false || isset( $cloud['error'] ) ) {
-			$cloud = BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_URL, 'fetch_api_key' );
+			$cloud = BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_GS_URL, 'fetch_api_key' );
 		}
 
 		if ( $cloud === false ) {
@@ -80,9 +80,9 @@ class BotBlockerCloudApiHooks {
 		$data  = array(
 			'cloud_api_key' => $api_key,
 		);
-		$cloud = BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_GS_URL, 'validate_api_key' );
+		$cloud = BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_URL, 'validate_api_key' );
 		if ( $cloud === false || isset( $cloud['error'] ) ) {
-			$cloud = BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_URL, 'validate_api_key' );
+			$cloud = BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_GS_URL, 'validate_api_key' );
 		}
 
 		if ( $cloud === false ) {
@@ -150,6 +150,8 @@ class BotBlockerCloudApiHooks {
 			)
 		);
 
+		BotBlockerPro::clearCache();
+
 		wp_send_json_success( array( 'message' => __( 'Cloud API connection deactivated.', 'botblocker-security' ) ) );
 	}
 
@@ -160,9 +162,9 @@ class BotBlockerCloudApiHooks {
 
 		$BBCS         = BotBlocker::getInstance();
 		$request_data = BotBlockerPro::buildAuthPayload( $BBCS->settings );
-		$cloud        = BotBlockerWpRequest::send_to_cloud( $request_data, BOTBLOCKER_API_GS_URL, 'refresh_cloud_api' );
+		$cloud        = BotBlockerWpRequest::send_to_cloud( $request_data, BOTBLOCKER_API_URL, 'refresh_cloud_api' );
 		if ( $cloud === false || isset( $cloud['error'] ) ) {
-			$cloud = BotBlockerWpRequest::send_to_cloud( $request_data, BOTBLOCKER_API_URL, 'refresh_cloud_api' );
+			$cloud = BotBlockerWpRequest::send_to_cloud( $request_data, BOTBLOCKER_API_GS_URL, 'refresh_cloud_api' );
 		}
 
 		if ( $cloud === false ) {

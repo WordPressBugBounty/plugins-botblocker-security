@@ -186,6 +186,11 @@
 
         function onMUPluginChanged() {
             const MUEnabled = $(this).is(":checked");
+            var $self = $(this);
+            var $pair = $('#bbcs_switch_early_init');
+            var earlyInitWasDisabled = $pair.prop('disabled');
+            $self.prop('disabled', true);
+            $pair.prop('disabled', true);
             $.ajax({
                 url: botblockerData.ajaxurl,
                 type: "POST",
@@ -196,19 +201,32 @@
                     mu_enable: MUEnabled ? 1 : 0,
                 },
                 success: function (response) {
+                    $self.prop('disabled', false);
+                    $pair.prop('disabled', earlyInitWasDisabled);
                     if (response.success) {
-                     //   console.log("MU setting updated.");
-                        if (MUEnabled) {
-                            $('#bbcs_switch_early_init').prop('checked', false);
+                        // Sync both checkboxes from the server's authoritative dedup'd state.
+                        if (response.data && response.data.final_state) {
+                            var fs = response.data.final_state;
+                            $self.prop('checked', fs.mu_enable === 1 || fs.mu_enable === '1');
+                            $pair.prop('checked', fs.early_init_enable === 1 || fs.early_init_enable === '1');
+                        } else {
+                            // Fallback for older server responses without final_state.
+                            if (MUEnabled) {
+                                $pair.prop('checked', false);
+                            }
                         }
                         if (window.location.search.indexOf('page=bbcs_setup_guide') !== -1) {
                             setTimeout(function () { window.location.reload(); }, 300);
                         }
                     } else {
+                        $self.prop('checked', !MUEnabled);
                         console.error("MU update failed: " + (response.data && response.data.message || response.data));
                     }
                 },
                 error: function (xhr, status, error) {
+                    $self.prop('disabled', false);
+                    $pair.prop('disabled', earlyInitWasDisabled);
+                    $self.prop('checked', !MUEnabled);
                     alert(bbcsCommonL10n.ajax_error + error);
                 },
             });
@@ -217,16 +235,19 @@
         function onEarlyInitPluginChanged() {
             const EarlyInitEnabled = $(this).is(":checked");
             var $el = $(this);
+            var $pair = $('#bbcs_switch_mu_plugin');
             var earlyAvailable = $el.data('early-available');
             var addonsUrl = $el.data('addons-url');
             var proUrl = $el.data('pro-url');
             if (!earlyAvailable && EarlyInitEnabled) {
-
                 $el.prop('checked', false);
                 var go = confirm(bbcsCommonL10n.early_init_confirm);
                 if (go && addonsUrl) { window.location.href = addonsUrl; }
                 return;
             }
+            var pairWasDisabled = $pair.prop('disabled');
+            $el.prop('disabled', true);
+            $pair.prop('disabled', true);
             $.ajax({
                 url: botblockerData.ajaxurl,
                 type: "POST",
@@ -237,22 +258,32 @@
                     early_init_enable: EarlyInitEnabled ? 1 : 0,
                 },
                 success: function (response) {
+                    $el.prop('disabled', false);
+                    $pair.prop('disabled', pairWasDisabled);
                     if (response.success) {
-                     //   console.log("EarlyInit setting updated.");
-                        if (EarlyInitEnabled) {
-                            $('#bbcs_switch_mu_plugin').prop('checked', false);
+                        // Sync both checkboxes from the server's authoritative dedup'd state.
+                        if (response.data && response.data.final_state) {
+                            var fs = response.data.final_state;
+                            $el.prop('checked', fs.early_init_enable === 1 || fs.early_init_enable === '1');
+                            $pair.prop('checked', fs.mu_enable === 1 || fs.mu_enable === '1');
+                        } else {
+                            // Fallback for older server responses without final_state.
+                            if (EarlyInitEnabled) {
+                                $pair.prop('checked', false);
+                            }
                         }
                         if (window.location.search.indexOf('page=bbcs_setup_guide') !== -1) {
                             setTimeout(function () { window.location.reload(); }, 300);
                         }
                     } else {
-
                         $el.prop('checked', false);
-                        var msg = (response.data && response.data.message) || response.data || 'Early Init cannot be enabled. Please ensure Cloud API and addon are active.';
+                        var msg = (response.data && response.data.message) || response.data || (window.bbcsCommonL10n && bbcsCommonL10n.early_init_error) || 'Early Init cannot be enabled. Please ensure Cloud API and addon are active.';
                         alert(msg);
                     }
                 },
                 error: function (xhr, status, error) {
+                    $el.prop('disabled', false);
+                    $pair.prop('disabled', pairWasDisabled);
                     alert(bbcsCommonL10n.ajax_error + error);
                 },
             });
@@ -305,20 +336,41 @@
     };
 
     window.copyToClipboard = function (button) {
-        const input = button.previousElementSibling;
+        var input = button.previousElementSibling;
+        if (!input || input.tagName !== 'INPUT') {
+            var wrap = button.closest('.bbcs-input-copy, .bbcs_text_input_inner');
+            if (wrap) input = wrap.querySelector('input');
+        }
+        if (!input) return;
+
         input.select();
         input.setSelectionRange(0, 99999);
-        navigator.clipboard.writeText(input.value).then(() => {
-            button.querySelector('i').setAttribute('title', 'Copied!');
-            const tooltip = bootstrap.Tooltip.getInstance(button.querySelector('i'));
-            tooltip.show();
-            setTimeout(() => {
-                tooltip.hide();
-                button.querySelector('i').setAttribute('title', 'Copy to clipboard');
-            }, 2000);
-        }).catch(err => {
-            alert(bbcsCommonL10n.failed_copy + err);
-        });
+
+        function done() {
+            var use = button.querySelector('use');
+            if (use) {
+                var orig = use.getAttribute('href');
+                use.setAttribute('href', '#bbcs-i-check');
+                setTimeout(function () { use.setAttribute('href', orig); }, 1500);
+                return;
+            }
+            var ico = button.querySelector('.fa-copy');
+            if (ico) {
+                ico.classList.remove('fa-copy');
+                ico.classList.add('fa-check');
+                setTimeout(function () {
+                    ico.classList.remove('fa-check');
+                    ico.classList.add('fa-copy');
+                }, 1500);
+            }
+        }
+
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(input.value).then(done);
+        } else {
+            document.execCommand('copy');
+            done();
+        }
     };
 
 
@@ -468,7 +520,7 @@
                         }, 1000);
                     } else {
                         $btn.prop('disabled', false).html(initialText);
-                        var errMsg = (response.data && response.data.message) || 'Error';
+                        var errMsg = (response.data && response.data.message) || (bbcsCommonL10n && bbcsCommonL10n.error_generic) || 'Error';
                         alert(bbcsCommonL10n.error_prefix + errMsg);
                     }
                 },

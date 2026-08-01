@@ -1,10 +1,10 @@
 === BotBlocker Security - Firewall & Bot Protection ===
 Contributors: globusstudio, alukashevych, alexandrkinakh
 Tags: security, firewall, anti-spam, captcha, brute force
-Requires at least: 5.0
+Requires at least: 5.1
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.6.21
+Stable tag: 1.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -36,6 +36,7 @@ If your site is hit by login brute force, spam comments, fake Googlebots, conten
 * **LLM / AI crawler management** - allow or block GPTBot, ChatGPT-User, ClaudeBot, PerplexityBot, Bytespider via CIDR-verified IP ranges. Trusted crawlers verified, impersonators blocked.
 * **Country, ASN, IP range, User-Agent, Referer** blocking rules with instant enforcement
 * **Cloudflare-aware** real-IP resolution and origin bypass protection
+* **TLS fingerprinting (JA3/JA4)** - detects bots by TLS handshake signature, cross-validates against User-Agent. Opt-in, requires server module. See `docs/TLS-FINGERPRINTING.md`
 * **Full IPv6 support** - separate tables and logic for IPv4 and IPv6, every feature works with both
 * **Live traffic monitor** with attack map, country, ASN, device, browser, and exact block reason for every request
 * **Built-in caching** via Redis and Memcached - free, auto-disable on connection failure
@@ -50,7 +51,7 @@ If your site is hit by login brute force, spam comments, fake Googlebots, conten
 
 = 💳 Payment Gateway Bypass (Free) =
 
-Auto-detects 25+ e-commerce platforms (WooCommerce, Easy Digital Downloads, SureCart, MemberPress, Paid Memberships Pro, Give, Dokan, CartFlows, FunnelKit, and more) and 150+ payment providers (Stripe, PayPal, Mollie, Adyen, Braintree, Square, Razorpay, Klarna, Paddle, Authorize.Net, 2Checkout, YooKassa, LiqPay, and more). **Webhooks, IPN callbacks, and payment notifications never get blocked.** Four detection layers ensure zero false positives on payment traffic.
+Auto-detects 25+ e-commerce platforms (WooCommerce, Easy Digital Downloads, SureCart, MemberPress, Paid Memberships Pro, Give, Dokan, CartFlows, FunnelKit, and more) and 150+ payment providers (Stripe, PayPal, Mollie, Adyen, Braintree, Square, Razorpay, Klarna, Paddle, Authorize.Net, 2Checkout, YooKassa, LiqPay, and more). Also auto-detects webhooks from form plugins (Contact Form 7, WPForms, Gravity Forms, Ninja Forms, Formidable Forms, Forminator, Fluent Forms). **Webhooks, IPN callbacks, and payment notifications never get blocked.** Four detection layers ensure zero false positives on payment traffic.
 
 = 📊 Visibility & Control (Free) =
 
@@ -59,7 +60,8 @@ Auto-detects 25+ e-commerce platforms (WooCommerce, Easy Digital Downloads, Sure
 * Health Score gauge - 42 parameters across 3 categories, 5 security levels from Critical to Secure
 * 3 security presets - Light, Strong, Full - one-click configuration
 * Setup Wizard - 8 steps from welcome to test attack, setup in under 5 minutes
-* 8 interface languages - English, Deutsch, Español, Français, Polski, Русский, Українська + POT template
+* **⌘K Command Palette** - press Ctrl+K / ⌘K on any admin page to instantly search and navigate every setting, tab, and action. 30+ quick-action shortcuts ("Block an IP address", "Set up 2FA", "Run malware scan"). Near-zero-click configuration.
+* 17 interface languages - English, Deutsch, Español, Français, Polski, Русский, Українська, العربية, עברית, Italiano, 日本語, 한국어, Nederlands, Português, Svenska, Türkçe, 中文 + POT template
 * Configurable retention with timezone and DST awareness
 * Clean uninstall - drops all 16 tables, removes 40+ options, clears cron hooks. Zero leftover data.
 
@@ -73,6 +75,11 @@ Auto-detects 25+ e-commerce platforms (WooCommerce, Easy Digital Downloads, Sure
 * Security Headers addon - HSTS, CSP, X-Frame-Options, Permissions-Policy, Referrer-Policy, X-Content-Type-Options
 * Speed Up WordPress addon - 14 frontend and server optimizations
 * Malware Scanner addon - 25 patterns scanning files + 7 database tables, detects webshells, eval injections, base64-obfuscated code hidden in wp_options and post_content
+* Behavioral Analysis Engine addon - real-time behavioral pattern detection with scoring and automated response
+* Cookie Alert addon - customizable GDPR/CCPA cookie consent banner with compliance tools
+* Cron Jobs addon - advanced WordPress cron management, monitoring, and debugging
+* Truth Source addon - file integrity verification against known-good WordPress core, plugin, and theme references
+* XMLRPC Tunnel addon - secure XMLRPC access through obfuscated endpoints with rate limiting
 * Priority support - 24-hour response time
 
 Four plans to match your traffic: **Premium** ($12/month, 25k cloud checks), **Pro** ($50/month, 100k cloud checks), **Ultimate** ($100/month, 250k cloud checks + emergency 24h support). Annual billing includes 1 month free. 30-day refund policy. Licensed per domain, billed securely via Freemius.
@@ -87,14 +94,16 @@ Four plans to match your traffic: **Premium** ($12/month, 25k cloud checks), **P
 * **Cache plugin compatibility** - automatic `DONOTCACHEPAGE` and `Cache-Control: no-store` on verification pages. Works with WP Super Cache, W3 Total Cache, WP Rocket, LiteSpeed Cache, Hummingbird, WP Fastest Cache, Cache Enabler
 * **CDN and WAF compatibility** - Cloudflare, Sucuri, Incapsula, AWS CloudFront, Fastly, KeyCDN, StackPath. Multi-header real-IP resolution (CF-Connecting-IP, X-Forwarded-For, X-Real-IP)
 * **DDoS Protection Compatibility** - automatic detection of JS-challenges from DDoS-Guard, Stormwall, Qrator. HMAC-signed AJAX responses, Circuit Breaker with automatic retry and backoff. BotBlocker is the only WordPress plugin that works correctly behind aggressive DDoS protection without manual configuration.
+* **Fatal Error Hive Mode** - even during PHP fatal errors from other plugins or themes, BotBlocker renders an emergency page instead of a white screen, preserving the security barrier.
+* **Floating support widget** on all admin pages - submit support tickets directly from the dashboard without leaving your site.
 * **Multisite Support** - network activation, per-site data, per-site cleanup. Free on all plans.
-* **PHP 7.4 – 8.5** - tested across 7 PHP versions. **WordPress 5.0 – 7.0+**. Linux and Windows.
+* **PHP 7.4 – 8.5** - tested across 7 PHP versions. **WordPress 5.1 – 7.0+**. Linux and Windows.
 * GDPR and CCPA compliant - no PII collected, technical parameters only, Legitimate Interest basis (Art. 6(1)(f))
 
 = 🤝 Trusted by =
 
 * 3 000+ active installations
-* Translated into 8 languages
+* Translated into 17 languages
 * Tested up to WordPress 7.0 and PHP 8.5
 * Developed and maintained by GLOBUS.studio
 
@@ -123,6 +132,8 @@ No. Measured overhead is +3-15ms for verified visitors with zero database querie
 = Does it work with Cloudflare or a CDN? =
 
 Yes. BotBlocker reads proxy headers (CF-Connecting-IP, X-Forwarded-For, X-Real-IP) to find the real client IP and blocks attempts to bypass Cloudflare by hitting your origin directly. Fully compatible with Cloudflare, Sucuri, Incapsula, AWS CloudFront, Fastly, KeyCDN, and StackPath.
+
+Cloudflare Business+ users can also enable TLS fingerprinting (JA3/JA4) for bot detection - see `docs/TLS-FINGERPRINTING.md`.
 
 = Does it work with WooCommerce and payment gateways? =
 
@@ -190,11 +201,34 @@ Clean uninstall: all 16 database tables are dropped, 40+ WordPress options delet
 6. Settings panel with CAPTCHA mode selector, security presets, and detailed options
 7. Speed optimization settings (PRO)
 8. Integration settings for reCAPTCHA, Redis, Memcached and more
-9. Addon marketplace - one-click install for Security Headers, Hide Login, Speed Up, Malware Scanner
+9. Addon marketplace - one-click install for Security Headers, Hide Login, Speed Up, Malware Scanner, Behavioral Analysis, Truth Source, and more
 10. Health Score gauge - 42 parameters, 5 security levels, real-time scoring
 
 == Changelog ==
  
+= 1.7 =
+Add completely redesigned admin interface with modern multipage layout, KPI cards and command palette integration
+Add Toastify notification system
+Add new setup wizard
+Add new addon marketplace page with one-click install
+Add 10 new interface languages: Arabic, Hebrew, Italian, Japanese, Korean, Dutch, Portuguese (Brazil), Swedish, Turkish, Chinese (Simplified) - 17 languages total
+Add Behavioral Analysis Engine addon with real-time pattern detection and scoring
+Add Cookie Alert addon 
+Add Cron Jobs addon
+Add Truth Source addon 
+Add XMLRPC Tunnel addon 
+Add rate limiting system
+Add TLS fingerprinting (JA3/JA4) 
+Add Telegram Bot integration 
+Add hot bans system
+Add core rate limit trait
+Add malware scanner pre-processor
+Add malware truth source verification comparing scanned files against known-good WordPress references
+Add HTTPS Protocol addon 
+Add short-term bans with configurable duration and automatic expiration
+Add session token verification improvements for restricted hosting environments
+Add KPI polling with real-time dashboard statistics updates
+
 = 1.6.21 =
 Add LLM/AI Crawler Whitelist system with dedicated database, admin management UI, and cloud-synced coverage for OpenAI, Claude, Gemini, Perplexity, and other AI crawlers
 Add Daily Summary Statistics pipeline with incremental aggregation for fast multi-day analytics

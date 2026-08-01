@@ -87,12 +87,15 @@ abstract class BotBlockerBase {
 	public $cookie_expected_hash;
 	public $cookie_visitor_data;
 	public $cookie_timestamp;
-	public $cookie_kind = 'none';
+	public $cookie_kind           = 'none';
 	public bool $is_asset_request = false;
 
 	// Verification state (written by resolve_cookie_identity).
 	// null = not yet computed, otherwise VERIFY_INVALID|VERIFY_VALID|VERIFY_EXPIRED.
 	public $verification_state = null;
+
+	public $core_individual_rpm = 0.0;
+	public $rate_subnet_pressure = 0.0;
 
 	// Rules properties
 	public $bbcs_rule      = array();
@@ -104,6 +107,11 @@ abstract class BotBlockerBase {
 	public $self_ips       = array();
 	public $admin_ips      = array();
 	public $bbcs_good_bots = array();
+	
+	public $visitor_ja3 = '';
+	public $visitor_ja4 = '';
+	public $visitor_tls_fingerprint_category = 'unknown';
+	public $bbcs_tls_fingerprints = array();
 
 	// Response properties
 	public $error_headers = array();
@@ -117,7 +125,7 @@ abstract class BotBlockerBase {
 
 	// Endpoint properties
 	public $reason_for_action;
-	public $result_of_action      = BOTBLOCKER_EMPTY;
+	public $result_of_action       = BOTBLOCKER_EMPTY;
 	public $payment_bypass_reason  = '';
 	public $payment_bypass_partial = false;
 

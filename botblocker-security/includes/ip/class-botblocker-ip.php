@@ -19,16 +19,33 @@ class BotBlockerIp {
 		$data = get_transient( $key );
 
 		if ( $data === false ) {
-			set_transient( $key, array( 'count' => 1, 'since' => time() ), $window );
+			set_transient(
+				$key,
+				array(
+					'count' => 1,
+					'since' => time(),
+				),
+				$window
+			);
 			return true;
 		}
 
 		if ( ! is_array( $data ) ) {
-			$data = array( 'count' => (int) $data, 'since' => time() - $window );
+			$data = array(
+				'count' => (int) $data,
+				'since' => time() - $window,
+			);
 		}
 
 		if ( time() - $data['since'] >= $window ) {
-			set_transient( $key, array( 'count' => 1, 'since' => time() ), $window );
+			set_transient(
+				$key,
+				array(
+					'count' => 1,
+					'since' => time(),
+				),
+				$window
+			);
 			return true;
 		}
 
@@ -36,7 +53,14 @@ class BotBlockerIp {
 			return false;
 		}
 
-		set_transient( $key, array( 'count' => $data['count'] + 1, 'since' => $data['since'] ), $window );
+		set_transient(
+			$key,
+			array(
+				'count' => $data['count'] + 1,
+				'since' => $data['since'],
+			),
+			$window
+		);
 		return true;
 	}
 
@@ -49,6 +73,16 @@ class BotBlockerIp {
 		$hex = unpack( 'H*hex', $bin );
 		$ip  = substr( preg_replace( '/([A-f0-9]{4})/', '$1:', $hex['hex'] ), 0, -1 );
 		return $ip;
+	}
+
+	public static function getVersion( string $ip ): int {
+		if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
+			return 4;
+		}
+		if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
+			return 6;
+		}
+		return 0;
 	}
 
 	public static function toNumeric( string $ip ) {
@@ -253,7 +287,10 @@ class BotBlockerIp {
 					$wpdb->prepare(
 						"INSERT INTO `{$wpdb->bbcs_ptrcache}` (ip, ptr, date, etime) VALUES (%s, %s, %d, %s)
 				ON DUPLICATE KEY UPDATE ptr = VALUES(ptr), date = VALUES(date), etime = VALUES(etime)",
-						$ip, $ptr, $time, $ttl
+						$ip,
+						$ptr,
+						$time,
+						$ttl
 					)
 				);
 			}
@@ -371,6 +408,23 @@ class BotBlockerIp {
 		return $ip;
 	}
 
+	public static function getCurrentIp(): string {
+		$raw = '';
+		if ( ! empty( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ) {
+			$raw = sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_CONNECTING_IP'] ) );
+		} elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
+			$raw = sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_FORWARDED_FOR'] ) );
+		} elseif ( ! empty( $_SERVER['HTTP_X_REAL_IP'] ) ) {
+			$raw = sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REAL_IP'] ) );
+		} elseif ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) {
+			$raw = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) );
+		}
+		if ( strpos( $raw, ',' ) !== false ) {
+			$raw = trim( explode( ',', $raw )[0] );
+		}
+		return sanitize_text_field( $raw );
+	}
+
 	public static function computePtrSubnet( string $ip, int $ip_version, int $mask_v4, int $mask_v6 ): string {
 		if ( $ip_version == 4 ) {
 			if ( $mask_v4 >= 32 ) {
@@ -386,8 +440,8 @@ class BotBlockerIp {
 			return self::expandIPv6( $ip ) . '/128';
 		}
 
-		$expanded = self::expandIPv6( $ip );
-		$groups   = explode( ':', $expanded );
+		$expanded       = self::expandIPv6( $ip );
+		$groups         = explode( ':', $expanded );
 		$bits_remaining = $mask_v6;
 		$result_groups  = array();
 		foreach ( $groups as $group ) {

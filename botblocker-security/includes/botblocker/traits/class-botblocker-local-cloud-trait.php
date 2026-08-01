@@ -15,51 +15,52 @@ trait BotBlockerLocalCloudTrait {
 			$this->cloud_data  = $cached_data;
 			$this->cloud_error = BOTBLOCKER_EMPTY;
 		} else {
-    		$auth = BotBlockerPro::buildAuthPayload( $this->settings );
+			$auth = BotBlockerPro::buildAuthPayload( $this->settings );
 			$data = array_merge(
 				$auth,
 				array(
-				'cid'                   => $this->cid,
-				'score'                 => $this->post_recaptcha_score,
-				'cfcountry'             => $this->post_cloudflare_country,
-				'country'               => $this->country,
-				'ip'                    => $this->ip,
-				'version'               => $this->version,
-				'ptr'                   => $this->ptr,
-				'w'                     => $this->post_width,
-				'h'                     => $this->post_height,
-				'cw'                    => $this->post_client_width,
-				'ch'                    => $this->post_client_height,
-				'co'                    => $this->post_color_depth,
-				'pi'                    => $this->post_pixel_depth,
-				'ref'                   => $this->post_referrer,
-				'tz'                    => $this->post_timezone,
-				'adb'                   => $this->post_adblocker_found,
-				'ipdbc'                 => $this->post_ip_database_result,
-				'ipv4'                  => $this->post_ipv4_value,
-				'accept'                => $this->post_http_accept,
-				'referer'               => $this->referer,
-				'useragent'             => $this->useragent,
-				'accept_lang'           => $this->accept_lang,
-				'post_antidetect_scope' => $this->post_antidetect_scope,
-			) );
+					'cid'                   => $this->cid,
+					'score'                 => $this->post_recaptcha_score,
+					'cfcountry'             => $this->post_cloudflare_country,
+					'country'               => $this->country,
+					'ip'                    => $this->ip,
+					'version'               => $this->version,
+					'ptr'                   => $this->ptr,
+					'w'                     => $this->post_width,
+					'h'                     => $this->post_height,
+					'cw'                    => $this->post_client_width,
+					'ch'                    => $this->post_client_height,
+					'co'                    => $this->post_color_depth,
+					'pi'                    => $this->post_pixel_depth,
+					'ref'                   => $this->post_referrer,
+					'tz'                    => $this->post_timezone,
+					'adb'                   => $this->post_adblocker_found,
+					'ipdbc'                 => $this->post_ip_database_result,
+					'ipv4'                  => $this->post_ipv4_value,
+					'accept'                => $this->post_http_accept,
+					'referer'               => $this->referer,
+					'useragent'             => $this->useragent,
+					'accept_lang'           => $this->accept_lang,
+					'post_antidetect_scope' => $this->post_antidetect_scope,
+				)
+			);
 
 			$this->cloud_error = BOTBLOCKER_EMPTY;
 
-			$cloud = BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_GS_URL );
+			$cloud = BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_URL );
 			if ( $cloud === false || isset( $cloud['error'] ) ) {
 				if ( $cloud === false ) {
-					$this->cloud_error = 'BOTBLOCKER_API_GS_URL connection failed.';
+					$this->cloud_error = 'BOTBLOCKER_API_URL connection failed.';
 				} elseif ( isset( $cloud['error'] ) ) {
-					$this->cloud_error = 'BOTBLOCKER_API_GS_URL error: ' . $cloud['error'];
+					$this->cloud_error = 'BOTBLOCKER_API_URL error: ' . $cloud['error'];
 				}
-				$cloud = BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_URL );
+				$cloud = BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_GS_URL );
 
 				if ( $cloud === false || isset( $cloud['error'] ) ) {
 					if ( $cloud === false ) {
-						$this->cloud_error = 'BOTBLOCKER_API_URL connection failed.';
+						$this->cloud_error = 'BOTBLOCKER_API_GS_URL connection failed.';
 					} elseif ( isset( $cloud['error'] ) ) {
-						$this->cloud_error = 'BOTBLOCKER_API_URL error: ' . $cloud['error'];
+						$this->cloud_error = 'BOTBLOCKER_API_GS_URL error: ' . $cloud['error'];
 					}
 					if ( $this->settings->unresponsive == 0 ) {
 						$payload = BotBlockerStore::localCheckResult( BBCS_LOCAL_RESULT_ERROR, $this->cloud_error, '' );
@@ -67,7 +68,7 @@ trait BotBlockerLocalCloudTrait {
 							$payload = $this->sign_response_payload( (array) $payload );
 						}
 						wp_send_json( $payload );
-											}
+					}
 				}
 			}
 
@@ -96,7 +97,7 @@ trait BotBlockerLocalCloudTrait {
 				$payload = $this->sign_response_payload( (array) $payload );
 			}
 			wp_send_json( $payload );
-					}
+		}
 
 		if ( $status === BBCS_CLOUD_STATUS_GRAY && $this->settings->unresponsive == 0 ) {
 			$payload = BotBlockerStore::localCheckResult( BBCS_LOCAL_RESULT_ERROR, 'Cloud API ident visitor as gray', '' );
@@ -104,7 +105,7 @@ trait BotBlockerLocalCloudTrait {
 				$payload = $this->sign_response_payload( (array) $payload );
 			}
 			wp_send_json( $payload );
-					}
+		}
 
 		if ( $status !== BBCS_CLOUD_STATUS_GOOD && $this->settings->unresponsive == 1 ) {
 			// $message = 'Cloud API mark visitor as not good, but access allowed due to unresponsive flag';
@@ -129,7 +130,7 @@ trait BotBlockerLocalCloudTrait {
 					$payload = $this->sign_response_payload( (array) $payload );
 				}
 				wp_send_json( $payload );
-							}
+			}
 		}
 
 		// TODO processFullCloud (for PRO)

@@ -1,28 +1,32 @@
 <?php
+
 declare(strict_types=1);
-if ( ! defined( 'ABSPATH' ) ) {
+if (! defined('ABSPATH')) {
 	exit; // Exit if accessed directly
 }
 
-class BotBlockerSettings {
+class BotBlockerSettings
+{
 
 	public $secure_mode = 1; // 1 = Frontend, 2 = Full
 
-	public $admin_gmt_offset    = 0;
-	public $admin_report_period = 5;
-	public $admin_store_period  = 7;
-	public $admin_uniq_type     = 'host';
-	public $allow_self_ip_req   = 1;
-	public $autosave_admin_ip    = 0;
-	public $skip_logged_in_users = 0;
+	public $admin_gmt_offset		= 0;
+	public $admin_report_period		= 5;
+	public $admin_store_period		= 7;
+	public $admin_uniq_type			= 'host';
+	public $allow_self_ip_req		= 1;
+	public $autosave_admin_ip		= 0;
+	public $skip_logged_in_users	= 0;
 
 	public $bbcs_api_gs_url = '';
 	public $bbcs_api_url    = '';
 
+	public $bbcs_allow_empty_accept_lang = 0;
 	public $bbcs_captcha_img_inline = 1;
 	public $bbcs_captcha_img_pack   = 1;
 	public $bbcs_captcha_mode       = 1;
 	public $bbcs_captcha_wait       = 30;
+	public $bbcs_cors_strict_headers    = 0;
 	public $bbcs_ddos_resilience    = 0;
 
 	public $block_adblocker_users      = 1;
@@ -65,10 +69,10 @@ class BotBlockerSettings {
 	public $botblocker_log_tests    = 1;
 	public $botblocker_log_wp       = 0;
 
-	public $payment_bypass_enable        = 0;
-	public $payment_bypass_log           = 1;
-	public $payment_strict_method        = 0;
-	public $payment_keep_ip_rules        = 0;
+	public $payment_bypass_enable	= 0;
+	public $payment_bypass_log		= 1;
+	public $payment_strict_method	= 0;
+	public $payment_keep_ip_rules	= 0;
 
 	public $cache_ui_data     = 0;
 	public $cache_ui_duration = 3600;
@@ -77,10 +81,10 @@ class BotBlockerSettings {
 
 	public $cloud_api_timeout = 5;
 
-	public $cookie          = 'BotBlocker';
-	public $cookie_lifetime = 604800;
-	public $session_token_enabled = 1;
-	public $vary_cookie     = 0;
+	public $cookie          		= 'BotBlocker';
+	public $cookie_lifetime 		= 604800;
+	public $session_token_enabled 	= 1;
+	public $vary_cookie     		= 0;
 
 	public $daylight_saving_time = 0;
 	public $disable              = 0;
@@ -134,7 +138,7 @@ class BotBlockerSettings {
 
 	public $mu_enable = 0;
 
-	public $early_init_enable = 0;
+	public $early_init_enable 	= 0;
 
 	public $x_robots_directives = array();
 
@@ -153,12 +157,14 @@ class BotBlockerSettings {
 	public $time_ban   = 200;
 	public $time_ban_2 = 400;
 
-	public $unresponsive             = 0;
-	public $cloud_fallback_block     = 0;
-	public $utm_noindex              = 0;
-	public $utm_referrer             = 1;
+	public $unresponsive            = 0;
+	public $cloud_fallback_block	= 0;
+	public $utm_noindex             = 0;
+	public $utm_referrer            = 1;
 
-	public $telegram_notification           = 0;
+	public $telegram_notifications          = 0;
+	public $telegram_bot_token              = '';
+	public $telegram_chat_id                = '';
 	public $email_notifications             = 0;
 	public $pusher_notifications            = 0;
 	public $critical_load_notifications     = 0;
@@ -166,29 +172,48 @@ class BotBlockerSettings {
 
 	public $bbcs_2fa_enable = 0;
 
-	public function load( string $settingsFile ): bool {
-		$settings = bbcs_safe_load_with_recovery( $settingsFile );
-		if ( is_array( $settings ) && ! empty( $settings ) ) {
-			$this->assignSettings( $settings );
+	public $tls_fingerprint_check 			= 0;
+	public $tls_fingerprint_header_ja3		= 'X-TLS-JA3';
+	public $tls_fingerprint_header_ja4 		= 'X-TLS-JA4';
+	public $tls_fingerprint_trusted_proxy	= '';
+
+	public $bbcs_rate_check_enabled     = 1;
+	public $bbcs_rate_captcha_rpm       = 30;
+	public $bbcs_rate_block_rpm         = 50;
+	public $bbcs_rate_window_minutes    = 5;
+	public $bbcs_rate_subnet_enabled    = 1;
+	public $bbcs_rate_subnet_multiplier = 3.0;
+	public $bbcs_rate_floor_percent     = 0.1;
+	public $bbcs_rate_subnet_mask       = '24-64';
+	public $bbcs_rate_block_duration    = 600;
+
+	public $fingerprint_sticky_block = 0;
+
+	public function load(string $settingsFile): bool
+	{
+		$settings = bbcs_safe_load_with_recovery($settingsFile);
+		if (is_array($settings) && ! empty($settings)) {
+			$this->assignSettings($settings);
 			return true;
 		}
 
-		$settings = BotBlockerFileRenderer::generateSettingsFile( true );
-		if ( is_array( $settings ) ) {
-			$this->assignSettings( $settings );
+		$settings = BotBlockerFileRenderer::generateSettingsFile(true);
+		if (is_array($settings)) {
+			$this->assignSettings($settings);
 			return true;
 		}
 		return false;
 	}
 
-	private function assignSettings( array $settings ): void {
-		$defaults = get_class_vars( __CLASS__ );
-		foreach ( $settings as $key => $value ) {
-			if ( ! property_exists( $this, $key ) ) {
+	private function assignSettings(array $settings): void
+	{
+		$defaults = get_class_vars(__CLASS__);
+		foreach ($settings as $key => $value) {
+			if (! property_exists($this, $key)) {
 				continue;
 			}
-			if ( array_key_exists( $key, $defaults ) && is_scalar( $defaults[ $key ] ) && is_scalar( $value ) ) {
-				settype( $value, gettype( $defaults[ $key ] ) );
+			if (array_key_exists($key, $defaults) && is_scalar($defaults[$key]) && is_scalar($value)) {
+				settype($value, gettype($defaults[$key]));
 			}
 			$this->$key = $value;
 		}

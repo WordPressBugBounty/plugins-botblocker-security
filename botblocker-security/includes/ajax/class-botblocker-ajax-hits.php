@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
-if ( ! defined( 'ABSPATH' ) ) { exit; }
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; }
 
 class BotBlockerAjaxHits {
 
@@ -103,8 +104,8 @@ class BotBlockerAjaxHits {
 				'passed',
 				'cid',
 			);
-			$search_parts  = array();
-			$search_values = array();
+			$search_parts       = array();
+			$search_values      = array();
 
 			foreach ( $search_fields as $field ) {
 				$search_parts[]  = "CAST({$field} AS CHAR) LIKE %s";
@@ -401,7 +402,7 @@ class BotBlockerAjaxHits {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' type=' . $type . ' triggering create_rule' );
 			}
-			// Other types — delegate to generic rule handler
+			// Other types - delegate to generic rule handler
 	        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 			do_action( 'wp_ajax_bbcs_create_rule' );
 		}

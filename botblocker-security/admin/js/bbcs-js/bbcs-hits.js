@@ -1,6 +1,39 @@
 (function ($) {
     "use strict";
   
+    // Lightweight modal shim - works when Bootstrap JS is not loaded (new UI).
+    function modalAction(el, action) {
+      if (typeof $.fn.modal === 'function') {
+        $(el).modal(action);
+      } else {
+        if (action === 'show') {
+          el.classList.add('show');
+          el.style.display = 'block';
+          document.body.classList.add('modal-open');
+        } else {
+          el.classList.remove('show');
+          el.style.display = 'none';
+          document.body.classList.remove('modal-open');
+        }
+      }
+    }
+
+    // Close modal on data-bs-dismiss="modal" click (fallback when Bootstrap JS is absent).
+    if (typeof $.fn.modal !== 'function') {
+      $(document).on('click', '[data-bs-dismiss="modal"]', function () {
+        var modal = $(this).closest('.modal');
+        if (modal.length) {
+          modalAction(modal[0], 'hide');
+        }
+      });
+      // Close modal on backdrop click (click outside modal-content).
+      $(document).on('click', '.modal.show', function (e) {
+        if (e.target === this) {
+          modalAction(this, 'hide');
+        }
+      });
+    }
+  
     /**
      * Get Font Awesome icon class for browser
      * @param {string} browserName - Browser name
@@ -200,6 +233,7 @@
     var tables = {
       "botblocker-hits": { 
         initialized: false, 
+        justInitialized: false,
         action: "bbcs_get_botblocker_hits",
         currentRequest: null,
         lastRequestId: 0,
@@ -207,6 +241,7 @@
       },
       "botblocker-hits-admin": {
         initialized: false,
+        justInitialized: false,
         action: "bbcs_get_botblocker_admin_hits",
         currentRequest: null,
         lastRequestId: 0,
@@ -214,6 +249,7 @@
       },
       "botblocker-other-admin": {
         initialized: false,
+        justInitialized: false,
         action: "bbcs_get_botblocker_other_hits",
         currentRequest: null,
         lastRequestId: 0,
@@ -221,12 +257,31 @@
       },
       "botblocker-hits-full": {
         initialized: false,
+        justInitialized: false,
         action: "bbcs_get_botblocker_all_hits",
         currentRequest: null,
         lastRequestId: 0,
         isLoading: false
       },
     };
+
+    // New UI data-tab name → table ID mapping (for bbcs:tab-changed event).
+    var newUITabMap = {
+      "Site Visitors":      "botblocker-hits",
+      "Admin Panel Log":    "botblocker-hits-admin",
+      "WordPress Actions":  "botblocker-other-admin",
+      "Full Log":           "botblocker-hits-full"
+    };
+
+    // Register loading states for new UI tab switching guard.
+    if (typeof window.BBCS_TabLoadingRegistry !== 'undefined') {
+      window.BBCS_TabLoadingRegistry['Site Visitors']     = function() { return tables['botblocker-hits'].isLoading; };
+      window.BBCS_TabLoadingRegistry['Admin Panel Log']   = function() { return tables['botblocker-hits-admin'].isLoading; };
+      window.BBCS_TabLoadingRegistry['WordPress Actions'] = function() { return tables['botblocker-other-admin'].isLoading; };
+      window.BBCS_TabLoadingRegistry['Full Log']          = function() { return tables['botblocker-hits-full'].isLoading; };
+    }
+
+    var lastUITab = '';
   
     function initializeDataTable(tableId) {
       if (
@@ -300,13 +355,10 @@
                 });
                 var $icon = $('<i>', {
                   style: 'font-size:14px; line-height:1em; width:14px; height:14px;',
-                  class: 'fas fa-gear bbcs-gray ms-1',
-                  'data-bs-toggle': 'tooltip',
-                  'data-bs-html': 'true',
-                  'data-bs-placement': 'top',
-                  'data-bs-original-title': 'Add rule'
+                  class: 'fas fa-gear bbcs-gray ms-1'
                 });
                 $btn.append($icon);
+                $btn.append($('<span>', { class: 'bbcs-help-tip' }).text(bbcsHitsL10n.add_rule));
                 return "<span class='bbcs-" + data.m.toLowerCase() + "'>" + data.m + "</span>" + $btn.prop('outerHTML') + "<br><br>" + data.date + "<br><br><small>" + data.time + "</small>";
               }, 
             },
@@ -346,7 +398,7 @@
               data: "p_info", 
               width: "300px",
               render: function (data) {
-                return "<span class='bbcs-sb'>Page:</span><br>" + data.p + "<br><br><span class='bbcs-sb'>Referer:</span><br><small>" + data.r + "</small>";
+                return "<span class='bbcs-sb'>" + bbcsHitsL10n.page_label + "</span><br>" + data.p + "<br><br><span class='bbcs-sb'>" + bbcsHitsL10n.referer_label + "</span><br><small>" + data.r + "</small>";
               },               
             },
             {
@@ -354,10 +406,10 @@
               width: "200px",
               render: function (data) {
                 return (
-                  "Display ( " + data.js_w +"x" +data.js_h + "x" + data.js_co + "/" + data.js_pi +")<br>" +
-                  "Web ( " + data.js_cw +"x" + data.js_ch +")<br>" +
-                  "Adblocker: " + data.ad + "<br><br>"+
-                  "<small><b>CID:</b> " + data.cid + "</small>"                  
+                  bbcsHitsL10n.display + " ( " + data.js_w +"x" +data.js_h + "x" + data.js_co + "/" + data.js_pi +")<br>" +
+                  bbcsHitsL10n.web + " ( " + data.js_cw +"x" + data.js_ch +")<br>" +
+                  bbcsHitsL10n.adblocker + " " + data.ad + "<br><br>"+
+                  "<small><b>" + bbcsHitsL10n.cid + "</b> " + data.cid + "</small>"                  
                 );
               },
             },
@@ -375,55 +427,78 @@
               className: "text-wrap",
             },
           ],
-          layout: {
-            topStart: {
-              buttons: [
-                'copy', 'csv', 'excel', 'print', //'colvis',                
-                {
-                  extend: 'colvis',
-                  columnText: function (dt, idx, title) {
-                    if ((title || '').trim() === 'Date/Time') {
-                      return '';
-                    }
-                    return title;
-                  },                  
-                },
-                {
-                  extend: 'collection',
-                  text: 'Length Menu',
-                  buttons: [
-                    { text: '10', action: function ( e, dt, node, config ) { dt.page.len(10).draw(); } },
-                    { text: '25', action: function ( e, dt, node, config ) { dt.page.len(25).draw(); } },
-                    { text: '50', action: function ( e, dt, node, config ) { dt.page.len(50).draw(); } },
-                    { text: '100', action: function ( e, dt, node, config ) { dt.page.len(100).draw(); } }
-                  ]
+          layout: (function () {
+            var isNewUI = !!document.querySelector('.bbcs-app');
+            return isNewUI ? {
+              topStart: {
+                search: {
+                  text: '',
+                  placeholder: bbcsHitsL10n.search_placeholder
                 }
-              ]
-            }
-          },
+              },
+              topEnd: {
+                buttons: [
+                  { extend: 'copy',  className: 'd-none' },
+                  { extend: 'csv',  className: 'd-none' },
+                  { extend: 'excel', className: 'd-none' }
+                ]
+              }
+            } : {
+              topStart: {
+                buttons: [
+                  'copy', 'csv', 'excel', 'print', //'colvis',
+                  {
+                    extend: 'colvis',
+                    columnText: function (dt, idx, title) {
+                      if ((title || '').trim() === 'Date/Time') {
+                        return '';
+                      }
+                      return title;
+                    },
+                  },
+                  {
+                    extend: 'collection',
+                    text: 'Length Menu',
+                    buttons: [
+                      { text: '10', action: function ( e, dt, node, config ) { dt.page.len(10).draw(); } },
+                      { text: '25', action: function ( e, dt, node, config ) { dt.page.len(25).draw(); } },
+                      { text: '50', action: function ( e, dt, node, config ) { dt.page.len(50).draw(); } },
+                      { text: '100', action: function ( e, dt, node, config ) { dt.page.len(100).draw(); } }
+                    ]
+                  }
+                ]
+              }
+            };
+          })(),
           initComplete: function (settings, json) {
             var api = this.api();
-            api.columns().every(function () {
-              var column = this;
-              var header = $(column.header());
-              var body = $(column.nodes());
-  
-              if (body.length > 0) {
-                header.css("min-width", body.first().css("width"));
-                header.css("max-width", body.first().css("width"));
-              }
-            });
-  
-            api.columns.adjust().draw();
+            var $tabPanel = $('#' + tableId).closest('.bbcs-tabpanel');
+            var isHidden = $tabPanel.length && $tabPanel[0].hasAttribute('hidden');
+
+            if (!isHidden) {
+              api.columns().every(function () {
+                var column = this;
+                var header = $(column.header());
+                var body = $(column.nodes());
+
+                if (body.length > 0) {
+                  header.css("min-width", body.first().css("width"));
+                  header.css("max-width", body.first().css("width"));
+                }
+              });
+            }
+
+            api.columns.adjust();
           },
         });
         tables[tableId].initialized = true;
+        tables[tableId].justInitialized = true;
       }
     }
   
 
     $(document).ready(function () {
-        // Permanently ban → hide date picker + fill +200y.
+        // Permanently ban → hide date picker + fill BOTBLOCKER_EXP_INF date.
         $(document).on('change', 'select[name="rule"]', function () {
             var $expires = $(this).closest('form').find('[name="expires"]');
             if (!$expires.length) return;
@@ -455,6 +530,13 @@
               initializeDataTable("botblocker-hits-full");
           }
       }
+
+      function initializeTabByUITabName(tabName) {
+          var tableId = newUITabMap[tabName];
+          if (tableId) {
+              initializeDataTable(tableId);
+          }
+      }
   
       const hash = window.location.hash;
       if (hash) {
@@ -462,18 +544,91 @@
           if (tabLink.length) {
               tabLink.tab('show'); 
               initializeTabTable(tabLink.attr('href')); 
+          } else {
+              // New UI hash slugs (e.g. #site-visitors → "Site Visitors").
+              var hashToTab = {
+                  '#site-visitors': 'Site Visitors',
+                  '#admin-panel-log': 'Admin Panel Log',
+                  '#wordpress-actions': 'WordPress Actions',
+                  '#full-log': 'Full Log',
+                  '#reports-dashboard': 'Reports Dashboard'
+              };
+              var cleanHash = hash.replace(/^#/, '');
+              var uiTabName = hashToTab['#' + cleanHash] || hashToTab[hash];
+              if (uiTabName) {
+                  lastUITab = uiTabName;
+                  initializeTabByUITabName(uiTabName);
+              }
           }
       } else {
          // initializeDataTable("botblocker-hits");
+      }
+
+      // New UI: hide pagehead-actions when Dashboard tab is active (default state).
+      if (!!document.querySelector('.bbcs-app')) {
+          var $actionsInit = $('.bbcs-pagehead-actions');
+          if ($actionsInit.length && $actionsInit.is(':visible')) {
+              $actionsInit.hide();
+          }
       }
 
       $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
           const target = $(e.target).attr('href'); 
           initializeTabTable(target); 
       });
-    });
 
-    $("#botblocker-hits, #botblocker-hits-admin, #botblocker-other-admin, #botblocker-hits-full").on("click", 'td>a.bbcs-icon-button', function (e) {
+      // New UI: listen for bbcs:tab-changed event fired by bbcs-multipage.js.
+      $(document).on('bbcs:tab-changed', function (e, data) {
+          if (data && data.tab) {
+              var sameTab = (lastUITab === data.tab);
+              lastUITab = data.tab;
+
+              initializeTabByUITabName(data.tab);
+              var tableId = newUITabMap[data.tab] || '';
+              if (tableId && $.fn.DataTable.isDataTable('#' + tableId)) {
+                  var dt = $('#' + tableId).DataTable();
+                  dt.columns.adjust();
+                  if (sameTab || tables[tableId].justInitialized) {
+                      tables[tableId].justInitialized = false;
+                  } else {
+                      dt.draw(false);
+                  }
+              }
+          }
+          // Toggle pagehead-actions visibility: hidden on Dashboard, shown on table tabs.
+          var $actions = $('.bbcs-pagehead-actions');
+          if ($actions.length) {
+              if (data.tab === 'Reports Dashboard') {
+                  $actions.hide();
+              } else {
+                  var tableId = newUITabMap[data.tab] || '';
+                  $actions.attr('data-bbcs-active-table', tableId);
+                  $actions.show();
+              }
+          }
+      });
+
+      // Pagehead export buttons - delegate to the active DataTable API.
+      $(document).on('click', '.bbcs-pagehead-actions .bbcs-btn--copy', function () {
+          var tableId = $('.bbcs-pagehead-actions').attr('data-bbcs-active-table');
+          if (!tableId || !$.fn.DataTable.isDataTable('#' + tableId)) return;
+          $('#' + tableId).DataTable().button('.buttons-copy').trigger();
+      });
+
+      $(document).on('click', '.bbcs-pagehead-actions .bbcs-btn--csv', function () {
+          var tableId = $('.bbcs-pagehead-actions').attr('data-bbcs-active-table');
+          if (!tableId || !$.fn.DataTable.isDataTable('#' + tableId)) return;
+          $('#' + tableId).DataTable().button('.buttons-csv').trigger();
+      });
+
+      $(document).on('click', '.bbcs-pagehead-actions .bbcs-btn--excel', function () {
+          var tableId = $('.bbcs-pagehead-actions').attr('data-bbcs-active-table');
+          if (!tableId || !$.fn.DataTable.isDataTable('#' + tableId)) return;
+          $('#' + tableId).DataTable().button('.buttons-excel').trigger();
+      });
+      });
+
+    $("#botblocker-hits, #botblocker-hits-admin, #botblocker-other-admin, #botblocker-hits-full").on("click", '.bbcs-icon-button', function (e) {
       e.preventDefault();
       var $btn = $(this);
       var cid = ($btn.attr("data-cid") || '').trim();
@@ -539,7 +694,11 @@
       var pad = function (n) { return String(n).padStart(2, "0"); };
       expiresInput.value = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate()) + 'T' + pad(now.getHours()) + ':' + pad(now.getMinutes());
 
-      $("#AddRuleModal").modal("show");
+      modalAction(document.getElementById("AddRuleModal"), "show");
+    });
+
+    $(document).on("input", "#priority", function () {
+        $(this).siblings("#priorityValue").val(this.value);
     });
 
     $("#addRuleForm").on("submit", function (e) {
@@ -555,19 +714,12 @@
                 if (response.success) {
 
                     $('#this_ip').val('');
-                    $("#AddRuleModal").modal("hide");                    
+                    modalAction(document.getElementById("AddRuleModal"), "hide");                    
                 } else {
                     alert(bbcsHitsL10n.failed_create_rule + response.data);
                 }
             },
         });
     });
- 
-  // Re-initialize tooltips after AJAX completes
-  $(document).ajaxComplete(function() {
-    $('[data-bs-toggle="tooltip"]').tooltip(); // Bootstrap 4
-    // Bootstrap 5:
-    // document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el));
-  });
 
   })(jQuery);

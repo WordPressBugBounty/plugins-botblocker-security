@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="createProxyModalLabel"><?php esc_html_e( 'Add Proxy', 'botblocker-security' ); ?></h5>
+				<h5 class="modal-title" id="createProxyModalLabel"><?php esc_html_e( 'Add Proxy Rule', 'botblocker-security' ); ?></h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
 									<span class="bbcs-label-input"><?php esc_html_e( 'Network Mask', 'botblocker-security' ); ?></span>
-									<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e( 'Enter the network mask (e.g., 173.245.48.0/20)', 'botblocker-security' ); ?>"></i>
+									<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Enter the network mask (e.g., 173.245.48.0/20)', 'botblocker-security' ); ?></span></span>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<input type="text" class="bbcs_text_input_input" id="key" name="key" required placeholder="e.g., 173.245.48.0/20">
@@ -29,7 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
 									<span class="bbcs-label-input"><?php esc_html_e( 'HTTP Header', 'botblocker-security' ); ?></span>
-									<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e( 'HTTP header for forwarding the real IP', 'botblocker-security' ); ?>"></i>
+									<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'HTTP header for forwarding the real IP', 'botblocker-security' ); ?></span></span>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<select class="bbcs_select_input_input" id="value" name="value" required>
@@ -52,10 +52,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
 									<span class="bbcs-label-input"><?php esc_html_e( 'Comment', 'botblocker-security' ); ?></span>
-									<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e( 'Comment for this proxy (e.g., Cloudflare IPv4)', 'botblocker-security' ); ?>"></i>
+									<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Comment for this proxy (e.g., Cloudflare IPv4)', 'botblocker-security' ); ?></span></span>
 								</div>
 								<div class="bbcs_text_input_inner">
-									<input type="text" class="bbcs_text_input_input" id="comment" name="comment" placeholder="e.g., CloudFlare IPv4">
+									<input type="text" class="bbcs_text_input_input" id="comment" name="comment" placeholder="e.g., Cloudflare IPv4">
 								</div>
 							</div>
 						</div>
@@ -64,7 +64,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary btn-xs" data-bs-dismiss="modal"><?php esc_html_e( 'Close', 'botblocker-security' ); ?></button>
-				<button type="submit" form="createProxyForm" class="btn btn-primary btn-xs"><?php esc_html_e( 'Add Proxy', 'botblocker-security' ); ?></button>
+				<button type="submit" form="createProxyForm" class="btn btn-primary btn-xs"><?php esc_html_e( 'Add', 'botblocker-security' ); ?></button>
 			</div>
 		</div>
 	</div>

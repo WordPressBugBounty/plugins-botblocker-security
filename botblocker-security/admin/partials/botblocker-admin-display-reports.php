@@ -48,7 +48,7 @@ $bbcs_reportTableHeader = '
 						</li>
 						<li class="nav-item">
 							<a class="nav-link" data-bs-toggle="tab"
-								href="#wordpress"><?php esc_html_e( 'WordPress Actions', 'botblocker-security' ); ?></a>
+								href="#WordPress"><?php esc_html_e( 'WordPress Actions', 'botblocker-security' ); ?></a>
 						</li>
 						<li class="nav-item">
 							<a class="nav-link" data-bs-toggle="tab"

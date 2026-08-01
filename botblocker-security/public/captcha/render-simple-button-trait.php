@@ -18,8 +18,8 @@ trait BBCS_RenderSimpleButtonTrait {
 			'params' => array(
 				'buttonHash'  => $hash0,
 				'buttonClass' => $btnClass,
-				'confirmText' => __( 'Confirm that you are human:', 'botblocker-security' ),
-				'buttonText'  => __( "I'm not a robot", 'botblocker-security' ),
+				'confirmText' => self::t( 'Confirm that you are human:' ),
+				'buttonText'  => self::t( "I'm not a robot" ),
 			),
 		);
 	}

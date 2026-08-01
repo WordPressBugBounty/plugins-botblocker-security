@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<li class="bbcs-modal-li"><?php esc_html_e( 'This action cannot be undone.', 'botblocker-security' ); ?></li>
 				<li class="bbcs-modal-li"><?php esc_html_e( 'New errors will be logged as they occur.', 'botblocker-security' ); ?></li>
 			</ul>
-			<p class="bbcs-black"><?php esc_html_e( 'Continue clearing the log file?', 'botblocker-security' ); ?></p>
+			<p class="bbcs-black"><?php esc_html_e( 'Are you sure you want to clear the log file?', 'botblocker-security' ); ?></p>
 		</div>
 		<div class="modal-footer">
 			<button type="button" class="btn btn-secondary btn-xs" data-bs-dismiss="modal"><?php esc_html_e( 'Cancel', 'botblocker-security' ); ?></button>

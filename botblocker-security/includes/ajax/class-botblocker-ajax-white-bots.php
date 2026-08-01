@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
-if ( ! defined( 'ABSPATH' ) ) { exit; }
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; }
 
 class BotBlockerAjaxWhiteBots {
 
@@ -225,7 +226,7 @@ class BotBlockerAjaxWhiteBots {
 
 		global $wpdb;
 
-		$id   = intval( wp_unslash( $_POST['id'] ) );
+		$id = intval( wp_unslash( $_POST['id'] ) );
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' id=' . $id );
@@ -287,7 +288,7 @@ class BotBlockerAjaxWhiteBots {
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' cap check passed' );
 		}
 
-		$id = isset($_POST['id']) ? absint(wp_unslash($_POST['id'])) : 0;
+		$id = isset( $_POST['id'] ) ? absint( wp_unslash( $_POST['id'] ) ) : 0;
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' id=' . $id );
@@ -572,7 +573,12 @@ class BotBlockerAjaxWhiteBots {
 			$imported = 0;
 			$skipped  = 0;
 			foreach ( $white_bots as $bot ) {
-				$search = sanitize_text_field( $bot['search'] );
+				$search   = sanitize_text_field( $bot['search'] ?? '' );
+				$priority = intval( $bot['priority'] ?? 50 );
+				$data_val = sanitize_textarea_field( $bot['data'] ?? '' );
+				$rule_val = sanitize_text_field( $bot['rule'] ?? '' );
+				$comment  = sanitize_textarea_field( $bot['comment'] ?? '' );
+				$disable  = intval( $bot['disable'] ?? 0 );
 				// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
 	            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$existing = $wpdb->get_var(
@@ -584,12 +590,12 @@ class BotBlockerAjaxWhiteBots {
 
 				if ( $existing == 0 ) {
 					$data = array(
-						'priority' => intval( $bot['priority'] ),
+						'priority' => $priority,
 						'search'   => $search,
-						'data'     => sanitize_textarea_field( $bot['data'] ),
-						'rule'     => sanitize_text_field( $bot['rule'] ),
-						'comment'  => sanitize_textarea_field( $bot['comment'] ),
-						'disable'  => intval( $bot['disable'] ),
+						'data'     => $data_val,
+						'rule'     => $rule_val,
+						'comment'  => $comment,
+						'disable'  => $disable,
 					);
 					// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
 	                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching

@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
-if ( ! defined( 'ABSPATH' ) ) { exit; }
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; }
 
 class BotBlockerAjaxRules {
 
@@ -243,7 +244,7 @@ class BotBlockerAjaxRules {
 		}
 		if ( $data['rule'] === 'permanently_ban' ) {
 			$data['rule']    = BBCS_RULE_BLOCK;
-			$data['expires'] = strtotime( '+200 years' );
+			$data['expires'] = BOTBLOCKER_EXP_INF;
 		}
 
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
@@ -462,7 +463,7 @@ class BotBlockerAjaxRules {
 		}
 		if ( $data['rule'] === 'permanently_ban' ) {
 			$data['rule']    = BBCS_RULE_BLOCK;
-			$data['expires'] = strtotime( '+200 years' );
+			$data['expires'] = BOTBLOCKER_EXP_INF;
 		}
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG

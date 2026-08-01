@@ -15,6 +15,7 @@ BotBlocker Security uses the following open-source libraries (thank you to the a
 * MobileDetect 4.8.10 - [https://github.com/serbanghita/Mobile-Detect/tree/4.8.x](https://github.com/serbanghita/Mobile-Detect/tree/4.8.x)
 * SypexGeo 2.2.3 - [https://github.com/GLOBUS-studio/SypexGeo](https://github.com/GLOBUS-studio/SypexGeo)
 * ChartJS 4.5 - [https://www.chartjs.org/](https://www.chartjs.org/)
+* Toastify JS 1.12.0 - [https://github.com/apvarun/toastify-js](https://github.com/apvarun/toastify-js)
 * Google2FA (pragmarx/google2fa) ^8.0 - [https://github.com/antonioribeiro/google2fa](https://github.com/antonioribeiro/google2fa)
 * Constant Time Encoding (paragonie/constant_time_encoding) ^2.6 - [https://github.com/paragonie/constant_time_encoding](https://github.com/paragonie/constant_time_encoding)
 

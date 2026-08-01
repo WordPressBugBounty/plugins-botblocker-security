@@ -5,6 +5,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
+require_once BOTBLOCKER_DIR . 'includes/class-botblocker-toastify.php';
+
 class BotBlockerSettingsHooks {
 
 	public static function handleIntegrationsSave(): void {
@@ -24,7 +26,7 @@ class BotBlockerSettingsHooks {
 		);
 
 		foreach ( $checkbox_fields as $field ) {
-			$value = isset( $_POST[ $field ] ) ? '1' : '0';
+			$value = ( isset( $_POST[ $field ] ) && $_POST[ $field ] !== '0' ) ? '1' : '0';
 			// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
 	        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$result = $wpdb->replace(
@@ -124,14 +126,7 @@ class BotBlockerSettingsHooks {
 		BotBlockerCache::flush();
 		BotBlockerCache::resetHealthTransients();
 
-		set_transient(
-			'bbcs_notice_integrations_' . get_current_user_id(),
-			array(
-				'message' => __( 'Integrations saved.', 'botblocker-security' ),
-				'type'    => 'updated',
-			),
-			60
-		);
+		BBCS_Toastify::flash( __( 'Integrations saved.', 'botblocker-security' ), BBCS_Toastify::TYPE_SUCCESS, BBCS_Toastify::PAGE_INTEGRATIONS );
 
 		$anchor = isset( $_POST['bbcs_anchor'] ) ? sanitize_key( wp_unslash( $_POST['bbcs_anchor'] ) ) : '';
 		$url    = add_query_arg( 'settings-updated', 'true', BotBlockerMultisite::getAdminPageUrl( 'bbcs_integrations' ) );
@@ -215,6 +210,11 @@ class BotBlockerSettingsHooks {
 			'payment_keep_ip_rules',
 			// 'session_token_enabled',
 			'bbcs_ddos_resilience',
+			'tls_fingerprint_check',
+			'bbcs_rate_check_enabled',
+			'bbcs_rate_subnet_enabled',
+			'fingerprint_sticky_block',
+			'options_preflight',
 		);
 
 		if ( ! isset( $_POST['x_robots_directives'] ) ) {
@@ -224,7 +224,7 @@ class BotBlockerSettingsHooks {
 		$old_block_rkn = (string) ( BotBlocker::getInstance()->settings->block_rkn ?? '0' );
 
 		foreach ( $checkbox_fields as $field ) {
-			$value = isset( $_POST[ $field ] ) ? '1' : '0';
+			$value = ( isset( $_POST[ $field ] ) && $_POST[ $field ] !== '0' ) ? '1' : '0';
 			if ( $field === 'hosting_block' && $value === '1' ) {
 				if ( ! ( class_exists( 'BotBlockerPro' ) && BotBlockerPro::isActive() ) ) {
 					$value = '0';
@@ -268,6 +268,11 @@ class BotBlockerSettingsHooks {
 					$prepared_value  = wp_json_encode( $sanitized_array );
 				} else {
 					$prepared_value = sanitize_text_field( wp_unslash( $_POST[ $key ] ) );
+					if ( $key === 'bbcs_rate_subnet_multiplier' ) {
+						$prepared_value = (string) max( 1.0, (float) $prepared_value );
+					} elseif ( $key === 'bbcs_rate_floor_percent' ) {
+						$prepared_value = (string) min( 1.0, max( 0.01, (float) $prepared_value / 100 ) );
+					}
 				}
 				// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
 	            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -288,22 +293,68 @@ class BotBlockerSettingsHooks {
 			}
 		}
 
+		// Shared dedup – ensures mutual exclusion between early_init_enable and mu_enable.
+		// Determine which key changed by comparing POST with current DB (only run dedup if a
+		// value was actually submitted, otherwise leave both untouched).
+		$early_post = isset( $_POST['early_init_enable'] ) ? (int) $_POST['early_init_enable'] : null;
+		$mu_post    = isset( $_POST['mu_enable'] ) ? (int) $_POST['mu_enable'] : null;
+
+		if ( $early_post !== null ) {
+			$final_state = bbcs_dedup_early_phase_toggles( 'early_init_enable', $early_post );
+		} elseif ( $mu_post !== null ) {
+			$final_state = bbcs_dedup_early_phase_toggles( 'mu_enable', $mu_post );
+		} else {
+			// Neither was in POST – read current state for filesystem actions.
+			$final_state = bbcs_dedup_early_phase_toggles( 'disable', 0 );
+		}
+
+		// Filesystem actions based on final dedup'd state.
+		if ( $final_state['early_init_enable'] === 1 ) {
+			BotBlockerInstall::setEarlyInitEnabled( true );
+		} elseif ( $final_state['mu_enable'] === 1 ) {
+			BotBlockerInstall::setEarlyInitEnabled( false );
+			BotBlockerInstall::installMuPlugin();
+		} else {
+			BotBlockerInstall::setEarlyInitEnabled( false );
+			BotBlockerInstall::uninstallMuPlugin();
+		}
+
+		// CAPTCHA mode server-side validation: correct incompatible modes.
+		$captcha_mode = isset( $_POST['bbcs_captcha_mode'] ) ? (int) $_POST['bbcs_captcha_mode'] : (int) BOTBLOCKER_CAPTCHA_MODE_DEFAULT;
+		$gd_ok        = isset( BotBlocker::getInstance()->prefly['gd'] ) && BotBlocker::getInstance()->prefly['gd'] === 1;
+		$gd_modes     = array( BOTBLOCKER_CAPTCHA_MODE_COLOR_BUTTONS, BOTBLOCKER_CAPTCHA_MODE_IMAGE );
+		if ( ! $gd_ok && in_array( $captcha_mode, $gd_modes, true ) ) {
+			$has_recaptcha_v2 = ! empty( BotBlocker::getInstance()->settings->recaptcha_key2 )
+				&& ! empty( BotBlocker::getInstance()->settings->recaptcha_secret2 );
+			$fallback_mode = $has_recaptcha_v2 ? (string) BOTBLOCKER_CAPTCHA_MODE_RECAPTCHA_V2 : (string) BOTBLOCKER_CAPTCHA_MODE_BUTTON;
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->replace(
+				$wpdb->bbcs_settings,
+				array(
+					'key'   => 'bbcs_captcha_mode',
+					'value' => $fallback_mode,
+				),
+				array( '%s', '%s' )
+			);
+			BBCS_Toastify::flash(
+				esc_html__(
+					'GD library not available. Captcha mode was adjusted to a compatible mode.',
+					'botblocker-security'
+				),
+				BBCS_Toastify::TYPE_WARNING,
+				BBCS_Toastify::PAGE_SETTINGS
+			);
+		}
+
 		BotBlockerFileRenderer::generateSettingsFile();
 		BotBlockerCache::resetHealthTransients();
 
-		$new_block_rkn = isset( $_POST['block_rkn'] ) ? '1' : '0';
+		$new_block_rkn = ( isset( $_POST['block_rkn'] ) && $_POST['block_rkn'] !== '0' ) ? '1' : '0';
 		if ( $old_block_rkn !== '1' && $new_block_rkn === '1' ) {
 			BotBlockerRugov::scheduleUpdate( 'enabled', 60 );
 		}
 
-		set_transient(
-			'bbcs_notice_settings_' . get_current_user_id(),
-			array(
-				'message' => __( 'Settings saved.', 'botblocker-security' ),
-				'type'    => 'updated',
-			),
-			60
-		);
+		BBCS_Toastify::flash( __( 'Settings saved.', 'botblocker-security' ), BBCS_Toastify::TYPE_SUCCESS, BBCS_Toastify::PAGE_SETTINGS );
 
 		$anchor = isset( $_POST['bbcs_anchor'] ) ? sanitize_key( wp_unslash( $_POST['bbcs_anchor'] ) ) : '';
 		$url    = add_query_arg( 'settings-updated', 'true', BotBlockerMultisite::getAdminPageUrl( 'bbcs_settings' ) );

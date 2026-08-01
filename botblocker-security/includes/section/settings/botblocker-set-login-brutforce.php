@@ -62,7 +62,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<div class="bbcs_number_input mb-2">
 				<div class="bbcs_label_input_box">
-					<span class="bbcs-label-input"><?php esc_html_e( 'Primary Block Time (seconds):', 'botblocker-security' ); ?></span>
+					<span class="bbcs-label-input"><?php esc_html_e( 'Block Time (seconds):', 'botblocker-security' ); ?></span>
 					<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e( 'Block duration for first-time offenders.', 'botblocker-security' ); ?>"></i>
 				</div>
 				<div class="bbcs_number_input_inner">
@@ -72,7 +72,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<div class="bbcs_number_input mb-2">
 				<div class="bbcs_label_input_box">
-					<span class="bbcs-label-input"><?php esc_html_e( 'Secondary Block Time (seconds):', 'botblocker-security' ); ?></span>
+					<span class="bbcs-label-input"><?php esc_html_e( 'Repeat Block Time (seconds):', 'botblocker-security' ); ?></span>
 					<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e( 'Block duration for repeat offenders.', 'botblocker-security' ); ?>"></i>
 				</div>
 				<div class="bbcs_number_input_inner">

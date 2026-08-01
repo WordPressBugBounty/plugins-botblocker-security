@@ -138,7 +138,7 @@ abstract class BBCS_ObjectCacheStorage {
 			return $cleanKey;
 		}
 
-		$hashKey = 'k_' . md5( $key );
+		$hashKey      = 'k_' . md5( $key );
 		$suffixLength = $maxLength - strlen( $hashKey ) - 1;
 		if ( $suffixLength <= 0 ) {
 			return substr( $hashKey, 0, $maxLength );

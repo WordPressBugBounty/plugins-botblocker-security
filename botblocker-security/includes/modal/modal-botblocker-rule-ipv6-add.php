@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
 									<span class="bbcs-label-input"><?php esc_html_e( 'Priority', 'botblocker-security' ); ?></span>
-									<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e( 'Priority (1-100)', 'botblocker-security' ); ?>"></i>
+									<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Priority (1-100)', 'botblocker-security' ); ?></span></span>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<input type="number" class="bbcs_text_input_input" id="addPriority" name="priority" min="1" max="100" value="50" required>
@@ -27,10 +27,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
 									<span class="bbcs-label-input"><?php esc_html_e( 'IP Address', 'botblocker-security' ); ?></span>
-									<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e( 'IPv6 address or subnet (CIDR)', 'botblocker-security' ); ?>"></i>
+									<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'IPv6 address or subnet (CIDR)', 'botblocker-security' ); ?></span></span>
 								</div>
 								<div class="bbcs_text_input_inner">
-									<input type="text" class="bbcs_text_input_input" id="addIp" name="ip" placeholder="2001:db8::/32 or 2001:0db8:0000:0000:0000:0000:0000:0000" required>
+									<input type="text" class="bbcs_text_input_input" id="addIp" name="ip" placeholder="2001:db8::/32 or 2001:db8::1" required>
 								</div>
 							</div>
 						</div>
@@ -40,7 +40,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
 									<span class="bbcs-label-input"><?php esc_html_e( 'Rule', 'botblocker-security' ); ?></span>
-									<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e( 'Allow or block this IP/subnet', 'botblocker-security' ); ?>"></i>
+									<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Allow or block this IP/subnet', 'botblocker-security' ); ?></span></span>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<select class="bbcs_select_input_input" id="addRule" name="rule" required>
@@ -54,7 +54,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
 									<span class="bbcs-label-input"><?php esc_html_e( 'Expires', 'botblocker-security' ); ?></span>
-									<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e( 'Expiration date/time for this rule', 'botblocker-security' ); ?>"></i>
+									<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Expiration date/time for this rule', 'botblocker-security' ); ?></span></span>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<input type="datetime-local" class="bbcs_text_input_input" id="addExpires" name="expires" required>
@@ -67,7 +67,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
 									<span class="bbcs-label-input"><?php esc_html_e( 'Comment', 'botblocker-security' ); ?></span>
-									<i class="fa-regular fa-circle-question" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php esc_attr_e( 'Optional comment for this rule', 'botblocker-security' ); ?>"></i>
+									<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Optional comment for this rule', 'botblocker-security' ); ?></span></span>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<textarea class="bbcs_text_input_input" id="addComment" name="comment" rows="3"></textarea>
@@ -75,8 +75,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 							</div>
 						</div>
 					</div>
-					<button type="submit" class="btn btn-primary btn-xs"><?php esc_html_e( 'Add', 'botblocker-security' ); ?></button>
 				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary btn-xs" data-bs-dismiss="modal"><?php esc_html_e( 'Close', 'botblocker-security' ); ?></button>
+				<button type="submit" form="addIPv6Form" class="btn btn-primary btn-xs"><?php esc_html_e( 'Add', 'botblocker-security' ); ?></button>
 			</div>
 		</div>
 	</div>

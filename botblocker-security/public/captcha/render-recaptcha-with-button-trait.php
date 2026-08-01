@@ -17,7 +17,7 @@ trait BBCS_RenderRecaptchaWithButtonTrait {
 
 		$onestyle[] = '.' . $style0 . ' {} ';
 		$onebtns[]  = array(
-			'html'    => '<div style="cursor: pointer;" class="' . $style0 . ' ' . 's' . md5( 'botblocker-btn-success' . $this->BBCS->time ) . '" onclick="' . $this->botblocker_check_function_name . '(\'post\', data, \'' . $correctHash . '\')">' . __( 'Go to website', 'botblocker-security' ) . '</div>',
+			'html'    => '<div style="cursor: pointer;" class="' . $style0 . ' ' . 's' . md5( 'botblocker-btn-success' . $this->BBCS->time ) . '" onclick="' . $this->botblocker_check_function_name . '(\'post\', data, \'' . $correctHash . '\')">' . self::t( 'Go to website' ) . '</div>',
 			'visible' => true,
 		);
 
@@ -26,7 +26,7 @@ trait BBCS_RenderRecaptchaWithButtonTrait {
 			$fakeStyle  = 'o' . md5( $fakeHash );
 			$onestyle[] = '.' . $fakeStyle . ' {display: none;} ';
 			$onebtns[]  = array(
-				'html'    => '<div style="cursor: pointer;" class="' . $fakeStyle . ' ' . 's' . md5( 'botblocker-btn-success' . $this->BBCS->time ) . '" onclick="' . $this->botblocker_check_function_name . '(\'post\', data, \'' . $fakeHash . '\')">' . __( 'Go to website', 'botblocker-security' ) . '</div>',
+				'html'    => '<div style="cursor: pointer;" class="' . $fakeStyle . ' ' . 's' . md5( 'botblocker-btn-success' . $this->BBCS->time ) . '" onclick="' . $this->botblocker_check_function_name . '(\'post\', data, \'' . $fakeHash . '\')">' . self::t( 'Go to website' ) . '</div>',
 				'visible' => false,
 			);
 		}
@@ -39,8 +39,8 @@ trait BBCS_RenderRecaptchaWithButtonTrait {
 			'params' => array(
 				'buttons'      => $onebtns,
 				'styles'       => $onestyle,
-				'confirmText'  => __( 'Confirm that you are human:', 'botblocker-security' ),
-				'loadingText'  => __( 'Loading...', 'botblocker-security' ),
+				'confirmText'  => self::t( 'Confirm that you are human:' ),
+				'loadingText'  => self::t( 'Loading...' ),
 				'recaptchaKey' => $this->BBCS->settings->recaptcha_key2,
 				'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
 			),

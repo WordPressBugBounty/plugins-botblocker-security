@@ -10,15 +10,16 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function bbcs_data_file_render_map(): array {
 	return array(
-		'ip.php'              => 'BotBlockerFileRenderer::renderIps',
-		'rules.php'           => 'BotBlockerFileRenderer::renderRules',
-		'paths.php'           => 'BotBlockerFileRenderer::renderPaths',
-		'proxy.php'           => 'BotBlockerFileRenderer::renderProxy',
-		'search_engines.php'  => 'BotBlockerFileRenderer::renderSearchEngines',
-		'llm_trusted.php'     => 'BotBlockerFileRenderer::renderLlmTrusted',
-		'asn_rules.php'       => 'BotBlockerFileRenderer::renderAsn',
-		'settings.php'        => 'BotBlockerFileRenderer::generateSettingsFile',
-		'salt.php'            => 'BotBlockerInstall::createSaltFile',
+		'ip.php'             => 'BotBlockerFileRenderer::renderIps',
+		'rules.php'          => 'BotBlockerFileRenderer::renderRules',
+		'paths.php'          => 'BotBlockerFileRenderer::renderPaths',
+		'proxy.php'          => 'BotBlockerFileRenderer::renderProxy',
+		'search_engines.php' => 'BotBlockerFileRenderer::renderSearchEngines',
+		'llm_trusted.php'    => 'BotBlockerFileRenderer::renderLlmTrusted',
+		'asn_rules.php'      => 'BotBlockerFileRenderer::renderAsn',
+		'settings.php'       => 'BotBlockerFileRenderer::generateSettingsFile',
+		'salt.php'           => 'BotBlockerInstall::createSaltFile',
+		'tls_fingerprints.php' => 'BotBlockerFileRenderer::renderTlsFingerprints',
 	);
 }
 
@@ -42,7 +43,7 @@ function bbcs_safe_load_with_recovery( string $file ): array {
 
 	$basename = basename( $file );
 
-	// File missing — hosting migration or accidental deletion. Regenerate from DB.
+	// File missing - hosting migration or accidental deletion. Regenerate from DB.
 	if ( ! file_exists( $file ) ) {
 		$map    = bbcs_data_file_render_map();
 		$render = $map[ $basename ] ?? '';
@@ -66,8 +67,8 @@ function bbcs_safe_load_with_recovery( string $file ): array {
 
 	if ( function_exists( 'set_transient' ) ) {
 		$alert = array(
-			'file'  => $basename,
-			'time'  => time(),
+			'file' => $basename,
+			'time' => time(),
 		);
 		set_transient( 'bbcs_file_tampered_' . md5( $file ), $alert, DAY_IN_SECONDS );
 	}
