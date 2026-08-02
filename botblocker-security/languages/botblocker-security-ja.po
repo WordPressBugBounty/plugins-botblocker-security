@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BotBlocker"
 "Report-Msgid-Bugs-To: "
-"POT-Creation-Date: 2026-07-30 23:51+0000"
-"PO-Revision-Date: 2026-07-30 23:51+0000"
+"POT-Creation-Date: 2026-08-02 21:32+0000"
+"PO-Revision-Date: 2026-08-02 21:32+0000"
 "Last-Translator: BotBlocker Translator Engine via AI"
 "Language-Team: Japanese"
 "Language: ja"
@@ -55,6 +55,20 @@ msgstr "%d 1回限り"
 #, php-format
 msgid "%d recurring"
 msgstr "%d 定期的"
+
+#. translators: %d: number of stale tasks executed
+#: includes/cron/class-botblocker-cron.php:388
+#, php-format, plural
+msgid "%d stale task executed."
+msgid_plural "%d stale tasks executed."
+msgstr[0] "%d 件の古いタスクが実行されました。"
+
+#. translators: %d: number of tasks executed
+#: includes/cron/class-botblocker-cron.php:346
+#, php-format, plural
+msgid "%d task executed."
+msgid_plural "%d tasks executed."
+msgstr[0] "%d 件のタスクが実行されました。"
 
 #. translators: %d: total task count
 #: admin/templates/settings/cron.php:61
@@ -203,7 +217,7 @@ msgstr "120日"
 #: admin/templates/settings/notifications.php:58
 #: includes/section/settings/botblocker-set-notif.php:72
 msgid "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
-msgstr ""
+msgstr "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
 
 #: includes/data/botblocker-data-time.php:11
 msgid "15 minutes"
@@ -222,10 +236,6 @@ msgstr "2時間"
 #: includes/data/botblocker-data-time.php:41
 msgid "2 weeks"
 msgstr "2週間"
-
-#: admin/templates/dashboard/quick-links.php:18
-msgid "2FA"
-msgstr "2段階認証"
 
 #: includes/utilites/2FA/inc-botblocker-2fa.php:456
 msgid "2FA has been reset."
@@ -411,7 +421,7 @@ msgstr "受理"
 msgid "Accept-Language"
 msgstr "Accept-Language"
 
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:121
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:122
 msgid "Access approved. Redirecting..."
 msgstr "アクセスが承認されました。リダイレクトしています..."
 
@@ -477,18 +487,20 @@ msgstr "Action Scheduler キュー"
 #: admin/templates/rules/body.php:52
 #: admin/templates/rules/body.php:68
 #: admin/templates/rules/body.php:84
+#: admin/templates/settings/cron.php:188
+#: admin/templates/settings/cron.php:225
 msgid "Actions"
 msgstr "アクション"
 
-#: admin/partials/botblocker-admin-display-addons.php:235
-#: admin/templates/addons/marketplace-panel.php:208
-#: admin/templates/addons/marketplace-panel.php:94
+#: admin/partials/botblocker-admin-display-addons.php:238
+#: admin/templates/addons/marketplace-panel.php:211
+#: admin/templates/addons/marketplace-panel.php:97
 #: admin/templates/integrations/2fa.php:68
 #: includes/section/integration/botblocker-int-2fa.php:163
 msgid "Activate"
 msgstr "有効化"
 
-#: admin/partials/botblocker-admin-display-addons.php:77
+#: admin/partials/botblocker-admin-display-addons.php:80
 msgid "Activate access"
 msgstr "アクセスを有効化"
 
@@ -527,15 +539,17 @@ msgstr "有効化サービスが利用できません。"
 #: addons/bbcs-cron-jobs/views/settings.php:173
 #: admin/class-botblocker-admin.php:338
 #: admin/partials/botblocker-section-right-sidebar.php:32
-#: admin/templates/addons/marketplace-panel.php:184
-#: admin/templates/addons/marketplace-panel.php:64
+#: admin/templates/addons/marketplace-panel.php:187
+#: admin/templates/addons/marketplace-panel.php:67
 #: admin/templates/cloud-api/status.php:17
 #: admin/templates/integrations/botblocker-api.php:29
 #: admin/templates/rules.php:52
 #: admin/templates/settings/cron.php:111
 #: admin/templates/settings/cron.php:147
 #: admin/templates/settings/cron.php:154
-#: admin/templates/settings/cron.php:209
+#: admin/templates/settings/cron.php:218
+#: admin/templates/settings/cron.php:220
+#: admin/templates/settings/cron.php:222
 #: admin/templates/setup-guide/pro-body.php:13
 #: admin/templates/setup-guide/status.php:53
 #: admin/templates/shared/request-chain.php:335
@@ -715,12 +729,16 @@ msgid "Add-on"
 msgstr "アドオン"
 
 #: admin/class-botblocker-admin.php:638
-#: includes/hook/class-botblocker-addon-hooks.php:397
+#: includes/hook/class-botblocker-addon-hooks.php:406
 msgid "Add-on deleted."
 msgstr "アドオンが削除されました。"
 
+#: includes/hook/class-botblocker-addon-hooks.php:22
+msgid "Add-on install, update, and delete are disabled in local add-on mode."
+msgstr "ローカルアドオンモードでは、アドオンのインストール、更新、削除は無効です。"
+
 #: admin/class-botblocker-admin.php:632
-#: includes/hook/class-botblocker-addon-hooks.php:279
+#: includes/hook/class-botblocker-addon-hooks.php:289
 msgid "Add-on installed successfully."
 msgstr "アドオンが正常にインストールされました。"
 
@@ -743,6 +761,10 @@ msgstr "アドオンパッケージが BotBlocker アドオンの契約と一致
 #: includes/hook/hook-addon-validation.php:66
 msgid "Add-on package has an invalid file count."
 msgstr "アドオンパッケージのファイル数が無効です。"
+
+#: includes/hook/hook-addon-install.php:101
+msgid "Add-on package install is disabled in local add-on mode."
+msgstr "ローカルアドオンモードでは、アドオンパッケージのインストールは無効です。"
 
 #: admin/class-botblocker-admin.php:649
 #: includes/class-botblocker-toastify.php:244
@@ -772,7 +794,7 @@ msgid "Add-on package slug does not match the requested add-on."
 msgstr "アドオンパッケージのスラッグが要求されたアドオンと一致しません。"
 
 #: admin/class-botblocker-admin.php:633
-#: includes/hook/class-botblocker-addon-hooks.php:344
+#: includes/hook/class-botblocker-addon-hooks.php:355
 msgid "Add-on package uploaded. Find it below, then activate it when ready."
 msgstr "アドオンパッケージがアップロードされました。以下で見つけて、準備ができたら有効化してください。"
 
@@ -780,7 +802,7 @@ msgstr "アドオンパッケージがアップロードされました。以下
 msgid "Add-on root folder must be a valid slug."
 msgstr "アドオンのルートフォルダーは有効なスラッグでなければなりません。"
 
-#: admin/templates/addons/addons-content.php:58
+#: admin/templates/addons/addons-content.php:60
 msgid "Add-on settings"
 msgstr "アドオン設定"
 
@@ -793,13 +815,13 @@ msgid "Add-on Update Failed"
 msgstr "アドオンの更新に失敗しました"
 
 #: admin/class-botblocker-admin.php:635
-#: includes/hook/class-botblocker-addon-hooks.php:206
-#: includes/hook/class-botblocker-addon-hooks.php:524
+#: includes/hook/class-botblocker-addon-hooks.php:215
+#: includes/hook/class-botblocker-addon-hooks.php:531
 msgid "Add-on updated successfully."
 msgstr "アドオンが正常に更新されました。"
 
 #. translators: %s: required BotBlocker version
-#: includes/hook/class-botblocker-addon-hooks.php:522
+#: includes/hook/class-botblocker-addon-hooks.php:529
 #, php-format
 msgid "Add-on was updated but not reactivated - it requires BotBlocker %s or higher. Please update the plugin first."
 msgstr "アドオンは更新されましたが、再アクティブ化されませんでした。BotBlocker %s 以上が必要です。まずプラグインを更新してください。"
@@ -812,7 +834,7 @@ msgstr "アドオンは更新されましたが、再アクティブ化されま
 
 #: admin/class-botblocker-admin.php:1261
 #: admin/class-botblocker-admin.php:1262
-#: admin/partials/botblocker-admin-display-addons.php:23
+#: admin/partials/botblocker-admin-display-addons.php:24
 #: admin/templates/settings/notifications.php:115
 #: admin/templates/setup-guide/status.php:167
 #: includes/section/dashboard/botblocker-dash-links.php:33
@@ -825,7 +847,7 @@ msgid "Add-ons Deactivated"
 msgstr "アドオン無効化"
 
 #: includes/components/class-botblocker-component-addons-summary.php:58
-#: includes/inc-botblocker-ui.php:305
+#: includes/inc-botblocker-ui.php:320
 msgid "Add-ons locked. Activate Cloud API to use marketplace features."
 msgstr "アドオンがロックされています。マーケットプレイス機能を使用するには Cloud API を有効化してください。"
 
@@ -867,14 +889,14 @@ msgstr "アドオン"
 msgid "Addon required"
 msgstr "アドオンが必要です"
 
-#: admin/partials/botblocker-admin-display-addons.php:171
-#: admin/partials/botblocker-admin-display-addons.php:252
+#: admin/partials/botblocker-admin-display-addons.php:174
+#: admin/partials/botblocker-admin-display-addons.php:255
 msgid "Addon Settings"
 msgstr "アドオン設定"
 
 #: admin/templates/addons.php:20
 #: admin/templates/dashboard/quick-links.php:15
-#: includes/viewmodels/class-addons-viewmodel.php:166
+#: includes/viewmodels/class-addons-viewmodel.php:168
 msgid "Addons"
 msgstr "アドオン"
 
@@ -882,7 +904,7 @@ msgstr "アドオン"
 msgid "Addons - extensions, plugins, marketplace, more features"
 msgstr "アドオン - 拡張機能、プラグイン、マーケットプレイス、その他の機能"
 
-#: admin/templates/addons/addons-content.php:28
+#: admin/templates/addons/addons-content.php:30
 msgid "Addons sections"
 msgstr "アドオンセクション"
 
@@ -1094,7 +1116,7 @@ msgid "All %s rules have been cleared."
 msgstr "すべての%sルールがクリアされました。"
 
 #: admin/class-botblocker-admin.php:634
-#: includes/hook/class-botblocker-addon-hooks.php:106
+#: includes/hook/class-botblocker-addon-hooks.php:118
 msgid "All add-ons have been updated."
 msgstr "すべてのアドオンが更新されました。"
 
@@ -1502,8 +1524,8 @@ msgstr "ログファイルをクリアしてもよろしいですか？"
 msgid "Are you sure you want to clear the security salt?"
 msgstr "セキュリティソルトをクリアしてもよろしいですか？"
 
-#: admin/templates/addons/marketplace-panel.php:137
-#: admin/templates/addons/marketplace-panel.php:235
+#: admin/templates/addons/marketplace-panel.php:140
+#: admin/templates/addons/marketplace-panel.php:238
 msgid "Are you sure you want to delete this add-on?"
 msgstr "このアドオンを削除してもよろしいですか？"
 
@@ -1606,17 +1628,6 @@ msgstr "AS名"
 #: includes/modal/modal-botblocker-rule-edit.php:32
 msgid "AS Number"
 msgstr "AS番号"
-
-#: admin/partials/botblocker-admin-display-rules.php:206
-#: admin/partials/botblocker-admin-display-rules.php:69
-#: admin/templates/reports/dashboard.php:31
-#: admin/templates/rules/body.php:126
-#: admin/templates/rules/body.php:20
-#: admin/templates/settings/connection-types.php:23
-#: includes/section/settings/botblocker-set-connect.php:30
-#: includes/viewmodels/class-rules-viewmodel.php:105
-msgid "ASN"
-msgstr "ASN"
 
 #: includes/ajax/class-botblocker-ajax-asn.php:235
 msgid "ASN already exists."
@@ -1854,7 +1865,7 @@ msgstr "一般的な分析、支払い、CDNスクリプトタグをマルウェ
 msgid "Back"
 msgstr "戻る"
 
-#: admin/templates/addons/addons-content.php:62
+#: admin/templates/addons/addons-content.php:64
 msgid "Back to Marketplace"
 msgstr "マーケットプレイスに戻る"
 
@@ -2373,7 +2384,7 @@ msgstr "WordPressが読み込まれる前に脅威をブロックします。最
 msgid "Blue"
 msgstr "青"
 
-#: admin/partials/botblocker-admin-display-addons.php:95
+#: admin/partials/botblocker-admin-display-addons.php:98
 msgid "Boost your BotBlocker experience with add-ons and tools selected to increase security, productivity and enhance your website"
 msgstr "BotBlocker体験を強化するアドオンとツールで、セキュリティと生産性を向上させ、ウェブサイトを強化します。"
 
@@ -2402,17 +2413,6 @@ msgstr "ボット検出、Captcha、保護"
 #: includes/section/settings/botblocker-set-notif.php:63
 msgid "Bot Token"
 msgstr "ボットトークン"
-
-#: admin/partials/botblocker-admin-display-about.php:42
-#: admin/partials/botblocker-admin-display-tools.php:31
-#: admin/templates/setup-guide/chain-body.php:41
-#: admin/templates/shared/request-chain.php:327
-#: admin/templates/shared/request-chain.php:40
-#: includes/data/botblocker-data-snav.php:692
-#: includes/section/setup/botblocker-setup-chain.php:60
-#: includes/viewmodels/class-tools-viewmodel.php:81
-msgid "BotBlocker"
-msgstr "BotBlocker"
 
 #: admin/partials/botblocker-admin-display-integrations.php:63
 #: includes/data/botblocker-data-snav.php:645
@@ -2666,7 +2666,7 @@ msgstr "BotBlocker セキュリティ - セットアップ完了"
 
 #. 'message' => __('Sorry, your request has been blocked', 'botblocker-security'),
 #: includes/botblocker/traits/class-botblocker-block-page-trait.php:16
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:206
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:207
 #: includes/botblocker/traits/class-botblocker-denied-page-trait.php:16
 #: public/template-botblocker-denied.php:24
 msgid "BotBlocker security plugin"
@@ -2753,9 +2753,9 @@ msgstr "BotBlocker: バージョン"
 msgid "Bottom"
 msgstr "下"
 
-#: admin/partials/botblocker-admin-display-addons.php:205
-#: admin/templates/addons/marketplace-panel.php:118
-#: admin/templates/addons/marketplace-panel.php:216
+#: admin/partials/botblocker-admin-display-addons.php:208
+#: admin/templates/addons/marketplace-panel.php:121
+#: admin/templates/addons/marketplace-panel.php:219
 msgid "Broken"
 msgstr "壊れた"
 
@@ -2764,7 +2764,7 @@ msgid "Browse add-ons"
 msgstr "アドオンを閲覧"
 
 #: includes/components/class-botblocker-component-addons-summary.php:64
-#: includes/inc-botblocker-ui.php:311
+#: includes/inc-botblocker-ui.php:326
 msgid "Browse Add-ons"
 msgstr "アドオンを閲覧"
 
@@ -2972,18 +2972,9 @@ msgstr "キャンセルしてログアウト"
 msgid "Cancel Scan"
 msgstr "スキャンをキャンセル"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:212
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:214
 msgid "Cancelling scan..."
 msgstr "スキャンをキャンセル中..."
-
-#: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:277
-#: admin/templates/settings/captcha-tab.php:53
-#: admin/templates/setup-wizard/finish.php:22
-#: includes/data/botblocker-data-snav.php:278
-#: includes/section/settings/botblocker-set-captcha.php:26
-#: includes/viewmodels/class-settings-viewmodel.php:187
-msgid "Captcha"
-msgstr "CAPTCHA"
 
 #: includes/services/class-botblocker-health-service.php:20
 #: includes/viewmodels/class-dashboard-viewmodel.php:161
@@ -3104,7 +3095,7 @@ msgstr "レポートを確認"
 msgid "Checking database tables..."
 msgstr "データベーステーブルをチェック中..."
 
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:208
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:209
 msgid "Checking your browser before accessing the site"
 msgstr "サイトにアクセスする前にブラウザをチェックしています"
 
@@ -3179,7 +3170,7 @@ msgstr "セットアップ方法を選択"
 msgid "Choose ZIP"
 msgstr "ZIPを選択"
 
-#: admin/partials/botblocker-admin-display-addons.php:59
+#: admin/partials/botblocker-admin-display-addons.php:61
 msgid "Choose ZIP package"
 msgstr "ZIPパッケージを選択"
 
@@ -3579,7 +3570,7 @@ msgstr "設定用コード"
 msgid "Codes for config:"
 msgstr "設定用コード:"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:185
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:193
 msgid "Collapse all"
 msgstr "すべて折りたたむ"
 
@@ -3699,7 +3690,7 @@ msgstr "FreeとPROを比較"
 msgid "Compare plan features below. PRO unlocks full per-visit verification, advanced blocking rules, performance add-ons, and priority support."
 msgstr "以下のプラン機能を比較してください。PROでは、訪問ごとの完全な検証、高度なブロックルール、パフォーマンスアドオン、優先サポートが利用できます。"
 
-#: admin/partials/botblocker-admin-display-addons.php:80
+#: admin/partials/botblocker-admin-display-addons.php:83
 #: admin/templates/addons/locked-notice.php:31
 #: admin/templates/setup-guide/pro-body.php:38
 #: includes/section/cloud/botblocker-cloud-status.php:61
@@ -3879,7 +3870,7 @@ msgid "Connect"
 msgstr "接続"
 
 #: includes/components/class-botblocker-component-addons-summary.php:74
-#: includes/inc-botblocker-ui.php:347
+#: includes/inc-botblocker-ui.php:362
 msgid "Connect Cloud API now!"
 msgstr "今すぐCloud APIに接続！"
 
@@ -4102,7 +4093,7 @@ msgstr "クッキー設定"
 msgid "Cookies"
 msgstr "クッキー"
 
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:106
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:107
 msgid "Cookies are disabled in your browser. Enable cookies to continue."
 msgstr "ブラウザでクッキーが無効になっています。続行するにはクッキーを有効にしてください。"
 
@@ -4136,7 +4127,7 @@ msgstr "著作権"
 msgid "Core, plugin, and theme security events."
 msgstr "コア、プラグイン、テーマのセキュリティイベント。"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:186
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:194
 msgid "Could not build tree view. Switch to Flat view."
 msgstr "ツリービューを構築できませんでした。フラットビューに切り替えます。"
 
@@ -4267,10 +4258,6 @@ msgstr "Cronタスク - スケジューラー、ジョブ、自動化"
 #: addons/bbcs-security-headers/inc/class-bbcs-security-headers-addons-page.php:43
 msgid "CSP Configuration"
 msgstr "CSP設定"
-
-#: admin/templates/about/body.php:151
-msgid "CSS Framework:"
-msgstr "CSSフレームワーク:"
 
 #: includes/data/botblocker-data-snav.php:378
 msgid "cURL Command"
@@ -4559,9 +4546,9 @@ msgstr "DB行"
 msgid "DB: v"
 msgstr "DB: バージョン"
 
-#: admin/partials/botblocker-admin-display-addons.php:233
-#: admin/templates/addons/marketplace-panel.php:208
-#: admin/templates/addons/marketplace-panel.php:94
+#: admin/partials/botblocker-admin-display-addons.php:236
+#: admin/templates/addons/marketplace-panel.php:211
+#: admin/templates/addons/marketplace-panel.php:97
 msgid "Deactivate"
 msgstr "無効化"
 
@@ -4611,9 +4598,9 @@ msgstr "同じRedisインスタンスを使用する他のアプリケーショ�
 
 #: admin/class-botblocker-admin.php:390
 #: admin/class-botblocker-admin.php:467
-#: admin/partials/botblocker-admin-display-addons.php:258
-#: admin/templates/addons/marketplace-panel.php:141
-#: admin/templates/addons/marketplace-panel.php:239
+#: admin/partials/botblocker-admin-display-addons.php:261
+#: admin/templates/addons/marketplace-panel.php:144
+#: admin/templates/addons/marketplace-panel.php:242
 msgid "Delete"
 msgstr "削除"
 
@@ -4631,7 +4618,7 @@ msgstr "すべての訪問者記録と統計を削除"
 msgid "Delete Expired Transients"
 msgstr "期限切れトランジェントの削除"
 
-#: admin/partials/botblocker-admin-display-addons.php:257
+#: admin/partials/botblocker-admin-display-addons.php:260
 msgid "Delete this add-on?"
 msgstr "このアドオンを削除しますか？"
 
@@ -4705,7 +4692,7 @@ msgstr "デバイスAPI検証"
 msgid "Device API verification"
 msgstr "デバイスAPI検証"
 
-#: admin/templates/about/body.php:194
+#: admin/templates/about/body.php:185
 msgid "Device Detection:"
 msgstr "デバイス検出："
 
@@ -4781,10 +4768,10 @@ msgstr "XML-RPCを無効化"
 #: admin/class-botblocker-admin.php:339
 #: admin/class-botblocker-admin.php:510
 #: admin/class-botblocker-admin.php:841
-#: admin/templates/addons/marketplace-panel.php:186
-#: admin/templates/addons/marketplace-panel.php:209
-#: admin/templates/addons/marketplace-panel.php:66
-#: admin/templates/addons/marketplace-panel.php:95
+#: admin/templates/addons/marketplace-panel.php:189
+#: admin/templates/addons/marketplace-panel.php:212
+#: admin/templates/addons/marketplace-panel.php:69
+#: admin/templates/addons/marketplace-panel.php:98
 #: admin/templates/dashboard/hero.php:17
 #: admin/templates/rules.php:57
 #: admin/templates/settings/cookie.php:31
@@ -4946,7 +4933,7 @@ msgstr "このサイトでEコマースソフトウェアが検出されまし�
 msgid "e.g. 173.245.48.0/20"
 msgstr "例：173.245.48.0/20"
 
-#: admin/partials/botblocker-admin-display-addons.php:73
+#: admin/partials/botblocker-admin-display-addons.php:76
 msgid "Each add-on is a turnkey extension: install in one click, configure in minutes, and gain a new layer of protection or speed without writing a line of code."
 msgstr "各アドオンはターンキー拡張機能です。ワンクリックでインストールし、数分で設定して、コードを1行も書かずに新しい保護層や速度向上を実現できます。"
 
@@ -5480,8 +5467,8 @@ msgstr "XML-RPCトンネルを有効化"
 #: admin/class-botblocker-admin.php:323
 #: admin/class-botblocker-admin.php:509
 #: admin/class-botblocker-admin.php:840
-#: admin/templates/addons/marketplace-panel.php:209
-#: admin/templates/addons/marketplace-panel.php:95
+#: admin/templates/addons/marketplace-panel.php:212
+#: admin/templates/addons/marketplace-panel.php:98
 #: admin/templates/dashboard/hero.php:17
 #: admin/templates/settings/cookie.php:32
 #: includes/section/settings/botblocker-set-cookie.php:167
@@ -5520,7 +5507,7 @@ msgid "English"
 msgstr "英語"
 
 #: includes/components/class-botblocker-component-addons-summary.php:63
-#: includes/inc-botblocker-ui.php:310
+#: includes/inc-botblocker-ui.php:325
 msgid "Enhance speed, security and user experience with official BotBlocker add-ons."
 msgstr "公式BotBlockerアドオンで速度、セキュリティ、ユーザーエクスペリエンスを向上させましょう。"
 
@@ -5706,7 +5693,7 @@ msgstr "毎日"
 msgid "Example:"
 msgstr "例:"
 
-#: admin/partials/botblocker-admin-display-addons.php:74
+#: admin/partials/botblocker-admin-display-addons.php:77
 msgid "Examples: Security Headers (HSTS, CSP, X-Frame), Hide Admin URL, Speed-up, Early Init, Anti-spam, Telegram alerts and more."
 msgstr "例: セキュリティヘッダー (HSTS, CSP, X-Frame)、管理URL非表示、高速化、早期初期化、アンチスパム、Telegramアラートなど。"
 
@@ -5738,7 +5725,7 @@ msgstr "実行専用モード (PHP/JS/htaccessのみ)"
 msgid "Exit Setup"
 msgstr "設定を終了"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:184
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:192
 #: addons/bbcs-truth-source/inc/views/scan-results.php:66
 msgid "Expand all"
 msgstr "すべて展開"
@@ -5935,7 +5922,7 @@ msgstr "既存のアドオンのバックアップに失敗しました。"
 msgid "Failed to backup the existing add-on."
 msgstr "既存のアドオンのバックアップに失敗しました。"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:214
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:216
 msgid "Failed to cancel scan."
 msgstr "スキャンのキャンセルに失敗しました。"
 
@@ -6110,7 +6097,7 @@ msgstr "ルールの作成に失敗しました: "
 msgid "Failed to create salt file."
 msgstr "ソルトファイルの作成に失敗しました。"
 
-#: includes/hook/hook-addon-install.php:119
+#: includes/hook/hook-addon-install.php:122
 msgid "Failed to create temporary add-on directory."
 msgstr "一時アドオンディレクトリの作成に失敗しました。"
 
@@ -6416,11 +6403,11 @@ msgstr "アクティベーションの送信に失敗しました。後でもう
 msgid "Failed to send email."
 msgstr "メールの送信に失敗しました。"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:209
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:211
 msgid "Failed to start scan."
 msgstr "スキャンの開始に失敗しました。"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:210
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:212
 msgid "Failed to start scan. Please try again."
 msgstr "スキャンの開始に失敗しました。もう一度お試しください。"
 
@@ -6573,14 +6560,26 @@ msgstr "フィールド '%s' は必須です。"
 msgid "File"
 msgstr "ファイル"
 
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:85
+msgid "File added to ignore list."
+msgstr "ファイルが無視リストに追加されました。"
+
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:42
+msgid "File integrity scan started."
+msgstr "ファイル整合性スキャンが開始されました。"
+
 #: admin/class-botblocker-admin.php:664
 #: includes/class-botblocker-toastify.php:257
 msgid "File modifications are disabled for this WordPress installation."
 msgstr "このWordPressインストールではファイルの変更が無効になっています。"
 
-#: includes/hook/hook-addon-install.php:101
+#: includes/hook/hook-addon-install.php:104
 msgid "File modifications are disabled."
 msgstr "ファイルの変更が無効になっています。"
+
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:103
+msgid "File removed from ignore list."
+msgstr "ファイルが無視リストから削除されました。"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:490
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:554
@@ -6596,7 +6595,7 @@ msgstr "これより大きいファイルはスキップされます。"
 msgid "Filesystem API is not available."
 msgstr "ファイルシステムAPIが利用できません。"
 
-#: admin/templates/addons/addons-content.php:29
+#: admin/templates/addons/addons-content.php:31
 msgid "Find addon…"
 msgstr "アドオンを検索…"
 
@@ -6731,10 +6730,10 @@ msgstr "重要なセキュリティ通知と特別オファーのため。"
 msgid "For payment issues, see our"
 msgstr "支払いの問題については、弊社の"
 
-#: includes/hook/class-botblocker-addon-hooks.php:213
-#: includes/hook/class-botblocker-addon-hooks.php:286
-#: includes/hook/class-botblocker-addon-hooks.php:351
-#: includes/hook/class-botblocker-addon-hooks.php:404
+#: includes/hook/class-botblocker-addon-hooks.php:222
+#: includes/hook/class-botblocker-addon-hooks.php:296
+#: includes/hook/class-botblocker-addon-hooks.php:362
+#: includes/hook/class-botblocker-addon-hooks.php:413
 msgid "Forbidden."
 msgstr "禁止されています。"
 
@@ -6770,7 +6769,7 @@ msgstr "無料版 vs BotBlocker PRO"
 msgid "Free vs PRO"
 msgstr "無料 vs PRO"
 
-#: admin/templates/about/body.php:181
+#: admin/templates/about/body.php:172
 msgid "from"
 msgstr "から"
 
@@ -6867,7 +6866,7 @@ msgstr "BotBlockerを完全に無効化"
 msgid "GD library is not enabled on this server. Image Captcha (mode 2) and Color Buttons (mode 1) will not work and will fall back to another mode."
 msgstr "このサーバーではGDライブラリが有効になっていません。画像CAPTCHA（モード2）とカラーボタン（モード1）は動作せず、別のモードにフォールバックします。"
 
-#: includes/hook/class-botblocker-settings-hooks.php:339
+#: includes/hook/class-botblocker-settings-hooks.php:340
 msgid "GD library not available. Captcha mode was adjusted to a compatible mode."
 msgstr "GDライブラリが利用できません。CAPTCHAモードは互換性のあるモードに調整されました。"
 
@@ -6903,12 +6902,6 @@ msgstr "一般設定"
 msgid "Generated by BotBlocker Security"
 msgstr "BotBlocker Securityによって生成"
 
-#: admin/partials/botblocker-admin-display-rules.php:73
-#: admin/templates/rules/body.php:22
-#: includes/viewmodels/class-rules-viewmodel.php:119
-msgid "GEO"
-msgstr "GEO"
-
 #: admin/templates/rules.php:41
 msgid "GEO / ASN:"
 msgstr "GEO / ASN:"
@@ -6932,7 +6925,7 @@ msgstr "Geo IP / 言語不一致フィルタリング"
 msgid "GeoIP Language mismatch"
 msgstr "GeoIP 言語不一致"
 
-#: admin/templates/about/body.php:185
+#: admin/templates/about/body.php:176
 msgid "Geolocation Database:"
 msgstr "位置情報データベース:"
 
@@ -6940,10 +6933,10 @@ msgstr "位置情報データベース:"
 msgid "Get API key from cloud - token, license, activate"
 msgstr "クラウドからAPIキーを取得 - トークン、ライセンス、アクティベート"
 
-#: admin/partials/botblocker-admin-display-addons.php:79
+#: admin/partials/botblocker-admin-display-addons.php:82
 #: admin/partials/botblocker-section-right-sidebar.php:201
 #: admin/templates/addons/locked-notice.php:28
-#: admin/templates/addons/marketplace-panel.php:110
+#: admin/templates/addons/marketplace-panel.php:113
 #: admin/templates/shared/sidebar/pro-features.php:40
 msgid "Get BotBlocker PRO"
 msgstr "BotBlocker PROを取得"
@@ -7282,8 +7275,8 @@ msgstr "ホームページアクセス"
 
 #: addons/bbcs-cron-jobs/views/settings.php:119
 #: addons/bbcs-cron-jobs/views/settings.php:67
-#: admin/templates/settings/cron.php:174
-#: admin/templates/settings/cron.php:185
+#: admin/templates/settings/cron.php:182
+#: admin/templates/settings/cron.php:194
 msgid "Hook"
 msgstr "フック"
 
@@ -7508,7 +7501,7 @@ msgstr "HTTPS設定"
 msgid "I'm not a robot"
 msgstr "私はロボットではありません"
 
-#: admin/templates/about/body.php:181
+#: admin/templates/about/body.php:172
 msgid "Icons designed by"
 msgstr "アイコンデザイン："
 
@@ -7584,7 +7577,7 @@ msgstr "iFrame"
 msgid "Iframe protection (clickjacking)"
 msgstr "Iframe保護（クリックジャッキング）"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:182
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:190
 #: addons/bbcs-truth-source/inc/class-bbcs-ts-settings-view.php:347
 msgid "Ignore"
 msgstr "無視"
@@ -7601,7 +7594,7 @@ msgstr "組み込みのWordPressプラグイン/テーマを無視（Akismet、H
 msgid "Ignore cached truth source - force fresh download"
 msgstr "キャッシュされた真実のソースを無視 - 新規ダウンロードを強制"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:183
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:191
 msgid "Ignore folder"
 msgstr "フォルダを無視"
 
@@ -7675,7 +7668,7 @@ msgstr "画像配信モード："
 msgid "Image Recognition"
 msgstr "画像認識"
 
-#: admin/templates/about/body.php:169
+#: admin/templates/about/body.php:160
 msgid "Images and Icons:"
 msgstr "画像とアイコン："
 
@@ -7862,14 +7855,14 @@ msgstr "シークレットモード"
 msgid "Incoming request"
 msgstr "受信リクエスト"
 
-#: admin/partials/botblocker-admin-display-addons.php:135
-#: admin/partials/botblocker-admin-display-addons.php:208
+#: admin/partials/botblocker-admin-display-addons.php:138
 #: admin/partials/botblocker-admin-display-addons.php:211
-#: admin/templates/addons/marketplace-panel.php:120
-#: admin/templates/addons/marketplace-panel.php:192
-#: admin/templates/addons/marketplace-panel.php:218
-#: admin/templates/addons/marketplace-panel.php:71
-#: admin/templates/addons/marketplace-panel.php:77
+#: admin/partials/botblocker-admin-display-addons.php:214
+#: admin/templates/addons/marketplace-panel.php:123
+#: admin/templates/addons/marketplace-panel.php:195
+#: admin/templates/addons/marketplace-panel.php:221
+#: admin/templates/addons/marketplace-panel.php:74
+#: admin/templates/addons/marketplace-panel.php:80
 msgid "Incompatible"
 msgstr "非互換"
 
@@ -7920,17 +7913,17 @@ msgstr "インライン Base64 (推奨)"
 msgid "Inline: embed images in page (recommended). Separate: load via AJAX (legacy)."
 msgstr "インライン: 画像をページに埋め込む (推奨)。分離: AJAX で読み込む (旧形式)。"
 
-#: admin/partials/botblocker-admin-display-addons.php:144
-#: admin/templates/addons/marketplace-panel.php:107
+#: admin/partials/botblocker-admin-display-addons.php:147
+#: admin/templates/addons/marketplace-panel.php:110
 msgid "Install"
 msgstr "インストール"
 
-#: admin/partials/botblocker-admin-display-addons.php:148
-#: admin/partials/botblocker-admin-display-addons.php:150
+#: admin/partials/botblocker-admin-display-addons.php:151
+#: admin/partials/botblocker-admin-display-addons.php:153
 msgid "Install (PRO)"
 msgstr "インストール (PRO)"
 
-#: admin/partials/botblocker-admin-display-addons.php:49
+#: admin/partials/botblocker-admin-display-addons.php:51
 msgid "Install add-on from ZIP"
 msgstr "ZIP からアドオンをインストール"
 
@@ -7938,7 +7931,7 @@ msgstr "ZIP からアドオンをインストール"
 msgid "Install addon from ZIP"
 msgstr "ZIP からアドオンをインストール"
 
-#: admin/partials/botblocker-admin-display-addons.php:65
+#: admin/partials/botblocker-admin-display-addons.php:67
 msgid "Install Package"
 msgstr "パッケージをインストール"
 
@@ -7946,8 +7939,8 @@ msgstr "パッケージをインストール"
 msgid "Install package"
 msgstr "パッケージをインストール"
 
-#: admin/partials/botblocker-admin-display-addons.php:148
-#: admin/partials/botblocker-admin-display-addons.php:150
+#: admin/partials/botblocker-admin-display-addons.php:151
+#: admin/partials/botblocker-admin-display-addons.php:153
 msgid "Install requires BotBlocker PRO"
 msgstr "インストールには BotBlocker PRO が必要です"
 
@@ -7956,15 +7949,15 @@ msgstr "インストールには BotBlocker PRO が必要です"
 msgid "Installation arguments are missing."
 msgstr "インストール引数が不足しています。"
 
-#: admin/partials/botblocker-admin-display-addons.php:164
-#: admin/partials/botblocker-admin-display-addons.php:166
-#: admin/partials/botblocker-admin-display-addons.php:88
+#: admin/partials/botblocker-admin-display-addons.php:167
+#: admin/partials/botblocker-admin-display-addons.php:169
+#: admin/partials/botblocker-admin-display-addons.php:91
 #: admin/templates/setup-guide/status.php:192
 #: admin/templates/setup-guide/status.php:219
 msgid "Installed"
 msgstr "インストール済み"
 
-#: admin/partials/botblocker-admin-display-addons.php:119
+#: admin/partials/botblocker-admin-display-addons.php:122
 #, php-format
 msgid "Installed %s"
 msgstr "%s をインストールしました"
@@ -7981,18 +7974,18 @@ msgstr "即時 IP ブロック"
 msgid "Instant response"
 msgstr "即時応答"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:103
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:188
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:104
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:190
 #: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:45
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:72
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:83
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:73
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:84
 #: addons/bbcs-malware/inc/class-bbcs-malware-background.php:656
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:108
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:116
 #: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:30
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:53
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:55
 #: addons/bbcs-truth-source/inc/class-bbcs-ts-background.php:398
-#: includes/hook/class-botblocker-addon-hooks.php:122
-#: includes/hook/class-botblocker-addon-hooks.php:91
+#: includes/hook/class-botblocker-addon-hooks.php:102
+#: includes/hook/class-botblocker-addon-hooks.php:134
 #: includes/hook/class-botblocker-addon-settings-hooks.php:12
 #: includes/hook/class-botblocker-settings-hooks.php:14
 #: includes/hook/class-botblocker-settings-hooks.php:143
@@ -8162,12 +8155,6 @@ msgstr "無効な確認コード。"
 #: includes/utilites/2FA/inc-botblocker-2fa.php:381
 msgid "Invalid verification code. Please try again."
 msgstr "無効な確認コードです。もう一度お試しください。"
-
-#: admin/partials/botblocker-admin-display-reports.php:12
-#: admin/templates/reports/table-header.php:13
-#: includes/modal/modal-botblocker-hits-add-rule.php:23
-msgid "IP"
-msgstr "IP"
 
 #: admin/partials/botblocker-admin-dashboard-widgets.php:193
 msgid "IP / Subnet"
@@ -8347,11 +8334,11 @@ msgstr "JA4ヘッダー名"
 msgid "JA4 Spec"
 msgstr "JA4仕様"
 
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:107
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:108
 msgid "JavaScript is disabled in your browser. Enable JavaScript to continue."
 msgstr "ブラウザでJavaScriptが無効になっています。続行するにはJavaScriptを有効にしてください。"
 
-#: admin/templates/about/body.php:160
+#: admin/templates/about/body.php:151
 msgid "JavaScript Library:"
 msgstr "JavaScriptライブラリ:"
 
@@ -8407,8 +8394,8 @@ msgstr "既知の非コアファイル（予想される）"
 
 #: addons/bbcs-cron-jobs/views/settings.php:127
 #: addons/bbcs-cron-jobs/views/settings.php:69
-#: admin/templates/settings/cron.php:176
-#: admin/templates/settings/cron.php:193
+#: admin/templates/settings/cron.php:184
+#: admin/templates/settings/cron.php:202
 msgid "Label"
 msgstr "ラベル"
 
@@ -8485,19 +8472,18 @@ msgstr "ライセンスキー"
 msgid "License, cloud API, premium features"
 msgstr "ライセンス、クラウドAPI、プレミアム機能"
 
-#: admin/templates/about/body.php:174
+#: admin/templates/about/body.php:165
 msgid "Licensed under"
 msgstr "ライセンス下で"
 
-#: admin/templates/about/body.php:190
+#: admin/templates/about/body.php:181
 msgid "Licensed under BSD License, available at"
 msgstr "BSDライセンスの下でライセンスされ、以下で入手可能:"
 
 #: admin/templates/about/body.php:147
 #: admin/templates/about/body.php:156
-#: admin/templates/about/body.php:165
+#: admin/templates/about/body.php:190
 #: admin/templates/about/body.php:199
-#: admin/templates/about/body.php:208
 msgid "Licensed under the"
 msgstr "ライセンスされた"
 
@@ -8545,13 +8531,6 @@ msgstr "スキャンから除外するパスセグメントのリスト。"
 #: includes/section/report/botblocker-report-dashboard.php:42
 msgid "Live and historical traffic (IP, country, device, behavior markers)."
 msgstr "ライブおよび履歴トラフィック (IP、国、デバイス、行動マーカー)。"
-
-#: admin/partials/botblocker-admin-display-rules.php:77
-#: admin/templates/reports/dashboard.php:31
-#: admin/templates/rules/body.php:21
-#: includes/viewmodels/class-rules-viewmodel.php:111
-msgid "LLM"
-msgstr "LLM"
 
 #: includes/ajax/class-botblocker-ajax-llm.php:371
 msgid "LLM file generated successfully."
@@ -8848,13 +8827,17 @@ msgstr "データベース内の悪意のあるIP"
 msgid "Malware"
 msgstr "マルウェア"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:174
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:176
 msgid "Malware Scan"
 msgstr "マルウェアスキャン"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:154
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:156
 msgid "Malware Scan Batch"
 msgstr "マルウェアスキャンバッチ"
+
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:49
+msgid "Malware scan started."
+msgstr "マルウェアスキャンが開始されました。"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-addons-page.php:36
 msgid "Malware Scanner"
@@ -8864,7 +8847,7 @@ msgstr "マルウェアスキャナー"
 msgid "Malware Scanner: High-Confidence Findings"
 msgstr "マルウェアスキャナー: 高信頼度の検出結果"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:153
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:155
 msgid "Malware Scheduled Scan"
 msgstr "マルウェア定期スキャン"
 
@@ -8911,8 +8894,8 @@ msgid "Maps traffic speed percentage to reputation tier 1–5 (tier 6 reserved f
 msgstr "トラフィック速度のパーセンテージを評価ティア1〜5にマッピングします（ティア6はブロックされたIP用に予約）。形式: パーセンテージ:ティア (1行に1つ)。"
 
 #: admin/class-botblocker-admin.php:673
-#: admin/partials/botblocker-admin-display-addons.php:87
-#: admin/templates/addons/addons-content.php:31
+#: admin/partials/botblocker-admin-display-addons.php:90
+#: admin/templates/addons/addons-content.php:33
 msgid "Marketplace"
 msgstr "マーケットプレイス"
 
@@ -9042,17 +9025,6 @@ msgstr "最大限のセキュリティ強化"
 #: includes/shortcode/botblocker-shortcode-health-full.php:46
 msgid "may reduce protection"
 msgstr "保護が低下する可能性があります"
-
-#: admin/partials/botblocker-admin-display-integrations.php:54
-#: admin/partials/botblocker-section-right-sidebar.php:134
-#: admin/templates/integrations/card.php:16
-#: admin/templates/shared/sidebar/status-card.php:83
-#: admin/templates/shared/system-toggles.php:45
-#: includes/data/botblocker-data-snav.php:597
-#: includes/section/integration/botblocker-int-memcached.php:14
-#: includes/viewmodels/class-integrations-viewmodel.php:141
-msgid "Memcached"
-msgstr "Memcached"
 
 #: admin/templates/integrations/memcached.php:31
 #: includes/data/botblocker-data-snav.php:602
@@ -9337,8 +9309,8 @@ msgstr "ニュース"
 
 #: addons/bbcs-cron-jobs/views/settings.php:156
 #: addons/bbcs-cron-jobs/views/settings.php:70
-#: admin/templates/settings/cron.php:177
-#: admin/templates/settings/cron.php:194
+#: admin/templates/settings/cron.php:185
+#: admin/templates/settings/cron.php:203
 msgid "Next Run"
 msgstr "次回の実行"
 
@@ -9426,7 +9398,7 @@ msgid "No file content provided."
 msgstr "ファイル内容が提供されていません。"
 
 #: admin/class-botblocker-admin.php:672
-#: admin/partials/botblocker-admin-display-addons.php:60
+#: admin/partials/botblocker-admin-display-addons.php:62
 #: admin/templates/addons/upload-section.php:21
 msgid "No file selected"
 msgstr "ファイルが選択されていません"
@@ -9470,6 +9442,9 @@ msgstr "お知らせはありません"
 #: admin/class-botblocker-setup-wizard-ajax.php:521
 #: admin/class-botblocker-setup-wizard-ajax.php:56
 #: includes/cron/class-botblocker-cron.php:159
+#: includes/cron/class-botblocker-cron.php:284
+#: includes/cron/class-botblocker-cron.php:320
+#: includes/cron/class-botblocker-cron.php:357
 msgid "No permission."
 msgstr "権限がありません。"
 
@@ -9486,7 +9461,7 @@ msgstr "まだスキャン結果はありません。"
 msgid "No scheduled cron jobs found."
 msgstr "予定されたcronジョブは見つかりませんでした。"
 
-#: admin/templates/settings/cron.php:220
+#: admin/templates/settings/cron.php:234
 msgid "No scheduled tasks at this time."
 msgstr "現在、スケジュールされたタスクはありません。"
 
@@ -9498,7 +9473,11 @@ msgstr "特別な設定は不要です"
 msgid "No special setup required"
 msgstr "特別なセットアップは不要です"
 
-#: admin/partials/botblocker-admin-display-addons.php:224
+#: includes/cron/class-botblocker-cron.php:391
+msgid "No stale tasks found."
+msgstr "古いタスクは見つかりませんでした。"
+
+#: admin/partials/botblocker-admin-display-addons.php:227
 msgid "No Update Source"
 msgstr "更新ソースがありません"
 
@@ -9506,10 +9485,10 @@ msgstr "更新ソースがありません"
 msgid "No visible checks. Decisions based on IP databases and threat intelligence."
 msgstr "可視的なチェックはありません。判断はIPデータベースと脅威インテリジェンスに基づいています。"
 
-#: includes/hook/class-botblocker-addon-hooks.php:217
-#: includes/hook/class-botblocker-addon-hooks.php:290
-#: includes/hook/class-botblocker-addon-hooks.php:355
-#: includes/hook/class-botblocker-addon-hooks.php:408
+#: includes/hook/class-botblocker-addon-hooks.php:226
+#: includes/hook/class-botblocker-addon-hooks.php:300
+#: includes/hook/class-botblocker-addon-hooks.php:366
+#: includes/hook/class-botblocker-addon-hooks.php:417
 msgid "Nonce verification failed."
 msgstr "Nonce検証に失敗しました。"
 
@@ -9560,7 +9539,7 @@ msgstr "不要"
 msgid "Not saved!"
 msgstr "保存されていません！"
 
-#: admin/templates/addons/addons-content.php:64
+#: admin/templates/addons/addons-content.php:66
 #: admin/templates/integrations.php:31
 #: admin/templates/settings/save-settings.php:10
 #: admin/templates/tools.php:31
@@ -9840,9 +9819,9 @@ msgid "Outsourcing"
 msgstr "アウトソーシング"
 
 #: addons/bbcs-cron-jobs/views/settings.php:165
-#: addons/bbcs-cron-jobs/views/settings.php:238
-#: admin/templates/settings/cron.php:211
-#: admin/templates/settings/cron.php:255
+#: addons/bbcs-cron-jobs/views/settings.php:240
+#: admin/templates/settings/cron.php:220
+#: admin/templates/settings/cron.php:270
 msgid "Overdue"
 msgstr "期限切れ"
 
@@ -9966,7 +9945,7 @@ msgctxt "device type label"
 msgid "PC"
 msgstr "パソコン"
 
-#: admin/templates/settings/cron.php:213
+#: admin/templates/settings/cron.php:222
 msgid "Pending"
 msgstr "保留中"
 
@@ -10072,7 +10051,7 @@ msgid "Please Confirm"
 msgstr "確認してください"
 
 #: includes/botblocker/traits/class-botblocker-block-page-trait.php:14
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:207
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:208
 #: includes/botblocker/traits/class-botblocker-denied-page-trait.php:14
 #: public/template-botblocker-denied.php:217
 msgid "Please enable JavaScript and reload the page"
@@ -10129,7 +10108,7 @@ msgstr "ポリシーリンクラベル"
 msgid "Policy URL"
 msgstr "ポリシーURL"
 
-#: admin/partials/botblocker-admin-display-addons.php:93
+#: admin/partials/botblocker-admin-display-addons.php:96
 msgid "Popular add-ons, new possibilities"
 msgstr "人気のアドオン、新しい可能性"
 
@@ -10138,7 +10117,7 @@ msgstr "人気のアドオン、新しい可能性"
 msgid "Position"
 msgstr "位置"
 
-#: admin/partials/botblocker-admin-display-addons.php:72
+#: admin/partials/botblocker-admin-display-addons.php:75
 msgid "Premium add-ons - included with BotBlocker PRO"
 msgstr "プレミアムアドオン - BotBlocker PROに含まれます"
 
@@ -10272,7 +10251,7 @@ msgstr "プライバシーポリシー"
 
 #: admin/class-botblocker-admin.php:1271
 #: admin/class-botblocker-admin.php:1272
-#: admin/templates/addons/marketplace-panel.php:68
+#: admin/templates/addons/marketplace-panel.php:71
 #: admin/templates/cloud-api/status.php:100
 #: admin/templates/integrations/redis.php:33
 #: admin/templates/settings/status.php:40
@@ -10383,8 +10362,8 @@ msgstr "プロファイルが適用されました。"
 
 #: addons/bbcs-cron-jobs/views/settings.php:159
 #: addons/bbcs-cron-jobs/views/settings.php:71
-#: admin/templates/settings/cron.php:178
-#: admin/templates/settings/cron.php:201
+#: admin/templates/settings/cron.php:186
+#: admin/templates/settings/cron.php:210
 msgid "Progress"
 msgstr "進捗"
 
@@ -10537,18 +10516,6 @@ msgstr "プロキシが正常に更新されました。"
 #: includes/section/setup/botblocker-setup-pro.php:33
 msgid "Proxy, VPN, and Tor detection"
 msgstr "プロキシ、VPN、Tor検出"
-
-#: admin/partials/botblocker-admin-display-reports.php:12
-#: admin/templates/reports/table-header.php:13
-#: admin/templates/settings/bot-detection.php:27
-#: admin/templates/settings/general.php:27
-#: includes/modal/modal-botblocker-hits-add-rule.php:25
-#: includes/modal/modal-botblocker-rule-add.php:26
-#: includes/modal/modal-botblocker-rule-edit.php:25
-#: includes/section/settings/botblocker-set-general.php:29
-#: includes/section/settings/botblocker-set-simple.php:31
-msgid "PTR"
-msgstr "PTR"
 
 #: admin/templates/settings/bot-detection.php:56
 #: includes/data/botblocker-data-snav.php:81
@@ -10996,17 +10963,6 @@ msgstr "リダイレクト"
 msgid "Redirect URL"
 msgstr "リダイレクトURL"
 
-#: admin/partials/botblocker-admin-display-integrations.php:57
-#: admin/partials/botblocker-section-right-sidebar.php:111
-#: admin/templates/integrations/card.php:17
-#: admin/templates/shared/sidebar/status-card.php:74
-#: admin/templates/shared/system-toggles.php:44
-#: includes/data/botblocker-data-snav.php:613
-#: includes/section/integration/botblocker-int-redis.php:14
-#: includes/viewmodels/class-integrations-viewmodel.php:143
-msgid "Redis"
-msgstr "Redis"
-
 #: includes/data/botblocker-data-snav.php:624
 msgid "Redis Authentication Password"
 msgstr "Redis認証パスワード"
@@ -11373,7 +11329,7 @@ msgstr "スケジュールタスクとバックアップに必要"
 msgid "Required:"
 msgstr "必須:"
 
-#: admin/partials/botblocker-admin-display-addons.php:199
+#: admin/partials/botblocker-admin-display-addons.php:202
 msgid "Requires a newer BotBlocker version"
 msgstr "より新しいBotBlockerバージョンが必要です"
 
@@ -11387,8 +11343,8 @@ msgstr "HTTPヘッダーを介してフィンガープリントを渡すには�
 msgid "Requires active BotBlocker PRO"
 msgstr "アクティブなBotBlocker PROが必要です"
 
-#: admin/partials/botblocker-admin-display-addons.php:123
-#: admin/partials/botblocker-admin-display-addons.php:199
+#: admin/partials/botblocker-admin-display-addons.php:126
+#: admin/partials/botblocker-admin-display-addons.php:202
 #, php-format
 msgid "Requires BotBlocker >= %s"
 msgstr "BotBlocker >= %s が必要です"
@@ -11398,7 +11354,7 @@ msgstr "BotBlocker >= %s が必要です"
 msgid "Requires BotBlocker PRO and the Early Init add-on."
 msgstr "BotBlocker PRO と Early Init アドオンが必要です。"
 
-#: admin/templates/addons/marketplace-panel.php:110
+#: admin/templates/addons/marketplace-panel.php:113
 #: admin/templates/setup-guide/one-click-modal.php:81
 #: includes/modal/modal-botblocker-setup-wizard.php:80
 msgid "Requires PRO"
@@ -11517,7 +11473,7 @@ msgstr "自動化された脅威を減らすために、プロキシサーバー
 msgid "Retrieves your BotBlocker PRO key from the cloud."
 msgstr "クラウドからBotBlocker PRO キーを取得します。"
 
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:123
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:124
 msgid "Retrying..."
 msgstr "再試行中..."
 
@@ -11534,10 +11490,6 @@ msgstr "セキュリティスコアを確認"
 #: admin/class-botblocker-admin.php:608
 msgid "Rewrite rules successfully flushed!"
 msgstr "リライトルールが正常にフラッシュされました！"
-
-#: admin/templates/reports/dashboard.php:31
-msgid "RKN"
-msgstr "RKN"
 
 #: admin/templates/integrations/2fa.php:124
 #: includes/data/botblocker-data-snav.php:653
@@ -11727,10 +11679,18 @@ msgstr "ルールファイルが正常に生成されました。"
 msgid "Rules will be regenerated automatically."
 msgstr "ルールは自動的に再生成されます。"
 
+#: admin/templates/settings/cron.php:170
+msgid "Run all recurring tasks immediately"
+msgstr "すべての定期的なタスクをすぐに実行"
+
 #: includes/data/botblocker-data-palette.php:81
 #: includes/data/botblocker-data-palette.php:82
 msgid "Run malware scan - virus, infected files"
 msgstr "マルウェアスキャンを実行 - ウイルス、感染ファイル"
+
+#: admin/templates/settings/cron.php:173
+msgid "Run only overdue tasks"
+msgstr "期限が過ぎたタスクのみを実行"
 
 #: includes/data/botblocker-data-palette.php:65
 msgid "Run setup wizard - guide, onboarding, first steps"
@@ -11744,6 +11704,10 @@ msgstr "セットアップウィザードを再実行"
 #: includes/section/dashboard/botblocker-dash-health.php:55
 msgid "Run the wizard to configure protection"
 msgstr "保護を設定するためにウィザードを実行する"
+
+#: admin/templates/settings/cron.php:226
+msgid "Run this task now"
+msgstr "このタスクを今すぐ実行"
 
 #: includes/data/botblocker-data-palette.php:105
 #: includes/data/botblocker-data-palette.php:106
@@ -11802,11 +11766,11 @@ msgstr "SameSiteクッキー"
 msgid "SameSite policy controls cross-site cookie behavior to protect against CSRF attacks."
 msgstr "SameSiteポリシーは、CSRF攻撃から保護するためにクロスサイトクッキーの動作を制御します。"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:88
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:89
 msgid "Sample file not found."
 msgstr "サンプルファイルが見つかりません。"
 
-#: admin/templates/addons/addons-content.php:65
+#: admin/templates/addons/addons-content.php:67
 #: admin/templates/integrations.php:32
 #: admin/templates/settings/save-settings.php:13
 #: admin/templates/tools.php:32
@@ -11878,12 +11842,12 @@ msgstr "保存中..."
 msgid "Scan active and inactive themes for malicious code."
 msgstr "アクティブおよび非アクティブなテーマを悪意のあるコードがないかスキャンします。"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:192
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:213
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:194
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:215
 msgid "Scan cancelled."
 msgstr "スキャンがキャンセルされました。"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:211
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:213
 msgid "Scan completed. Refreshing results..."
 msgstr "スキャンが完了しました。結果を更新中..."
 
@@ -11931,6 +11895,11 @@ msgstr "投稿、ページ、オプション、ユーザー、cronフックを�
 msgid "Scan QR Code"
 msgstr "QRコードをスキャン"
 
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:112
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:63
+msgid "Scan results cleared."
+msgstr "スキャン結果がクリアされました。"
+
 #: addons/bbcs-malware/inc/class-bbcs-malware-addons-page.php:46
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:117
 #: addons/bbcs-truth-source/inc/class-bbcs-truth-source-addons-page.php:47
@@ -11938,7 +11907,7 @@ msgstr "QRコードをスキャン"
 msgid "Scan Scope"
 msgstr "スキャン範囲"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:76
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:77
 msgid "Scan started."
 msgstr "スキャンが開始されました。"
 
@@ -12029,8 +11998,8 @@ msgstr "WordPressファイルとデータベースコンテンツをスキャン
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:317
 #: addons/bbcs-truth-source/inc/class-bbcs-truth-source-addons-page.php:75
 #: addons/bbcs-truth-source/inc/class-bbcs-ts-settings-view.php:193
-#: admin/templates/settings/cron.php:175
-#: admin/templates/settings/cron.php:186
+#: admin/templates/settings/cron.php:183
+#: admin/templates/settings/cron.php:195
 msgid "Schedule"
 msgstr "スケジュール"
 
@@ -12187,9 +12156,9 @@ msgstr "セキュリティとプライバシー"
 msgid "Security blog"
 msgstr "セキュリティブログ"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:103
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:111
 #: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:25
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:48
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:50
 #: includes/ajax/class-botblocker-ajax-backup.php:181
 #: includes/ajax/class-botblocker-ajax-debug.php:192
 #: public/2FA/bbcs-2fa.php:118
@@ -12519,9 +12488,9 @@ msgstr "セットトップボックス"
 #: admin/class-botblocker-setup-wizard-renderer.php:34
 #: admin/partials/botblocker-admin-dashboard-widgets.php:127
 #: admin/partials/botblocker-admin-display-settings.php:135
-#: admin/templates/addons/marketplace-panel.php:134
-#: admin/templates/addons/marketplace-panel.php:146
-#: admin/templates/addons/marketplace-panel.php:232
+#: admin/templates/addons/marketplace-panel.php:137
+#: admin/templates/addons/marketplace-panel.php:149
+#: admin/templates/addons/marketplace-panel.php:235
 #: admin/templates/dashboard/quick-links.php:11
 #: admin/templates/setup-guide/status.php:196
 #: admin/templates/setup-wizard/completed.php:52
@@ -12535,7 +12504,7 @@ msgstr "セットトップボックス"
 msgid "Settings"
 msgstr "設定"
 
-#: includes/hook/class-botblocker-settings-hooks.php:356
+#: includes/hook/class-botblocker-settings-hooks.php:357
 msgid "Settings saved."
 msgstr "設定を保存しました。"
 
@@ -12802,7 +12771,7 @@ msgstr "スキップされました: "
 msgid "Sliding window size in minutes. RPM = total hits in window / window minutes. Default: 5."
 msgstr "スライディングウィンドウサイズ（分）。 RPM = ウィンドウ内の総ヒット数 / ウィンドウの分数。デフォルト: 5。"
 
-#: admin/templates/about/body.php:215
+#: admin/templates/about/body.php:206
 #: includes/section/about/botblocker-about-status.php:56
 msgid "Software versions"
 msgstr "ソフトウェアバージョン"
@@ -12914,7 +12883,7 @@ msgstr "ウィザードを開始"
 msgid "Start Wizard"
 msgstr "ウィザードを開始"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:208
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:210
 msgid "Starting scan..."
 msgstr "スキャンを開始しています..."
 
@@ -12933,8 +12902,8 @@ msgstr "統計表示モード"
 #: addons/bbcs-cron-jobs/views/settings.php:72
 #: addons/bbcs-early-init/inc/class-bbcs-early-init-addons-page.php:43
 #: admin/partials/botblocker-section-right-sidebar.php:26
-#: admin/templates/settings/cron.php:179
-#: admin/templates/settings/cron.php:207
+#: admin/templates/settings/cron.php:187
+#: admin/templates/settings/cron.php:216
 #: admin/templates/shared/sidebar/rail.php:13
 #: admin/templates/shared/sidebar/status-card.php:18
 msgid "Status"
@@ -13265,6 +13234,12 @@ msgstr "ターゲットIP/サブネット"
 msgid "Targets: %1$d. Clean: %2$d. Issues: %3$d. Unverifiable: %4$d. Added: %5$d. Modified: %6$d. Missing: %7$d. Expected: %8$d. Ignored: %9$d."
 msgstr "ターゲット: %1$d. クリーン: %2$d. 問題: %3$d. 検証不能: %4$d. 追加: %5$d. 変更: %6$d. 欠落: %7$d. 予想: %8$d. 無視: %9$d."
 
+#. translators: %s: cron hook name
+#: includes/cron/class-botblocker-cron.php:309
+#, php-format
+msgid "Task %s executed successfully."
+msgstr "タスク %s が正常に実行されました。"
+
 #: admin/templates/settings/cron.php:164
 #: includes/data/botblocker-data-snav.php:390
 msgid "Task List"
@@ -13581,7 +13556,7 @@ msgstr "サードパーティ"
 msgid "This action cannot be undone."
 msgstr "この操作は元に戻せません。"
 
-#: admin/partials/botblocker-admin-display-addons.php:257
+#: admin/partials/botblocker-admin-display-addons.php:260
 msgid "This add-on is incompatible with your BotBlocker version. Delete anyway?"
 msgstr "このアドオンはあなたのBotBlockerのバージョンと互換性がありません。それでも削除しますか？"
 
@@ -13730,7 +13705,7 @@ msgstr "データベースの修復と最適化を有効にするには："
 msgid "To receive important security news and special offers."
 msgstr "重要なセキュリティニュースや特別オファーを受け取るため。"
 
-#: admin/templates/about/body.php:203
+#: admin/templates/about/body.php:194
 msgid "Toast Notifications:"
 msgstr "トースト通知："
 
@@ -14066,7 +14041,7 @@ msgstr "トゥルースソース比較"
 msgid "Truth Source Settings"
 msgstr "トゥルースソース設定"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:147
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:155
 msgid "Truth Source: Background Scan Progress"
 msgstr "トゥルースソース: バックグラウンドスキャンの進行状況"
 
@@ -14074,11 +14049,11 @@ msgstr "トゥルースソース: バックグラウンドスキャンの進行�
 msgid "Truth Source: File Integrity Issues"
 msgstr "トゥルースソース: ファイル整合性の問題"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:138
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:146
 msgid "Truth Source: Scan Batch"
 msgstr "トゥルースソース: スキャンバッチ"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:137
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:145
 msgid "Truth Source: Scheduled Scan"
 msgstr "トゥルースソース: スケジュールスキャン"
 
@@ -14331,6 +14306,10 @@ msgstr "ユニークビジター（IP別）"
 msgid "Unknown chart data type."
 msgstr "不明なチャートデータタイプ。"
 
+#: includes/cron/class-botblocker-cron.php:291
+msgid "Unknown cron task."
+msgstr "不明なcronタスク。"
+
 #: admin/class-botblocker-setup-wizard.php:234
 #: admin/class-botblocker-setup-wizard.php:359
 msgid "Unknown error"
@@ -14360,18 +14339,18 @@ msgstr "応答しないIPのブロック"
 msgid "Until changed"
 msgstr "変更されるまで"
 
-#: admin/partials/botblocker-admin-display-addons.php:160
-#: admin/partials/botblocker-admin-display-addons.php:221
-#: admin/partials/botblocker-admin-display-addons.php:245
-#: admin/templates/addons/marketplace-panel.php:129
-#: admin/templates/addons/marketplace-panel.php:189
-#: admin/templates/addons/marketplace-panel.php:227
-#: admin/templates/addons/marketplace-panel.php:74
+#: admin/partials/botblocker-admin-display-addons.php:163
+#: admin/partials/botblocker-admin-display-addons.php:224
+#: admin/partials/botblocker-admin-display-addons.php:248
+#: admin/templates/addons/marketplace-panel.php:132
+#: admin/templates/addons/marketplace-panel.php:192
+#: admin/templates/addons/marketplace-panel.php:230
+#: admin/templates/addons/marketplace-panel.php:77
 msgid "Update"
 msgstr "更新"
 
 #. translators: %d: number of add-ons with available updates.
-#: admin/partials/botblocker-admin-display-addons.php:36
+#: admin/partials/botblocker-admin-display-addons.php:37
 #: admin/templates/addons.php:23
 #, php-format
 msgid "Update All (%d)"
@@ -14387,19 +14366,19 @@ msgstr "ASNデータベースを更新"
 msgid "Update ASN database - geo, network, country data"
 msgstr "ASNデータベースの更新 - 地理、ネットワーク、国データ"
 
-#: admin/partials/botblocker-admin-display-addons.php:128
+#: admin/partials/botblocker-admin-display-addons.php:131
 #, php-format
 msgid "Update available, requires BotBlocker >= %s"
 msgstr "更新があります、BotBlocker >= %sが必要です"
 
-#: admin/partials/botblocker-admin-display-addons.php:135
-#: admin/partials/botblocker-admin-display-addons.php:208
+#: admin/partials/botblocker-admin-display-addons.php:138
 #: admin/partials/botblocker-admin-display-addons.php:211
+#: admin/partials/botblocker-admin-display-addons.php:214
 #, php-format
 msgid "Update BotBlocker to %s to use this add-on"
 msgstr "このアドオンを使用するにはBotBlockerを%sに更新してください"
 
-#: admin/partials/botblocker-admin-display-addons.php:164
+#: admin/partials/botblocker-admin-display-addons.php:167
 #, php-format
 msgid "Update requires BotBlocker >= %s"
 msgstr "更新にはBotBlocker >= %sが必要です"
@@ -14450,11 +14429,11 @@ msgstr "Behavioral EngineのためにProにアップグレードしてくださ�
 msgid "Upgrade your plan for better protection."
 msgstr "より良い保護のためにプランをアップグレードしてください。"
 
-#: admin/partials/botblocker-admin-display-addons.php:50
+#: admin/partials/botblocker-admin-display-addons.php:52
 msgid "Upload a BotBlocker add-on package. It will be installed inactive, then you can review and activate it from the Installed tab."
 msgstr "BotBlockerアドオンパッケージをアップロードしてください。非アクティブ状態でインストールされ、その後「インストール済み」タブから確認して有効化できます。"
 
-#: admin/partials/botblocker-admin-display-addons.php:26
+#: admin/partials/botblocker-admin-display-addons.php:27
 #: admin/templates/addons.php:22
 msgid "Upload ZIP"
 msgstr "ZIPをアップロード"
@@ -14462,11 +14441,6 @@ msgstr "ZIPをアップロード"
 #: admin/partials/botblocker-admin-dashboard-widgets.php:176
 msgid "Uploading a new list will add new IPs and skip existing ones. Invalid lines will be skipped automatically."
 msgstr "新しいリストをアップロードすると、新しいIPが追加され、既存のものはスキップされます。無効な行は自動的にスキップされます。"
-
-#: includes/modal/modal-botblocker-rule-add.php:29
-#: includes/modal/modal-botblocker-rule-edit.php:28
-msgid "URI"
-msgstr "URI"
 
 #: includes/modal/modal-botblocker-rewrite-rules.php:13
 msgid "URL rewrite rules will be reset:"
@@ -14533,7 +14507,7 @@ msgstr "現在のセッションでBotBlockerのチェックを一時的に無�
 msgid "Use WordPress transients. Works on any hosting."
 msgstr "WordPressトランジェントを使用します。どのホスティングでも動作します。"
 
-#: admin/templates/about/body.php:181
+#: admin/templates/about/body.php:172
 msgid "used with attribution"
 msgstr "帰属表示付きで使用"
 
@@ -14617,7 +14591,7 @@ msgstr "確認コードが必要です。"
 msgid "Verification failed."
 msgstr "確認に失敗しました。"
 
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:124
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:125
 msgid "Verification failed. Please complete the challenge below."
 msgstr "確認に失敗しました。以下のチャレンジを完了してください。"
 
@@ -14687,7 +14661,7 @@ msgstr "%s の整合性を検証しています"
 msgid "Verifying file integrity..."
 msgstr "ファイルの整合性を検証しています..."
 
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:122
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:123
 #: public/captcha/render-hold-button-trait.php:31
 msgid "Verifying..."
 msgstr "検証中..."
@@ -14697,8 +14671,8 @@ msgstr "検証中..."
 msgid "Version"
 msgstr "バージョン"
 
-#: admin/partials/botblocker-admin-display-addons.php:114
-#: admin/partials/botblocker-admin-display-addons.php:195
+#: admin/partials/botblocker-admin-display-addons.php:117
+#: admin/partials/botblocker-admin-display-addons.php:198
 #, php-format
 msgid "Version %s"
 msgstr "バージョン %s"
@@ -15111,7 +15085,7 @@ msgstr "WordPressコアチューニング"
 msgid "WordPress development"
 msgstr "WordPress開発"
 
-#: includes/hook/hook-addon-install.php:114
+#: includes/hook/hook-addon-install.php:117
 msgid "WordPress filesystem is unavailable."
 msgstr "WordPressファイルシステムが利用できません。"
 
@@ -15153,7 +15127,7 @@ msgid "WordPress speed optimizations"
 msgstr "WordPress速度最適化"
 
 #. phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-#: includes/botblocker/class-botblocker.php:241
+#: includes/botblocker/class-botblocker.php:242
 msgid "WordPress stopped by BotBlocker"
 msgstr "BotBlockerによって停止されたWordPress"
 
@@ -15195,11 +15169,6 @@ msgstr "WP Super Cache（Expert/mod_rewriteモード）は.htaccess経由でキ�
 #: addons/bbcs-early-init/inc/class-bbcs-early-init-addons-page.php:46
 msgid "wp-config.php Integration"
 msgstr "wp-config.php統合"
-
-#: admin/templates/settings/cron.php:88
-#: includes/section/settings/botblocker-set-cron.php:27
-msgid "WP-Cron"
-msgstr "WP-クロン"
 
 #: addons/bbcs-cron-jobs/views/settings.php:26
 msgid "WP-Cron Documentation"

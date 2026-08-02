@@ -166,6 +166,14 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
 				?>
 				<div class="bbcs-row bbcs-g-2 bbcs-mb-3h bbcs-ai-center" data-anchor="task-list">
 					<div class="bbcs-fill bbcs-fs-xs bbcs-dim bbcs-mono"><?php echo esc_html( $summary_text ); ?></div>
+					<div class="bbcs-row bbcs-g-1">
+						<button type="button" class="bbcs-btn bbcs-btn--ghost bbcs-btn--icon bbcs-btn--sm" data-bbcs-cron-action="run-all" title="<?php esc_attr_e( 'Run all recurring tasks immediately', 'botblocker-security' ); ?>">
+							<svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-refresh"></use></svg>
+						</button>
+						<button type="button" class="bbcs-btn bbcs-btn--ghost bbcs-btn--icon bbcs-btn--sm" data-bbcs-cron-action="run-stale" title="<?php esc_attr_e( 'Run only overdue tasks', 'botblocker-security' ); ?>">
+							<svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-bolt"></use></svg>
+						</button>
+					</div>
 				</div>
 				<div class="bbcs-table-wrap" data-anchor="task-list-table">
 				<table class="bbcs-table bbcs-table--cron">
@@ -177,6 +185,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
 							<th><?php esc_html_e( 'Next Run', 'botblocker-security' ); ?></th>
 							<th><?php esc_html_e( 'Progress', 'botblocker-security' ); ?></th>
 							<th><?php esc_html_e( 'Status', 'botblocker-security' ); ?></th>
+							<th class="bbcs-table--actions"><?php esc_html_e( 'Actions', 'botblocker-security' ); ?></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -199,25 +208,30 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
 								<?php endif; ?>
 							</td>
 							<td data-label="<?php esc_attr_e( 'Progress', 'botblocker-security' ); ?>">
-								<div class="bbcs-cron-progress" title="<?php echo esc_attr( round( $task->progress ) ); ?>%">
+								<div class="bbcs-cron-progress" title="<?php echo esc_attr( round( $task->progress ) ); ?>%" data-interval="<?php echo esc_attr( (string) $task->interval ); ?>">
 									<div class="bbcs-cron-progress-bar bbcs-cron-progress-bar--animated" style="width: <?php echo esc_attr( (string) $task->progress ); ?>%;"></div>
 									<span class="bbcs-cron-progress-s" data-seconds="<?php echo esc_attr( (string) $task->time_remaining ); ?>"><?php echo esc_html( bbcs_format_time_remaining( $task->time_remaining ) ); ?></span>
 								</div>
 							</td>
 							<td data-label="<?php esc_attr_e( 'Status', 'botblocker-security' ); ?>">
 								<?php if ( $task->status === 'active' ) : ?>
-									<span class="bbcs-tag bbcs-tag--green"><?php esc_html_e( 'Active', 'botblocker-security' ); ?></span>
+									<span class="bbcs-tag bbcs-tag--green bbcs-cron-status" data-active-label="<?php esc_attr_e( 'Active', 'botblocker-security' ); ?>"><?php esc_html_e( 'Active', 'botblocker-security' ); ?></span>
 								<?php elseif ( $task->status === 'overdue' ) : ?>
-									<span class="bbcs-tag bbcs-tag--red"><?php esc_html_e( 'Overdue', 'botblocker-security' ); ?></span>
+									<span class="bbcs-tag bbcs-tag--red bbcs-cron-status" data-active-label="<?php esc_attr_e( 'Active', 'botblocker-security' ); ?>"><?php esc_html_e( 'Overdue', 'botblocker-security' ); ?></span>
 								<?php else : ?>
-									<span class="bbcs-tag"><?php esc_html_e( 'Pending', 'botblocker-security' ); ?></span>
+									<span class="bbcs-tag bbcs-cron-status" data-active-label="<?php esc_attr_e( 'Active', 'botblocker-security' ); ?>"><?php esc_html_e( 'Pending', 'botblocker-security' ); ?></span>
 								<?php endif; ?>
+							</td>
+							<td class="bbcs-table--actions" data-label="<?php esc_attr_e( 'Actions', 'botblocker-security' ); ?>">
+								<button type="button" class="bbcs-btn bbcs-btn--ghost bbcs-btn--icon bbcs-btn--sm bbcs-cron-run-now" data-bbcs-cron-action="run-now" data-bbcs-cron-hook="<?php echo esc_attr( $task->hook ); ?>" title="<?php esc_attr_e( 'Run this task now', 'botblocker-security' ); ?>">
+									<svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-bolt"></use></svg>
+								</button>
 							</td>
 						</tr>
 						<?php endforeach; ?>
 						<?php if ( empty( $scheduled_tasks ) ) : ?>
 						<tr>
-							<td colspan="6" class="bbcs-ta-center bbcs-dim bbcs-fs-sm" style="padding:var(--bbcs-sp-7) var(--bbcs-sp-4);"><?php esc_html_e( 'No scheduled tasks at this time.', 'botblocker-security' ); ?></td>
+							<td colspan="7" class="bbcs-ta-center bbcs-dim bbcs-fs-sm" style="padding:var(--bbcs-sp-7) var(--bbcs-sp-4);"><?php esc_html_e( 'No scheduled tasks at this time.', 'botblocker-security' ); ?></td>
 						</tr>
 						<?php endif; ?>
 					</tbody>
@@ -242,6 +256,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
 		var h = Math.floor((sec % 86400) / 3600);
 		return d + 'd ' + h + 'h';
 	}
+	window.bbcsCronFormatTime = fmt;
 
 	setInterval(function() {
 		var els = document.querySelectorAll('.bbcs-cron-progress-s');

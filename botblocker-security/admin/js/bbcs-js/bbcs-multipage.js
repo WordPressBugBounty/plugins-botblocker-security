@@ -647,6 +647,113 @@ jQuery(function ($) {
     if (e.key === 'Escape') $('.bbcs-drop-menu').attr('hidden', true);
   });
 
+  /* ── 10. Cron task buttons ── */
+
+  function flashCronBtn($btn) {
+    var $use = $btn.find('use');
+    var origHref = $use.attr('href') || '';
+    $btn.prop('disabled', true);
+    $use.attr('href', '#bbcs-i-check');
+    setTimeout(function () {
+      $btn.prop('disabled', false);
+      $use.attr('href', origHref);
+    }, 2000);
+  }
+
+  function resetCronProgressRow($row) {
+    var $prog  = $row.find('.bbcs-cron-progress');
+    var $bar   = $row.find('.bbcs-cron-progress-bar');
+    var $sec   = $row.find('.bbcs-cron-progress-s');
+    var $tag   = $row.find('.bbcs-cron-status');
+    var interval = parseInt($prog.attr('data-interval'), 10) || 0;
+    if ($bar.length) $bar.css('width', '0%');
+    if ($sec.length && interval > 0) {
+      $sec.attr('data-seconds', interval);
+      if (typeof window.bbcsCronFormatTime === 'function') {
+        $sec.text(window.bbcsCronFormatTime(interval));
+      } else {
+        $sec.text(interval + 's');
+      }
+    }
+    if ($tag.length) {
+      $tag.removeClass('bbcs-tag--red').addClass('bbcs-tag--green');
+      var activeLabel = $tag.data('active-label') || 'Active';
+      $tag.text(activeLabel);
+    }
+  }
+
+  $doc.on('click', '[data-bbcs-cron-action="run-now"]', function () {
+    var $btn = $(this);
+    var hook = $btn.data('bbcs-cron-hook');
+    if (!hook) return;
+
+    flashCronBtn($btn);
+    $.ajax({
+      url: (typeof botblockerData !== 'undefined') ? botblockerData.ajaxurl : ajaxurl,
+      type: 'POST',
+      data: {
+        action: 'bbcs_run_cron_task',
+        hook: hook,
+        nonce: (typeof botblockerData !== 'undefined') ? botblockerData.nonce : ''
+      },
+      success: function () {
+        var $row = $btn.closest('tr');
+        if ($row.length) resetCronProgressRow($row);
+      },
+      error: function () {
+        $btn.prop('disabled', false);
+      }
+    });
+  });
+
+  $doc.on('click', '[data-bbcs-cron-action="run-all"]', function () {
+    var $btn = $(this);
+    flashCronBtn($btn);
+    $.ajax({
+      url: (typeof botblockerData !== 'undefined') ? botblockerData.ajaxurl : ajaxurl,
+      type: 'POST',
+      data: {
+        action: 'bbcs_run_all_cron_tasks',
+        nonce: (typeof botblockerData !== 'undefined') ? botblockerData.nonce : ''
+      },
+      success: function (resp) {
+        if (resp.success && resp.data && resp.data.tasks) {
+          resp.data.tasks.forEach(function (hook) {
+            var $row = $('.bbcs-table--cron tr[data-bbcs-cron-hook="' + hook + '"]');
+            if ($row.length) resetCronProgressRow($row);
+          });
+        }
+      },
+      error: function () {
+        $btn.prop('disabled', false);
+      }
+    });
+  });
+
+  $doc.on('click', '[data-bbcs-cron-action="run-stale"]', function () {
+    var $btn = $(this);
+    flashCronBtn($btn);
+    $.ajax({
+      url: (typeof botblockerData !== 'undefined') ? botblockerData.ajaxurl : ajaxurl,
+      type: 'POST',
+      data: {
+        action: 'bbcs_run_stale_cron_tasks',
+        nonce: (typeof botblockerData !== 'undefined') ? botblockerData.nonce : ''
+      },
+      success: function (resp) {
+        if (resp.success && resp.data && resp.data.tasks) {
+          resp.data.tasks.forEach(function (hook) {
+            var $row = $('.bbcs-table--cron tr[data-bbcs-cron-hook="' + hook + '"]');
+            if ($row.length) resetCronProgressRow($row);
+          });
+        }
+      },
+      error: function () {
+        $btn.prop('disabled', false);
+      }
+    });
+  });
+
 
 });
 

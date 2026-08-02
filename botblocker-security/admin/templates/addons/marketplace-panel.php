@@ -7,6 +7,9 @@ if (! defined('ABSPATH')) {
 }
 
 return static function (Botblocker_AddonsViewModel $data, bool $isActive): void {
+	// Local mode serves the market from disk, so every item is installed and up to date;
+	// only delete needs suppressing, the install/update branches are unreachable anyway.
+	$local_mode = $data->addons_local_mode;
 	// Collect slugs of locally installed addons that are also in the market
 	$market_slugs = array();
 	foreach ($data->market as $item) {
@@ -98,7 +101,7 @@ return static function (Botblocker_AddonsViewModel $data, bool $isActive): void 
 							<?php endif; ?>
 						<?php else : ?>
 							<?php if ($show_install) : ?>
-								<?php if (! $data->addons_locked && $data->has_cloud_api) : ?>
+								<?php if (! $data->addons_locked) : ?>
 									<form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="bbcs-addon-install-form">
 										<input type="hidden" name="action" value="bbcs_install_addon">
 										<input type="hidden" name="slug" value="<?php echo esc_attr($slug); ?>">
@@ -138,7 +141,7 @@ return static function (Botblocker_AddonsViewModel $data, bool $isActive): void 
 									<input type="hidden" name="action" value="bbcs_delete_addon">
 									<input type="hidden" name="slug" value="<?php echo esc_attr($slug); ?>">
 									<?php wp_nonce_field('bbcs_delete_addon', 'bbcs_delete_addon_nonce'); ?>
-									<button type="submit" class="bbcs-btn bbcs-btn--icon bbcs-btn--danger" title="<?php esc_attr_e('Delete', 'botblocker-security'); ?>"><svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-trash"></use></svg></button>
+									<button type="submit" class="bbcs-btn bbcs-btn--icon bbcs-btn--danger" title="<?php esc_attr_e('Delete', 'botblocker-security'); ?>"<?php echo $local_mode ? ' disabled' : ''; ?>><svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-trash"></use></svg></button>
 								</form>
 							<?php endif; ?>
 						<?php else : ?>
@@ -236,7 +239,7 @@ return static function (Botblocker_AddonsViewModel $data, bool $isActive): void 
 								<input type="hidden" name="action" value="bbcs_delete_addon">
 								<input type="hidden" name="slug" value="<?php echo esc_attr($slug); ?>">
 								<?php wp_nonce_field('bbcs_delete_addon', 'bbcs_delete_addon_nonce'); ?>
-								<button type="submit" class="bbcs-btn bbcs-btn--icon bbcs-btn--danger" title="<?php esc_attr_e('Delete', 'botblocker-security'); ?>"><svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-trash"></use></svg></button>
+								<button type="submit" class="bbcs-btn bbcs-btn--icon bbcs-btn--danger" title="<?php esc_attr_e('Delete', 'botblocker-security'); ?>"<?php echo $local_mode ? ' disabled' : ''; ?>><svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-trash"></use></svg></button>
 							</form>
 						<?php endif; ?>
 					</div>

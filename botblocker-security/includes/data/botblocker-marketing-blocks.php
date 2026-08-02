@@ -79,43 +79,43 @@ if ( ! function_exists( 'bbcs_render_in_plugin_update_message' ) ) {
 		$html .= esc_html__( 'BotBlocker is a security plugin that runs early in the request lifecycle. We highly recommend you back up your site and test the new version on a staging environment first.', 'botblocker-security' );
 		$html .= '</p></div>';
 		*/
-		if ( ! empty( $lines ) ) {
-			$html .= '<div class="notice notice-info inline bbcs-update-alert-info"><p>';
-			$html .= '<strong>' . esc_html__( "What's new in", 'botblocker-security' ) . ' ' . esc_html( $version ) . '</strong>';
-			$html .= '</p><ul class="bbcs-update-changelog" style="margin:4px 0 0 20px;list-style:disc;">';
-			foreach ( $lines as $line ) {
-				$html .= '<li>' . esc_html( $line ) . '</li>';
-			}
-			$html .= '</ul></div>';
-		} else {
-			$upgrade_notice = '';
-			if ( isset( $response->upgrade_notice ) && is_string( $response->upgrade_notice ) ) {
-				$upgrade_notice = trim( wp_strip_all_tags( $response->upgrade_notice ) );
-			}
+    if ( ! empty( $lines ) ) {
+            $html .= '<div class="bbcs-update-changelog-box" style="margin:8px 0;padding:8px 12px;border-left:4px solid #2271b1;background:#f0f6fc;">';
+            $html .= '<strong>' . esc_html__( "What's new in", 'botblocker-security' ) . ' ' . esc_html( $version ) . '</strong>';
+            $html .= '<ul style="margin:4px 0 0 16px;list-style:disc;">';
+            foreach ( $lines as $line ) {
+                $html .= '<li>' . esc_html( $line ) . '</li>';
+            }
+            $html .= '</ul></div>';
+        } else {
+            $upgrade_notice = '';
+            if ( isset( $response->upgrade_notice ) && is_string( $response->upgrade_notice ) ) {
+                $upgrade_notice = trim( wp_strip_all_tags( $response->upgrade_notice ) );
+            }
 
-			$html .= '<div class="notice notice-warning inline bbcs-update-alert-warning"><p>';
-			$html .= '<strong>' . esc_html__( 'New BotBlocker version available', 'botblocker-security' ) . ': ' . esc_html( $version ) . '</strong><br>';
-			$html .= $upgrade_notice !== ''
-				? esc_html( $upgrade_notice )
-				: esc_html__( 'BotBlocker runs early in the WordPress request lifecycle. Back up your site and review the update before upgrading.', 'botblocker-security' );
-			$html .= '</p></div>';
-		}
+            $html .= '<p style="margin:4px 0;">';
+            $html .= '<strong>' . esc_html__( 'New BotBlocker version available', 'botblocker-security' ) . ': ' . esc_html( $version ) . '</strong><br>';
+            $html .= $upgrade_notice !== ''
+                ? esc_html( $upgrade_notice )
+                : esc_html__( 'BotBlocker runs early in the WordPress request lifecycle. Back up your site and review the update before upgrading.', 'botblocker-security' );
+            $html .= '</p>';
+        }
 
 		$html .= '<p class="bbcs-update-spacer">';
 
 		echo wp_kses(
 			$html,
-			array(
-				'div'    => array( 'class' => true ),
-				'strong' => array(),
-				'br'     => array(),
-				'ul'     => array(
-					'class' => true,
-					'style' => true,
-				),
-				'li'     => array(),
-				'p'      => array( 'class' => true ),
-			)
+            array(
+                'div'    => array( 'class' => true, 'style' => true ),
+                'strong' => array(),
+                'br'     => array(),
+                'ul'     => array(
+                    'class' => true,
+                    'style' => true,
+                ),
+                'li'     => array(),
+                'p'      => array( 'class' => true, 'style' => true ),
+            )
 		);
 	}
 }

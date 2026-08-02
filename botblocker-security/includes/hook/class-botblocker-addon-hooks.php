@@ -11,6 +11,19 @@ require_once BOTBLOCKER_DIR . 'includes/class-botblocker-toastify.php';
 
 class BotBlockerAddonHooks {
 
+	/**
+	 * Local add-on mode allows enable/disable only; install, upload, update and
+	 * delete would rewrite the git-tracked plugin tree, so they bail out here.
+	 */
+	private static function denyWhenLocalMode(): void {
+		if ( ! BotBlockerAddons::isLocalMode() ) {
+			return;
+		}
+		BBCS_Toastify::flash( __( 'Add-on install, update, and delete are disabled in local add-on mode.', 'botblocker-security' ), BBCS_Toastify::TYPE_WARNING, BBCS_Toastify::PAGE_ADDONS );
+		wp_safe_redirect( BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' ) );
+		exit;
+	}
+
 	public static function onPluginUpdated( $upgrader, $hook_extra ): void {
 		if ( empty( $hook_extra['type'] ) || $hook_extra['type'] !== 'plugin' ) {
 			return;
@@ -26,17 +39,15 @@ class BotBlockerAddonHooks {
 
 		BotBlockerMultisite::forEachSite(
 			function ( $site_id ) use ( $new_version ) {
+				// autoUpdate() is a no-op in local add-on mode, so $result stays empty there.
 				$result = BotBlockerAddons::autoUpdate( $new_version );
 				if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
-					error_log( '[BBCS DEBUG] [Addons] PluginUpdate: site=' . $site_id . ' updated=' . count( $result['updated'] ?? array() ) . ' failed=' . count( $result['failed'] ?? array() ) );
+					error_log( '[BBCS DEBUG] [Addons] PluginUpdate: site=' . $site_id . ' updated=' . count( $result['updated'] ) . ' failed=' . count( $result['failed'] ) );
 				}
 				if ( ! empty( $result['failed'] ) ) {
 					$failed_slugs = array_column( $result['failed'], 'slug' );
-					$active       = BotBlockerMultisite::getOption( 'bbcs_active_addons', array() );
-					if ( is_array( $active ) && ! empty( $failed_slugs ) ) {
-						BotBlockerMultisite::updateOption( 'bbcs_active_addons', array_values( array_diff( $active, $failed_slugs ) ) );
-					}
+					BotBlockerAddons::setActive( array_values( array_diff( BotBlockerAddons::getActive(), $failed_slugs ) ) );
 					BotBlockerAlerts::setAddonUpdateFailed( $result['failed'] );
 				}
 				self::deactivateIncompatible( $new_version );
@@ -48,8 +59,8 @@ class BotBlockerAddonHooks {
 	}
 
 	public static function deactivateIncompatible( string $core_version = '' ): void {
-		$active = BotBlockerMultisite::getOption( 'bbcs_active_addons', array() );
-		if ( ! is_array( $active ) || empty( $active ) ) {
+		$active = BotBlockerAddons::getActive();
+		if ( empty( $active ) ) {
 			return;
 		}
 
@@ -78,7 +89,7 @@ class BotBlockerAddonHooks {
 		);
 
 		if ( $new_active !== array_values( $active ) ) {
-			BotBlockerMultisite::updateOption( 'bbcs_active_addons', $new_active );
+			BotBlockerAddons::setActive( $new_active );
 		}
 
 		if ( ! empty( $incompatible ) ) {
@@ -94,6 +105,7 @@ class BotBlockerAddonHooks {
 		if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, 'bbcs_update_all_addons' ) ) {
 			wp_die( 'Nonce verification failed' );
 		}
+		self::denyWhenLocalMode();
 		$result = BotBlockerAddons::autoUpdate();
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
@@ -147,13 +159,10 @@ class BotBlockerAddonHooks {
 			exit;
 		}
 		$addons = BotBlockerAddons::scanAll();
-		$active = BotBlockerMultisite::getOption( 'bbcs_active_addons', array() );
-		if ( ! is_array( $active ) ) {
-			$active = array();
-		}
+		$active = BotBlockerAddons::getActive();
 		if ( ! isset( $addons[ $slug ] ) || ! $addons[ $slug ]['valid'] ) {
 			$active = array_values( array_diff( $active, array( $slug ) ) );
-			BotBlockerMultisite::updateOption( 'bbcs_active_addons', $active );
+			BotBlockerAddons::setActive( $active );
 			BBCS_Toastify::flash_addon_error( 'invalid' );
 			wp_safe_redirect( BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' ) );
 			exit;
@@ -190,7 +199,7 @@ class BotBlockerAddonHooks {
 			$active[] = $slug;
 			$active   = array_values( array_unique( $active ) );
 		}
-		BotBlockerMultisite::updateOption( 'bbcs_active_addons', $active );
+		BotBlockerAddons::setActive( $active );
 
 		$is_now_active = in_array( $slug, $active, true );
 
@@ -216,6 +225,7 @@ class BotBlockerAddonHooks {
 		if ( empty( $nonce_install ) || ! wp_verify_nonce( $nonce_install, 'bbcs_install_addon' ) ) {
 			wp_die( esc_html__( 'Nonce verification failed.', 'botblocker-security' ) );
 		}
+		self::denyWhenLocalMode();
 		$slug          = isset( $_POST['slug'] ) ? sanitize_key( wp_unslash( $_POST['slug'] ) ) : '';
 		$url           = isset( $_POST['url'] ) ? esc_url_raw( wp_unslash( $_POST['url'] ) ) : '';
 		$requires_core = isset( $_POST['requires_core'] ) ? sanitize_text_field( wp_unslash( $_POST['requires_core'] ) ) : '';
@@ -289,6 +299,7 @@ class BotBlockerAddonHooks {
 		if ( empty( $nonce_upload ) || ! wp_verify_nonce( $nonce_upload, 'bbcs_upload_addon' ) ) {
 			wp_die( esc_html__( 'Nonce verification failed.', 'botblocker-security' ) );
 		}
+		self::denyWhenLocalMode();
 
 		$redir = BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' );
 		if ( empty( $_FILES['bbcs_addon_zip'] ) || ! is_array( $_FILES['bbcs_addon_zip'] ) ) {
@@ -354,15 +365,13 @@ class BotBlockerAddonHooks {
 		if ( empty( $nonce_delete ) || ! wp_verify_nonce( $nonce_delete, 'bbcs_delete_addon' ) ) {
 			wp_die( esc_html__( 'Nonce verification failed.', 'botblocker-security' ) );
 		}
+		self::denyWhenLocalMode();
 		$slug = isset( $_POST['slug'] ) ? sanitize_key( wp_unslash( $_POST['slug'] ) ) : '';
 		if ( $slug === '' ) {
 			wp_safe_redirect( BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' ) );
 			exit;
 		}
-		$active = BotBlockerMultisite::getOption( 'bbcs_active_addons', array() );
-		if ( ! is_array( $active ) ) {
-			$active = array();
-		}
+		$active = BotBlockerAddons::getActive();
 		$addons     = class_exists( 'BotBlockerAddons' ) ? BotBlockerAddons::scanAll() : array();
 		$addon      = $addons[ $slug ] ?? array();
 		$was_active = in_array( $slug, $active, true );
@@ -375,7 +384,7 @@ class BotBlockerAddonHooks {
 
 		if ( $was_active ) {
 			$active = array_values( array_diff( $active, array( $slug ) ) );
-			BotBlockerMultisite::updateOption( 'bbcs_active_addons', $active );
+			BotBlockerAddons::setActive( $active );
 			if ( ! empty( $addon ) ) {
 				BotBlockerAddons::dispatchLifecycle( $slug, 'deactivate', $addon, array( 'reason' => 'delete' ) );
 			}
@@ -407,6 +416,7 @@ class BotBlockerAddonHooks {
 		if ( empty( $nonce_update ) || ! wp_verify_nonce( $nonce_update, 'bbcs_update_addon' ) ) {
 			wp_die( esc_html__( 'Nonce verification failed.', 'botblocker-security' ) );
 		}
+		self::denyWhenLocalMode();
 		$slug          = isset( $_POST['slug'] ) ? sanitize_key( wp_unslash( $_POST['slug'] ) ) : '';
 		$url           = isset( $_POST['url'] ) ? esc_url_raw( wp_unslash( $_POST['url'] ) ) : '';
 		$requires_core = isset( $_POST['requires_core'] ) ? sanitize_text_field( wp_unslash( $_POST['requires_core'] ) ) : '';
@@ -444,10 +454,7 @@ class BotBlockerAddonHooks {
 			exit;
 		}
 
-		$active = BotBlockerMultisite::getOption( 'bbcs_active_addons', array() );
-		if ( ! is_array( $active ) ) {
-			$active = array();
-		}
+		$active = BotBlockerAddons::getActive();
 		$wasActive  = in_array( $slug, $active, true );
 		$old_addons = class_exists( 'BotBlockerAddons' ) ? BotBlockerAddons::scanAll() : array();
 		$old_addon  = $old_addons[ $slug ] ?? array();
@@ -461,7 +468,7 @@ class BotBlockerAddonHooks {
 			}
 			do_action( 'bbcs_addon_toggled', $slug, false );
 			$active = array_values( array_diff( $active, array( $slug ) ) );
-			BotBlockerMultisite::updateOption( 'bbcs_active_addons', $active );
+			BotBlockerAddons::setActive( $active );
 		}
 
 		$installed = bbcs_install_addon_package(
@@ -478,9 +485,9 @@ class BotBlockerAddonHooks {
 
 		if ( is_wp_error( $installed ) ) {
 			if ( $wasActive ) {
-				$active   = BotBlockerMultisite::getOption( 'bbcs_active_addons', array() );
+				$active   = BotBlockerAddons::getActive();
 				$active[] = $slug;
-				BotBlockerMultisite::updateOption( 'bbcs_active_addons', array_values( array_unique( $active ) ) );
+				BotBlockerAddons::setActive( array_values( array_unique( $active ) ) );
 				if ( ! empty( $old_addon ) ) {
 					BotBlockerAddons::dispatchLifecycle( $slug, 'activate', $old_addon, array( 'reason' => 'update_rollback' ) );
 				}
@@ -499,9 +506,9 @@ class BotBlockerAddonHooks {
 		if ( $wasActive ) {
 			$updated_addons = class_exists( 'BotBlockerAddons' ) ? BotBlockerAddons::scanAll() : array();
 			if ( isset( $updated_addons[ $slug ] ) && BotBlockerAddons::isCompatible( $updated_addons[ $slug ] ) ) {
-				$active   = BotBlockerMultisite::getOption( 'bbcs_active_addons', array() );
+				$active   = BotBlockerAddons::getActive();
 				$active[] = $slug;
-				BotBlockerMultisite::updateOption( 'bbcs_active_addons', array_values( array_unique( $active ) ) );
+				BotBlockerAddons::setActive( array_values( array_unique( $active ) ) );
 				if ( ! empty( $updated_addons[ $slug ]['core'] ) && file_exists( $updated_addons[ $slug ]['core'] ) ) {
 					include_once $updated_addons[ $slug ]['core'];
 				}

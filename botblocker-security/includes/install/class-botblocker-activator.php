@@ -97,7 +97,9 @@ class Botblocker_Activator {
 			BotBlockerLlmSync::scheduleSync( 'activation' );
 		}
 
-		BotBlockerCloudApiHooks::registerRewriteRules();
+		if ( class_exists( 'BotBlockerCloudApiHooks' ) ) {
+			BotBlockerCloudApiHooks::registerRewriteRules();
+		}
 
 		if ( function_exists( 'bbcs_register_2fa_rewrite_rules' ) ) {
 			bbcs_register_2fa_rewrite_rules();

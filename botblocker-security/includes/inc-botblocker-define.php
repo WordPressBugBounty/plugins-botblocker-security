@@ -11,12 +11,19 @@ if ( ! defined( 'BOTBLOCKER_TABLE_PREFIX' ) ) {
 }
 define( 'BOTBLOCKER_PREFIX', 'bb_' ); // The prefix used for settings and options
 
-define( 'BOTBLOCKER_VERSION', '1.7.1' );
+define( 'BOTBLOCKER_VERSION', '1.7.2' );
 // The version number of the plugin
 define( 'BOTBLOCKER_DB_VERSION', '2.9.0' ); // The database version of the plugin
 define( 'BOTBLOCKER_WIZARD_ON_UPDATE', false ); // Show setup wizard after plugin update
 define( 'BOTBLOCKER_MODE_STABLE', 'stable' );
 define( 'BOTBLOCKER_MODE_DEV', 'dev' );
+
+// =========================DEV START=========================
+define( 'BOTBLOCKER_MODE', BOTBLOCKER_MODE_DEV );
+if ( ! defined( 'BOTBLOCKER_ADDONS_LOCAL' ) ) {
+	define( 'BOTBLOCKER_ADDONS_LOCAL', true );
+}
+// =========================DEV END=========================
 
 define( 'BBCS_NEW_ADMIN_UI', true );
 
@@ -137,7 +144,8 @@ define( 'BOTBLOCKER_API_GS_URL', 'https://api.' . BOTBLOCKER_RESERVE_SERVER . '/
 define( 'BOTBLOCKER_BASE_UPDATE', 'https://api.' . BOTBLOCKER_RESERVE_SERVER . '/info/botiptoday' ); // The URL of the base updates
 define( 'BOTBLOCKER_BASE_TOTAL', 'https://api.' . BOTBLOCKER_RESERVE_SERVER . '/info/botiptotal' ); // The URL of the base updates
 
-define( 'BOTBLOCKER_PARENT_IPS_URL', 'https://api.' . BOTBLOCKER_RESERVE_SERVER . '/pool' );
+define( 'BOTBLOCKER_PARENT_IPS_URL', 'https://api.' . BOTBLOCKER_SERVER . '/pool' );
+define( 'BOTBLOCKER_PARENT_IPS_GS_URL', 'https://api.' . BOTBLOCKER_RESERVE_SERVER . '/pool' );
 
 define( 'BOTBLOCKER_API_GS_IPV6', BOTBLOCKER_API_GS_URL . '/ip?v=6&format=json' ); // The URL of the Globus Studio API for IPv6 addresses
 define( 'BOTBLOCKER_API_IPV6', BOTBLOCKER_API_URL . '/ip?v=6&format=json' ); // The URL of the BotBlocker API for IPv6 addresses
@@ -180,7 +188,7 @@ define( 'BOTBLOCKER_SUPPORT_FORUM', 'https://wordpress.org/support/plugin/botblo
 define( 'BBCS_CAPTCHA_DIAG', true );
 
 // Master debug switch - enables error_log() calls across the plugin
-define( 'BBCS_DEBUG', true );
+define( 'BBCS_DEBUG', false );
 // Log cache operations to error_log (requires BBCS_DEBUG = true)
 define( 'BBCS_CACHE_DEBUG', false );
 // Show raw termination data before wp_die() - extreme debug only
@@ -193,9 +201,6 @@ define( 'BBCS_FATAL_ERROR_HIVE', true );
 define( 'BBCS_LOG_TO_DEBUG', true );
 // Halt execution on fatal errors (off = graceful recovery attempt)
 define( 'BBCS_ERROR_EXIT', false );
-
-// Plugin channel: STABLE = production addon market, DEV = dev addon market
-define( 'BOTBLOCKER_MODE', BOTBLOCKER_MODE_STABLE );
 
 define(
 	'BBCS_STOP_DIRECT',

@@ -148,15 +148,6 @@ return static function (Botblocker_AboutViewModel $data): void {
 					</div>
 				</div>
 
-				<h4 class="bbcs-fs-sm bbcs-fw-semibold bbcs-mb-1h bbcs-mt-2h"><?php esc_html_e('CSS Framework:', 'botblocker-security'); ?></h4>
-				<div class="bbcs-list-row">
-					<span class="bbcs-tx-green bbcs-row bbcs-ai-center"><svg class="bbcs-ico bbcs-ico--md"><use href="#bbcs-i-copyright"></use></svg></span>
-					<div class="bbcs-fill">
-						<div class="bbcs-fs-sm bbcs-fw-semibold">Bootstrap CSS Framework</div>
-						<div class="bbcs-dim bbcs-fs-xs"><?php esc_html_e('Licensed under the', 'botblocker-security'); ?> <a href="https://getbootstrap.com/docs/5.3/about/license/" target="_blank" class="bbcs-link">MIT License</a>.</div>
-					</div>
-				</div>
-
 				<h4 class="bbcs-fs-sm bbcs-fw-semibold bbcs-mb-1h bbcs-mt-2h"><?php esc_html_e('JavaScript Library:', 'botblocker-security'); ?></h4>
 				<div class="bbcs-list-row">
 					<span class="bbcs-tx-green bbcs-row bbcs-ai-center"><svg class="bbcs-ico bbcs-ico--md"><use href="#bbcs-i-copyright"></use></svg></span>

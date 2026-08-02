@@ -125,6 +125,35 @@ trait BotBlockerMuUtils {
 		return false;
 	}
 
+	private function is_wordpress_self_request(): bool {
+		if ( ! isset( $_SERVER['HTTP_USER_AGENT'] ) ) {
+			return false;
+		}
+		$ua = sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) );
+		if ( ! preg_match( '/^WordPress\/[\d\.]+/', $ua ) ) {
+			return false;
+		}
+		return $this->is_self_ip();
+	}
+
+	private function is_self_ip(): bool {
+		if ( ! isset( $_SERVER['REMOTE_ADDR'] ) ) {
+			return false;
+		}
+		$raw     = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) );
+		$ip      = trim( wp_strip_all_tags( $raw ) );
+		$ip_file = $this->dirs['data'] . 'ip.php';
+		if ( ! file_exists( $ip_file ) ) {
+			return false;
+		}
+		$ip_rule_list = bbcs_safe_load_data_file( $ip_file );
+		if ( ! is_array( $ip_rule_list ) ) {
+			return false;
+		}
+		$self_ips = $ip_rule_list['self_ips'] ?? array();
+		return isset( $self_ips[ $ip ] );
+	}
+
 	private function read_protocol(): void {
 
 		$this->protocol = isset( $_SERVER['SERVER_PROTOCOL'] )

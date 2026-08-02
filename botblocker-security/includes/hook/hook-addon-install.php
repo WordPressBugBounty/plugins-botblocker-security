@@ -97,6 +97,9 @@ function bbcs_cleanup_addon_tmp( string $path ): void {
 }
 
 function bbcs_install_addon_package( string $zip_file, array $args = array() ) {
+	if ( BotBlockerAddons::isLocalMode() ) {
+		return new WP_Error( 'local_mode', __( 'Add-on package install is disabled in local add-on mode.', 'botblocker-security' ) );
+	}
 	if ( defined( 'DISALLOW_FILE_MODS' ) && DISALLOW_FILE_MODS ) {
 		return new WP_Error( 'file_mods_disabled', __( 'File modifications are disabled.', 'botblocker-security' ) );
 	}

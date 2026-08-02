@@ -13,7 +13,9 @@ return static function (Botblocker_Addons_View $view, Botblocker_AddonsViewModel
 	$is_addon_tab = isset( $data->addon_tabs[ $active_tab ] );
 
 	// Upload section (hidden by default)
-	$view->upload_section();
+	if ( ! $data->addons_local_mode ) {
+		$view->upload_section();
+	}
 
 	// Locked/PRO notice (only on Marketplace, not on addon settings tabs)
 	if ( ! $is_addon_tab ) {

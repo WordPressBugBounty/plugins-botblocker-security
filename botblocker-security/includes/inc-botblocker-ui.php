@@ -174,6 +174,18 @@ class BotBlockerUI {
 		return preg_replace( '/\.zip$/', '', $b );
 	}
 
+	/**
+	 * Disk-built market items carry an explicit slug; cloud items derive it from the ZIP url.
+	 *
+	 * @param array<string,mixed> $item
+	 */
+	protected static function market_item_slug( array $item ): string {
+		if ( ! empty( $item['slug'] ) ) {
+			return sanitize_key( (string) $item['slug'] );
+		}
+		return ! empty( $item['url'] ) ? self::market_slug_from_url( (string) $item['url'] ) : '';
+	}
+
 	protected static function filter_market_addons( array $addons ): array {
 		return array_values( array_filter( $addons, function ( $item ) {
 			return ( $item['enabled'] ?? true ) !== false;
@@ -181,8 +193,11 @@ class BotBlockerUI {
 	}
 
 	protected static function load_market(): array {
+		if ( BotBlockerAddons::isLocalMode() ) {
+			return BotBlockerAddons::buildMarketFromDisk( BotBlockerAddons::scanAll() );
+		}
 		$market    = array();
-		$marketUrl = class_exists( 'BotBlockerAddons' ) ? BotBlockerAddons::getMarketUrl() : ( defined( 'BOTBLOCKER_ADDONS' ) ? BOTBLOCKER_ADDONS : '' );
+		$marketUrl = BotBlockerAddons::getMarketUrl();
 		if ( $marketUrl ) {
 			$res = wp_remote_get( $marketUrl, array( 'timeout' => 10 ) );
 			if ( ! is_wp_error( $res ) && wp_remote_retrieve_response_code( $res ) === 200 ) {
@@ -214,20 +229,19 @@ class BotBlockerUI {
 	}
 
 	public static function get_addons_context(): array {
-		$addons = class_exists( 'BotBlockerAddons' ) ? BotBlockerAddons::scanAll() : array();
-		$active = class_exists( 'BotBlockerAddons' ) ? BotBlockerAddons::getActive() : array();
-		if ( ! is_array( $active ) ) {
-			$active = array(); }
-		$market       = self::load_market();
-		$marketBySlug = array();
+		$addons            = BotBlockerAddons::scanAll();
+		$active            = BotBlockerAddons::getActive();
+		$addons_local_mode = BotBlockerAddons::isLocalMode();
+		$market            = self::load_market();
+		$marketBySlug      = array();
 		foreach ( $market as $it ) {
-			if ( ! empty( $it['url'] ) ) {
-				$s                  = self::market_slug_from_url( $it['url'] );
-				$marketBySlug[ $s ] = $it;
+			$slug = self::market_item_slug( $it );
+			if ( $slug !== '' ) {
+				$marketBySlug[ $slug ] = $it;
 			}
 		}
 		foreach ( $market as $i => $it ) {
-			$slug           = ! empty( $it['url'] ) ? self::market_slug_from_url( $it['url'] ) : '';
+			$slug           = self::market_item_slug( $it );
 			$is_installed   = isset( $addons[ $slug ] );
 			$installed_ver  = $is_installed ? ( $addons[ $slug ]['version'] ?? '' ) : '';
 			$remote_ver     = $it['version'] ?? '';
@@ -288,8 +302,9 @@ class BotBlockerUI {
 				++$updates_count; }
 		}
 		$has_cloud_api = class_exists( 'BotBlockerPro' ) && BotBlockerPro::isActive();
-		$addons_locked = ( ! $has_cloud_api );
-		return compact( 'addons', 'active', 'market', 'marketBySlug', 'addons_locked', 'has_cloud_api', 'updates_count' );
+		// Local mode serves add-ons from disk, so no cloud licence is needed to manage them.
+		$addons_locked = ! $has_cloud_api && ! $addons_local_mode;
+		return compact( 'addons', 'active', 'market', 'marketBySlug', 'addons_locked', 'has_cloud_api', 'updates_count', 'addons_local_mode' );
 	}
 
 	public static function render_dashboard_addons_summary(): void {

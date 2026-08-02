@@ -12,6 +12,7 @@ $bbcs_market        = $bbcs_ctx['market'];
 $bbcs_marketBySlug  = $bbcs_ctx['marketBySlug'];
 $bbcs_addons_locked = $bbcs_ctx['addons_locked'];
 $bbcs_has_cloud_api = $bbcs_ctx['has_cloud_api'];
+$bbcs_addons_local  = ! empty( $bbcs_ctx['addons_local_mode'] );
 
 $bbcs_updates_count = $bbcs_ctx['updates_count'];
 ?>
@@ -22,7 +23,7 @@ $bbcs_updates_count = $bbcs_ctx['updates_count'];
 				<header class="card-header d-flex align-items-center justify-content-between bbcs-addon-card-header">
 					<h2 class="card-title m-0"><?php esc_html_e( 'Add-ons', 'botblocker-security' ); ?></h2>
 					<div class="card-actions bbcs-addon-header-actions">
-						<button type="button" class="btn btn-primary btn-sm bbcs-addon-upload-toggle" data-bbcs-toggle-upload aria-expanded="false" aria-controls="bbcs-addon-upload-panel">
+						<button type="button" class="btn btn-primary btn-sm bbcs-addon-upload-toggle" data-bbcs-toggle-upload aria-expanded="false" aria-controls="bbcs-addon-upload-panel"<?php echo $bbcs_addons_local ? ' disabled' : ''; ?>>
 							<i class="fa-solid fa-cloud-arrow-up me-1"></i><?php esc_html_e( 'Upload ZIP', 'botblocker-security' ); ?>
 						</button>
 						<?php if ( $bbcs_updates_count > 0 && ! $bbcs_addons_locked && $bbcs_has_cloud_api ) : ?>
@@ -42,6 +43,7 @@ $bbcs_updates_count = $bbcs_ctx['updates_count'];
 				</header>
 				<div class="card-body bbcs-addon-card-body">
 
+					<?php if ( ! $bbcs_addons_local ) : ?>
 					<div id="bbcs-addon-upload-panel" class="bbcs-addon-upload-panel" hidden>
 						<div class="bbcs-addon-upload-copy">
 							<div class="bbcs-addon-upload-icon"><i class="fa-solid fa-file-zipper"></i></div>
@@ -66,8 +68,9 @@ $bbcs_updates_count = $bbcs_ctx['updates_count'];
 							</button>
 						</form>
 					</div>
+					<?php endif; ?>
 
-			<?php if ( $bbcs_addons_locked || ! $bbcs_has_cloud_api ) : ?>
+			<?php if ( $bbcs_addons_locked ) : ?>
 				<div class="alert alert-warning bbcs-mb-16" role="alert">
 					<h4 class="alert-heading"><i class="fa-solid fa-puzzle-piece me-1"></i><?php esc_html_e( 'Premium add-ons - included with BotBlocker PRO', 'botblocker-security' ); ?></h4>
 					<p class="mb-2"><?php esc_html_e( 'Each add-on is a turnkey extension: install in one click, configure in minutes, and gain a new layer of protection or speed without writing a line of code.', 'botblocker-security' ); ?></p>

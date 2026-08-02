@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BotBlocker"
 "Report-Msgid-Bugs-To: "
-"POT-Creation-Date: 2026-07-30 23:51+0000"
-"PO-Revision-Date: 2026-07-30 23:51+0000"
+"POT-Creation-Date: 2026-08-02 21:32+0000"
+"PO-Revision-Date: 2026-08-02 21:32+0000"
 "Last-Translator: BotBlocker Translator Engine via AI"
 "Language-Team: Hebrew"
 "Language: he_IL"
@@ -55,6 +55,22 @@ msgstr "%d חד-פעמי"
 #, php-format
 msgid "%d recurring"
 msgstr "%d חוזר"
+
+#. translators: %d: number of stale tasks executed
+#: includes/cron/class-botblocker-cron.php:388
+#, php-format, plural
+msgid "%d stale task executed."
+msgid_plural "%d stale tasks executed."
+msgstr[0] "%d משימת סרק בוצעה."
+msgstr[1] "%d משימות סרק בוצעו."
+
+#. translators: %d: number of tasks executed
+#: includes/cron/class-botblocker-cron.php:346
+#, php-format, plural
+msgid "%d task executed."
+msgid_plural "%d tasks executed."
+msgstr[0] "%d משימה בוצעה."
+msgstr[1] "%d משימות בוצעו."
 
 #. translators: %d: total task count
 #: admin/templates/settings/cron.php:61
@@ -204,7 +220,7 @@ msgstr "120 ימים"
 #: admin/templates/settings/notifications.php:58
 #: includes/section/settings/botblocker-set-notif.php:72
 msgid "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
-msgstr ""
+msgstr "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
 
 #: includes/data/botblocker-data-time.php:11
 msgid "15 minutes"
@@ -223,10 +239,6 @@ msgstr "2 שעות"
 #: includes/data/botblocker-data-time.php:41
 msgid "2 weeks"
 msgstr "2 שבועות"
-
-#: admin/templates/dashboard/quick-links.php:18
-msgid "2FA"
-msgstr "אימות דו-גורמי"
 
 #: includes/utilites/2FA/inc-botblocker-2fa.php:456
 msgid "2FA has been reset."
@@ -412,7 +424,7 @@ msgstr "קבל"
 msgid "Accept-Language"
 msgstr "Accept-Language"
 
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:121
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:122
 msgid "Access approved. Redirecting..."
 msgstr "גישה אושרה. מפנה..."
 
@@ -478,18 +490,20 @@ msgstr "תור מתזמן הפעולות"
 #: admin/templates/rules/body.php:52
 #: admin/templates/rules/body.php:68
 #: admin/templates/rules/body.php:84
+#: admin/templates/settings/cron.php:188
+#: admin/templates/settings/cron.php:225
 msgid "Actions"
 msgstr "פעולות"
 
-#: admin/partials/botblocker-admin-display-addons.php:235
-#: admin/templates/addons/marketplace-panel.php:208
-#: admin/templates/addons/marketplace-panel.php:94
+#: admin/partials/botblocker-admin-display-addons.php:238
+#: admin/templates/addons/marketplace-panel.php:211
+#: admin/templates/addons/marketplace-panel.php:97
 #: admin/templates/integrations/2fa.php:68
 #: includes/section/integration/botblocker-int-2fa.php:163
 msgid "Activate"
 msgstr "הפעל"
 
-#: admin/partials/botblocker-admin-display-addons.php:77
+#: admin/partials/botblocker-admin-display-addons.php:80
 msgid "Activate access"
 msgstr "הפעל גישה"
 
@@ -528,15 +542,17 @@ msgstr "שירות ההפעלה אינו זמין."
 #: addons/bbcs-cron-jobs/views/settings.php:173
 #: admin/class-botblocker-admin.php:338
 #: admin/partials/botblocker-section-right-sidebar.php:32
-#: admin/templates/addons/marketplace-panel.php:184
-#: admin/templates/addons/marketplace-panel.php:64
+#: admin/templates/addons/marketplace-panel.php:187
+#: admin/templates/addons/marketplace-panel.php:67
 #: admin/templates/cloud-api/status.php:17
 #: admin/templates/integrations/botblocker-api.php:29
 #: admin/templates/rules.php:52
 #: admin/templates/settings/cron.php:111
 #: admin/templates/settings/cron.php:147
 #: admin/templates/settings/cron.php:154
-#: admin/templates/settings/cron.php:209
+#: admin/templates/settings/cron.php:218
+#: admin/templates/settings/cron.php:220
+#: admin/templates/settings/cron.php:222
 #: admin/templates/setup-guide/pro-body.php:13
 #: admin/templates/setup-guide/status.php:53
 #: admin/templates/shared/request-chain.php:335
@@ -716,12 +732,16 @@ msgid "Add-on"
 msgstr "תוסף"
 
 #: admin/class-botblocker-admin.php:638
-#: includes/hook/class-botblocker-addon-hooks.php:397
+#: includes/hook/class-botblocker-addon-hooks.php:406
 msgid "Add-on deleted."
 msgstr "התוסף נמחק."
 
+#: includes/hook/class-botblocker-addon-hooks.php:22
+msgid "Add-on install, update, and delete are disabled in local add-on mode."
+msgstr "התקנה, עדכון ומחיקה של תוספים מושבתים במצב תוספים מקומיים."
+
 #: admin/class-botblocker-admin.php:632
-#: includes/hook/class-botblocker-addon-hooks.php:279
+#: includes/hook/class-botblocker-addon-hooks.php:289
 msgid "Add-on installed successfully."
 msgstr "התוסף הותקן בהצלחה."
 
@@ -744,6 +764,10 @@ msgstr "חבילת התוסף אינה תואמת לחוזה התוספים של
 #: includes/hook/hook-addon-validation.php:66
 msgid "Add-on package has an invalid file count."
 msgstr "לחבילת התוסף יש מספר קבצים לא חוקי."
+
+#: includes/hook/hook-addon-install.php:101
+msgid "Add-on package install is disabled in local add-on mode."
+msgstr "התקנת חבילת תוספים מושבתת במצב תוספים מקומיים."
 
 #: admin/class-botblocker-admin.php:649
 #: includes/class-botblocker-toastify.php:244
@@ -773,7 +797,7 @@ msgid "Add-on package slug does not match the requested add-on."
 msgstr "המזהה של חבילת התוסף אינו תואם לתוסף המבוקש."
 
 #: admin/class-botblocker-admin.php:633
-#: includes/hook/class-botblocker-addon-hooks.php:344
+#: includes/hook/class-botblocker-addon-hooks.php:355
 msgid "Add-on package uploaded. Find it below, then activate it when ready."
 msgstr "חבילת התוסף הועלתה. מצא אותה למטה, ולאחר מכן הפעל אותה כשתהיה מוכן."
 
@@ -781,7 +805,7 @@ msgstr "חבילת התוסף הועלתה. מצא אותה למטה, ולאחר
 msgid "Add-on root folder must be a valid slug."
 msgstr "תיקיית השורש של התוסף חייבת להיות מזהה חוקי."
 
-#: admin/templates/addons/addons-content.php:58
+#: admin/templates/addons/addons-content.php:60
 msgid "Add-on settings"
 msgstr "הגדרות תוסף"
 
@@ -794,13 +818,13 @@ msgid "Add-on Update Failed"
 msgstr "עדכון התוסף נכשל"
 
 #: admin/class-botblocker-admin.php:635
-#: includes/hook/class-botblocker-addon-hooks.php:206
-#: includes/hook/class-botblocker-addon-hooks.php:524
+#: includes/hook/class-botblocker-addon-hooks.php:215
+#: includes/hook/class-botblocker-addon-hooks.php:531
 msgid "Add-on updated successfully."
 msgstr "התוסף עודכן בהצלחה."
 
 #. translators: %s: required BotBlocker version
-#: includes/hook/class-botblocker-addon-hooks.php:522
+#: includes/hook/class-botblocker-addon-hooks.php:529
 #, php-format
 msgid "Add-on was updated but not reactivated - it requires BotBlocker %s or higher. Please update the plugin first."
 msgstr "התוסף עודכן אך לא הופעל מחדש - הוא דורש את BotBlocker %s ומעלה. יש לעדכן את התוסף תחילה."
@@ -813,7 +837,7 @@ msgstr "התוסף עודכן אך לא הופעל מחדש - הוא דורש א
 
 #: admin/class-botblocker-admin.php:1261
 #: admin/class-botblocker-admin.php:1262
-#: admin/partials/botblocker-admin-display-addons.php:23
+#: admin/partials/botblocker-admin-display-addons.php:24
 #: admin/templates/settings/notifications.php:115
 #: admin/templates/setup-guide/status.php:167
 #: includes/section/dashboard/botblocker-dash-links.php:33
@@ -826,7 +850,7 @@ msgid "Add-ons Deactivated"
 msgstr "תוספים בוטלו"
 
 #: includes/components/class-botblocker-component-addons-summary.php:58
-#: includes/inc-botblocker-ui.php:305
+#: includes/inc-botblocker-ui.php:320
 msgid "Add-ons locked. Activate Cloud API to use marketplace features."
 msgstr "תוספים נעולים. הפעל את Cloud API כדי להשתמש בתכונות השוק."
 
@@ -868,14 +892,14 @@ msgstr "תוסף"
 msgid "Addon required"
 msgstr "נדרש תוסף"
 
-#: admin/partials/botblocker-admin-display-addons.php:171
-#: admin/partials/botblocker-admin-display-addons.php:252
+#: admin/partials/botblocker-admin-display-addons.php:174
+#: admin/partials/botblocker-admin-display-addons.php:255
 msgid "Addon Settings"
 msgstr "הגדרות תוסף"
 
 #: admin/templates/addons.php:20
 #: admin/templates/dashboard/quick-links.php:15
-#: includes/viewmodels/class-addons-viewmodel.php:166
+#: includes/viewmodels/class-addons-viewmodel.php:168
 msgid "Addons"
 msgstr "תוספים"
 
@@ -883,7 +907,7 @@ msgstr "תוספים"
 msgid "Addons - extensions, plugins, marketplace, more features"
 msgstr "תוספים - הרחבות, פלאגינים, שוק, תכונות נוספות"
 
-#: admin/templates/addons/addons-content.php:28
+#: admin/templates/addons/addons-content.php:30
 msgid "Addons sections"
 msgstr "מקטעי תוספים"
 
@@ -1095,7 +1119,7 @@ msgid "All %s rules have been cleared."
 msgstr "כל כללי ה-%s נוקו."
 
 #: admin/class-botblocker-admin.php:634
-#: includes/hook/class-botblocker-addon-hooks.php:106
+#: includes/hook/class-botblocker-addon-hooks.php:118
 msgid "All add-ons have been updated."
 msgstr "כל התוספים עודכנו."
 
@@ -1503,8 +1527,8 @@ msgstr "האם אתה בטוח שברצונך לנקות את קובץ היומ�
 msgid "Are you sure you want to clear the security salt?"
 msgstr "האם אתה בטוח שברצונך לנקות את ה-salt האבטחה?"
 
-#: admin/templates/addons/marketplace-panel.php:137
-#: admin/templates/addons/marketplace-panel.php:235
+#: admin/templates/addons/marketplace-panel.php:140
+#: admin/templates/addons/marketplace-panel.php:238
 msgid "Are you sure you want to delete this add-on?"
 msgstr "האם אתה בטוח שברצונך למחוק תוסף זה?"
 
@@ -1607,17 +1631,6 @@ msgstr "שם AS"
 #: includes/modal/modal-botblocker-rule-edit.php:32
 msgid "AS Number"
 msgstr "מספר AS"
-
-#: admin/partials/botblocker-admin-display-rules.php:206
-#: admin/partials/botblocker-admin-display-rules.php:69
-#: admin/templates/reports/dashboard.php:31
-#: admin/templates/rules/body.php:126
-#: admin/templates/rules/body.php:20
-#: admin/templates/settings/connection-types.php:23
-#: includes/section/settings/botblocker-set-connect.php:30
-#: includes/viewmodels/class-rules-viewmodel.php:105
-msgid "ASN"
-msgstr "ASN"
 
 #: includes/ajax/class-botblocker-ajax-asn.php:235
 msgid "ASN already exists."
@@ -1855,7 +1868,7 @@ msgstr "הימנע מדיווח על תגי סקריפטים נפוצים של �
 msgid "Back"
 msgstr "חזרה"
 
-#: admin/templates/addons/addons-content.php:62
+#: admin/templates/addons/addons-content.php:64
 msgid "Back to Marketplace"
 msgstr "חזרה לשוק"
 
@@ -2374,7 +2387,7 @@ msgstr "חוסם איומים לפני שוורדפרס נטען. אבטחה מ�
 msgid "Blue"
 msgstr "כחול"
 
-#: admin/partials/botblocker-admin-display-addons.php:95
+#: admin/partials/botblocker-admin-display-addons.php:98
 msgid "Boost your BotBlocker experience with add-ons and tools selected to increase security, productivity and enhance your website"
 msgstr "שפר את חוויית ה-BotBlocker שלך עם תוספות וכלים שנבחרו להגברת האבטחה, הפרודוקטיביות ושיפור האתר שלך"
 
@@ -2403,17 +2416,6 @@ msgstr "זיהוי בוטים, Captcha, הגנה"
 #: includes/section/settings/botblocker-set-notif.php:63
 msgid "Bot Token"
 msgstr "אסימון בוט"
-
-#: admin/partials/botblocker-admin-display-about.php:42
-#: admin/partials/botblocker-admin-display-tools.php:31
-#: admin/templates/setup-guide/chain-body.php:41
-#: admin/templates/shared/request-chain.php:327
-#: admin/templates/shared/request-chain.php:40
-#: includes/data/botblocker-data-snav.php:692
-#: includes/section/setup/botblocker-setup-chain.php:60
-#: includes/viewmodels/class-tools-viewmodel.php:81
-msgid "BotBlocker"
-msgstr "BotBlocker"
 
 #: admin/partials/botblocker-admin-display-integrations.php:63
 #: includes/data/botblocker-data-snav.php:645
@@ -2667,7 +2669,7 @@ msgstr "אבטחת BotBlocker - ההגדרה הושלמה"
 
 #. 'message' => __('Sorry, your request has been blocked', 'botblocker-security'),
 #: includes/botblocker/traits/class-botblocker-block-page-trait.php:16
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:206
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:207
 #: includes/botblocker/traits/class-botblocker-denied-page-trait.php:16
 #: public/template-botblocker-denied.php:24
 msgid "BotBlocker security plugin"
@@ -2754,9 +2756,9 @@ msgstr "BotBlocker: v"
 msgid "Bottom"
 msgstr "תחתון"
 
-#: admin/partials/botblocker-admin-display-addons.php:205
-#: admin/templates/addons/marketplace-panel.php:118
-#: admin/templates/addons/marketplace-panel.php:216
+#: admin/partials/botblocker-admin-display-addons.php:208
+#: admin/templates/addons/marketplace-panel.php:121
+#: admin/templates/addons/marketplace-panel.php:219
 msgid "Broken"
 msgstr "שבור"
 
@@ -2765,7 +2767,7 @@ msgid "Browse add-ons"
 msgstr "עיין בתוספים"
 
 #: includes/components/class-botblocker-component-addons-summary.php:64
-#: includes/inc-botblocker-ui.php:311
+#: includes/inc-botblocker-ui.php:326
 msgid "Browse Add-ons"
 msgstr "עיין בתוספים"
 
@@ -2973,18 +2975,9 @@ msgstr "ביטול ויציאה"
 msgid "Cancel Scan"
 msgstr "ביטול סריקה"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:212
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:214
 msgid "Cancelling scan..."
 msgstr "מבטל סריקה..."
-
-#: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:277
-#: admin/templates/settings/captcha-tab.php:53
-#: admin/templates/setup-wizard/finish.php:22
-#: includes/data/botblocker-data-snav.php:278
-#: includes/section/settings/botblocker-set-captcha.php:26
-#: includes/viewmodels/class-settings-viewmodel.php:187
-msgid "Captcha"
-msgstr "Captcha"
 
 #: includes/services/class-botblocker-health-service.php:20
 #: includes/viewmodels/class-dashboard-viewmodel.php:161
@@ -3105,7 +3098,7 @@ msgstr "בדוק דוחות"
 msgid "Checking database tables..."
 msgstr "בודק טבלאות מסד נתונים..."
 
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:208
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:209
 msgid "Checking your browser before accessing the site"
 msgstr "בודק את הדפדפן שלך לפני גישה לאתר"
 
@@ -3180,7 +3173,7 @@ msgstr "בחר את שיטת ההגדרה שלך"
 msgid "Choose ZIP"
 msgstr "בחר ZIP"
 
-#: admin/partials/botblocker-admin-display-addons.php:59
+#: admin/partials/botblocker-admin-display-addons.php:61
 msgid "Choose ZIP package"
 msgstr "בחר חבילת ZIP"
 
@@ -3580,7 +3573,7 @@ msgstr "קודים להגדרה"
 msgid "Codes for config:"
 msgstr "קודים להגדרה:"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:185
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:193
 msgid "Collapse all"
 msgstr "כווץ הכל"
 
@@ -3700,7 +3693,7 @@ msgstr "השווה חינם מול PRO"
 msgid "Compare plan features below. PRO unlocks full per-visit verification, advanced blocking rules, performance add-ons, and priority support."
 msgstr "השווה תכונות תוכנית למטה. PRO פותח אימות מלא לכל ביקור, כללי חסימה מתקדמים, תוספי ביצועים ותמיכה בעדיפות."
 
-#: admin/partials/botblocker-admin-display-addons.php:80
+#: admin/partials/botblocker-admin-display-addons.php:83
 #: admin/templates/addons/locked-notice.php:31
 #: admin/templates/setup-guide/pro-body.php:38
 #: includes/section/cloud/botblocker-cloud-status.php:61
@@ -3880,7 +3873,7 @@ msgid "Connect"
 msgstr "התחבר"
 
 #: includes/components/class-botblocker-component-addons-summary.php:74
-#: includes/inc-botblocker-ui.php:347
+#: includes/inc-botblocker-ui.php:362
 msgid "Connect Cloud API now!"
 msgstr "התחבר ל-Cloud API עכשיו!"
 
@@ -4103,7 +4096,7 @@ msgstr "הגדרות עוגיות"
 msgid "Cookies"
 msgstr "עוגיות"
 
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:106
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:107
 msgid "Cookies are disabled in your browser. Enable cookies to continue."
 msgstr "העוגיות מושבתות בדפדפן שלך. הפעל עוגיות כדי להמשיך."
 
@@ -4137,7 +4130,7 @@ msgstr "זכויות יוצרים"
 msgid "Core, plugin, and theme security events."
 msgstr "אירועי אבטחה של ליבה, תוספים וערכות נושא."
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:186
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:194
 msgid "Could not build tree view. Switch to Flat view."
 msgstr "לא ניתן לבנות תצוגת עץ. עבור לתצוגה שטוחה."
 
@@ -4268,10 +4261,6 @@ msgstr "משימות Cron - מתזמן, עבודות, אוטומציה"
 #: addons/bbcs-security-headers/inc/class-bbcs-security-headers-addons-page.php:43
 msgid "CSP Configuration"
 msgstr "תצורת CSP"
-
-#: admin/templates/about/body.php:151
-msgid "CSS Framework:"
-msgstr "מסגרת CSS:"
 
 #: includes/data/botblocker-data-snav.php:378
 msgid "cURL Command"
@@ -4560,9 +4549,9 @@ msgstr "שורות במסד נתונים"
 msgid "DB: v"
 msgstr "מסד נתונים: v"
 
-#: admin/partials/botblocker-admin-display-addons.php:233
-#: admin/templates/addons/marketplace-panel.php:208
-#: admin/templates/addons/marketplace-panel.php:94
+#: admin/partials/botblocker-admin-display-addons.php:236
+#: admin/templates/addons/marketplace-panel.php:211
+#: admin/templates/addons/marketplace-panel.php:97
 msgid "Deactivate"
 msgstr "לנטרל"
 
@@ -4612,9 +4601,9 @@ msgstr "הגדר קידומת ייחודית לכל מפתחות Redis לארג�
 
 #: admin/class-botblocker-admin.php:390
 #: admin/class-botblocker-admin.php:467
-#: admin/partials/botblocker-admin-display-addons.php:258
-#: admin/templates/addons/marketplace-panel.php:141
-#: admin/templates/addons/marketplace-panel.php:239
+#: admin/partials/botblocker-admin-display-addons.php:261
+#: admin/templates/addons/marketplace-panel.php:144
+#: admin/templates/addons/marketplace-panel.php:242
 msgid "Delete"
 msgstr "מחק"
 
@@ -4632,7 +4621,7 @@ msgstr "מחק את כל רשומות המבקרים והסטטיסטיקות"
 msgid "Delete Expired Transients"
 msgstr "מחיקת ערכים ארעיים שפג תוקפם"
 
-#: admin/partials/botblocker-admin-display-addons.php:257
+#: admin/partials/botblocker-admin-display-addons.php:260
 msgid "Delete this add-on?"
 msgstr "למחוק תוסף זה?"
 
@@ -4706,7 +4695,7 @@ msgstr "אימות API של מכשיר"
 msgid "Device API verification"
 msgstr "אימות API של מכשיר"
 
-#: admin/templates/about/body.php:194
+#: admin/templates/about/body.php:185
 msgid "Device Detection:"
 msgstr "זיהוי מכשיר:"
 
@@ -4782,10 +4771,10 @@ msgstr "השבת XML-RPC"
 #: admin/class-botblocker-admin.php:339
 #: admin/class-botblocker-admin.php:510
 #: admin/class-botblocker-admin.php:841
-#: admin/templates/addons/marketplace-panel.php:186
-#: admin/templates/addons/marketplace-panel.php:209
-#: admin/templates/addons/marketplace-panel.php:66
-#: admin/templates/addons/marketplace-panel.php:95
+#: admin/templates/addons/marketplace-panel.php:189
+#: admin/templates/addons/marketplace-panel.php:212
+#: admin/templates/addons/marketplace-panel.php:69
+#: admin/templates/addons/marketplace-panel.php:98
 #: admin/templates/dashboard/hero.php:17
 #: admin/templates/rules.php:57
 #: admin/templates/settings/cookie.php:31
@@ -4947,7 +4936,7 @@ msgstr "זוהתה תוכנת מסחר אלקטרוני באתר זה. מומל�
 msgid "e.g. 173.245.48.0/20"
 msgstr "למשל 173.245.48.0/20"
 
-#: admin/partials/botblocker-admin-display-addons.php:73
+#: admin/partials/botblocker-admin-display-addons.php:76
 msgid "Each add-on is a turnkey extension: install in one click, configure in minutes, and gain a new layer of protection or speed without writing a line of code."
 msgstr "כל תוסף הוא הרחבה מוכנה לשימוש: התקנה בלחיצה אחת, הגדרה בדקות, וקבלת שכבת הגנה או מהירות חדשה ללא כתיבת שורת קוד."
 
@@ -5481,8 +5470,8 @@ msgstr "הפעל מנהרת XML-RPC"
 #: admin/class-botblocker-admin.php:323
 #: admin/class-botblocker-admin.php:509
 #: admin/class-botblocker-admin.php:840
-#: admin/templates/addons/marketplace-panel.php:209
-#: admin/templates/addons/marketplace-panel.php:95
+#: admin/templates/addons/marketplace-panel.php:212
+#: admin/templates/addons/marketplace-panel.php:98
 #: admin/templates/dashboard/hero.php:17
 #: admin/templates/settings/cookie.php:32
 #: includes/section/settings/botblocker-set-cookie.php:167
@@ -5521,7 +5510,7 @@ msgid "English"
 msgstr "אנגלית"
 
 #: includes/components/class-botblocker-component-addons-summary.php:63
-#: includes/inc-botblocker-ui.php:310
+#: includes/inc-botblocker-ui.php:325
 msgid "Enhance speed, security and user experience with official BotBlocker add-ons."
 msgstr "שפר מהירות, אבטחה וחוויית משתמש עם תוספים רשמיים של BotBlocker."
 
@@ -5708,7 +5697,7 @@ msgstr "כל יום"
 msgid "Example:"
 msgstr "דוגמה:"
 
-#: admin/partials/botblocker-admin-display-addons.php:74
+#: admin/partials/botblocker-admin-display-addons.php:77
 msgid "Examples: Security Headers (HSTS, CSP, X-Frame), Hide Admin URL, Speed-up, Early Init, Anti-spam, Telegram alerts and more."
 msgstr "דוגמאות: כותרות אבטחה (HSTS, CSP, X-Frame), הסתרת כתובת ה-URL של המנהל, האצה, אתחול מוקדם, אנטי-ספאם, התראות Telegram ועוד."
 
@@ -5740,7 +5729,7 @@ msgstr "מצב הרצה בלבד (PHP/JS/htaccess בלבד)"
 msgid "Exit Setup"
 msgstr "יציאה מהגדרה"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:184
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:192
 #: addons/bbcs-truth-source/inc/views/scan-results.php:66
 msgid "Expand all"
 msgstr "הרחב הכול"
@@ -5937,7 +5926,7 @@ msgstr "גיבוי של התוספת הקיימת נכשל."
 msgid "Failed to backup the existing add-on."
 msgstr "גיבוי של התוספת הקיימת נכשל."
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:214
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:216
 msgid "Failed to cancel scan."
 msgstr "ביטול הסריקה נכשל."
 
@@ -6112,7 +6101,7 @@ msgstr "נכשל ליצור כלל: "
 msgid "Failed to create salt file."
 msgstr "נכשל ליצור קובץ salt."
 
-#: includes/hook/hook-addon-install.php:119
+#: includes/hook/hook-addon-install.php:122
 msgid "Failed to create temporary add-on directory."
 msgstr "נכשל ליצור תיקיית תוספים זמנית."
 
@@ -6418,11 +6407,11 @@ msgstr "נכשל בשליחת ההפעלה. נסה שוב מאוחר יותר."
 msgid "Failed to send email."
 msgstr "נכשל בשליחת הדוא\"ל."
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:209
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:211
 msgid "Failed to start scan."
 msgstr "נכשל בהתחלת הסריקה."
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:210
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:212
 msgid "Failed to start scan. Please try again."
 msgstr "נכשל בהתחלת הסריקה. אנא נסה שוב."
 
@@ -6575,14 +6564,26 @@ msgstr "שדה '%s' הינו חובה."
 msgid "File"
 msgstr "קובץ"
 
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:85
+msgid "File added to ignore list."
+msgstr "הקובץ נוסף לרשימת ההתעלמות."
+
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:42
+msgid "File integrity scan started."
+msgstr "סריקת שלמות הקבצים החלה."
+
 #: admin/class-botblocker-admin.php:664
 #: includes/class-botblocker-toastify.php:257
 msgid "File modifications are disabled for this WordPress installation."
 msgstr "שינויי קבצים מושבתים עבור התקנת WordPress זו."
 
-#: includes/hook/hook-addon-install.php:101
+#: includes/hook/hook-addon-install.php:104
 msgid "File modifications are disabled."
 msgstr "שינויי קבצים מושבתים."
+
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:103
+msgid "File removed from ignore list."
+msgstr "הקובץ הוסר מרשימת ההתעלמות."
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:490
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:554
@@ -6598,7 +6599,7 @@ msgstr "קבצים גדולים מזה ידולגו."
 msgid "Filesystem API is not available."
 msgstr "API מערכת הקבצים אינו זמין."
 
-#: admin/templates/addons/addons-content.php:29
+#: admin/templates/addons/addons-content.php:31
 msgid "Find addon…"
 msgstr "מצא תוסף…"
 
@@ -6733,10 +6734,10 @@ msgstr "לקבלת התראות אבטחה חשובות והצעות מיוחד�
 msgid "For payment issues, see our"
 msgstr "לבעיות תשלום, ראה את"
 
-#: includes/hook/class-botblocker-addon-hooks.php:213
-#: includes/hook/class-botblocker-addon-hooks.php:286
-#: includes/hook/class-botblocker-addon-hooks.php:351
-#: includes/hook/class-botblocker-addon-hooks.php:404
+#: includes/hook/class-botblocker-addon-hooks.php:222
+#: includes/hook/class-botblocker-addon-hooks.php:296
+#: includes/hook/class-botblocker-addon-hooks.php:362
+#: includes/hook/class-botblocker-addon-hooks.php:413
 msgid "Forbidden."
 msgstr "אסור."
 
@@ -6772,7 +6773,7 @@ msgstr "חינם לעומת BotBlocker PRO"
 msgid "Free vs PRO"
 msgstr "חינם לעומת PRO"
 
-#: admin/templates/about/body.php:181
+#: admin/templates/about/body.php:172
 msgid "from"
 msgstr "מ"
 
@@ -6869,7 +6870,7 @@ msgstr "השבתת BotBlocker לחלוטין"
 msgid "GD library is not enabled on this server. Image Captcha (mode 2) and Color Buttons (mode 1) will not work and will fall back to another mode."
 msgstr "ספריית GD אינה מופעלת בשרת זה. CAPTCHA תמונה (מצב 2) וכפתורי צבע (מצב 1) לא יעבדו ויעברו למצב אחר."
 
-#: includes/hook/class-botblocker-settings-hooks.php:339
+#: includes/hook/class-botblocker-settings-hooks.php:340
 msgid "GD library not available. Captcha mode was adjusted to a compatible mode."
 msgstr "ספריית GD אינה זמינה. מצב CAPTCHA הותאם למצב תואם."
 
@@ -6905,12 +6906,6 @@ msgstr "הגדרות כלליות"
 msgid "Generated by BotBlocker Security"
 msgstr "נוצר על ידי אבטחת BotBlocker"
 
-#: admin/partials/botblocker-admin-display-rules.php:73
-#: admin/templates/rules/body.php:22
-#: includes/viewmodels/class-rules-viewmodel.php:119
-msgid "GEO"
-msgstr "GEO"
-
 #: admin/templates/rules.php:41
 msgid "GEO / ASN:"
 msgstr "GEO / ASN:"
@@ -6934,7 +6929,7 @@ msgstr "סינון אי התאמה של IP גיאוגרפי / שפה"
 msgid "GeoIP Language mismatch"
 msgstr "אי התאמת שפת GeoIP"
 
-#: admin/templates/about/body.php:185
+#: admin/templates/about/body.php:176
 msgid "Geolocation Database:"
 msgstr "מסד נתוני מיקום גיאוגרפי:"
 
@@ -6942,10 +6937,10 @@ msgstr "מסד נתוני מיקום גיאוגרפי:"
 msgid "Get API key from cloud - token, license, activate"
 msgstr "קבל מפתח API מהענן - אסימון, רישיון, הפעלה"
 
-#: admin/partials/botblocker-admin-display-addons.php:79
+#: admin/partials/botblocker-admin-display-addons.php:82
 #: admin/partials/botblocker-section-right-sidebar.php:201
 #: admin/templates/addons/locked-notice.php:28
-#: admin/templates/addons/marketplace-panel.php:110
+#: admin/templates/addons/marketplace-panel.php:113
 #: admin/templates/shared/sidebar/pro-features.php:40
 msgid "Get BotBlocker PRO"
 msgstr "קבל BotBlocker PRO"
@@ -7284,8 +7279,8 @@ msgstr "גישה לדף הבית"
 
 #: addons/bbcs-cron-jobs/views/settings.php:119
 #: addons/bbcs-cron-jobs/views/settings.php:67
-#: admin/templates/settings/cron.php:174
-#: admin/templates/settings/cron.php:185
+#: admin/templates/settings/cron.php:182
+#: admin/templates/settings/cron.php:194
 msgid "Hook"
 msgstr "וו"
 
@@ -7510,7 +7505,7 @@ msgstr "הגדרות HTTPS"
 msgid "I'm not a robot"
 msgstr "אני לא רובוט"
 
-#: admin/templates/about/body.php:181
+#: admin/templates/about/body.php:172
 msgid "Icons designed by"
 msgstr "אייקונים עוצבו על ידי"
 
@@ -7586,7 +7581,7 @@ msgstr "iFrame"
 msgid "Iframe protection (clickjacking)"
 msgstr "הגנת Iframe (clickjacking)"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:182
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:190
 #: addons/bbcs-truth-source/inc/class-bbcs-ts-settings-view.php:347
 msgid "Ignore"
 msgstr "התעלם"
@@ -7603,7 +7598,7 @@ msgstr "התעלם מתוספים/ערכות נושא מובנים של WordPres
 msgid "Ignore cached truth source - force fresh download"
 msgstr "התעלם ממקור האמת השמור במטמון - כפה הורדה רעננה"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:183
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:191
 msgid "Ignore folder"
 msgstr "התעלם מתיקייה"
 
@@ -7677,7 +7672,7 @@ msgstr "מצב אספקת תמונה:"
 msgid "Image Recognition"
 msgstr "זיהוי תמונה"
 
-#: admin/templates/about/body.php:169
+#: admin/templates/about/body.php:160
 msgid "Images and Icons:"
 msgstr "תמונות ואייקונים:"
 
@@ -7864,14 +7859,14 @@ msgstr "מצב גלישה פרטית"
 msgid "Incoming request"
 msgstr "בקשה נכנסת"
 
-#: admin/partials/botblocker-admin-display-addons.php:135
-#: admin/partials/botblocker-admin-display-addons.php:208
+#: admin/partials/botblocker-admin-display-addons.php:138
 #: admin/partials/botblocker-admin-display-addons.php:211
-#: admin/templates/addons/marketplace-panel.php:120
-#: admin/templates/addons/marketplace-panel.php:192
-#: admin/templates/addons/marketplace-panel.php:218
-#: admin/templates/addons/marketplace-panel.php:71
-#: admin/templates/addons/marketplace-panel.php:77
+#: admin/partials/botblocker-admin-display-addons.php:214
+#: admin/templates/addons/marketplace-panel.php:123
+#: admin/templates/addons/marketplace-panel.php:195
+#: admin/templates/addons/marketplace-panel.php:221
+#: admin/templates/addons/marketplace-panel.php:74
+#: admin/templates/addons/marketplace-panel.php:80
 msgid "Incompatible"
 msgstr "לא תואם"
 
@@ -7922,17 +7917,17 @@ msgstr "Base64 מוטבע (מומלץ)"
 msgid "Inline: embed images in page (recommended). Separate: load via AJAX (legacy)."
 msgstr "מוטבע: הטמע תמונות בדף (מומלץ). נפרד: טען דרך AJAX (מורשת)."
 
-#: admin/partials/botblocker-admin-display-addons.php:144
-#: admin/templates/addons/marketplace-panel.php:107
+#: admin/partials/botblocker-admin-display-addons.php:147
+#: admin/templates/addons/marketplace-panel.php:110
 msgid "Install"
 msgstr "התקן"
 
-#: admin/partials/botblocker-admin-display-addons.php:148
-#: admin/partials/botblocker-admin-display-addons.php:150
+#: admin/partials/botblocker-admin-display-addons.php:151
+#: admin/partials/botblocker-admin-display-addons.php:153
 msgid "Install (PRO)"
 msgstr "התקן (PRO)"
 
-#: admin/partials/botblocker-admin-display-addons.php:49
+#: admin/partials/botblocker-admin-display-addons.php:51
 msgid "Install add-on from ZIP"
 msgstr "התקן תוסף מקובץ ZIP"
 
@@ -7940,7 +7935,7 @@ msgstr "התקן תוסף מקובץ ZIP"
 msgid "Install addon from ZIP"
 msgstr "התקן תוסף מ-ZIP"
 
-#: admin/partials/botblocker-admin-display-addons.php:65
+#: admin/partials/botblocker-admin-display-addons.php:67
 msgid "Install Package"
 msgstr "התקן חבילה"
 
@@ -7948,8 +7943,8 @@ msgstr "התקן חבילה"
 msgid "Install package"
 msgstr "התקן חבילה"
 
-#: admin/partials/botblocker-admin-display-addons.php:148
-#: admin/partials/botblocker-admin-display-addons.php:150
+#: admin/partials/botblocker-admin-display-addons.php:151
+#: admin/partials/botblocker-admin-display-addons.php:153
 msgid "Install requires BotBlocker PRO"
 msgstr "ההתקנה דורשת BotBlocker PRO"
 
@@ -7958,15 +7953,15 @@ msgstr "ההתקנה דורשת BotBlocker PRO"
 msgid "Installation arguments are missing."
 msgstr "חסרים ארגומנטים להתקנה."
 
-#: admin/partials/botblocker-admin-display-addons.php:164
-#: admin/partials/botblocker-admin-display-addons.php:166
-#: admin/partials/botblocker-admin-display-addons.php:88
+#: admin/partials/botblocker-admin-display-addons.php:167
+#: admin/partials/botblocker-admin-display-addons.php:169
+#: admin/partials/botblocker-admin-display-addons.php:91
 #: admin/templates/setup-guide/status.php:192
 #: admin/templates/setup-guide/status.php:219
 msgid "Installed"
 msgstr "הותקן"
 
-#: admin/partials/botblocker-admin-display-addons.php:119
+#: admin/partials/botblocker-admin-display-addons.php:122
 #, php-format
 msgid "Installed %s"
 msgstr "הותקן %s"
@@ -7983,18 +7978,18 @@ msgstr "חסימת IP מיידית"
 msgid "Instant response"
 msgstr "תגובה מיידית"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:103
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:188
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:104
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:190
 #: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:45
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:72
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:83
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:73
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:84
 #: addons/bbcs-malware/inc/class-bbcs-malware-background.php:656
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:108
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:116
 #: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:30
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:53
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:55
 #: addons/bbcs-truth-source/inc/class-bbcs-ts-background.php:398
-#: includes/hook/class-botblocker-addon-hooks.php:122
-#: includes/hook/class-botblocker-addon-hooks.php:91
+#: includes/hook/class-botblocker-addon-hooks.php:102
+#: includes/hook/class-botblocker-addon-hooks.php:134
 #: includes/hook/class-botblocker-addon-settings-hooks.php:12
 #: includes/hook/class-botblocker-settings-hooks.php:14
 #: includes/hook/class-botblocker-settings-hooks.php:143
@@ -8164,12 +8159,6 @@ msgstr "קוד אימות לא חוקי."
 #: includes/utilites/2FA/inc-botblocker-2fa.php:381
 msgid "Invalid verification code. Please try again."
 msgstr "קוד אימות לא חוקי. אנא נסה שוב."
-
-#: admin/partials/botblocker-admin-display-reports.php:12
-#: admin/templates/reports/table-header.php:13
-#: includes/modal/modal-botblocker-hits-add-rule.php:23
-msgid "IP"
-msgstr "IP"
 
 #: admin/partials/botblocker-admin-dashboard-widgets.php:193
 msgid "IP / Subnet"
@@ -8349,11 +8338,11 @@ msgstr "שם כותרת JA4"
 msgid "JA4 Spec"
 msgstr "מפרט JA4"
 
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:107
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:108
 msgid "JavaScript is disabled in your browser. Enable JavaScript to continue."
 msgstr "JavaScript מושבת בדפדפן שלך. אפשר JavaScript כדי להמשיך."
 
-#: admin/templates/about/body.php:160
+#: admin/templates/about/body.php:151
 msgid "JavaScript Library:"
 msgstr "ספריית JavaScript:"
 
@@ -8409,8 +8398,8 @@ msgstr "קבצים ידועים שאינם ליבה (צפויים)"
 
 #: addons/bbcs-cron-jobs/views/settings.php:127
 #: addons/bbcs-cron-jobs/views/settings.php:69
-#: admin/templates/settings/cron.php:176
-#: admin/templates/settings/cron.php:193
+#: admin/templates/settings/cron.php:184
+#: admin/templates/settings/cron.php:202
 msgid "Label"
 msgstr "תווית"
 
@@ -8487,19 +8476,18 @@ msgstr "מפתח רישיון"
 msgid "License, cloud API, premium features"
 msgstr "רישיון, API ענן, תכונות פרימיום"
 
-#: admin/templates/about/body.php:174
+#: admin/templates/about/body.php:165
 msgid "Licensed under"
 msgstr "ברישיון"
 
-#: admin/templates/about/body.php:190
+#: admin/templates/about/body.php:181
 msgid "Licensed under BSD License, available at"
 msgstr "ברישיון BSD, זמין בכתובת"
 
 #: admin/templates/about/body.php:147
 #: admin/templates/about/body.php:156
-#: admin/templates/about/body.php:165
+#: admin/templates/about/body.php:190
 #: admin/templates/about/body.php:199
-#: admin/templates/about/body.php:208
 msgid "Licensed under the"
 msgstr "ברישיון ה-"
 
@@ -8547,13 +8535,6 @@ msgstr "רשימת מקטעי נתיב להחרגה מסריקה."
 #: includes/section/report/botblocker-report-dashboard.php:42
 msgid "Live and historical traffic (IP, country, device, behavior markers)."
 msgstr "תעבורה בזמן אמת ובהיסטוריה (IP, מדינה, מכשיר, סמני התנהגות)."
-
-#: admin/partials/botblocker-admin-display-rules.php:77
-#: admin/templates/reports/dashboard.php:31
-#: admin/templates/rules/body.php:21
-#: includes/viewmodels/class-rules-viewmodel.php:111
-msgid "LLM"
-msgstr "LLM"
 
 #: includes/ajax/class-botblocker-ajax-llm.php:371
 msgid "LLM file generated successfully."
@@ -8850,13 +8831,17 @@ msgstr "כתובות IP זדוניות במסד הנתונים"
 msgid "Malware"
 msgstr "נוזקה"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:174
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:176
 msgid "Malware Scan"
 msgstr "סריקת נוזקות"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:154
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:156
 msgid "Malware Scan Batch"
 msgstr "סריקת נוזקות - אצווה"
+
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:49
+msgid "Malware scan started."
+msgstr "סריקת נוזקות החלה."
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-addons-page.php:36
 msgid "Malware Scanner"
@@ -8866,7 +8851,7 @@ msgstr "סורק נוזקות"
 msgid "Malware Scanner: High-Confidence Findings"
 msgstr "סורק נוזקות: ממצאים ברמת ודאות גבוהה"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:153
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:155
 msgid "Malware Scheduled Scan"
 msgstr "סריקת נוזקות מתוזמנת"
 
@@ -8913,8 +8898,8 @@ msgid "Maps traffic speed percentage to reputation tier 1–5 (tier 6 reserved f
 msgstr "ממפה אחוז מהירות תעבורה לשכבת מוניטין 1–5 (שכבת 6 שמורה לכתובות IP חסומות). פורמט: אחוז:שכבת (אחד בכל שורה)."
 
 #: admin/class-botblocker-admin.php:673
-#: admin/partials/botblocker-admin-display-addons.php:87
-#: admin/templates/addons/addons-content.php:31
+#: admin/partials/botblocker-admin-display-addons.php:90
+#: admin/templates/addons/addons-content.php:33
 msgid "Marketplace"
 msgstr "חנות"
 
@@ -9044,17 +9029,6 @@ msgstr "הקשחת אבטחה מקסימלית"
 #: includes/shortcode/botblocker-shortcode-health-full.php:46
 msgid "may reduce protection"
 msgstr "עלול להפחית את ההגנה"
-
-#: admin/partials/botblocker-admin-display-integrations.php:54
-#: admin/partials/botblocker-section-right-sidebar.php:134
-#: admin/templates/integrations/card.php:16
-#: admin/templates/shared/sidebar/status-card.php:83
-#: admin/templates/shared/system-toggles.php:45
-#: includes/data/botblocker-data-snav.php:597
-#: includes/section/integration/botblocker-int-memcached.php:14
-#: includes/viewmodels/class-integrations-viewmodel.php:141
-msgid "Memcached"
-msgstr "Memcached"
 
 #: admin/templates/integrations/memcached.php:31
 #: includes/data/botblocker-data-snav.php:602
@@ -9339,8 +9313,8 @@ msgstr "חדשות"
 
 #: addons/bbcs-cron-jobs/views/settings.php:156
 #: addons/bbcs-cron-jobs/views/settings.php:70
-#: admin/templates/settings/cron.php:177
-#: admin/templates/settings/cron.php:194
+#: admin/templates/settings/cron.php:185
+#: admin/templates/settings/cron.php:203
 msgid "Next Run"
 msgstr "ההרצה הבאה"
 
@@ -9428,7 +9402,7 @@ msgid "No file content provided."
 msgstr "לא סופק תוכן קובץ."
 
 #: admin/class-botblocker-admin.php:672
-#: admin/partials/botblocker-admin-display-addons.php:60
+#: admin/partials/botblocker-admin-display-addons.php:62
 #: admin/templates/addons/upload-section.php:21
 msgid "No file selected"
 msgstr "לא נבחר קובץ"
@@ -9472,6 +9446,9 @@ msgstr "אין פריטי חדשות זמינים"
 #: admin/class-botblocker-setup-wizard-ajax.php:521
 #: admin/class-botblocker-setup-wizard-ajax.php:56
 #: includes/cron/class-botblocker-cron.php:159
+#: includes/cron/class-botblocker-cron.php:284
+#: includes/cron/class-botblocker-cron.php:320
+#: includes/cron/class-botblocker-cron.php:357
 msgid "No permission."
 msgstr "אין הרשאה."
 
@@ -9488,7 +9465,7 @@ msgstr "עדיין אין תוצאות סריקה."
 msgid "No scheduled cron jobs found."
 msgstr "לא נמצאו משימות cron מתוזמנות."
 
-#: admin/templates/settings/cron.php:220
+#: admin/templates/settings/cron.php:234
 msgid "No scheduled tasks at this time."
 msgstr "אין משימות מתוזמנות בשלב זה."
 
@@ -9500,7 +9477,11 @@ msgstr "אין צורך בתצורה מיוחדת"
 msgid "No special setup required"
 msgstr "אין צורך בהגדרה מיוחדת"
 
-#: admin/partials/botblocker-admin-display-addons.php:224
+#: includes/cron/class-botblocker-cron.php:391
+msgid "No stale tasks found."
+msgstr "לא נמצאו משימות סרק."
+
+#: admin/partials/botblocker-admin-display-addons.php:227
 msgid "No Update Source"
 msgstr "אין מקור עדכון"
 
@@ -9508,10 +9489,10 @@ msgstr "אין מקור עדכון"
 msgid "No visible checks. Decisions based on IP databases and threat intelligence."
 msgstr "ללא בדיקות גלויות. החלטות מבוססות על מסדי נתוני IP ומודיעין איומים."
 
-#: includes/hook/class-botblocker-addon-hooks.php:217
-#: includes/hook/class-botblocker-addon-hooks.php:290
-#: includes/hook/class-botblocker-addon-hooks.php:355
-#: includes/hook/class-botblocker-addon-hooks.php:408
+#: includes/hook/class-botblocker-addon-hooks.php:226
+#: includes/hook/class-botblocker-addon-hooks.php:300
+#: includes/hook/class-botblocker-addon-hooks.php:366
+#: includes/hook/class-botblocker-addon-hooks.php:417
 msgid "Nonce verification failed."
 msgstr "אימות Nonce נכשל."
 
@@ -9562,7 +9543,7 @@ msgstr "לא נדרש"
 msgid "Not saved!"
 msgstr "לא נשמר!"
 
-#: admin/templates/addons/addons-content.php:64
+#: admin/templates/addons/addons-content.php:66
 #: admin/templates/integrations.php:31
 #: admin/templates/settings/save-settings.php:10
 #: admin/templates/tools.php:31
@@ -9842,9 +9823,9 @@ msgid "Outsourcing"
 msgstr "מיקור חוץ"
 
 #: addons/bbcs-cron-jobs/views/settings.php:165
-#: addons/bbcs-cron-jobs/views/settings.php:238
-#: admin/templates/settings/cron.php:211
-#: admin/templates/settings/cron.php:255
+#: addons/bbcs-cron-jobs/views/settings.php:240
+#: admin/templates/settings/cron.php:220
+#: admin/templates/settings/cron.php:270
 msgid "Overdue"
 msgstr "באיחור"
 
@@ -9968,7 +9949,7 @@ msgctxt "device type label"
 msgid "PC"
 msgstr "מחשב"
 
-#: admin/templates/settings/cron.php:213
+#: admin/templates/settings/cron.php:222
 msgid "Pending"
 msgstr "ממתין"
 
@@ -10074,7 +10055,7 @@ msgid "Please Confirm"
 msgstr "אנא אשר"
 
 #: includes/botblocker/traits/class-botblocker-block-page-trait.php:14
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:207
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:208
 #: includes/botblocker/traits/class-botblocker-denied-page-trait.php:14
 #: public/template-botblocker-denied.php:217
 msgid "Please enable JavaScript and reload the page"
@@ -10131,7 +10112,7 @@ msgstr "תווית קישור למדיניות"
 msgid "Policy URL"
 msgstr "כתובת URL של המדיניות"
 
-#: admin/partials/botblocker-admin-display-addons.php:93
+#: admin/partials/botblocker-admin-display-addons.php:96
 msgid "Popular add-ons, new possibilities"
 msgstr "תוספים פופולריים, אפשרויות חדשות"
 
@@ -10140,7 +10121,7 @@ msgstr "תוספים פופולריים, אפשרויות חדשות"
 msgid "Position"
 msgstr "מיקום"
 
-#: admin/partials/botblocker-admin-display-addons.php:72
+#: admin/partials/botblocker-admin-display-addons.php:75
 msgid "Premium add-ons - included with BotBlocker PRO"
 msgstr "תוספים פרימיום - כלולים ב-BotBlocker PRO"
 
@@ -10274,7 +10255,7 @@ msgstr "מדיניות פרטיות"
 
 #: admin/class-botblocker-admin.php:1271
 #: admin/class-botblocker-admin.php:1272
-#: admin/templates/addons/marketplace-panel.php:68
+#: admin/templates/addons/marketplace-panel.php:71
 #: admin/templates/cloud-api/status.php:100
 #: admin/templates/integrations/redis.php:33
 #: admin/templates/settings/status.php:40
@@ -10385,8 +10366,8 @@ msgstr "פרופיל הוחל."
 
 #: addons/bbcs-cron-jobs/views/settings.php:159
 #: addons/bbcs-cron-jobs/views/settings.php:71
-#: admin/templates/settings/cron.php:178
-#: admin/templates/settings/cron.php:201
+#: admin/templates/settings/cron.php:186
+#: admin/templates/settings/cron.php:210
 msgid "Progress"
 msgstr "התקדמות"
 
@@ -10539,18 +10520,6 @@ msgstr "פרוקסי עודכן בהצלחה."
 #: includes/section/setup/botblocker-setup-pro.php:33
 msgid "Proxy, VPN, and Tor detection"
 msgstr "זיהוי פרוקסי, VPN ו-Tor"
-
-#: admin/partials/botblocker-admin-display-reports.php:12
-#: admin/templates/reports/table-header.php:13
-#: admin/templates/settings/bot-detection.php:27
-#: admin/templates/settings/general.php:27
-#: includes/modal/modal-botblocker-hits-add-rule.php:25
-#: includes/modal/modal-botblocker-rule-add.php:26
-#: includes/modal/modal-botblocker-rule-edit.php:25
-#: includes/section/settings/botblocker-set-general.php:29
-#: includes/section/settings/botblocker-set-simple.php:31
-msgid "PTR"
-msgstr "PTR"
 
 #: admin/templates/settings/bot-detection.php:56
 #: includes/data/botblocker-data-snav.php:81
@@ -10998,17 +10967,6 @@ msgstr "הפניה מחדש"
 msgid "Redirect URL"
 msgstr "כתובת URL להפניה מחדש"
 
-#: admin/partials/botblocker-admin-display-integrations.php:57
-#: admin/partials/botblocker-section-right-sidebar.php:111
-#: admin/templates/integrations/card.php:17
-#: admin/templates/shared/sidebar/status-card.php:74
-#: admin/templates/shared/system-toggles.php:44
-#: includes/data/botblocker-data-snav.php:613
-#: includes/section/integration/botblocker-int-redis.php:14
-#: includes/viewmodels/class-integrations-viewmodel.php:143
-msgid "Redis"
-msgstr "Redis"
-
 #: includes/data/botblocker-data-snav.php:624
 msgid "Redis Authentication Password"
 msgstr "סיסמת אימות Redis"
@@ -11375,7 +11333,7 @@ msgstr "נדרש למשימות מתוזמנות ולגיבויים"
 msgid "Required:"
 msgstr "נדרש:"
 
-#: admin/partials/botblocker-admin-display-addons.php:199
+#: admin/partials/botblocker-admin-display-addons.php:202
 msgid "Requires a newer BotBlocker version"
 msgstr "דורש גרסת BotBlocker חדשה יותר"
 
@@ -11389,8 +11347,8 @@ msgstr "דורש מודול שרת אינטרנט (nginx, HAProxy, LiteSpeed) א
 msgid "Requires active BotBlocker PRO"
 msgstr "דורש BotBlocker PRO פעיל"
 
-#: admin/partials/botblocker-admin-display-addons.php:123
-#: admin/partials/botblocker-admin-display-addons.php:199
+#: admin/partials/botblocker-admin-display-addons.php:126
+#: admin/partials/botblocker-admin-display-addons.php:202
 #, php-format
 msgid "Requires BotBlocker >= %s"
 msgstr "דורש BotBlocker >= %s"
@@ -11400,7 +11358,7 @@ msgstr "דורש BotBlocker >= %s"
 msgid "Requires BotBlocker PRO and the Early Init add-on."
 msgstr "דורש BotBlocker PRO ותוסף Early Init."
 
-#: admin/templates/addons/marketplace-panel.php:110
+#: admin/templates/addons/marketplace-panel.php:113
 #: admin/templates/setup-guide/one-click-modal.php:81
 #: includes/modal/modal-botblocker-setup-wizard.php:80
 msgid "Requires PRO"
@@ -11504,7 +11462,7 @@ msgstr "מאפס..."
 #: admin/class-botblocker-setup-wizard-renderer.php:290
 #: admin/templates/setup-wizard/compatibility.php:25
 msgid "REST API"
-msgstr "REST API"
+msgstr "API REST"
 
 #: addons/bbcs-truth-source/inc/views/scan-results.php:214
 msgid "Restore"
@@ -11519,7 +11477,7 @@ msgstr "הגבל שרתי פרוקסי, מרכזי נתונים, VPNs ופרוט
 msgid "Retrieves your BotBlocker PRO key from the cloud."
 msgstr "שולף את מפתח ה-BotBlocker PRO שלך מהענן."
 
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:123
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:124
 msgid "Retrying..."
 msgstr "מנסה שוב..."
 
@@ -11537,10 +11495,6 @@ msgstr "סקור ציון אבטחה"
 msgid "Rewrite rules successfully flushed!"
 msgstr "כללי שכתוב נמחקו בהצלחה!"
 
-#: admin/templates/reports/dashboard.php:31
-msgid "RKN"
-msgstr "RKN"
-
 #: admin/templates/integrations/2fa.php:124
 #: includes/data/botblocker-data-snav.php:653
 #: includes/section/integration/botblocker-int-2fa.php:217
@@ -11553,17 +11507,17 @@ msgstr "קובץ נתב"
 
 #: addons/bbcs-behavior/views/settings.php:121
 msgid "rph"
-msgstr "rph"
+msgstr "בקשות/שעה"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:285
 msgid "RPM"
-msgstr "RPM"
+msgstr "בקשות/דקה"
 
 #: addons/bbcs-behavior/views/settings.php:109
 #: admin/templates/settings/rate-limiting.php:77
 #: admin/templates/settings/rate-limiting.php:86
 msgid "rpm"
-msgstr "rpm"
+msgstr "בקשות/דקה"
 
 #: addons/bbcs-speedup/views/settings.php:27
 msgid "RSS"
@@ -11729,10 +11683,18 @@ msgstr "קובץ הכללים נוצר בהצלחה."
 msgid "Rules will be regenerated automatically."
 msgstr "הכללים יווצרו מחדש אוטומטית."
 
+#: admin/templates/settings/cron.php:170
+msgid "Run all recurring tasks immediately"
+msgstr "הפעל את כל המשימות החוזרות מיד"
+
 #: includes/data/botblocker-data-palette.php:81
 #: includes/data/botblocker-data-palette.php:82
 msgid "Run malware scan - virus, infected files"
 msgstr "הרץ סריקת תוכנות זדוניות - וירוס, קבצים נגועים"
+
+#: admin/templates/settings/cron.php:173
+msgid "Run only overdue tasks"
+msgstr "הפעל רק משימות באיחור"
 
 #: includes/data/botblocker-data-palette.php:65
 msgid "Run setup wizard - guide, onboarding, first steps"
@@ -11746,6 +11708,10 @@ msgstr "הרץ שוב את אשף ההתקנה"
 #: includes/section/dashboard/botblocker-dash-health.php:55
 msgid "Run the wizard to configure protection"
 msgstr "הרץ את האשף כדי להגדיר הגנה"
+
+#: admin/templates/settings/cron.php:226
+msgid "Run this task now"
+msgstr "הפעל משימה זו עכשיו"
 
 #: includes/data/botblocker-data-palette.php:105
 #: includes/data/botblocker-data-palette.php:106
@@ -11804,11 +11770,11 @@ msgstr "עוגיות SameSite"
 msgid "SameSite policy controls cross-site cookie behavior to protect against CSRF attacks."
 msgstr "מדיניות SameSite שולטת בהתנהגות עוגיות בין-אתריות כדי להגן מפני התקפות CSRF."
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:88
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:89
 msgid "Sample file not found."
 msgstr "קובץ הדוגמה לא נמצא."
 
-#: admin/templates/addons/addons-content.php:65
+#: admin/templates/addons/addons-content.php:67
 #: admin/templates/integrations.php:32
 #: admin/templates/settings/save-settings.php:13
 #: admin/templates/tools.php:32
@@ -11880,12 +11846,12 @@ msgstr "שומר..."
 msgid "Scan active and inactive themes for malicious code."
 msgstr "סרוק ערכות נושא פעילות ולא פעילות לאיתור קוד זדוני."
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:192
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:213
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:194
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:215
 msgid "Scan cancelled."
 msgstr "הסריקה בוטלה."
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:211
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:213
 msgid "Scan completed. Refreshing results..."
 msgstr "הסריקה הושלמה. מרענן תוצאות..."
 
@@ -11933,6 +11899,11 @@ msgstr "סרוק פוסטים, עמודים, אפשרויות, משתמשים ו
 msgid "Scan QR Code"
 msgstr "סרוק קוד QR"
 
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:112
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:63
+msgid "Scan results cleared."
+msgstr "תוצאות הסריקה נוקו."
+
 #: addons/bbcs-malware/inc/class-bbcs-malware-addons-page.php:46
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:117
 #: addons/bbcs-truth-source/inc/class-bbcs-truth-source-addons-page.php:47
@@ -11940,7 +11911,7 @@ msgstr "סרוק קוד QR"
 msgid "Scan Scope"
 msgstr "טווח סריקה"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:76
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:77
 msgid "Scan started."
 msgstr "הסריקה התחילה."
 
@@ -12031,8 +12002,8 @@ msgstr "סורק קבצי WordPress ותוכן מסד נתונים לחיפוש 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:317
 #: addons/bbcs-truth-source/inc/class-bbcs-truth-source-addons-page.php:75
 #: addons/bbcs-truth-source/inc/class-bbcs-ts-settings-view.php:193
-#: admin/templates/settings/cron.php:175
-#: admin/templates/settings/cron.php:186
+#: admin/templates/settings/cron.php:183
+#: admin/templates/settings/cron.php:195
 msgid "Schedule"
 msgstr "תזמון"
 
@@ -12189,9 +12160,9 @@ msgstr "אבטחה ופרטיות"
 msgid "Security blog"
 msgstr "בלוג אבטחה"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:103
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:111
 #: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:25
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:48
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:50
 #: includes/ajax/class-botblocker-ajax-backup.php:181
 #: includes/ajax/class-botblocker-ajax-debug.php:192
 #: public/2FA/bbcs-2fa.php:118
@@ -12521,9 +12492,9 @@ msgstr "ממיר"
 #: admin/class-botblocker-setup-wizard-renderer.php:34
 #: admin/partials/botblocker-admin-dashboard-widgets.php:127
 #: admin/partials/botblocker-admin-display-settings.php:135
-#: admin/templates/addons/marketplace-panel.php:134
-#: admin/templates/addons/marketplace-panel.php:146
-#: admin/templates/addons/marketplace-panel.php:232
+#: admin/templates/addons/marketplace-panel.php:137
+#: admin/templates/addons/marketplace-panel.php:149
+#: admin/templates/addons/marketplace-panel.php:235
 #: admin/templates/dashboard/quick-links.php:11
 #: admin/templates/setup-guide/status.php:196
 #: admin/templates/setup-wizard/completed.php:52
@@ -12537,7 +12508,7 @@ msgstr "ממיר"
 msgid "Settings"
 msgstr "הגדרות"
 
-#: includes/hook/class-botblocker-settings-hooks.php:356
+#: includes/hook/class-botblocker-settings-hooks.php:357
 msgid "Settings saved."
 msgstr "ההגדרות נשמרו."
 
@@ -12804,7 +12775,7 @@ msgstr "דולג: "
 msgid "Sliding window size in minutes. RPM = total hits in window / window minutes. Default: 5."
 msgstr "גודל חלון ההזזה בדקות. RPM = סך כל הפגיעות בחלון / דקות החלון. ברירת מחדל: 5."
 
-#: admin/templates/about/body.php:215
+#: admin/templates/about/body.php:206
 #: includes/section/about/botblocker-about-status.php:56
 msgid "Software versions"
 msgstr "גרסאות תוכנה"
@@ -12916,7 +12887,7 @@ msgstr "התחל אשף"
 msgid "Start Wizard"
 msgstr "התחל אשף"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:208
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:210
 msgid "Starting scan..."
 msgstr "מתחיל סריקה..."
 
@@ -12935,8 +12906,8 @@ msgstr "מצב תצוגת סטטיסטיקות"
 #: addons/bbcs-cron-jobs/views/settings.php:72
 #: addons/bbcs-early-init/inc/class-bbcs-early-init-addons-page.php:43
 #: admin/partials/botblocker-section-right-sidebar.php:26
-#: admin/templates/settings/cron.php:179
-#: admin/templates/settings/cron.php:207
+#: admin/templates/settings/cron.php:187
+#: admin/templates/settings/cron.php:216
 #: admin/templates/shared/sidebar/rail.php:13
 #: admin/templates/shared/sidebar/status-card.php:18
 msgid "Status"
@@ -13267,6 +13238,12 @@ msgstr "IP/תת-רשת מטרה"
 msgid "Targets: %1$d. Clean: %2$d. Issues: %3$d. Unverifiable: %4$d. Added: %5$d. Modified: %6$d. Missing: %7$d. Expected: %8$d. Ignored: %9$d."
 msgstr "מטרות: %1$d. נקי: %2$d. בעיות: %3$d. לא ניתן לאימות: %4$d. נוספו: %5$d. שונו: %6$d. חסרים: %7$d. צפויים: %8$d. התעלמו: %9$d."
 
+#. translators: %s: cron hook name
+#: includes/cron/class-botblocker-cron.php:309
+#, php-format
+msgid "Task %s executed successfully."
+msgstr "המשימה %s בוצעה בהצלחה."
+
 #: admin/templates/settings/cron.php:164
 #: includes/data/botblocker-data-snav.php:390
 msgid "Task List"
@@ -13290,12 +13267,12 @@ msgstr "משימות"
 #: includes/data/botblocker-data-snav.php:541
 #: includes/section/settings/botblocker-set-notif.php:51
 msgid "Telegram"
-msgstr "Telegram"
+msgstr "טלגרם"
 
 #: admin/templates/settings/notifications.php:30
 #: includes/section/settings/botblocker-set-notif.php:28
 msgid "Telegram BotFather"
-msgstr "Telegram BotFather"
+msgstr "טלגרם BotFather"
 
 #: admin/templates/settings/notifications.php:48
 msgid "Telegram Configuration"
@@ -13585,7 +13562,7 @@ msgstr "צד שלישי"
 msgid "This action cannot be undone."
 msgstr "לא ניתן לבטל פעולה זו."
 
-#: admin/partials/botblocker-admin-display-addons.php:257
+#: admin/partials/botblocker-admin-display-addons.php:260
 msgid "This add-on is incompatible with your BotBlocker version. Delete anyway?"
 msgstr "תוסף זה אינו תואם לגרסת BotBlocker שלך. למחוק בכל זאת?"
 
@@ -13734,7 +13711,7 @@ msgstr "כדי לאפשר תיקון ואופטימיזציה של מסד הנת
 msgid "To receive important security news and special offers."
 msgstr "כדי לקבל חדשות אבטחה חשובות ומבצעים מיוחדים."
 
-#: admin/templates/about/body.php:203
+#: admin/templates/about/body.php:194
 msgid "Toast Notifications:"
 msgstr "התראות Toast:"
 
@@ -13986,11 +13963,11 @@ msgstr "נתוני גאוגרפיה של תעבורה"
 #: admin/templates/integrations/transients.php:23
 #: includes/viewmodels/class-integrations-viewmodel.php:139
 msgid "Transients"
-msgstr "Transients"
+msgstr "ארעיים"
 
 #: admin/templates/integrations/transients.php:17
 msgid "Transients API"
-msgstr "Transients API"
+msgstr "API ארעיים"
 
 #: includes/modal/modal-botblocker-transient-clear.php:15
 msgid "Transients are temporary database data used by plugins and themes."
@@ -14070,7 +14047,7 @@ msgstr "משווה מקור אמת"
 msgid "Truth Source Settings"
 msgstr "הגדרות מקור אמת"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:147
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:155
 msgid "Truth Source: Background Scan Progress"
 msgstr "מקור אמת: התקדמות סריקת רקע"
 
@@ -14078,11 +14055,11 @@ msgstr "מקור אמת: התקדמות סריקת רקע"
 msgid "Truth Source: File Integrity Issues"
 msgstr "מקור אמת: בעיות שלמות קבצים"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:138
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:146
 msgid "Truth Source: Scan Batch"
 msgstr "מקור אמת: אצוות סריקה"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:137
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:145
 msgid "Truth Source: Scheduled Scan"
 msgstr "מקור אמת: סריקה מתוזמנת"
 
@@ -14335,6 +14312,10 @@ msgstr "מבקרים ייחודיים (לפי IP)"
 msgid "Unknown chart data type."
 msgstr "סוג נתוני תרשים לא ידוע."
 
+#: includes/cron/class-botblocker-cron.php:291
+msgid "Unknown cron task."
+msgstr "משימת cron לא ידועה."
+
 #: admin/class-botblocker-setup-wizard.php:234
 #: admin/class-botblocker-setup-wizard.php:359
 msgid "Unknown error"
@@ -14364,18 +14345,18 @@ msgstr "חסימת IP לא מגיב"
 msgid "Until changed"
 msgstr "עד לשינוי"
 
-#: admin/partials/botblocker-admin-display-addons.php:160
-#: admin/partials/botblocker-admin-display-addons.php:221
-#: admin/partials/botblocker-admin-display-addons.php:245
-#: admin/templates/addons/marketplace-panel.php:129
-#: admin/templates/addons/marketplace-panel.php:189
-#: admin/templates/addons/marketplace-panel.php:227
-#: admin/templates/addons/marketplace-panel.php:74
+#: admin/partials/botblocker-admin-display-addons.php:163
+#: admin/partials/botblocker-admin-display-addons.php:224
+#: admin/partials/botblocker-admin-display-addons.php:248
+#: admin/templates/addons/marketplace-panel.php:132
+#: admin/templates/addons/marketplace-panel.php:192
+#: admin/templates/addons/marketplace-panel.php:230
+#: admin/templates/addons/marketplace-panel.php:77
 msgid "Update"
 msgstr "עדכן"
 
 #. translators: %d: number of add-ons with available updates.
-#: admin/partials/botblocker-admin-display-addons.php:36
+#: admin/partials/botblocker-admin-display-addons.php:37
 #: admin/templates/addons.php:23
 #, php-format
 msgid "Update All (%d)"
@@ -14391,19 +14372,19 @@ msgstr "עדכן מסד נתוני ASN"
 msgid "Update ASN database - geo, network, country data"
 msgstr "עדכן מסד נתוני ASN - נתוני גיאוגרפיה, רשת, מדינה"
 
-#: admin/partials/botblocker-admin-display-addons.php:128
+#: admin/partials/botblocker-admin-display-addons.php:131
 #, php-format
 msgid "Update available, requires BotBlocker >= %s"
 msgstr "עדכון זמין, דורש BotBlocker >= %s"
 
-#: admin/partials/botblocker-admin-display-addons.php:135
-#: admin/partials/botblocker-admin-display-addons.php:208
+#: admin/partials/botblocker-admin-display-addons.php:138
 #: admin/partials/botblocker-admin-display-addons.php:211
+#: admin/partials/botblocker-admin-display-addons.php:214
 #, php-format
 msgid "Update BotBlocker to %s to use this add-on"
 msgstr "עדכן את BotBlocker ל-%s כדי להשתמש בתוסף זה"
 
-#: admin/partials/botblocker-admin-display-addons.php:164
+#: admin/partials/botblocker-admin-display-addons.php:167
 #, php-format
 msgid "Update requires BotBlocker >= %s"
 msgstr "עדכון דורש BotBlocker >= %s"
@@ -14454,11 +14435,11 @@ msgstr "שדרג ל-Pro למנוע ההתנהגותי. הוא כולל ניקו�
 msgid "Upgrade your plan for better protection."
 msgstr "שדרג את החבילה שלך להגנה טובה יותר."
 
-#: admin/partials/botblocker-admin-display-addons.php:50
+#: admin/partials/botblocker-admin-display-addons.php:52
 msgid "Upload a BotBlocker add-on package. It will be installed inactive, then you can review and activate it from the Installed tab."
 msgstr "העלה חבילת תוסף של BotBlocker. היא תותקן כבלתי פעילה, ואז תוכל לסקור ולהפעיל אותה מהלשונית 'מותקן'."
 
-#: admin/partials/botblocker-admin-display-addons.php:26
+#: admin/partials/botblocker-admin-display-addons.php:27
 #: admin/templates/addons.php:22
 msgid "Upload ZIP"
 msgstr "העלה ZIP"
@@ -14466,11 +14447,6 @@ msgstr "העלה ZIP"
 #: admin/partials/botblocker-admin-dashboard-widgets.php:176
 msgid "Uploading a new list will add new IPs and skip existing ones. Invalid lines will be skipped automatically."
 msgstr "העלאת רשימה חדשה תוסיף IPs חדשים ותדלג על קיימים. שורות לא חוקיות ידולגו אוטומטית."
-
-#: includes/modal/modal-botblocker-rule-add.php:29
-#: includes/modal/modal-botblocker-rule-edit.php:28
-msgid "URI"
-msgstr "URI"
 
 #: includes/modal/modal-botblocker-rewrite-rules.php:13
 msgid "URL rewrite rules will be reset:"
@@ -14537,7 +14513,7 @@ msgstr "השתמש בקישור זה כדי להשבית באופן זמני א�
 msgid "Use WordPress transients. Works on any hosting."
 msgstr "השתמש במשתנים זמניים של WordPress. עובד בכל אחסון."
 
-#: admin/templates/about/body.php:181
+#: admin/templates/about/body.php:172
 msgid "used with attribution"
 msgstr "בשימוש עם ייחוס"
 
@@ -14569,7 +14545,7 @@ msgstr "משתמש לא מחובר"
 #: admin/templates/settings/bot-detection.php:23
 #: includes/section/settings/botblocker-set-simple.php:27
 msgid "User-Agent"
-msgstr "User-Agent"
+msgstr "סוכן משתמש"
 
 #: admin/templates/settings/bot-detection.php:42
 #: includes/data/botblocker-data-snav.php:71
@@ -14621,7 +14597,7 @@ msgstr "נדרש קוד אימות."
 msgid "Verification failed."
 msgstr "האימות נכשל."
 
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:124
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:125
 msgid "Verification failed. Please complete the challenge below."
 msgstr "האימות נכשל. אנא השלימו את האתגר למטה."
 
@@ -14691,7 +14667,7 @@ msgstr "מאמת תקינות %s"
 msgid "Verifying file integrity..."
 msgstr "מאמת תקינות קבצים..."
 
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:122
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:123
 #: public/captcha/render-hold-button-trait.php:31
 msgid "Verifying..."
 msgstr "מאמת..."
@@ -14701,8 +14677,8 @@ msgstr "מאמת..."
 msgid "Version"
 msgstr "גרסה"
 
-#: admin/partials/botblocker-admin-display-addons.php:114
-#: admin/partials/botblocker-admin-display-addons.php:195
+#: admin/partials/botblocker-admin-display-addons.php:117
+#: admin/partials/botblocker-admin-display-addons.php:198
 #, php-format
 msgid "Version %s"
 msgstr "גרסה %s"
@@ -15115,7 +15091,7 @@ msgstr "כוונון ליבת WordPress"
 msgid "WordPress development"
 msgstr "פיתוח WordPress"
 
-#: includes/hook/hook-addon-install.php:114
+#: includes/hook/hook-addon-install.php:117
 msgid "WordPress filesystem is unavailable."
 msgstr "מערכת הקבצים של WordPress אינה זמינה."
 
@@ -15157,7 +15133,7 @@ msgid "WordPress speed optimizations"
 msgstr "אופטימיזציות מהירות WordPress"
 
 #. phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-#: includes/botblocker/class-botblocker.php:241
+#: includes/botblocker/class-botblocker.php:242
 msgid "WordPress stopped by BotBlocker"
 msgstr "WordPress נעצר על ידי BotBlocker"
 
@@ -15199,11 +15175,6 @@ msgstr "WP Super Cache (מצב Expert/mod_rewrite) מגיש דפים שמורי�
 #: addons/bbcs-early-init/inc/class-bbcs-early-init-addons-page.php:46
 msgid "wp-config.php Integration"
 msgstr "שילוב wp-config.php"
-
-#: admin/templates/settings/cron.php:88
-#: includes/section/settings/botblocker-set-cron.php:27
-msgid "WP-Cron"
-msgstr "WP-Cron"
 
 #: addons/bbcs-cron-jobs/views/settings.php:26
 msgid "WP-Cron Documentation"

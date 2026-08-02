@@ -11,6 +11,40 @@ class BotBlockerAddons {
 	 */
 	private static $loaded_cores = array();
 
+	public static function isLocalMode(): bool {
+		self::ensureMultisiteLoaded();
+		return BotBlockerMultisite::isAddonsLocalMode();
+	}
+
+	public static function getActiveOptionName(): string {
+		return self::isLocalMode() ? 'bbcs_dev_active_addons' : 'bbcs_active_addons';
+	}
+
+	/**
+	 * @param array<string,array<string,mixed>> $addons
+	 * @return array<int,array<string,mixed>>
+	 */
+	public static function buildMarketFromDisk( array $addons ): array {
+		$market = array();
+		foreach ( $addons as $slug => $addon ) {
+			if ( empty( $addon['valid'] ) ) {
+				continue;
+			}
+			$slug   = sanitize_key( (string) $slug );
+			$market[] = array(
+				'name'          => isset( $addon['name'] ) ? (string) $addon['name'] : $slug,
+				'slug'          => $slug,
+				'version'       => isset( $addon['version'] ) ? (string) $addon['version'] : '',
+				'description'   => isset( $addon['description'] ) ? (string) $addon['description'] : '',
+				'icon'          => isset( $addon['icon'] ) ? (string) $addon['icon'] : '',
+				'requires_core' => isset( $addon['requires_core'] ) ? (string) $addon['requires_core'] : '',
+				'url'           => '',
+				'enabled'       => true,
+			);
+		}
+		return $market;
+	}
+
 	public static function loadCore( array $addon ): void {
 		$slug = isset( $addon['slug'] ) ? sanitize_key( (string) $addon['slug'] ) : '';
 		$core = ! empty( $addon['core'] ) ? (string) $addon['core'] : '';
@@ -371,13 +405,21 @@ class BotBlockerAddons {
 		return $addons;
 	}
 
+	/**
+	 * @return array<int,string>
+	 */
 	public static function getActive(): array {
 		self::ensureMultisiteLoaded();
-		$active = BotBlockerMultisite::getOption( 'bbcs_active_addons', array() );
-		if ( ! is_array( $active ) ) {
-			return array();
-		}
-		return array_values( $active );
+		$active = BotBlockerMultisite::getOption( self::getActiveOptionName(), array() );
+		return is_array( $active ) ? array_values( $active ) : array();
+	}
+
+	/**
+	 * @param array<int,string> $active
+	 */
+	public static function setActive( array $active ): void {
+		self::ensureMultisiteLoaded();
+		BotBlockerMultisite::updateOption( self::getActiveOptionName(), array_values( $active ) );
 	}
 
 	public static function isActive( string $slug ): bool {
@@ -395,8 +437,7 @@ class BotBlockerAddons {
 
 	public static function fileRequiresCore( string $slug ): string {
 		$slug     = sanitize_key( $slug );
-		self::ensureMultisiteLoaded();
-		$base     = trailingslashit( BotBlockerMultisite::getAddonsDir() ) . $slug . DIRECTORY_SEPARATOR;
+		$base     = trailingslashit( self::rootDir() ) . $slug . DIRECTORY_SEPARATOR;
 		$manifest = self::parseManifest( $base, $slug );
 		if ( ! empty( $manifest ) ) {
 			return $manifest['requires_core'] ?? '';
@@ -646,6 +687,9 @@ class BotBlockerAddons {
 	}
 
 	public static function fetchMarket(): array {
+		if ( self::isLocalMode() ) {
+			return self::buildMarketFromDisk( self::scanAll() );
+		}
 		$url = self::getMarketUrl();
 		if ( empty( $url ) ) {
 			return array();
@@ -663,10 +707,13 @@ class BotBlockerAddons {
 	}
 
 	public static function autoUpdate( string $core_version = '' ): array {
-		$result  = array(
+		$result = array(
 			'updated' => array(),
 			'failed'  => array(),
 		);
+		if ( self::isLocalMode() ) {
+			return $result;
+		}
 		$version = $core_version !== '' ? $core_version : BOTBLOCKER_VERSION;
 
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
@@ -703,10 +750,7 @@ class BotBlockerAddons {
 			}
 		}
 
-		$active = BotBlockerMultisite::getOption( 'bbcs_active_addons', array() );
-		if ( ! is_array( $active ) ) {
-			$active = array();
-		}
+		$active = self::getActive();
 		$active_changed = false;
 		$reactivate     = array();
 
@@ -813,7 +857,7 @@ class BotBlockerAddons {
 		}
 
 		if ( $active_changed ) {
-			BotBlockerMultisite::updateOption( 'bbcs_active_addons', $active );
+			self::setActive( $active );
 		}
 
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
@@ -826,10 +870,7 @@ class BotBlockerAddons {
 
 	public static function includeAll(): void {
 		$addons = self::scanAll();
-		$active = BotBlockerMultisite::getOption( 'bbcs_active_addons', array() );
-		if ( ! is_array( $active ) ) {
-			$active = array();
-		}
+		$active = self::getActive();
 
 		$incompatible       = array();
 		$incompatible_slugs = array();
@@ -868,7 +909,7 @@ class BotBlockerAddons {
 				)
 			);
 			if ( $new_active !== $active ) {
-				BotBlockerMultisite::updateOption( 'bbcs_active_addons', $new_active );
+				self::setActive( $new_active );
 			}
 			BotBlockerAlerts::setAddonIncompatible( $incompatible );
 
@@ -922,10 +963,7 @@ class BotBlockerAddons {
 	public static function deactivateAll(): void {
 
 		$addons = self::scanAll();
-		$active = BotBlockerMultisite::getOption( 'bbcs_active_addons', array() );
-		if ( ! is_array( $active ) ) {
-			$active = array();
-		}
+		$active = self::getActive();
 
 		foreach ( $active as $slug ) {
 			if ( ! isset( $addons[ $slug ] ) || ! $addons[ $slug ]['valid'] ) {

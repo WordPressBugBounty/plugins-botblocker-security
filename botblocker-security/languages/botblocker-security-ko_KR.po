@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BotBlocker"
 "Report-Msgid-Bugs-To: "
-"POT-Creation-Date: 2026-07-30 23:51+0000"
-"PO-Revision-Date: 2026-07-30 23:51+0000"
+"POT-Creation-Date: 2026-08-02 21:33+0000"
+"PO-Revision-Date: 2026-08-02 21:33+0000"
 "Last-Translator: BotBlocker Translator Engine via AI"
 "Language-Team: Korean"
 "Language: ko_KR"
@@ -55,6 +55,20 @@ msgstr "%d회 일회성"
 #, php-format
 msgid "%d recurring"
 msgstr "%d회 정기"
+
+#. translators: %d: number of stale tasks executed
+#: includes/cron/class-botblocker-cron.php:388
+#, php-format, plural
+msgid "%d stale task executed."
+msgid_plural "%d stale tasks executed."
+msgstr[0] "%d개의 오래된 작업이 실행되었습니다."
+
+#. translators: %d: number of tasks executed
+#: includes/cron/class-botblocker-cron.php:346
+#, php-format, plural
+msgid "%d task executed."
+msgid_plural "%d tasks executed."
+msgstr[0] "%d개의 작업이 실행되었습니다."
 
 #. translators: %d: total task count
 #: admin/templates/settings/cron.php:61
@@ -203,7 +217,7 @@ msgstr "120일"
 #: admin/templates/settings/notifications.php:58
 #: includes/section/settings/botblocker-set-notif.php:72
 msgid "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
-msgstr ""
+msgstr "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
 
 #: includes/data/botblocker-data-time.php:11
 msgid "15 minutes"
@@ -222,10 +236,6 @@ msgstr "2시간"
 #: includes/data/botblocker-data-time.php:41
 msgid "2 weeks"
 msgstr "2주"
-
-#: admin/templates/dashboard/quick-links.php:18
-msgid "2FA"
-msgstr ""
 
 #: includes/utilites/2FA/inc-botblocker-2fa.php:456
 msgid "2FA has been reset."
@@ -409,9 +419,9 @@ msgstr "수락"
 #: admin/templates/settings/bot-detection.php:24
 #: includes/section/settings/botblocker-set-simple.php:28
 msgid "Accept-Language"
-msgstr ""
+msgstr "Accept-Language"
 
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:121
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:122
 msgid "Access approved. Redirecting..."
 msgstr "액세스 승인됨. 리디렉션 중..."
 
@@ -458,7 +468,7 @@ msgstr "이 경로에 대한 작업"
 
 #: addons/bbcs-cron-jobs/views/settings.php:143
 msgid "Action Scheduler Queue"
-msgstr ""
+msgstr "Action Scheduler 대기열"
 
 #: admin/class-botblocker-admin.php:327
 #: admin/partials/botblocker-admin-display-rules.php:114
@@ -477,18 +487,20 @@ msgstr ""
 #: admin/templates/rules/body.php:52
 #: admin/templates/rules/body.php:68
 #: admin/templates/rules/body.php:84
+#: admin/templates/settings/cron.php:188
+#: admin/templates/settings/cron.php:225
 msgid "Actions"
 msgstr "작업들"
 
-#: admin/partials/botblocker-admin-display-addons.php:235
-#: admin/templates/addons/marketplace-panel.php:208
-#: admin/templates/addons/marketplace-panel.php:94
+#: admin/partials/botblocker-admin-display-addons.php:238
+#: admin/templates/addons/marketplace-panel.php:211
+#: admin/templates/addons/marketplace-panel.php:97
 #: admin/templates/integrations/2fa.php:68
 #: includes/section/integration/botblocker-int-2fa.php:163
 msgid "Activate"
 msgstr "활성화"
 
-#: admin/partials/botblocker-admin-display-addons.php:77
+#: admin/partials/botblocker-admin-display-addons.php:80
 msgid "Activate access"
 msgstr "접근 활성화"
 
@@ -527,15 +539,17 @@ msgstr "활성화 서비스를 사용할 수 없습니다."
 #: addons/bbcs-cron-jobs/views/settings.php:173
 #: admin/class-botblocker-admin.php:338
 #: admin/partials/botblocker-section-right-sidebar.php:32
-#: admin/templates/addons/marketplace-panel.php:184
-#: admin/templates/addons/marketplace-panel.php:64
+#: admin/templates/addons/marketplace-panel.php:187
+#: admin/templates/addons/marketplace-panel.php:67
 #: admin/templates/cloud-api/status.php:17
 #: admin/templates/integrations/botblocker-api.php:29
 #: admin/templates/rules.php:52
 #: admin/templates/settings/cron.php:111
 #: admin/templates/settings/cron.php:147
 #: admin/templates/settings/cron.php:154
-#: admin/templates/settings/cron.php:209
+#: admin/templates/settings/cron.php:218
+#: admin/templates/settings/cron.php:220
+#: admin/templates/settings/cron.php:222
 #: admin/templates/setup-guide/pro-body.php:13
 #: admin/templates/setup-guide/status.php:53
 #: admin/templates/shared/request-chain.php:335
@@ -558,7 +572,7 @@ msgstr "활성:"
 #: includes/data/botblocker-data-snav.php:109
 #: includes/section/settings/botblocker-set-browser.php:60
 msgid "AdBlock / uBlock"
-msgstr ""
+msgstr "AdBlock / uBlock"
 
 #: admin/class-botblocker-admin.php:534
 msgid "Adblocker:"
@@ -715,12 +729,16 @@ msgid "Add-on"
 msgstr "애드온"
 
 #: admin/class-botblocker-admin.php:638
-#: includes/hook/class-botblocker-addon-hooks.php:397
+#: includes/hook/class-botblocker-addon-hooks.php:406
 msgid "Add-on deleted."
 msgstr "애드온이 삭제되었습니다."
 
+#: includes/hook/class-botblocker-addon-hooks.php:22
+msgid "Add-on install, update, and delete are disabled in local add-on mode."
+msgstr "로컬 애드온 모드에서는 애드온 설치, 업데이트 및 삭제가 비활성화되어 있습니다."
+
 #: admin/class-botblocker-admin.php:632
-#: includes/hook/class-botblocker-addon-hooks.php:279
+#: includes/hook/class-botblocker-addon-hooks.php:289
 msgid "Add-on installed successfully."
 msgstr "애드온이 성공적으로 설치되었습니다."
 
@@ -743,6 +761,10 @@ msgstr "애드온 패키지가 BotBlocker 애드온 계약과 일치하지 않�
 #: includes/hook/hook-addon-validation.php:66
 msgid "Add-on package has an invalid file count."
 msgstr "애드온 패키지에 파일 수가 올바르지 않습니다."
+
+#: includes/hook/hook-addon-install.php:101
+msgid "Add-on package install is disabled in local add-on mode."
+msgstr "로컬 애드온 모드에서는 애드온 패키지 설치가 비활성화되어 있습니다."
 
 #: admin/class-botblocker-admin.php:649
 #: includes/class-botblocker-toastify.php:244
@@ -772,7 +794,7 @@ msgid "Add-on package slug does not match the requested add-on."
 msgstr "애드온 패키지 슬러그가 요청된 애드온과 일치하지 않습니다."
 
 #: admin/class-botblocker-admin.php:633
-#: includes/hook/class-botblocker-addon-hooks.php:344
+#: includes/hook/class-botblocker-addon-hooks.php:355
 msgid "Add-on package uploaded. Find it below, then activate it when ready."
 msgstr "애드온 패키지가 업로드되었습니다. 아래에서 찾은 후 준비되면 활성화하세요."
 
@@ -780,7 +802,7 @@ msgstr "애드온 패키지가 업로드되었습니다. 아래에서 찾은 후
 msgid "Add-on root folder must be a valid slug."
 msgstr "애드온 루트 폴더는 유효한 슬러그여야 합니다."
 
-#: admin/templates/addons/addons-content.php:58
+#: admin/templates/addons/addons-content.php:60
 msgid "Add-on settings"
 msgstr "애드온 설정"
 
@@ -793,13 +815,13 @@ msgid "Add-on Update Failed"
 msgstr "추가 기능 업데이트 실패"
 
 #: admin/class-botblocker-admin.php:635
-#: includes/hook/class-botblocker-addon-hooks.php:206
-#: includes/hook/class-botblocker-addon-hooks.php:524
+#: includes/hook/class-botblocker-addon-hooks.php:215
+#: includes/hook/class-botblocker-addon-hooks.php:531
 msgid "Add-on updated successfully."
 msgstr "추가 기능이 성공적으로 업데이트되었습니다."
 
 #. translators: %s: required BotBlocker version
-#: includes/hook/class-botblocker-addon-hooks.php:522
+#: includes/hook/class-botblocker-addon-hooks.php:529
 #, php-format
 msgid "Add-on was updated but not reactivated - it requires BotBlocker %s or higher. Please update the plugin first."
 msgstr "추가 기능이 업데이트되었지만 다시 활성화되지 않았습니다 - BotBlocker %s 이상이 필요합니다. 먼저 플러그인을 업데이트하세요."
@@ -812,7 +834,7 @@ msgstr "추가 기능이 업데이트되었지만 다시 활성화되지 않았�
 
 #: admin/class-botblocker-admin.php:1261
 #: admin/class-botblocker-admin.php:1262
-#: admin/partials/botblocker-admin-display-addons.php:23
+#: admin/partials/botblocker-admin-display-addons.php:24
 #: admin/templates/settings/notifications.php:115
 #: admin/templates/setup-guide/status.php:167
 #: includes/section/dashboard/botblocker-dash-links.php:33
@@ -825,7 +847,7 @@ msgid "Add-ons Deactivated"
 msgstr "추가 기능 비활성화됨"
 
 #: includes/components/class-botblocker-component-addons-summary.php:58
-#: includes/inc-botblocker-ui.php:305
+#: includes/inc-botblocker-ui.php:320
 msgid "Add-ons locked. Activate Cloud API to use marketplace features."
 msgstr "추가 기능이 잠겼습니다. 마켓플레이스 기능을 사용하려면 Cloud API를 활성화하세요."
 
@@ -867,14 +889,14 @@ msgstr "추가 기능"
 msgid "Addon required"
 msgstr "추가 기능 필요"
 
-#: admin/partials/botblocker-admin-display-addons.php:171
-#: admin/partials/botblocker-admin-display-addons.php:252
+#: admin/partials/botblocker-admin-display-addons.php:174
+#: admin/partials/botblocker-admin-display-addons.php:255
 msgid "Addon Settings"
 msgstr "추가 기능 설정"
 
 #: admin/templates/addons.php:20
 #: admin/templates/dashboard/quick-links.php:15
-#: includes/viewmodels/class-addons-viewmodel.php:166
+#: includes/viewmodels/class-addons-viewmodel.php:168
 msgid "Addons"
 msgstr "추가 기능"
 
@@ -882,7 +904,7 @@ msgstr "추가 기능"
 msgid "Addons - extensions, plugins, marketplace, more features"
 msgstr "추가 기능 - 확장, 플러그인, 마켓플레이스, 더 많은 기능"
 
-#: admin/templates/addons/addons-content.php:28
+#: admin/templates/addons/addons-content.php:30
 msgid "Addons sections"
 msgstr "추가 기능 섹션"
 
@@ -937,7 +959,7 @@ msgstr "관리자 패널 로그"
 
 #: includes/section/about/botblocker-about-contacts.php:52
 msgid "admin@botblocker.top"
-msgstr ""
+msgstr "admin@botblocker.top"
 
 #: includes/section/settings/botblocker-set-general.php:30
 msgid "Administrator IPs"
@@ -1040,7 +1062,7 @@ msgstr "AI 행동 분석 엔진"
 
 #: addons/bbcs-cron-jobs/views/settings.php:142
 msgid "AJAX Cron Heartbeat"
-msgstr ""
+msgstr "AJAX Cron Heartbeat"
 
 #: admin/class-botblocker-setup-wizard.php:235
 #: admin/class-botblocker-setup-wizard.php:360
@@ -1094,7 +1116,7 @@ msgid "All %s rules have been cleared."
 msgstr "모든 %s 규칙이 지워졌습니다."
 
 #: admin/class-botblocker-admin.php:634
-#: includes/hook/class-botblocker-addon-hooks.php:106
+#: includes/hook/class-botblocker-addon-hooks.php:118
 msgid "All add-ons have been updated."
 msgstr "모든 애드온이 업데이트되었습니다."
 
@@ -1280,7 +1302,7 @@ msgstr "워드프레스 외부 사용자 정의 경로 허용"
 #: admin/templates/settings/bot-detection.php:44
 #: includes/data/botblocker-data-snav.php:73
 msgid "Allow Empty Accept-Language in Verification"
-msgstr ""
+msgstr "인증 시 빈 Accept-Language 허용"
 
 #: admin/templates/settings/bot-detection.php:63
 #: includes/section/settings/botblocker-set-simple.php:126
@@ -1361,7 +1383,7 @@ msgstr "허용된 IP 주소"
 #: admin/templates/shared/kpi-primary-grid.php:13
 #: admin/templates/shared/kpi-primary-grid.php:40
 msgid "Allowed today"
-msgstr ""
+msgstr "오늘 허용됨"
 
 #: includes/shortcode/botblocker-shortcode-rules.php:76
 #: includes/shortcode/botblocker-shortcode-rules.php:77
@@ -1415,7 +1437,7 @@ msgstr "안티 탐지 브라우저"
 
 #: includes/section/about/botblocker-about-status.php:28
 msgid "Apache"
-msgstr ""
+msgstr "Apache"
 
 #: admin/templates/about/body.php:109
 msgid "API & Developers"
@@ -1502,8 +1524,8 @@ msgstr "로그 파일을 삭제하시겠습니까?"
 msgid "Are you sure you want to clear the security salt?"
 msgstr "보안 솔트를 삭제하시겠습니까?"
 
-#: admin/templates/addons/marketplace-panel.php:137
-#: admin/templates/addons/marketplace-panel.php:235
+#: admin/templates/addons/marketplace-panel.php:140
+#: admin/templates/addons/marketplace-panel.php:238
 msgid "Are you sure you want to delete this add-on?"
 msgstr "이 애드온을 삭제하시겠습니까?"
 
@@ -1606,17 +1628,6 @@ msgstr "AS 이름"
 #: includes/modal/modal-botblocker-rule-edit.php:32
 msgid "AS Number"
 msgstr "AS 번호"
-
-#: admin/partials/botblocker-admin-display-rules.php:206
-#: admin/partials/botblocker-admin-display-rules.php:69
-#: admin/templates/reports/dashboard.php:31
-#: admin/templates/rules/body.php:126
-#: admin/templates/rules/body.php:20
-#: admin/templates/settings/connection-types.php:23
-#: includes/section/settings/botblocker-set-connect.php:30
-#: includes/viewmodels/class-rules-viewmodel.php:105
-msgid "ASN"
-msgstr ""
 
 #: includes/ajax/class-botblocker-ajax-asn.php:235
 msgid "ASN already exists."
@@ -1749,7 +1760,7 @@ msgstr "자동 감지됨:"
 
 #: addons/bbcs-cron-jobs/views/settings.php:134
 msgid "Auto-Draft Cleanup"
-msgstr ""
+msgstr "자동 초안 정리"
 
 #: admin/templates/setup-wizard/compatibility.php:35
 msgid "Auto-fix"
@@ -1780,7 +1791,7 @@ msgstr "PTR 및 User-Agent 데이터베이스 자동 업데이트"
 
 #: addons/bbcs-cron-jobs/views/settings.php:136
 msgid "Auto-Updates Check"
-msgstr ""
+msgstr "자동 업데이트 확인"
 
 #: admin/class-botblocker-setup-wizard.php:232
 #: admin/class-botblocker-setup-wizard.php:357
@@ -1854,7 +1865,7 @@ msgstr "일반적인 분석, 결제 및 CDN 스크립트 태그를 멀웨어 지
 msgid "Back"
 msgstr "뒤로"
 
-#: admin/templates/addons/addons-content.php:62
+#: admin/templates/addons/addons-content.php:64
 msgid "Back to Marketplace"
 msgstr "마켓플레이스로 돌아가기"
 
@@ -2373,7 +2384,7 @@ msgstr "WordPress 로드 전에 위협 차단. 최대 보안."
 msgid "Blue"
 msgstr "파란색"
 
-#: admin/partials/botblocker-admin-display-addons.php:95
+#: admin/partials/botblocker-admin-display-addons.php:98
 msgid "Boost your BotBlocker experience with add-ons and tools selected to increase security, productivity and enhance your website"
 msgstr "보안과 생산성을 높이고 웹사이트를 개선하기 위해 선택된 추가 기능과 도구로 BotBlocker 경험을 향상시키세요"
 
@@ -2403,22 +2414,11 @@ msgstr "봇 탐지, Captcha, 보호"
 msgid "Bot Token"
 msgstr "봇 토큰"
 
-#: admin/partials/botblocker-admin-display-about.php:42
-#: admin/partials/botblocker-admin-display-tools.php:31
-#: admin/templates/setup-guide/chain-body.php:41
-#: admin/templates/shared/request-chain.php:327
-#: admin/templates/shared/request-chain.php:40
-#: includes/data/botblocker-data-snav.php:692
-#: includes/section/setup/botblocker-setup-chain.php:60
-#: includes/viewmodels/class-tools-viewmodel.php:81
-msgid "BotBlocker"
-msgstr ""
-
 #: admin/partials/botblocker-admin-display-integrations.php:63
 #: includes/data/botblocker-data-snav.php:645
 #: includes/viewmodels/class-integrations-viewmodel.php:147
 msgid "BotBlocker 2FA"
-msgstr ""
+msgstr "BotBlocker 2FA"
 
 #: addons/bbcs-security-headers/views/settings.php:67
 msgid "BotBlocker API (botblocker.top, globus.studio) - always allowed in CSP."
@@ -2448,12 +2448,12 @@ msgstr "BotBlocker API 통합"
 
 #: includes/data/botblocker-data-snav.php:638
 msgid "BotBlocker API URL"
-msgstr ""
+msgstr "BotBlocker API URL"
 
 #: admin/templates/integrations/botblocker-api.php:79
 #: includes/section/integration/botblocker-int-botblocker.php:37
 msgid "BotBlocker API URL:"
-msgstr ""
+msgstr "BotBlocker API URL:"
 
 #: admin/partials/botblocker-admin-display-settings.php:191
 #: admin/partials/botblocker-admin-display-settings.php:76
@@ -2465,14 +2465,14 @@ msgstr ""
 #: includes/section/settings/botblocker-set-captcha.php:23
 #: includes/section/settings/botblocker-set-captcha.php:31
 msgid "BotBlocker Captcha"
-msgstr ""
+msgstr "BotBlocker Captcha"
 
 #: admin/partials/botblocker-admin-display-integrations.php:60
 #: admin/templates/integrations/card.php:18
 #: includes/data/botblocker-data-snav.php:631
 #: includes/viewmodels/class-integrations-viewmodel.php:145
 msgid "BotBlocker Cloud"
-msgstr ""
+msgstr "BotBlocker Cloud"
 
 #: admin/partials/botblocker-admin-display-cloud-api.php:28
 msgid "BotBlocker Cloud Protection and PRO Status"
@@ -2600,7 +2600,7 @@ msgstr "BotBlocker 페이지"
 #: includes/section/setup/botblocker-setup-pro.php:23
 #: includes/section/setup/botblocker-setup-pro.php:25
 msgid "BotBlocker PRO"
-msgstr ""
+msgstr "BotBlocker PRO"
 
 #: admin/class-botblocker-admin.php:1011
 #: admin/class-botblocker-admin.php:622
@@ -2666,7 +2666,7 @@ msgstr "BotBlocker 보안 - 설정 완료"
 
 #. 'message' => __('Sorry, your request has been blocked', 'botblocker-security'),
 #: includes/botblocker/traits/class-botblocker-block-page-trait.php:16
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:206
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:207
 #: includes/botblocker/traits/class-botblocker-denied-page-trait.php:16
 #: public/template-botblocker-denied.php:24
 msgid "BotBlocker security plugin"
@@ -2720,7 +2720,7 @@ msgstr "BotBlocker는 보안, 호환성 및 오픈 소스 라이선스 준수를
 #: public/templates/denied-page.php:13
 #, php-format
 msgid "BotBlocker v. %s"
-msgstr ""
+msgstr "BotBlocker v. %s"
 
 #: admin/partials/botblocker-section-header.php:189
 #: admin/templates/shared/header/user-menu.php:29
@@ -2742,20 +2742,20 @@ msgstr "BotBlocker WordPress 플러그인"
 
 #: admin/class-botblocker-setup-wizard-renderer.php:837
 msgid "botblocker.top/contacts"
-msgstr ""
+msgstr "botblocker.top/contacts"
 
 #: admin/templates/shared/system-status-lines.php:13
 #: includes/viewmodels/class-about-viewmodel.php:67
 msgid "BotBlocker: v"
-msgstr ""
+msgstr "BotBlocker: v"
 
 #: addons/bbcs-cookie-alert/views/settings.php:118
 msgid "Bottom"
 msgstr "하단"
 
-#: admin/partials/botblocker-admin-display-addons.php:205
-#: admin/templates/addons/marketplace-panel.php:118
-#: admin/templates/addons/marketplace-panel.php:216
+#: admin/partials/botblocker-admin-display-addons.php:208
+#: admin/templates/addons/marketplace-panel.php:121
+#: admin/templates/addons/marketplace-panel.php:219
 msgid "Broken"
 msgstr "손상됨"
 
@@ -2764,7 +2764,7 @@ msgid "Browse add-ons"
 msgstr "추가 기능 찾아보기"
 
 #: includes/components/class-botblocker-component-addons-summary.php:64
-#: includes/inc-botblocker-ui.php:311
+#: includes/inc-botblocker-ui.php:326
 msgid "Browse Add-ons"
 msgstr "추가 기능 찾아보기"
 
@@ -2972,18 +2972,9 @@ msgstr "취소 및 로그아웃"
 msgid "Cancel Scan"
 msgstr "스캔 취소"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:212
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:214
 msgid "Cancelling scan..."
 msgstr "스캔 취소 중..."
-
-#: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:277
-#: admin/templates/settings/captcha-tab.php:53
-#: admin/templates/setup-wizard/finish.php:22
-#: includes/data/botblocker-data-snav.php:278
-#: includes/section/settings/botblocker-set-captcha.php:26
-#: includes/viewmodels/class-settings-viewmodel.php:187
-msgid "Captcha"
-msgstr ""
 
 #: includes/services/class-botblocker-health-service.php:20
 #: includes/viewmodels/class-dashboard-viewmodel.php:161
@@ -3080,15 +3071,15 @@ msgstr "의심스러운 것으로 확인"
 
 #: addons/bbcs-cron-jobs/views/settings.php:131
 msgid "Check for Plugin Updates"
-msgstr ""
+msgstr "플러그인 업데이트 확인"
 
 #: addons/bbcs-cron-jobs/views/settings.php:132
 msgid "Check for Theme Updates"
-msgstr ""
+msgstr "테마 업데이트 확인"
 
 #: addons/bbcs-cron-jobs/views/settings.php:130
 msgid "Check for WordPress Updates"
-msgstr ""
+msgstr "WordPress 업데이트 확인"
 
 #: admin/templates/settings/traffic.php:31
 #: includes/data/botblocker-data-snav.php:238
@@ -3104,7 +3095,7 @@ msgstr "보고서 확인"
 msgid "Checking database tables..."
 msgstr "데이터베이스 테이블 확인 중..."
 
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:208
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:209
 msgid "Checking your browser before accessing the site"
 msgstr "사이트에 접속하기 전에 브라우저를 확인하는 중"
 
@@ -3179,13 +3170,13 @@ msgstr "설정 방법 선택"
 msgid "Choose ZIP"
 msgstr "ZIP 선택"
 
-#: admin/partials/botblocker-admin-display-addons.php:59
+#: admin/partials/botblocker-admin-display-addons.php:61
 msgid "Choose ZIP package"
 msgstr "ZIP 패키지 선택"
 
 #: admin/class-botblocker-admin.php:535
 msgid "CID:"
-msgstr ""
+msgstr "CID:"
 
 #: admin/templates/settings/rate-limiting.php:149
 #: includes/section/settings/botblocker-set-rate-limiting.php:169
@@ -3213,7 +3204,7 @@ msgstr "정리 및 간소화"
 
 #: addons/bbcs-cron-jobs/views/settings.php:138
 msgid "Cleanup Expired Recovery Keys"
-msgstr ""
+msgstr "만료된 복구 키 정리"
 
 #: includes/cron/class-botblocker-cron.php:99
 msgid "Cleanup Hot Bans"
@@ -3221,15 +3212,15 @@ msgstr "핫 밴 정리"
 
 #: addons/bbcs-cron-jobs/views/settings.php:140
 msgid "Cleanup Old Comment Meta"
-msgstr ""
+msgstr "오래된 댓글 메타 정리"
 
 #: addons/bbcs-cron-jobs/views/settings.php:135
 msgid "Cleanup Old Export Files"
-msgstr ""
+msgstr "오래된 내보내기 파일 정리"
 
 #: addons/bbcs-cron-jobs/views/settings.php:139
 msgid "Cleanup Temp Directories"
-msgstr ""
+msgstr "임시 디렉터리 정리"
 
 #: admin/templates/tools/modals/object-cache.php:24
 #: admin/templates/tools/modals/transient-clear.php:24
@@ -3579,7 +3570,7 @@ msgstr "설정용 코드"
 msgid "Codes for config:"
 msgstr "설정용 코드:"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:185
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:193
 msgid "Collapse all"
 msgstr "모두 접기"
 
@@ -3699,7 +3690,7 @@ msgstr "Free vs PRO 비교"
 msgid "Compare plan features below. PRO unlocks full per-visit verification, advanced blocking rules, performance add-ons, and priority support."
 msgstr "아래 플랜 기능을 비교하세요. PRO는 전체 방문별 검증, 고급 차단 규칙, 성능 애드온 및 우선 지원을 제공합니다."
 
-#: admin/partials/botblocker-admin-display-addons.php:80
+#: admin/partials/botblocker-admin-display-addons.php:83
 #: admin/templates/addons/locked-notice.php:31
 #: admin/templates/setup-guide/pro-body.php:38
 #: includes/section/cloud/botblocker-cloud-status.php:61
@@ -3879,7 +3870,7 @@ msgid "Connect"
 msgstr "연결"
 
 #: includes/components/class-botblocker-component-addons-summary.php:74
-#: includes/inc-botblocker-ui.php:347
+#: includes/inc-botblocker-ui.php:362
 msgid "Connect Cloud API now!"
 msgstr "지금 Cloud API에 연결하세요!"
 
@@ -4102,7 +4093,7 @@ msgstr "쿠키 설정"
 msgid "Cookies"
 msgstr "쿠키"
 
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:106
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:107
 msgid "Cookies are disabled in your browser. Enable cookies to continue."
 msgstr "브라우저에서 쿠키가 비활성화되어 있습니다. 계속하려면 쿠키를 활성화하세요."
 
@@ -4136,7 +4127,7 @@ msgstr "저작권"
 msgid "Core, plugin, and theme security events."
 msgstr "코어, 플러그인 및 테마 보안 이벤트."
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:186
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:194
 msgid "Could not build tree view. Switch to Flat view."
 msgstr "트리 뷰를 빌드할 수 없습니다. 플랫 뷰로 전환하세요."
 
@@ -4254,7 +4245,7 @@ msgstr "크론 작업"
 
 #: addons/bbcs-cron-jobs/inc/class-bbcs-cron-jobs-addons-page.php:23
 msgid "Cron Jobs Manager"
-msgstr ""
+msgstr "Cron 작업 관리자"
 
 #: admin/templates/settings/cron.php:100
 msgid "Cron Settings"
@@ -4267,10 +4258,6 @@ msgstr "크론 작업 - 스케줄러, 작업, 자동화"
 #: addons/bbcs-security-headers/inc/class-bbcs-security-headers-addons-page.php:43
 msgid "CSP Configuration"
 msgstr "CSP 구성"
-
-#: admin/templates/about/body.php:151
-msgid "CSS Framework:"
-msgstr "CSS 프레임워크:"
 
 #: includes/data/botblocker-data-snav.php:378
 msgid "cURL Command"
@@ -4557,11 +4544,11 @@ msgstr "DB 행"
 #: admin/templates/shared/system-status-lines.php:10
 #: includes/viewmodels/class-about-viewmodel.php:64
 msgid "DB: v"
-msgstr ""
+msgstr "DB: v"
 
-#: admin/partials/botblocker-admin-display-addons.php:233
-#: admin/templates/addons/marketplace-panel.php:208
-#: admin/templates/addons/marketplace-panel.php:94
+#: admin/partials/botblocker-admin-display-addons.php:236
+#: admin/templates/addons/marketplace-panel.php:211
+#: admin/templates/addons/marketplace-panel.php:97
 msgid "Deactivate"
 msgstr "비활성화"
 
@@ -4611,9 +4598,9 @@ msgstr "데이터를 구성하고 동일한 Redis 인스턴스를 사용하는 �
 
 #: admin/class-botblocker-admin.php:390
 #: admin/class-botblocker-admin.php:467
-#: admin/partials/botblocker-admin-display-addons.php:258
-#: admin/templates/addons/marketplace-panel.php:141
-#: admin/templates/addons/marketplace-panel.php:239
+#: admin/partials/botblocker-admin-display-addons.php:261
+#: admin/templates/addons/marketplace-panel.php:144
+#: admin/templates/addons/marketplace-panel.php:242
 msgid "Delete"
 msgstr "삭제"
 
@@ -4629,9 +4616,9 @@ msgstr "모든 방문자 기록 및 통계 삭제"
 
 #: addons/bbcs-cron-jobs/views/settings.php:141
 msgid "Delete Expired Transients"
-msgstr ""
+msgstr "만료된 Transients 삭제"
 
-#: admin/partials/botblocker-admin-display-addons.php:257
+#: admin/partials/botblocker-admin-display-addons.php:260
 msgid "Delete this add-on?"
 msgstr "이 추가 기능을 삭제하시겠습니까?"
 
@@ -4705,7 +4692,7 @@ msgstr "기기 API 검증"
 msgid "Device API verification"
 msgstr "기기 API 검증"
 
-#: admin/templates/about/body.php:194
+#: admin/templates/about/body.php:185
 msgid "Device Detection:"
 msgstr "기기 감지:"
 
@@ -4781,10 +4768,10 @@ msgstr "XML-RPC 비활성화"
 #: admin/class-botblocker-admin.php:339
 #: admin/class-botblocker-admin.php:510
 #: admin/class-botblocker-admin.php:841
-#: admin/templates/addons/marketplace-panel.php:186
-#: admin/templates/addons/marketplace-panel.php:209
-#: admin/templates/addons/marketplace-panel.php:66
-#: admin/templates/addons/marketplace-panel.php:95
+#: admin/templates/addons/marketplace-panel.php:189
+#: admin/templates/addons/marketplace-panel.php:212
+#: admin/templates/addons/marketplace-panel.php:69
+#: admin/templates/addons/marketplace-panel.php:98
 #: admin/templates/dashboard/hero.php:17
 #: admin/templates/rules.php:57
 #: admin/templates/settings/cookie.php:31
@@ -4809,7 +4796,7 @@ msgstr "비활성화됨 (레거시)"
 #: admin/templates/settings/cookie.php:35
 #: includes/section/settings/botblocker-set-cookie.php:183
 msgid "Disabled (Wildcard *)"
-msgstr ""
+msgstr "비활성화됨 (와일드카드 *)"
 
 #: addons/bbcs-hide-admin/inc/class-bbcs-hide-admin-addons-page.php:36
 #: addons/bbcs-hide-admin/views/settings.php:76
@@ -4946,7 +4933,7 @@ msgstr "이 사이트에서 전자상거래 소프트웨어가 감지되었습�
 msgid "e.g. 173.245.48.0/20"
 msgstr "예: 173.245.48.0/20"
 
-#: admin/partials/botblocker-admin-display-addons.php:73
+#: admin/partials/botblocker-admin-display-addons.php:76
 msgid "Each add-on is a turnkey extension: install in one click, configure in minutes, and gain a new layer of protection or speed without writing a line of code."
 msgstr "각 애드온은 턴키 확장입니다: 한 번의 클릭으로 설치하고, 몇 분 안에 구성하여 코드 한 줄 작성하지 않고도 새로운 보호 또는 속도 계층을 얻을 수 있습니다."
 
@@ -5480,8 +5467,8 @@ msgstr "XML-RPC 터널 활성화"
 #: admin/class-botblocker-admin.php:323
 #: admin/class-botblocker-admin.php:509
 #: admin/class-botblocker-admin.php:840
-#: admin/templates/addons/marketplace-panel.php:209
-#: admin/templates/addons/marketplace-panel.php:95
+#: admin/templates/addons/marketplace-panel.php:212
+#: admin/templates/addons/marketplace-panel.php:98
 #: admin/templates/dashboard/hero.php:17
 #: admin/templates/settings/cookie.php:32
 #: includes/section/settings/botblocker-set-cookie.php:167
@@ -5491,7 +5478,7 @@ msgstr "활성화됨"
 #: admin/templates/settings/cookie.php:36
 #: includes/section/settings/botblocker-set-cookie.php:186
 msgid "Enabled (Explicit headers)"
-msgstr ""
+msgstr "활성화됨 (명시적 헤더)"
 
 #: admin/templates/settings/cookie.php:19
 #: includes/section/settings/botblocker-set-cookie.php:103
@@ -5520,7 +5507,7 @@ msgid "English"
 msgstr "영어"
 
 #: includes/components/class-botblocker-component-addons-summary.php:63
-#: includes/inc-botblocker-ui.php:310
+#: includes/inc-botblocker-ui.php:325
 msgid "Enhance speed, security and user experience with official BotBlocker add-ons."
 msgstr "공식 BotBlocker 애드온으로 속도, 보안 및 사용자 경험을 향상시키세요."
 
@@ -5706,7 +5693,7 @@ msgstr "매일"
 msgid "Example:"
 msgstr "예시:"
 
-#: admin/partials/botblocker-admin-display-addons.php:74
+#: admin/partials/botblocker-admin-display-addons.php:77
 msgid "Examples: Security Headers (HSTS, CSP, X-Frame), Hide Admin URL, Speed-up, Early Init, Anti-spam, Telegram alerts and more."
 msgstr "예시: 보안 헤더 (HSTS, CSP, X-Frame), 관리자 URL 숨기기, 속도 향상, 조기 초기화, 안티 스팸, 텔레그램 알림 등."
 
@@ -5738,7 +5725,7 @@ msgstr "Exec-only 모드 (PHP/JS/htaccess 전용)"
 msgid "Exit Setup"
 msgstr "설정 종료"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:184
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:192
 #: addons/bbcs-truth-source/inc/views/scan-results.php:66
 msgid "Expand all"
 msgstr "모두 펼치기"
@@ -5935,7 +5922,7 @@ msgstr "기존 애드온 백업 실패."
 msgid "Failed to backup the existing add-on."
 msgstr "기존 애드온 백업 실패."
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:214
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:216
 msgid "Failed to cancel scan."
 msgstr "검사 취소 실패."
 
@@ -6110,7 +6097,7 @@ msgstr "규칙 생성 실패: "
 msgid "Failed to create salt file."
 msgstr "솔트 파일 생성 실패."
 
-#: includes/hook/hook-addon-install.php:119
+#: includes/hook/hook-addon-install.php:122
 msgid "Failed to create temporary add-on directory."
 msgstr "임시 애드온 디렉토리 생성 실패."
 
@@ -6416,11 +6403,11 @@ msgstr "활성화 전송에 실패했습니다. 나중에 다시 시도하세요
 msgid "Failed to send email."
 msgstr "이메일 전송에 실패했습니다."
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:209
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:211
 msgid "Failed to start scan."
 msgstr "스캔 시작에 실패했습니다."
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:210
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:212
 msgid "Failed to start scan. Please try again."
 msgstr "스캔 시작에 실패했습니다. 다시 시도하세요."
 
@@ -6573,14 +6560,26 @@ msgstr "필드 '%s'은(는) 필수입니다."
 msgid "File"
 msgstr "파일"
 
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:85
+msgid "File added to ignore list."
+msgstr "파일이 무시 목록에 추가되었습니다."
+
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:42
+msgid "File integrity scan started."
+msgstr "파일 무결성 검사가 시작되었습니다."
+
 #: admin/class-botblocker-admin.php:664
 #: includes/class-botblocker-toastify.php:257
 msgid "File modifications are disabled for this WordPress installation."
 msgstr "이 WordPress 설치에서는 파일 수정이 비활성화되어 있습니다."
 
-#: includes/hook/hook-addon-install.php:101
+#: includes/hook/hook-addon-install.php:104
 msgid "File modifications are disabled."
 msgstr "파일 수정이 비활성화되어 있습니다."
+
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:103
+msgid "File removed from ignore list."
+msgstr "파일이 무시 목록에서 제거되었습니다."
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:490
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:554
@@ -6596,7 +6595,7 @@ msgstr "이보다 큰 파일은 건너뜁니다."
 msgid "Filesystem API is not available."
 msgstr "파일시스템 API를 사용할 수 없습니다."
 
-#: admin/templates/addons/addons-content.php:29
+#: admin/templates/addons/addons-content.php:31
 msgid "Find addon…"
 msgstr "추가 기능 찾기…"
 
@@ -6731,10 +6730,10 @@ msgstr "중요 보안 알림 및 특별 할인을 위해."
 msgid "For payment issues, see our"
 msgstr "결제 문제는 다음을 참조하세요:"
 
-#: includes/hook/class-botblocker-addon-hooks.php:213
-#: includes/hook/class-botblocker-addon-hooks.php:286
-#: includes/hook/class-botblocker-addon-hooks.php:351
-#: includes/hook/class-botblocker-addon-hooks.php:404
+#: includes/hook/class-botblocker-addon-hooks.php:222
+#: includes/hook/class-botblocker-addon-hooks.php:296
+#: includes/hook/class-botblocker-addon-hooks.php:362
+#: includes/hook/class-botblocker-addon-hooks.php:413
 msgid "Forbidden."
 msgstr "금지됨."
 
@@ -6770,7 +6769,7 @@ msgstr "무료 vs BotBlocker PRO"
 msgid "Free vs PRO"
 msgstr "무료 vs PRO"
 
-#: admin/templates/about/body.php:181
+#: admin/templates/about/body.php:172
 msgid "from"
 msgstr "에서"
 
@@ -6867,7 +6866,7 @@ msgstr "BotBlocker 완전 비활성화"
 msgid "GD library is not enabled on this server. Image Captcha (mode 2) and Color Buttons (mode 1) will not work and will fall back to another mode."
 msgstr "이 서버에서 GD 라이브러리가 활성화되지 않았습니다. 이미지 Captcha(모드 2)와 컬러 버튼(모드 1)이 작동하지 않으며 다른 모드로 대체됩니다."
 
-#: includes/hook/class-botblocker-settings-hooks.php:339
+#: includes/hook/class-botblocker-settings-hooks.php:340
 msgid "GD library not available. Captcha mode was adjusted to a compatible mode."
 msgstr "GD 라이브러리를 사용할 수 없습니다. Captcha 모드가 호환되는 모드로 조정되었습니다."
 
@@ -6903,15 +6902,9 @@ msgstr "일반 설정"
 msgid "Generated by BotBlocker Security"
 msgstr "BotBlocker Security에 의해 생성됨"
 
-#: admin/partials/botblocker-admin-display-rules.php:73
-#: admin/templates/rules/body.php:22
-#: includes/viewmodels/class-rules-viewmodel.php:119
-msgid "GEO"
-msgstr ""
-
 #: admin/templates/rules.php:41
 msgid "GEO / ASN:"
-msgstr ""
+msgstr "GEO / ASN:"
 
 #: admin/templates/reports/dashboard.php:54
 msgid "Geo Data"
@@ -6932,7 +6925,7 @@ msgstr "Geo IP / 언어 불일치 필터링"
 msgid "GeoIP Language mismatch"
 msgstr "GeoIP 언어 불일치"
 
-#: admin/templates/about/body.php:185
+#: admin/templates/about/body.php:176
 msgid "Geolocation Database:"
 msgstr "지리적 위치 데이터베이스:"
 
@@ -6940,10 +6933,10 @@ msgstr "지리적 위치 데이터베이스:"
 msgid "Get API key from cloud - token, license, activate"
 msgstr "클라우드에서 API 키 가져오기 - 토큰, 라이선스, 활성화"
 
-#: admin/partials/botblocker-admin-display-addons.php:79
+#: admin/partials/botblocker-admin-display-addons.php:82
 #: admin/partials/botblocker-section-right-sidebar.php:201
 #: admin/templates/addons/locked-notice.php:28
-#: admin/templates/addons/marketplace-panel.php:110
+#: admin/templates/addons/marketplace-panel.php:113
 #: admin/templates/shared/sidebar/pro-features.php:40
 msgid "Get BotBlocker PRO"
 msgstr "BotBlocker PRO 받기"
@@ -6972,12 +6965,12 @@ msgstr "이메일로 보안 업데이트 및 혜택 받기"
 #: admin/partials/botblocker-section-header.php:205
 #: admin/templates/shared/header/user-menu.php:45
 msgid "GLOBUS.studio"
-msgstr ""
+msgstr "GLOBUS.studio"
 
 #: includes/section/cloud/botblocker-cloud-about.php:16
 #: includes/section/integration/botblocker-int-botblocker.php:14
 msgid "GLOBUS.studio / BotBlocker API"
-msgstr ""
+msgstr "GLOBUS.studio / BotBlocker API"
 
 #: admin/templates/settings/ui.php:36
 #: includes/section/settings/botblocker-set-ui.php:29
@@ -7024,21 +7017,21 @@ msgstr "웹사이트로 이동"
 #: includes/modal/modal-botblocker-rule-add.php:40
 #: includes/modal/modal-botblocker-rule-edit.php:36
 msgid "Google Analytics ID"
-msgstr ""
+msgstr "Google Analytics ID"
 
 #: admin/templates/integrations/2fa.php:153
 #: admin/templates/integrations/2fa.php:20
 #: includes/section/integration/botblocker-int-2fa.php:201
 #: includes/section/integration/botblocker-int-2fa.php:282
 msgid "Google Authenticator (App Store)"
-msgstr ""
+msgstr "Google Authenticator (App Store)"
 
 #: admin/templates/integrations/2fa.php:156
 #: admin/templates/integrations/2fa.php:21
 #: includes/section/integration/botblocker-int-2fa.php:209
 #: includes/section/integration/botblocker-int-2fa.php:290
 msgid "Google Authenticator (Google Play)"
-msgstr ""
+msgstr "Google Authenticator (Google Play)"
 
 #: admin/templates/integrations/2fa.php:19
 msgid "Google Authenticator Setup Guide"
@@ -7050,11 +7043,11 @@ msgstr "Google 도메인이 CSP에 자동 추가되었습니다."
 
 #: includes/section/integration/botblocker-int-recaptcha2.php:14
 msgid "Google reCaptcha 2"
-msgstr ""
+msgstr "Google reCaptcha 2"
 
 #: includes/section/integration/botblocker-int-recaptcha3.php:18
 msgid "Google reCaptcha 3"
-msgstr ""
+msgstr "Google reCaptcha 3"
 
 #: admin/templates/integrations/recaptcha-v2.php:15
 #: includes/section/integration/botblocker-int-recaptcha2.php:16
@@ -7282,8 +7275,8 @@ msgstr "홈페이지 접근"
 
 #: addons/bbcs-cron-jobs/views/settings.php:119
 #: addons/bbcs-cron-jobs/views/settings.php:67
-#: admin/templates/settings/cron.php:174
-#: admin/templates/settings/cron.php:185
+#: admin/templates/settings/cron.php:182
+#: admin/templates/settings/cron.php:194
 msgid "Hook"
 msgstr "훅"
 
@@ -7419,12 +7412,12 @@ msgstr "시간"
 
 #: addons/bbcs-hide-admin/views/settings.php:30
 msgid "HTTP 404"
-msgstr ""
+msgstr "HTTP 404"
 
 #: includes/modal/modal-botblocker-rule-add.php:30
 #: includes/modal/modal-botblocker-rule-edit.php:29
 msgid "HTTP Accept"
-msgstr ""
+msgstr "HTTP Accept"
 
 #: admin/templates/settings/error.php:26
 #: includes/section/settings/botblocker-set-error.php:29
@@ -7480,7 +7473,7 @@ msgstr "HTTP/1.0 사용자"
 
 #: addons/bbcs-cron-jobs/views/settings.php:137
 msgid "HTTPS Detection"
-msgstr ""
+msgstr "HTTPS 탐지"
 
 #: includes/data/botblocker-data-palette.php:122
 #: includes/data/botblocker-data-palette.php:123
@@ -7508,7 +7501,7 @@ msgstr "HTTPS 설정"
 msgid "I'm not a robot"
 msgstr "저는 로봇이 아닙니다"
 
-#: admin/templates/about/body.php:181
+#: admin/templates/about/body.php:172
 msgid "Icons designed by"
 msgstr "아이콘 디자인:"
 
@@ -7531,7 +7524,7 @@ msgstr "아이콘:"
 #: admin/templates/rules/body.php:78
 #: admin/templates/rules/body.php:94
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #: includes/ajax/class-botblocker-ajax-asn.php:387
 #: includes/ajax/class-botblocker-ajax-white-bots.php:301
@@ -7584,7 +7577,7 @@ msgstr "아이프레임"
 msgid "Iframe protection (clickjacking)"
 msgstr "아이프레임 보호 (클릭재킹)"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:182
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:190
 #: addons/bbcs-truth-source/inc/class-bbcs-ts-settings-view.php:347
 msgid "Ignore"
 msgstr "무시"
@@ -7601,7 +7594,7 @@ msgstr "기본 제공 WordPress 플러그인/테마 무시 (Akismet, Hello Dolly
 msgid "Ignore cached truth source - force fresh download"
 msgstr "캐시된 진실 소스 무시 - 새로 다운로드 강제"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:183
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:191
 msgid "Ignore folder"
 msgstr "폴더 무시"
 
@@ -7675,7 +7668,7 @@ msgstr "이미지 전송 모드:"
 msgid "Image Recognition"
 msgstr "이미지 인식"
 
-#: admin/templates/about/body.php:169
+#: admin/templates/about/body.php:160
 msgid "Images and Icons:"
 msgstr "이미지 및 아이콘:"
 
@@ -7862,14 +7855,14 @@ msgstr "시크릿 모드"
 msgid "Incoming request"
 msgstr "들어오는 요청"
 
-#: admin/partials/botblocker-admin-display-addons.php:135
-#: admin/partials/botblocker-admin-display-addons.php:208
+#: admin/partials/botblocker-admin-display-addons.php:138
 #: admin/partials/botblocker-admin-display-addons.php:211
-#: admin/templates/addons/marketplace-panel.php:120
-#: admin/templates/addons/marketplace-panel.php:192
-#: admin/templates/addons/marketplace-panel.php:218
-#: admin/templates/addons/marketplace-panel.php:71
-#: admin/templates/addons/marketplace-panel.php:77
+#: admin/partials/botblocker-admin-display-addons.php:214
+#: admin/templates/addons/marketplace-panel.php:123
+#: admin/templates/addons/marketplace-panel.php:195
+#: admin/templates/addons/marketplace-panel.php:221
+#: admin/templates/addons/marketplace-panel.php:74
+#: admin/templates/addons/marketplace-panel.php:80
 msgid "Incompatible"
 msgstr "호환되지 않음"
 
@@ -7920,17 +7913,17 @@ msgstr "인라인 Base64 (권장)"
 msgid "Inline: embed images in page (recommended). Separate: load via AJAX (legacy)."
 msgstr "인라인: 페이지에 이미지 포함 (권장). 별도: AJAX로 로드 (레거시)."
 
-#: admin/partials/botblocker-admin-display-addons.php:144
-#: admin/templates/addons/marketplace-panel.php:107
+#: admin/partials/botblocker-admin-display-addons.php:147
+#: admin/templates/addons/marketplace-panel.php:110
 msgid "Install"
 msgstr "설치"
 
-#: admin/partials/botblocker-admin-display-addons.php:148
-#: admin/partials/botblocker-admin-display-addons.php:150
+#: admin/partials/botblocker-admin-display-addons.php:151
+#: admin/partials/botblocker-admin-display-addons.php:153
 msgid "Install (PRO)"
 msgstr "설치 (PRO)"
 
-#: admin/partials/botblocker-admin-display-addons.php:49
+#: admin/partials/botblocker-admin-display-addons.php:51
 msgid "Install add-on from ZIP"
 msgstr "ZIP에서 추가 기능 설치"
 
@@ -7938,7 +7931,7 @@ msgstr "ZIP에서 추가 기능 설치"
 msgid "Install addon from ZIP"
 msgstr "ZIP에서 애드온 설치"
 
-#: admin/partials/botblocker-admin-display-addons.php:65
+#: admin/partials/botblocker-admin-display-addons.php:67
 msgid "Install Package"
 msgstr "패키지 설치"
 
@@ -7946,8 +7939,8 @@ msgstr "패키지 설치"
 msgid "Install package"
 msgstr "패키지 설치"
 
-#: admin/partials/botblocker-admin-display-addons.php:148
-#: admin/partials/botblocker-admin-display-addons.php:150
+#: admin/partials/botblocker-admin-display-addons.php:151
+#: admin/partials/botblocker-admin-display-addons.php:153
 msgid "Install requires BotBlocker PRO"
 msgstr "설치하려면 BotBlocker PRO가 필요합니다"
 
@@ -7956,15 +7949,15 @@ msgstr "설치하려면 BotBlocker PRO가 필요합니다"
 msgid "Installation arguments are missing."
 msgstr "설치 인수가 누락되었습니다."
 
-#: admin/partials/botblocker-admin-display-addons.php:164
-#: admin/partials/botblocker-admin-display-addons.php:166
-#: admin/partials/botblocker-admin-display-addons.php:88
+#: admin/partials/botblocker-admin-display-addons.php:167
+#: admin/partials/botblocker-admin-display-addons.php:169
+#: admin/partials/botblocker-admin-display-addons.php:91
 #: admin/templates/setup-guide/status.php:192
 #: admin/templates/setup-guide/status.php:219
 msgid "Installed"
 msgstr "설치됨"
 
-#: admin/partials/botblocker-admin-display-addons.php:119
+#: admin/partials/botblocker-admin-display-addons.php:122
 #, php-format
 msgid "Installed %s"
 msgstr "%s 설치됨"
@@ -7981,18 +7974,18 @@ msgstr "즉시 IP 차단"
 msgid "Instant response"
 msgstr "즉시 응답"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:103
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:188
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:104
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:190
 #: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:45
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:72
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:83
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:73
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:84
 #: addons/bbcs-malware/inc/class-bbcs-malware-background.php:656
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:108
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:116
 #: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:30
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:53
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:55
 #: addons/bbcs-truth-source/inc/class-bbcs-ts-background.php:398
-#: includes/hook/class-botblocker-addon-hooks.php:122
-#: includes/hook/class-botblocker-addon-hooks.php:91
+#: includes/hook/class-botblocker-addon-hooks.php:102
+#: includes/hook/class-botblocker-addon-hooks.php:134
 #: includes/hook/class-botblocker-addon-settings-hooks.php:12
 #: includes/hook/class-botblocker-settings-hooks.php:14
 #: includes/hook/class-botblocker-settings-hooks.php:143
@@ -8162,12 +8155,6 @@ msgstr "잘못된 인증 코드입니다."
 #: includes/utilites/2FA/inc-botblocker-2fa.php:381
 msgid "Invalid verification code. Please try again."
 msgstr "잘못된 인증 코드입니다. 다시 시도해 주세요."
-
-#: admin/partials/botblocker-admin-display-reports.php:12
-#: admin/templates/reports/table-header.php:13
-#: includes/modal/modal-botblocker-hits-add-rule.php:23
-msgid "IP"
-msgstr "IP"
 
 #: admin/partials/botblocker-admin-dashboard-widgets.php:193
 msgid "IP / Subnet"
@@ -8347,11 +8334,11 @@ msgstr "JA4 헤더 이름"
 msgid "JA4 Spec"
 msgstr "JA4 사양"
 
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:107
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:108
 msgid "JavaScript is disabled in your browser. Enable JavaScript to continue."
 msgstr "브라우저에서 JavaScript가 비활성화되어 있습니다. 계속하려면 JavaScript를 활성화하세요."
 
-#: admin/templates/about/body.php:160
+#: admin/templates/about/body.php:151
 msgid "JavaScript Library:"
 msgstr "JavaScript 라이브러리:"
 
@@ -8407,8 +8394,8 @@ msgstr "알려진 비핵심 파일 (예상됨)"
 
 #: addons/bbcs-cron-jobs/views/settings.php:127
 #: addons/bbcs-cron-jobs/views/settings.php:69
-#: admin/templates/settings/cron.php:176
-#: admin/templates/settings/cron.php:193
+#: admin/templates/settings/cron.php:184
+#: admin/templates/settings/cron.php:202
 msgid "Label"
 msgstr "라벨"
 
@@ -8485,19 +8472,18 @@ msgstr "라이선스 키"
 msgid "License, cloud API, premium features"
 msgstr "라이선스, 클라우드 API, 프리미엄 기능"
 
-#: admin/templates/about/body.php:174
+#: admin/templates/about/body.php:165
 msgid "Licensed under"
 msgstr "~ 하에 라이선스됨"
 
-#: admin/templates/about/body.php:190
+#: admin/templates/about/body.php:181
 msgid "Licensed under BSD License, available at"
 msgstr "BSD 라이선스 하에 라이선스됨, 다음에서 이용 가능:"
 
 #: admin/templates/about/body.php:147
 #: admin/templates/about/body.php:156
-#: admin/templates/about/body.php:165
+#: admin/templates/about/body.php:190
 #: admin/templates/about/body.php:199
-#: admin/templates/about/body.php:208
 msgid "Licensed under the"
 msgstr "~ 하에 라이선스됨"
 
@@ -8545,13 +8531,6 @@ msgstr "검색에서 제외할 경로 세그먼트 목록."
 #: includes/section/report/botblocker-report-dashboard.php:42
 msgid "Live and historical traffic (IP, country, device, behavior markers)."
 msgstr "실시간 및 과거 트래픽 (IP, 국가, 기기, 행동 마커)."
-
-#: admin/partials/botblocker-admin-display-rules.php:77
-#: admin/templates/reports/dashboard.php:31
-#: admin/templates/rules/body.php:21
-#: includes/viewmodels/class-rules-viewmodel.php:111
-msgid "LLM"
-msgstr "LLM"
 
 #: includes/ajax/class-botblocker-ajax-llm.php:371
 msgid "LLM file generated successfully."
@@ -8848,13 +8827,17 @@ msgstr "데이터베이스 내 악성 IP"
 msgid "Malware"
 msgstr "멀웨어"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:174
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:176
 msgid "Malware Scan"
 msgstr "멀웨어 검사"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:154
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:156
 msgid "Malware Scan Batch"
 msgstr "멀웨어 검사 배치"
+
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:49
+msgid "Malware scan started."
+msgstr "악성 코드 검사가 시작되었습니다."
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-addons-page.php:36
 msgid "Malware Scanner"
@@ -8864,7 +8847,7 @@ msgstr "멀웨어 스캐너"
 msgid "Malware Scanner: High-Confidence Findings"
 msgstr "멀웨어 스캐너: 높은 신뢰도 발견"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:153
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:155
 msgid "Malware Scheduled Scan"
 msgstr "멀웨어 예약 검사"
 
@@ -8911,8 +8894,8 @@ msgid "Maps traffic speed percentage to reputation tier 1–5 (tier 6 reserved f
 msgstr "트래픽 속도 백분율을 평판 등급 1~5로 매핑합니다(등급 6은 차단된 IP용). 형식: 백분율:등급 (한 줄에 하나)."
 
 #: admin/class-botblocker-admin.php:673
-#: admin/partials/botblocker-admin-display-addons.php:87
-#: admin/templates/addons/addons-content.php:31
+#: admin/partials/botblocker-admin-display-addons.php:90
+#: admin/templates/addons/addons-content.php:33
 msgid "Marketplace"
 msgstr "마켓플레이스"
 
@@ -9042,17 +9025,6 @@ msgstr "최대 보안 강화"
 #: includes/shortcode/botblocker-shortcode-health-full.php:46
 msgid "may reduce protection"
 msgstr "보호 수준이 낮아질 수 있음"
-
-#: admin/partials/botblocker-admin-display-integrations.php:54
-#: admin/partials/botblocker-section-right-sidebar.php:134
-#: admin/templates/integrations/card.php:16
-#: admin/templates/shared/sidebar/status-card.php:83
-#: admin/templates/shared/system-toggles.php:45
-#: includes/data/botblocker-data-snav.php:597
-#: includes/section/integration/botblocker-int-memcached.php:14
-#: includes/viewmodels/class-integrations-viewmodel.php:141
-msgid "Memcached"
-msgstr "Memcached"
 
 #: admin/templates/integrations/memcached.php:31
 #: includes/data/botblocker-data-snav.php:602
@@ -9337,8 +9309,8 @@ msgstr "뉴스"
 
 #: addons/bbcs-cron-jobs/views/settings.php:156
 #: addons/bbcs-cron-jobs/views/settings.php:70
-#: admin/templates/settings/cron.php:177
-#: admin/templates/settings/cron.php:194
+#: admin/templates/settings/cron.php:185
+#: admin/templates/settings/cron.php:203
 msgid "Next Run"
 msgstr "다음 실행"
 
@@ -9426,7 +9398,7 @@ msgid "No file content provided."
 msgstr "파일 내용이 제공되지 않았습니다."
 
 #: admin/class-botblocker-admin.php:672
-#: admin/partials/botblocker-admin-display-addons.php:60
+#: admin/partials/botblocker-admin-display-addons.php:62
 #: admin/templates/addons/upload-section.php:21
 msgid "No file selected"
 msgstr "선택된 파일 없음"
@@ -9470,6 +9442,9 @@ msgstr "사용 가능한 뉴스 항목 없음"
 #: admin/class-botblocker-setup-wizard-ajax.php:521
 #: admin/class-botblocker-setup-wizard-ajax.php:56
 #: includes/cron/class-botblocker-cron.php:159
+#: includes/cron/class-botblocker-cron.php:284
+#: includes/cron/class-botblocker-cron.php:320
+#: includes/cron/class-botblocker-cron.php:357
 msgid "No permission."
 msgstr "권한 없음."
 
@@ -9486,7 +9461,7 @@ msgstr "아직 검사 결과 없음."
 msgid "No scheduled cron jobs found."
 msgstr "예약된 크론 작업이 없습니다."
 
-#: admin/templates/settings/cron.php:220
+#: admin/templates/settings/cron.php:234
 msgid "No scheduled tasks at this time."
 msgstr "현재 예약된 작업 없음."
 
@@ -9498,7 +9473,11 @@ msgstr "특별한 구성 필요 없음"
 msgid "No special setup required"
 msgstr "특별한 설정 불필요"
 
-#: admin/partials/botblocker-admin-display-addons.php:224
+#: includes/cron/class-botblocker-cron.php:391
+msgid "No stale tasks found."
+msgstr "만료된 작업이 없습니다."
+
+#: admin/partials/botblocker-admin-display-addons.php:227
 msgid "No Update Source"
 msgstr "업데이트 소스 없음"
 
@@ -9506,10 +9485,10 @@ msgstr "업데이트 소스 없음"
 msgid "No visible checks. Decisions based on IP databases and threat intelligence."
 msgstr "보이는 확인 없음. IP 데이터베이스 및 위협 인텔리전스에 기반한 결정."
 
-#: includes/hook/class-botblocker-addon-hooks.php:217
-#: includes/hook/class-botblocker-addon-hooks.php:290
-#: includes/hook/class-botblocker-addon-hooks.php:355
-#: includes/hook/class-botblocker-addon-hooks.php:408
+#: includes/hook/class-botblocker-addon-hooks.php:226
+#: includes/hook/class-botblocker-addon-hooks.php:300
+#: includes/hook/class-botblocker-addon-hooks.php:366
+#: includes/hook/class-botblocker-addon-hooks.php:417
 msgid "Nonce verification failed."
 msgstr "Nonce 검증 실패."
 
@@ -9560,7 +9539,7 @@ msgstr "필요하지 않음"
 msgid "Not saved!"
 msgstr "저장되지 않았습니다!"
 
-#: admin/templates/addons/addons-content.php:64
+#: admin/templates/addons/addons-content.php:66
 #: admin/templates/integrations.php:31
 #: admin/templates/settings/save-settings.php:10
 #: admin/templates/tools.php:31
@@ -9840,9 +9819,9 @@ msgid "Outsourcing"
 msgstr "아웃소싱"
 
 #: addons/bbcs-cron-jobs/views/settings.php:165
-#: addons/bbcs-cron-jobs/views/settings.php:238
-#: admin/templates/settings/cron.php:211
-#: admin/templates/settings/cron.php:255
+#: addons/bbcs-cron-jobs/views/settings.php:240
+#: admin/templates/settings/cron.php:220
+#: admin/templates/settings/cron.php:270
 msgid "Overdue"
 msgstr "연체"
 
@@ -9966,7 +9945,7 @@ msgctxt "device type label"
 msgid "PC"
 msgstr "PC"
 
-#: admin/templates/settings/cron.php:213
+#: admin/templates/settings/cron.php:222
 msgid "Pending"
 msgstr "보류 중"
 
@@ -10072,7 +10051,7 @@ msgid "Please Confirm"
 msgstr "확인해 주세요"
 
 #: includes/botblocker/traits/class-botblocker-block-page-trait.php:14
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:207
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:208
 #: includes/botblocker/traits/class-botblocker-denied-page-trait.php:14
 #: public/template-botblocker-denied.php:217
 msgid "Please enable JavaScript and reload the page"
@@ -10129,7 +10108,7 @@ msgstr "정책 링크 라벨"
 msgid "Policy URL"
 msgstr "정책 URL"
 
-#: admin/partials/botblocker-admin-display-addons.php:93
+#: admin/partials/botblocker-admin-display-addons.php:96
 msgid "Popular add-ons, new possibilities"
 msgstr "인기 있는 추가 기능, 새로운 가능성"
 
@@ -10138,7 +10117,7 @@ msgstr "인기 있는 추가 기능, 새로운 가능성"
 msgid "Position"
 msgstr "위치"
 
-#: admin/partials/botblocker-admin-display-addons.php:72
+#: admin/partials/botblocker-admin-display-addons.php:75
 msgid "Premium add-ons - included with BotBlocker PRO"
 msgstr "프리미엄 애드온 - BotBlocker PRO에 포함됨"
 
@@ -10272,7 +10251,7 @@ msgstr "개인정보 보호정책"
 
 #: admin/class-botblocker-admin.php:1271
 #: admin/class-botblocker-admin.php:1272
-#: admin/templates/addons/marketplace-panel.php:68
+#: admin/templates/addons/marketplace-panel.php:71
 #: admin/templates/cloud-api/status.php:100
 #: admin/templates/integrations/redis.php:33
 #: admin/templates/settings/status.php:40
@@ -10383,8 +10362,8 @@ msgstr "프로필이 적용되었습니다."
 
 #: addons/bbcs-cron-jobs/views/settings.php:159
 #: addons/bbcs-cron-jobs/views/settings.php:71
-#: admin/templates/settings/cron.php:178
-#: admin/templates/settings/cron.php:201
+#: admin/templates/settings/cron.php:186
+#: admin/templates/settings/cron.php:210
 msgid "Progress"
 msgstr "진행률"
 
@@ -10537,18 +10516,6 @@ msgstr "프록시가 성공적으로 업데이트되었습니다."
 #: includes/section/setup/botblocker-setup-pro.php:33
 msgid "Proxy, VPN, and Tor detection"
 msgstr "프록시, VPN, Tor 탐지"
-
-#: admin/partials/botblocker-admin-display-reports.php:12
-#: admin/templates/reports/table-header.php:13
-#: admin/templates/settings/bot-detection.php:27
-#: admin/templates/settings/general.php:27
-#: includes/modal/modal-botblocker-hits-add-rule.php:25
-#: includes/modal/modal-botblocker-rule-add.php:26
-#: includes/modal/modal-botblocker-rule-edit.php:25
-#: includes/section/settings/botblocker-set-general.php:29
-#: includes/section/settings/botblocker-set-simple.php:31
-msgid "PTR"
-msgstr "PTR"
 
 #: admin/templates/settings/bot-detection.php:56
 #: includes/data/botblocker-data-snav.php:81
@@ -10996,17 +10963,6 @@ msgstr "리디렉션"
 msgid "Redirect URL"
 msgstr "리디렉션 URL"
 
-#: admin/partials/botblocker-admin-display-integrations.php:57
-#: admin/partials/botblocker-section-right-sidebar.php:111
-#: admin/templates/integrations/card.php:17
-#: admin/templates/shared/sidebar/status-card.php:74
-#: admin/templates/shared/system-toggles.php:44
-#: includes/data/botblocker-data-snav.php:613
-#: includes/section/integration/botblocker-int-redis.php:14
-#: includes/viewmodels/class-integrations-viewmodel.php:143
-msgid "Redis"
-msgstr "Redis"
-
 #: includes/data/botblocker-data-snav.php:624
 msgid "Redis Authentication Password"
 msgstr "Redis 인증 비밀번호"
@@ -11373,7 +11329,7 @@ msgstr "예약 작업 및 백업에 필요"
 msgid "Required:"
 msgstr "필수:"
 
-#: admin/partials/botblocker-admin-display-addons.php:199
+#: admin/partials/botblocker-admin-display-addons.php:202
 msgid "Requires a newer BotBlocker version"
 msgstr "새로운 BotBlocker 버전 필요"
 
@@ -11387,8 +11343,8 @@ msgstr "HTTP 헤더를 통해 핑거프린트를 전달하려면 웹 서버 모�
 msgid "Requires active BotBlocker PRO"
 msgstr "활성 BotBlocker PRO 필요"
 
-#: admin/partials/botblocker-admin-display-addons.php:123
-#: admin/partials/botblocker-admin-display-addons.php:199
+#: admin/partials/botblocker-admin-display-addons.php:126
+#: admin/partials/botblocker-admin-display-addons.php:202
 #, php-format
 msgid "Requires BotBlocker >= %s"
 msgstr "BotBlocker >= %s 필요"
@@ -11398,7 +11354,7 @@ msgstr "BotBlocker >= %s 필요"
 msgid "Requires BotBlocker PRO and the Early Init add-on."
 msgstr "BotBlocker PRO 및 Early Init 애드온 필요."
 
-#: admin/templates/addons/marketplace-panel.php:110
+#: admin/templates/addons/marketplace-panel.php:113
 #: admin/templates/setup-guide/one-click-modal.php:81
 #: includes/modal/modal-botblocker-setup-wizard.php:80
 msgid "Requires PRO"
@@ -11517,7 +11473,7 @@ msgstr "자동화된 위협을 줄이기 위해 프록시 서버, 데이터 센�
 msgid "Retrieves your BotBlocker PRO key from the cloud."
 msgstr "클라우드에서 BotBlocker PRO 키를 가져옵니다."
 
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:123
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:124
 msgid "Retrying..."
 msgstr "다시 시도하는 중..."
 
@@ -11534,10 +11490,6 @@ msgstr "보안 점수 검토"
 #: admin/class-botblocker-admin.php:608
 msgid "Rewrite rules successfully flushed!"
 msgstr "재작성 규칙이 성공적으로 플러시되었습니다!"
-
-#: admin/templates/reports/dashboard.php:31
-msgid "RKN"
-msgstr "RKN"
 
 #: admin/templates/integrations/2fa.php:124
 #: includes/data/botblocker-data-snav.php:653
@@ -11727,10 +11679,18 @@ msgstr "규칙 파일이 성공적으로 생성되었습니다."
 msgid "Rules will be regenerated automatically."
 msgstr "규칙이 자동으로 다시 생성됩니다."
 
+#: admin/templates/settings/cron.php:170
+msgid "Run all recurring tasks immediately"
+msgstr "모든 반복 작업을 즉시 실행"
+
 #: includes/data/botblocker-data-palette.php:81
 #: includes/data/botblocker-data-palette.php:82
 msgid "Run malware scan - virus, infected files"
 msgstr "멀웨어 검사 실행 - 바이러스, 감염된 파일"
+
+#: admin/templates/settings/cron.php:173
+msgid "Run only overdue tasks"
+msgstr "만료된 작업만 실행"
 
 #: includes/data/botblocker-data-palette.php:65
 msgid "Run setup wizard - guide, onboarding, first steps"
@@ -11744,6 +11704,10 @@ msgstr "설정 마법사 다시 실행"
 #: includes/section/dashboard/botblocker-dash-health.php:55
 msgid "Run the wizard to configure protection"
 msgstr "보호 구성을 위한 마법사 실행"
+
+#: admin/templates/settings/cron.php:226
+msgid "Run this task now"
+msgstr "지금 이 작업 실행"
 
 #: includes/data/botblocker-data-palette.php:105
 #: includes/data/botblocker-data-palette.php:106
@@ -11802,11 +11766,11 @@ msgstr "SameSite 쿠키"
 msgid "SameSite policy controls cross-site cookie behavior to protect against CSRF attacks."
 msgstr "SameSite 정책은 CSRF 공격으로부터 보호하기 위해 교차 사이트 쿠키 동작을 제어합니다."
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:88
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:89
 msgid "Sample file not found."
 msgstr "샘플 파일을 찾을 수 없습니다."
 
-#: admin/templates/addons/addons-content.php:65
+#: admin/templates/addons/addons-content.php:67
 #: admin/templates/integrations.php:32
 #: admin/templates/settings/save-settings.php:13
 #: admin/templates/tools.php:32
@@ -11878,12 +11842,12 @@ msgstr "저장 중..."
 msgid "Scan active and inactive themes for malicious code."
 msgstr "활성 및 비활성 테마에서 악성 코드를 검사합니다."
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:192
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:213
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:194
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:215
 msgid "Scan cancelled."
 msgstr "검사가 취소되었습니다."
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:211
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:213
 msgid "Scan completed. Refreshing results..."
 msgstr "검사가 완료되었습니다. 결과를 새로 고치는 중..."
 
@@ -11931,6 +11895,11 @@ msgstr "게시물, 페이지, 옵션, 사용자 및 크론 훅을 검사"
 msgid "Scan QR Code"
 msgstr "QR 코드 스캔"
 
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:112
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:63
+msgid "Scan results cleared."
+msgstr "검사 결과가 삭제되었습니다."
+
 #: addons/bbcs-malware/inc/class-bbcs-malware-addons-page.php:46
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:117
 #: addons/bbcs-truth-source/inc/class-bbcs-truth-source-addons-page.php:47
@@ -11938,7 +11907,7 @@ msgstr "QR 코드 스캔"
 msgid "Scan Scope"
 msgstr "검사 범위"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:76
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:77
 msgid "Scan started."
 msgstr "검사가 시작되었습니다."
 
@@ -12029,8 +11998,8 @@ msgstr "WordPress 파일과 데이터베이스 내용에서 위험한 실행, �
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:317
 #: addons/bbcs-truth-source/inc/class-bbcs-truth-source-addons-page.php:75
 #: addons/bbcs-truth-source/inc/class-bbcs-ts-settings-view.php:193
-#: admin/templates/settings/cron.php:175
-#: admin/templates/settings/cron.php:186
+#: admin/templates/settings/cron.php:183
+#: admin/templates/settings/cron.php:195
 msgid "Schedule"
 msgstr "일정"
 
@@ -12187,9 +12156,9 @@ msgstr "보안 및 개인정보 보호"
 msgid "Security blog"
 msgstr "보안 블로그"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:103
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:111
 #: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:25
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:48
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:50
 #: includes/ajax/class-botblocker-ajax-backup.php:181
 #: includes/ajax/class-botblocker-ajax-debug.php:192
 #: public/2FA/bbcs-2fa.php:118
@@ -12519,9 +12488,9 @@ msgstr "셋톱박스"
 #: admin/class-botblocker-setup-wizard-renderer.php:34
 #: admin/partials/botblocker-admin-dashboard-widgets.php:127
 #: admin/partials/botblocker-admin-display-settings.php:135
-#: admin/templates/addons/marketplace-panel.php:134
-#: admin/templates/addons/marketplace-panel.php:146
-#: admin/templates/addons/marketplace-panel.php:232
+#: admin/templates/addons/marketplace-panel.php:137
+#: admin/templates/addons/marketplace-panel.php:149
+#: admin/templates/addons/marketplace-panel.php:235
 #: admin/templates/dashboard/quick-links.php:11
 #: admin/templates/setup-guide/status.php:196
 #: admin/templates/setup-wizard/completed.php:52
@@ -12535,7 +12504,7 @@ msgstr "셋톱박스"
 msgid "Settings"
 msgstr "설정"
 
-#: includes/hook/class-botblocker-settings-hooks.php:356
+#: includes/hook/class-botblocker-settings-hooks.php:357
 msgid "Settings saved."
 msgstr "설정이 저장되었습니다."
 
@@ -12802,7 +12771,7 @@ msgstr "건너뜀: "
 msgid "Sliding window size in minutes. RPM = total hits in window / window minutes. Default: 5."
 msgstr "분 단위 슬라이딩 윈도우 크기입니다. RPM = 윈도우 내 총 히트 수 / 윈도우 분. 기본값: 5."
 
-#: admin/templates/about/body.php:215
+#: admin/templates/about/body.php:206
 #: includes/section/about/botblocker-about-status.php:56
 msgid "Software versions"
 msgstr "소프트웨어 버전"
@@ -12914,7 +12883,7 @@ msgstr "마법사 시작"
 msgid "Start Wizard"
 msgstr "마법사 시작"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:208
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:210
 msgid "Starting scan..."
 msgstr "검사 시작 중..."
 
@@ -12933,8 +12902,8 @@ msgstr "통계 표시 모드"
 #: addons/bbcs-cron-jobs/views/settings.php:72
 #: addons/bbcs-early-init/inc/class-bbcs-early-init-addons-page.php:43
 #: admin/partials/botblocker-section-right-sidebar.php:26
-#: admin/templates/settings/cron.php:179
-#: admin/templates/settings/cron.php:207
+#: admin/templates/settings/cron.php:187
+#: admin/templates/settings/cron.php:216
 #: admin/templates/shared/sidebar/rail.php:13
 #: admin/templates/shared/sidebar/status-card.php:18
 msgid "Status"
@@ -13265,6 +13234,12 @@ msgstr "대상 IP/서브넷"
 msgid "Targets: %1$d. Clean: %2$d. Issues: %3$d. Unverifiable: %4$d. Added: %5$d. Modified: %6$d. Missing: %7$d. Expected: %8$d. Ignored: %9$d."
 msgstr "대상: %1$d. 깨끗: %2$d. 문제: %3$d. 확인 불가: %4$d. 추가됨: %5$d. 수정됨: %6$d. 누락: %7$d. 예상: %8$d. 무시됨: %9$d."
 
+#. translators: %s: cron hook name
+#: includes/cron/class-botblocker-cron.php:309
+#, php-format
+msgid "Task %s executed successfully."
+msgstr "작업 %s이(가) 성공적으로 실행되었습니다."
+
 #: admin/templates/settings/cron.php:164
 #: includes/data/botblocker-data-snav.php:390
 msgid "Task List"
@@ -13581,7 +13556,7 @@ msgstr "서드파티"
 msgid "This action cannot be undone."
 msgstr "이 작업은 되돌릴 수 없습니다."
 
-#: admin/partials/botblocker-admin-display-addons.php:257
+#: admin/partials/botblocker-admin-display-addons.php:260
 msgid "This add-on is incompatible with your BotBlocker version. Delete anyway?"
 msgstr "이 애드온은 현재 BotBlocker 버전과 호환되지 않습니다. 그래도 삭제하시겠습니까?"
 
@@ -13730,7 +13705,7 @@ msgstr "데이터베이스 복구 및 최적화를 활성화하려면:"
 msgid "To receive important security news and special offers."
 msgstr "중요한 보안 뉴스와 특별 할인 정보를 받으시려면."
 
-#: admin/templates/about/body.php:203
+#: admin/templates/about/body.php:194
 msgid "Toast Notifications:"
 msgstr "토스트 알림:"
 
@@ -14066,7 +14041,7 @@ msgstr "진실 소스 비교기"
 msgid "Truth Source Settings"
 msgstr "진실 소스 설정"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:147
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:155
 msgid "Truth Source: Background Scan Progress"
 msgstr "진실 소스: 백그라운드 스캔 진행률"
 
@@ -14074,11 +14049,11 @@ msgstr "진실 소스: 백그라운드 스캔 진행률"
 msgid "Truth Source: File Integrity Issues"
 msgstr "진실 소스: 파일 무결성 문제"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:138
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:146
 msgid "Truth Source: Scan Batch"
 msgstr "진실 소스: 스캔 배치"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:137
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:145
 msgid "Truth Source: Scheduled Scan"
 msgstr "진실 소스: 예약된 스캔"
 
@@ -14331,6 +14306,10 @@ msgstr "고유 방문자(IP 기준)"
 msgid "Unknown chart data type."
 msgstr "알 수 없는 차트 데이터 유형."
 
+#: includes/cron/class-botblocker-cron.php:291
+msgid "Unknown cron task."
+msgstr "알 수 없는 cron 작업입니다."
+
 #: admin/class-botblocker-setup-wizard.php:234
 #: admin/class-botblocker-setup-wizard.php:359
 msgid "Unknown error"
@@ -14360,18 +14339,18 @@ msgstr "응답 없는 IP 차단"
 msgid "Until changed"
 msgstr "변경될 때까지"
 
-#: admin/partials/botblocker-admin-display-addons.php:160
-#: admin/partials/botblocker-admin-display-addons.php:221
-#: admin/partials/botblocker-admin-display-addons.php:245
-#: admin/templates/addons/marketplace-panel.php:129
-#: admin/templates/addons/marketplace-panel.php:189
-#: admin/templates/addons/marketplace-panel.php:227
-#: admin/templates/addons/marketplace-panel.php:74
+#: admin/partials/botblocker-admin-display-addons.php:163
+#: admin/partials/botblocker-admin-display-addons.php:224
+#: admin/partials/botblocker-admin-display-addons.php:248
+#: admin/templates/addons/marketplace-panel.php:132
+#: admin/templates/addons/marketplace-panel.php:192
+#: admin/templates/addons/marketplace-panel.php:230
+#: admin/templates/addons/marketplace-panel.php:77
 msgid "Update"
 msgstr "업데이트"
 
 #. translators: %d: number of add-ons with available updates.
-#: admin/partials/botblocker-admin-display-addons.php:36
+#: admin/partials/botblocker-admin-display-addons.php:37
 #: admin/templates/addons.php:23
 #, php-format
 msgid "Update All (%d)"
@@ -14387,19 +14366,19 @@ msgstr "ASN 데이터베이스 업데이트"
 msgid "Update ASN database - geo, network, country data"
 msgstr "ASN 데이터베이스 업데이트 - 지리, 네트워크, 국가 데이터"
 
-#: admin/partials/botblocker-admin-display-addons.php:128
+#: admin/partials/botblocker-admin-display-addons.php:131
 #, php-format
 msgid "Update available, requires BotBlocker >= %s"
 msgstr "업데이트 가능, BotBlocker >= %s 필요"
 
-#: admin/partials/botblocker-admin-display-addons.php:135
-#: admin/partials/botblocker-admin-display-addons.php:208
+#: admin/partials/botblocker-admin-display-addons.php:138
 #: admin/partials/botblocker-admin-display-addons.php:211
+#: admin/partials/botblocker-admin-display-addons.php:214
 #, php-format
 msgid "Update BotBlocker to %s to use this add-on"
 msgstr "이 애드온을 사용하려면 BotBlocker를 %s로 업데이트하세요"
 
-#: admin/partials/botblocker-admin-display-addons.php:164
+#: admin/partials/botblocker-admin-display-addons.php:167
 #, php-format
 msgid "Update requires BotBlocker >= %s"
 msgstr "업데이트에는 BotBlocker >= %s 필요"
@@ -14450,11 +14429,11 @@ msgstr "행동 엔진을 위해 Pro로 업그레이드하세요. 고급 다중 �
 msgid "Upgrade your plan for better protection."
 msgstr "더 나은 보호를 위해 요금제를 업그레이드하세요."
 
-#: admin/partials/botblocker-admin-display-addons.php:50
+#: admin/partials/botblocker-admin-display-addons.php:52
 msgid "Upload a BotBlocker add-on package. It will be installed inactive, then you can review and activate it from the Installed tab."
 msgstr "BotBlocker 애드온 패키지를 업로드하세요. 비활성 상태로 설치되며, 설치된 탭에서 검토하고 활성화할 수 있습니다."
 
-#: admin/partials/botblocker-admin-display-addons.php:26
+#: admin/partials/botblocker-admin-display-addons.php:27
 #: admin/templates/addons.php:22
 msgid "Upload ZIP"
 msgstr "ZIP 업로드"
@@ -14462,11 +14441,6 @@ msgstr "ZIP 업로드"
 #: admin/partials/botblocker-admin-dashboard-widgets.php:176
 msgid "Uploading a new list will add new IPs and skip existing ones. Invalid lines will be skipped automatically."
 msgstr "새 목록을 업로드하면 새 IP가 추가되고 기존 IP는 건너뜁니다. 잘못된 줄은 자동으로 건너뜁니다."
-
-#: includes/modal/modal-botblocker-rule-add.php:29
-#: includes/modal/modal-botblocker-rule-edit.php:28
-msgid "URI"
-msgstr "URI"
 
 #: includes/modal/modal-botblocker-rewrite-rules.php:13
 msgid "URL rewrite rules will be reset:"
@@ -14533,7 +14507,7 @@ msgstr "이 링크를 사용하여 현재 세션에 대한 BotBlocker 검사를 
 msgid "Use WordPress transients. Works on any hosting."
 msgstr "WordPress 트랜션트를 사용합니다. 모든 호스팅에서 작동합니다."
 
-#: admin/templates/about/body.php:181
+#: admin/templates/about/body.php:172
 msgid "used with attribution"
 msgstr "저작자 표시와 함께 사용"
 
@@ -14617,7 +14591,7 @@ msgstr "인증 코드가 필요합니다."
 msgid "Verification failed."
 msgstr "인증에 실패했습니다."
 
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:124
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:125
 msgid "Verification failed. Please complete the challenge below."
 msgstr "인증에 실패했습니다. 아래 챌린지를 완료해 주세요."
 
@@ -14687,7 +14661,7 @@ msgstr "%s 무결성 확인 중"
 msgid "Verifying file integrity..."
 msgstr "파일 무결성 확인 중..."
 
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:122
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:123
 #: public/captcha/render-hold-button-trait.php:31
 msgid "Verifying..."
 msgstr "확인 중..."
@@ -14697,8 +14671,8 @@ msgstr "확인 중..."
 msgid "Version"
 msgstr "버전"
 
-#: admin/partials/botblocker-admin-display-addons.php:114
-#: admin/partials/botblocker-admin-display-addons.php:195
+#: admin/partials/botblocker-admin-display-addons.php:117
+#: admin/partials/botblocker-admin-display-addons.php:198
 #, php-format
 msgid "Version %s"
 msgstr "버전 %s"
@@ -15111,7 +15085,7 @@ msgstr "WordPress 코어 튜닝"
 msgid "WordPress development"
 msgstr "WordPress 개발"
 
-#: includes/hook/hook-addon-install.php:114
+#: includes/hook/hook-addon-install.php:117
 msgid "WordPress filesystem is unavailable."
 msgstr "WordPress 파일 시스템을 사용할 수 없습니다."
 
@@ -15153,7 +15127,7 @@ msgid "WordPress speed optimizations"
 msgstr "WordPress 속도 최적화"
 
 #. phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-#: includes/botblocker/class-botblocker.php:241
+#: includes/botblocker/class-botblocker.php:242
 msgid "WordPress stopped by BotBlocker"
 msgstr "BotBlocker에 의해 중지된 WordPress"
 
@@ -15195,11 +15169,6 @@ msgstr "WP Super Cache(Expert/mod_rewrite 모드)는 PHP를 우회하여 .htacce
 #: addons/bbcs-early-init/inc/class-bbcs-early-init-addons-page.php:46
 msgid "wp-config.php Integration"
 msgstr "wp-config.php 통합"
-
-#: admin/templates/settings/cron.php:88
-#: includes/section/settings/botblocker-set-cron.php:27
-msgid "WP-Cron"
-msgstr "WP-크론"
 
 #: addons/bbcs-cron-jobs/views/settings.php:26
 msgid "WP-Cron Documentation"

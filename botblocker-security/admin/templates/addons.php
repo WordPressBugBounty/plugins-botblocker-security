@@ -19,7 +19,7 @@ return static function ( Botblocker_Addons_View $view, Botblocker_Layout_View $l
 					<div class="bbcs-pagehead">
 						<div><div class="bbcs-pagehead-title"><?php esc_html_e( 'Addons', 'botblocker-security' ); ?></div><div class="bbcs-pagehead-sub"><?php esc_html_e( 'Modules that enhance BotBlocker', 'botblocker-security' ); ?></div></div>
 						<div class="bbcs-pagehead-actions">
-							<button class="bbcs-btn" id="bbcs-toggle-upload"><svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-upload"></use></svg><?php esc_html_e( 'Upload ZIP', 'botblocker-security' ); ?></button>
+							<button class="bbcs-btn" id="bbcs-toggle-upload"<?php echo $view->getData()->addons_local_mode ? ' disabled' : ''; ?>><svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-upload"></use></svg><?php esc_html_e( 'Upload ZIP', 'botblocker-security' ); ?></button>
 							<button class="bbcs-btn bbcs-btn--pri" id="bbcs-update-all" hidden><svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-refresh"></use></svg><?php echo esc_html( sprintf( /* translators: %d: number of available addon updates */ __( 'Update All (%d)', 'botblocker-security' ), $view->updates_count() ) ); ?></button>
 						</div>
 					</div>

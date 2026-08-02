@@ -7,7 +7,7 @@ if (! defined('ABSPATH')) {
 }
 
 return static function (Botblocker_AddonsViewModel $data): void {
-	if ( ! $data->addons_locked && $data->has_cloud_api ) {
+	if ( ! $data->addons_locked ) {
 		return;
 	}
 	?>

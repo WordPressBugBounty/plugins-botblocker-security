@@ -179,11 +179,25 @@ final class BotBlockerMultisite {
 		return $cached;
 	}
 
+	public static function isAddonsLocalMode(): bool {
+		return defined( 'BOTBLOCKER_ADDONS_LOCAL' ) && BOTBLOCKER_ADDONS_LOCAL;
+	}
+
+	public static function getPluginAddonsDir(): string {
+		return trailingslashit( wp_normalize_path( BOTBLOCKER_DIR ) ) . 'addons/';
+	}
+
 	public static function getAddonsDir(): string {
+		if ( self::isAddonsLocalMode() ) {
+			return self::getPluginAddonsDir();
+		}
 		return self::getUploadsDir() . 'addons/';
 	}
 
 	public static function getAddonsUrl(): string {
+		if ( self::isAddonsLocalMode() ) {
+			return trailingslashit( BOTBLOCKER_URL ) . 'addons/';
+		}
 		$url = bbcs_get_protected_upload_dir( true );
 		if ( ! is_string( $url ) || $url === '' ) {
 			return '';

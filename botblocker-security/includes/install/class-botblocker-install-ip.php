@@ -208,29 +208,40 @@ class BotBlockerInstallIp {
 		return null;
 	}
 
-	public static function fetchAndStoreParentIPs(): void {
+	private static function fetchParentIPsFromUrl( string $url ): ?array {
 		$response = wp_remote_get(
-			BOTBLOCKER_PARENT_IPS_URL,
+			$url,
 			array(
 				'timeout'    => 10,
-				'user-agent' => BotBlockerMultisite::getCurrentUserAgent(), //BBCS-MULTISITE
-			// 'sslverify'  => false
+				'user-agent' => BotBlockerMultisite::getCurrentUserAgent(),
 			)
 		);
 
 		if ( is_wp_error( $response ) ) {
-			throw new \Exception( wp_kses_post( 'Error loading URL: ' . esc_url( BOTBLOCKER_PARENT_IPS_URL ) . ' | WP Error: ' . $response->get_error_message() ) );
+			return null;
 		}
 
 		$body = wp_remote_retrieve_body( $response );
 		if ( strlen( $body ) > 512 * 1024 ) {
-			throw new \Exception( 'Response too large from ' . esc_url( BOTBLOCKER_PARENT_IPS_URL ) );
+			return null;
 		}
 
-		$ipAddresses = json_decode( $body, true );
+		$decoded = json_decode( $body, true );
+		if ( ! is_array( $decoded ) ) {
+			return null;
+		}
+
+		return $decoded;
+	}
+
+	public static function fetchAndStoreParentIPs(): void {
+		$ipAddresses = self::fetchParentIPsFromUrl( BOTBLOCKER_PARENT_IPS_URL );
+		if ( $ipAddresses === null ) {
+			$ipAddresses = self::fetchParentIPsFromUrl( BOTBLOCKER_PARENT_IPS_GS_URL );
+		}
 
 		if ( ! is_array( $ipAddresses ) ) {
-			throw new \Exception( 'Invalid JSON format in response.' );
+			throw new \Exception( 'Failed to fetch parent IPs from both primary and reserve servers.' );
 		}
 
 		if ( count( $ipAddresses ) > 10000 ) {

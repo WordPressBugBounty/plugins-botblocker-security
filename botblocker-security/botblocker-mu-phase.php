@@ -37,6 +37,9 @@ class BotBlockerMuPhase {
 		if ( $this->is_wordpress_maintenance_request() ) {
 			return;
 		}
+		if ( $this->is_wordpress_self_request() ) {
+			return;
+		}
 		$this->read_ip();
 		$this->read_protocol();
 		$res = $this->is_ip_blocked( $this->read_ip_rules(), $this->ip );

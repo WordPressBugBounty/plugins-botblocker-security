@@ -38,6 +38,8 @@ final class Botblocker_AddonsViewModel {
 	public $addons_locked;
 	/** @var bool */
 	public $has_cloud_api;
+	/** @var bool */
+	public $addons_local_mode;
 
 	/** @var int */
 	public $updates_count;
@@ -78,6 +80,7 @@ final class Botblocker_AddonsViewModel {
 		$this->active     = $ctx['active'];
 		$this->addons_locked = $ctx['addons_locked'];
 		$this->has_cloud_api = $ctx['has_cloud_api'];
+		$this->addons_local_mode = ! empty( $ctx['addons_local_mode'] );
 		$this->updates_count = $ctx['updates_count'];
 
 		// Convert raw market arrays to typed DTOs.
@@ -97,13 +100,12 @@ final class Botblocker_AddonsViewModel {
 			$this->addons[ $slug ] = new Botblocker_AddonInstalledItemData( $slug, $raw );
 		}
 
-		// Build addon settings tabs - only for PRO users with active addons.
-		// Non-PRO: skip entirely, no addon hooks triggered.
-		$is_pro = $this->has_cloud_api && ! $this->addons_locked;
+		// Build addon settings tabs - only when add-ons are unlocked (PRO or local mode).
+		// Locked: skip entirely, no addon hooks triggered.
 		$this->addon_tabs = array();
-		if ( $is_pro ) {
-			$bbcs_addons = class_exists( 'BotBlockerAddons' ) ? BotBlockerAddons::scanAll() : array();
-			$bbcs_active = class_exists( 'BotBlockerAddons' ) ? BotBlockerAddons::getActive() : array();
+		if ( ! $this->addons_locked ) {
+			$bbcs_addons = BotBlockerAddons::scanAll();
+			$bbcs_active = BotBlockerAddons::getActive();
 
 			foreach ( $bbcs_active as $bbcs_slug ) {
 				if ( ! isset( $bbcs_addons[ $bbcs_slug ] ) || ! $bbcs_addons[ $bbcs_slug ]['valid'] ) {
@@ -143,7 +145,7 @@ final class Botblocker_AddonsViewModel {
 		}
 
 		// For non-PRO users, add marketplace addons as searchable snav items.
-		if ( ! $is_pro ) {
+		if ( ! $this->has_cloud_api ) {
 			foreach ( $this->market as $m ) {
 				$tab = new TabItem(
 					'market-' . $m->slug,

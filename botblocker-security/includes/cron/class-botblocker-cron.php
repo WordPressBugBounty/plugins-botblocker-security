@@ -276,6 +276,122 @@ class BotBlockerCron
 		BotBlockerFileRenderer::cleanupHotBans();
 	}
 
+	public static function handleRunCronTask(): void
+	{
+		check_ajax_referer( 'botblocker_nonce', 'nonce' );
+
+		if ( ! current_user_can( BotBlockerMultisite::canManage() ) ) {
+			wp_send_json_error( __( 'No permission.', 'botblocker-security' ) );
+		}
+
+		$hook = isset( $_POST['hook'] ) ? sanitize_text_field( wp_unslash( $_POST['hook'] ) ) : '';
+
+		$all_tasks = self::getAllTasks();
+		if ( $hook === '' || ! isset( $all_tasks[ $hook ] ) ) {
+			wp_send_json_error( __( 'Unknown cron task.', 'botblocker-security' ) );
+		}
+
+		self::runTask( $hook );
+
+		$def   = $all_tasks[ $hook ];
+		$now   = time();
+		$event = bbcs_get_scheduled_event( $hook );
+		if ( $event ) {
+			wp_unschedule_event( $event->timestamp, $hook );
+		}
+		if ( $def['schedule'] !== null ) {
+			wp_schedule_event( $now + $def['interval'], $def['schedule'], $hook );
+		}
+
+		wp_send_json_success( array(
+			'message' => sprintf(
+				// translators: %s: cron hook name
+				__( 'Task %s executed successfully.', 'botblocker-security' ),
+				$hook
+			),
+		) );
+	}
+
+	public static function handleRunAllCronTasks(): void
+	{
+		check_ajax_referer( 'botblocker_nonce', 'nonce' );
+
+		if ( ! current_user_can( BotBlockerMultisite::canManage() ) ) {
+			wp_send_json_error( __( 'No permission.', 'botblocker-security' ) );
+		}
+
+		$tasks = self::getFallbackTasks();
+		$ran   = array();
+		$now   = time();
+
+		foreach ( $tasks as $hook => $config ) {
+			self::runTask( $hook );
+
+			$event = bbcs_get_scheduled_event( $hook );
+			if ( $event ) {
+				wp_unschedule_event( $event->timestamp, $hook );
+			}
+			if ( ! empty( $config['schedule'] ) ) {
+				wp_schedule_event( $now + $config['interval'], $config['schedule'], $hook );
+			}
+
+			$ran[] = $hook;
+		}
+
+		wp_send_json_success( array(
+			'ran'     => count( $ran ),
+			'tasks'   => $ran,
+			'message' => sprintf(
+				// translators: %d: number of tasks executed
+				_n( '%d task executed.', '%d tasks executed.', count( $ran ), 'botblocker-security' ),
+				count( $ran )
+			),
+		) );
+	}
+
+	public static function handleRunStaleCronTasks(): void
+	{
+		check_ajax_referer( 'botblocker_nonce', 'nonce' );
+
+		if ( ! current_user_can( BotBlockerMultisite::canManage() ) ) {
+			wp_send_json_error( __( 'No permission.', 'botblocker-security' ) );
+		}
+
+		$current_time = time();
+		$tasks        = self::getFallbackTasks();
+		$ran          = array();
+
+		foreach ( $tasks as $hook => $config ) {
+			$event = bbcs_get_scheduled_event( $hook );
+			if ( ! $event ) {
+				continue;
+			}
+
+			$overdue_threshold = $event->timestamp + ( $config['interval'] * 1.5 );
+			if ( $current_time > $overdue_threshold ) {
+				self::runTask( $hook );
+				$ran[] = $hook;
+
+				wp_unschedule_event( $event->timestamp, $hook );
+				if ( ! empty( $config['schedule'] ) ) {
+					wp_schedule_event( $current_time + $config['interval'], $config['schedule'], $hook );
+				}
+			}
+		}
+
+		wp_send_json_success( array(
+			'ran'     => count( $ran ),
+			'tasks'   => $ran,
+			'message' => count( $ran ) > 0
+				? sprintf(
+					// translators: %d: number of stale tasks executed
+					_n( '%d stale task executed.', '%d stale tasks executed.', count( $ran ), 'botblocker-security' ),
+					count( $ran )
+				)
+				: __( 'No stale tasks found.', 'botblocker-security' ),
+		) );
+	}
+
 	public static function cleanOldHits(): void
 	{
 		global $wpdb;
@@ -406,7 +522,7 @@ class BotBlockerCron
 		require_once BOTBLOCKER_DIR . 'helpers-cron.php';
 	}
 
-	private static function runTask(string $hook): void
+	public static function runTask(string $hook): void
 	{
 		self::loadTaskDependencies();
 
@@ -505,6 +621,9 @@ add_action('bbcs_weekly_task', array('BotBlockerCron', 'weeklyHandler'));
 add_action('bbcs_telegram_weekly_report_task', array('BotBlockerCron', 'telegramWeeklyReportHandler'));
 add_action('bbcs_one_time_task', array('BotBlockerCron', 'oneTimeHandler'));
 add_action('wp_ajax_bbcs_get_cron_tasks', array('BotBlockerCron', 'getTasksList'));
+add_action('wp_ajax_bbcs_run_cron_task', array('BotBlockerCron', 'handleRunCronTask'));
+add_action('wp_ajax_bbcs_run_all_cron_tasks', array('BotBlockerCron', 'handleRunAllCronTasks'));
+add_action('wp_ajax_bbcs_run_stale_cron_tasks', array('BotBlockerCron', 'handleRunStaleCronTasks'));
 add_action('init', array('BotBlockerCron', 'fallbackRunner'));
 add_action('bbcs_hourly_task', array('BotBlockerSummary', 'cronHandler'));
 add_action('bbcs_summary_backfill', array('BotBlockerSummary', 'backfillHandler'));

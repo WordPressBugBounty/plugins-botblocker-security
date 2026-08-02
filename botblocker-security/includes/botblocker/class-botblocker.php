@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * This class is responsible for all the operations against bots.
  * It handles detections, logging, and blocking of suspicious bot activities.
  *
- * @version    1.7.1
+ * @version    1.7.2
  * @author     BotBlocker Team
  * @package    Botblocker
  * @subpackage Botblocker/includes
@@ -233,6 +233,7 @@ class BotBlocker extends BotBlockerBase {
 		if ( apply_filters( 'bbcs_test_intercept_termination', false, $message, $this ) ) {
 			return;
 		}
+		$this->maybe_spawn_cron();
 		if ( ! empty( $message ) ) {
 			die( wp_kses_post( $message ) );
 		} elseif ( BBCS_DIE_MESSAGE ) {
@@ -241,6 +242,12 @@ class BotBlocker extends BotBlockerBase {
 				die( __( 'WordPress stopped by BotBlocker', 'botblocker-security' ) );
 		} else {
 			die();
+		}
+	}
+
+	private function maybe_spawn_cron(): void {
+		if ( function_exists( 'spawn_cron' ) && ! defined( 'DOING_CRON' ) ) {
+			spawn_cron();
 		}
 	}
 }

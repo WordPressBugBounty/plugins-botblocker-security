@@ -44,7 +44,13 @@ class BotBlockerInstall {
 	public static function initDbAndFiles(): void {
 		BotBlockerInstallIp::addServerIPs();
 		BotBlockerInstallIp::addAdminIPs();
-		BotBlockerInstallIp::fetchAndStoreParentIPs();
+		try {
+			BotBlockerInstallIp::fetchAndStoreParentIPs();
+		} catch ( \Exception $e ) {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				error_log( '[BBCS DEBUG] [Install] fetchAndStoreParentIPs failed: ' . $e->getMessage() );
+			}
+		}
 		BotBlockerSeedData::insertInitialData( self::createSaltFile( true ) );
 		BotBlockerDb::generateAllFiles();
 		BotBlockerFileRenderer::generateSettingsFile();

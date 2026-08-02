@@ -8,6 +8,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once BOTBLOCKER_DIR . 'includes/install/class-botblocker-install.php';
 require_once BOTBLOCKER_DIR . 'includes/install/class-botblocker-install-ip.php';
 require_once BOTBLOCKER_DIR . 'includes/install/class-botblocker-migration.php';
+require_once BOTBLOCKER_DIR . 'includes/install/class-botblocker-activator.php';
+require_once BOTBLOCKER_DIR . 'includes/install/class-botblocker-deactivator.php';
 require_once BOTBLOCKER_DIR . 'includes/utilites/util-botblocker-data-file.php';
 require_once BOTBLOCKER_DIR . 'includes/utilites/util-botblocker-tampering.php';
 require_once BOTBLOCKER_DIR . 'includes/hook/class-botblocker-login-brutforce.php';

@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BotBlocker"
 "Report-Msgid-Bugs-To: "
-"POT-Creation-Date: 2026-07-30 23:51+0000"
-"PO-Revision-Date: 2026-07-30 23:51+0000"
+"POT-Creation-Date: 2026-08-02 21:33+0000"
+"PO-Revision-Date: 2026-08-02 21:33+0000"
 "Last-Translator: BotBlocker Translator Engine via AI"
 "Language-Team: Chinese"
 "Language: zh_CN"
@@ -55,6 +55,20 @@ msgstr "%d 一次性"
 #, php-format
 msgid "%d recurring"
 msgstr "%d 定期"
+
+#. translators: %d: number of stale tasks executed
+#: includes/cron/class-botblocker-cron.php:388
+#, php-format, plural
+msgid "%d stale task executed."
+msgid_plural "%d stale tasks executed."
+msgstr[0] "%d 个过期任务已执行。"
+
+#. translators: %d: number of tasks executed
+#: includes/cron/class-botblocker-cron.php:346
+#, php-format, plural
+msgid "%d task executed."
+msgid_plural "%d tasks executed."
+msgstr[0] "%d 个任务已执行。"
 
 #. translators: %d: total task count
 #: admin/templates/settings/cron.php:61
@@ -222,10 +236,6 @@ msgstr "2小时"
 #: includes/data/botblocker-data-time.php:41
 msgid "2 weeks"
 msgstr "2周"
-
-#: admin/templates/dashboard/quick-links.php:18
-msgid "2FA"
-msgstr "两步验证"
 
 #: includes/utilites/2FA/inc-botblocker-2fa.php:456
 msgid "2FA has been reset."
@@ -411,7 +421,7 @@ msgstr "接受"
 msgid "Accept-Language"
 msgstr "接受语言"
 
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:121
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:122
 msgid "Access approved. Redirecting..."
 msgstr "访问已批准。正在重定向..."
 
@@ -477,18 +487,20 @@ msgstr "Action Scheduler 队列"
 #: admin/templates/rules/body.php:52
 #: admin/templates/rules/body.php:68
 #: admin/templates/rules/body.php:84
+#: admin/templates/settings/cron.php:188
+#: admin/templates/settings/cron.php:225
 msgid "Actions"
 msgstr "操作"
 
-#: admin/partials/botblocker-admin-display-addons.php:235
-#: admin/templates/addons/marketplace-panel.php:208
-#: admin/templates/addons/marketplace-panel.php:94
+#: admin/partials/botblocker-admin-display-addons.php:238
+#: admin/templates/addons/marketplace-panel.php:211
+#: admin/templates/addons/marketplace-panel.php:97
 #: admin/templates/integrations/2fa.php:68
 #: includes/section/integration/botblocker-int-2fa.php:163
 msgid "Activate"
 msgstr "激活"
 
-#: admin/partials/botblocker-admin-display-addons.php:77
+#: admin/partials/botblocker-admin-display-addons.php:80
 msgid "Activate access"
 msgstr "激活访问"
 
@@ -527,15 +539,17 @@ msgstr "激活服务不可用。"
 #: addons/bbcs-cron-jobs/views/settings.php:173
 #: admin/class-botblocker-admin.php:338
 #: admin/partials/botblocker-section-right-sidebar.php:32
-#: admin/templates/addons/marketplace-panel.php:184
-#: admin/templates/addons/marketplace-panel.php:64
+#: admin/templates/addons/marketplace-panel.php:187
+#: admin/templates/addons/marketplace-panel.php:67
 #: admin/templates/cloud-api/status.php:17
 #: admin/templates/integrations/botblocker-api.php:29
 #: admin/templates/rules.php:52
 #: admin/templates/settings/cron.php:111
 #: admin/templates/settings/cron.php:147
 #: admin/templates/settings/cron.php:154
-#: admin/templates/settings/cron.php:209
+#: admin/templates/settings/cron.php:218
+#: admin/templates/settings/cron.php:220
+#: admin/templates/settings/cron.php:222
 #: admin/templates/setup-guide/pro-body.php:13
 #: admin/templates/setup-guide/status.php:53
 #: admin/templates/shared/request-chain.php:335
@@ -715,12 +729,16 @@ msgid "Add-on"
 msgstr "附加组件"
 
 #: admin/class-botblocker-admin.php:638
-#: includes/hook/class-botblocker-addon-hooks.php:397
+#: includes/hook/class-botblocker-addon-hooks.php:406
 msgid "Add-on deleted."
 msgstr "附加组件已删除。"
 
+#: includes/hook/class-botblocker-addon-hooks.php:22
+msgid "Add-on install, update, and delete are disabled in local add-on mode."
+msgstr "在本地附加组件模式下，附加组件的安装、更新和删除已被禁用。"
+
 #: admin/class-botblocker-admin.php:632
-#: includes/hook/class-botblocker-addon-hooks.php:279
+#: includes/hook/class-botblocker-addon-hooks.php:289
 msgid "Add-on installed successfully."
 msgstr "附加组件安装成功。"
 
@@ -743,6 +761,10 @@ msgstr "附加组件包不符合BotBlocker附加组件协议。"
 #: includes/hook/hook-addon-validation.php:66
 msgid "Add-on package has an invalid file count."
 msgstr "附加组件包的文件数量无效。"
+
+#: includes/hook/hook-addon-install.php:101
+msgid "Add-on package install is disabled in local add-on mode."
+msgstr "在本地附加组件模式下，附加组件包的安装已被禁用。"
 
 #: admin/class-botblocker-admin.php:649
 #: includes/class-botblocker-toastify.php:244
@@ -772,7 +794,7 @@ msgid "Add-on package slug does not match the requested add-on."
 msgstr "附加组件包slug与请求的附加组件不匹配。"
 
 #: admin/class-botblocker-admin.php:633
-#: includes/hook/class-botblocker-addon-hooks.php:344
+#: includes/hook/class-botblocker-addon-hooks.php:355
 msgid "Add-on package uploaded. Find it below, then activate it when ready."
 msgstr "附加组件包已上传。请在下方找到它，准备就绪后激活。"
 
@@ -780,7 +802,7 @@ msgstr "附加组件包已上传。请在下方找到它，准备就绪后激活
 msgid "Add-on root folder must be a valid slug."
 msgstr "附加组件根文件夹必须是有效的slug。"
 
-#: admin/templates/addons/addons-content.php:58
+#: admin/templates/addons/addons-content.php:60
 msgid "Add-on settings"
 msgstr "附加组件设置"
 
@@ -793,13 +815,13 @@ msgid "Add-on Update Failed"
 msgstr "附加组件更新失败"
 
 #: admin/class-botblocker-admin.php:635
-#: includes/hook/class-botblocker-addon-hooks.php:206
-#: includes/hook/class-botblocker-addon-hooks.php:524
+#: includes/hook/class-botblocker-addon-hooks.php:215
+#: includes/hook/class-botblocker-addon-hooks.php:531
 msgid "Add-on updated successfully."
 msgstr "附加组件更新成功。"
 
 #. translators: %s: required BotBlocker version
-#: includes/hook/class-botblocker-addon-hooks.php:522
+#: includes/hook/class-botblocker-addon-hooks.php:529
 #, php-format
 msgid "Add-on was updated but not reactivated - it requires BotBlocker %s or higher. Please update the plugin first."
 msgstr "附加组件已更新但未重新激活 - 它需要BotBlocker %s或更高版本。请先更新插件。"
@@ -812,7 +834,7 @@ msgstr "附加组件已更新但未重新激活 - 它需要BotBlocker版本%s或
 
 #: admin/class-botblocker-admin.php:1261
 #: admin/class-botblocker-admin.php:1262
-#: admin/partials/botblocker-admin-display-addons.php:23
+#: admin/partials/botblocker-admin-display-addons.php:24
 #: admin/templates/settings/notifications.php:115
 #: admin/templates/setup-guide/status.php:167
 #: includes/section/dashboard/botblocker-dash-links.php:33
@@ -825,7 +847,7 @@ msgid "Add-ons Deactivated"
 msgstr "附加组件已停用"
 
 #: includes/components/class-botblocker-component-addons-summary.php:58
-#: includes/inc-botblocker-ui.php:305
+#: includes/inc-botblocker-ui.php:320
 msgid "Add-ons locked. Activate Cloud API to use marketplace features."
 msgstr "附加组件已锁定。请激活Cloud API以使用市场功能。"
 
@@ -867,14 +889,14 @@ msgstr "插件"
 msgid "Addon required"
 msgstr "需要插件"
 
-#: admin/partials/botblocker-admin-display-addons.php:171
-#: admin/partials/botblocker-admin-display-addons.php:252
+#: admin/partials/botblocker-admin-display-addons.php:174
+#: admin/partials/botblocker-admin-display-addons.php:255
 msgid "Addon Settings"
 msgstr "插件设置"
 
 #: admin/templates/addons.php:20
 #: admin/templates/dashboard/quick-links.php:15
-#: includes/viewmodels/class-addons-viewmodel.php:166
+#: includes/viewmodels/class-addons-viewmodel.php:168
 msgid "Addons"
 msgstr "插件"
 
@@ -882,7 +904,7 @@ msgstr "插件"
 msgid "Addons - extensions, plugins, marketplace, more features"
 msgstr "插件 - 扩展、插件、市场、更多功能"
 
-#: admin/templates/addons/addons-content.php:28
+#: admin/templates/addons/addons-content.php:30
 msgid "Addons sections"
 msgstr "插件部分"
 
@@ -1094,7 +1116,7 @@ msgid "All %s rules have been cleared."
 msgstr "所有 %s 规则已清除。"
 
 #: admin/class-botblocker-admin.php:634
-#: includes/hook/class-botblocker-addon-hooks.php:106
+#: includes/hook/class-botblocker-addon-hooks.php:118
 msgid "All add-ons have been updated."
 msgstr "所有插件已更新。"
 
@@ -1502,8 +1524,8 @@ msgstr "您确定要清除日志文件吗？"
 msgid "Are you sure you want to clear the security salt?"
 msgstr "您确定要清除安全盐值吗？"
 
-#: admin/templates/addons/marketplace-panel.php:137
-#: admin/templates/addons/marketplace-panel.php:235
+#: admin/templates/addons/marketplace-panel.php:140
+#: admin/templates/addons/marketplace-panel.php:238
 msgid "Are you sure you want to delete this add-on?"
 msgstr "您确定要删除此附加组件吗？"
 
@@ -1606,17 +1628,6 @@ msgstr "AS 名称"
 #: includes/modal/modal-botblocker-rule-edit.php:32
 msgid "AS Number"
 msgstr "AS 编号"
-
-#: admin/partials/botblocker-admin-display-rules.php:206
-#: admin/partials/botblocker-admin-display-rules.php:69
-#: admin/templates/reports/dashboard.php:31
-#: admin/templates/rules/body.php:126
-#: admin/templates/rules/body.php:20
-#: admin/templates/settings/connection-types.php:23
-#: includes/section/settings/botblocker-set-connect.php:30
-#: includes/viewmodels/class-rules-viewmodel.php:105
-msgid "ASN"
-msgstr "ASN"
 
 #: includes/ajax/class-botblocker-ajax-asn.php:235
 msgid "ASN already exists."
@@ -1854,7 +1865,7 @@ msgstr "避免将常见的分析、支付和 CDN 脚本标签报告为恶意软�
 msgid "Back"
 msgstr "返回"
 
-#: admin/templates/addons/addons-content.php:62
+#: admin/templates/addons/addons-content.php:64
 msgid "Back to Marketplace"
 msgstr "返回市场"
 
@@ -2373,7 +2384,7 @@ msgstr "在WordPress加载之前阻止威胁。最高安全性。"
 msgid "Blue"
 msgstr "蓝色"
 
-#: admin/partials/botblocker-admin-display-addons.php:95
+#: admin/partials/botblocker-admin-display-addons.php:98
 msgid "Boost your BotBlocker experience with add-ons and tools selected to increase security, productivity and enhance your website"
 msgstr "利用精选的附加组件和工具增强您的BotBlocker体验，提升安全性、生产力并改善您的网站"
 
@@ -2402,17 +2413,6 @@ msgstr "机器人检测、Captcha、保护"
 #: includes/section/settings/botblocker-set-notif.php:63
 msgid "Bot Token"
 msgstr "机器人令牌"
-
-#: admin/partials/botblocker-admin-display-about.php:42
-#: admin/partials/botblocker-admin-display-tools.php:31
-#: admin/templates/setup-guide/chain-body.php:41
-#: admin/templates/shared/request-chain.php:327
-#: admin/templates/shared/request-chain.php:40
-#: includes/data/botblocker-data-snav.php:692
-#: includes/section/setup/botblocker-setup-chain.php:60
-#: includes/viewmodels/class-tools-viewmodel.php:81
-msgid "BotBlocker"
-msgstr "BotBlocker"
 
 #: admin/partials/botblocker-admin-display-integrations.php:63
 #: includes/data/botblocker-data-snav.php:645
@@ -2666,7 +2666,7 @@ msgstr "BotBlocker 安全 - 设置完成"
 
 #. 'message' => __('Sorry, your request has been blocked', 'botblocker-security'),
 #: includes/botblocker/traits/class-botblocker-block-page-trait.php:16
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:206
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:207
 #: includes/botblocker/traits/class-botblocker-denied-page-trait.php:16
 #: public/template-botblocker-denied.php:24
 msgid "BotBlocker security plugin"
@@ -2753,9 +2753,9 @@ msgstr "BotBlocker：版本"
 msgid "Bottom"
 msgstr "底部"
 
-#: admin/partials/botblocker-admin-display-addons.php:205
-#: admin/templates/addons/marketplace-panel.php:118
-#: admin/templates/addons/marketplace-panel.php:216
+#: admin/partials/botblocker-admin-display-addons.php:208
+#: admin/templates/addons/marketplace-panel.php:121
+#: admin/templates/addons/marketplace-panel.php:219
 msgid "Broken"
 msgstr "损坏的"
 
@@ -2764,7 +2764,7 @@ msgid "Browse add-ons"
 msgstr "浏览附加组件"
 
 #: includes/components/class-botblocker-component-addons-summary.php:64
-#: includes/inc-botblocker-ui.php:311
+#: includes/inc-botblocker-ui.php:326
 msgid "Browse Add-ons"
 msgstr "浏览附加组件"
 
@@ -2972,18 +2972,9 @@ msgstr "取消并退出"
 msgid "Cancel Scan"
 msgstr "取消扫描"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:212
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:214
 msgid "Cancelling scan..."
 msgstr "正在取消扫描..."
-
-#: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:277
-#: admin/templates/settings/captcha-tab.php:53
-#: admin/templates/setup-wizard/finish.php:22
-#: includes/data/botblocker-data-snav.php:278
-#: includes/section/settings/botblocker-set-captcha.php:26
-#: includes/viewmodels/class-settings-viewmodel.php:187
-msgid "Captcha"
-msgstr "Captcha"
 
 #: includes/services/class-botblocker-health-service.php:20
 #: includes/viewmodels/class-dashboard-viewmodel.php:161
@@ -3104,7 +3095,7 @@ msgstr "检查报告"
 msgid "Checking database tables..."
 msgstr "正在检查数据库表..."
 
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:208
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:209
 msgid "Checking your browser before accessing the site"
 msgstr "在访问站点之前检查您的浏览器"
 
@@ -3179,7 +3170,7 @@ msgstr "选择设置方法"
 msgid "Choose ZIP"
 msgstr "选择 ZIP"
 
-#: admin/partials/botblocker-admin-display-addons.php:59
+#: admin/partials/botblocker-admin-display-addons.php:61
 msgid "Choose ZIP package"
 msgstr "选择 ZIP 包"
 
@@ -3579,7 +3570,7 @@ msgstr "配置代码"
 msgid "Codes for config:"
 msgstr "配置代码："
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:185
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:193
 msgid "Collapse all"
 msgstr "全部折叠"
 
@@ -3699,7 +3690,7 @@ msgstr "比较免费版与PRO版"
 msgid "Compare plan features below. PRO unlocks full per-visit verification, advanced blocking rules, performance add-ons, and priority support."
 msgstr "比较下方套餐功能。PRO版解锁完整的每次访问验证、高级拦截规则、性能附加组件和优先支持。"
 
-#: admin/partials/botblocker-admin-display-addons.php:80
+#: admin/partials/botblocker-admin-display-addons.php:83
 #: admin/templates/addons/locked-notice.php:31
 #: admin/templates/setup-guide/pro-body.php:38
 #: includes/section/cloud/botblocker-cloud-status.php:61
@@ -3879,7 +3870,7 @@ msgid "Connect"
 msgstr "连接"
 
 #: includes/components/class-botblocker-component-addons-summary.php:74
-#: includes/inc-botblocker-ui.php:347
+#: includes/inc-botblocker-ui.php:362
 msgid "Connect Cloud API now!"
 msgstr "立即连接云API！"
 
@@ -4102,7 +4093,7 @@ msgstr "Cookie设置"
 msgid "Cookies"
 msgstr "Cookie"
 
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:106
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:107
 msgid "Cookies are disabled in your browser. Enable cookies to continue."
 msgstr "您的浏览器禁用了Cookies。请启用Cookies以继续。"
 
@@ -4136,7 +4127,7 @@ msgstr "版权"
 msgid "Core, plugin, and theme security events."
 msgstr "核心、插件和主题安全事件。"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:186
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:194
 msgid "Could not build tree view. Switch to Flat view."
 msgstr "无法构建树视图。切换到平面视图。"
 
@@ -4267,10 +4258,6 @@ msgstr "定时任务 - 调度器、作业、自动化"
 #: addons/bbcs-security-headers/inc/class-bbcs-security-headers-addons-page.php:43
 msgid "CSP Configuration"
 msgstr "CSP 配置"
-
-#: admin/templates/about/body.php:151
-msgid "CSS Framework:"
-msgstr "CSS 框架："
 
 #: includes/data/botblocker-data-snav.php:378
 msgid "cURL Command"
@@ -4559,9 +4546,9 @@ msgstr "数据库行"
 msgid "DB: v"
 msgstr "数据库：v"
 
-#: admin/partials/botblocker-admin-display-addons.php:233
-#: admin/templates/addons/marketplace-panel.php:208
-#: admin/templates/addons/marketplace-panel.php:94
+#: admin/partials/botblocker-admin-display-addons.php:236
+#: admin/templates/addons/marketplace-panel.php:211
+#: admin/templates/addons/marketplace-panel.php:97
 msgid "Deactivate"
 msgstr "停用"
 
@@ -4611,9 +4598,9 @@ msgstr "为所有 Redis 键定义唯一前缀以组织数据，并防止与使�
 
 #: admin/class-botblocker-admin.php:390
 #: admin/class-botblocker-admin.php:467
-#: admin/partials/botblocker-admin-display-addons.php:258
-#: admin/templates/addons/marketplace-panel.php:141
-#: admin/templates/addons/marketplace-panel.php:239
+#: admin/partials/botblocker-admin-display-addons.php:261
+#: admin/templates/addons/marketplace-panel.php:144
+#: admin/templates/addons/marketplace-panel.php:242
 msgid "Delete"
 msgstr "删除"
 
@@ -4631,7 +4618,7 @@ msgstr "删除所有访客记录和统计数据"
 msgid "Delete Expired Transients"
 msgstr "删除过期的瞬态数据"
 
-#: admin/partials/botblocker-admin-display-addons.php:257
+#: admin/partials/botblocker-admin-display-addons.php:260
 msgid "Delete this add-on?"
 msgstr "删除此附加组件？"
 
@@ -4705,7 +4692,7 @@ msgstr "设备API验证"
 msgid "Device API verification"
 msgstr "设备API验证"
 
-#: admin/templates/about/body.php:194
+#: admin/templates/about/body.php:185
 msgid "Device Detection:"
 msgstr "设备检测："
 
@@ -4781,10 +4768,10 @@ msgstr "禁用XML-RPC"
 #: admin/class-botblocker-admin.php:339
 #: admin/class-botblocker-admin.php:510
 #: admin/class-botblocker-admin.php:841
-#: admin/templates/addons/marketplace-panel.php:186
-#: admin/templates/addons/marketplace-panel.php:209
-#: admin/templates/addons/marketplace-panel.php:66
-#: admin/templates/addons/marketplace-panel.php:95
+#: admin/templates/addons/marketplace-panel.php:189
+#: admin/templates/addons/marketplace-panel.php:212
+#: admin/templates/addons/marketplace-panel.php:69
+#: admin/templates/addons/marketplace-panel.php:98
 #: admin/templates/dashboard/hero.php:17
 #: admin/templates/rules.php:57
 #: admin/templates/settings/cookie.php:31
@@ -4946,7 +4933,7 @@ msgstr "检测到此站点上有电子商务软件。强烈建议启用此选项
 msgid "e.g. 173.245.48.0/20"
 msgstr "例如 173.245.48.0/20"
 
-#: admin/partials/botblocker-admin-display-addons.php:73
+#: admin/partials/botblocker-admin-display-addons.php:76
 msgid "Each add-on is a turnkey extension: install in one click, configure in minutes, and gain a new layer of protection or speed without writing a line of code."
 msgstr "每个附加组件都是一个交钥匙扩展：一键安装，几分钟配置，无需编写任何代码即可获得新的保护层或速度提升。"
 
@@ -5480,8 +5467,8 @@ msgstr "启用 XML-RPC 隧道"
 #: admin/class-botblocker-admin.php:323
 #: admin/class-botblocker-admin.php:509
 #: admin/class-botblocker-admin.php:840
-#: admin/templates/addons/marketplace-panel.php:209
-#: admin/templates/addons/marketplace-panel.php:95
+#: admin/templates/addons/marketplace-panel.php:212
+#: admin/templates/addons/marketplace-panel.php:98
 #: admin/templates/dashboard/hero.php:17
 #: admin/templates/settings/cookie.php:32
 #: includes/section/settings/botblocker-set-cookie.php:167
@@ -5520,7 +5507,7 @@ msgid "English"
 msgstr "英语"
 
 #: includes/components/class-botblocker-component-addons-summary.php:63
-#: includes/inc-botblocker-ui.php:310
+#: includes/inc-botblocker-ui.php:325
 msgid "Enhance speed, security and user experience with official BotBlocker add-ons."
 msgstr "使用官方 BotBlocker 插件提升速度、安全性和用户体验。"
 
@@ -5706,7 +5693,7 @@ msgstr "每天"
 msgid "Example:"
 msgstr "示例："
 
-#: admin/partials/botblocker-admin-display-addons.php:74
+#: admin/partials/botblocker-admin-display-addons.php:77
 msgid "Examples: Security Headers (HSTS, CSP, X-Frame), Hide Admin URL, Speed-up, Early Init, Anti-spam, Telegram alerts and more."
 msgstr "示例：安全标头（HSTS、CSP、X-Frame）、隐藏管理后台URL、加速、提前初始化、反垃圾邮件、Telegram警报等。"
 
@@ -5738,7 +5725,7 @@ msgstr "仅执行模式（仅PHP/JS/htaccess）"
 msgid "Exit Setup"
 msgstr "退出设置"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:184
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:192
 #: addons/bbcs-truth-source/inc/views/scan-results.php:66
 msgid "Expand all"
 msgstr "展开全部"
@@ -5935,7 +5922,7 @@ msgstr "无法备份现有插件。"
 msgid "Failed to backup the existing add-on."
 msgstr "无法备份现有插件。"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:214
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:216
 msgid "Failed to cancel scan."
 msgstr "无法取消扫描。"
 
@@ -6110,7 +6097,7 @@ msgstr "无法创建规则："
 msgid "Failed to create salt file."
 msgstr "无法创建盐值文件。"
 
-#: includes/hook/hook-addon-install.php:119
+#: includes/hook/hook-addon-install.php:122
 msgid "Failed to create temporary add-on directory."
 msgstr "无法创建临时插件目录。"
 
@@ -6416,11 +6403,11 @@ msgstr "发送激活失败。请稍后再试。"
 msgid "Failed to send email."
 msgstr "发送电子邮件失败。"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:209
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:211
 msgid "Failed to start scan."
 msgstr "启动扫描失败。"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:210
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:212
 msgid "Failed to start scan. Please try again."
 msgstr "启动扫描失败。请重试。"
 
@@ -6573,14 +6560,26 @@ msgstr "字段 '%s' 是必填的。"
 msgid "File"
 msgstr "文件"
 
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:85
+msgid "File added to ignore list."
+msgstr "文件已添加到忽略列表。"
+
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:42
+msgid "File integrity scan started."
+msgstr "文件完整性扫描已启动。"
+
 #: admin/class-botblocker-admin.php:664
 #: includes/class-botblocker-toastify.php:257
 msgid "File modifications are disabled for this WordPress installation."
 msgstr "此 WordPress 安装已禁用文件修改。"
 
-#: includes/hook/hook-addon-install.php:101
+#: includes/hook/hook-addon-install.php:104
 msgid "File modifications are disabled."
 msgstr "已禁用文件修改。"
+
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:103
+msgid "File removed from ignore list."
+msgstr "文件已从忽略列表中移除。"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:490
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:554
@@ -6596,7 +6595,7 @@ msgstr "大于此大小的文件将被跳过。"
 msgid "Filesystem API is not available."
 msgstr "文件系统 API 不可用。"
 
-#: admin/templates/addons/addons-content.php:29
+#: admin/templates/addons/addons-content.php:31
 msgid "Find addon…"
 msgstr "查找附加组件…"
 
@@ -6731,10 +6730,10 @@ msgstr "用于重要的安全通知和特别优惠。"
 msgid "For payment issues, see our"
 msgstr "有关付款问题，请参阅我们的"
 
-#: includes/hook/class-botblocker-addon-hooks.php:213
-#: includes/hook/class-botblocker-addon-hooks.php:286
-#: includes/hook/class-botblocker-addon-hooks.php:351
-#: includes/hook/class-botblocker-addon-hooks.php:404
+#: includes/hook/class-botblocker-addon-hooks.php:222
+#: includes/hook/class-botblocker-addon-hooks.php:296
+#: includes/hook/class-botblocker-addon-hooks.php:362
+#: includes/hook/class-botblocker-addon-hooks.php:413
 msgid "Forbidden."
 msgstr "禁止访问。"
 
@@ -6770,7 +6769,7 @@ msgstr "免费版 vs BotBlocker PRO"
 msgid "Free vs PRO"
 msgstr "免费版 vs PRO"
 
-#: admin/templates/about/body.php:181
+#: admin/templates/about/body.php:172
 msgid "from"
 msgstr "来自"
 
@@ -6867,7 +6866,7 @@ msgstr "完全禁用 BotBlocker"
 msgid "GD library is not enabled on this server. Image Captcha (mode 2) and Color Buttons (mode 1) will not work and will fall back to another mode."
 msgstr "此服务器上未启用 GD 库。图像验证码（模式2）和颜色按钮（模式1）将不起作用，并将回退到其他模式。"
 
-#: includes/hook/class-botblocker-settings-hooks.php:339
+#: includes/hook/class-botblocker-settings-hooks.php:340
 msgid "GD library not available. Captcha mode was adjusted to a compatible mode."
 msgstr "GD 库不可用。验证码模式已调整为兼容模式。"
 
@@ -6903,12 +6902,6 @@ msgstr "常规设置"
 msgid "Generated by BotBlocker Security"
 msgstr "由 BotBlocker Security 生成"
 
-#: admin/partials/botblocker-admin-display-rules.php:73
-#: admin/templates/rules/body.php:22
-#: includes/viewmodels/class-rules-viewmodel.php:119
-msgid "GEO"
-msgstr "地理位置"
-
 #: admin/templates/rules.php:41
 msgid "GEO / ASN:"
 msgstr "GEO / ASN："
@@ -6932,7 +6925,7 @@ msgstr "Geo IP / 语言不匹配过滤"
 msgid "GeoIP Language mismatch"
 msgstr "GeoIP 语言不匹配"
 
-#: admin/templates/about/body.php:185
+#: admin/templates/about/body.php:176
 msgid "Geolocation Database:"
 msgstr "地理位置数据库："
 
@@ -6940,10 +6933,10 @@ msgstr "地理位置数据库："
 msgid "Get API key from cloud - token, license, activate"
 msgstr "从云端获取 API 密钥 - 令牌、许可证、激活"
 
-#: admin/partials/botblocker-admin-display-addons.php:79
+#: admin/partials/botblocker-admin-display-addons.php:82
 #: admin/partials/botblocker-section-right-sidebar.php:201
 #: admin/templates/addons/locked-notice.php:28
-#: admin/templates/addons/marketplace-panel.php:110
+#: admin/templates/addons/marketplace-panel.php:113
 #: admin/templates/shared/sidebar/pro-features.php:40
 msgid "Get BotBlocker PRO"
 msgstr "获取 BotBlocker PRO"
@@ -7282,8 +7275,8 @@ msgstr "首页访问"
 
 #: addons/bbcs-cron-jobs/views/settings.php:119
 #: addons/bbcs-cron-jobs/views/settings.php:67
-#: admin/templates/settings/cron.php:174
-#: admin/templates/settings/cron.php:185
+#: admin/templates/settings/cron.php:182
+#: admin/templates/settings/cron.php:194
 msgid "Hook"
 msgstr "钩子"
 
@@ -7508,7 +7501,7 @@ msgstr "HTTPS设置"
 msgid "I'm not a robot"
 msgstr "我不是机器人"
 
-#: admin/templates/about/body.php:181
+#: admin/templates/about/body.php:172
 msgid "Icons designed by"
 msgstr "图标设计者"
 
@@ -7584,7 +7577,7 @@ msgstr "iFrame"
 msgid "Iframe protection (clickjacking)"
 msgstr "Iframe保护（点击劫持）"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:182
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:190
 #: addons/bbcs-truth-source/inc/class-bbcs-ts-settings-view.php:347
 msgid "Ignore"
 msgstr "忽略"
@@ -7601,7 +7594,7 @@ msgstr "忽略内置WordPress插件/主题（Akismet、Hello Dolly、Twenty*系�
 msgid "Ignore cached truth source - force fresh download"
 msgstr "忽略缓存的真相源 - 强制全新下载"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:183
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:191
 msgid "Ignore folder"
 msgstr "忽略文件夹"
 
@@ -7675,7 +7668,7 @@ msgstr "图片分发模式："
 msgid "Image Recognition"
 msgstr "图像识别"
 
-#: admin/templates/about/body.php:169
+#: admin/templates/about/body.php:160
 msgid "Images and Icons:"
 msgstr "图片和图标："
 
@@ -7862,14 +7855,14 @@ msgstr "无痕模式"
 msgid "Incoming request"
 msgstr "传入请求"
 
-#: admin/partials/botblocker-admin-display-addons.php:135
-#: admin/partials/botblocker-admin-display-addons.php:208
+#: admin/partials/botblocker-admin-display-addons.php:138
 #: admin/partials/botblocker-admin-display-addons.php:211
-#: admin/templates/addons/marketplace-panel.php:120
-#: admin/templates/addons/marketplace-panel.php:192
-#: admin/templates/addons/marketplace-panel.php:218
-#: admin/templates/addons/marketplace-panel.php:71
-#: admin/templates/addons/marketplace-panel.php:77
+#: admin/partials/botblocker-admin-display-addons.php:214
+#: admin/templates/addons/marketplace-panel.php:123
+#: admin/templates/addons/marketplace-panel.php:195
+#: admin/templates/addons/marketplace-panel.php:221
+#: admin/templates/addons/marketplace-panel.php:74
+#: admin/templates/addons/marketplace-panel.php:80
 msgid "Incompatible"
 msgstr "不兼容"
 
@@ -7920,17 +7913,17 @@ msgstr "内联 Base64（推荐）"
 msgid "Inline: embed images in page (recommended). Separate: load via AJAX (legacy)."
 msgstr "内联：将图像嵌入页面（推荐）。单独：通过 AJAX 加载（传统方式）。"
 
-#: admin/partials/botblocker-admin-display-addons.php:144
-#: admin/templates/addons/marketplace-panel.php:107
+#: admin/partials/botblocker-admin-display-addons.php:147
+#: admin/templates/addons/marketplace-panel.php:110
 msgid "Install"
 msgstr "安装"
 
-#: admin/partials/botblocker-admin-display-addons.php:148
-#: admin/partials/botblocker-admin-display-addons.php:150
+#: admin/partials/botblocker-admin-display-addons.php:151
+#: admin/partials/botblocker-admin-display-addons.php:153
 msgid "Install (PRO)"
 msgstr "安装（PRO）"
 
-#: admin/partials/botblocker-admin-display-addons.php:49
+#: admin/partials/botblocker-admin-display-addons.php:51
 msgid "Install add-on from ZIP"
 msgstr "从 ZIP 安装附加组件"
 
@@ -7938,7 +7931,7 @@ msgstr "从 ZIP 安装附加组件"
 msgid "Install addon from ZIP"
 msgstr "从 ZIP 安装附加组件"
 
-#: admin/partials/botblocker-admin-display-addons.php:65
+#: admin/partials/botblocker-admin-display-addons.php:67
 msgid "Install Package"
 msgstr "安装包"
 
@@ -7946,8 +7939,8 @@ msgstr "安装包"
 msgid "Install package"
 msgstr "安装包"
 
-#: admin/partials/botblocker-admin-display-addons.php:148
-#: admin/partials/botblocker-admin-display-addons.php:150
+#: admin/partials/botblocker-admin-display-addons.php:151
+#: admin/partials/botblocker-admin-display-addons.php:153
 msgid "Install requires BotBlocker PRO"
 msgstr "安装需要 BotBlocker PRO"
 
@@ -7956,15 +7949,15 @@ msgstr "安装需要 BotBlocker PRO"
 msgid "Installation arguments are missing."
 msgstr "缺少安装参数。"
 
-#: admin/partials/botblocker-admin-display-addons.php:164
-#: admin/partials/botblocker-admin-display-addons.php:166
-#: admin/partials/botblocker-admin-display-addons.php:88
+#: admin/partials/botblocker-admin-display-addons.php:167
+#: admin/partials/botblocker-admin-display-addons.php:169
+#: admin/partials/botblocker-admin-display-addons.php:91
 #: admin/templates/setup-guide/status.php:192
 #: admin/templates/setup-guide/status.php:219
 msgid "Installed"
 msgstr "已安装"
 
-#: admin/partials/botblocker-admin-display-addons.php:119
+#: admin/partials/botblocker-admin-display-addons.php:122
 #, php-format
 msgid "Installed %s"
 msgstr "已安装 %s"
@@ -7981,18 +7974,18 @@ msgstr "即时 IP 封锁"
 msgid "Instant response"
 msgstr "即时响应"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:103
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:188
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:104
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:190
 #: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:45
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:72
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:83
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:73
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:84
 #: addons/bbcs-malware/inc/class-bbcs-malware-background.php:656
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:108
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:116
 #: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:30
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:53
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:55
 #: addons/bbcs-truth-source/inc/class-bbcs-ts-background.php:398
-#: includes/hook/class-botblocker-addon-hooks.php:122
-#: includes/hook/class-botblocker-addon-hooks.php:91
+#: includes/hook/class-botblocker-addon-hooks.php:102
+#: includes/hook/class-botblocker-addon-hooks.php:134
 #: includes/hook/class-botblocker-addon-settings-hooks.php:12
 #: includes/hook/class-botblocker-settings-hooks.php:14
 #: includes/hook/class-botblocker-settings-hooks.php:143
@@ -8162,12 +8155,6 @@ msgstr "无效验证码。"
 #: includes/utilites/2FA/inc-botblocker-2fa.php:381
 msgid "Invalid verification code. Please try again."
 msgstr "无效验证码。请重试。"
-
-#: admin/partials/botblocker-admin-display-reports.php:12
-#: admin/templates/reports/table-header.php:13
-#: includes/modal/modal-botblocker-hits-add-rule.php:23
-msgid "IP"
-msgstr "IP"
 
 #: admin/partials/botblocker-admin-dashboard-widgets.php:193
 msgid "IP / Subnet"
@@ -8347,11 +8334,11 @@ msgstr "JA4 头部名称"
 msgid "JA4 Spec"
 msgstr "JA4 规范"
 
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:107
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:108
 msgid "JavaScript is disabled in your browser. Enable JavaScript to continue."
 msgstr "您的浏览器已禁用 JavaScript。请启用 JavaScript 以继续。"
 
-#: admin/templates/about/body.php:160
+#: admin/templates/about/body.php:151
 msgid "JavaScript Library:"
 msgstr "JavaScript 库："
 
@@ -8407,8 +8394,8 @@ msgstr "已知的非核心文件（预期）"
 
 #: addons/bbcs-cron-jobs/views/settings.php:127
 #: addons/bbcs-cron-jobs/views/settings.php:69
-#: admin/templates/settings/cron.php:176
-#: admin/templates/settings/cron.php:193
+#: admin/templates/settings/cron.php:184
+#: admin/templates/settings/cron.php:202
 msgid "Label"
 msgstr "标签"
 
@@ -8485,19 +8472,18 @@ msgstr "许可证密钥"
 msgid "License, cloud API, premium features"
 msgstr "许可证、云 API、高级功能"
 
-#: admin/templates/about/body.php:174
+#: admin/templates/about/body.php:165
 msgid "Licensed under"
 msgstr "许可协议"
 
-#: admin/templates/about/body.php:190
+#: admin/templates/about/body.php:181
 msgid "Licensed under BSD License, available at"
 msgstr "依据 BSD 许可证授权，可在以下位置获取"
 
 #: admin/templates/about/body.php:147
 #: admin/templates/about/body.php:156
-#: admin/templates/about/body.php:165
+#: admin/templates/about/body.php:190
 #: admin/templates/about/body.php:199
-#: admin/templates/about/body.php:208
 msgid "Licensed under the"
 msgstr "依据"
 
@@ -8545,13 +8531,6 @@ msgstr "要从扫描中排除的路径段列表。"
 #: includes/section/report/botblocker-report-dashboard.php:42
 msgid "Live and historical traffic (IP, country, device, behavior markers)."
 msgstr "实时和历史流量（IP、国家/地区、设备、行为标记）。"
-
-#: admin/partials/botblocker-admin-display-rules.php:77
-#: admin/templates/reports/dashboard.php:31
-#: admin/templates/rules/body.php:21
-#: includes/viewmodels/class-rules-viewmodel.php:111
-msgid "LLM"
-msgstr "大语言模型"
 
 #: includes/ajax/class-botblocker-ajax-llm.php:371
 msgid "LLM file generated successfully."
@@ -8848,13 +8827,17 @@ msgstr "数据库中的恶意IP"
 msgid "Malware"
 msgstr "恶意软件"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:174
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:176
 msgid "Malware Scan"
 msgstr "恶意软件扫描"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:154
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:156
 msgid "Malware Scan Batch"
 msgstr "恶意软件扫描批次"
+
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:49
+msgid "Malware scan started."
+msgstr "恶意软件扫描已启动。"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-addons-page.php:36
 msgid "Malware Scanner"
@@ -8864,7 +8847,7 @@ msgstr "恶意软件扫描器"
 msgid "Malware Scanner: High-Confidence Findings"
 msgstr "恶意软件扫描器：高置信度发现"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:153
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:155
 msgid "Malware Scheduled Scan"
 msgstr "恶意软件定时扫描"
 
@@ -8911,8 +8894,8 @@ msgid "Maps traffic speed percentage to reputation tier 1–5 (tier 6 reserved f
 msgstr "将流量速度百分比映射到信誉等级 1–5（等级 6 保留给已阻止的 IP）。格式：百分比:等级（每行一个）。"
 
 #: admin/class-botblocker-admin.php:673
-#: admin/partials/botblocker-admin-display-addons.php:87
-#: admin/templates/addons/addons-content.php:31
+#: admin/partials/botblocker-admin-display-addons.php:90
+#: admin/templates/addons/addons-content.php:33
 msgid "Marketplace"
 msgstr "市场"
 
@@ -9042,17 +9025,6 @@ msgstr "最大安全加固"
 #: includes/shortcode/botblocker-shortcode-health-full.php:46
 msgid "may reduce protection"
 msgstr "可能会降低保护"
-
-#: admin/partials/botblocker-admin-display-integrations.php:54
-#: admin/partials/botblocker-section-right-sidebar.php:134
-#: admin/templates/integrations/card.php:16
-#: admin/templates/shared/sidebar/status-card.php:83
-#: admin/templates/shared/system-toggles.php:45
-#: includes/data/botblocker-data-snav.php:597
-#: includes/section/integration/botblocker-int-memcached.php:14
-#: includes/viewmodels/class-integrations-viewmodel.php:141
-msgid "Memcached"
-msgstr "Memcached"
 
 #: admin/templates/integrations/memcached.php:31
 #: includes/data/botblocker-data-snav.php:602
@@ -9337,8 +9309,8 @@ msgstr "新闻"
 
 #: addons/bbcs-cron-jobs/views/settings.php:156
 #: addons/bbcs-cron-jobs/views/settings.php:70
-#: admin/templates/settings/cron.php:177
-#: admin/templates/settings/cron.php:194
+#: admin/templates/settings/cron.php:185
+#: admin/templates/settings/cron.php:203
 msgid "Next Run"
 msgstr "下次运行"
 
@@ -9426,7 +9398,7 @@ msgid "No file content provided."
 msgstr "未提供文件内容。"
 
 #: admin/class-botblocker-admin.php:672
-#: admin/partials/botblocker-admin-display-addons.php:60
+#: admin/partials/botblocker-admin-display-addons.php:62
 #: admin/templates/addons/upload-section.php:21
 msgid "No file selected"
 msgstr "未选择文件"
@@ -9470,6 +9442,9 @@ msgstr "没有可用的新闻条目"
 #: admin/class-botblocker-setup-wizard-ajax.php:521
 #: admin/class-botblocker-setup-wizard-ajax.php:56
 #: includes/cron/class-botblocker-cron.php:159
+#: includes/cron/class-botblocker-cron.php:284
+#: includes/cron/class-botblocker-cron.php:320
+#: includes/cron/class-botblocker-cron.php:357
 msgid "No permission."
 msgstr "没有权限。"
 
@@ -9486,7 +9461,7 @@ msgstr "尚无扫描结果。"
 msgid "No scheduled cron jobs found."
 msgstr "未找到计划的 Cron 作业。"
 
-#: admin/templates/settings/cron.php:220
+#: admin/templates/settings/cron.php:234
 msgid "No scheduled tasks at this time."
 msgstr "当前没有计划任务。"
 
@@ -9498,7 +9473,11 @@ msgstr "无需特殊配置"
 msgid "No special setup required"
 msgstr "无需特殊设置"
 
-#: admin/partials/botblocker-admin-display-addons.php:224
+#: includes/cron/class-botblocker-cron.php:391
+msgid "No stale tasks found."
+msgstr "未发现过期任务。"
+
+#: admin/partials/botblocker-admin-display-addons.php:227
 msgid "No Update Source"
 msgstr "无更新源"
 
@@ -9506,10 +9485,10 @@ msgstr "无更新源"
 msgid "No visible checks. Decisions based on IP databases and threat intelligence."
 msgstr "无可见检查。决策基于 IP 数据库和威胁情报。"
 
-#: includes/hook/class-botblocker-addon-hooks.php:217
-#: includes/hook/class-botblocker-addon-hooks.php:290
-#: includes/hook/class-botblocker-addon-hooks.php:355
-#: includes/hook/class-botblocker-addon-hooks.php:408
+#: includes/hook/class-botblocker-addon-hooks.php:226
+#: includes/hook/class-botblocker-addon-hooks.php:300
+#: includes/hook/class-botblocker-addon-hooks.php:366
+#: includes/hook/class-botblocker-addon-hooks.php:417
 msgid "Nonce verification failed."
 msgstr "Nonce 验证失败。"
 
@@ -9560,7 +9539,7 @@ msgstr "不需要"
 msgid "Not saved!"
 msgstr "未保存！"
 
-#: admin/templates/addons/addons-content.php:64
+#: admin/templates/addons/addons-content.php:66
 #: admin/templates/integrations.php:31
 #: admin/templates/settings/save-settings.php:10
 #: admin/templates/tools.php:31
@@ -9840,9 +9819,9 @@ msgid "Outsourcing"
 msgstr "外包"
 
 #: addons/bbcs-cron-jobs/views/settings.php:165
-#: addons/bbcs-cron-jobs/views/settings.php:238
-#: admin/templates/settings/cron.php:211
-#: admin/templates/settings/cron.php:255
+#: addons/bbcs-cron-jobs/views/settings.php:240
+#: admin/templates/settings/cron.php:220
+#: admin/templates/settings/cron.php:270
 msgid "Overdue"
 msgstr "逾期"
 
@@ -9966,7 +9945,7 @@ msgctxt "device type label"
 msgid "PC"
 msgstr "个人电脑"
 
-#: admin/templates/settings/cron.php:213
+#: admin/templates/settings/cron.php:222
 msgid "Pending"
 msgstr "待处理"
 
@@ -10072,7 +10051,7 @@ msgid "Please Confirm"
 msgstr "请确认"
 
 #: includes/botblocker/traits/class-botblocker-block-page-trait.php:14
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:207
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:208
 #: includes/botblocker/traits/class-botblocker-denied-page-trait.php:14
 #: public/template-botblocker-denied.php:217
 msgid "Please enable JavaScript and reload the page"
@@ -10129,7 +10108,7 @@ msgstr "政策链接标签"
 msgid "Policy URL"
 msgstr "政策网址"
 
-#: admin/partials/botblocker-admin-display-addons.php:93
+#: admin/partials/botblocker-admin-display-addons.php:96
 msgid "Popular add-ons, new possibilities"
 msgstr "流行的附加组件，新的可能性"
 
@@ -10138,7 +10117,7 @@ msgstr "流行的附加组件，新的可能性"
 msgid "Position"
 msgstr "位置"
 
-#: admin/partials/botblocker-admin-display-addons.php:72
+#: admin/partials/botblocker-admin-display-addons.php:75
 msgid "Premium add-ons - included with BotBlocker PRO"
 msgstr "高级附加组件 - BotBlocker PRO 包含"
 
@@ -10272,7 +10251,7 @@ msgstr "隐私政策"
 
 #: admin/class-botblocker-admin.php:1271
 #: admin/class-botblocker-admin.php:1272
-#: admin/templates/addons/marketplace-panel.php:68
+#: admin/templates/addons/marketplace-panel.php:71
 #: admin/templates/cloud-api/status.php:100
 #: admin/templates/integrations/redis.php:33
 #: admin/templates/settings/status.php:40
@@ -10383,8 +10362,8 @@ msgstr "配置文件已应用。"
 
 #: addons/bbcs-cron-jobs/views/settings.php:159
 #: addons/bbcs-cron-jobs/views/settings.php:71
-#: admin/templates/settings/cron.php:178
-#: admin/templates/settings/cron.php:201
+#: admin/templates/settings/cron.php:186
+#: admin/templates/settings/cron.php:210
 msgid "Progress"
 msgstr "进度"
 
@@ -10537,18 +10516,6 @@ msgstr "代理更新成功。"
 #: includes/section/setup/botblocker-setup-pro.php:33
 msgid "Proxy, VPN, and Tor detection"
 msgstr "代理、VPN 和 Tor 检测"
-
-#: admin/partials/botblocker-admin-display-reports.php:12
-#: admin/templates/reports/table-header.php:13
-#: admin/templates/settings/bot-detection.php:27
-#: admin/templates/settings/general.php:27
-#: includes/modal/modal-botblocker-hits-add-rule.php:25
-#: includes/modal/modal-botblocker-rule-add.php:26
-#: includes/modal/modal-botblocker-rule-edit.php:25
-#: includes/section/settings/botblocker-set-general.php:29
-#: includes/section/settings/botblocker-set-simple.php:31
-msgid "PTR"
-msgstr "PTR"
 
 #: admin/templates/settings/bot-detection.php:56
 #: includes/data/botblocker-data-snav.php:81
@@ -10996,17 +10963,6 @@ msgstr "重定向"
 msgid "Redirect URL"
 msgstr "重定向URL"
 
-#: admin/partials/botblocker-admin-display-integrations.php:57
-#: admin/partials/botblocker-section-right-sidebar.php:111
-#: admin/templates/integrations/card.php:17
-#: admin/templates/shared/sidebar/status-card.php:74
-#: admin/templates/shared/system-toggles.php:44
-#: includes/data/botblocker-data-snav.php:613
-#: includes/section/integration/botblocker-int-redis.php:14
-#: includes/viewmodels/class-integrations-viewmodel.php:143
-msgid "Redis"
-msgstr "Redis"
-
 #: includes/data/botblocker-data-snav.php:624
 msgid "Redis Authentication Password"
 msgstr "Redis认证密码"
@@ -11373,7 +11329,7 @@ msgstr "用于计划任务和备份所必须"
 msgid "Required:"
 msgstr "必需："
 
-#: admin/partials/botblocker-admin-display-addons.php:199
+#: admin/partials/botblocker-admin-display-addons.php:202
 msgid "Requires a newer BotBlocker version"
 msgstr "需要更新的BotBlocker版本"
 
@@ -11387,8 +11343,8 @@ msgstr "需要Web服务器模块（nginx、HAProxy、LiteSpeed）或Cloudflare�
 msgid "Requires active BotBlocker PRO"
 msgstr "需要激活的BotBlocker PRO"
 
-#: admin/partials/botblocker-admin-display-addons.php:123
-#: admin/partials/botblocker-admin-display-addons.php:199
+#: admin/partials/botblocker-admin-display-addons.php:126
+#: admin/partials/botblocker-admin-display-addons.php:202
 #, php-format
 msgid "Requires BotBlocker >= %s"
 msgstr "需要BotBlocker >= %s"
@@ -11398,7 +11354,7 @@ msgstr "需要BotBlocker >= %s"
 msgid "Requires BotBlocker PRO and the Early Init add-on."
 msgstr "需要BotBlocker PRO和Early Init附加组件。"
 
-#: admin/templates/addons/marketplace-panel.php:110
+#: admin/templates/addons/marketplace-panel.php:113
 #: admin/templates/setup-guide/one-click-modal.php:81
 #: includes/modal/modal-botblocker-setup-wizard.php:80
 msgid "Requires PRO"
@@ -11517,7 +11473,7 @@ msgstr "限制代理服务器、数据中心、VPN和旧版协议，以减少自
 msgid "Retrieves your BotBlocker PRO key from the cloud."
 msgstr "从云端获取您的BotBlocker PRO密钥。"
 
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:123
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:124
 msgid "Retrying..."
 msgstr "正在重试..."
 
@@ -11534,10 +11490,6 @@ msgstr "查看安全评分"
 #: admin/class-botblocker-admin.php:608
 msgid "Rewrite rules successfully flushed!"
 msgstr "重写规则成功刷新！"
-
-#: admin/templates/reports/dashboard.php:31
-msgid "RKN"
-msgstr "RKN"
 
 #: admin/templates/integrations/2fa.php:124
 #: includes/data/botblocker-data-snav.php:653
@@ -11727,10 +11679,18 @@ msgstr "规则文件生成成功。"
 msgid "Rules will be regenerated automatically."
 msgstr "规则将自动重新生成。"
 
+#: admin/templates/settings/cron.php:170
+msgid "Run all recurring tasks immediately"
+msgstr "立即运行所有重复任务"
+
 #: includes/data/botblocker-data-palette.php:81
 #: includes/data/botblocker-data-palette.php:82
 msgid "Run malware scan - virus, infected files"
 msgstr "运行恶意软件扫描 - 病毒、受感染文件"
+
+#: admin/templates/settings/cron.php:173
+msgid "Run only overdue tasks"
+msgstr "仅运行过期的任务"
 
 #: includes/data/botblocker-data-palette.php:65
 msgid "Run setup wizard - guide, onboarding, first steps"
@@ -11744,6 +11704,10 @@ msgstr "再次运行设置向导"
 #: includes/section/dashboard/botblocker-dash-health.php:55
 msgid "Run the wizard to configure protection"
 msgstr "运行向导以配置保护"
+
+#: admin/templates/settings/cron.php:226
+msgid "Run this task now"
+msgstr "立即运行此任务"
 
 #: includes/data/botblocker-data-palette.php:105
 #: includes/data/botblocker-data-palette.php:106
@@ -11802,11 +11766,11 @@ msgstr "SameSite Cookie"
 msgid "SameSite policy controls cross-site cookie behavior to protect against CSRF attacks."
 msgstr "SameSite策略控制跨站cookie行为以防御CSRF攻击。"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:88
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:89
 msgid "Sample file not found."
 msgstr "未找到示例文件。"
 
-#: admin/templates/addons/addons-content.php:65
+#: admin/templates/addons/addons-content.php:67
 #: admin/templates/integrations.php:32
 #: admin/templates/settings/save-settings.php:13
 #: admin/templates/tools.php:32
@@ -11878,12 +11842,12 @@ msgstr "保存中..."
 msgid "Scan active and inactive themes for malicious code."
 msgstr "扫描活跃和非活跃主题中的恶意代码。"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:192
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:213
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:194
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:215
 msgid "Scan cancelled."
 msgstr "扫描已取消。"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:211
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:213
 msgid "Scan completed. Refreshing results..."
 msgstr "扫描完成。正在刷新结果..."
 
@@ -11931,6 +11895,11 @@ msgstr "扫描文章、页面、选项、用户和 cron 钩子"
 msgid "Scan QR Code"
 msgstr "扫描二维码"
 
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:112
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:63
+msgid "Scan results cleared."
+msgstr "扫描结果已清除。"
+
 #: addons/bbcs-malware/inc/class-bbcs-malware-addons-page.php:46
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:117
 #: addons/bbcs-truth-source/inc/class-bbcs-truth-source-addons-page.php:47
@@ -11938,7 +11907,7 @@ msgstr "扫描二维码"
 msgid "Scan Scope"
 msgstr "扫描范围"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:76
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:77
 msgid "Scan started."
 msgstr "扫描已开始。"
 
@@ -12029,8 +11998,8 @@ msgstr "扫描 WordPress 文件和数据库内容，查找危险的执行、混�
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:317
 #: addons/bbcs-truth-source/inc/class-bbcs-truth-source-addons-page.php:75
 #: addons/bbcs-truth-source/inc/class-bbcs-ts-settings-view.php:193
-#: admin/templates/settings/cron.php:175
-#: admin/templates/settings/cron.php:186
+#: admin/templates/settings/cron.php:183
+#: admin/templates/settings/cron.php:195
 msgid "Schedule"
 msgstr "计划"
 
@@ -12187,9 +12156,9 @@ msgstr "安全与隐私"
 msgid "Security blog"
 msgstr "安全博客"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:103
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:111
 #: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:25
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:48
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:50
 #: includes/ajax/class-botblocker-ajax-backup.php:181
 #: includes/ajax/class-botblocker-ajax-debug.php:192
 #: public/2FA/bbcs-2fa.php:118
@@ -12519,9 +12488,9 @@ msgstr "机顶盒"
 #: admin/class-botblocker-setup-wizard-renderer.php:34
 #: admin/partials/botblocker-admin-dashboard-widgets.php:127
 #: admin/partials/botblocker-admin-display-settings.php:135
-#: admin/templates/addons/marketplace-panel.php:134
-#: admin/templates/addons/marketplace-panel.php:146
-#: admin/templates/addons/marketplace-panel.php:232
+#: admin/templates/addons/marketplace-panel.php:137
+#: admin/templates/addons/marketplace-panel.php:149
+#: admin/templates/addons/marketplace-panel.php:235
 #: admin/templates/dashboard/quick-links.php:11
 #: admin/templates/setup-guide/status.php:196
 #: admin/templates/setup-wizard/completed.php:52
@@ -12535,7 +12504,7 @@ msgstr "机顶盒"
 msgid "Settings"
 msgstr "设置"
 
-#: includes/hook/class-botblocker-settings-hooks.php:356
+#: includes/hook/class-botblocker-settings-hooks.php:357
 msgid "Settings saved."
 msgstr "设置已保存。"
 
@@ -12802,7 +12771,7 @@ msgstr "已跳过："
 msgid "Sliding window size in minutes. RPM = total hits in window / window minutes. Default: 5."
 msgstr "滑动窗口大小（分钟）。RPM = 窗口内的总点击次数 / 窗口分钟数。默认值：5。"
 
-#: admin/templates/about/body.php:215
+#: admin/templates/about/body.php:206
 #: includes/section/about/botblocker-about-status.php:56
 msgid "Software versions"
 msgstr "软件版本"
@@ -12914,7 +12883,7 @@ msgstr "开始向导"
 msgid "Start Wizard"
 msgstr "开始向导"
 
-#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:208
+#: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:210
 msgid "Starting scan..."
 msgstr "正在开始扫描..."
 
@@ -12933,8 +12902,8 @@ msgstr "统计显示模式"
 #: addons/bbcs-cron-jobs/views/settings.php:72
 #: addons/bbcs-early-init/inc/class-bbcs-early-init-addons-page.php:43
 #: admin/partials/botblocker-section-right-sidebar.php:26
-#: admin/templates/settings/cron.php:179
-#: admin/templates/settings/cron.php:207
+#: admin/templates/settings/cron.php:187
+#: admin/templates/settings/cron.php:216
 #: admin/templates/shared/sidebar/rail.php:13
 #: admin/templates/shared/sidebar/status-card.php:18
 msgid "Status"
@@ -13265,6 +13234,12 @@ msgstr "目标 IP/子网"
 msgid "Targets: %1$d. Clean: %2$d. Issues: %3$d. Unverifiable: %4$d. Added: %5$d. Modified: %6$d. Missing: %7$d. Expected: %8$d. Ignored: %9$d."
 msgstr "目标：%1$d。干净：%2$d。问题：%3$d。无法验证：%4$d。已添加：%5$d。已修改：%6$d。缺失：%7$d。预期：%8$d。已忽略：%9$d。"
 
+#. translators: %s: cron hook name
+#: includes/cron/class-botblocker-cron.php:309
+#, php-format
+msgid "Task %s executed successfully."
+msgstr "任务 %s 已成功执行。"
+
 #: admin/templates/settings/cron.php:164
 #: includes/data/botblocker-data-snav.php:390
 msgid "Task List"
@@ -13581,7 +13556,7 @@ msgstr "第三方"
 msgid "This action cannot be undone."
 msgstr "此操作无法撤消。"
 
-#: admin/partials/botblocker-admin-display-addons.php:257
+#: admin/partials/botblocker-admin-display-addons.php:260
 msgid "This add-on is incompatible with your BotBlocker version. Delete anyway?"
 msgstr "此插件与您的 BotBlocker 版本不兼容。仍然删除吗？"
 
@@ -13730,7 +13705,7 @@ msgstr "要启用数据库修复和优化："
 msgid "To receive important security news and special offers."
 msgstr "接收重要的安全新闻和特别优惠。"
 
-#: admin/templates/about/body.php:203
+#: admin/templates/about/body.php:194
 msgid "Toast Notifications:"
 msgstr "弹出通知："
 
@@ -14066,7 +14041,7 @@ msgstr "真相源比较器"
 msgid "Truth Source Settings"
 msgstr "真相源设置"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:147
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:155
 msgid "Truth Source: Background Scan Progress"
 msgstr "真相源：后台扫描进度"
 
@@ -14074,11 +14049,11 @@ msgstr "真相源：后台扫描进度"
 msgid "Truth Source: File Integrity Issues"
 msgstr "真相源：文件完整性问题"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:138
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:146
 msgid "Truth Source: Scan Batch"
 msgstr "真相源：扫描批次"
 
-#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:137
+#: addons/bbcs-truth-source/inc/class-bbcs-ts-admin.php:145
 msgid "Truth Source: Scheduled Scan"
 msgstr "Truth Source: 定时扫描"
 
@@ -14331,6 +14306,10 @@ msgstr "唯一访客（按 IP）"
 msgid "Unknown chart data type."
 msgstr "未知的图表数据类型。"
 
+#: includes/cron/class-botblocker-cron.php:291
+msgid "Unknown cron task."
+msgstr "未知的 cron 任务。"
+
 #: admin/class-botblocker-setup-wizard.php:234
 #: admin/class-botblocker-setup-wizard.php:359
 msgid "Unknown error"
@@ -14360,18 +14339,18 @@ msgstr "无响应 IP 封锁"
 msgid "Until changed"
 msgstr "直到更改"
 
-#: admin/partials/botblocker-admin-display-addons.php:160
-#: admin/partials/botblocker-admin-display-addons.php:221
-#: admin/partials/botblocker-admin-display-addons.php:245
-#: admin/templates/addons/marketplace-panel.php:129
-#: admin/templates/addons/marketplace-panel.php:189
-#: admin/templates/addons/marketplace-panel.php:227
-#: admin/templates/addons/marketplace-panel.php:74
+#: admin/partials/botblocker-admin-display-addons.php:163
+#: admin/partials/botblocker-admin-display-addons.php:224
+#: admin/partials/botblocker-admin-display-addons.php:248
+#: admin/templates/addons/marketplace-panel.php:132
+#: admin/templates/addons/marketplace-panel.php:192
+#: admin/templates/addons/marketplace-panel.php:230
+#: admin/templates/addons/marketplace-panel.php:77
 msgid "Update"
 msgstr "更新"
 
 #. translators: %d: number of add-ons with available updates.
-#: admin/partials/botblocker-admin-display-addons.php:36
+#: admin/partials/botblocker-admin-display-addons.php:37
 #: admin/templates/addons.php:23
 #, php-format
 msgid "Update All (%d)"
@@ -14387,19 +14366,19 @@ msgstr "更新 ASN 数据库"
 msgid "Update ASN database - geo, network, country data"
 msgstr "更新 ASN 数据库 - 地理、网络、国家数据"
 
-#: admin/partials/botblocker-admin-display-addons.php:128
+#: admin/partials/botblocker-admin-display-addons.php:131
 #, php-format
 msgid "Update available, requires BotBlocker >= %s"
 msgstr "有可用更新，需要 BotBlocker >= %s"
 
-#: admin/partials/botblocker-admin-display-addons.php:135
-#: admin/partials/botblocker-admin-display-addons.php:208
+#: admin/partials/botblocker-admin-display-addons.php:138
 #: admin/partials/botblocker-admin-display-addons.php:211
+#: admin/partials/botblocker-admin-display-addons.php:214
 #, php-format
 msgid "Update BotBlocker to %s to use this add-on"
 msgstr "将 BotBlocker 更新到 %s 以使用此附加组件"
 
-#: admin/partials/botblocker-admin-display-addons.php:164
+#: admin/partials/botblocker-admin-display-addons.php:167
 #, php-format
 msgid "Update requires BotBlocker >= %s"
 msgstr "更新需要 BotBlocker >= %s"
@@ -14450,11 +14429,11 @@ msgstr "升级到Pro以使用行为引擎。它具备先进的多信号评分和
 msgid "Upgrade your plan for better protection."
 msgstr "升级您的计划以获得更好的保护。"
 
-#: admin/partials/botblocker-admin-display-addons.php:50
+#: admin/partials/botblocker-admin-display-addons.php:52
 msgid "Upload a BotBlocker add-on package. It will be installed inactive, then you can review and activate it from the Installed tab."
 msgstr "上传一个BotBlocker附加包。它将以未激活状态安装，然后您可以从“已安装”选项卡查看并激活它。"
 
-#: admin/partials/botblocker-admin-display-addons.php:26
+#: admin/partials/botblocker-admin-display-addons.php:27
 #: admin/templates/addons.php:22
 msgid "Upload ZIP"
 msgstr "上传ZIP"
@@ -14462,11 +14441,6 @@ msgstr "上传ZIP"
 #: admin/partials/botblocker-admin-dashboard-widgets.php:176
 msgid "Uploading a new list will add new IPs and skip existing ones. Invalid lines will be skipped automatically."
 msgstr "上传新列表将添加新IP并跳过现有IP。无效行将自动跳过。"
-
-#: includes/modal/modal-botblocker-rule-add.php:29
-#: includes/modal/modal-botblocker-rule-edit.php:28
-msgid "URI"
-msgstr "URI"
 
 #: includes/modal/modal-botblocker-rewrite-rules.php:13
 msgid "URL rewrite rules will be reset:"
@@ -14533,7 +14507,7 @@ msgstr "使用此链接在当前会话中临时禁用BotBlocker检查。"
 msgid "Use WordPress transients. Works on any hosting."
 msgstr "使用WordPress瞬态。适用于任何主机。"
 
-#: admin/templates/about/body.php:181
+#: admin/templates/about/body.php:172
 msgid "used with attribution"
 msgstr "在注明出处的情况下使用"
 
@@ -14617,7 +14591,7 @@ msgstr "验证码是必需的。"
 msgid "Verification failed."
 msgstr "验证失败。"
 
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:124
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:125
 msgid "Verification failed. Please complete the challenge below."
 msgstr "验证失败。请完成下面的挑战。"
 
@@ -14687,7 +14661,7 @@ msgstr "正在验证%s完整性"
 msgid "Verifying file integrity..."
 msgstr "正在验证文件完整性..."
 
-#: includes/botblocker/traits/class-botblocker-check-page-trait.php:122
+#: includes/botblocker/traits/class-botblocker-check-page-trait.php:123
 #: public/captcha/render-hold-button-trait.php:31
 msgid "Verifying..."
 msgstr "正在验证..."
@@ -14697,8 +14671,8 @@ msgstr "正在验证..."
 msgid "Version"
 msgstr "版本"
 
-#: admin/partials/botblocker-admin-display-addons.php:114
-#: admin/partials/botblocker-admin-display-addons.php:195
+#: admin/partials/botblocker-admin-display-addons.php:117
+#: admin/partials/botblocker-admin-display-addons.php:198
 #, php-format
 msgid "Version %s"
 msgstr "版本%s"
@@ -15111,7 +15085,7 @@ msgstr "WordPress核心优化"
 msgid "WordPress development"
 msgstr "WordPress开发"
 
-#: includes/hook/hook-addon-install.php:114
+#: includes/hook/hook-addon-install.php:117
 msgid "WordPress filesystem is unavailable."
 msgstr "WordPress文件系统不可用。"
 
@@ -15153,7 +15127,7 @@ msgid "WordPress speed optimizations"
 msgstr "WordPress速度优化"
 
 #. phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-#: includes/botblocker/class-botblocker.php:241
+#: includes/botblocker/class-botblocker.php:242
 msgid "WordPress stopped by BotBlocker"
 msgstr "WordPress被BotBlocker阻止"
 
@@ -15195,11 +15169,6 @@ msgstr "WP Super Cache（专家/mod_rewrite模式）通过.htaccess提供缓存�
 #: addons/bbcs-early-init/inc/class-bbcs-early-init-addons-page.php:46
 msgid "wp-config.php Integration"
 msgstr "wp-config.php集成"
-
-#: admin/templates/settings/cron.php:88
-#: includes/section/settings/botblocker-set-cron.php:27
-msgid "WP-Cron"
-msgstr "WP-定时任务"
 
 #: addons/bbcs-cron-jobs/views/settings.php:26
 msgid "WP-Cron Documentation"
