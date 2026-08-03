@@ -6,7 +6,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require_once __DIR__ . '/class-botblocker-setup-wizard-ajax.php';
-require_once __DIR__ . '/class-botblocker-setup-wizard-renderer.php';
 
 class BotBlocker_SetupWizard {
 
@@ -59,12 +58,7 @@ class BotBlocker_SetupWizard {
 		remove_action( 'admin_print_styles', 'print_emoji_styles' );
 		remove_action( 'admin_head', 'wp_admin_bar_header' );
 
-		if ( $this->is_new_ui_mode() ) {
-			$this->load_new_ui_wizard();
-			return;
-		}
-
-		$this->load_setup_wizard();
+		$this->load_new_ui_wizard();
 	}
 
 	public function redirect_after_activation(): void {
@@ -137,25 +131,6 @@ class BotBlocker_SetupWizard {
 		}
 		flush();
 		exit;
-	}
-
-	private function load_setup_wizard(): void {
-		if ( ! $this->should_setup_wizard_load() ) {
-			return;
-		}
-
-		$this->setup_wizard_header();
-		$this->setup_wizard_content();
-		$this->setup_wizard_footer();
-		while ( ob_get_level() > 0 ) {
-			ob_end_flush();
-		}
-		flush();
-		exit;
-	}
-
-	private function is_new_ui_mode(): bool {
-		return defined( 'BBCS_NEW_ADMIN_UI' ) && BBCS_NEW_ADMIN_UI;
 	}
 
 	private function render_new_ui_wizard(): void {
@@ -318,77 +293,6 @@ class BotBlocker_SetupWizard {
 		}
 
 		return true;
-	}
-
-	public function setup_wizard_header(): void {
-		// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet, WordPress.WP.EnqueuedResources.NonEnqueuedScript 
-		?>
-		<!DOCTYPE html>
-		<html <?php language_attributes(); ?>>
-		<head>
-			<meta name="viewport" content="width=device-width"/>
-			<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-			<title><?php esc_html_e( 'BotBlocker Security &rsaquo; Setup Wizard', 'botblocker-security' ); ?></title>
-			
-			<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700&display=swap">
-			<link rel="stylesheet" href="<?php echo esc_url( add_query_arg( 'ver', BOTBLOCKER_VERSION, plugin_dir_url( __FILE__ ) . 'css/bootstrap/bootstrap.min.css' ) ); ?>">
-			<link rel="stylesheet" href="<?php echo esc_url( add_query_arg( 'ver', BOTBLOCKER_VERSION, plugin_dir_url( __FILE__ ) . 'css/theme.css' ) ); ?>">
-			<link rel="stylesheet" href="<?php echo esc_url( add_query_arg( 'ver', BOTBLOCKER_VERSION, plugin_dir_url( __FILE__ ) . 'css/default.css' ) ); ?>">
-			<link rel="stylesheet" href="<?php echo esc_url( add_query_arg( 'ver', BOTBLOCKER_VERSION, plugin_dir_url( __FILE__ ) . 'css/all.min.css' ) ); ?>">
-			<link rel="stylesheet" href="<?php echo esc_url( add_query_arg( 'ver', BOTBLOCKER_VERSION, plugin_dir_url( __FILE__ ) . 'css/botblocker-setup-wizard.css' ) ); ?>">
-			
-			<script src="<?php echo esc_url( includes_url( 'js/jquery/jquery.min.js' ) ); ?>"></script>
-			<script>
-				var bbcs_setup_wizard_vars = 
-				<?php
-				echo wp_json_encode(
-					array(
-						'ajax_url'           => admin_url( 'admin-ajax.php' ),
-						'nonce'              => wp_create_nonce( 'bbcs-wizard-admin-nonce' ),
-						'plugin_version'     => BOTBLOCKER_VERSION,
-						'public_url'         => BOTBLOCKER_URL . 'public/',
-						'current_user_email' => wp_get_current_user()->user_email,
-						'dashboard_url'      => BotBlockerMultisite::getSiteAdminPageUrl( 'bbcs_dashboard' ),
-						'reports_url'        => BotBlockerMultisite::getSiteAdminPageUrl( 'bbcs_reports' ),
-						'current_ip'         => BotBlockerIp::getCurrentIp(),
-						'site_url'           => home_url( '/' ),
-						'i18n'               => array(
-							'confirm_apply_defaults' => __( 'Are you sure? We will apply the default settings (Balanced).', 'botblocker-security' ),
-							'auto_fix_stub'          => __( 'Automatic fix applied (stub). Moving on.', 'botblocker-security' ),
-							'error_prefix'           => __( 'Error: ', 'botblocker-security' ),
-							'unknown_error'          => __( 'Unknown error', 'botblocker-security' ),
-							'ajax_error'             => __( 'AJAX error', 'botblocker-security' ),
-							'ajax_error_compat'      => __( 'AJAX error during compatibility test', 'botblocker-security' ),
-							'ajax_error_captcha'     => __( 'AJAX error during captcha save', 'botblocker-security' ),
-							'ajax_error_init'        => __( 'AJAX error during init mode save', 'botblocker-security' ),
-							'ajax_error_cache'       => __( 'AJAX error during cache save', 'botblocker-security' ),
-							'test_failed_prefix'     => __( 'Test failed: ', 'botblocker-security' ),
-							'saving'                 => __( 'Saving...', 'botblocker-security' ),
-							'apply_preset'           => __( 'Apply preset', 'botblocker-security' ),
-						),
-					)
-				);
-				?>
-												;
-			</script>
-			<script src="<?php echo esc_url( add_query_arg( 'ver', BOTBLOCKER_VERSION, plugin_dir_url( __FILE__ ) . 'js/bootstrap/bootstrap.bundle.min.js' ) ); ?>"></script>
-			<script src="<?php echo esc_url( add_query_arg( 'ver', BOTBLOCKER_VERSION, plugin_dir_url( __FILE__ ) . 'js/botblocker-setup-wizard.js' ) ); ?>"></script>
-		</head>
-		<body class="botblocker-security-setup-wizard">
-		<?php
-		// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet, WordPress.WP.EnqueuedResources.NonEnqueuedScript
-	}
-
-	public function setup_wizard_content(): void {
-		$renderer = new BotBlocker_SetupWizardRenderer();
-		$renderer->render_wizard_content();
-	}
-
-	public function setup_wizard_footer(): void {
-		?>
-		</body>
-		</html>
-		<?php
 	}
 
 }

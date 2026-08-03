@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * This class is responsible for all the operations against bots.
  * It handles detections, logging, and blocking of suspicious bot activities.
  *
- * @version    1.7.2
+ * @version    1.7.3
  * @author     BotBlocker Team
  * @package    Botblocker
  * @subpackage Botblocker/includes
@@ -246,8 +246,25 @@ class BotBlocker extends BotBlockerBase {
 	}
 
 	private function maybe_spawn_cron(): void {
-		if ( function_exists( 'spawn_cron' ) && ! defined( 'DOING_CRON' ) ) {
-			spawn_cron();
+		if ( ! $this->should_spawn_cron(
+			function_exists( 'spawn_cron' ),
+			defined( 'DOING_CRON' ),
+			(bool) ( defined( 'ALTERNATE_WP_CRON' ) && ALTERNATE_WP_CRON )
+		) ) {
+			return;
+		}
+		$this->ensure_cron_lock_timeout( defined( 'WP_CRON_LOCK_TIMEOUT' ) );
+		spawn_cron();
+	}
+
+	private function should_spawn_cron( bool $spawn_exists, bool $doing_cron, bool $alternate ): bool {
+		return $spawn_exists && ! $doing_cron && ! $alternate;
+	}
+
+	private function ensure_cron_lock_timeout( bool $already_defined ): void {
+		// Core defines WP_CRON_LOCK_TIMEOUT after plugins_loaded - too late for process_die().
+		if ( ! $already_defined ) {
+			define( 'WP_CRON_LOCK_TIMEOUT', MINUTE_IN_SECONDS );
 		}
 	}
 }

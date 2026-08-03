@@ -240,4 +240,65 @@
     }
   });
 
+  /* Modal shim */
+  function bbcsModalElementAction(el, action) {
+    if (!el) return;
+    if (el.classList.contains('bbcs-modal-overlay')) {
+      el.style.display = action === 'show' ? 'flex' : 'none';
+      return;
+    }
+    if (action === 'show') {
+      el.classList.add('show');
+      document.body.classList.add('modal-open');
+    } else {
+      el.classList.remove('show');
+      document.body.classList.remove('modal-open');
+    }
+  }
+
+  function bbcsModalShow(el) {
+    bbcsModalElementAction(el, 'show');
+  }
+
+  function bbcsModalHide(el) {
+    bbcsModalElementAction(el, 'hide');
+  }
+
+  if (typeof $.fn.modal !== 'function') {
+    $.fn.modal = function (action) {
+      return this.each(function () {
+        bbcsModalElementAction(this, action);
+      });
+    };
+  }
+
+  $(document).on('click', '[data-bs-dismiss="modal"]', function () {
+    var $modal = $(this).closest('.modal, .bbcs-modal-overlay');
+    if ($modal.length) {
+      bbcsModalHide($modal[0]);
+    }
+  });
+
+  $(document).on('click', '.modal.show', function (e) {
+    if (e.target === this) {
+      bbcsModalHide(this);
+    }
+  });
+
+  $(document).on('click', '[data-modal-close]', function () {
+    var overlay = this.closest('.bbcs-modal-overlay');
+    if (overlay) {
+      bbcsModalHide(overlay);
+    }
+  });
+
+  window.BBCS_Helpers.modalShow = function (sel) {
+    var $el = sel instanceof jQuery ? sel : $(sel);
+    if ($el.length) bbcsModalShow($el[0]);
+  };
+  window.BBCS_Helpers.modalHide = function (sel) {
+    var $el = sel instanceof jQuery ? sel : $(sel);
+    if ($el.length) bbcsModalHide($el[0]);
+  };
+
 })(jQuery);

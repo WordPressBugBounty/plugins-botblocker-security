@@ -13,6 +13,28 @@ function bbcs_extract_locale_from_mo( string $path, string $text_domain = 'botbl
 	return false;
 }
 
+function bbcs_find_mo_files(): array {
+	$seen  = array();
+	$files = array();
+	$dirs  = array( WP_LANG_DIR . '/plugins/', BOTBLOCKER_DIR . 'languages/' );
+
+	foreach ( $dirs as $dir ) {
+		$found = glob( $dir . 'botblocker-*.mo' );
+		if ( ! is_array( $found ) ) {
+			continue;
+		}
+		foreach ( $found as $f ) {
+			$locale = bbcs_extract_locale_from_mo( $f, 'botblocker-security' );
+			if ( $locale && ! isset( $seen[ $locale ] ) ) {
+				$seen[ $locale ] = true;
+				$files[]         = $f;
+			}
+		}
+	}
+
+	return $files;
+}
+
 /**
  * Custom locale
  * @param $locale string - 'ru_RU', 'en_US', etc.
@@ -39,38 +61,57 @@ function bbcs_custom_locale_display_name( string $locale ): string {
 		'he_IL' => 'עברית',
 	);
 
-	return $names_native[ $locale ] ?? $locale;
+	if ( isset( $names_native[ $locale ] ) ) {
+		return $names_native[ $locale ];
+	}
+
+	$translations = function_exists( 'wp_get_available_translations' )
+		? wp_get_available_translations()
+		: array();
+	if ( isset( $translations[ $locale ]['native_name'] ) ) {
+		return $translations[ $locale ]['native_name'];
+	}
+
+	if ( class_exists( 'Locale' ) ) {
+		$display = Locale::getDisplayName( $locale, $locale );
+		if ( $display !== $locale ) {
+			return $display;
+		}
+	}
+
+	return $locale;
 }
 
 function bbcs_get_lang_options_html(): void {
-	$mo_files = glob( BOTBLOCKER_DIR . 'languages/botblocker-*.mo' );
-	$items = array();
+	$mo_files = bbcs_find_mo_files();
+	$items    = array();
 
-	if ( is_array( $mo_files ) ) {
-		$lang_to_flag = array(
-			'ja' => 'jp',
-			'uk' => 'ua',
-			'ar' => 'sa',
-			'ko' => 'kr',
-		);
+	$lang_to_flag = array(
+		'ja' => 'jp',
+		'uk' => 'ua',
+		'ar' => 'sa',
+		'ko' => 'kr',
+	);
 
-		foreach ( $mo_files as $f ) {
-			$data_lang = bbcs_extract_locale_from_mo( $f, 'botblocker-security' );
-
-			if ( preg_match( '/^[a-z]{2,3}_([A-Z]{2})$/i', $data_lang, $matches ) ) {
-				$flag = strtolower( $matches[1] );
-			} elseif ( isset( $lang_to_flag[ $data_lang ] ) ) {
-				$flag = $lang_to_flag[ $data_lang ];
-			} else {
-				$flag = strtolower( $data_lang );
-			}
-
-			$items[] = array(
-				'lang' => $data_lang,
-				'flag' => $flag,
-				'name' => bbcs_custom_locale_display_name( $data_lang ),
-			);
+	foreach ( $mo_files as $f ) {
+		$data_lang = bbcs_extract_locale_from_mo( $f, 'botblocker-security' );
+		if ( ! $data_lang ) {
+			continue;
 		}
+
+		if ( preg_match( '/^[a-z]{2,3}_([A-Z]{2})$/i', $data_lang, $matches ) ) {
+			$flag = strtolower( $matches[1] );
+		} elseif ( isset( $lang_to_flag[ $data_lang ] ) ) {
+			$flag = $lang_to_flag[ $data_lang ];
+		} else {
+			$flag = strtolower( $data_lang );
+		}
+
+		$items[] = array(
+			'lang' => $data_lang,
+			'flag' => $flag,
+			'name' => bbcs_custom_locale_display_name( $data_lang ),
+		);
 	}
 
 	usort($items, static function ($a, $b) {

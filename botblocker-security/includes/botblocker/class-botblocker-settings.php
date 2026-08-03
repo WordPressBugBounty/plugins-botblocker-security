@@ -105,7 +105,7 @@ class BotBlockerSettings
 	public $cloud_api_secret = '';
 	public $cloud_api_tier   = '';
 
-	public $memcached_enable = 1;
+	public $memcached_enable = 0;
 	public $memcached_host   = '127.0.0.1';
 	public $memcached_port   = 11211;
 	public $memcached_prefix = 'bb_';

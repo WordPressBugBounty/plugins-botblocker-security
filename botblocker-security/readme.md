@@ -4,7 +4,7 @@ Tags: security, firewall, anti-spam, captcha, brute force
 Requires at least: 5.1
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.7.2
+Stable tag: 1.7.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -206,6 +206,10 @@ Clean uninstall: all 16 database tables are dropped, 40+ WordPress options delet
 
 == Changelog ==
  
+= 1.7.3 =
+Fix cron reliability on free hosting
+Minor bug fixes and improvements.
+
 = 1.7.2 =
 Fix minor bugs, improve background task management, optimize for WordPress 7.0.2
 

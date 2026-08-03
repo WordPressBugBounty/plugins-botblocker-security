@@ -405,12 +405,25 @@ class BotBlockerFileRenderer {
 	}
 
 	/**
-	 * Build the PHP file content for hot-bans.php from a data array.
 	 *
-	 * @param array{ipv4: array<string, array{string, int}>, ipv6: array<string, array{string, int}>} $data
-	 * @return string
+	 * @param mixed $data
+	 * @return array{ipv4: array<string, array{string, int}>, ipv6: array<string, array{string, int}>}
 	 */
+	private static function normalizeHotBansData( $data ): array {
+		if ( ! is_array( $data ) ) {
+			return array(
+				'ipv4' => array(),
+				'ipv6' => array(),
+			);
+		}
+		return array(
+			'ipv4' => ( isset( $data['ipv4'] ) && is_array( $data['ipv4'] ) ) ? $data['ipv4'] : array(),
+			'ipv6' => ( isset( $data['ipv6'] ) && is_array( $data['ipv6'] ) ) ? $data['ipv6'] : array(),
+		);
+	}
+
 	private static function buildHotBansContent( array $data ): string {
+		$data     = self::normalizeHotBansData( $data );
 		$content  = BBCS_STOP_DIRECT . " \n";
 		$content .= "return [\n";
 		$content .= "    'ipv4' => [\n";
@@ -451,13 +464,26 @@ class BotBlockerFileRenderer {
 	public static function syncIpBanFiles( string $ip, string $rule, int $expires ): void {
 		// Only hot-ban short-term bans (won't appear in ip.php).
 		// Permanent/long-term bans go to ip.php only via renderIps().
-		if ( $expires <= time() + DAY_IN_SECONDS ) {
+		$short_term = $expires <= time() + DAY_IN_SECONDS;
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( '[BBCS DEBUG] [HotBan] syncIpBanFiles ip=' . $ip . ' rule=' . $rule . ' expires=' . $expires . ' short_term=' . ( $short_term ? 'YES' : 'NO' ) );
+		}
+		if ( $short_term ) {
 			self::appendHotBan( $ip, $rule, $expires );
 		} else {
 			self::removeHotBan( $ip );
 		}
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( '[BBCS DEBUG] [HotBan] syncIpBanFiles hot-ban step done, renderIps' );
+		}
 		self::renderIps();
 		BotBlockerCache::clearFileCache();
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( '[BBCS DEBUG] [HotBan] syncIpBanFiles complete' );
+		}
 	}
 
 	public static function removeHotBan( string $ip ): void {
@@ -476,11 +502,7 @@ class BotBlockerFileRenderer {
 			return;
 		}
 
-		$data = bbcs_safe_load_data_file( $file );
-		if ( ! is_array( $data ) ) {
-			self::releaseHotBanLock( $lockFp );
-			return;
-		}
+		$data = self::normalizeHotBansData( bbcs_safe_load_data_file( $file ) );
 
 		$key   = filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ? 'ipv6' : 'ipv4';
 		$found = false;
@@ -494,7 +516,7 @@ class BotBlockerFileRenderer {
 			return;
 		}
 
-		$total = count( $data['ipv4'] ?? array() ) + count( $data['ipv6'] ?? array() );
+		$total = count( $data['ipv4'] ) + count( $data['ipv6'] );
 		if ( $total === 0 ) {
 			// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
 			@unlink( $file );
@@ -529,10 +551,7 @@ class BotBlockerFileRenderer {
 
 		$existing = array( 'ipv4' => array(), 'ipv6' => array() );
 		if ( file_exists( $file ) ) {
-			$loaded = bbcs_safe_load_data_file( $file );
-			if ( is_array( $loaded ) ) {
-				$existing = $loaded;
-			}
+			$existing = self::normalizeHotBansData( bbcs_safe_load_data_file( $file ) );
 		}
 
 		self::pruneExpiredHotBans( $existing );
@@ -577,10 +596,7 @@ class BotBlockerFileRenderer {
 
 		$existing = array( 'ipv4' => array(), 'ipv6' => array() );
 		if ( file_exists( $file ) ) {
-			$loaded = bbcs_safe_load_data_file( $file );
-			if ( is_array( $loaded ) ) {
-				$existing = $loaded;
-			}
+			$existing = self::normalizeHotBansData( bbcs_safe_load_data_file( $file ) );
 		}
 
 		// Prune expired entries inline - no extra I/O (already read the file).
@@ -639,11 +655,7 @@ class BotBlockerFileRenderer {
 			return;
 		}
 
-		$data = bbcs_safe_load_data_file( $file );
-		if ( ! is_array( $data ) ) {
-			self::releaseHotBanLock( $lockFp );
-			return;
-		}
+		$data = self::normalizeHotBansData( bbcs_safe_load_data_file( $file ) );
 
 		$changed = self::pruneExpiredHotBans( $data );
 		if ( ! $changed ) {
@@ -651,7 +663,7 @@ class BotBlockerFileRenderer {
 			return;
 		}
 
-		$total = count( $data['ipv4'] ?? array() ) + count( $data['ipv6'] ?? array() );
+		$total = count( $data['ipv4'] ) + count( $data['ipv6'] );
 		if ( $total === 0 ) {
 			// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
 			@unlink( $file );

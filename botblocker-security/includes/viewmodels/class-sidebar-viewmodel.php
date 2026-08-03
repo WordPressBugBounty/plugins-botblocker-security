@@ -90,10 +90,16 @@ final class Botblocker_SidebarViewModel {
 		$this->toggles->early_init_available = $this->early_available;
 		$this->toggles->early_init_disabled  = ! $this->early_available;
 		$this->toggles->mu_checked           = (int) ( isset( $settings->mu_enable ) ? $settings->mu_enable : 0 );
-		$this->toggles->redis_checked        = (int) ( isset( $settings->redis_enable ) ? $settings->redis_enable : 1 );
 		$this->toggles->redis_disabled       = ! extension_loaded( 'redis' );
-		$this->toggles->memcached_checked    = (int) ( isset( $settings->memcached_enable ) ? $settings->memcached_enable : 1 );
+		$this->toggles->redis_checked        = (int) ( isset( $settings->redis_enable ) ? $settings->redis_enable : 0 );
+		if ( $this->toggles->redis_disabled ) {
+			$this->toggles->redis_checked = 0;
+		}
 		$this->toggles->memcached_disabled   = ! extension_loaded( 'memcached' );
+		$this->toggles->memcached_checked    = (int) ( isset( $settings->memcached_enable ) ? $settings->memcached_enable : 0 );
+		if ( $this->toggles->memcached_disabled ) {
+			$this->toggles->memcached_checked = 0;
+		}
 		$this->toggles->ptr_cache_checked    = (int) ( isset( $settings->ptr_cache_in_db ) ? $settings->ptr_cache_in_db : 1 );
 		
 		$ptr_time = (int) ( isset( $settings->ptrcache_time ) ? $settings->ptrcache_time : 86400 );

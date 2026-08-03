@@ -6,34 +6,35 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 function bbcs_get_lang_options(): array {
-	$mo_files = glob( BOTBLOCKER_DIR . 'languages/botblocker-*.mo' );
+	$mo_files = bbcs_find_mo_files();
 	$options  = array();
 
-	if ( is_array( $mo_files ) ) {
-		foreach ( $mo_files as $f ) {
-			$data_lang = bbcs_extract_locale_from_mo( $f, 'botblocker-security' );
-
-			$lang_to_flag = array(
-				'ja' => 'jp',
-				'uk' => 'ua',
-				'ar' => 'sa',
-				'ko' => 'kr',
-			);
-
-			if ( preg_match( '/^[a-z]{2,3}_([A-Z]{2})$/i', $data_lang, $matches ) ) {
-				$flag = strtolower( $matches[1] );
-			} elseif ( isset( $lang_to_flag[ $data_lang ] ) ) {
-				$flag = $lang_to_flag[ $data_lang ];
-			} else {
-				$flag = strtolower( $data_lang );
-			}
-
-			$options[] = array(
-				'lang' => $data_lang,
-				'flag' => $flag,
-				'name' => bbcs_custom_locale_display_name( $data_lang ),
-			);
+	foreach ( $mo_files as $f ) {
+		$data_lang = bbcs_extract_locale_from_mo( $f, 'botblocker-security' );
+		if ( ! $data_lang ) {
+			continue;
 		}
+
+		$lang_to_flag = array(
+			'ja' => 'jp',
+			'uk' => 'ua',
+			'ar' => 'sa',
+			'ko' => 'kr',
+		);
+
+		if ( preg_match( '/^[a-z]{2,3}_([A-Z]{2})$/i', $data_lang, $matches ) ) {
+			$flag = strtolower( $matches[1] );
+		} elseif ( isset( $lang_to_flag[ $data_lang ] ) ) {
+			$flag = $lang_to_flag[ $data_lang ];
+		} else {
+			$flag = strtolower( $data_lang );
+		}
+
+		$options[] = array(
+			'lang' => $data_lang,
+			'flag' => $flag,
+			'name' => bbcs_custom_locale_display_name( $data_lang ),
+		);
 	}
 
 	usort($options, static function ($a, $b) {

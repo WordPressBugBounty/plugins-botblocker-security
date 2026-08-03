@@ -44,7 +44,7 @@ return static function (Botblocker_SetupGuideViewModel $data, string $mode): voi
 					</div>
 					<div class="bbcs-fill">
 						<div class="bbcs-section-title bbcs-fs-xl"><?php esc_html_e('System security status', 'botblocker-security'); ?></div>
-						<div class="bbcs-muted bbcs-mt-2 bbcs-fs-sm bbcs-max-desc"><?php defined('BBCS_NEW_ADMIN_UI') && BBCS_NEW_ADMIN_UI ? esc_html_e('Complete protection checklist. Review each item below to ensure full coverage.', 'botblocker-security') : esc_html_e('Most checks are active. Enable the highlighted options to maximize protection.', 'botblocker-security'); ?></div>
+						<div class="bbcs-muted bbcs-mt-2 bbcs-fs-sm bbcs-max-desc"><?php esc_html_e('Complete protection checklist. Review each item below to ensure full coverage.', 'botblocker-security'); ?></div>
 					</div>
 				</div>
 				<div class="bbcs-status-stats">
@@ -171,58 +171,37 @@ return static function (Botblocker_SetupGuideViewModel $data, string $mode): voi
 				<div class="bbcs-muted bbcs-fs-sm"><?php esc_html_e( 'No add-ons available at the moment.', 'botblocker-security' ); ?></div>
 			<?php else : ?>
 				<div class="bbcs-col bbcs-g-1">
-					<?php if ( defined( 'BBCS_NEW_ADMIN_UI' ) && BBCS_NEW_ADMIN_UI ) : ?>
-						<?php foreach ( $data->market_addons as $addon ) : ?>
-							<?php $settings_link = $addon->is_active ? $data->addons_url . '#' . $addon->slug : ''; ?>
-							<div class="bbcs-status">
-								<span class="bbcs-status-ic">
-									<?php if ( $addon->icon ) : ?>
-										<img src="<?php echo esc_url( $addon->icon ); ?>" alt="" class="bbcs-tile-img">
-									<?php else : ?>
-										<svg class="bbcs-ico"><use href="#bbcs-i-puzzle"></use></svg>
-									<?php endif; ?>
-								</span>
-								<span class="bbcs-status-label">
-									<?php if ( $settings_link ) : ?>
-										<a href="<?php echo esc_url( $settings_link ); ?>" class="bbcs-dim"><?php echo esc_html( $addon->name ?: $addon->slug ); ?></a>
-									<?php else : ?>
-										<?php echo esc_html( $addon->name ?: $addon->slug ); ?>
-									<?php endif; ?>
-									<?php if ( $addon->is_installed ) : ?>
-										<span class="bbcs-pill bbcs-pill--green bbcs-pill--pro bbcs-ml-1"><?php esc_html_e( 'Installed', 'botblocker-security' ); ?></span>
-									<?php endif; ?>
-								</span>
-								<?php if ( $settings_link ) : ?>
-									<a href="<?php echo esc_url( $settings_link ); ?>" class="bbcs-dim bbcs-pointer bbcs-d-flex bbcs-ml-auto" title="<?php esc_attr_e( 'Settings', 'botblocker-security' ); ?>">
-										<svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-gear"></use></svg>
-									</a>
+					<?php foreach ( $data->market_addons as $addon ) : ?>
+						<?php $settings_link = $addon->is_active ? $data->addons_url . '#' . $addon->slug : ''; ?>
+						<div class="bbcs-status">
+							<span class="bbcs-status-ic">
+								<?php if ( $addon->icon ) : ?>
+									<img src="<?php echo esc_url( $addon->icon ); ?>" alt="" class="bbcs-tile-img">
 								<?php else : ?>
-									<a href="<?php echo esc_url( $data->addons_url ); ?>" class="bbcs-dim bbcs-d-flex bbcs-ml-auto">
-										<svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-arrowR"></use></svg>
-									</a>
+									<svg class="bbcs-ico"><use href="#bbcs-i-puzzle"></use></svg>
 								<?php endif; ?>
-							</div>
-						<?php endforeach; ?>
-					<?php else : ?>
-						<?php foreach ( $data->market_addons as $addon ) : ?>
-							<a href="<?php echo esc_url( $data->addons_url ); ?>" class="bbcs-status" style="cursor:pointer;text-decoration:none;">
-								<span class="bbcs-status-ic">
-									<?php if ( $addon->icon ) : ?>
-										<img src="<?php echo esc_url( $addon->icon ); ?>" alt="" style="width:1.5em;height:1.5em;border-radius:4px;">
-									<?php else : ?>
-										<svg class="bbcs-ico"><use href="#bbcs-i-puzzle"></use></svg>
-									<?php endif; ?>
-								</span>
-								<span class="bbcs-status-label">
+							</span>
+							<span class="bbcs-status-label">
+								<?php if ( $settings_link ) : ?>
+									<a href="<?php echo esc_url( $settings_link ); ?>" class="bbcs-dim"><?php echo esc_html( $addon->name ?: $addon->slug ); ?></a>
+								<?php else : ?>
 									<?php echo esc_html( $addon->name ?: $addon->slug ); ?>
-									<?php if ( $addon->is_installed ) : ?>
-										<span class="bbcs-pill bbcs-pill--green bbcs-pill--pro" style="margin-left:0.5em;"><?php esc_html_e( 'Installed', 'botblocker-security' ); ?></span>
-									<?php endif; ?>
-								</span>
-								<svg class="bbcs-ico bbcs-ico--sm bbcs-ml-auto" style="flex-shrink:0;color:var(--bbcs-tx3);"><use href="#bbcs-i-arrowR"></use></svg>
-							</a>
-						<?php endforeach; ?>
-					<?php endif; ?>
+								<?php endif; ?>
+								<?php if ( $addon->is_installed ) : ?>
+									<span class="bbcs-pill bbcs-pill--green bbcs-pill--pro bbcs-ml-1"><?php esc_html_e( 'Installed', 'botblocker-security' ); ?></span>
+								<?php endif; ?>
+							</span>
+							<?php if ( $settings_link ) : ?>
+								<a href="<?php echo esc_url( $settings_link ); ?>" class="bbcs-dim bbcs-pointer bbcs-d-flex bbcs-ml-auto" title="<?php esc_attr_e( 'Settings', 'botblocker-security' ); ?>">
+									<svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-gear"></use></svg>
+								</a>
+							<?php else : ?>
+								<a href="<?php echo esc_url( $data->addons_url ); ?>" class="bbcs-dim bbcs-d-flex bbcs-ml-auto">
+									<svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-arrowR"></use></svg>
+								</a>
+							<?php endif; ?>
+						</div>
+					<?php endforeach; ?>
 				</div>
 				<div class="bbcs-mt-3h">
 					<a class="bbcs-btn bbcs-btn--surface bbcs-btn--block" href="<?php echo esc_url( $data->addons_url ); ?>">

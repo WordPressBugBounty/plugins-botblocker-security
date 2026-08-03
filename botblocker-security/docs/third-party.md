@@ -3,8 +3,6 @@
 
 BotBlocker Security uses the following open-source libraries (thank you to the authors):
 
-* Bootstrap 5.3.3 - [https://getbootstrap.com/](https://getbootstrap.com/) (bundle includes Popper)
-* Popper 1.7.3 - [https://popper.js.org/](https://popper.js.org/)
 * DataTables 2.3.3 (Buttons, FixedHeader, Responsive) - [https://datatables.net/](https://datatables.net/)
 * JSZip 3.10.1 - [https://github.com/Stuk/jszip](https://github.com/Stuk/jszip)
 * jVectorMap 3.1.0 - [https://github.com/alex-pex/jvectormap](https://github.com/alex-pex/jvectormap)

@@ -132,10 +132,7 @@ final class Botblocker_AddonsViewModel {
 			'Marketplace' => BOTBLOCKER_DIR . 'admin/templates/addons/marketplace-panel.php',
 		);
 
-		foreach ( $this->addon_tabs as $slug => $addon ) {
-			if ( ! apply_filters( 'bbcs_addon_show_in_nav', true, $slug, $addon ) ) {
-				continue;
-			}
+		foreach ( $this->addon_tabs as $slug => $addon ) {			
 			$tab_item = ( new TabItem( $slug, '', false, '', '', $addon->name, 'puzzle' ) )
 				->withIconImage( BOTBLOCKER_URL . 'public/icons/plugins.svg' );
 			if ( $addon->icon_image !== '' ) {

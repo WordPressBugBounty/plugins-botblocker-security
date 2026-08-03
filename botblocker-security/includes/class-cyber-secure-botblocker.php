@@ -39,18 +39,20 @@ class Cyber_Secure_Botblocker {
 
 		if ( isset( $_COOKIE['bbcs_preferred_language'] ) ) {
 			$locale = preg_replace( '/[^a-zA-Z0-9_.-]/', '', sanitize_text_field( wp_unslash( $_COOKIE['bbcs_preferred_language'] ) ) );
-			$f_path = BOTBLOCKER_DIR . 'languages/botblocker-security-' . $locale . '.mo';
-			if ( file_exists( $f_path ) ) {
-				load_textdomain(
-					'botblocker-security',
-					BOTBLOCKER_DIR . 'languages/botblocker-security-' . $locale . '.mo'
-				);
 
+			$wp_lang_path = WP_LANG_DIR . '/plugins/botblocker-security-' . $locale . '.mo';
+			if ( file_exists( $wp_lang_path ) ) {
+				load_textdomain( 'botblocker-security', $wp_lang_path );
 			} else {
-				load_textdomain(
-					'botblocker-security',
-					BOTBLOCKER_DIR . 'languages/botblocker-security-en_US.mo'
-				);
+				$local_path = BOTBLOCKER_DIR . 'languages/botblocker-security-' . $locale . '.mo';
+				if ( file_exists( $local_path ) ) {
+					load_textdomain( 'botblocker-security', $local_path );
+				} else {
+					load_textdomain(
+						'botblocker-security',
+						BOTBLOCKER_DIR . 'languages/botblocker-security-en_US.mo'
+					);
+				}
 			}
 		} else {
 			$plugin_i18n->load_plugin_textdomain();
@@ -89,15 +91,26 @@ class Cyber_Secure_Botblocker {
 
 		if ( isset( $_COOKIE['bbcs_preferred_language'] ) ) {
 			$preferred      = preg_replace( '/[^a-zA-Z0-9_.-]/', '', sanitize_text_field( wp_unslash( $_COOKIE['bbcs_preferred_language'] ) ) );
-			$preferred_path = BOTBLOCKER_DIR . 'languages/botblocker-security-' . $preferred . '.mo';
-			if ( file_exists( $preferred_path ) ) {
-				return $preferred_path;
+
+			$wp_preferred = WP_LANG_DIR . '/plugins/botblocker-security-' . $preferred . '.mo';
+			if ( file_exists( $wp_preferred ) ) {
+				return $wp_preferred;
+			}
+
+			$local_preferred = BOTBLOCKER_DIR . 'languages/botblocker-security-' . $preferred . '.mo';
+			if ( file_exists( $local_preferred ) ) {
+				return $local_preferred;
 			}
 		}
 
-		$locale       = determine_locale();
-		$local_mofile = BOTBLOCKER_DIR . 'languages/botblocker-security-' . $locale . '.mo';
+		$locale = determine_locale();
 
+		$wp_mofile = WP_LANG_DIR . '/plugins/botblocker-security-' . $locale . '.mo';
+		if ( file_exists( $wp_mofile ) ) {
+			return $wp_mofile;
+		}
+
+		$local_mofile = BOTBLOCKER_DIR . 'languages/botblocker-security-' . $locale . '.mo';
 		if ( file_exists( $local_mofile ) ) {
 			return $local_mofile;
 		}

@@ -19,6 +19,12 @@ return static function ( Botblocker_ToolsViewModel $data, bool $isActive ): void
 	$rugov_range_count = isset( $data->rugov_status['range_count'] ) ? (int) $data->rugov_status['range_count'] : 0;
 	$rugov_error       = isset( $data->rugov_status['last_error'] ) ? (string) $data->rugov_status['last_error'] : '';
 
+	$block_rkn_enabled = false;
+	$bbcs_instance     = BotBlocker::getInstance();
+	if ( isset( $bbcs_instance->settings ) ) {
+		$block_rkn_enabled = ! empty( $bbcs_instance->settings->block_rkn );
+	}
+
 	$llm_last_sync      = isset( $data->llm_status['last_sync'] ) ? (int) $data->llm_status['last_sync'] : 0;
 	$llm_provider_count = isset( $data->llm_status['provider_count'] ) ? (int) $data->llm_status['provider_count'] : 0;
 	$llm_error          = isset( $data->llm_status['last_error'] ) ? (string) $data->llm_status['last_error'] : '';
@@ -48,7 +54,15 @@ return static function ( Botblocker_ToolsViewModel $data, bool $isActive ): void
 			$rugov_age
 		);
 	} else {
-		$rugov_info = __( 'RU-Gov list: not yet downloaded.', 'botblocker-security' );
+		$rugov_info = sprintf(
+			/* translators: %s: linked RU-Gov label */
+			__( '%s list: not yet downloaded.', 'botblocker-security' ),
+			sprintf(
+				'<a href="%s">%s</a>',
+				esc_url( bbcs_get_setting_link( 'block_rkn', true ) ),
+				esc_html( __( 'RU-Gov', 'botblocker-security' ) )
+			)
+		);
 	}
 	if ( ! empty( $rugov_error ) ) {
 		$rugov_info .= '<br><span class="bbcs-tx-danger">' . esc_html( $rugov_error ) . '</span>';
@@ -82,7 +96,7 @@ return static function ( Botblocker_ToolsViewModel $data, bool $isActive ): void
 			<?php
 			SettingsGroup::make()
 				->withTitle( __( 'Database', 'botblocker-security' ) )
-				->withItems( static function () use ( $asn_info, $rugov_info, $llm_info ): void {
+				->withItems( static function () use ( $asn_info, $rugov_info, $llm_info, $block_rkn_enabled ): void {
 					ActionButton::make()
 						->withId( 'bbcs-reinstall-database' )
 						->withIcon( 'reinstall' )
@@ -119,6 +133,7 @@ return static function ( Botblocker_ToolsViewModel $data, bool $isActive ): void
 						'div'  => array( 'class' => array() ),
 						'span' => array( 'class' => array() ),
 						'br'   => array(),
+						'a'    => array( 'href' => array() ),
 					);
 					echo wp_kses( '<div class="bbcs-settings-info">' . $asn_info . '</div>', $info_kses );
 					ActionButton::make()
@@ -126,6 +141,7 @@ return static function ( Botblocker_ToolsViewModel $data, bool $isActive ): void
 						->withIcon( 'cloud-download' )
 						->withLabel( __( 'Update RU-Gov list', 'botblocker-security' ) )
 						->withTooltip( __( 'Schedule an immediate background download of the latest RU-Gov CIDR list from C24Be/AS_Network_List (VK excluded).', 'botblocker-security' ) )
+						->withDisabled( ! $block_rkn_enabled )
 						->render();
 					echo wp_kses( '<div class="bbcs-settings-info">' . $rugov_info . '</div>', $info_kses );
 					ActionButton::make()

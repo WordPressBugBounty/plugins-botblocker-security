@@ -312,7 +312,7 @@ class BotBlockerSettingsHooks {
 		if ( $final_state['early_init_enable'] === 1 ) {
 			BotBlockerInstall::setEarlyInitEnabled( true );
 		} elseif ( $final_state['mu_enable'] === 1 ) {
-			BotBlockerInstall::setEarlyInitEnabled( false );
+			BotBlockerInstall::setEarlyInitEnabled( false, array( 'reason' => 'mu_switch' ) );
 			BotBlockerInstall::installMuPlugin();
 		} else {
 			BotBlockerInstall::setEarlyInitEnabled( false );

@@ -200,7 +200,7 @@ trait BotBlocker_SetupWizardAjaxTrait {
 				wp_send_json_error( __( 'Failed to configure Early Init. Check filesystem permissions and try again, or set up Early Init manually.', 'botblocker-security' ) );
 			}
 		} elseif ( $init_mode === 'mu' ) {
-			BotBlockerInstall::setEarlyInitEnabled( false );
+			BotBlockerInstall::setEarlyInitEnabled( false, array( 'reason' => 'mu_switch' ) );
 			// Install MU plugin file so MU mode actually works
 			if ( method_exists( 'BotBlockerInstall', 'installMuPlugin' ) ) {
 				BotBlockerInstall::installMuPlugin();

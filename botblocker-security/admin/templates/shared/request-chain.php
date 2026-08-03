@@ -4,9 +4,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 return static function ( Botblocker_ChainContextData $data ): void {
-	if ( defined( 'BBCS_NEW_ADMIN_UI' ) && BBCS_NEW_ADMIN_UI ) {
-		// ── New UI: vertical pipeline with JS-driven sequential animation ──
-		$uid = 'bbcs-pipe-' . wp_rand( 1000, 9999 );
+	// Request processing chain: vertical pipeline with JS-driven sequential animation
+	$uid = 'bbcs-pipe-' . wp_rand( 1000, 9999 );
 		?>
 		<div class="bbcs-pipeline-wrap" id="<?php echo esc_attr( $uid ); ?>" data-block-at="<?php echo esc_attr( (string) $data->block_at ); ?>">
 
@@ -302,45 +301,4 @@ return static function ( Botblocker_ChainContextData $data ): void {
 		}());
 		</script>
 		<?php
-	} else {
-		// ── Legacy UI: chip row with tooltips ──────────────────────────────
-		?>
-		<div class="bbcs-chain">
-			<span class="bbcs-chip<?php echo $data->early_init_active ? ' bbcs-chip--green' : ''; ?>" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php esc_attr_e( 'Loads black/white IP lists via wp-config before WordPress core starts.', 'botblocker-security' ); ?>" style="cursor: help;">
-				<?php if ( $data->early_init_active ) : ?><i class="fa-solid fa-play bbcs-mr-1" style="margin-right: 4px;"></i><?php else : ?><i class="fa-solid fa-stop bbcs-mr-1" style="margin-right: 4px;"></i><?php endif; ?>
-				<?php esc_html_e( 'Early Init', 'botblocker-security' ); ?>
-				<i class="fa-solid fa-circle-info ms-1" style="margin-left: 4px; opacity: 0.7;"></i>
-			</span>
-			<svg class="bbcs-ico bbcs-ico--sm">
-				<use href="#bbcs-i-arrowR"></use>
-			</svg>
-			<span class="bbcs-chip<?php echo $data->mu_active ? ' bbcs-chip--green' : ''; ?>" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php esc_attr_e( 'Loads black/white IP lists before regular plugins.', 'botblocker-security' ); ?>" style="cursor: help;">
-				<?php if ( $data->mu_active ) : ?><i class="fa-solid fa-play bbcs-mr-1" style="margin-right: 4px;"></i><?php else : ?><i class="fa-solid fa-stop bbcs-mr-1" style="margin-right: 4px;"></i><?php endif; ?>
-				<?php esc_html_e( 'MU-plugin', 'botblocker-security' ); ?>
-				<i class="fa-solid fa-circle-info ms-1" style="margin-left: 4px; opacity: 0.7;"></i>
-			</span>
-			<svg class="bbcs-ico bbcs-ico--sm">
-				<use href="#bbcs-i-arrowR"></use>
-			</svg>
-			<span class="bbcs-chip<?php echo $data->botblocker_active ? ' bbcs-chip--green' : ''; ?>" data-bs-toggle="tooltip" data-bs-placement="top" title="<?php esc_attr_e( 'Main protection layer and deep traffic analysis.', 'botblocker-security' ); ?>" style="cursor: help;">
-				<?php if ( $data->botblocker_active ) : ?><i class="fa-solid fa-play bbcs-mr-1" style="margin-right: 4px;"></i><?php else : ?><i class="fa-solid fa-stop bbcs-mr-1" style="margin-right: 4px;"></i><?php endif; ?>
-				<?php esc_html_e( 'BotBlocker', 'botblocker-security' ); ?>
-				<i class="fa-solid fa-circle-info ms-1" style="margin-left: 4px; opacity: 0.7;"></i>
-			</span>
-		</div>
-		<?php if ( $data->show_text ) : ?>
-			<div class="bbcs-muted bbcs-mt-3 bbcs-fs-xs bbcs-lh-15">
-				<?php
-				if ( $data->botblocker_active ) {
-					esc_html_e( 'Active', 'botblocker-security' );
-				} else {
-					esc_html_e( 'Protection paused', 'botblocker-security' );
-				}
-				echo ' &mdash; ';
-				esc_html_e( 'Junk traffic is filtered as early as possible - only clean requests reach WordPress.', 'botblocker-security' );
-				?>
-			</div>
-		<?php endif; ?>
-		<?php
-	}
 };

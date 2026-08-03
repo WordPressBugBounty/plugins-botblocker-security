@@ -45,7 +45,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
 	<div role="tabpanel" class="bbcs-tabpanel bbcs-protect-layout" data-tabpanel="captcha"<?php echo $isActive ? '' : ' hidden' ?>>
 		<?php
 		$info = InfoColumn::make()
-			->withIconImage( BOTBLOCKER_URL . 'public/icons/Captcha.svg', __( 'BotBlocker Captcha', 'botblocker-security' ) )
+			->withIconImage( BOTBLOCKER_URL . 'public/icons/captcha.svg', __( 'BotBlocker Captcha', 'botblocker-security' ) )
 			->withDescription( __( 'Choose from button, color, image, shape, digit, or reCaptcha verification methods.', 'botblocker-security' ) )
 			->withDocLink( $data->docs_url . '/all-Captcha-types-in-botblocker-maximum-flexibility-and-reliable-protection/', __( 'BotBlocker Captcha', 'botblocker-security' ) )
 			->withDocLink( $data->docs_url . '/reCaptcha-v2-in-botblocker-an-additional-user-verification-method-and-how-to-set-up-keys/', __( 'reCaptcha v2', 'botblocker-security' ) )

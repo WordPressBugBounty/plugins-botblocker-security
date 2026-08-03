@@ -14,13 +14,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @link              https://globus.studio
  * @package           botblocker-security
- * @version           1.7.2
+ * @version           1.7.3
  *
  * @wordpress-plugin
  * Plugin Name:       BotBlocker Security - Firewall & Bot Protection
  * Plugin URI:        https://botblocker.top/
  * Description:       Blocks bots, brute force attacks, spam and automated threats in real time. Captcha, IP rules, proxy/vpn/tor detection, login protection, reCAPTCHA, customizable security rules - all in one plugin. Maximum Security for WordPress.
- * Version:           1.7.2
+ * Version:           1.7.3
  * Author:            Yevhen Leonidov
  * Author URI:        https://leonidov.dev/
  * License:           GPL-2.0+

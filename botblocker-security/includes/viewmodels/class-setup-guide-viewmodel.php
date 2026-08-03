@@ -143,11 +143,7 @@ final class Botblocker_SetupGuideViewModel {
 		$recaptcha_ready       = ! empty( $settings->recaptcha_key3 ) && ! empty( $settings->recaptcha_secret3 );
 		$this->raw_items_chunked = BotBlockerHealthService::getChunkedHealthItems( $settings, $recaptcha_ready );
 
-		if ( defined( 'BBCS_NEW_ADMIN_UI' ) && BBCS_NEW_ADMIN_UI ) {
-			$this->build_status_data_full( $bbcs );
-		} else {
-			$this->build_status_data( $bbcs );
-		}
+		$this->build_status_data_full( $bbcs );
 
 		$this->chain_context = new Botblocker_ChainContextData(
 			$this->early_init_active,
@@ -170,120 +166,6 @@ final class Botblocker_SetupGuideViewModel {
 
 	public function is_early_available_for_display(): bool {
 		return $this->early_available;
-	}
-
-	private function build_status_data( BotBlocker $bbcs ): void {
-		$settings = $bbcs->settings;
-		$recaptchaReady = ! empty( $settings->recaptcha_key3 ) && ! empty( $settings->recaptcha_secret3 );
-
-		// Group 0: Detection and connectivity
-		$group0 = array();
-		$g0_items = array(
-			array( 'key' => 'bbcs_captcha_mode', 'label' => __( 'Captcha enabled', 'botblocker-security' ), 'func' => 'bbcs_captcha_mode' ),
-			array( 'key' => 'block_empty_ua', 'label' => __( 'Block empty User-Agent', 'botblocker-security' ), 'func' => 'block_empty_ua' ),
-			array( 'key' => 'block_simplebot_ua', 'label' => __( 'Block simple bots by UA', 'botblocker-security' ), 'func' => 'block_simplebot_ua' ),
-			array( 'key' => 'block_nojs_users', 'label' => __( 'Block no-JavaScript', 'botblocker-security' ), 'func' => 'block_nojs_users' ),
-			array( 'key' => 'block_ip_ptr_match', 'label' => __( 'PTR / DNS anomalies', 'botblocker-security' ), 'func' => 'block_ip_ptr_match' ),
-			array( 'key' => 'block_proxy_users', 'label' => __( 'Classic proxies', 'botblocker-security' ), 'func' => 'block_proxy_users' ),
-			array( 'key' => 'block_ipv6_users', 'label' => __( 'IPv6 connections', 'botblocker-security' ), 'func' => 'block_ipv6_users' ),
-			array( 'key' => 'block_http10_users', 'label' => __( 'HTTP/1.0 users', 'botblocker-security' ), 'func' => 'block_http10_users' ),
-		);
-		foreach ( $g0_items as $gi ) {
-			$item = new Botblocker_StatusItemData( $gi['label'], BotBlockerHealthService::isEnabled( $gi['func'], $settings, $recaptchaReady ) );
-			$item->key = $gi['key'];
-			$group0[] = $item;
-		}
-
-		// Group 1: Browser and protection
-		$group1 = array();
-		$g1_items = array(
-			array( 'key' => 'block_simple_antidetect', 'label' => __( 'JS consistency checks', 'botblocker-security' ), 'func' => 'block_simple_antidetect', 'pro' => false ),
-			array( 'key' => 'iframe_stop', 'label' => __( 'Clickjacking protection', 'botblocker-security' ), 'func' => 'iframe_stop', 'pro' => false ),
-			array( 'key' => 'samesite', 'label' => __( 'SameSite cookies', 'botblocker-security' ), 'func' => 'samesite', 'pro' => false ),
-			array( 'key' => 'check', 'label' => __( 'Cloud threat verification', 'botblocker-security' ), 'func' => 'check', 'pro' => false ),
-			array( 'key' => 'block_vpn_users', 'label' => __( 'VPN blocking', 'botblocker-security' ), 'func' => 'block_vpn_users', 'pro' => true ),
-			array( 'key' => 'block_tor_users', 'label' => __( 'Tor blocking', 'botblocker-security' ), 'func' => 'block_tor_users', 'pro' => true ),
-			array( 'key' => 'block_override', 'label' => __( 'Spoofing detection', 'botblocker-security' ), 'func' => 'block_override', 'pro' => true ),
-			array( 'key' => 'block_device_options', 'label' => __( 'Device API verification', 'botblocker-security' ), 'func' => 'block_device_options', 'pro' => true ),
-		);
-		foreach ( $g1_items as $gi ) {
-			$item = new Botblocker_StatusItemData( $gi['label'], BotBlockerHealthService::isEnabled( $gi['func'], $settings, $recaptchaReady ), false, $gi['pro'] );
-			$item->key = $gi['key'];
-			$group1[] = $item;
-		}
-
-		// Group 2: Data and notifications
-		$group2 = array();
-		$g2_items = array(
-			array( 'key' => 'get_browser_type', 'label' => __( 'Browser data collection', 'botblocker-security' ), 'func' => 'get_browser_type' ),
-			array( 'key' => 'get_os_type', 'label' => __( 'OS data collection', 'botblocker-security' ), 'func' => 'get_os_type' ),
-			array( 'key' => 'telegram_notifications', 'label' => __( 'Telegram notifications', 'botblocker-security' ), 'func' => null ),
-			array( 'key' => 'email_notifications', 'label' => __( 'Email notifications', 'botblocker-security' ), 'func' => 'email_notifications' ),
-			array( 'key' => 'autosave_admin_ip', 'label' => __( 'Save admin IPs', 'botblocker-security' ), 'func' => 'autosave_admin_ip' ),
-			array( 'key' => 'allow_self_ip_req', 'label' => __( 'Requests from server IP', 'botblocker-security' ), 'func' => null ),
-		);
-		foreach ( $g2_items as $gi ) {
-			if ( $gi['key'] === 'telegram_notifications' ) {
-				$item = new Botblocker_StatusItemData( $gi['label'], ! empty( $settings->telegram_bot_token ) && ! empty( $settings->telegram_chat_id ) );
-			} elseif ( $gi['key'] === 'allow_self_ip_req' ) {
-				$item = new Botblocker_StatusItemData( $gi['label'], ! empty( $settings->allow_self_ip_req ), true );
-			} else {
-				$item = new Botblocker_StatusItemData( $gi['label'], BotBlockerHealthService::isEnabled( $gi['func'], $settings, $recaptchaReady ) );
-			}
-			$item->key = $gi['key'];
-			$group2[] = $item;
-		}
-
-		$this->status_groups       = array( $group0, $group1, $group2 );
-		$this->status_group_titles = array(
-			__( 'Detection and connectivity', 'botblocker-security' ),
-			__( 'Browser and protection', 'botblocker-security' ),
-			__( 'Data and notifications', 'botblocker-security' ),
-		);
-
-		// Compute counts
-		$active    = 0;
-		$disabled  = 0;
-		$attention = 0;
-		foreach ( $this->status_groups as $group ) {
-			foreach ( $group as $item ) {
-				if ( $item->warn ) {
-					$attention++;
-				} elseif ( $item->ok ) {
-					$active++;
-				} else {
-					$disabled++;
-				}
-			}
-		}
-		$this->status_active_count    = $active;
-		$this->status_disabled_count  = $disabled;
-		$this->status_attention_count = $attention;
-
-		// System information
-		global $wpdb;
-		$this->system_os               = PHP_OS_FAMILY . ' ' . php_uname( 'r' );
-		$this->system_web              = isset( $_SERVER['SERVER_SOFTWARE'] ) ? sanitize_text_field( wp_unslash( $_SERVER['SERVER_SOFTWARE'] ) ) : '';
-		$this->system_db_version       = $wpdb->db_version();
-		$this->system_php_version      = PHP_VERSION;
-		$this->system_wp_version       = get_bloginfo( 'version' );
-		$this->system_bb_version       = BOTBLOCKER_VERSION;
-		$this->system_memory_limit     = ini_get( 'memory_limit' );
-		$this->system_max_execution_time = ini_get( 'max_execution_time' );
-		$this->system_upload_max_filesize = ini_get( 'upload_max_filesize' );
-
-		// Changelog
-		$this->changelog_html = $this->build_changelog_html();
-
-		// Chain active flags
-		$this->early_init_active = $this->has_cloud_api && $this->early_addon_active && ! empty( $settings->early_init_enable );
-		$this->mu_active         = ! empty( $settings->mu_enable );
-
-		// Version strings for rail
-		$this->wp_version   = get_bloginfo( 'version' );
-		$this->bb_version   = BOTBLOCKER_VERSION;
-		$this->php_version  = PHP_VERSION;
-		$this->mysql_version = $wpdb->db_version();
 	}
 
 	private function build_status_data_full( BotBlocker $bbcs ): void {

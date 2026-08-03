@@ -61,7 +61,7 @@ class BotBlockerAjaxEarlyPhase {
 
 		if ( $setting_key === 'mu_enable' ) {
 			if ( $setting_value ) {
-				BotBlockerInstall::setEarlyInitEnabled( false );
+				BotBlockerInstall::setEarlyInitEnabled( false, array( 'reason' => 'mu_switch' ) );
 				BotBlockerInstall::installMuPlugin();
 				if ( ! file_exists( $mu_plugin_file ) ) {
 					$fs_error = __( 'Failed to install MU plugin. Check filesystem permissions.', 'botblocker-security' );

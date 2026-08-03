@@ -11,7 +11,7 @@ use BotBlocker\Component\SidebarNav;
 /**
  * Tab IDs that belong to the Simple / General group (visible in simple mode).
  * All other tabs are hidden when simple mode is on.
- * Matches the first block of the old (pre-BBCS_NEW_ADMIN_UI) layout.
+ * Matches the first block of the old layout.
  */
 function bbcs_get_simple_tab_ids(): array {
 	return array(

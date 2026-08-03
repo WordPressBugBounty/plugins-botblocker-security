@@ -244,7 +244,7 @@ function bbcs_loadDefaultSettings(): array {
 		'recaptcha_secret3'                    => '',
 		'recaptcha_tresshold'                  => 0.5,
 		'recaptcha_v3_ipv6_block'              => 0,
-		'memcached_enable'                     => 1,
+		'memcached_enable'                     => 0,
 		'memcached_host'                       => '127.0.0.1',
 		'memcached_port'                       => 11211,
 		'memcached_prefix'                     => BOTBLOCKER_PREFIX,

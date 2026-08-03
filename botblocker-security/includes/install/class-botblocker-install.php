@@ -961,7 +961,10 @@ class BotBlockerInstall {
 		}
 	}
 
-	public static function setEarlyInitEnabled( bool $enabled ): bool {
+	/**
+	 * @param array<string,mixed> $context Optional. e.g. array( 'reason' => 'mu_switch' ).
+	 */
+	public static function setEarlyInitEnabled( bool $enabled, array $context = array() ): bool {
 		global $wpdb;
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -988,7 +991,7 @@ class BotBlockerInstall {
 			self::uninstallMuPlugin();
 		}
 
-		do_action( 'bbcs_early_init_toggle', $enabled );
+		do_action( 'bbcs_early_init_toggle', $enabled, $context );
 
 		$files_ok = apply_filters( 'bbcs_early_init_files_ok', true, $enabled );
 

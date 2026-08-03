@@ -11,21 +11,21 @@ if ( ! defined( 'BOTBLOCKER_TABLE_PREFIX' ) ) {
 }
 define( 'BOTBLOCKER_PREFIX', 'bb_' ); // The prefix used for settings and options
 
-define( 'BOTBLOCKER_VERSION', '1.7.2' );
+define( 'BOTBLOCKER_VERSION', '1.7.3' );
 // The version number of the plugin
 define( 'BOTBLOCKER_DB_VERSION', '2.9.0' ); // The database version of the plugin
 define( 'BOTBLOCKER_WIZARD_ON_UPDATE', false ); // Show setup wizard after plugin update
 define( 'BOTBLOCKER_MODE_STABLE', 'stable' );
 define( 'BOTBLOCKER_MODE_DEV', 'dev' );
 
-// =========================DEV START=========================
-define( 'BOTBLOCKER_MODE', BOTBLOCKER_MODE_DEV );
-if ( ! defined( 'BOTBLOCKER_ADDONS_LOCAL' ) ) {
+$bbcs_is_dev = file_exists( BOTBLOCKER_DIR . '.bbcdev' );
+
+if ( ! defined( 'BOTBLOCKER_MODE' ) ) {
+	define( 'BOTBLOCKER_MODE', $bbcs_is_dev ? BOTBLOCKER_MODE_DEV : BOTBLOCKER_MODE_STABLE );
+}
+if ( $bbcs_is_dev && ! defined( 'BOTBLOCKER_ADDONS_LOCAL' ) ) {
 	define( 'BOTBLOCKER_ADDONS_LOCAL', true );
 }
-// =========================DEV END=========================
-
-define( 'BBCS_NEW_ADMIN_UI', true );
 
 // BBCS-MULTISITE: Site-specific values moved to dynamic functions in inc-botblocker-multisite.php:
 // BotBlockerMultisite::getCurrentSiteUrl(), BotBlockerMultisite::getCurrentSiteClear(), BotBlockerMultisite::getCurrentSiteName(),
@@ -185,20 +185,20 @@ define( 'BOTBLOCKER_SUPPORT_FORUM', 'https://wordpress.org/support/plugin/botblo
 // block reasons, cache operations, or fatal error recovery.
 
 // Append CAPTCHA diagnostic codes to ban comments (TD, TT, DM, HM, RM, NM)
-define( 'BBCS_CAPTCHA_DIAG', true );
+define( 'BBCS_CAPTCHA_DIAG', $bbcs_is_dev );
 
-// Master debug switch - enables error_log() calls across the plugin
-define( 'BBCS_DEBUG', false );
+// Master debug switch — enables error_log() calls across the plugin
+define( 'BBCS_DEBUG', $bbcs_is_dev );
 // Log cache operations to error_log (requires BBCS_DEBUG = true)
-define( 'BBCS_CACHE_DEBUG', false );
-// Show raw termination data before wp_die() - extreme debug only
-define( 'BBCS_DIE_MESSAGE', false );
-// Expose internal block reason on the block page - testing only, NOT for production
-define( 'BBCS_BLOCK_REASON_VIEW', true );
+define( 'BBCS_CACHE_DEBUG', $bbcs_is_dev );
+// Show raw termination data before wp_die() — extreme debug only
+define( 'BBCS_DIE_MESSAGE', $bbcs_is_dev );
+// Expose internal block reason on the block page — testing only, NOT for production
+define( 'BBCS_BLOCK_REASON_VIEW', $bbcs_is_dev );
 // Emergency recovery: force-render page even on fatal errors (hive mode)
-define( 'BBCS_FATAL_ERROR_HIVE', true );
+define( 'BBCS_FATAL_ERROR_HIVE', $bbcs_is_dev );
 // Write errors to wp-content/debug.log (requires BBCS_DEBUG = true)
-define( 'BBCS_LOG_TO_DEBUG', true );
+define( 'BBCS_LOG_TO_DEBUG', $bbcs_is_dev );
 // Halt execution on fatal errors (off = graceful recovery attempt)
 define( 'BBCS_ERROR_EXIT', false );
 
