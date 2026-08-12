@@ -14,13 +14,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @link              https://globus.studio
  * @package           botblocker-security
- * @version           1.7.3
+ * @version           1.7.4
  *
  * @wordpress-plugin
- * Plugin Name:       BotBlocker Security - Firewall & Bot Protection
+ * Plugin Name:       BotBlocker Security - Complete security platform
  * Plugin URI:        https://botblocker.top/
  * Description:       Blocks bots, brute force attacks, spam and automated threats in real time. Captcha, IP rules, proxy/vpn/tor detection, login protection, reCAPTCHA, customizable security rules - all in one plugin. Maximum Security for WordPress.
- * Version:           1.7.3
+ * Version:           1.7.4
  * Author:            Yevhen Leonidov
  * Author URI:        https://leonidov.dev/
  * License:           GPL-2.0+
@@ -63,15 +63,20 @@ define( 'BOTBLOCKER_URL', plugin_dir_url( __FILE__ ) );
 define( 'BOTBLOCKER_BASENAME', plugin_basename( __FILE__ ) );
 
 // Include the helper functions file
-require_once BOTBLOCKER_DIR . 'helpers.php';
+require_once BOTBLOCKER_DIR . 'helpers-shield.php';
 // Include the core helpers file
-require_once BOTBLOCKER_DIR . 'core-helpers.php';
-if ( is_admin() || wp_doing_cron() ) {
+require_once BOTBLOCKER_DIR . 'core-helpers-shield.php';
+
+if ( is_admin() || wp_doing_cron() || wp_doing_ajax() || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
+	require_once BOTBLOCKER_DIR . 'helpers-admin-deferred.php';
+	require_once BOTBLOCKER_DIR . 'core-helpers-admin.php';
 	require_once BOTBLOCKER_DIR . 'helpers-admin.php';
 }
 
 // Include license functionality
-bbcs_handleBotblockerPro();
+if ( function_exists( 'bbcs_handleBotblockerPro' ) ) {
+	bbcs_handleBotblockerPro();
+}
 
 // Marketing blocks (changelog parser, in-plugin update message, social proof, etc.)
 add_action( 'in_plugin_update_message-' . BOTBLOCKER_BASENAME, 'bbcs_render_in_plugin_update_message', 10, 2 );
@@ -123,6 +128,32 @@ add_action( 'wp_ajax_nopriv_bbcs_botblocker_check', 'bbcs_botblocker_ajax_check'
  * @return void
  */
 register_activation_hook( __FILE__, array( 'Botblocker_Activator', 'activate' ) );
+
+/**
+ * Sends the security headers built by the bbcs-security-headers addon.
+ *
+ * Called by BotBlockerHeaderTrait::finalize_allowed_headers() - the plugin is
+ * the only component that writes addon headers to the browser. Security pages
+ * (check/block/denied, AJAX verification) never reach this function.
+ *
+ * @since 1.6.21
+ *
+ * @param array<string,string> $headers Header-name => header-value pairs.
+ * @return void
+ */
+function bbcs_send_security_headers( array $headers ): void {
+	if ( headers_sent() ) {
+		return;
+	}
+	foreach ( $headers as $name => $value ) {
+		if ( ! is_string( $name ) || '' === $name ) {
+			continue;
+		}
+		// Strip CR/LF/NUL to prevent header injection.
+		$safe_value = str_replace( array( "\r", "\n", "\0" ), '', (string) $value );
+		header( "{$name}: {$safe_value}", true );
+	}
+}
 
 /**
  * Deactivates the BotBlocker plugin.

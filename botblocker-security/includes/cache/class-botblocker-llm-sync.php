@@ -74,14 +74,6 @@ class BotBlockerLlmSync {
 	}
 
 	public static function selfHeal(): void {
-		if ( defined( 'DOING_CRON' ) && DOING_CRON ) {
-			return;
-		}
-		if ( get_transient( self::SELF_HEAL_KEY ) ) {
-			return;
-		}
-		set_transient( self::SELF_HEAL_KEY, '1', HOUR_IN_SECONDS );
-
 		global $wpdb;
 
 	    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -133,6 +125,9 @@ class BotBlockerLlmSync {
 					'failures'   => 0,
 				)
 			);
+			if ( class_exists( 'BotBlockerAlerts' ) ) {
+				BotBlockerAlerts::clearSyncFailed( 'llm' );
+			}
 			if ( $locked ) {
 				self::releaseLock();
 			}
@@ -238,6 +233,10 @@ class BotBlockerLlmSync {
 		BotBlockerFileRenderer::renderLlmTrusted();
 		BotBlockerCache::clearFileCache();
 
+		if ( class_exists( 'BotBlockerAlerts' ) ) {
+			BotBlockerAlerts::clearSyncFailed( 'llm' );
+		}
+
 		if ( $locked ) {
 			self::releaseLock();
 		}
@@ -322,6 +321,15 @@ class BotBlockerLlmSync {
 			)
 		);
 
+		if ( class_exists( 'BotBlockerAlerts' ) ) {
+			BotBlockerAlerts::setSyncFailed(
+				'llm',
+				'llm_sync_failed',
+				__( 'LLM Provider Sync Failed', 'botblocker-security' ),
+				__( 'Could not sync the LLM provider list. Trusted LLM bots may not be recognized.', 'botblocker-security' )
+			);
+		}
+
 		if ( $failures < 7 ) {
 			$backoff = min( 6, $failures );
 			$delay   = max( HOUR_IN_SECONDS, $backoff * HOUR_IN_SECONDS );
@@ -330,5 +338,4 @@ class BotBlockerLlmSync {
 	}
 }
 
-add_action( 'init', array( 'BotBlockerLlmSync', 'selfHeal' ), 25 );
 add_action( 'bbcs_llm_sync_event', array( 'BotBlockerLlmSync', 'doSync' ), 10, 1 );

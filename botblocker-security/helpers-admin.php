@@ -49,6 +49,7 @@ require_once BOTBLOCKER_DIR . 'includes/ajax/class-botblocker-ajax-proxy.php';
 require_once BOTBLOCKER_DIR . 'includes/ajax/class-botblocker-ajax-asn.php';
 require_once BOTBLOCKER_DIR . 'includes/ajax/class-botblocker-ajax-white-bots.php';
 require_once BOTBLOCKER_DIR . 'includes/ajax/class-botblocker-ajax-llm.php';
+require_once BOTBLOCKER_DIR . 'includes/ajax/class-botblocker-ajax-addons.php';
 require_once BOTBLOCKER_DIR . 'includes/ajax/class-botblocker-ajax-maintenance.php';
 require_once BOTBLOCKER_DIR . 'includes/ajax/class-botblocker-ajax-backup.php';
 require_once BOTBLOCKER_DIR . 'includes/ajax/class-botblocker-ajax-cache.php';

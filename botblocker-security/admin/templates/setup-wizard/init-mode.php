@@ -39,7 +39,7 @@ return static function ( Botblocker_SetupWizard_ViewModel $d ): void { ?>
 					<a class="bbcs-wizcard-pro-link" href="<?php echo esc_url( $d->pro_url ); ?>"><?php esc_html_e( 'View plans', 'botblocker-security' ); ?></a>
 					<?php else : ?>
 					<div class="bbcs-wizcard-pro-badge"><svg class="bbcs-ico bbcs-ico--xs"><use href="#bbcs-i-lock"></use></svg> <?php esc_html_e( 'Addon required', 'botblocker-security' ); ?></div>
-					<a class="bbcs-wizcard-pro-link" href="<?php echo esc_url( $d->addons_url . '&focus=bbcs-early-init' ); ?>"><?php esc_html_e( 'Enable Early Init addon', 'botblocker-security' ); ?></a>
+					<a class="bbcs-wizcard-pro-link" href="<?php echo esc_url( $d->addons_url . '&focus=' . urlencode( $d->early_init_slug ) ); ?>"><?php esc_html_e( 'Enable Early Init addon', 'botblocker-security' ); ?></a>
 					<?php endif; ?>
 				</div>
 				<?php endif; ?>

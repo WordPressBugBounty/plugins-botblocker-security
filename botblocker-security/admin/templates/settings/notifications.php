@@ -8,10 +8,8 @@ use BotBlocker\Component\SettingsGroup;
 use BotBlocker\Component\FieldPair;
 use BotBlocker\Component\ToggleOption;
 use BotBlocker\Component\CustomSelect;
-use BotBlocker\Component\TextInput;
 
 return static function (Botblocker_SettingsViewModel $data, bool $isActive): void {
-    $tv = $data->is_checked('telegram_notifications', 1);
     $freq = (string)($data->get('regular_notifications_frequency', ''));
     $freq_opts = [
         "disabled" => __("Disabled", "botblocker-security"),
@@ -27,7 +25,6 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
             ->withDescription( __( 'Configure how and when you receive alerts about bot activity.', 'botblocker-security' ) )
             ->withDescription( __( 'Choose notification channels, set up load alerts, and configure report frequency.', 'botblocker-security' ) )
             ->withDocLink( 'https://pusher.com/', __( 'Pusher', 'botblocker-security' ) )
-            ->withDocLink( 'https://t.me/BotFather', __( 'Telegram BotFather', 'botblocker-security' ) )
             ->render();
         ?>
         <div>
@@ -38,42 +35,8 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                     FieldPair::make()
                         ->withItems( static function () use ( $data ): void {
                             ToggleOption::make()->withName( 'email_notifications' )->withChecked( $data->is_checked( 'email_notifications' ) )->withLabel( __( 'Email', 'botblocker-security' ) )->withTooltip( __( 'Receive security alerts via email.', 'botblocker-security' ) )->render();
-                            ToggleOption::make()->withName( 'telegram_notifications' )->withChecked( $data->is_checked( 'telegram_notifications' ) )->withLabel( __( 'Telegram', 'botblocker-security' ) )->withTooltip( __( 'Receive security alerts via Telegram.', 'botblocker-security' ) )->render();
                         } )
                         ->render();
-                } )
-                ->render();
-
-            SettingsGroup::make()
-                ->withTitle( __( 'Telegram Configuration', 'botblocker-security' ) )
-                ->withItems( static function () use ( $data, $tv ): void {
-                    ?>
-                    <div class="bbcs-telegram-fields" id="bbcs_telegram_fields" style="padding-left:24px;">
-                        <?php
-                        FieldPair::make()
-                            ->withItems( static function () use ( $data, $tv ): void {
-                                TextInput::make()
-                                    ->withName( 'telegram_bot_token' )
-                                    ->withValue( (string) $data->get( 'telegram_bot_token', '' ) )
-                                    ->withPlaceholder( __( '123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11', 'botblocker-security' ) )
-                                    ->withLabel( __( 'Bot Token', 'botblocker-security' ) )
-                                    ->withTooltip( __( 'Your Telegram bot token from @BotFather.', 'botblocker-security' ) )
-                                    ->withDisabled( ! $tv )
-                                    ->render();
-
-                                TextInput::make()
-                                    ->withName( 'telegram_chat_id' )
-                                    ->withValue( (string) $data->get( 'telegram_chat_id', '' ) )
-                                    ->withPlaceholder( __( '-1001234567890', 'botblocker-security' ) )
-                                    ->withLabel( __( 'Chat ID', 'botblocker-security' ) )
-                                    ->withTooltip( __( 'Your Telegram chat ID (user or group).', 'botblocker-security' ) )
-                                    ->withDisabled( ! $tv )
-                                    ->render();
-                            } )
-                            ->render();
-                        ?>
-                    </div>
-                    <?php
                 } )
                 ->render();
 

@@ -14,7 +14,7 @@ return static function (Botblocker_DashboardViewModel $data): void {
 		QuickLink::make()->withUrl($data->urls->reports)->withTitle(__('Log', 'botblocker-security'))->withSub(__('Who visited and who was blocked', 'botblocker-security'))->withIcon('chart')->withAcc('violet'),
 		QuickLink::make()->withUrl($data->urls->addons)->withTitle(__('Addons', 'botblocker-security'))->withSub(__('Extra modules', 'botblocker-security'))->withIcon('puzzle')->withAcc('amber'),
 		QuickLink::make()->withUrl($data->urls->tools)->withTitle(__('Tools', 'botblocker-security'))->withSub(__('Database, cache, maintenance', 'botblocker-security'))->withIcon('sliders')->withAcc('green'),
-		QuickLink::make()->withUrl($data->urls->integrations)->withTitle(__('Integrations', 'botblocker-security'))->withSub(__('reCaptcha, Redis, Telegram', 'botblocker-security'))->withIcon('plug')->withAcc('blue'),
+		QuickLink::make()->withUrl($data->urls->integrations)->withTitle(__('Integrations', 'botblocker-security'))->withSub(__('reCaptcha, Redis', 'botblocker-security'))->withIcon('plug')->withAcc('blue'),
 		QuickLink::make()->withUrl($data->urls->integrations . '#bbcs-2fa')->withTitle(__('2FA', 'botblocker-security'))->withSub(__('Two-factor login protection', 'botblocker-security'))->withIcon('lock')->withAcc('blue'),
 		QuickLink::make()->withUrl($data->urls->setup)->withTitle(__('System Status', 'botblocker-security'))->withSub(__('Protection checklist and server', 'botblocker-security'))->withIcon('eye')->withAcc('violet'),
 		QuickLink::make()->withUrl($data->urls->cloud_api)->withTitle(__('BotBlocker PRO', 'botblocker-security'))->withSub(__('License, cloud API, premium features', 'botblocker-security'))->withIcon('crown')->withAcc('amber'),

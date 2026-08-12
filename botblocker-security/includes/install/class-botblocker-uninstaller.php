@@ -100,7 +100,9 @@ class Botblocker_Uninstaller {
 		'bbcs_asn',
 		'bbcs_llm_trusted',
 		'bbcs_tls_fingerprints',
+		'bbcs_countries',
 		'bbcs_fingerprint',
+		'bbcs_sessions',
 	);
 
 	/**
@@ -126,6 +128,18 @@ class Botblocker_Uninstaller {
 		'bbcs_wpconfig_writing',
 	);
 
+	private static function isDebug(): bool {
+		return defined( 'BBCS_DEBUG' ) && BBCS_DEBUG;
+	}
+
+	private static function log( string $message ): void {
+		if ( ! self::isDebug() ) {
+			return;
+		}
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+		error_log( '[BBCS DEBUG] [Uninstall] ' . $message );
+	}
+
 	/**
 	 * Entry point for plugin uninstallation.
 	 *
@@ -134,37 +148,31 @@ class Botblocker_Uninstaller {
 	 * multisite iteration, and MU plugin removal.
 	 */
 	public static function uninstall(): void {
-		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-			error_log( '[BBCS DEBUG] [Uninstall] Botblocker_Uninstaller::uninstall() started.' );
+		$debug   = self::isDebug();
+		$started = $debug ? microtime( true ) : 0.0;
+
+		if ( $debug ) {
+			self::log( '===== uninstall() START | plugin version ' . ( defined( 'BOTBLOCKER_VERSION' ) ? BOTBLOCKER_VERSION : 'unknown' ) . ' =====' );
 		}
 
 		self::uninstallAddons();
 
-		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-			error_log( '[BBCS DEBUG] [Uninstall] Before multisite check.' );
-		}
-
 		if ( is_multisite() ) {
+			if ( $debug ) {
+				self::log( 'Site type: multisite. Running uninstallNetwork().' );
+			}
 			self::uninstallNetwork();
 		} else {
-			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-				error_log( '[BBCS DEBUG] [Uninstall] Single site, running uninstallSite.' );
+			if ( $debug ) {
+				self::log( 'Site type: single site. Running uninstallSite().' );
 			}
 			self::uninstallSite();
-			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-				error_log( '[BBCS DEBUG] [Uninstall] After uninstallSite returned.' );
-			}
 		}
 
 		self::removeMuPlugin();
 
-		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-			error_log( '[BBCS DEBUG] [Uninstall] Botblocker_Uninstaller::uninstall() completed.' );
+		if ( $debug ) {
+			self::log( sprintf( '===== uninstall() DONE in %.3fs =====', microtime( true ) - $started ) );
 		}
 	}
 
@@ -172,26 +180,23 @@ class Botblocker_Uninstaller {
 	 * Dispatch 'delete' lifecycle to all active add-ons.
 	 */
 	private static function uninstallAddons(): void {
+		self::log( '--- STEP: addon cleanup ---' );
+
 		if ( ! file_exists( BOTBLOCKER_DIR . 'includes/class-botblocker-addons.php' ) ) {
-			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-				error_log( '[BBCS DEBUG] [Uninstall] Addons file missing, skipping addon cleanup.' );
-			}
+			self::log( 'Addons: file class-botblocker-addons.php missing. SKIPPED.' );
 			return;
 		}
 		require_once BOTBLOCKER_DIR . 'includes/class-botblocker-addons.php';
 
 		if ( ! class_exists( 'BotBlockerAddons' ) ) {
-			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-				error_log( '[BBCS DEBUG] [Uninstall] BotBlockerAddons class not found, skipping addon cleanup.' );
-			}
+			self::log( 'Addons: class BotBlockerAddons not found after require. SKIPPED.' );
 			return;
 		}
 
 		try {
 			$addons = BotBlockerAddons::scanAll();
 			$active = BotBlockerAddons::getActive();
+
 			foreach ( $active as $slug ) {
 				if ( isset( $addons[ $slug ] ) && ! empty( $addons[ $slug ]['valid'] ) ) {
 					BotBlockerAddons::loadCore( $addons[ $slug ] );
@@ -199,12 +204,17 @@ class Botblocker_Uninstaller {
 						$slug, 'delete', $addons[ $slug ],
 						array( 'reason' => 'delete' )
 					);
+					if ( self::isDebug() ) {
+						self::log( 'Addons: dispatched "delete" lifecycle to ' . $slug . '.' );
+					}
+				} elseif ( self::isDebug() ) {
+					self::log( 'Addons: ' . $slug . ' active but missing or invalid on disk. SKIPPED.' );
 				}
 			}
+
 		} catch ( \Throwable $e ) {
-			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-				error_log( '[BBCS DEBUG] [Uninstall] Addon cleanup error: ' . $e->getMessage() );
+			if ( self::isDebug() ) {
+				self::log( 'Addons: ERROR - ' . $e->getMessage() );
 			}
 		}
 	}
@@ -216,19 +226,11 @@ class Botblocker_Uninstaller {
 	 * followed by network-level option and transient removal.
 	 */
 	private static function uninstallNetwork(): void {
-		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-			error_log( '[BBCS DEBUG] [Uninstall] Multisite detected, processing all sites.' );
-		}
-
 		$site_ids = BotBlockerMultisite::getAllSiteIds( 50 );
+
 		foreach ( $site_ids as $site_id ) {
 			switch_to_blog( $site_id );
 			try {
-				if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-					error_log( '[BBCS DEBUG] [Uninstall] Processing site ID ' . $site_id . '.' );
-				}
 				require BOTBLOCKER_DIR . 'includes/database/inc-botblocker-tables.php';
 				self::uninstallSite();
 			} finally {
@@ -236,10 +238,7 @@ class Botblocker_Uninstaller {
 			}
 		}
 
-		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-			error_log( '[BBCS DEBUG] [Uninstall] Multisite data cleanup complete, deleting site options.' );
-		}
+		self::log( '--- STEP: network-level options and transients ---' );
 
 		require BOTBLOCKER_DIR . 'includes/database/inc-botblocker-tables.php';
 
@@ -258,7 +257,8 @@ class Botblocker_Uninstaller {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->query(
 			$wpdb->prepare(
-				"DELETE FROM `{$wpdb->sitemeta}` WHERE meta_key LIKE %s OR meta_key LIKE %s",
+				"DELETE FROM `{$wpdb->sitemeta}`
+				 WHERE meta_key LIKE %s OR meta_key LIKE %s",
 				$wpdb->esc_like( '_site_transient_bbcs_' ) . '%',
 				$wpdb->esc_like( '_site_transient_timeout_bbcs_' ) . '%'
 			)
@@ -269,26 +269,21 @@ class Botblocker_Uninstaller {
 	 * Remove all per-site plugin data: cron → transients → tables → options → upload dir.
 	 */
 	private static function uninstallSite(): void {
-		global $wpdb;
+		$debug  = self::isDebug();
+		$site_id = get_current_blog_id();
 
-		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-			error_log( '[BBCS DEBUG] [Uninstall] uninstallSite started for site ID ' . get_current_blog_id() . '.' );
-		}
-
-		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-			error_log( '[BBCS DEBUG] [Uninstall] uninstallSite before wpdb tables check.' );
+		if ( $debug ) {
+			self::log( '--- SITE ' . $site_id . ': cleanup START ---' );
 		}
 
 		// 1. Remove cron tasks (delegates to BotBlockerCron, single source of truth)
 		if ( class_exists( 'BotBlockerCron' ) ) {
 			BotBlockerCron::removeTasks();
-		}
-
-		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-			error_log( '[BBCS DEBUG] [Uninstall] Cron tasks unscheduled, removing transients.' );
+			if ( $debug ) {
+				self::log( 'Site ' . $site_id . ' step 1/6 cron: BotBlockerCron::removeTasks() called.' );
+			}
+		} elseif ( $debug ) {
+			self::log( 'Site ' . $site_id . ' step 1/6 cron: class BotBlockerCron not loaded. SKIPPED.' );
 		}
 
 		// 2a. Named transients
@@ -297,18 +292,8 @@ class Botblocker_Uninstaller {
 		// 2b. Prefix-based transients
 		self::cleanupPrefixTransients();
 
-		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-			error_log( '[BBCS DEBUG] [Uninstall] uninstallSite before dropping tables.' );
-		}
-
 		// 3. Drop plugin tables
 		self::dropTables();
-
-		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-			error_log( '[BBCS DEBUG] [Uninstall] Plugin tables dropped, cleaning options.' );
-		}
 
 		// 4. Clean up named options
 		self::cleanupOptions();
@@ -317,11 +302,23 @@ class Botblocker_Uninstaller {
 		self::cleanupPrefixOptions();
 
 		// 6. Remove per-site upload directory
-		self::removeUploadDirectory();
+		$addon_cache_dirs = array( 'bbcs-malware-ts-cache', 'bbcs-truth-source' );
+		if ( class_exists( 'BotBlockerAddons' ) ) {
+			$addons_dir = BotBlockerAddons::rootDir();
+			if ( $addons_dir !== '' && is_dir( $addons_dir ) ) {
+				foreach ( BotBlockerAddons::scanAll() as $addon ) {
+					if ( ! empty( $addon['storage']['cache_dirs'] ) && is_array( $addon['storage']['cache_dirs'] ) ) {
+						foreach ( $addon['storage']['cache_dirs'] as $cache_dir ) {
+							$addon_cache_dirs[] = $cache_dir;
+						}
+					}
+				}
+			}
+		}
+		self::removeUploadDirectory( array_unique( $addon_cache_dirs ) );
 
-		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-			error_log( '[BBCS DEBUG] [Uninstall] uninstallSite completed for site ID ' . get_current_blog_id() . '.' );
+		if ( $debug ) {
+			self::log( '--- SITE ' . $site_id . ': cleanup DONE ---' );
 		}
 	}
 
@@ -336,6 +333,10 @@ class Botblocker_Uninstaller {
 
 	/**
 	 * Delete all prefix-matching plugin transients from the options table.
+	 *
+	 * Covers site transients too. On a single site install WordPress stores
+	 * site transients in the options table under a _site_transient_ prefix,
+	 * so matching only _transient_ leaves them behind.
 	 */
 	private static function cleanupPrefixTransients(): void {
 		global $wpdb;
@@ -343,9 +344,13 @@ class Botblocker_Uninstaller {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->query(
 			$wpdb->prepare(
-				"DELETE FROM `{$wpdb->options}` WHERE option_name LIKE %s OR option_name LIKE %s",
+				"DELETE FROM `{$wpdb->options}`
+				 WHERE option_name LIKE %s OR option_name LIKE %s
+				    OR option_name LIKE %s OR option_name LIKE %s",
 				$wpdb->esc_like( '_transient_bbcs_' ) . '%',
-				$wpdb->esc_like( '_transient_timeout_bbcs_' ) . '%'
+				$wpdb->esc_like( '_transient_timeout_bbcs_' ) . '%',
+				$wpdb->esc_like( '_site_transient_bbcs_' ) . '%',
+				$wpdb->esc_like( '_site_transient_timeout_bbcs_' ) . '%'
 			)
 		);
 	}
@@ -379,8 +384,8 @@ class Botblocker_Uninstaller {
 	 * Delete any remaining plugin options by prefix.
 	 *
 	 * Catches addon-specific options left behind when addons are deactivated
-	 * before full plugin uninstall, as well as any bbcs_ options not explicitly
-	 * listed in $option_keys.
+	 * before full plugin uninstall, as well as any bbcs_ options not
+	 * explicitly listed in $option_keys.
 	 */
 	private static function cleanupPrefixOptions(): void {
 		global $wpdb;
@@ -397,29 +402,22 @@ class Botblocker_Uninstaller {
 	/**
 	 * Remove the plugin's per-site upload directory.
 	 */
-	private static function removeUploadDirectory(): void {
+	private static function removeUploadDirectory( array $addon_cache_dirs = array() ): void {
 		$slug    = defined( 'BOTBLOCKER_SHORT_NAME' ) ? sanitize_title( BOTBLOCKER_SHORT_NAME ) : 'botblocker';
 		$uploads = wp_upload_dir();
 		$dir     = trailingslashit( $uploads['basedir'] ) . $slug;
 
-		if ( is_dir( $dir ) ) {
-			self::removeDirectory( $dir );
-			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-				error_log( '[BBCS DEBUG] [Uninstall] Upload directory removed: ' . $dir );
-			}
+		if ( self::isDebug() ) {
+			self::log( 'Step 6/6 upload dir cleanup: ' . $dir );
 		}
+		self::removeDirectory( $dir );
 
-		$addon_cache_dirs = array( 'bbcs-malware-ts-cache', 'bbcs-truth-source' );
 		foreach ( $addon_cache_dirs as $cache_dir ) {
 			$path = trailingslashit( $uploads['basedir'] ) . $cache_dir;
-			if ( is_dir( $path ) ) {
-				self::removeDirectory( $path );
-				if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-					error_log( '[BBCS DEBUG] [Uninstall] Addon cache directory removed: ' . $path );
-				}
+			if ( self::isDebug() ) {
+				self::log( 'Step 6/6 addon cache cleanup: ' . $path );
 			}
+			self::removeDirectory( $path );
 		}
 	}
 
@@ -427,9 +425,8 @@ class Botblocker_Uninstaller {
 	 * Recursively remove a directory using WP_Filesystem.
 	 */
 	private static function removeDirectory( string $dir ): void {
-		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-			error_log( '[BBCS DEBUG] [Uninstall] removeDirectory called: ' . $dir );
+		if ( self::isDebug() ) {
+			self::log( 'removeDirectory(): ' . $dir );
 		}
 
 		if ( ! is_dir( $dir ) ) {
@@ -446,9 +443,14 @@ class Botblocker_Uninstaller {
 
 		if ( ! empty( $wp_filesystem ) ) {
 			@$wp_filesystem->delete( $dir, true );
+		} elseif ( self::isDebug() ) {
+			self::log( 'removeDirectory(): WP_Filesystem unavailable, using native fallback.' );
 		}
 
 		if ( is_dir( $dir ) ) {
+			if ( self::isDebug() ) {
+				self::log( 'removeDirectory(): WP_Filesystem left ' . $dir . ' in place, running native fallback.' );
+			}
 			self::removeDirectoryNative( $dir );
 		}
 	}
@@ -475,18 +477,24 @@ class Botblocker_Uninstaller {
 	 * Remove the BotBlocker MU plugin loader file.
 	 */
 	private static function removeMuPlugin(): void {
-		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-			error_log( '[BBCS DEBUG] [Uninstall] Before MU plugin cleanup.' );
-		}
+		self::log( '--- STEP: MU plugin cleanup ---' );
 
 		$mu_plugin_file = trailingslashit( WPMU_PLUGIN_DIR ) . 'botblocker-mu-plugin.php';
-		if ( file_exists( $mu_plugin_file ) ) {
-			wp_delete_file( $mu_plugin_file );
-			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-				error_log( '[BBCS DEBUG] [Uninstall] MU plugin removed: ' . $mu_plugin_file );
+
+		if ( ! file_exists( $mu_plugin_file ) ) {
+			if ( self::isDebug() ) {
+				self::log( 'MU plugin: ' . $mu_plugin_file . ' not present (early phase was never enabled). Nothing to remove.' );
 			}
+			return;
+		}
+
+		wp_delete_file( $mu_plugin_file );
+
+		if ( self::isDebug() ) {
+			self::log(
+				'MU plugin: ' . $mu_plugin_file
+				. ( file_exists( $mu_plugin_file ) ? ' STILL EXISTS after wp_delete_file() - check permissions.' : ' removed OK.' )
+			);
 		}
 	}
 }

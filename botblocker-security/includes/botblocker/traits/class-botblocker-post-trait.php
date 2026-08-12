@@ -511,13 +511,12 @@ trait BotBlockerPostTrait {
 		$miss_count = (int) $wpdb->get_var(
 			$wpdb->prepare(
 				"
-            SELECT COUNT(*) FROM (
-                SELECT * FROM `{$wpdb->bbcs_hits}`
-                UNION ALL
-                SELECT * FROM `{$wpdb->bbcs_hits_suspicious}`
-            ) AS combined_hits
-            WHERE date >= %d AND ip = %s AND passed = %d
+            SELECT (SELECT COUNT(*) FROM `{$wpdb->bbcs_hits}` WHERE date >= %d AND ip = %s AND passed = %d)
+                 + (SELECT COUNT(*) FROM `{$wpdb->bbcs_hits_suspicious}` WHERE date >= %d AND ip = %s AND passed = %d)
             ",
+				$fromdate,
+				$ip_from_post,
+				$passed_code,
 				$fromdate,
 				$ip_from_post,
 				$passed_code

@@ -114,7 +114,7 @@ class BotBlockerAjaxHits {
 
 			$search_parts[]  = "CONCAT('AS', asnum) LIKE %s";
 			$search_values[] = $like;
-			$search_parts[]  = "DATE_FORMAT(FROM_UNIXTIME(date + %d), '%%Y-%%m-%%d %%H:%%i:%%s') LIKE %s";
+			$search_parts[]  = "DATE_FORMAT(" . BotBlockerDb::localDatetimeExpr( 'date' ) . ", '%%Y-%%m-%%d %%H:%%i:%%s') LIKE %s";
 			$search_values[] = $gmt_offset_seconds;
 			$search_values[] = $like;
 
@@ -152,6 +152,8 @@ class BotBlockerAjaxHits {
 			}
 		}
 
+		$where_clause = trim( $where );
+
 		$union_query = "
 	        SELECT date, cid, ip, ptr, asnum, asname, lang, name_lang, country_name, useragent,
 	               js_w, js_h, js_cw, js_ch, js_co, js_pi, adblock, country, referer, page,
@@ -161,10 +163,10 @@ class BotBlockerAjaxHits {
 	            UNION ALL
 	            SELECT * FROM `{$wpdb->bbcs_hits_suspicious}`
 	        ) AS combined_hits
-	        {$where}
+	        {$where_clause}
 	    ";
 
-		$total_query = "SELECT COUNT(*) FROM ({$union_query}) AS total_count";
+		$total_query = "SELECT (SELECT COUNT(*) FROM `{$wpdb->bbcs_hits}` {$where_clause}) + (SELECT COUNT(*) FROM `{$wpdb->bbcs_hits_suspicious}` {$where_clause})";
 		// REVIEWER NOTE: Query string is dynamically built from sanitized input data.
 		// $where is constructed internally by the plugin and all user input is sanitized
 		// (esc_like, absint, sanitize_text_field) and values are prepared where possible.

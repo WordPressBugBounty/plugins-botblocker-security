@@ -19,14 +19,6 @@ if ( ! defined( 'GMP_LITTLE_ENDIAN' ) ) {
 
 class BotBlockerEnv {
 
-
-	public static function check_favicon(): bool {
-		require_once ABSPATH . 'wp-admin/includes/file.php';
-		$root = get_home_path();
-
-		return file_exists( $root . 'favicon.ico' );
-	}
-
 	public static function check_curl(): int {
 		return extension_loaded( 'curl' ) ? 1 : 0;
 	}
@@ -92,16 +84,5 @@ class BotBlockerEnv {
 		$hours   = floor( abs( $offset ) );
 		$minutes = ( abs( $offset ) - $hours ) * 60;
 		return sprintf( '%s%02d:%02d', $sign, $hours, $minutes );
-	}
-
-	public static function is_shell_exec_available(): bool {
-		$functionExists       = function_exists( 'shell_exec' );
-		$disabled_functions   = explode( ',', ini_get( 'disable_functions' ) );
-		$functionEnabledInIni = ! in_array( 'shell_exec', array_map( 'trim', $disabled_functions ), true );
-		$executionTest        = null;
-		if ( $functionExists && $functionEnabledInIni ) {
-			$executionTest = shell_exec( 'echo test' );
-		}
-		return $functionExists && $functionEnabledInIni && $executionTest === "test\n";
 	}
 }

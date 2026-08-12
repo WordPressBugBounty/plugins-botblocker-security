@@ -21,7 +21,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
 			->withDescription( __( 'Early Phase settings control how BotBlocker loads before WordPress fully initializes. Toggle Early Init and MU-plugin for earlier bot filtering at the earliest possible stage.', 'botblocker-security' ) )
 			->withDescription( __( 'These options require no form save - they apply immediately and are safe to experiment with.', 'botblocker-security' ) )
 			->withDocLink( $data->docs_url . '/early-init/', __( 'Early Init', 'botblocker-security' ) )
-			->withDocLink( $data->docs_url . '/mu-plugin/', __( 'MU-plugin', 'botblocker-security' ) )
+			->withDocLink( 'https://developer.wordpress.org/advanced-administration/plugins/mu-plugins/', __( 'Must-Use Plugins (WordPress.org)', 'botblocker-security' ) )
 			->render();
 		?>
 		<div>

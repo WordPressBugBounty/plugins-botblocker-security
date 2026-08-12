@@ -6,12 +6,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 function bbcs_get_protected_upload_slug(): string {
-	$slug = defined( 'BOTBLOCKER_SHORT_NAME' ) ? BOTBLOCKER_SHORT_NAME : 'botblocker';
-	$slug = sanitize_title( (string) $slug );
+	static $slug = null;
+	if ( $slug !== null ) {
+		return $slug;
+	}
+	$raw  = defined( 'BOTBLOCKER_SHORT_NAME' ) ? BOTBLOCKER_SHORT_NAME : 'botblocker';
+	$slug = sanitize_title( (string) $raw );
 	return $slug;
 }
 
 function bbcs_get_protected_upload_dir( bool $return_url = false ) {
+
+	static $cached_dir  = null;
+	static $cached_url  = null;
+
+	if ( $return_url && $cached_url !== null ) {
+		return $cached_url;
+	}
+	if ( ! $return_url && $cached_dir !== null ) {
+		return $cached_dir;
+	}
 
 	$uploads = wp_upload_dir();
 	$slug    = bbcs_get_protected_upload_slug();
@@ -20,15 +34,20 @@ function bbcs_get_protected_upload_dir( bool $return_url = false ) {
 	$dir_url = isset( $uploads['baseurl'] ) ? trailingslashit( $uploads['baseurl'] ) . $slug . '/' : null;
 
 	if ( ! is_dir( $dir ) ) {
+		$cached_dir = null;
+		$cached_url = null;
 		return null;
 	}
 
 	$marker = $dir . 'bbcs-owner.txt';
 	if ( ! file_exists( $marker ) ) {
-		//return new WP_Error( 'not_owned', 'Ownership marker not found' );
+		$cached_dir = null;
+		$cached_url = null;
 		return null;
 	}
 
+	$cached_dir = $dir;
+	$cached_url = $dir_url;
 	return $return_url ? $dir_url : $dir;
 }
 

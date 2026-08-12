@@ -29,7 +29,7 @@ class BotBlockerAjaxEarlyPhase {
 
 		// Start output buffering to avoid breaking JSON with warnings/notices
 
-		if ( ! isset( $_POST['setting'] ) || ! in_array( wp_unslash( $_POST['setting'] ), array( 'mu_enable', 'early_init_enable', 'disable' ), true ) ) {
+		if ( ! isset( $_POST['setting'] ) || ! in_array( wp_unslash( $_POST['setting'] ), array( 'mu_enable', 'early_init_enable', 'disable', 'early_geo_enable', 'mu_geo_enable' ), true ) ) {
 			wp_send_json_error( array( 'message' => __( 'Invalid setting.', 'botblocker-security' ) ) );
 		}
 
@@ -50,7 +50,7 @@ class BotBlockerAjaxEarlyPhase {
 
 		if ( $setting_key === 'early_init_enable' && $setting_value === 1 ) {
 			$cloud_api_active   = ( class_exists( 'BotBlockerPro' ) && BotBlockerPro::isActive() );
-			$early_addon_active = class_exists( 'BotBlockerAddons' ) ? BotBlockerAddons::hasActiveProvider( 'early_init_provider', 'bbcs_early_init_provider_active' ) : false;
+			$early_addon_active = class_exists( 'BotBlockerGateway' ) && BotBlockerGateway::isRegistered( 'early_init' );
 			if ( ! $early_addon_active || ! $cloud_api_active ) {
 				wp_send_json_error( array( 'message' => __( 'Early Init requires Cloud API and the Early Init addon to be enabled.', 'botblocker-security' ) ) );
 			}
@@ -84,7 +84,7 @@ class BotBlockerAjaxEarlyPhase {
 		}
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->update( $wpdb->bbcs_settings, array( 'value' => $setting_value ), array( 'key' => $setting_key ) );
+		$wpdb->replace( $wpdb->bbcs_settings, array( 'key' => $setting_key, 'value' => $setting_value ), array( '%s', '%s' ) );
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' DB update executed' );
@@ -104,8 +104,9 @@ class BotBlockerAjaxEarlyPhase {
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' success' );
 		}
 		wp_send_json_success( array(
-			'message'     => __( 'Success!', 'botblocker-security' ),
-			'final_state' => $final_state,
+			'message'          => __( 'Success!', 'botblocker-security' ),
+			'final_state'      => $final_state,
+			'mu_loader_exists' => ( $setting_key === 'mu_enable' && file_exists( $mu_plugin_file ) ),
 		) );
 	}
 }

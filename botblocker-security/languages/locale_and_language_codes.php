@@ -4,14 +4,12 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 function bbcs_get_country_by_code($code) 
 {
-    $code = strtolower($code);
-    return BBCS_COUNTRIES[$code] ?? BOTBLOCKER_EMPTY;
+    return BotBlockerCoreFacade::getCountryByCode( $code );
 }
 
 function bbcs_get_language_by_code($code) 
 {
-    $code = strtolower($code);
-    return BBCS_LANGUAGES[$code] ?? BOTBLOCKER_EMPTY;
+    return BotBlockerCoreFacade::getLanguageByCode( $code );
 }
 
 function bbcs_CountrylanguageMap()

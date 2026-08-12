@@ -124,8 +124,7 @@ final class Botblocker_SettingsViewModel {
 		$this->has_recaptcha_v2   = ! empty( $BBCS->settings->recaptcha_key2 ) && ! empty( $BBCS->settings->recaptcha_secret2 );
 		$this->has_recaptcha_v3   = ! empty( $BBCS->settings->recaptcha_key3 ) && ! empty( $BBCS->settings->recaptcha_secret3 );
 		$this->has_ecommerce      = BotBlockerPaymentData::detectEcommerce();
-		$this->has_behavior_engine = class_exists( 'BotBlockerAddons' )
-		&& BotBlockerAddons::hasActiveFeature( 'behavioral_analysis_engine' );
+		$this->has_behavior_engine = apply_filters( 'bbcs_has_behavioral_analysis_engine', false );
 		$this->behavior_engine_active = $this->has_behavior_engine;
 
 		$this->urls               = new Botblocker_DashboardUrls();
@@ -261,7 +260,7 @@ final class Botblocker_SettingsViewModel {
 
 	private function buildCronTaskData(): void {
 		$all_tasks    = BotBlockerCron::getAllTasks();
-		$labels       = BotBlockerCron::getTaskLabels();
+		$labels       = apply_filters( 'bbcs_cron_task_labels', BotBlockerCron::getTaskLabels() );
 		$cron_jobs    = _get_cron_array();
 		if ( ! is_array( $cron_jobs ) ) {
 			$cron_jobs = array();
@@ -345,6 +344,57 @@ final class Botblocker_SettingsViewModel {
 			$this->cron_tasks[] = $task;
 		}
 
+		// Addon-registered hooks (bbcs_cron_task_labels) that are actually scheduled.
+		// Keeps the Settings Task List consistent with the AJAX cron list and Tools page.
+		foreach ( $labels as $hook => $label ) {
+			if ( isset( $all_tasks[ $hook ] ) ) {
+				continue;
+			}
+			foreach ( $cron_jobs as $timestamp => $hooks ) {
+				if ( ! isset( $hooks[ $hook ] ) ) {
+					continue;
+				}
+
+				$task         = new Botblocker_CronTaskData();
+				$event        = reset( $hooks[ $hook ] );
+				$interval     = isset( $event['interval'] ) ? (int) $event['interval'] : 0;
+				$is_recurring = ! empty( $event['schedule'] );
+
+				$task->hook     = $hook;
+				$task->label    = $label;
+				$task->interval = $interval;
+				$task->next_run = $timestamp;
+				$task->time_remaining = $timestamp > $current_time ? $timestamp - $current_time : 0;
+
+				if ( $is_recurring ) {
+					$task->type     = 'recurring';
+					$task->schedule = isset( $schedules[ $event['schedule'] ]['display'] )
+						? $schedules[ $event['schedule'] ]['display']
+						: (string) $event['schedule'];
+					$this->cron_recurring_count++;
+				} else {
+					$task->type     = 'one-time';
+					$task->schedule = $interval > 0 ? self::formatInterval( $interval ) : __( 'One-time', 'botblocker-security' );
+					$this->cron_one_time_count++;
+				}
+
+				if ( $timestamp <= $current_time ) {
+					$overdue_threshold = $interval > 0 ? $interval * 1.5 : 0;
+					$task->status      = $interval > 0 && ( $current_time - $timestamp ) > $overdue_threshold ? 'overdue' : 'active';
+				} else {
+					$task->status = 'active';
+				}
+
+				$task->progress = $interval > 0
+					? round( min( 100, max( 0, ( ( $current_time - ( $timestamp - $interval ) ) / $interval ) * 100 ) ), 2 )
+					: 0.0;
+				$task->next_run_display = bbcs_wp_date( 'Y-m-d H:i', $timestamp );
+
+				$this->cron_tasks[] = $task;
+				break;
+			}
+		}
+
 		$this->cron_total_count = count( $this->cron_tasks );
 
 		// Custom intervals for display cards
@@ -392,7 +442,7 @@ final class Botblocker_SettingsViewModel {
 	}
 
 	public function get_ptrcache_ttl(): string {
-		return (string) ( $this->settings['ptrcache_time'] ?? '86400' );
+		return (string) ( $this->settings['ptrcache_time'] ?? DAY_IN_SECONDS );
 	}
 
 	public function get_cloud_timeout(): string {

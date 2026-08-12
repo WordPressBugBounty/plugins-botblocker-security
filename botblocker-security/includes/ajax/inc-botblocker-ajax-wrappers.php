@@ -9,6 +9,9 @@ add_action( 'wp_ajax_bbcs_backup_data_settings', array( 'BotBlockerAjaxBackup', 
 add_action( 'wp_ajax_bbcs_download_backup', array( 'BotBlockerAjaxBackup', 'handleDownload' ) );
 add_action( 'wp_ajax_bbcs_import_data_settings', array( 'BotBlockerAjaxBackup', 'handleImport' ) );
 
+// ADDONS
+add_action( 'wp_ajax_bbcs_load_market', array( 'BotBlockerAjaxAddons', 'handleLoadMarket' ) );
+
 // MAINTENANCE
 add_action( 'wp_ajax_bbcs_database_reinstallation', array( 'BotBlockerAjaxMaintenance', 'handleDatabaseReinstallation' ) );
 add_action( 'wp_ajax_bbcs_clear_hits_database', array( 'BotBlockerAjaxMaintenance', 'handleClearHits' ) );
@@ -134,8 +137,13 @@ add_action( 'wp_ajax_bbcs_clear_all_proxies', array( 'BotBlockerAjaxProxy', 'han
 add_action( 'wp_ajax_bbcs_render_proxy_file', array( 'BotBlockerAjaxProxy', 'handleRenderFile' ) );
 
 // GEO
-add_action( 'wp_ajax_bbcs_get_geo_countries', array( 'BotBlockerAjaxGeo', 'handleGetCountries' ) );
-add_action( 'wp_ajax_bbcs_save_geo_countries', array( 'BotBlockerAjaxGeo', 'handleSaveCountries' ) );
+add_action( 'wp_ajax_bbcs_get_geo_countries', array( 'BotBlockerAjaxGeo', 'handleGetCountriesLegacy' ) );
+add_action( 'wp_ajax_bbcs_save_geo_countries', array( 'BotBlockerAjaxGeo', 'handleSaveCountriesLegacy' ) );
+add_action( 'wp_ajax_bbcs_get_countries_table', array( 'BotBlockerAjaxGeo', 'handleGetCountries' ) );
+add_action( 'wp_ajax_bbcs_toggle_country', array( 'BotBlockerAjaxGeo', 'handleToggleCountry' ) );
+add_action( 'wp_ajax_bbcs_create_country', array( 'BotBlockerAjaxGeo', 'handleCreateCountry' ) );
+add_action( 'wp_ajax_bbcs_delete_country', array( 'BotBlockerAjaxGeo', 'handleDeleteCountry' ) );
+add_action( 'wp_ajax_bbcs_clear_all_countries', array( 'BotBlockerAjaxGeo', 'handleClearAll' ) );
 
 // LLM
 add_action( 'wp_ajax_bbcs_get_botblocker_llm', array( 'BotBlockerAjaxLlm', 'handleGetProviders' ) );

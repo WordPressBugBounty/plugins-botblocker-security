@@ -7,8 +7,6 @@ if (! defined('ABSPATH')) {
 }
 
 return static function (Botblocker_RulesViewModel $data): void {
-	$bbcs_geo_countries       = $data->geo_countries;
-	$bbcs_geo_countries_count = $data->geo_countries_count;
 ?>
 	<div class="bbcs-tabs" role="tablist">
 		<div role="tab" aria-selected="true" class="bbcs-tab is-active" data-tab="Rules" tabindex="0"><?php esc_html_e('Rules', 'botblocker-security'); ?></div>
@@ -147,26 +145,7 @@ return static function (Botblocker_RulesViewModel $data): void {
 	</div>
 
 	<div role="tabpanel" class="bbcs-tabpanel" data-tabpanel="GEO" id="bbcs_geo_list" hidden>
-		<div class="bbcs-col bbcs-g-3h">
-			<div class="bbcs-row bbcs-g-2">
-				<span class="bbcs-fw-semibold bbcs-fs-sm"><?php esc_html_e('Blocked countries:', 'botblocker-security'); ?></span>
-				<strong id="bbcs_geo_count"><?php echo (int) $bbcs_geo_countries_count; ?></strong>
-			</div>
-			<div class="bbcs-row bbcs-g-2">
-				<button type="button" id="bbcs_geo_refresh" class="bbcs-btn bbcs-btn--sm"><svg class="bbcs-ico bbcs-ico--xs">
-						<use href="#bbcs-i-refresh"></use>
-					</svg><?php esc_html_e('Reload', 'botblocker-security'); ?></button>
-				<button type="button" id="bbcs_geo_save" class="bbcs-btn bbcs-btn--sm bbcs-btn--pri"><svg class="bbcs-ico bbcs-ico--xs">
-						<use href="#bbcs-i-check"></use>
-					</svg><?php esc_html_e('Save list', 'botblocker-security'); ?></button>
-				<button type="button" class="bbcs-btn bbcs-btn--sm" id="bbcs_geo_add_country"><svg class="bbcs-ico bbcs-ico--xs">
-						<use href="#bbcs-i-plus"></use>
-					</svg><?php esc_html_e('Add country', 'botblocker-security'); ?></button>
-				<button type="button" class="bbcs-btn bbcs-btn--sm bbcs-btn--danger" id="bbcs_geo_clear_all"><svg class="bbcs-ico bbcs-ico--xs">
-						<use href="#bbcs-i-trash"></use>
-					</svg><?php esc_html_e('Clear all', 'botblocker-security'); ?></button>
-			</div>
-			<div id="bbcs_geo_alert" class="bbcs-card bbcs-amber-card bbcs-mb-2" style="display:none;"><?php esc_html_e('Country list saved.', 'botblocker-security'); ?></div>
+		<div class="bbcs-row bbcs-g-2 bbcs-mb-2 bbcs-geo-toolbar">
 			<div class="bbcs-field">
 				<div class="bbcs-select">
 					<div class="bbcs-select-trigger">
@@ -183,19 +162,48 @@ return static function (Botblocker_RulesViewModel $data): void {
 				</div>
 				<input type="hidden" id="geoCountrySelect" value="">
 			</div>
-			<div>
-				<div class="bbcs-fs-xs bbcs-dim bbcs-mb-1h"><?php esc_html_e('Selected countries:', 'botblocker-security'); ?></div>
-				<div id="geoTags" class="bbcs-row bbcs-g-1 bbcs-row--wrap">
-				</div>
+			<button type="button" class="bbcs-btn bbcs-btn--sm bbcs-btn--pri" id="bbcs_geo_add_country"><svg class="bbcs-ico bbcs-ico--xs">
+					<use href="#bbcs-i-plus"></use>
+				</svg><?php esc_html_e('Add country', 'botblocker-security'); ?></button>
+			<button type="button" class="bbcs-btn bbcs-btn--sm bbcs-btn--danger" id="bbcs_geo_clear_all"><svg class="bbcs-ico bbcs-ico--xs">
+					<use href="#bbcs-i-trash"></use>
+				</svg><?php esc_html_e('Clear all', 'botblocker-security'); ?></button>
+			<div class="bbcs-row bbcs-g-2" style="margin-left:auto;">
+				<a href="<?php echo esc_url( $data->mu_geo_url ); ?>" class="bbcs-btn bbcs-btn--sm">
+					<svg class="bbcs-ico bbcs-ico--xs"><use href="#bbcs-i-shield"></use></svg>
+					<?php esc_html_e( 'MU layer', 'botblocker-security' ); ?>
+					<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Enable GEO blocking in the MU layer to filter blocked countries before WordPress loads plugins.', 'botblocker-security' ); ?></span></span>
+				</a>
+				<?php if ( $data->early_geo_available ) : ?>
+					<a href="<?php echo esc_url( $data->early_geo_url ); ?>" class="bbcs-btn bbcs-btn--sm">
+						<svg class="bbcs-ico bbcs-ico--xs"><use href="#bbcs-i-bolt"></use></svg>
+						<?php esc_html_e( 'Early Init', 'botblocker-security' ); ?>
+						<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Enable GEO blocking in Early Init to reject blocked countries before WordPress even starts.', 'botblocker-security' ); ?></span></span>
+					</a>
+				<?php else : ?>
+					<a href="<?php echo esc_url( $data->early_geo_url ); ?>" class="bbcs-btn bbcs-btn--sm" title="<?php esc_attr_e( 'Early Init requires an active PRO license', 'botblocker-security' ); ?>">
+						<svg class="bbcs-ico bbcs-ico--xs"><use href="#bbcs-i-bolt"></use></svg>
+						<?php esc_html_e( 'Early Init', 'botblocker-security' ); ?>
+						<span class="bbcs-pill bbcs-pill--violet bbcs-pill--pro"><?php esc_html_e( 'PRO', 'botblocker-security' ); ?></span>
+					</a>
+				<?php endif; ?>
 			</div>
-			<div>
-				<div class="bbcs-fs-xs bbcs-dim bbcs-mb-1h"><?php esc_html_e('Codes for config:', 'botblocker-security'); ?></div>
-				<textarea id="geoCountryCodes" class="bbcs-input bbcs-input--mono" rows="3" readonly><?php echo esc_textarea(implode(',', $bbcs_geo_countries)); ?></textarea>
-			</div>
-			<div class="bbcs-fs-xs bbcs-dim"><?php esc_html_e('Visitors from selected countries will be unable to access the site.', 'botblocker-security'); ?></div>
 		</div>
+		<table class="bbcs-table compact bbcs-mb-0" id="botblocker-geo"
+			style="width:100%; font-size: 11px;">
+			<thead>
+				<tr>
+					<th style="min-width: 50px;"><?php esc_html_e('ID', 'botblocker-security'); ?></th>
+					<th style="min-width: 80px;"><?php esc_html_e('Priority', 'botblocker-security'); ?></th>
+					<th style="min-width: 80px;"><?php esc_html_e('Code', 'botblocker-security'); ?></th>
+					<th style="min-width: 150px;"><?php esc_html_e('Country', 'botblocker-security'); ?></th>
+					<th style="min-width: 80px;"><?php esc_html_e('Rule', 'botblocker-security'); ?></th>
+					<th style="min-width: 100px;"><?php esc_html_e('Comment', 'botblocker-security'); ?></th>
+					<th style="min-width: 100px;"><?php esc_html_e('Actions', 'botblocker-security'); ?></th>
+				</tr>
+			</thead>
+		</table>
 	</div>
-
 
 <?php
 };

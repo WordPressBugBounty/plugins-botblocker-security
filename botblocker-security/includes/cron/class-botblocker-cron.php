@@ -8,6 +8,12 @@ if (! defined('ABSPATH')) {
 
 class BotBlockerCron
 {
+	public const CRON_MODE_NONE     = 'none';
+	public const CRON_MODE_SPAWN    = 'spawn';
+	public const CRON_MODE_FALLBACK = 'fallback';
+
+	private const SINGLE_EVENT_MIN_INTERVAL = 300;
+
 	private const TASK_DEFINITIONS = array(
 		'bbcs_daily_task'            => array(
 			'schedule' => 'daily',
@@ -30,8 +36,8 @@ class BotBlockerCron
 			'label'    => 'Sync Early Init Data',
 		),
 		'bbcs_asn_db_freshness_task' => array(
-			'schedule' => 'every_five_days',
-			'interval' => 5 * DAY_IN_SECONDS,
+			'schedule' => 'weekly',
+			'interval' => WEEK_IN_SECONDS,
 			'label'    => 'ASN Database Freshness Check',
 		),
 		'bbcs_asn_db_download_event' => array(
@@ -40,8 +46,8 @@ class BotBlockerCron
 			'label'    => 'ASN Database Download/Update',
 		),
 		'bbcs_rugov_freshness_task'  => array(
-			'schedule' => 'daily',
-			'interval' => DAY_IN_SECONDS,
+			'schedule' => 'weekly',
+			'interval' => WEEK_IN_SECONDS,
 			'label'    => 'RUGOV Freshness Check',
 		),
 		'bbcs_rugov_update_event'    => array(
@@ -63,11 +69,6 @@ class BotBlockerCron
 			'schedule' => null,
 			'interval' => 120,
 			'label'    => 'Daily Summary Backfill',
-		),
-		'bbcs_telegram_weekly_report_task' => array(
-			'schedule' => 'weekly',
-			'interval' => WEEK_IN_SECONDS,
-			'label'    => 'Telegram Weekly Report',
 		),
 		'bbcs_cleanup_hot_bans'            => array(
 			'schedule' => 'five_minutes',
@@ -95,7 +96,6 @@ class BotBlockerCron
 			'bbcs_llm_sync_event'        => __('LLM Provider Sync', 'botblocker-security'),
 			'bbcs_tls_fingerprints_sync_event' => __('TLS Fingerprint Sync', 'botblocker-security'),
 			'bbcs_summary_backfill'		 => __('Daily Summary Backfill', 'botblocker-security'),
-			'bbcs_telegram_weekly_report_task' => __('Telegram Weekly Report', 'botblocker-security'),
 			'bbcs_cleanup_hot_bans'            => __('Cleanup Hot Bans', 'botblocker-security'),
 		);
 	}
@@ -113,18 +113,20 @@ class BotBlockerCron
 
 	public static function registerIntervals(array $schedules): array
 	{
+		$early = ! did_action('init');
+
 		$custom_intervals = array(
 			'every_five_days' => array(
 				'interval' => 5 * DAY_IN_SECONDS,
-				'display'  => __('Every 5 Days', 'botblocker-security'),
+				'display'  => $early ? 'Every 5 Days' : __('Every 5 Days', 'botblocker-security'),
 			),
 			'weekly'          => array(
 				'interval' => WEEK_IN_SECONDS,
-				'display'  => __('Weekly', 'botblocker-security'),
+				'display'  => $early ? 'Weekly' : __('Weekly', 'botblocker-security'),
 			),
 			'five_minutes'    => array(
 				'interval' => 5 * MINUTE_IN_SECONDS,
-				'display'  => __('Every 5 Minutes', 'botblocker-security'),
+				'display'  => $early ? 'Every 5 Minutes' : __('Every 5 Minutes', 'botblocker-security'),
 			),
 		);
 		return array_merge($schedules, $custom_intervals);
@@ -245,11 +247,6 @@ class BotBlockerCron
 		self::sendSuspiciousHits();
 	}
 
-	public static function telegramWeeklyReportHandler(): void
-	{
-		BotBlockerTelegram::sendWeeklyReport();
-	}
-
 	public static function oneTimeHandler(): void
 	{
 		if (defined('BBCS_DEBUG') && BBCS_DEBUG) {
@@ -287,20 +284,31 @@ class BotBlockerCron
 		$hook = isset( $_POST['hook'] ) ? sanitize_text_field( wp_unslash( $_POST['hook'] ) ) : '';
 
 		$all_tasks = self::getAllTasks();
-		if ( $hook === '' || ! isset( $all_tasks[ $hook ] ) ) {
+		if ( $hook === '' ) {
 			wp_send_json_error( __( 'Unknown cron task.', 'botblocker-security' ) );
+		}
+
+		$is_core = isset( $all_tasks[ $hook ] );
+		if ( ! $is_core ) {
+			$labels = apply_filters( 'bbcs_cron_task_labels', self::getTaskLabels() );
+			if ( ! isset( $labels[ $hook ] ) ) {
+				wp_send_json_error( __( 'Unknown cron task.', 'botblocker-security' ) );
+			}
 		}
 
 		self::runTask( $hook );
 
-		$def   = $all_tasks[ $hook ];
 		$now   = time();
 		$event = bbcs_get_scheduled_event( $hook );
 		if ( $event ) {
 			wp_unschedule_event( $event->timestamp, $hook );
 		}
-		if ( $def['schedule'] !== null ) {
-			wp_schedule_event( $now + $def['interval'], $def['schedule'], $hook );
+		if ( $is_core ) {
+			if ( $all_tasks[ $hook ]['schedule'] !== null ) {
+				wp_schedule_event( $now + $all_tasks[ $hook ]['interval'], $all_tasks[ $hook ]['schedule'], $hook );
+			}
+		} elseif ( $event && ! empty( $event->schedule ) ) {
+			wp_schedule_event( $now + (int) $event->interval, (string) $event->schedule, $hook );
 		}
 
 		wp_send_json_success( array(
@@ -402,10 +410,15 @@ class BotBlockerCron
 		// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
 		// Should not be cached - it's a cron task for cleanup.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$cloud_result = $wpdb->query($wpdb->prepare(
-			"INSERT INTO {$wpdb->bbcs_hits_cloud} SELECT * FROM `{$wpdb->bbcs_hits_suspicious}` WHERE `date` < %d",
+		// Explicit column list, not SELECT *: a positional copy breaks as soon as the two
+		// schemas differ by one column, and a failure here aborts the whole retention run.
+		$columns = BotBlockerDb::sharedColumnList($wpdb->bbcs_hits_suspicious, $wpdb->bbcs_hits_cloud);
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$cloud_result = $columns === '' ? false : $wpdb->query($wpdb->prepare(
+			"INSERT INTO `{$wpdb->bbcs_hits_cloud}` ({$columns}) SELECT {$columns} FROM `{$wpdb->bbcs_hits_suspicious}` WHERE `date` < %d",
 			$delete_before
 		));
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		if ($cloud_result === false) {
 			if (defined('BBCS_DEBUG') && BBCS_DEBUG) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
@@ -431,6 +444,8 @@ class BotBlockerCron
 		}
 		BotBlockerSummary::cleanOldData($store_period);
 
+		self::retireFilteredWatermark();
+
 		if ( isset( $wpdb->bbcs_fingerprint ) ) {
 			$fingerprint_cutoff = $delete_before;
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -438,6 +453,32 @@ class BotBlockerCron
 				"DELETE FROM `{$wpdb->bbcs_fingerprint}` WHERE last_seen < %d AND status = 'watch'",
 				$fingerprint_cutoff
 			) );
+		}
+	}
+
+	/**
+	 * Set watermark to 0 once no hit rows remain below it. Write 0 (not delete) — absent = untrusted.
+	 */
+	private static function retireFilteredWatermark(): void
+	{
+		global $wpdb;
+
+		$watermark = (int) get_option( BotBlockerStore::FILTERED_WATERMARK_OPTION, 0 );
+		if ( $watermark <= 0 ) {
+			return;
+		}
+		if ( empty( $wpdb->bbcs_hits ) || empty( $wpdb->bbcs_hits_suspicious ) ) {
+			return;
+		}
+
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$min_hits       = (int) $wpdb->get_var( "SELECT MIN(`date`) FROM `{$wpdb->bbcs_hits}`" );
+		$min_suspicious = (int) $wpdb->get_var( "SELECT MIN(`date`) FROM `{$wpdb->bbcs_hits_suspicious}`" );
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		// Empty table → MIN is 0 → treat as satisfied. Both tables must clear the watermark.
+		if ( ( $min_hits >= $watermark || $min_hits === 0 ) && ( $min_suspicious >= $watermark || $min_suspicious === 0 ) ) {
+			update_option( BotBlockerStore::FILTERED_WATERMARK_OPTION, 0, true );
 		}
 	}
 
@@ -462,7 +503,7 @@ class BotBlockerCron
 			// Should not be cached - it's a cron task for cleanup.
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$suspicious_hits = $wpdb->get_results($wpdb->prepare(
-				"SELECT ip, date FROM `{$wpdb->bbcs_hits_cloud}` WHERE date > %d AND ip != %s ORDER BY date ASC LIMIT %d",
+				"SELECT cid, ip, date FROM `{$wpdb->bbcs_hits_cloud}` WHERE date > %d AND ip != %s ORDER BY date ASC LIMIT %d",
 				$last_date,
 				BOTBLOCKER_EMPTY,
 				BOTBLOCKER_CLOUD_RECORDS_BATCH
@@ -474,6 +515,8 @@ class BotBlockerCron
 				$batch_start_date = $suspicious_hits[0]['date'];
 			}
 			$last_date = $batch_end_date = end($suspicious_hits)['date'];
+			$batch_cids = array_column($suspicious_hits, 'cid');
+			$all_batch_cids = array_merge($all_batch_cids ?? array(), $batch_cids);
 			$ip_records = array_map(
 				function ($hit) {
 					return array('ip' => $hit['ip']);
@@ -481,7 +524,7 @@ class BotBlockerCron
 				$suspicious_hits
 			);
 			$compressed = gzencode(wp_json_encode($ip_records), 9);
-			unset($suspicious_hits, $ip_records);
+			unset($suspicious_hits, $batch_cids, $ip_records);
 			$request_data['hits'][] = base64_encode($compressed);
 			unset($compressed);
 			if (count($request_data['hits']) >= BOTBLOCKER_CLOUD_REQUEST_SIZE) {
@@ -491,12 +534,14 @@ class BotBlockerCron
 					$cloud = BotBlockerWpRequest::send_to_cloud($request_data, BOTBLOCKER_API_GS_URL, 'suspicious');
 				}
 				if ($cloud !== false) {
+					$placeholders = implode(',', array_fill(0, count($all_batch_cids), '%s'));
 					// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared and sanitized. No direct unsanitized SQL is executed.
 					// Should not be cached - it's a cron task for cleanup.
-					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-					$wpdb->query($wpdb->prepare("DELETE FROM `{$wpdb->bbcs_hits_cloud}` WHERE date >= %d AND date <= %d", $batch_start_date, $batch_end_date));
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+					$wpdb->query($wpdb->prepare("DELETE FROM `{$wpdb->bbcs_hits_cloud}` WHERE cid IN ($placeholders)", ...$all_batch_cids));
 				}
 				$request_data     = array();
+				$all_batch_cids   = array();
 				$batch_start_date = null;
 				$batch_end_date   = null;
 			}
@@ -507,11 +552,12 @@ class BotBlockerCron
 			if ($cloud === false) {
 				$cloud = BotBlockerWpRequest::send_to_cloud($request_data, BOTBLOCKER_API_GS_URL, 'suspicious');
 			}
-			if ($cloud !== false && $batch_start_date !== null && $batch_end_date !== null) {
+			if ($cloud !== false && ! empty($all_batch_cids)) {
+				$placeholders = implode(',', array_fill(0, count($all_batch_cids), '%s'));
 				// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared and sanitized. No direct unsanitized SQL is executed.
 				// Should not be cached - it's a cron task for cleanup.
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-				$wpdb->query($wpdb->prepare("DELETE FROM `{$wpdb->bbcs_hits_cloud}` WHERE date >= %d AND date <= %d", $batch_start_date, $batch_end_date));
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+				$wpdb->query($wpdb->prepare("DELETE FROM `{$wpdb->bbcs_hits_cloud}` WHERE cid IN ($placeholders)", ...$all_batch_cids));
 			}
 			$request_data = array();
 		}
@@ -522,13 +568,25 @@ class BotBlockerCron
 		require_once BOTBLOCKER_DIR . 'helpers-cron.php';
 	}
 
-	public static function runTask(string $hook): void
+	private static function skipMissingHandler(string $hook): bool
+	{
+		if (has_action($hook)) {
+			return false;
+		}
+		if (defined('BBCS_DEBUG') && BBCS_DEBUG) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log("[BBCS] [Cron] Fallback skipped {$hook}: no handler registered, leaving it scheduled");
+		}
+		return true;
+	}
+
+	public static function runTask(string $hook, array $args = array()): void
 	{
 		self::loadTaskDependencies();
 
 		try {
 			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
-			do_action($hook);
+			do_action_ref_array($hook, $args);
 		} catch (\Throwable $e) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 			error_log(sprintf('[BBCS] [Cron] Task %s failed: %s in %s:%d', $hook, $e->getMessage(), $e->getFile(), $e->getLine()));
@@ -538,6 +596,12 @@ class BotBlockerCron
 	public static function fallbackRunner(): void
 	{
 		if (wp_doing_cron()) {
+			return;
+		}
+
+		$cron_lock_timeout = defined('WP_CRON_LOCK_TIMEOUT') ? WP_CRON_LOCK_TIMEOUT : MINUTE_IN_SECONDS;
+		$doing_cron        = (float) get_transient('doing_cron');
+		if ($doing_cron > 0 && ($doing_cron + $cron_lock_timeout) > microtime(true)) {
 			return;
 		}
 
@@ -568,8 +632,11 @@ class BotBlockerCron
 		}
 
 		try {
+			self::loadTaskDependencies();
+
 			$current_time = time();
 			$tasks        = self::getFallbackTasks();
+
 			foreach ($tasks as $hook => $config) {
 				$event = bbcs_get_scheduled_event($hook);
 				if (! $event) {
@@ -581,31 +648,61 @@ class BotBlockerCron
 				}
 				// Simplified overdue check - if task is more than 1.5x interval overdue, run it
 				$overdue_threshold = $event->timestamp + ($config['interval'] * 1.5);
-				if ($current_time > $overdue_threshold) {
-					if (defined('BBCS_DEBUG') && BBCS_DEBUG) {
-						// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-						error_log("[BBCS DEBUG] [Cron] Running overdue task: {$hook}");
-					}
-					// runTask() never throws, so a failing handler still gets
-					// rescheduled below instead of staying permanently overdue.
-					self::runTask($hook);
-
-					wp_unschedule_event($event->timestamp, $hook);
-					if (! empty($config['schedule'])) {
-						wp_schedule_event(time() + 60, $config['schedule'], $hook);
-					}
+				if ($current_time <= $overdue_threshold) {
+					continue;
 				}
-			}
 
-			// One-time task fallback
-			$one_time = bbcs_get_scheduled_event('bbcs_one_time_task');
-			if ($one_time && $one_time->timestamp < ($current_time - 600)) {
+				if (self::skipMissingHandler($hook)) {
+					continue;
+				}
+
 				if (defined('BBCS_DEBUG') && BBCS_DEBUG) {
 					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-					error_log('[BBCS DEBUG] [Cron] Running overdue one-time task');
+					error_log("[BBCS DEBUG] [Cron] Running overdue task: {$hook}");
 				}
-				self::runTask('bbcs_one_time_task');
-				wp_unschedule_event($one_time->timestamp, 'bbcs_one_time_task');
+
+				wp_unschedule_event($event->timestamp, $hook);
+				if (! empty($config['schedule'])) {
+					wp_schedule_event(time() + 60, $config['schedule'], $hook);
+				}
+
+				self::runTask($hook);
+			}
+
+			foreach ((array) _get_cron_array() as $timestamp => $hooks) {
+				if ((int) $timestamp >= $current_time) {
+					break;
+				}
+				foreach ($hooks as $hook => $events) {
+					$config = isset(self::TASK_DEFINITIONS[$hook]) ? self::TASK_DEFINITIONS[$hook] : null;
+					if ($config === null) {
+						continue;
+					}
+					foreach ((array) $events as $event) {
+						if (! empty($event['schedule'])) {
+							continue;
+						}
+						$interval = $config['schedule'] === null
+							? (int) $config['interval']
+							: self::SINGLE_EVENT_MIN_INTERVAL;
+						if ((int) $timestamp >= ($current_time - $interval)) {
+							continue;
+						}
+
+						$event_args = isset($event['args']) && is_array($event['args']) ? $event['args'] : array();
+
+						if (self::skipMissingHandler($hook)) {
+							continue;
+						}
+
+						if (defined('BBCS_DEBUG') && BBCS_DEBUG) {
+							// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+							error_log("[BBCS DEBUG] [Cron] Running overdue single event: {$hook}");
+						}
+						wp_unschedule_event((int) $timestamp, $hook, $event_args);
+						self::runTask($hook, $event_args);
+					}
+				}
 			}
 		} finally {
 			delete_option($lock_key);
@@ -618,7 +715,6 @@ add_filter('cron_schedules', array('BotBlockerCron', 'registerIntervals'));
 add_action('bbcs_daily_task', array('BotBlockerCron', 'dailyHandler'));
 add_action('bbcs_hourly_task', array('BotBlockerCron', 'hourlyHandler'));
 add_action('bbcs_weekly_task', array('BotBlockerCron', 'weeklyHandler'));
-add_action('bbcs_telegram_weekly_report_task', array('BotBlockerCron', 'telegramWeeklyReportHandler'));
 add_action('bbcs_one_time_task', array('BotBlockerCron', 'oneTimeHandler'));
 add_action('wp_ajax_bbcs_get_cron_tasks', array('BotBlockerCron', 'getTasksList'));
 add_action('wp_ajax_bbcs_run_cron_task', array('BotBlockerCron', 'handleRunCronTask'));

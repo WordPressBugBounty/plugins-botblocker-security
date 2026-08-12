@@ -29,7 +29,7 @@ class BotBlockerAjaxMaintenance {
 		}
 
 		global $wpdb;
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		if (
 			$wpdb->query( "TRUNCATE TABLE `{$wpdb->bbcs_rules}`" ) === false ||
 			$wpdb->query( "TRUNCATE TABLE `{$wpdb->bbcs_path}`" ) === false ||
@@ -84,22 +84,17 @@ class BotBlockerAjaxMaintenance {
 
 		// No user-provided table or value is interpolated into the SQL.
 		global $wpdb;
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 
-		$suspicious_count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->bbcs_hits_suspicious}`" );
-		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
-			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' suspicious_count=' . $suspicious_count );
-		}
-		if ( $suspicious_count > 0 ) {
-			if ( $wpdb->query( "INSERT INTO {$wpdb->bbcs_hits_cloud} SELECT * FROM `{$wpdb->bbcs_hits_suspicious}`" ) === false ) {
-				// phpcs:enable
-				if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
-					error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' insert into hits_cloud FAILED: ' . $wpdb->last_error );
-				}
-				wp_send_json_error( array( 'message' => __( 'Failed to clear visitors data.', 'botblocker-security' ) ) );
+		$columns        = BotBlockerDb::sharedColumnList( $wpdb->bbcs_hits_suspicious, $wpdb->bbcs_hits_cloud );
+		$archive_result = $columns === '' ? false : $wpdb->query( "INSERT INTO `{$wpdb->bbcs_hits_cloud}` ({$columns}) SELECT {$columns} FROM `{$wpdb->bbcs_hits_suspicious}`" );
+		if ( $archive_result === false ) {
+			// phpcs:enable
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' insert into hits_cloud FAILED: ' . $wpdb->last_error );
 			}
+			wp_send_json_error( array( 'message' => __( 'Failed to clear visitors data.', 'botblocker-security' ) ) );
 		}
 
 		if ( $wpdb->query( "TRUNCATE TABLE `{$wpdb->bbcs_hits}`" ) === false ) {
@@ -115,15 +110,6 @@ class BotBlockerAjaxMaintenance {
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' truncate hits_suspicious FAILED: ' . $wpdb->last_error );
-			}
-			wp_send_json_error( array( 'message' => __( 'Failed to clear visitors data.', 'botblocker-security' ) ) );
-		}
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		if ( $wpdb->query( "UPDATE `{$wpdb->bbcs_counters}` SET `today_hits` = 0, `today_blocked` = 0, `total_hits` = 0, `total_blocked` = 0, `search_engine_visits` = 0, `last_update` = NULL" ) === false ) {
-			// phpcs:enable
-			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
-				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' reset counters FAILED: ' . $wpdb->last_error );
 			}
 			wp_send_json_error( array( 'message' => __( 'Failed to clear visitors data.', 'botblocker-security' ) ) );
 		}

@@ -12,6 +12,11 @@ class Botblocker_Deactivator {
 			return;
 		}
 
+		// Re-activation must re-run critical logic: drop the cached gates.
+		if ( class_exists( 'Botblocker_Activator' ) && method_exists( 'Botblocker_Activator', 'clearActivationGates' ) ) {
+			Botblocker_Activator::clearActivationGates();
+		}
+
 		if ( class_exists( 'BotBlockerAddons' ) ) {
 			BotBlockerAddons::deactivateAll();
 		}
@@ -28,6 +33,9 @@ class Botblocker_Deactivator {
 	public static function deactivateNetworkWide(): void {
 		if ( ! is_multisite() ) {
 			return;
+		}
+		if ( class_exists( 'Botblocker_Activator' ) && method_exists( 'Botblocker_Activator', 'clearActivationGates' ) ) {
+			Botblocker_Activator::clearActivationGates();
 		}
 		$site_ids = BotBlockerMultisite::getAllSiteIds();
 		foreach ( $site_ids as $site_id ) {

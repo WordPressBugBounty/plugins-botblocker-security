@@ -9,6 +9,12 @@ require_once __DIR__ . '/includes/mu/mu-botblocker-ip.php';
 require_once __DIR__ . '/includes/mu/mu-botblocker-header.php';
 require_once __DIR__ . '/includes/mu/mu-botblocker-db.php';
 require_once __DIR__ . '/includes/mu/mu-botblocker-utils.php';
+if ( ! function_exists( 'bbcs_path_candidates' ) ) {
+	require_once __DIR__ . '/includes/mu/mu-botblocker-path-resolver.php';
+}
+if ( ! function_exists( 'bbcs_geo_block_decision' ) ) {
+	require_once __DIR__ . '/includes/mu/mu-botblocker-geo.php';
+}
 
 class BotBlockerMuPhase {
 
@@ -42,8 +48,54 @@ class BotBlockerMuPhase {
 		}
 		$this->read_ip();
 		$this->read_protocol();
-		$res = $this->is_ip_blocked( $this->read_ip_rules(), $this->ip );
+		$rules = $this->read_ip_rules();
+		$res   = $this->is_ip_blocked( $rules, $this->ip );
 		if ( $res ) {
+			$this->increment_blocked_hit();
+			$this->show_denied_page();
+		}
+		$this->bbcs_mu_geo_check( $rules );
+	}
+
+	/**
+	 * GEO block check, spec section 4.4. Fail-open: any uncertainty passes
+	 * the traffic to the main plugin (Layer 3).
+	 *
+	 * @param array $rules ip.php rules map (allow rules take priority, S17)
+	 */
+	private function bbcs_mu_geo_check( array $rules ): void {
+		if ( ! function_exists( 'bbcs_geo_block_decision' ) ) {
+			return;
+		}
+		if ( empty( $this->settings['mu_geo_enable'] ) ) {
+			return;
+		}
+		$blocked = bbcs_geo_load_blocked( $this->dirs['data'] . 'geo_countries.php' );
+		if ( empty( $blocked ) ) {
+			return;
+		}
+
+		$is_allowed = bbcs_geo_is_allowed( $rules, $this->ip );
+		$is_v6      = $this->ip_version === '6';
+		$header     = bbcs_geo_header_country();
+
+		$mmdb = null;
+		if ( ! $is_allowed && ( $header === '' || ! isset( $blocked[ $header ] ) ) ) {
+			$ctx = array(
+				'script_dir'     => __DIR__ . '/includes/mu/',
+				'plugin_slug'    => 'botblocker-security',
+				'abspath'        => defined( 'ABSPATH' ) ? ABSPATH : '',
+				'wp_plugin_dir'  => defined( 'WP_PLUGIN_DIR' ) ? WP_PLUGIN_DIR : '',
+				'wp_content_dir' => defined( 'WP_CONTENT_DIR' ) ? WP_CONTENT_DIR : '',
+			);
+			$autoloader = bbcs_resolve_reader_autoloader( $ctx );
+			$mmdb_path  = bbcs_geo_mmdb_path( $this->dirs['data'] );
+			if ( $autoloader !== null && $mmdb_path !== '' ) {
+				$mmdb = bbcs_geo_mmdb_lookup( $autoloader, $mmdb_path, $this->ip );
+			}
+		}
+
+		if ( bbcs_geo_block_decision( $header, $mmdb, $blocked, $is_allowed, $is_v6 ) ) {
 			$this->increment_blocked_hit();
 			$this->show_denied_page();
 		}

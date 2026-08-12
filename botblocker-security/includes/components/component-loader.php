@@ -31,6 +31,7 @@ require_once __DIR__ . '/class-botblocker-component-visitors-map.php';
 require_once __DIR__ . '/class-botblocker-component-health-item.php';
 require_once __DIR__ . '/class-botblocker-component-health-item-data.php';
 require_once __DIR__ . '/class-botblocker-component-addons-summary.php';
+require_once __DIR__ . '/class-botblocker-component-addon-market-card.php';
 require_once __DIR__ . '/class-botblocker-component-quick-link.php';
 require_once __DIR__ . '/class-botblocker-component-info-column.php';
 require_once __DIR__ . '/class-botblocker-component-settings-group.php';

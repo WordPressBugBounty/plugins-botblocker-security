@@ -103,6 +103,7 @@ abstract class BotBlockerBase {
 	public $bbcs_asn       = array();
 	public $bbcs_llm       = array();
 	public $bbcs_path      = array();
+	public $bbcs_custom_rules = array();
 	public $bbcs_proxy     = array();
 	public $self_ips       = array();
 	public $admin_ips      = array();
@@ -185,7 +186,6 @@ abstract class BotBlockerBase {
 	public $should_show_check_page      = false;
 	public $should_show_block_page      = false;
 	public $should_show_denied_page     = false;
-	public $csp_nonce                   = '';
 	public $addon_traffic_decision      = array();
 	public $addon_traffic_decision_stop = false;
 

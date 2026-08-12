@@ -12,6 +12,13 @@ class BotBlockerAddons {
 	private static $loaded_cores = array();
 
 	public static function isLocalMode(): bool {
+		$override = apply_filters( 'bbcs_addons_channel', '' );
+		if ( self::CHANNEL_LOCAL === $override ) {
+			return true;
+		}
+		if ( in_array( $override, array( self::CHANNEL_DEV, self::CHANNEL_STABLE ), true ) ) {
+			return false;
+		}
 		self::ensureMultisiteLoaded();
 		return BotBlockerMultisite::isAddonsLocalMode();
 	}
@@ -97,16 +104,45 @@ class BotBlockerAddons {
 		}
 	}
 
-	public static function getMarketUrl(): string {
-		if ( defined( 'BOTBLOCKER_MODE' ) && BOTBLOCKER_MODE === BOTBLOCKER_MODE_DEV ) {
+	const CHANNEL_LOCAL  = 'local';
+	const CHANNEL_DEV    = 'dev';
+	const CHANNEL_STABLE = 'stable';
+
+	public static function getChannel(): string {
+		$override = apply_filters( 'bbcs_addons_channel', '' );
+		if ( in_array( $override, array( self::CHANNEL_LOCAL, self::CHANNEL_DEV, self::CHANNEL_STABLE ), true ) ) {
+			return $override;
+		}
+
+		if ( self::isLocalMode() ) {
+			return self::CHANNEL_LOCAL;
+		}
+
+		$mode = defined( 'BOTBLOCKER_ADDONS_MODE' ) ? (string) BOTBLOCKER_ADDONS_MODE : self::CHANNEL_STABLE;
+		return $mode === self::CHANNEL_DEV ? self::CHANNEL_DEV : self::CHANNEL_STABLE;
+	}
+
+	public static function getMarketUrl( string $channel = '' ): string {
+		$channel = $channel !== '' ? $channel : self::getChannel();
+
+		if ( $channel === self::CHANNEL_LOCAL ) {
+			return '';
+		}
+		if ( $channel === self::CHANNEL_DEV ) {
 			return defined( 'BOTBLOCKER_ADDONS_DEV' ) ? BOTBLOCKER_ADDONS_DEV : '';
 		}
 		return defined( 'BOTBLOCKER_ADDONS' ) ? BOTBLOCKER_ADDONS : '';
 	}
 
 	public static function safeRelativePath( $path ): string {
+		static $resolved = array();
+
+		if ( array_key_exists( $path, $resolved ) ) {
+			return $resolved[ $path ];
+		}
 
 		if ( ! is_string( $path ) || trim( $path ) === '' ) {
+			$resolved[ $path ] = '';
 			return '';
 		}
 
@@ -120,8 +156,11 @@ class BotBlockerAddons {
 			|| strpos( $path, ':' ) !== false
 			|| preg_match( '#(^|/)\.\.(/|$)#', $path )
 		) {
+			$resolved[ $path ] = '';
 			return '';
 		}
+
+		$resolved[ $path ] = $path;
 		return $path;
 	}
 
@@ -154,12 +193,21 @@ class BotBlockerAddons {
 	}
 
 	public static function absPath( string $base, string $relative ): string {
+		static $resolved = array();
+
+		$key = $base . '|' . $relative;
+		if ( array_key_exists( $key, $resolved ) ) {
+			return $resolved[ $key ];
+		}
 
 		$relative = self::safeRelativePath( $relative );
 		if ( $relative === '' ) {
+			$resolved[ $key ] = '';
 			return '';
 		}
-		return trailingslashit( $base ) . str_replace( '/', DIRECTORY_SEPARATOR, $relative );
+		$result = trailingslashit( $base ) . str_replace( '/', DIRECTORY_SEPARATOR, $relative );
+		$resolved[ $key ] = $result;
+		return $result;
 	}
 
 	public static function fileUrl( string $slug, string $relative ): string {
@@ -171,12 +219,21 @@ class BotBlockerAddons {
 	}
 
 	public static function parseManifest( string $base, string $slug = '' ): array {
+		static $cache = array();
+
 		$manifest_file = trailingslashit( $base ) . 'bbcs-addon.json';
 		if ( ! file_exists( $manifest_file ) ) {
 			return array();
 		}
 
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+		clearstatcache( true, $manifest_file );
+		$mtime = (int) @filemtime( $manifest_file );
+		$key   = $manifest_file . '|' . $mtime;
+
+		if ( array_key_exists( $key, $cache ) ) {
+			return $cache[ $key ];
+		}
+
 		$raw = file_get_contents( $manifest_file );
 		if ( ! is_string( $raw ) || trim( $raw ) === '' ) {
 			return array();
@@ -187,7 +244,9 @@ class BotBlockerAddons {
 			return array();
 		}
 
-		return self::normalizeManifest( $manifest, $base, $slug );
+		$result = self::normalizeManifest( $manifest, $base, $slug );
+		$cache[ $key ] = $result;
+		return $result;
 	}
 
 	public static function normalizeManifest( array $manifest, string $base, string $folder_slug = '' ): array {
@@ -254,6 +313,11 @@ class BotBlockerAddons {
 		$schema            = isset( $manifest['schema'] ) ? trim( (string) $manifest['schema'] ) : '2.0';
 		$settings_option   = isset( $settings['option'] ) ? sanitize_key( (string) $settings['option'] ) : '';
 		$settings_sanitize = isset( $settings['sanitize'] ) && is_string( $settings['sanitize'] ) ? trim( $settings['sanitize'] ) : '';
+		$name              = isset( $manifest['name'] ) ? trim( (string) $manifest['name'] ) : $slug;
+
+		$gateway = self::normalizeGateway( $manifest );
+		$ui      = self::normalizeUi( $manifest, $name );
+		$storage = self::normalizeStorage( $manifest );
 
 		$valid = $slug !== ''
 			&& $slug === sanitize_key( $slug )
@@ -277,7 +341,7 @@ class BotBlockerAddons {
 			'settings'          => $settings_path,
 			'icon'              => ( $icon_rel !== '' && file_exists( $icon_path ) ) ? self::fileUrl( $slug, $icon_rel ) : '',
 			'valid'             => $valid,
-			'name'              => isset( $manifest['name'] ) ? trim( (string) $manifest['name'] ) : $slug,
+			'name'              => $name,
 			'author'            => isset( $manifest['author'] ) ? trim( (string) $manifest['author'] ) : '',
 			'description'       => isset( $manifest['description'] ) ? trim( (string) $manifest['description'] ) : '',
 			'version'           => isset( $manifest['version'] ) ? trim( (string) $manifest['version'] ) : '',
@@ -293,8 +357,91 @@ class BotBlockerAddons {
 			'features'          => array_values( array_unique( $features ) ),
 			'manifest'          => trailingslashit( $base ) . 'bbcs-addon.json',
 			'readme'            => ( $readme_path !== '' && file_exists( $readme_path ) ) ? $readme_path : '',
+			'gateway'           => $gateway,
+			'ui'                => $ui,
+			'storage'           => $storage,
 		);
 	}
+
+	private static function normalizeGateway( array $manifest ): array {
+		$raw     = isset( $manifest['gateway'] ) && is_array( $manifest['gateway'] ) ? $manifest['gateway'] : array();
+		$gateway = array();
+
+		if ( isset( $raw['early_init'] ) && is_array( $raw['early_init'] ) ) {
+			$ei = $raw['early_init'];
+			$gateway['early_init'] = array(
+				'router_file'        => isset( $ei['router_file'] ) ? self::safeRelativePath( $ei['router_file'] ) : '',
+				'entry_file'         => isset( $ei['entry_file'] ) ? self::safeRelativePath( $ei['entry_file'] ) : '',
+				'entry_class'        => isset( $ei['entry_class'] ) ? trim( (string) $ei['entry_class'] ) : '',
+				'deploy_target'      => isset( $ei['deploy_target'] ) ? sanitize_key( (string) $ei['deploy_target'] ) : '',
+				'wp_config_block'    => ! empty( $ei['wp_config_block'] ),
+				'consistency_check'  => isset( $ei['consistency_check'] ) ? self::safeCallableName( $ei['consistency_check'] ) : '',
+				'data_file_probe'    => isset( $ei['data_file_probe'] ) ? self::safeRelativePath( $ei['data_file_probe'] ) : '',
+			);
+		}
+
+		if ( isset( $raw['mu_plugin'] ) && is_array( $raw['mu_plugin'] ) ) {
+			$mp = $raw['mu_plugin'];
+			$gateway['mu_plugin'] = array(
+				'source_file'      => isset( $mp['source_file'] ) ? self::safeRelativePath( $mp['source_file'] ) : '',
+				'target_filename'  => isset( $mp['target_filename'] ) ? trim( (string) $mp['target_filename'] ) : '',
+				'auto_deploy'      => ! empty( $mp['auto_deploy'] ),
+			);
+		}
+
+		return $gateway;
+	}
+
+	private static function normalizeUi( array $manifest, string $name ): array {
+		$raw = isset( $manifest['ui'] ) && is_array( $manifest['ui'] ) ? $manifest['ui'] : array();
+		$ui  = array();
+
+		$palette = isset( $raw['palette'] ) && is_array( $raw['palette'] ) ? $raw['palette'] : array();
+		$ui['palette'] = array(
+			'icon'     => isset( $palette['icon'] ) ? sanitize_key( (string) $palette['icon'] ) : 'puzzle',
+			'title'    => isset( $palette['title'] ) ? trim( (string) $palette['title'] ) : $name,
+			'priority' => isset( $palette['priority'] ) && is_numeric( $palette['priority'] ) ? (int) $palette['priority'] : 50,
+		);
+
+		$ui['settings_sections'] = array();
+		if ( isset( $raw['settings_sections'] ) && is_array( $raw['settings_sections'] ) ) {
+			foreach ( $raw['settings_sections'] as $section_name => $section_cfg ) {
+				$section_name = sanitize_key( (string) $section_name );
+				if ( $section_name === '' || ! is_array( $section_cfg ) ) {
+					continue;
+				}
+				$ui['settings_sections'][ $section_name ] = array(
+					'callback' => isset( $section_cfg['callback'] ) ? self::safeCallableName( $section_cfg['callback'] ) : '',
+				);
+			}
+		}
+
+		return $ui;
+	}
+
+	private static function normalizeStorage( array $manifest ): array {
+		$raw     = isset( $manifest['storage'] ) && is_array( $manifest['storage'] ) ? $manifest['storage'] : array();
+		$storage = array(
+			'cache_dirs'          => array(),
+			'cleanup_on_uninstall' => false,
+		);
+
+		if ( isset( $raw['cache_dirs'] ) && is_array( $raw['cache_dirs'] ) ) {
+			foreach ( $raw['cache_dirs'] as $dir ) {
+				$dir = self::safeRelativePath( $dir );
+				if ( $dir !== '' ) {
+					$storage['cache_dirs'][] = $dir;
+				}
+			}
+		}
+
+		if ( isset( $raw['cleanup_on_uninstall'] ) ) {
+			$storage['cleanup_on_uninstall'] = ! empty( $raw['cleanup_on_uninstall'] );
+		}
+
+		return $storage;
+	}
+
 	public static function scanLegacy( string $base, string $slug ): array {
 		$root     = trailingslashit( $base ) . $slug . '.php';
 		$core     = trailingslashit( $base ) . 'inc' . DIRECTORY_SEPARATOR . $slug . '-core.php';
@@ -343,6 +490,19 @@ class BotBlockerAddons {
 			'features'          => array(),
 			'manifest'          => '',
 			'readme'            => file_exists( $readme ) ? $readme : '',
+			'gateway'           => array(),
+			'ui'                => array(
+				'palette' => array(
+					'icon'     => 'puzzle',
+					'title'    => isset( $meta['Name'] ) ? $meta['Name'] : $slug,
+					'priority' => 50,
+				),
+				'settings_sections' => array(),
+			),
+			'storage'           => array(
+				'cache_dirs'          => array(),
+				'cleanup_on_uninstall' => false,
+			),
 		);
 	}
 
@@ -432,7 +592,14 @@ class BotBlockerAddons {
 			return false;
 		}
 		$version = $core_version !== '' ? $core_version : BOTBLOCKER_VERSION;
-		return version_compare( $version, $addon['requires_core'], '>=' );
+		static $compatCache = array();
+		$cache_key = $addon['requires_core'] . '|' . $version;
+		if ( array_key_exists( $cache_key, $compatCache ) ) {
+			return $compatCache[ $cache_key ];
+		}
+		$result = version_compare( $version, $addon['requires_core'], '>=' );
+		$compatCache[ $cache_key ] = $result;
+		return $result;
 	}
 
 	public static function fileRequiresCore( string $slug ): string {
@@ -452,13 +619,22 @@ class BotBlockerAddons {
 	}
 
 	public static function includeLifecycleFile( array $addon ): void {
+		static $included = array();
+
 		$lifecycle = isset( $addon['lifecycle'] ) && is_array( $addon['lifecycle'] ) ? $addon['lifecycle'] : array();
 		if ( empty( $lifecycle['file'] ) ) {
 			return;
 		}
-		$file = self::absPath( $addon['base'] ?? '', $lifecycle['file'] );
-		if ( $file !== '' && file_exists( $file ) ) {
-			include_once $file;
+
+		$file = $lifecycle['file'];
+		if ( array_key_exists( $file, $included ) ) {
+			return;
+		}
+
+		$path = self::absPath( $addon['base'] ?? '', $file );
+		if ( $path !== '' && file_exists( $path ) ) {
+			$included[ $file ] = true;
+			include_once $path;
 		}
 	}
 
@@ -557,40 +733,17 @@ class BotBlockerAddons {
 	}
 
 	public static function registerTrafficDecisionProvider( string $slug, $callback, int $priority = 10 ): bool {
-
-		$slug = sanitize_key( $slug );
-		if ( $slug === '' || ! is_callable( $callback ) ) {
-			return false;
+		if ( ! class_exists( 'BotBlockerTrafficDecisions' ) ) {
+			require_once BOTBLOCKER_DIR . 'includes/class-botblocker-traffic-decisions.php';
 		}
-
-		if ( ! isset( $GLOBALS['bbcs_traffic_decision_providers'] ) || ! is_array( $GLOBALS['bbcs_traffic_decision_providers'] ) ) {
-			$GLOBALS['bbcs_traffic_decision_providers'] = array();
-		}
-
-		$GLOBALS['bbcs_traffic_decision_providers'][ $slug ] = array(
-			'slug'     => $slug,
-			'callback' => $callback,
-			'priority' => max( -9999, min( 9999, $priority ) ),
-		);
-		return true;
+		return BotBlockerTrafficDecisions::register( $slug, $callback, $priority );
 	}
 
 	public static function getTrafficDecisionProviders(): array {
-
-		$providers = isset( $GLOBALS['bbcs_traffic_decision_providers'] ) && is_array( $GLOBALS['bbcs_traffic_decision_providers'] ) ? $GLOBALS['bbcs_traffic_decision_providers'] : array();
-		uasort(
-			$providers,
-			static function ( $a, $b ) {
-
-				$priority_a = isset( $a['priority'] ) ? (int) $a['priority'] : 10;
-				$priority_b = isset( $b['priority'] ) ? (int) $b['priority'] : 10;
-				if ( $priority_a === $priority_b ) {
-					return strcmp( (string) ( $a['slug'] ?? '' ), (string) ( $b['slug'] ?? '' ) );
-				}
-				return $priority_a <=> $priority_b;
-			}
-		);
-		return $providers;
+		if ( ! class_exists( 'BotBlockerTrafficDecisions' ) ) {
+			require_once BOTBLOCKER_DIR . 'includes/class-botblocker-traffic-decisions.php';
+		}
+		return BotBlockerTrafficDecisions::getAll();
 	}
 
 	public static function isPreRunMarkerReady( array $pre_run, array $addon, string $slug ): bool {
@@ -609,6 +762,11 @@ class BotBlockerAddons {
 	}
 
 	public static function includePreRunAddons(): array {
+
+		if ( ! class_exists( 'BotBlockerTrafficDecisions' ) ) {
+			require_once BOTBLOCKER_DIR . 'includes/class-botblocker-traffic-decisions.php';
+		}
+		BotBlockerTrafficDecisions::reset();
 
 		$addons = self::scanAll();
 		$active = self::getActive();
@@ -648,6 +806,61 @@ class BotBlockerAddons {
 		}
 
 		return $loaded;
+	}
+
+	public static function registerGatewayConfigs( array $addons ): void {
+		if ( ! class_exists( 'BotBlockerGateway' ) ) {
+			require_once BOTBLOCKER_DIR . 'includes/class-botblocker-gateway.php';
+		}
+
+		foreach ( $addons as $slug => $addon ) {
+			$gateway = $addon['gateway'] ?? array();
+			if ( ! is_array( $gateway ) || empty( $gateway ) ) {
+				continue;
+			}
+
+			foreach ( $gateway as $type => $config ) {
+				if ( ! is_array( $config ) ) {
+					continue;
+				}
+				BotBlockerGateway::register( $slug, $type, $config );
+			}
+		}
+	}
+
+	private static function restoreGatewayStates(): void {
+		if ( ! class_exists( 'BotBlockerGateway' ) ) {
+			require_once BOTBLOCKER_DIR . 'includes/class-botblocker-gateway.php';
+		}
+
+		global $wpdb;
+		if ( ! isset( $wpdb->bbcs_settings ) ) {
+			return;
+		}
+
+		$gateway_settings = array(
+			'early_init_enable' => 'early_init',
+		);
+
+		foreach ( $gateway_settings as $db_key => $gateway_type ) {
+			if ( BotBlockerGateway::isEnabled( $gateway_type ) !== null ) {
+				continue;
+			}
+
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$enabled = (int) $wpdb->get_var(
+				$wpdb->prepare( "SELECT value FROM {$wpdb->bbcs_settings} WHERE `key` = %s", $db_key )
+			);
+
+			if ( 1 !== $enabled ) {
+				continue;
+			}
+
+			$slug = BotBlockerGateway::firstSlug( $gateway_type );
+			if ( $slug !== '' ) {
+				BotBlockerGateway::restoreState( $gateway_type, $slug );
+			}
+		}
 	}
 
 	public static function sanitizeSettingsValue( $value ) {
@@ -872,6 +1085,8 @@ class BotBlockerAddons {
 		$addons = self::scanAll();
 		$active = self::getActive();
 
+		self::registerGatewayConfigs( $addons );
+
 		$incompatible       = array();
 		$incompatible_slugs = array();
 		$loaded             = array();
@@ -914,8 +1129,11 @@ class BotBlockerAddons {
 			BotBlockerAlerts::setAddonIncompatible( $incompatible );
 
 			foreach ( $incompatible_slugs as $slug ) {
-				if ( isset( $addons[ $slug ] ) && self::declaresFeature( $addons[ $slug ], 'early_init_provider' ) && ! empty( $addons[ $slug ]['core'] ) ) {
-					self::loadCore( $addons[ $slug ] );
+				if ( isset( $addons[ $slug ] ) && ! empty( $addons[ $slug ]['core'] ) ) {
+					$gateway = $addons[ $slug ]['gateway'] ?? array();
+					if ( ! empty( $gateway['early_init'] ) ) {
+						self::loadCore( $addons[ $slug ] );
+					}
 				}
 			}
 
@@ -931,17 +1149,9 @@ class BotBlockerAddons {
 				self::dispatchLifecycle( $slug, 'health_check', $addons[ $slug ] );
 			}
 		}
-		$cloud_api_active  = ( class_exists( 'BotBlockerPro' ) && BotBlockerPro::isActive() );
-		$early_init_loaded = false;
-		foreach ( $loaded as $slug ) {
-			if ( isset( $addons[ $slug ] ) && self::declaresFeature( $addons[ $slug ], 'early_init_provider' ) ) {
-				$early_init_loaded = true;
-				break;
-			}
-		}
-		if ( ! $early_init_loaded ) {
-			$early_init_loaded = (bool) apply_filters( 'bbcs_early_init_provider_active', false );
-		}
+		$cloud_api_active = ( class_exists( 'BotBlockerPro' ) && BotBlockerPro::isActive() );
+		self::restoreGatewayStates();
+		$early_init_loaded = class_exists( 'BotBlockerGateway' ) && BotBlockerGateway::isRegistered( 'early_init' );
 
 		if ( $early_init_loaded && is_multisite() && get_site_option( 'bbcs_sites_map_dirty' ) ) {
 			if ( function_exists( 'bbcs_generateSitesMapFile' ) ) {

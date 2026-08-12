@@ -20,6 +20,9 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 trait BotBlockerCoreRateTrait {
 
+	private static $rpmDirtyBuckets = array();
+	private static $rpmFlushRegistered = false;
+
 	public function apply_core_rate_limit(): bool {
 		if ( empty( $this->settings->bbcs_rate_check_enabled ) ) {
 			return false;
@@ -173,7 +176,7 @@ trait BotBlockerCoreRateTrait {
 	}
 
 	private function getAndCleanBucket( string $key, int $window_minutes ): array {
-		$bucket = get_transient( $key );
+		$bucket = BotBlockerCache::fileGet( $key );
 		if ( ! is_array( $bucket ) || ! isset( $bucket['b'] ) ) {
 			return array(
 				'b'  => array(),
@@ -206,6 +209,32 @@ trait BotBlockerCoreRateTrait {
 		if ( $ttl < 60 ) {
 			$ttl = 60;
 		}
-		set_transient( $key, $bucket, $ttl );
+		if ( defined( 'WP_TESTS_DOMAIN' ) ) {
+			BotBlockerCache::fileSet( $key, $bucket, $ttl );
+			return;
+		}
+		self::$rpmDirtyBuckets[ $key ] = array( 'bucket' => $bucket, 'ttl' => $ttl );
+		self::ensureRpmFlushRegistered();
+	}
+
+	private static function ensureRpmFlushRegistered(): void {
+		if ( self::$rpmFlushRegistered ) {
+			return;
+		}
+		self::$rpmFlushRegistered = true;
+		add_action( 'shutdown', function (): void {
+			self::flushRpmBuckets();
+		}, 10000 );
+	}
+
+	public static function flushRpmBuckets(): void {
+		if ( empty( self::$rpmDirtyBuckets ) ) {
+			return;
+		}
+		$dirty = self::$rpmDirtyBuckets;
+		self::$rpmDirtyBuckets = array();
+		foreach ( $dirty as $key => $data ) {
+			BotBlockerCache::fileSet( $key, $data['bucket'], $data['ttl'] );
+		}
 	}
 }

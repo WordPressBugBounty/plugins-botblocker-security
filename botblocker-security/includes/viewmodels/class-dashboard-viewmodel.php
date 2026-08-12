@@ -160,7 +160,6 @@ final class Botblocker_DashboardViewModel {
 			new Botblocker_HealthCheckItemData( __( 'Brute-force protection', 'botblocker-security' ), ! empty( $settings->check_login_bruteforce ) ),
 			new Botblocker_HealthCheckItemData( __( 'Captcha enabled', 'botblocker-security' ), ! empty( $settings->captcha_type ) && 'none' !== $settings->captcha_type ),
 			new Botblocker_HealthCheckItemData( __( 'Simple bot UA blocking', 'botblocker-security' ), ! empty( $settings->check_simple_bots ) ),
-			new Botblocker_HealthCheckItemData( __( 'Telegram notifications', 'botblocker-security' ), ! empty( $settings->telegram_bot_token ) && ! empty( $settings->telegram_chat_id ) ),
 			new Botblocker_HealthCheckItemData( __( 'VPN and Tor blocking', 'botblocker-security' ), $this->has_pro && ! empty( $settings->proxy_check ), true ),
 		);
 	}

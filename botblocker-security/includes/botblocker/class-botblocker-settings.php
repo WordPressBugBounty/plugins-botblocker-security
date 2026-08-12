@@ -27,6 +27,7 @@ class BotBlockerSettings
 	public $bbcs_captcha_mode       = 1;
 	public $bbcs_captcha_wait       = 30;
 	public $bbcs_cors_strict_headers    = 0;
+	public $bbcs_wp_connectors_enabled   = 0;
 	public $bbcs_ddos_resilience    = 0;
 
 	public $block_adblocker_users      = 1;
@@ -112,7 +113,7 @@ class BotBlockerSettings
 
 	public $noarchive          = 0;
 	public $ptr_cache_in_db    = 1;
-	public $ptrcache_time      = 86400;
+	public $ptrcache_time      = DAY_IN_SECONDS;
 	public $ptrcache_subnet    = '24-64';
 	public $ptrcache_rule_ttl  = 90;
 
@@ -137,8 +138,10 @@ class BotBlockerSettings
 	public $redis_prefix   = 'bb_';
 
 	public $mu_enable = 0;
+	public $mu_geo_enable = 0;
 
 	public $early_init_enable 	= 0;
+	public $early_geo_enable 	= 0;
 
 	public $x_robots_directives = array();
 
@@ -162,9 +165,6 @@ class BotBlockerSettings
 	public $utm_noindex             = 0;
 	public $utm_referrer            = 1;
 
-	public $telegram_notifications          = 0;
-	public $telegram_bot_token              = '';
-	public $telegram_chat_id                = '';
 	public $email_notifications             = 0;
 	public $pusher_notifications            = 0;
 	public $critical_load_notifications     = 0;

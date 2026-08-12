@@ -30,7 +30,8 @@ if ( ! defined( 'BBCS_ASN_DB_OPTION_STATUS' ) ) {
 class BotBlockerAsnDb {
 
 	public static function dir(): string {
-		$base = BotBlockerMultisite::getUploadsDir();
+		// Single shared copy for the whole network (multisite: main-site data dir).
+		$base = BotBlockerMultisite::getNetworkDataDir();
 		if ( ! is_string( $base ) || $base === '' ) {
 			return '';
 		}
@@ -245,6 +246,11 @@ class BotBlockerAsnDb {
 	}
 
 	public static function download( string $reason = '' ): bool {
+		// Single network copy: only the main site downloads in multisite.
+		if ( is_multisite() && get_current_blog_id() !== get_main_site_id() ) {
+			return true;
+		}
+
 		if ( ! self::acquireLock() ) {
 			return false;
 		}
@@ -401,14 +407,6 @@ class BotBlockerAsnDb {
 	}
 
 	public static function selfHeal(): void {
-		if ( wp_doing_cron() ) {
-			return;
-		}
-		if ( get_transient( 'bbcs_asn_db_self_heal_throttle' ) ) {
-			return;
-		}
-		set_transient( 'bbcs_asn_db_self_heal_throttle', '1', HOUR_IN_SECONDS );
-
 		if ( class_exists( 'BotBlockerCron' ) && ! wp_next_scheduled( 'bbcs_asn_db_freshness_task' ) ) {
 			BotBlockerCron::registerTasks();
 		}
@@ -558,4 +556,4 @@ class BotBlockerAsnDb {
 
 add_action( 'bbcs_asn_db_download_event', array( 'BotBlockerAsnDb', 'download' ), 10, 1 );
 add_action( 'bbcs_asn_db_freshness_task', array( 'BotBlockerAsnDb', 'freshnessHandler' ) );
-add_action( 'init', array( 'BotBlockerAsnDb', 'selfHeal' ), 20 );
+

@@ -15,6 +15,5 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once BOTBLOCKER_DIR . 'includes/hook/class-botblocker-cloud-api-hooks.php';
 require_once BOTBLOCKER_DIR . 'includes/data/class-botblocker-summary.php';
-require_once BOTBLOCKER_DIR . 'includes/class-botblocker-telegram.php';
 require_once BOTBLOCKER_DIR . 'includes/cache/class-botblocker-llm-sync.php';
 require_once BOTBLOCKER_DIR . 'includes/cache/class-botblocker-tls-fingerprints-sync.php';

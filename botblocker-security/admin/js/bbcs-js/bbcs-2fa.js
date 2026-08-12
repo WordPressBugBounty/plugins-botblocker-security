@@ -56,19 +56,7 @@
         },
 
         showToast(type, message) {
-            const className = type === 'success' ? 'toast-success' : 'toast-error';
-            const el = document.querySelector('.bbcs-app') || document.body;
-            Toastify({
-                text: message,
-                duration: 6000,
-                close: true,
-                gravity: 'top',
-                position: 'right',
-                offset: { y: 65 },
-                className: className,
-                stopOnFocus: true,
-                selector: el
-            }).showToast();
+            window.bbcsToast(type, message);
         },
 
         toggleVerifiedState() {

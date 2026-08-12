@@ -6,7 +6,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 trait BotBlockerLocalCloudTrait {
 
-	private function processCloudCheck() {
+	// Test seam (HG-11): called by processLocalRequest; public so contract tests
+	// can drive the cloud decision directly without the full local pipeline.
+	public function processCloudCheck() {
 		$cache_key = BotBlockerCache::getPrefix( '_CLOUD_DATA_' );
 		$cache_ttl = 86400; // 1 day
 

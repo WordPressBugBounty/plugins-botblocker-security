@@ -14,6 +14,7 @@ class BotBlockerAjaxBackup {
 			'path'      => $wpdb->bbcs_path,
 			'ipv6rules' => $wpdb->bbcs_ipv6rules,
 			'ipv4rules' => $wpdb->bbcs_ipv4rules,
+			'countries' => $wpdb->bbcs_countries,
 		);
 	}
 

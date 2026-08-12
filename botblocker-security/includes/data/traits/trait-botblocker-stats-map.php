@@ -55,25 +55,25 @@ trait BotBlockerStatsMapTrait {
 					'
             SELECT u.country, COUNT(*) AS unique_visitors
             FROM (
-                SELECT h.country, h.ip
+                SELECT CAST(h.country AS CHAR(8)) AS country, CAST(h.ip AS CHAR(45)) AS ip
                 FROM `' . $wpdb->bbcs_hits . '` h
-                LEFT JOIN `' . $wpdb->bbcs_page_filters . '` pf ON h.page LIKE pf.pattern
+                ' . BotBlockerDb::pageFilterJoin( 'h', $today_start_ts ) . '
                 WHERE h.date BETWEEN %d AND %d
-                  AND pf.pattern IS NULL
+                  ' . BotBlockerDb::pageFilterWhere( 'h', $today_start_ts ) . '
                   AND h.country <> \'\' AND h.country <> %s
                   ' . $ip_not_in_sql . '
-                GROUP BY h.country, h.ip
+                GROUP BY 1, 2
 
                 UNION
 
-                SELECT s.country, s.ip
+                SELECT CAST(s.country AS CHAR(8)) AS country, CAST(s.ip AS CHAR(45)) AS ip
                 FROM `' . $wpdb->bbcs_hits_suspicious . '` s
-                LEFT JOIN `' . $wpdb->bbcs_page_filters . '` pf2 ON s.page LIKE pf2.pattern
+                ' . BotBlockerDb::pageFilterJoin( 's', $today_start_ts ) . '
                 WHERE s.date BETWEEN %d AND %d
-                  AND pf2.pattern IS NULL
+                  ' . BotBlockerDb::pageFilterWhere( 's', $today_start_ts ) . '
                   AND s.country <> \'\' AND s.country <> %s
                   ' . $ip_not_in_sql . '
-                GROUP BY s.country, s.ip
+                GROUP BY 1, 2
             ) u
             GROUP BY u.country
             ORDER BY unique_visitors DESC
@@ -96,25 +96,25 @@ trait BotBlockerStatsMapTrait {
 					'
             SELECT u.country, COUNT(*) AS unique_visitors
             FROM (
-                SELECT h.country, h.ip
+                SELECT CAST(h.country AS CHAR(8)) AS country, CAST(h.ip AS CHAR(45)) AS ip
                 FROM `' . $wpdb->bbcs_hits . '` h
-                LEFT JOIN `' . $wpdb->bbcs_page_filters . '` pf ON h.page LIKE pf.pattern
+                ' . BotBlockerDb::pageFilterJoin( 'h', $start_ts ) . '
                 WHERE h.date BETWEEN %d AND %d
-                  AND pf.pattern IS NULL
+                  ' . BotBlockerDb::pageFilterWhere( 'h', $start_ts ) . '
                   AND h.country <> \'\' AND h.country <> %s
                   ' . $ip_not_in_sql . '
-                GROUP BY h.country, h.ip
+                GROUP BY 1, 2
 
                 UNION
 
-                SELECT s.country, s.ip
+                SELECT CAST(s.country AS CHAR(8)) AS country, CAST(s.ip AS CHAR(45)) AS ip
                 FROM `' . $wpdb->bbcs_hits_suspicious . '` s
-                LEFT JOIN `' . $wpdb->bbcs_page_filters . '` pf2 ON s.page LIKE pf2.pattern
+                ' . BotBlockerDb::pageFilterJoin( 's', $start_ts ) . '
                 WHERE s.date BETWEEN %d AND %d
-                  AND pf2.pattern IS NULL
+                  ' . BotBlockerDb::pageFilterWhere( 's', $start_ts ) . '
                   AND s.country <> \'\' AND s.country <> %s
                   ' . $ip_not_in_sql . '
-                GROUP BY s.country, s.ip
+                GROUP BY 1, 2
             ) u
             GROUP BY u.country
             ORDER BY unique_visitors DESC

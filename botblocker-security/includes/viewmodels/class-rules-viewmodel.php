@@ -27,6 +27,15 @@ final class Botblocker_RulesViewModel {
 	/** @var array{name: string, label: string, active: int, disabled: int, attention: int}[] */
 	public $table_counts;
 
+	/** @var bool */
+	public $has_pro;
+	/** @var bool */
+	public $early_geo_available;
+	/** @var string */
+	public $mu_geo_url;
+	/** @var string */
+	public $early_geo_url;
+
 	public function __construct() {
 		$BBCSA = Botblocker_Admin::getInstance();
 
@@ -72,6 +81,13 @@ final class Botblocker_RulesViewModel {
 		$this->geo_countries       = $geo_countries;
 		$this->geo_countries_count = count( $geo_countries );
 
+		$this->has_pro           = class_exists( 'BotBlockerPro' ) && BotBlockerPro::isActive();
+		$this->early_geo_available = $this->has_pro
+			&& class_exists( 'BotBlockerGateway' )
+			&& BotBlockerGateway::isRegistered( 'early_init' );
+		$this->mu_geo_url   = $BBCSA->pages_integrations . '#mu';
+		$this->early_geo_url = $BBCSA->pages_addons . '#bbcs-early-init';
+
 		$this->table_counts = $this->computeTableCounts();
 	}
 
@@ -114,11 +130,13 @@ final class Botblocker_RulesViewModel {
 			'attention' => 0,
 		);
 
-		$results[] = array(
+		$geo_active   = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM `{$wpdb->bbcs_countries}` WHERE `disable` = %d", 0 ) );
+		$geo_disabled = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM `{$wpdb->bbcs_countries}` WHERE `disable` = %d", 1 ) );
+		$results[]    = array(
 			'name'      => 'GEO',
 			'label'     => __( 'GEO', 'botblocker-security' ),
-			'active'    => $this->geo_countries_count,
-			'disabled'  => 0,
+			'active'    => $geo_active,
+			'disabled'  => $geo_disabled,
 			'attention' => 0,
 		);
 

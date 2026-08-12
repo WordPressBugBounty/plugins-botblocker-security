@@ -75,9 +75,7 @@ final class Botblocker_SidebarViewModel {
 		$this->tools_url        = $bbcsa->pages_tools;
 		$this->cloud_api_active = BotBlockerPro::isActive();
 
-		$early_addon = class_exists( 'BotBlockerAddons' )
-			? BotBlockerAddons::hasActiveProvider( 'early_init_provider', 'bbcs_early_init_provider_active' )
-			: false;
+		$early_addon = class_exists( 'BotBlockerGateway' ) && BotBlockerGateway::isRegistered( 'early_init' );
 
 		$this->early_addon_active = $early_addon;
 		$this->early_available    = $this->cloud_api_active && $early_addon;
@@ -102,7 +100,7 @@ final class Botblocker_SidebarViewModel {
 		}
 		$this->toggles->ptr_cache_checked    = (int) ( isset( $settings->ptr_cache_in_db ) ? $settings->ptr_cache_in_db : 1 );
 		
-		$ptr_time = (int) ( isset( $settings->ptrcache_time ) ? $settings->ptrcache_time : 86400 );
+		$ptr_time = (int) ( isset( $settings->ptrcache_time ) ? $settings->ptrcache_time : DAY_IN_SECONDS );
 		$ptr_labels = function_exists( 'bbcs_get_ptr_lifetimes' ) ? bbcs_get_ptr_lifetimes() : array();
 		$this->toggles->ptrcache_time_label = $ptr_labels[ $ptr_time ] ?? ( $ptr_time / 3600 ) . 'h';
 

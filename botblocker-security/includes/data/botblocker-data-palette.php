@@ -4,6 +4,85 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Collects addon palette actions from all installed addons' ui.palette manifest data,
+ * merged with promo entries for addons that are not yet installed.
+ *
+ * @return array<int, array{ic: string, t: string, go: string, tab?: string, addon?: string, pro: bool}>
+ */
+function bbcs_get_addon_palette_actions(): array {
+	$actions    = array();
+	$installed  = array();
+
+	if ( class_exists( 'BotBlockerAddons' ) ) {
+		$scanned = BotBlockerAddons::scanAll();
+		$active  = BotBlockerAddons::getActive();
+
+		foreach ( $scanned as $slug => $addon ) {
+			$palette = $addon['ui']['palette'] ?? null;
+			if ( ! $palette || empty( $palette['icon'] ) ) {
+				continue;
+			}
+
+			$installed[] = $slug;
+
+			$is_active = in_array( $slug, $active, true )
+				&& ! empty( $addon['valid'] )
+				&& BotBlockerAddons::isCompatible( $addon );
+
+			$action = array(
+				'ic'  => $palette['icon'],
+				't'   => $palette['title'],
+				'go'  => 'addons',
+				'pro' => true,
+			);
+
+			if ( $is_active ) {
+				$action['tab'] = $slug;
+			} else {
+				$action['addon'] = $slug;
+			}
+
+			$actions[] = $action;
+		}
+	}
+
+	foreach ( bbcs_get_addon_promo_actions() as $promo ) {
+		if ( in_array( $promo['addon'], $installed, true ) ) {
+			continue;
+		}
+		$actions[] = $promo;
+	}
+
+	usort( $actions, function ( $a, $b ) {
+		return ( $a['t'] ?? '' ) <=> ( $b['t'] ?? '' );
+	} );
+
+	return apply_filters( 'bbcs_palette_addon_actions', $actions );
+}
+
+/**
+ * Returns promo palette entries for addons that are not yet installed.
+ * Each entry drives an install prompt in the command palette.
+ *
+ * @return array<int, array{ic: string, t: string, go: string, addon: string, pro: bool}>
+ */
+function bbcs_get_addon_promo_actions(): array {
+	$promos = array(
+		array( 'ic' => 'speed',   't' => __( 'Early Init - before WordPress loads', 'botblocker-security' ),                   'go' => 'addons', 'addon' => 'bbcs-early-init', 'pro' => true ),
+		array( 'ic' => 'shield',  't' => __( 'Security headers - HSTS, CSP, permissions policy', 'botblocker-security' ),      'go' => 'addons', 'addon' => 'bbcs-security-headers', 'pro' => true ),
+		array( 'ic' => 'secret',  't' => __( 'Hide admin URL - custom login page', 'botblocker-security' ),                    'go' => 'addons', 'addon' => 'bbcs-hide-admin', 'pro' => true ),
+		array( 'ic' => 'speed',   't' => __( 'Speed up - performance, PageSpeed', 'botblocker-security' ),                     'go' => 'addons', 'addon' => 'bbcs-speedup', 'pro' => true ),
+		array( 'ic' => 'scan',    't' => __( 'Run malware scan - virus, infected files', 'botblocker-security' ),               'go' => 'addons', 'addon' => 'bbcs-malware', 'pro' => true ),
+		array( 'ic' => 'https',   't' => __( 'HTTPS enforcement - redirect, mixed content fixer', 'botblocker-security' ),      'go' => 'addons', 'addon' => 'bbcs-https-protocol', 'pro' => true ),
+		array( 'ic' => 'gauge',   't' => __( 'Behavioral analysis - smart spam scoring', 'botblocker-security' ),               'go' => 'addons', 'addon' => 'bbcs-behavior', 'pro' => true ),
+		array( 'ic' => 'cookie2', 't' => __( 'Cookie consent alert - GDPR, privacy notice', 'botblocker-security' ),             'go' => 'addons', 'addon' => 'bbcs-cookie-alert', 'pro' => true ),
+		array( 'ic' => 'scan',    't' => __( 'Run truth source scan - file integrity', 'botblocker-security' ),                   'go' => 'addons', 'addon' => 'bbcs-truth-source', 'pro' => true ),
+		array( 'ic' => 'plug',    't' => __( 'XML-RPC tunnel - secure remote access, block exploits', 'botblocker-security' ),     'go' => 'addons', 'addon' => 'bbcs-xmlrpc-tunnel', 'pro' => true ),
+	);
+	return apply_filters( 'bbcs_palette_addon_promo_actions', $promos );
+}
+
+/**
  * Generates the command palette data (ACTIONS, GROUPS, SECTIONS) for bbcs-multipage.js.
  *
  * All user-facing description strings use __() for translation.
@@ -61,66 +140,39 @@ function bbcs_get_palette_data(): array {
 	}
 
 	return array(
-		'actions' => array(
-			array( 'ic' => 'bolt',        't' => __( 'Run setup wizard - guide, onboarding, first steps', 'botblocker-security' ),           'go' => 'setup_wizard' ),
-			array( 'ic' => 'home',        't' => __( 'Open dashboard - protection status, overview, main page', 'botblocker-security' ),      'go' => 'home' ),
-			array( 'ic' => 'chart',       't' => __( 'Open reports & log - traffic, blocked, threats, visitor history', 'botblocker-security' ),              'go' => 'log' ),
-		( class_exists( 'BotBlockerAddons' ) && BotBlockerAddons::hasActiveFeature( 'performance_tools_provider' ) )
-			? array( 'ic' => 'speed',  't' => __( 'Speed up - performance, PageSpeed', 'botblocker-security' ),                     'go' => 'addons', 'tab' => 'bbcs-speedup', 'pro' => true )
-			: array( 'ic' => 'speed',  't' => __( 'Speed up - performance, PageSpeed', 'botblocker-security' ),                     'go' => 'addons', 'pro' => true, 'addon' => 'bbcs-speedup' ),
-		( class_exists( 'BotBlockerAddons' ) && BotBlockerAddons::hasActiveFeature( 'early_init_provider' ) )
-			? array( 'ic' => 'speed',  't' => __( 'Early Init - before WordPress loads', 'botblocker-security' ),                   'go' => 'addons', 'tab' => 'bbcs-early-init', 'pro' => true )
-			: array( 'ic' => 'speed',  't' => __( 'Early Init - before WordPress loads', 'botblocker-security' ),                   'go' => 'addons', 'pro' => true, 'addon' => 'bbcs-early-init' ),
-		( class_exists( 'BotBlockerAddons' ) && BotBlockerAddons::hasActiveFeature( 'login_url_provider' ) )
-			? array( 'ic' => 'secret', 't' => __( 'Hide admin URL - custom login page', 'botblocker-security' ),                    'go' => 'addons', 'tab' => 'bbcs-hide-admin', 'pro' => true )
-			: array( 'ic' => 'secret', 't' => __( 'Hide admin URL - custom login page', 'botblocker-security' ),                    'go' => 'addons', 'pro' => true, 'addon' => 'bbcs-hide-admin' ),
-		( class_exists( 'BotBlockerAddons' ) && BotBlockerAddons::hasActiveFeature( 'behavioral_analysis_engine' ) )
-			? array( 'ic' => 'gauge',  't' => __( 'Behavioral analysis - smart spam scoring', 'botblocker-security' ),               'go' => 'addons', 'tab' => 'bbcs-behavior', 'pro' => true )
-			: array( 'ic' => 'gauge',  't' => __( 'Behavioral analysis - smart spam scoring', 'botblocker-security' ),               'go' => 'addons', 'pro' => true, 'addon' => 'bbcs-behavior' ),
-		( class_exists( 'BotBlockerAddons' ) && BotBlockerAddons::hasActiveFeature( 'malware_scanner_provider' ) )
-			? array( 'ic' => 'scan',   't' => __( 'Run malware scan - virus, infected files', 'botblocker-security' ),               'go' => 'addons', 'tab' => 'bbcs-malware', 'pro' => true )
-			: array( 'ic' => 'scan',   't' => __( 'Run malware scan - virus, infected files', 'botblocker-security' ),               'go' => 'addons', 'pro' => true, 'addon' => 'bbcs-malware' ),
-		( class_exists( 'BotBlockerAddons' ) && BotBlockerAddons::hasActiveFeature( 'cookie_consent_provider' ) )
-			? array( 'ic' => 'cookie2', 't' => __( 'Cookie consent alert - GDPR, privacy notice', 'botblocker-security' ),             'go' => 'addons', 'tab' => 'bbcs-cookie-alert', 'pro' => true )
-			: array( 'ic' => 'cookie2', 't' => __( 'Cookie consent alert - GDPR, privacy notice', 'botblocker-security' ),             'go' => 'addons', 'pro' => true, 'addon' => 'bbcs-cookie-alert' ),
-			array( 'ic' => 'ddos',        't' => __( 'Configure DDoS resilience - attack mitigation, flood protection', 'botblocker-security' ), 'go' => 'settings', 'tab' => 'advanced-protection' ),
-			array( 'ic' => 'gauge',       't' => __( 'Configure rate limiting - spam, flood, throttle, behavioral', 'botblocker-security' ), 'go' => 'settings', 'tab' => 'rate_limiting' ),
-			array( 'ic' => 'bruteforce',  't' => __( 'Configure login brute-force protection - wp-login, lockout', 'botblocker-security' ),  'go' => 'settings', 'tab' => 'brute-force' ),
-			array( 'ic' => 'payment',     't' => __( 'Configure payment gateways - Stripe, PayPal, checkout bypass', 'botblocker-security' ), 'go' => 'settings', 'tab' => 'payment' ),
-			array( 'ic' => '2fa',         't' => __( 'Set up two-factor authentication - 2FA, MFA, OTP, recovery', 'botblocker-security' ),  'go' => 'integrations', 'tab' => 'bbcs-2fa' ),
-			array( 'ic' => 'captcha',     't' => __( 'Configure Captcha - human verification, challenge, reCaptcha', 'botblocker-security' ), 'go' => 'settings', 'tab' => 'captcha' ),
-			array( 'ic' => 'bot',         't' => __( 'Configure simple bot detection - crawler, scraper, user-agent', 'botblocker-security' ), 'go' => 'settings', 'tab' => 'simple-detection' ),
-			array( 'ic' => 'crown',       't' => __( 'Upgrade to PRO - premium, pricing, license, features', 'botblocker-security' ),        'go' => 'pro',  'pro' => true ),
-			array( 'ic' => 'key',         't' => __( 'Get API key from cloud - token, license, activate', 'botblocker-security' ),           'go' => 'integrations', 'tab' => 'cloud' ),
-			array( 'ic' => 'broom',       't' => __( 'Clear visitor cookies - reset tracking, privacy data', 'botblocker-security' ),        'go' => 'tools',        'tab' => 'Maintenance' ),
-			array( 'ic' => 'memory',      't' => __( 'Clear object cache - flush, redis, memcached, purge', 'botblocker-security' ),         'go' => 'tools',        'tab' => 'Maintenance' ),
-			array( 'ic' => 'link',        't' => __( 'Flush rewrite rules - URLs, permalinks, refresh', 'botblocker-security' ),             'go' => 'tools',        'tab' => 'Maintenance' ),
-			array( 'ic' => 'ban',         't' => __( 'Block an IP address - ban, deny, blacklist', 'botblocker-security' ),                  'go' => 'rules',        'tab' => 'IPv4 List' ),
-			array( 'ic' => 'flag',        't' => __( 'Add a white bot - allowlist, trusted, search engine', 'botblocker-security' ),         'go' => 'rules',        'tab' => 'Trusted Bots' ),
-			array( 'ic' => 'upload',      't' => __( 'Import IP whitelist from file - allowlist, CSV, bulk add', 'botblocker-security' ),    'go' => 'rules',        'tab' => 'IPv4 List' ),
-			array( 'ic' => 'ban',         't' => __( 'Import IP blacklist from file - blocklist, CSV, bulk block', 'botblocker-security' ),  'go' => 'rules',        'tab' => 'IPv4 List' ),
-			array( 'ic' => 'import',      't' => __( 'Import rules from JSON - restore, migrate, transfer', 'botblocker-security' ),         'go' => 'rules',        'tab' => 'Rules' ),
-			array( 'ic' => 'export',      't' => __( 'Export rules to JSON - backup, save, download', 'botblocker-security' ),               'go' => 'rules',        'tab' => 'Rules' ),
-		( class_exists( 'BotBlockerAddons' ) && BotBlockerAddons::hasActiveFeature( 'truth_source_provider' ) )
-			? array( 'ic' => 'scan',  't' => __( 'Run truth source scan - file integrity', 'botblocker-security' ),                   'go' => 'addons', 'tab' => 'bbcs-truth-source', 'pro' => true )
-			: array( 'ic' => 'scan',  't' => __( 'Run truth source scan - file integrity', 'botblocker-security' ),                   'go' => 'addons', 'pro' => true, 'addon' => 'bbcs-truth-source' ),
-			array( 'ic' => 'crown',       't' => __( 'Cloud validation - PRO bot verification, AI detection', 'botblocker-security' ),       'go' => 'pro',  'pro' => true ),
-			array( 'ic' => 'cloud-download', 't' => __( 'Update RU-Gov list - Russian IP ranges, RKN blocklist', 'botblocker-security' ),    'go' => 'tools',        'tab' => 'Maintenance' ),
-			array( 'ic' => 'sync',        't' => __( 'Sync LLM providers - AI crawlers, ChatGPT, Claude bot list', 'botblocker-security' ),   'go' => 'tools',        'tab' => 'Maintenance' ),
-			array( 'ic' => 'database',    't' => __( 'Update ASN database - geo, network, country data', 'botblocker-security' ),            'go' => 'tools',        'tab' => 'Maintenance' ),
-			array( 'ic' => 'fix',         't' => __( 'Repair and optimize DB - fix tables, cleanup, speed up', 'botblocker-security' ),      'go' => 'tools',        'tab' => 'Maintenance' ),
-			array( 'ic' => 'broom',       't' => __( 'Clear transients - cache, temporary data, cleanup', 'botblocker-security' ),           'go' => 'tools',        'tab' => 'Maintenance' ),
-			array( 'ic' => 'broom',       't' => __( 'Clear all visitor data - wipe stats, reset counters', 'botblocker-security' ),         'go' => 'tools',        'tab' => 'Maintenance' ),
-			array( 'ic' => 'reinstall',   't' => __( 'Reinstall database - reset, fresh start, rebuild tables', 'botblocker-security' ),     'go' => 'tools',        'tab' => 'Maintenance' ),
-		( class_exists( 'BotBlockerAddons' ) && BotBlockerAddons::hasActiveFeature( 'security_headers_provider' ) )
-			? array( 'ic' => 'shield', 't' => __( 'Security headers - HSTS, CSP, permissions policy', 'botblocker-security' ),          'go' => 'addons', 'tab' => 'bbcs-security-headers', 'pro' => true )
-			: array( 'ic' => 'shield', 't' => __( 'Security headers - HSTS, CSP, permissions policy', 'botblocker-security' ),          'go' => 'addons', 'pro' => true, 'addon' => 'bbcs-security-headers' ),
-		( class_exists( 'BotBlockerAddons' ) && BotBlockerAddons::hasActiveFeature( 'xmlrpc_tunnel_provider' ) )
-			? array( 'ic' => 'plug',   't' => __( 'XML-RPC tunnel - secure remote access, block exploits', 'botblocker-security' ),     'go' => 'addons', 'tab' => 'bbcs-xmlrpc-tunnel', 'pro' => true )
-			: array( 'ic' => 'plug',   't' => __( 'XML-RPC tunnel - secure remote access, block exploits', 'botblocker-security' ),     'go' => 'addons', 'pro' => true, 'addon' => 'bbcs-xmlrpc-tunnel' ),
-		( class_exists( 'BotBlockerAddons' ) && BotBlockerAddons::hasActiveFeature( 'https_protocol_provider' ) )
-			? array( 'ic' => 'https',  't' => __( 'HTTPS enforcement - redirect, mixed content fixer', 'botblocker-security' ),          'go' => 'addons', 'tab' => 'bbcs-https-protocol', 'pro' => true )
-			: array( 'ic' => 'https',  't' => __( 'HTTPS enforcement - redirect, mixed content fixer', 'botblocker-security' ),          'go' => 'addons', 'pro' => true, 'addon' => 'bbcs-https-protocol' ),
+		'actions' => array_merge(
+			array(
+				array( 'ic' => 'bolt',        't' => __( 'Run setup wizard - guide, onboarding, first steps', 'botblocker-security' ),           'go' => 'setup_wizard' ),
+				array( 'ic' => 'home',        't' => __( 'Open dashboard - protection status, overview, main page', 'botblocker-security' ),      'go' => 'home' ),
+				array( 'ic' => 'chart',       't' => __( 'Open reports & log - traffic, blocked, threats, visitor history', 'botblocker-security' ),              'go' => 'log' ),
+				array( 'ic' => 'ddos',        't' => __( 'Configure DDoS resilience - attack mitigation, flood protection', 'botblocker-security' ), 'go' => 'settings', 'tab' => 'advanced-protection' ),
+				array( 'ic' => 'gauge',       't' => __( 'Configure rate limiting - spam, flood, throttle, behavioral', 'botblocker-security' ), 'go' => 'settings', 'tab' => 'rate_limiting' ),
+				array( 'ic' => 'bruteforce',  't' => __( 'Configure login brute-force protection - wp-login, lockout', 'botblocker-security' ),  'go' => 'settings', 'tab' => 'brute-force' ),
+				array( 'ic' => 'payment',     't' => __( 'Configure payment gateways - Stripe, PayPal, checkout bypass', 'botblocker-security' ), 'go' => 'settings', 'tab' => 'payment' ),
+				array( 'ic' => '2fa',         't' => __( 'Set up two-factor authentication - 2FA, MFA, OTP, recovery', 'botblocker-security' ),  'go' => 'integrations', 'tab' => 'bbcs-2fa' ),
+				array( 'ic' => 'captcha',     't' => __( 'Configure Captcha - human verification, challenge, reCaptcha', 'botblocker-security' ), 'go' => 'settings', 'tab' => 'captcha' ),
+				array( 'ic' => 'bot',         't' => __( 'Configure simple bot detection - crawler, scraper, user-agent', 'botblocker-security' ), 'go' => 'settings', 'tab' => 'simple-detection' ),
+				array( 'ic' => 'crown',       't' => __( 'Upgrade to PRO - premium, pricing, license, features', 'botblocker-security' ),        'go' => 'pro',  'pro' => true ),
+				array( 'ic' => 'key',         't' => __( 'Get API key from cloud - token, license, activate', 'botblocker-security' ),           'go' => 'integrations', 'tab' => 'cloud' ),
+				array( 'ic' => 'broom',       't' => __( 'Clear visitor cookies - reset tracking, privacy data', 'botblocker-security' ),        'go' => 'tools',        'tab' => 'Maintenance' ),
+				array( 'ic' => 'memory',      't' => __( 'Clear object cache - flush, redis, memcached, purge', 'botblocker-security' ),         'go' => 'tools',        'tab' => 'Maintenance' ),
+				array( 'ic' => 'link',        't' => __( 'Flush rewrite rules - URLs, permalinks, refresh', 'botblocker-security' ),             'go' => 'tools',        'tab' => 'Maintenance' ),
+				array( 'ic' => 'ban',         't' => __( 'Block an IP address - ban, deny, blacklist', 'botblocker-security' ),                  'go' => 'rules',        'tab' => 'IPv4 List' ),
+				array( 'ic' => 'flag',        't' => __( 'Add a white bot - allowlist, trusted, search engine', 'botblocker-security' ),         'go' => 'rules',        'tab' => 'Trusted Bots' ),
+				array( 'ic' => 'upload',      't' => __( 'Import IP whitelist from file - allowlist, CSV, bulk add', 'botblocker-security' ),    'go' => 'rules',        'tab' => 'IPv4 List' ),
+				array( 'ic' => 'ban',         't' => __( 'Import IP blacklist from file - blocklist, CSV, bulk block', 'botblocker-security' ),  'go' => 'rules',        'tab' => 'IPv4 List' ),
+				array( 'ic' => 'import',      't' => __( 'Import rules from JSON - restore, migrate, transfer', 'botblocker-security' ),         'go' => 'rules',        'tab' => 'Rules' ),
+				array( 'ic' => 'export',      't' => __( 'Export rules to JSON - backup, save, download', 'botblocker-security' ),               'go' => 'rules',        'tab' => 'Rules' ),
+				array( 'ic' => 'crown',       't' => __( 'Cloud validation - PRO bot verification, AI detection', 'botblocker-security' ),       'go' => 'pro',  'pro' => true ),
+				array( 'ic' => 'cloud-download', 't' => __( 'Update RU-Gov list - Russian IP ranges, RKN blocklist', 'botblocker-security' ),    'go' => 'tools',        'tab' => 'Maintenance' ),
+				array( 'ic' => 'sync',        't' => __( 'Sync LLM providers - AI crawlers, ChatGPT, Claude bot list', 'botblocker-security' ),   'go' => 'tools',        'tab' => 'Maintenance' ),
+				array( 'ic' => 'database',    't' => __( 'Update ASN database - geo, network, country data', 'botblocker-security' ),            'go' => 'tools',        'tab' => 'Maintenance' ),
+				array( 'ic' => 'fix',         't' => __( 'Repair and optimize DB - fix tables, cleanup, speed up', 'botblocker-security' ),      'go' => 'tools',        'tab' => 'Maintenance' ),
+				array( 'ic' => 'broom',       't' => __( 'Clear transients - cache, temporary data, cleanup', 'botblocker-security' ),           'go' => 'tools',        'tab' => 'Maintenance' ),
+				array( 'ic' => 'broom',       't' => __( 'Clear all visitor data - wipe stats, reset counters', 'botblocker-security' ),         'go' => 'tools',        'tab' => 'Maintenance' ),
+				array( 'ic' => 'reinstall',   't' => __( 'Reinstall database - reset, fresh start, rebuild tables', 'botblocker-security' ),     'go' => 'tools',        'tab' => 'Maintenance' ),
+			),
+			bbcs_get_addon_palette_actions()
 		),
 		'groups' => $auto_groups,
 		'sections' => array(

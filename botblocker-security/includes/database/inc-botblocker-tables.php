@@ -24,7 +24,9 @@ $bbcs_tables = array(
 	'bbcs_self_ips'        => 'self_ips', //! Deprecated in 2.2.0, only used to drop in migrations
 	'bbcs_llm_trusted'     => 'llm_trusted',
 	'bbcs_tls_fingerprints' => 'tls_fingerprints',
+	'bbcs_countries'       => 'countries',
 	'bbcs_fingerprint'     => 'fingerprint',
+	'bbcs_sessions'        => 'sessions',
 );
 
 foreach ( $bbcs_tables as $bbcs_prop => $bbcs_suffix ) {

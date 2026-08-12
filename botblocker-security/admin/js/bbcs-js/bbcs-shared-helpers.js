@@ -128,6 +128,30 @@
     }, 250);
   }
 
+  /**
+   * Single Toastify wrapper shared by every admin JS module.
+   * Falls back to alert() if Toastify hasn't loaded (script order issue, ad blocker, etc.).
+   */
+  window.bbcsToast = function (type, message) {
+    if (typeof Toastify !== 'function') {
+      alert(message);
+      return;
+    }
+    var className = type === 'success' ? 'toast-success' : 'toast-error';
+    var el = document.querySelector('.bbcs-app') || document.body;
+    Toastify({
+      text: message,
+      duration: 6000,
+      close: true,
+      gravity: 'top',
+      position: 'right',
+      offset: { y: 65 },
+      className: className,
+      selector: el,
+      stopOnFocus: true
+    }).showToast();
+  };
+
   /* Expose globally for other scripts */
   window.BBCS_Helpers = {
     findAndScrollToSetting: findAndScrollToSetting,

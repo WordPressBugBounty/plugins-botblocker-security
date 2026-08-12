@@ -62,12 +62,7 @@ function bbcs_get_rate_subnet_mask_options(): array {
 }
 
 function bbcs_parse_rate_subnet_mask( string $mask = '24-64' ): array {
-	$parts = explode( '-', $mask );
-	if ( isset( $parts[0] ) && $parts[0] === 'ipv6' ) {
-		// IPv4 mask unused for these rows; placeholder kept for return-shape consistency.
-		return array( 24, isset( $parts[1] ) ? (int) $parts[1] : 64 );
-	}
-	return array( isset( $parts[0] ) ? (int) $parts[0] : 24, isset( $parts[1] ) ? (int) $parts[1] : 64 );
+	return BotBlockerCoreFacade::parseRateSubnetMask( $mask );
 }
 
 function bbcs_get_ptrcache_rule_ttl_options(): array {

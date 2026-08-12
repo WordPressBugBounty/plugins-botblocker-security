@@ -517,6 +517,12 @@ return static function (): void {
         <path d="m15 9-6 6" />
         <path d="m9 9 6 6" />
     </symbol>
+    <symbol id="bbcs-i-play" viewBox="0 0 24 24">
+      <path d="M7 5.5c0-.9 1-1.5 1.8-1l10 6.5c.7.5.7 1.5 0 2l-10 6.5c-.8.5-1.8 0-1.8-1z" />
+    </symbol>
+    <symbol id="bbcs-i-stop" viewBox="0 0 24 24">
+      <rect x="5" y="5" width="14" height="14" rx="1.5" />
+    </symbol>
     <symbol id="bbcs-i-grey" viewBox="0 0 24 24">
       <circle cx="12" cy="12" r="10" />
         <path d="M8 12h8" />

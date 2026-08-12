@@ -67,12 +67,24 @@ return static function ( Botblocker_HeaderViewModel $h ): void {
 				<div class="bbcs-drop-menu" role="menu" hidden>
 					<?php if ( ! empty( $h->alerts ) ) : ?>
 					<?php foreach ( $h->alerts as $alert ) : ?>
+					<?php if ( ! empty( $alert->link ) ) : ?>
+					<a class="bbcs-drop-item" role="menuitem" href="<?php echo esc_url( $alert->link ); ?>">
+						<div class="bbcs-fill">
+							<div class="bbcs-fw-semibold bbcs-fs-xs"><?php echo esc_html( $alert->title ); ?></div>
+							<div class="bbcs-dim bbcs-fs-2xs"><?php echo esc_html( $alert->message ); ?></div>
+							<?php if ( ! empty( $alert->link_text ) ) : ?>
+							<div class="bbcs-tx-green bbcs-fs-2xs"><?php echo esc_html( $alert->link_text ); ?> →</div>
+							<?php endif; ?>
+						</div>
+					</a>
+					<?php else : ?>
 					<div class="bbcs-drop-item" role="menuitem">
 						<div class="bbcs-fill">
 							<div class="bbcs-fw-semibold bbcs-fs-xs"><?php echo esc_html( $alert->title ); ?></div>
 							<div class="bbcs-dim bbcs-fs-2xs"><?php echo esc_html( $alert->message ); ?></div>
 						</div>
 					</div>
+					<?php endif; ?>
 					<?php endforeach; ?>
 					<?php else : ?>
 					<div class="bbcs-drop-item" role="menuitem">

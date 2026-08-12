@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( defined( 'BOTBLOCKER_WIDGETS' ) && BOTBLOCKER_WIDGETS ) {
-	include 'partials/botblocker-admin-dashboard-widgets.php';
+	include_once 'partials/botblocker-admin-dashboard-widgets.php';
 }
 
 require_once BOTBLOCKER_DIR . 'admin/class-botblocker-admin-settings.php';
@@ -196,6 +196,7 @@ class Botblocker_Admin {
 
 		// Shared: vertical nav sidebar (snav) - used by Settings, Integrations, Tools, and Addons pages.
 		if ( $this->is_screen( $screen->id, 'botblocker_page_bbcs_settings' ) || $this->is_screen( $screen->id, 'botblocker_page_bbcs_integrations' ) || $this->is_screen( $screen->id, 'botblocker_page_bbcs_tools' ) || $this->is_screen( $screen->id, 'botblocker_page_bbcs_addons' ) ) {
+			wp_enqueue_script( BOTBLOCKER_SHORT_NAME . '-help-tips-js', plugin_dir_url( __FILE__ ) . 'js/bbcs-js/bbcs-help-tips.js', array(), BOTBLOCKER_VERSION, true );
 			wp_enqueue_script( BOTBLOCKER_SHORT_NAME . '-snav-js', plugin_dir_url( __FILE__ ) . 'js/bbcs-js/bbcs-snav.js', array( 'jquery', BOTBLOCKER_SHORT_NAME . '-shared-helpers-js' ), BOTBLOCKER_VERSION, true );
 
 			if ( function_exists( 'bbcs_get_global_search_index' ) ) {
@@ -262,6 +263,8 @@ class Botblocker_Admin {
 			'stat_active'       => __( 'Active', 'botblocker-security' ),
 			'stat_disabled'     => __( 'Disabled', 'botblocker-security' ),
 			'stat_attention'    => __( 'Attention', 'botblocker-security' ),
+			'mu_loader_present' => __( 'present', 'botblocker-security' ),
+			'mu_loader_missing' => __( 'missing', 'botblocker-security' ),
 		) );
 
 		// Inject translatable command palette and rules tab labels from PHP.
@@ -280,16 +283,19 @@ class Botblocker_Admin {
 
 		// Rules page - 9 JS modules + per-module l10n.
 		if ( $this->is_screen( $screen->id, 'botblocker_page_bbcs_rules' ) ) {
-			$rules_deps = array( 'jquery', BOTBLOCKER_SHORT_NAME . '-shared-helpers-js' );
+			$rules_deps = array( 'jquery', BOTBLOCKER_SHORT_NAME . '-shared-helpers-js', BOTBLOCKER_SHORT_NAME . '-toastify' );
 			wp_enqueue_script( BOTBLOCKER_SHORT_NAME . '-rules-js', plugin_dir_url( __FILE__ ) . 'js/bbcs-js/bbcs-rules.js', $rules_deps, BOTBLOCKER_VERSION, true );
-			wp_enqueue_script( BOTBLOCKER_SHORT_NAME . '-rules-ipv4-js', plugin_dir_url( __FILE__ ) . 'js/bbcs-js/bbcs-rules-ipv4.js', $rules_deps, BOTBLOCKER_VERSION, true );
-			wp_enqueue_script( BOTBLOCKER_SHORT_NAME . '-rules-ipv6-js', plugin_dir_url( __FILE__ ) . 'js/bbcs-js/bbcs-rules-ipv6.js', $rules_deps, BOTBLOCKER_VERSION, true );
-			wp_enqueue_script( BOTBLOCKER_SHORT_NAME . '-rules-white-js', plugin_dir_url( __FILE__ ) . 'js/bbcs-js/bbcs-white.js', $rules_deps, BOTBLOCKER_VERSION, true );
-			wp_enqueue_script( BOTBLOCKER_SHORT_NAME . '-rules-path-js', plugin_dir_url( __FILE__ ) . 'js/bbcs-js/bbcs-path.js', $rules_deps, BOTBLOCKER_VERSION, true );
-			wp_enqueue_script( BOTBLOCKER_SHORT_NAME . '-proxy-js', plugin_dir_url( __FILE__ ) . 'js/bbcs-js/bbcs-proxy.js', $rules_deps, BOTBLOCKER_VERSION, true );
-			wp_enqueue_script( BOTBLOCKER_SHORT_NAME . '-asn-js', plugin_dir_url( __FILE__ ) . 'js/bbcs-js/bbcs-asn.js', $rules_deps, BOTBLOCKER_VERSION, true );
-			wp_enqueue_script( BOTBLOCKER_SHORT_NAME . '-geo-js', plugin_dir_url( __FILE__ ) . 'js/bbcs-js/bbcs-geo.js', $rules_deps, BOTBLOCKER_VERSION, true );
-			wp_enqueue_script( BOTBLOCKER_SHORT_NAME . '-llm-js', plugin_dir_url( __FILE__ ) . 'js/bbcs-js/bbcs-llm.js', $rules_deps, BOTBLOCKER_VERSION, true );
+
+			// Module scripts depend on rules-js for the shared window.bbcsRulesToast() notify helper.
+			$module_deps = array_merge( $rules_deps, array( BOTBLOCKER_SHORT_NAME . '-rules-js' ) );
+			wp_enqueue_script( BOTBLOCKER_SHORT_NAME . '-rules-ipv4-js', plugin_dir_url( __FILE__ ) . 'js/bbcs-js/bbcs-rules-ipv4.js', $module_deps, BOTBLOCKER_VERSION, true );
+			wp_enqueue_script( BOTBLOCKER_SHORT_NAME . '-rules-ipv6-js', plugin_dir_url( __FILE__ ) . 'js/bbcs-js/bbcs-rules-ipv6.js', $module_deps, BOTBLOCKER_VERSION, true );
+			wp_enqueue_script( BOTBLOCKER_SHORT_NAME . '-rules-white-js', plugin_dir_url( __FILE__ ) . 'js/bbcs-js/bbcs-white.js', $module_deps, BOTBLOCKER_VERSION, true );
+			wp_enqueue_script( BOTBLOCKER_SHORT_NAME . '-rules-path-js', plugin_dir_url( __FILE__ ) . 'js/bbcs-js/bbcs-path.js', $module_deps, BOTBLOCKER_VERSION, true );
+			wp_enqueue_script( BOTBLOCKER_SHORT_NAME . '-proxy-js', plugin_dir_url( __FILE__ ) . 'js/bbcs-js/bbcs-proxy.js', $module_deps, BOTBLOCKER_VERSION, true );
+			wp_enqueue_script( BOTBLOCKER_SHORT_NAME . '-asn-js', plugin_dir_url( __FILE__ ) . 'js/bbcs-js/bbcs-asn.js', $module_deps, BOTBLOCKER_VERSION, true );
+			wp_enqueue_script( BOTBLOCKER_SHORT_NAME . '-geo-js', plugin_dir_url( __FILE__ ) . 'js/bbcs-js/bbcs-geo.js', $module_deps, BOTBLOCKER_VERSION, true );
+			wp_enqueue_script( BOTBLOCKER_SHORT_NAME . '-llm-js', plugin_dir_url( __FILE__ ) . 'js/bbcs-js/bbcs-llm.js', $module_deps, BOTBLOCKER_VERSION, true );
 
 			// Rules per-module l10n.
 			$rules_l10n = array(
@@ -313,6 +319,13 @@ class Botblocker_Admin {
 				'edit'              => __( 'Edit', 'botblocker-security' ),
 				'delete'            => __( 'Delete', 'botblocker-security' ),
 				'toggle'            => __( 'Toggle On/Off', 'botblocker-security' ),
+				'success_toggle'    => __( 'Rule toggled successfully.', 'botblocker-security' ),
+				'success_update'    => __( 'Rule updated successfully.', 'botblocker-security' ),
+				'success_create'    => __( 'Rule created successfully.', 'botblocker-security' ),
+				'success_delete'    => __( 'Rule deleted successfully.', 'botblocker-security' ),
+				'success_export'    => __( 'Rules exported successfully.', 'botblocker-security' ),
+				'success_import'    => __( 'Rules imported successfully.', 'botblocker-security' ),
+				'success_clear'     => __( 'All rules have been cleared.', 'botblocker-security' ),
 			);
 			wp_localize_script( BOTBLOCKER_SHORT_NAME . '-rules-js', 'bbcsRulesL10n', $rules_l10n );
 
@@ -326,6 +339,8 @@ class Botblocker_Admin {
 			$ipv4_l10n['failed_clear']   = __( 'Failed to clear IPv4 rules: ', 'botblocker-security' );
 			$ipv4_l10n['failed_import_whitelist'] = __( 'Failed to import IPv4 whitelist: ', 'botblocker-security' );
 			$ipv4_l10n['failed_import_blacklist'] = __( 'Failed to import IPv4 blacklist: ', 'botblocker-security' );
+			$ipv4_l10n['success_import_whitelist'] = __( 'IPv4 whitelist imported successfully.', 'botblocker-security' );
+			$ipv4_l10n['success_import_blacklist'] = __( 'IPv4 blacklist imported successfully.', 'botblocker-security' );
 			$ipv4_l10n['clear_all_rules'] = __( 'Clear All IPv4 Rules', 'botblocker-security' );
 			$ipv4_l10n['confirm_clear']  = __( 'Are you sure you want to remove all IPv4 rules?', 'botblocker-security' );
 			wp_localize_script( BOTBLOCKER_SHORT_NAME . '-rules-ipv4-js', 'bbcsIpv4L10n', $ipv4_l10n );
@@ -340,6 +355,8 @@ class Botblocker_Admin {
 			$ipv6_l10n['failed_clear']   = __( 'Failed to clear IPv6 rules: ', 'botblocker-security' );
 			$ipv6_l10n['failed_import_whitelist'] = __( 'Failed to import IPv6 whitelist: ', 'botblocker-security' );
 			$ipv6_l10n['failed_import_blacklist'] = __( 'Failed to import IPv6 blacklist: ', 'botblocker-security' );
+			$ipv6_l10n['success_import_whitelist'] = __( 'IPv6 whitelist imported successfully.', 'botblocker-security' );
+			$ipv6_l10n['success_import_blacklist'] = __( 'IPv6 blacklist imported successfully.', 'botblocker-security' );
 			$ipv6_l10n['clear_all_rules'] = __( 'Clear All IPv6 Rules', 'botblocker-security' );
 			$ipv6_l10n['confirm_clear']  = __( 'Are you sure you want to remove all IPv6 rules?', 'botblocker-security' );
 			wp_localize_script( BOTBLOCKER_SHORT_NAME . '-rules-ipv6-js', 'bbcsIpv6L10n', $ipv6_l10n );
@@ -390,6 +407,12 @@ class Botblocker_Admin {
 				'edit'                  => __( 'Edit', 'botblocker-security' ),
 				'delete'                => __( 'Delete', 'botblocker-security' ),
 				'search_placeholder'    => __( 'Search by data, comment…', 'botblocker-security' ),
+				'success_update'        => __( 'Proxy updated successfully.', 'botblocker-security' ),
+				'success_create'        => __( 'Proxy created successfully.', 'botblocker-security' ),
+				'success_delete'        => __( 'Proxy deleted successfully.', 'botblocker-security' ),
+				'success_export'        => __( 'Proxies exported successfully.', 'botblocker-security' ),
+				'success_import'        => __( 'Proxies imported successfully.', 'botblocker-security' ),
+				'success_clear'         => __( 'All proxies have been cleared.', 'botblocker-security' ),
 			) );
 
 			$asn_l10n = $rules_l10n;
@@ -409,18 +432,19 @@ class Botblocker_Admin {
 				'nonce'   => wp_create_nonce( 'botblocker_nonce' ),
 				'i18n'    => array(
 					'please_select_country'              => __( 'Please select a country.', 'botblocker-security' ),
-					'country_already_added'              => __( 'Country already added.', 'botblocker-security' ),
-					'invalid_country'                    => __( 'Invalid country.', 'botblocker-security' ),
-					'no_countries_selected'              => __( 'No countries selected', 'botblocker-security' ),
-					'country_list_loaded'                => __( 'Country list loaded.', 'botblocker-security' ),
-					'failed_to_load_saved_countries'     => __( 'Failed to load saved countries.', 'botblocker-security' ),
-					'server_error_loading_saved_countries' => __( 'Server error while loading saved countries.', 'botblocker-security' ),
-					'country_list_saved'                 => __( 'Country list saved.', 'botblocker-security' ),
-					'failed_to_save_country_list'        => __( 'Failed to save country list.', 'botblocker-security' ),
-					'server_error_saving_country_list'   => __( 'Server error while saving country list.', 'botblocker-security' ),
-					'remove_country'                     => __( 'Remove country', 'botblocker-security' ),
-					'reloading'                          => __( 'Reloading...', 'botblocker-security' ),
-					'saving'                             => __( 'Saving...', 'botblocker-security' ),
+					'delete'                             => __( 'Delete', 'botblocker-security' ),
+					'toggle'                             => __( 'Toggle On/Off', 'botblocker-security' ),
+					'confirm_delete'                     => __( 'Are you sure you want to delete this country rule?', 'botblocker-security' ),
+					'confirm_clear'                      => __( 'Are you sure you want to remove all country rules?', 'botblocker-security' ),
+					'failed_toggle'                      => __( 'Failed to toggle country rule.', 'botblocker-security' ),
+					'failed_delete'                      => __( 'Failed to delete country rule.', 'botblocker-security' ),
+					'failed_create'                      => __( 'Failed to add country.', 'botblocker-security' ),
+					'failed_clear'                       => __( 'Failed to clear countries.', 'botblocker-security' ),
+					'search_placeholder'                 => __( 'Search by code, rule, comment…', 'botblocker-security' ),
+					'success_toggle'                     => __( 'Country rule toggled successfully.', 'botblocker-security' ),
+					'success_delete'                     => __( 'Country rule deleted successfully.', 'botblocker-security' ),
+					'success_create'                     => __( 'Country added successfully.', 'botblocker-security' ),
+					'success_clear'                      => __( 'All country rules have been cleared.', 'botblocker-security' ),
 				),
 			) );
 
@@ -441,6 +465,8 @@ class Botblocker_Admin {
 				'to_php'             => __( 'Save LLM rules to PHP file', 'botblocker-security' ),
 				'search_placeholder' => __( 'Search by data, comment…', 'botblocker-security' ),
 				'length_menu'        => __( 'Length Menu', 'botblocker-security' ),
+				'success_toggle'     => __( 'Provider toggled successfully.', 'botblocker-security' ),
+				'success_download'   => __( 'Rules downloaded successfully.', 'botblocker-security' ),
 			) );
 		}
 
@@ -470,7 +496,7 @@ class Botblocker_Admin {
 		// Integrations page.
 		if ( $this->is_screen( $screen->id, 'botblocker_page_bbcs_integrations' ) ) {
 			wp_enqueue_script( BOTBLOCKER_SHORT_NAME . '-integrations-js', plugin_dir_url( __FILE__ ) . 'js/bbcs-js/bbcs-integrations.js', array( 'jquery' ), BOTBLOCKER_VERSION, true );
-			wp_enqueue_script( BOTBLOCKER_SHORT_NAME . '-2fa-js', plugin_dir_url( __FILE__ ) . 'js/bbcs-js/bbcs-2fa.js', array( 'jquery' ), BOTBLOCKER_VERSION, true );
+			wp_enqueue_script( BOTBLOCKER_SHORT_NAME . '-2fa-js', plugin_dir_url( __FILE__ ) . 'js/bbcs-js/bbcs-2fa.js', array( 'jquery', BOTBLOCKER_SHORT_NAME . '-shared-helpers-js' ), BOTBLOCKER_VERSION, true );
 			wp_localize_script( BOTBLOCKER_SHORT_NAME . '-2fa-js', 'bbcs2faL10n', array(
 				'reset_failed' => __( 'Reset failed', 'botblocker-security' ),
 				'invalid_code' => __( 'Invalid verification code.', 'botblocker-security' ),
@@ -595,6 +621,11 @@ class Botblocker_Admin {
 				'update_plugin'      => __( 'Please update the plugin first.', 'botblocker-security' ),
 				'no_file_selected'   => __( 'No file selected', 'botblocker-security' ),
 				'marketplace'        => __( 'Marketplace', 'botblocker-security' ),
+				/* translators: %d: number of available addon updates */
+				'update_all'         => __( 'Update All (%d)', 'botblocker-security' ),
+				'update_tag'         => __( 'Update', 'botblocker-security' ),
+				'catalog_error'      => __( 'Failed to load add-on catalog.', 'botblocker-security' ),
+				'catalog_unavailable' => __( 'Add-on catalog is currently unavailable.', 'botblocker-security' ),
 			) );
 			wp_enqueue_script( BOTBLOCKER_SHORT_NAME . '-addons-settings-js', plugin_dir_url( __FILE__ ) . 'js/bbcs-js/bbcs-addons-settings.js', array(), BOTBLOCKER_VERSION, true );
 			wp_add_inline_script( BOTBLOCKER_SHORT_NAME . '-addons-settings-js', 'var bbcsUnsavedLabel = ' . wp_json_encode( __( 'Not saved!', 'botblocker-security' ) ) . ';', 'before' );
@@ -754,7 +785,7 @@ class Botblocker_Admin {
 		}
 		$vm     = new Botblocker_DashboardViewModel();
 		$view   = new Botblocker_Dashboard_View( $vm );
-		$layout = new Botblocker_Layout_View( $vm, true );
+		$layout = new Botblocker_Layout_View( $vm );
 		$this->render_page( 'dashboard', $view, $layout );
 		do_action( 'bbcs_show_support_button' );
 	}
@@ -767,7 +798,7 @@ class Botblocker_Admin {
 
 		$vm     = new Botblocker_SettingsViewModel();
 		$view   = new Botblocker_Settings_View( $vm );
-		$layout = new Botblocker_Layout_View( $vm, true );
+		$layout = new Botblocker_Layout_View( $vm );
 
 		$this->render_page( 'settings', $view, $layout );
 	}
@@ -781,7 +812,7 @@ class Botblocker_Admin {
 
 		$vm     = new Botblocker_ReportsViewModel();
 		$view   = new Botblocker_Reports_View( $vm );
-		$layout = new Botblocker_Layout_View( $vm, true );
+		$layout = new Botblocker_Layout_View( $vm );
 
 		$this->render_page( 'reports', $view, $layout );
 		do_action( 'bbcs_show_support_button' );
@@ -795,7 +826,7 @@ class Botblocker_Admin {
 
 		$vm     = new Botblocker_RulesViewModel();
 		$view   = new Botblocker_Rules_View( $vm );
-		$layout = new Botblocker_Layout_View( $vm, true );
+		$layout = new Botblocker_Layout_View( $vm );
 
 		$this->render_page( 'rules', $view, $layout );
 		do_action( 'bbcs_show_support_button' );
@@ -809,7 +840,7 @@ class Botblocker_Admin {
 
 		$vm     = new Botblocker_ToolsViewModel();
 		$view   = new Botblocker_Tools_View( $vm );
-		$layout = new Botblocker_Layout_View( $vm, true );
+		$layout = new Botblocker_Layout_View( $vm );
 
 		$this->render_page( 'tools', $view, $layout );
 		do_action( 'bbcs_show_support_button' );
@@ -840,7 +871,7 @@ class Botblocker_Admin {
 
 		$vm     = new Botblocker_IntegrationsViewModel();
 		$view   = new Botblocker_Integrations_View( $vm );
-		$layout = new Botblocker_Layout_View( $vm, true );
+		$layout = new Botblocker_Layout_View( $vm );
 
 		$this->render_page( 'integrations', $view, $layout );
 		do_action( 'bbcs_show_support_button' );
@@ -857,7 +888,7 @@ class Botblocker_Admin {
 		$vm->deactivate_nonce = wp_create_nonce( 'bbcs_deactivate_cloud_api_action' );
 		$vm->fetch_key_nonce  = wp_create_nonce( 'bbcs_fetch_cloud_api_key_action' );
 		$view   = new Botblocker_CloudApi_View( $vm );
-		$layout = new Botblocker_Layout_View( $vm, true );
+		$layout = new Botblocker_Layout_View( $vm );
 
 		$this->render_page( 'cloud-api', $view, $layout );
 		do_action( 'bbcs_show_support_button' );
@@ -871,7 +902,7 @@ class Botblocker_Admin {
 
 		$vm     = new Botblocker_AddonsViewModel();
 		$view   = new Botblocker_Addons_View( $vm );
-		$layout = new Botblocker_Layout_View( $vm, true );
+		$layout = new Botblocker_Layout_View( $vm );
 
 		$this->render_page( 'addons', $view, $layout );
 		do_action( 'bbcs_show_support_button' );
@@ -889,7 +920,7 @@ class Botblocker_Admin {
 		}
 		$vm     = new Botblocker_SetupGuideViewModel();
 		$view   = new Botblocker_SetupGuide_View( $vm );
-		$layout = new Botblocker_Layout_View( $vm, true );
+		$layout = new Botblocker_Layout_View( $vm );
 		$this->render_page( 'setup-guide', $view, $layout );
 		do_action( 'bbcs_show_support_button' );
 	}
@@ -902,7 +933,7 @@ class Botblocker_Admin {
 
 		$vm     = new Botblocker_AboutViewModel();
 		$view   = new Botblocker_About_View( $vm );
-		$layout = new Botblocker_Layout_View( $vm, true );
+		$layout = new Botblocker_Layout_View( $vm );
 
 		$this->render_page( 'about', $view, $layout );
 		do_action( 'bbcs_show_support_button' );

@@ -272,8 +272,6 @@ final class BBCS_Toastify
 		} elseif ( $code === 'requires_php' && $detail !== null ) {
 			/* translators: %s: required PHP version */
 			$msg = sprintf( __( 'This add-on requires PHP %s or higher.', 'botblocker-security' ), $detail );
-		} elseif ( $detail !== null && $detail !== '' ) {
-			$msg .= ' ' . $detail;
 		}
 
 		return $msg;

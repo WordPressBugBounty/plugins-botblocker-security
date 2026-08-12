@@ -83,12 +83,7 @@ if ( ! function_exists( 'bbcs_is_using_https' ) ) {
 	 * @return bool
 	 */
 	function bbcs_is_using_https(): bool {
-		$fn = 'wp_is_using_https';
-		if ( function_exists( $fn ) ) {
-			return (bool) $fn();
-		}
-
-		return false;
+		return BotBlockerCoreFacade::isUsingHttps();
 	}
 }
 

@@ -43,6 +43,9 @@ final class Botblocker_IntegrationsViewModel {
 	/** @var array<string,string> */
 	public $tabpanels;
 
+	/** @var array<string, array{state:string, warning:string, label:string}> */
+	public $cache_systems;
+
 	/** @var string */
 	public $active_tab_id;
 
@@ -79,6 +82,23 @@ final class Botblocker_IntegrationsViewModel {
 	public $deactivate_nonce;
 	/** @var string */
 	public $fetch_key_nonce;
+
+	/** @var bool */
+	public $mu_active;
+	/** @var bool */
+	public $early_active;
+	/** @var bool */
+	public $mu_geo_active;
+	/** @var string */
+	public $mu_loader_path;
+	/** @var bool */
+	public $mu_loader_exists;
+	/** @var string */
+	public $data_dir;
+	/** @var bool */
+	public $ip_file_exists;
+	/** @var bool */
+	public $hotbans_file_exists;
 
 	public function __construct() {
 		$BBCS  = BotBlocker::getInstance();
@@ -144,8 +164,14 @@ final class Botblocker_IntegrationsViewModel {
 						->withIconImage( BOTBLOCKER_URL . 'public/icons/redis.svg' ),
 					( new TabItem( 'cloud',         '', false, '', '', __( 'BotBlocker Cloud', 'botblocker-security' ),  'sync' ) )
 						->withIconImage( BOTBLOCKER_URL . 'public/icons/cloud-api.svg' ),
+					( new TabItem( 'cache',         '', false, '', '', __( 'Cache', 'botblocker-security' ),            'rocket' ) )
+						->withIconImage( BOTBLOCKER_URL . 'public/icons/rocket.svg' ),
 					( new TabItem( 'bbcs-2fa',      '', false, '', '', __( 'BotBlocker 2FA', 'botblocker-security' ),    '2fa' ) )
 						->withIconImage( BOTBLOCKER_URL . 'public/icons/qrcode.svg' ),
+					( new TabItem( 'wp-connectors', '', false, '', '', __( 'WordPress Connectors', 'botblocker-security' ), 'plug' ) )
+						->withIconImage( BOTBLOCKER_URL . 'public/icons/wordpress.svg' ),
+					( new TabItem( 'mu',             '', false, '', '', __( 'MU-plugin', 'botblocker-security' ),             'tools' ) )
+						->withIconImage( BOTBLOCKER_URL . 'public/icons/tools.svg' ),
 				),
 			),
 		);
@@ -157,10 +183,15 @@ final class Botblocker_IntegrationsViewModel {
 			'memcached'     => BOTBLOCKER_DIR . 'admin/templates/integrations/memcached.php',
 			'redis'         => BOTBLOCKER_DIR . 'admin/templates/integrations/redis.php',
 			'cloud'         => BOTBLOCKER_DIR . 'admin/templates/integrations/botblocker-api.php',
+			'cache'         => BOTBLOCKER_DIR . 'admin/templates/integrations/cache.php',
 			'bbcs-2fa'      => BOTBLOCKER_DIR . 'admin/templates/integrations/2fa.php',
+			'wp-connectors' => BOTBLOCKER_DIR . 'admin/templates/integrations/wp-connectors.php',
+			'mu'            => BOTBLOCKER_DIR . 'admin/templates/integrations/mu.php',
 		);
 
 		$this->active_tab_id = 'recaptcha-v2';
+
+		$this->cache_systems = class_exists( 'BotBlockerAlerts' ) ? BotBlockerAlerts::detectCacheSystems() : array();
 
 		$user_id = get_current_user_id();
 		$user    = wp_get_current_user();
@@ -192,6 +223,17 @@ final class Botblocker_IntegrationsViewModel {
 		}
 
 		$this->wp_roles = wp_roles()->roles;
+
+		$this->mu_active    = ! empty( $this->settings['mu_enable'] );
+		$this->early_active = ! empty( $this->settings['early_init_enable'] );
+		$this->mu_geo_active = ! empty( $this->settings['mu_geo_enable'] );
+		$this->data_dir     = BotBlockerMultisite::getDataDir();
+		$this->mu_loader_path = ( defined( 'WPMU_PLUGIN_DIR' ) && WPMU_PLUGIN_DIR !== '' )
+			? trailingslashit( WPMU_PLUGIN_DIR ) . 'botblocker-mu-plugin.php'
+			: '';
+		$this->mu_loader_exists  = $this->mu_loader_path !== '' && file_exists( $this->mu_loader_path );
+		$this->ip_file_exists    = file_exists( $this->data_dir . 'ip.php' );
+		$this->hotbans_file_exists = file_exists( $this->data_dir . 'hot-bans.php' );
 	}
 
 	public function get( string $key, $default = '' ) {

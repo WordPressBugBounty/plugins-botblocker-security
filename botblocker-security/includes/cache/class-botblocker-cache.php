@@ -246,7 +246,12 @@ class BotBlockerCache {
 	 * @param string $cache_key
 	 * @return array|null
 	 */
+	private static $memoryCache = array();
+
 	public static function getCacheData( string $cache_key ) {
+		if ( array_key_exists( $cache_key, self::$memoryCache ) ) {
+			return self::$memoryCache[ $cache_key ];
+		}
 		try {
 			$storage = self::connect();
 
@@ -257,10 +262,10 @@ class BotBlockerCache {
 					self::logDebug( 'Cache hit for key: ' . $cache_key . ' from ' . get_class( $storage ) );
 				}
 			} else {
-				$cached_data = get_transient( $cache_key );
+				$cached_data = self::fileGet( $cache_key );
 
-				if ( $cached_data !== false ) {
-					self::logDebug( 'Cache hit for key: ' . $cache_key . ' from WP transients' );
+				if ( $cached_data !== null ) {
+					self::logDebug( 'Cache hit for key: ' . $cache_key . ' from file cache' );
 				}
 			}
 
@@ -268,7 +273,9 @@ class BotBlockerCache {
 				self::logDebug( 'Cache miss for key: ' . $cache_key );
 			}
 
-			return is_array( $cached_data ) ? $cached_data : null;
+			$result = is_array( $cached_data ) ? $cached_data : null;
+			self::$memoryCache[ $cache_key ] = $result;
+			return $result;
 		} catch ( \Exception $e ) {
 			self::logDebug( 'Error getting cached data: ' . $e->getMessage() );
 			return null;
@@ -282,6 +289,7 @@ class BotBlockerCache {
 	 * @return bool
 	 */
 	public static function setCacheData( string $cache_key, $data, int $ttl ): bool {
+		unset( self::$memoryCache[ $cache_key ] );
 		try {
 			if ( empty( $data ) || ! is_array( $data ) ) {
 				self::logDebug( 'Skipping cache storage for invalid data (key: ' . $cache_key . ')' );
@@ -301,12 +309,12 @@ class BotBlockerCache {
 
 				return $result;
 			} else {
-				$result = set_transient( $cache_key, $data, $ttl );
+				$result = self::fileSet( $cache_key, $data, $ttl );
 
 				if ( $result ) {
-					self::logDebug( 'Data cached successfully in WP transients with key: ' . $cache_key . ' (TTL: ' . $ttl . 's)' );
+					self::logDebug( 'Data cached successfully in file cache with key: ' . $cache_key . ' (TTL: ' . $ttl . 's)' );
 				} else {
-					self::logDebug( 'Failed to cache data in WP transients with key: ' . $cache_key );
+					self::logDebug( 'Failed to cache data in file cache with key: ' . $cache_key );
 				}
 
 				return $result;
@@ -318,15 +326,94 @@ class BotBlockerCache {
 	}
 
 	public static function deleteCacheData( string $cache_key ): void {
+		unset( self::$memoryCache[ $cache_key ] );
 		try {
 			$storage = self::connect();
 			if ( $storage !== null ) {
 				$storage->delete( $cache_key );
 			}
-			delete_transient( $cache_key );
+			self::fileDelete( $cache_key );
 		} catch ( \Exception $e ) {
 			self::logDebug( 'Error deleting cache: ' . $e->getMessage() );
 		}
+	}
+
+	private static function cacheDir(): string {
+		return BotBlockerMultisite::getDataDir() . 'cache/';
+	}
+
+	private static function cacheFilePath( string $key ): string {
+		return self::cacheDir() . md5( $key ) . '.cache';
+	}
+
+	/**
+	 * @return mixed|null
+	 */
+	public static function fileGet( string $key ) {
+		$file = self::cacheFilePath( $key );
+		if ( ! file_exists( $file ) ) {
+			return self::transientFallbackGet( $key );
+		}
+		$content = @file_get_contents( $file );
+		if ( $content === false || $content === '' ) {
+			return self::transientFallbackGet( $key );
+		}
+		$data = @unserialize( $content );
+		if ( ! is_array( $data ) || ! isset( $data['d'], $data['e'] ) ) {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+			@unlink( $file );
+			return self::transientFallbackGet( $key );
+		}
+		if ( time() > (int) $data['e'] ) {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+			@unlink( $file );
+			return self::transientFallbackGet( $key );
+		}
+		return $data['d'];
+	}
+
+	private static function transientFallbackGet( string $key ) {
+		$value = get_transient( $key );
+		if ( $value === false ) {
+			return null;
+		}
+		return is_array( $value ) ? $value : null;
+	}
+
+	public static function fileSet( string $key, $data, int $ttl ): bool {
+		$dir = self::cacheDir();
+		if ( ! is_dir( $dir ) ) {
+			if ( ! wp_mkdir_p( $dir ) ) {
+				return self::transientFallbackSet( $key, $data, $ttl );
+			}
+		}
+		$file    = self::cacheFilePath( $key );
+		$tmp     = $file . '.' . getmypid() . '.tmp';
+		$payload = serialize( array( 'd' => $data, 'e' => time() + $ttl ) );
+		if ( @file_put_contents( $tmp, $payload, LOCK_EX ) === false ) {
+			return self::transientFallbackSet( $key, $data, $ttl );
+		}
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename
+		if ( ! @rename( $tmp, $file ) ) {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+			@unlink( $tmp );
+			return self::transientFallbackSet( $key, $data, $ttl );
+		}
+		delete_transient( $key );
+		return true;
+	}
+
+	private static function transientFallbackSet( string $key, $data, int $ttl ): bool {
+		return set_transient( $key, $data, $ttl );
+	}
+
+	public static function fileDelete( string $key ): void {
+		$file = self::cacheFilePath( $key );
+		if ( file_exists( $file ) ) {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+			@unlink( $file );
+		}
+		delete_transient( $key );
 	}
 
 	public static function resetHealthTransients(): bool {
@@ -397,15 +484,25 @@ class BotBlockerCache {
 	}
 
 	public static function clearFileCache(): bool {
+		static $cleared = false;
+		if ( $cleared ) {
+			return true;
+		}
+		$cleared = true;
 		try {
 			clearstatcache( true );
 
-			$opcache_cleared = false;
-			if ( function_exists( 'opcache_reset' ) ) {
-				$opcache_cleared = @opcache_reset();
+			if ( function_exists( 'opcache_invalidate' ) && class_exists( 'BotBlockerMultisite' ) ) {
+				$dataDir = BotBlockerMultisite::getDataDir();
+				if ( $dataDir && is_dir( $dataDir ) ) {
+					$files = glob( $dataDir . '*.php' );
+					if ( is_array( $files ) ) {
+						foreach ( $files as $file ) {
+							@opcache_invalidate( $file, true );
+						}
+					}
+				}
 			}
-
-			self::logDebug( 'File cache cleared, opcache reset: ' . ( $opcache_cleared ? 'Success' : 'N/A' ) );
 
 			return true;
 		} catch ( \Exception $e ) {

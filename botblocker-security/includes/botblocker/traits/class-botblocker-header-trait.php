@@ -17,8 +17,44 @@ trait BotBlockerHeaderTrait {
 		}
 	}
 
-	protected function dispatch_security_headers_addon(): void {
-		do_action( 'bbcs_security_headers_dispatch', $this );
+	/**
+	 * Finalizes the header set for an allowed request.
+	 *
+	 * Single branching point for the security-headers addon: allowed requests
+	 * (all early-return branches of run() and admin/login/REST contexts) get
+	 * the full addon header set on top of the plugin's own headers, which were
+	 * already queued from run()/set_*_headers(). Security pages never reach
+	 * this method: check/block/denied die inside run() in FULL mode, and in
+	 * FRONTEND mode the should_show_* flags short-circuit it.
+	 *
+	 * @since 1.1.2
+	 *
+	 * @return bool True when the addon header set was sent.
+	 */
+	public function finalize_allowed_headers(): bool {
+		if ( $this->should_show_check_page || $this->should_show_block_page || $this->should_show_denied_page ) {
+			return false;
+		}
+
+		if ( ( defined( 'WP_CLI' ) && WP_CLI ) || wp_doing_cron() || wp_doing_ajax() ) {
+			return false;
+		}
+
+		if ( ! class_exists( 'Botblocker_Security_Headers' ) ) {
+			return false;
+		}
+
+		$headers = Botblocker_Security_Headers::get_instance()->get_headers();
+
+		if ( empty( $headers ) ) {
+			return false;
+		}
+
+		if ( function_exists( 'bbcs_send_security_headers' ) ) {
+			bbcs_send_security_headers( $headers );
+		}
+
+		return true;
 	}
 
 	public function set_iframe_headers(): void {
@@ -87,7 +123,6 @@ trait BotBlockerHeaderTrait {
 			header( 'Access-Control-Allow-Headers: *' );
 		}
 		header( 'X-Robots-Tag: noindex' );
-		$this->dispatch_security_headers_addon();
 	}
 
 	public function set_check_headers(): void {
@@ -102,18 +137,6 @@ trait BotBlockerHeaderTrait {
 			: '200 OK';
 		header( $this->protocol . ' ' . $test_code );
 		header( 'Status: ' . $test_code );
-		if ( ! empty( $this->csp_nonce ) ) {
-			add_filter(
-				'botblocker_csp_directives',
-				function ( $directives ) {
-					if ( isset( $directives['script-src'] ) ) {
-						$directives['script-src'] .= " 'nonce-" . $this->csp_nonce . "'";
-					}
-					return $directives;
-				}
-			);
-		}
-		$this->dispatch_security_headers_addon();
 	}
 
 	public function set_denied_headers(): void {
@@ -127,7 +150,6 @@ trait BotBlockerHeaderTrait {
 			: '403 Forbidden';
 		header( $this->protocol . ' ' . $error_code );
 		header( 'Status: ' . $error_code );
-		$this->dispatch_security_headers_addon();
 	}
 
 	public function reset_post_headers(): void {
@@ -150,16 +172,18 @@ trait BotBlockerHeaderTrait {
 		$available_directives = BotBlockerData::getXRobotTags();
 
 		if ( isset( $this->settings->x_robots_directives ) && ! empty( $this->settings->x_robots_directives ) ) {
-			$user_directives = is_array( $this->settings->x_robots_directives ) ?
-								$this->settings->x_robots_directives :
-								json_decode( $this->settings->x_robots_directives, true );
+			if ( is_string( $this->settings->x_robots_directives ) ) {
+				$user_directives = json_decode( $this->settings->x_robots_directives, true );
 
-			if ( json_last_error() !== JSON_ERROR_NONE ) {
-				if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-					error_log( '[BBCS DEBUG] [Header] Invalid JSON in x_robots_directives: ' . json_last_error_msg() );
+				if ( json_last_error() !== JSON_ERROR_NONE ) {
+					if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+						// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+						error_log( '[BBCS DEBUG] [Header] Invalid JSON in x_robots_directives: ' . json_last_error_msg() );
+					}
+					$user_directives = array();
 				}
-				$user_directives = array();
+			} else {
+				$user_directives = $this->settings->x_robots_directives;
 			}
 
 			if ( is_array( $user_directives ) ) {

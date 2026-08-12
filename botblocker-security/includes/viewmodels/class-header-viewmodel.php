@@ -16,7 +16,10 @@ final class Botblocker_HeaderViewModel {
 	 */
 	private static function mapAlerts( array $alerts ): array {
 		return array_map(
-			static function ( array $a ): Botblocker_AlertItemData {
+			static function ( $a ): Botblocker_AlertItemData {
+				if ( ! is_array( $a ) ) {
+					$a = array();
+				}
 				return new Botblocker_AlertItemData(
 					$a['title'] ?? '',
 					$a['message'] ?? '',

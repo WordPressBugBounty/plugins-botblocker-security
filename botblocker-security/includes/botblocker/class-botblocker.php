@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * This class is responsible for all the operations against bots.
  * It handles detections, logging, and blocking of suspicious bot activities.
  *
- * @version    1.7.3
+ * @version    1.7.4
  * @author     BotBlocker Team
  * @package    Botblocker
  * @subpackage Botblocker/includes
@@ -86,14 +86,17 @@ class BotBlocker extends BotBlockerBase {
 		$this->generate_connection_id();
 
 		if ( $this->check_secret_parameter() ) {
+			$this->finalize_allowed_headers();
 			return;
 		}
 		if ( $this->process_disabled_state() ) {
+			$this->finalize_allowed_headers();
 			return;
 		}
 
 		$guard = $this->start_output_guard();
 		$this->run();
+		$this->finalize_allowed_headers();
 		$this->end_output_guard( $guard );
 	}
 
@@ -209,7 +212,61 @@ class BotBlocker extends BotBlockerBase {
 				$bbcs[ $key ] = $value;
 			}
 		}
-		return bbcs_mask_sensitive_data( $bbcs );
+		return $this->mask_sensitive_data( $bbcs );
+	}
+
+	public function sensitive_hive_keys(): array {
+		$keys = array(
+			'cloud_api_key',
+			'cloud_api_pass',
+			'cloud_api_secret',
+			'cloud_api_email',
+			'recaptcha_key2',
+			'recaptcha_key3',
+			'recaptcha_secret2',
+			'recaptcha_secret3',
+			'salt',
+			'salt_pz',
+			'redis_password',
+			'memcached_password',
+			'password',
+			'secret',
+			'api_key',
+			'token',
+		);
+
+		/**
+		 * Filter the list of sensitive hive keys that should be masked in diagnostic output.
+		 *
+		 * @param string[] $keys Lowercase key names to mask.
+		 */
+		return apply_filters( 'bbcs_sensitive_hive_keys', $keys );
+	}
+
+	public function mask_sensitive_data( array $data ): array {
+		$sensitive_keys = $this->sensitive_hive_keys();
+
+		foreach ( $data as $key => $value ) {
+			$lower_key = strtolower( (string) $key );
+
+			if ( is_object( $value ) ) {
+				$value = get_object_vars( $value );
+			}
+
+			if ( is_array( $value ) ) {
+				$data[ $key ] = $this->mask_sensitive_data( $value );
+				continue;
+			}
+
+			foreach ( $sensitive_keys as $sensitive ) {
+				if ( strpos( $lower_key, $sensitive ) !== false ) {
+					$data[ $key ] = '****';
+					continue 2;
+				}
+			}
+		}
+
+		return $data;
 	}
 
 	public function print_hive(): void {
@@ -230,6 +287,7 @@ class BotBlocker extends BotBlockerBase {
 
 	// Native die() - not wp_die() - defense-in-depth: prevents third-party wp_die_handler filter bypass of the security barrier.
 	public function process_die( string $message = '' ): void {
+		BotBlockerCounters::flushHits();
 		if ( apply_filters( 'bbcs_test_intercept_termination', false, $message, $this ) ) {
 			return;
 		}
@@ -239,26 +297,47 @@ class BotBlocker extends BotBlockerBase {
 		} elseif ( BBCS_DIE_MESSAGE ) {
 				$this->print_hive();
 				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				die( __( 'WordPress stopped by BotBlocker', 'botblocker-security' ) );
+				die( did_action( 'init' ) ? __( 'WordPress stopped by BotBlocker', 'botblocker-security' ) : 'WordPress stopped by BotBlocker' );
 		} else {
 			die();
 		}
 	}
 
 	private function maybe_spawn_cron(): void {
-		if ( ! $this->should_spawn_cron(
-			function_exists( 'spawn_cron' ),
+		$mode = $this->cron_dispatch_mode(
 			defined( 'DOING_CRON' ),
+			(bool) ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ),
 			(bool) ( defined( 'ALTERNATE_WP_CRON' ) && ALTERNATE_WP_CRON )
-		) ) {
+		);
+
+		if ( BBCS_CRON_MODE_FALLBACK === $mode ) {
+			add_action( 'shutdown', array( $this, 'run_cron_fallback' ), 20 );
+			return;
+		}
+
+		if ( BBCS_CRON_MODE_SPAWN !== $mode || ! function_exists( 'spawn_cron' ) ) {
 			return;
 		}
 		$this->ensure_cron_lock_timeout( defined( 'WP_CRON_LOCK_TIMEOUT' ) );
 		spawn_cron();
 	}
 
-	private function should_spawn_cron( bool $spawn_exists, bool $doing_cron, bool $alternate ): bool {
-		return $spawn_exists && ! $doing_cron && ! $alternate;
+	private function cron_dispatch_mode( bool $doing_cron, bool $cron_disabled, bool $alternate ): string {
+		if ( $doing_cron || $cron_disabled ) {
+			return BBCS_CRON_MODE_NONE;
+		}
+		return $alternate ? BBCS_CRON_MODE_FALLBACK : BBCS_CRON_MODE_SPAWN;
+	}
+
+	public function run_cron_fallback(): void {
+		if ( ! class_exists( 'BotBlockerCron' ) ) {
+			require_once BOTBLOCKER_DIR . 'includes/cron/class-botblocker-cron.php';
+		}
+		if ( ! class_exists( 'BotBlockerCron' ) ) {
+			return;
+		}
+		ignore_user_abort( true );
+		BotBlockerCron::fallbackRunner();
 	}
 
 	private function ensure_cron_lock_timeout( bool $already_defined ): void {

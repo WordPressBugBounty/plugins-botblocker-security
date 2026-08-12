@@ -242,6 +242,10 @@ class BotBlockerIp {
 		return $range;
 	}
 
+	/**
+	 * @param int $ttl `ptrcache_time` setting, in SECONDS (see bbcs_get_ptr_lifetimes(),
+	 *                 e.g. 86400 = 1 day). Do not multiply by 60 - it is not minutes.
+	 */
 	public static function getPtr( string $ip, int $time, int $ttl ): string {
 		// Allow tests (or integrations) to short-circuit the full DB / cache lookup.
 		// false from the filter means "checked, no PTR exists" and is normalised to BOTBLOCKER_EMPTY.
@@ -274,13 +278,13 @@ class BotBlockerIp {
 
 		if ( isset( $get_ptr['ptr'] ) && $BBCS->settings->ptr_cache_in_db ) {
 			if ( $storage !== null ) {
-				$storage->set( $cache_key, array( 'ptr' => $get_ptr['ptr'] ), $ttl * 60 );
+				$storage->set( $cache_key, array( 'ptr' => $get_ptr['ptr'] ), $ttl );
 			}
 			return $get_ptr['ptr'];
 		} else {
 			$ptr = trim( preg_replace( '/[^0-9a-z-.:]/', '', strtolower( gethostbyaddr( $ip ) ) ) );
 			if ( $BBCS->settings->ptr_cache_in_db ) {
-				$time = $time + ( $ttl * 60 );
+				$time = $time + $ttl;
 				// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared and sanitized. No direct unsanitized SQL is executed.
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$wpdb->query(
@@ -295,7 +299,8 @@ class BotBlockerIp {
 				);
 			}
 			if ( $storage !== null && $BBCS->settings->ptr_cache_in_db ) {
-				$storage->set( $cache_key, array( 'ptr' => $ptr ), $ttl * 60 );
+				// $ttl already seconds - do not multiply by 60.
+				$storage->set( $cache_key, array( 'ptr' => $ptr ), $ttl );
 			}
 			return $ptr;
 		}

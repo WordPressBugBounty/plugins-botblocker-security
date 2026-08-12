@@ -9,6 +9,13 @@ trait BotBlockerMuUtils {
 
 	//BBCS-MULTISITE
 	private function load_directories(): void {
+		if ( defined( 'BOTBLOCKER_DATA_DIR' ) && BOTBLOCKER_DATA_DIR !== '' ) {
+			$this->dirs = array(
+				'data' => rtrim( (string) BOTBLOCKER_DATA_DIR, '/\\' ) . '/',
+			);
+			return;
+		}
+
 		$uploads_base = '';
 		if ( function_exists( 'wp_upload_dir' ) ) {
 			$upload = wp_upload_dir();

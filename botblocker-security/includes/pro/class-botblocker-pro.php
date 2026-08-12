@@ -172,6 +172,7 @@ class BotBlockerPro {
 			}
 		}
 		if ( ! empty( $warnings ) ) {
+			require_once BOTBLOCKER_DIR . 'includes/mail/class-botblocker-mailer.php';
 			BotBlockerMailer::sendExpirationEmail( implode( ' ', $warnings ), $expired );
 		}
 	}

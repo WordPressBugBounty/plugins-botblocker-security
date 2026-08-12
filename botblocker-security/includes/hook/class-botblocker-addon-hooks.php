@@ -111,11 +111,37 @@ class BotBlockerAddonHooks {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 			error_log( '[BBCS DEBUG] [Addons] UpdateAll: updated=' . count( $result['updated'] ?? array() ) . ' failed=' . count( $result['failed'] ?? array() ) );
 		}
+		self::deactivateIncompatible();
+
 		if ( ! empty( $result['failed'] ) ) {
 			BotBlockerAlerts::setAddonUpdateFailed( $result['failed'] );
+			$failed_names = wp_list_pluck( $result['failed'], 'name' );
+			if ( ! empty( $result['updated'] ) ) {
+				BBCS_Toastify::flash(
+					sprintf(
+						/* translators: 1: number of add-ons updated, 2: comma-separated list of add-ons that failed to update */
+						__( 'Updated %1$d add-on(s). Failed to update: %2$s.', 'botblocker-security' ),
+						count( $result['updated'] ),
+						implode( ', ', $failed_names )
+					),
+					BBCS_Toastify::TYPE_WARNING,
+					BBCS_Toastify::PAGE_ADDONS
+				);
+			} else {
+				BBCS_Toastify::flash(
+					sprintf(
+						/* translators: %s: comma-separated list of add-ons that failed to update */
+						__( 'Failed to update add-on(s): %s.', 'botblocker-security' ),
+						implode( ', ', $failed_names )
+					),
+					BBCS_Toastify::TYPE_ERROR,
+					BBCS_Toastify::PAGE_ADDONS
+				);
+			}
+		} else {
+			BBCS_Toastify::flash( __( 'All add-ons have been updated.', 'botblocker-security' ), BBCS_Toastify::TYPE_SUCCESS, BBCS_Toastify::PAGE_ADDONS );
 		}
-		self::deactivateIncompatible();
-		BBCS_Toastify::flash( __( 'All add-ons have been updated.', 'botblocker-security' ), BBCS_Toastify::TYPE_SUCCESS, BBCS_Toastify::PAGE_ADDONS );
+
 		wp_safe_redirect( BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' ) );
 		exit;
 	}
@@ -255,7 +281,12 @@ class BotBlockerAddonHooks {
 		}
 		$tmp = download_url( $url );
 		if ( is_wp_error( $tmp ) ) {
-			BBCS_Toastify::flash_addon_error( 'download', $tmp->get_error_message() );
+			BotBlockerAddonsMarket::flushCache();
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [Addons] download failed: ' . $tmp->get_error_message() );
+			}
+			BBCS_Toastify::flash_addon_error( 'download' );
 			wp_safe_redirect( $redir );
 			exit;
 		}
@@ -449,7 +480,12 @@ class BotBlockerAddonHooks {
 
 		$tmp = download_url( $url );
 		if ( is_wp_error( $tmp ) ) {
-			BBCS_Toastify::flash_addon_error( 'download', $tmp->get_error_message() );
+			BotBlockerAddonsMarket::flushCache();
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [Addons] download failed: ' . $tmp->get_error_message() );
+			}
+			BBCS_Toastify::flash_addon_error( 'download' );
 			wp_safe_redirect( $redir );
 			exit;
 		}
@@ -533,6 +569,12 @@ class BotBlockerAddonHooks {
 		wp_safe_redirect( $redir );
 		exit;
 	}
+
+	public static function flushMarketCache(): void {
+		if ( class_exists( 'BotBlockerAddonsMarket' ) ) {
+			BotBlockerAddonsMarket::flushCache();
+		}
+	}
 }
 
 add_action( 'upgrader_process_complete', array( 'BotBlockerAddonHooks', 'onPluginUpdated' ), 10, 2 );
@@ -542,3 +584,11 @@ add_action( 'admin_post_bbcs_install_addon', array( 'BotBlockerAddonHooks', 'han
 add_action( 'admin_post_bbcs_upload_addon', array( 'BotBlockerAddonHooks', 'handleUpload' ) );
 add_action( 'admin_post_bbcs_delete_addon', array( 'BotBlockerAddonHooks', 'handleDelete' ) );
 add_action( 'admin_post_bbcs_update_addon', array( 'BotBlockerAddonHooks', 'handleUpdate' ) );
+
+foreach ( array( 'bbcs_update_all_addons', 'bbcs_install_addon', 'bbcs_upload_addon', 'bbcs_delete_addon', 'bbcs_update_addon' ) as $bbcs_market_action ) {
+	// PHP_INT_MAX: flush *after* the default-priority handler. If the install
+	// handler called load(), the cache would otherwise repopulate with the
+	// pre-install feed before this flush ran.
+	add_action( 'admin_post_' . $bbcs_market_action, array( 'BotBlockerAddonHooks', 'flushMarketCache' ), PHP_INT_MAX );
+}
+unset( $bbcs_market_action );

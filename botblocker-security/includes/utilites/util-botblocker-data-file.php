@@ -39,10 +39,8 @@ if ( ! function_exists( 'bbcs_data_file_sign' ) ) :
 		$verified = bbcs_data_file_verify( $content );
 		if ( ! $verified ) {
 			if ( strrpos( $content, '// HASH:' ) !== false ) {
-				// Has hash but verification failed -> tampered
 				return array();
 			}
-			// No hash -> legacy format -> auto-migrate: sign and save
 			$signed = bbcs_data_file_sign( $content );
 			if ( @file_put_contents( $file, $signed, LOCK_EX ) !== false ) {
 				if ( function_exists( 'opcache_invalidate' ) ) {
@@ -52,13 +50,8 @@ if ( ! function_exists( 'bbcs_data_file_sign' ) ) :
 				return is_array( $data ) ? $data : array();
 			}
 			return array();
-			/*
-			$data = include $file;
-			return is_array( $data ) ? $data : array();
-			*/
 		}
 
-		// Hash verified.
 		$data = include $file;
 		return is_array( $data ) ? $data : array();
 	}

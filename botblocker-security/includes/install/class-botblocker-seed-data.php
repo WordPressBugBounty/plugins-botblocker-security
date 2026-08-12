@@ -1246,6 +1246,7 @@ class BotBlockerSeedData {
 		$cloud_api_secret = BotBlockerPro::generateKey( BOTBLOCKER_SHORT_NAME, $cloud_api_pass );
 		$secret_param     = md5( BOTBLOCKER_URL . time() );
 
+		require_once BOTBLOCKER_DIR . 'includes/data/botblocker-data-settings.php';
 		$default_settings   = bbcs_loadDefaultSettings();
 		$generated_settings = array(
 			'salt'                        => $salt_bb,

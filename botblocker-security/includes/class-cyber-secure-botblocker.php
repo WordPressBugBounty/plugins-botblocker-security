@@ -20,16 +20,28 @@ class Cyber_Secure_Botblocker {
 		$this->load_dependencies();
 		add_filter( 'load_textdomain_mofile', array( $this, 'bbcs_force_local_translations' ), 20, 2 );
 		add_action( 'init', array( $this, 'set_locale' ), 0 );
-		$this->define_admin_hooks();
+		if ( is_admin() || wp_doing_ajax() || wp_doing_cron() || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
+			$this->define_admin_hooks();
+		}
 	}
 
 	private function load_dependencies(): void {
+		$this->load_shield_dependencies();
+		if ( is_admin() || wp_doing_ajax() || wp_doing_cron() || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
+			$this->load_admin_dependencies();
+		}
+	}
+
+	private function load_shield_dependencies(): void {
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-botblocker-loader.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-botblocker-i18n.php';
-		require_once plugin_dir_path( __DIR__ ) . 'includes/components/component-loader.php';
-		require_once plugin_dir_path( __DIR__ ) . 'admin/class-botblocker-admin.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/botblocker/class-botblocker.php';
 		$this->loader = new Botblocker_Loader();
+	}
+
+	private function load_admin_dependencies(): void {
+		require_once plugin_dir_path( __DIR__ ) . 'includes/components/component-loader.php';
+		require_once plugin_dir_path( __DIR__ ) . 'admin/class-botblocker-admin.php';
 	}
 
 	public function set_locale(): void {
@@ -66,7 +78,9 @@ class Cyber_Secure_Botblocker {
 	}
 
 	public function run(): void {
-		$this->loader->run();
+		if ( $this->loader !== null ) {
+			$this->loader->run();
+		}
 		$botBlocker = BotBlocker::getInstance();
 		$botBlocker->init_visitor_pages();
 		$botBlocker->initialize();

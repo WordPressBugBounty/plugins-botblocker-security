@@ -20,6 +20,7 @@ function bbcs_data_file_render_map(): array {
 		'settings.php'       => 'BotBlockerFileRenderer::generateSettingsFile',
 		'salt.php'           => 'BotBlockerInstall::createSaltFile',
 		'tls_fingerprints.php' => 'BotBlockerFileRenderer::renderTlsFingerprints',
+		'geo_countries.php'    => 'BotBlockerFileRenderer::renderCountries',
 	);
 }
 

@@ -18,6 +18,8 @@ final class Botblocker_AddonMarketItemData {
 	public $description;
 	/** @var string */
 	public $url;
+	/** @var string */
+	public $requires_core;
 	/** @var bool */
 	public $is_active;
 	/** @var bool */
@@ -34,6 +36,7 @@ final class Botblocker_AddonMarketItemData {
 		$this->remote_ver     = (string) ( $raw['remote_ver'] ?? '' );
 		$this->description    = (string) ( $raw['description'] ?? '' );
 		$this->url            = (string) ( $raw['url'] ?? '' );
+		$this->requires_core  = (string) ( $raw['requires_core'] ?? '' );
 		$this->is_active      = (bool) ( $raw['is_active'] ?? false );
 		$this->show_installed = (bool) ( $raw['show_installed'] ?? false );
 		$this->is_incompatible = (bool) ( $raw['is_incompatible'] ?? false );

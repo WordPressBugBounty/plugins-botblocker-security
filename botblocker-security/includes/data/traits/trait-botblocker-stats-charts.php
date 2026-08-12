@@ -9,6 +9,7 @@ trait BotBlockerStatsChartsTrait {
 
 	public static function getDailyHitsChartData(): array {
 		global $wpdb;
+		BotBlockerDb::ensureUtcSession();
 		$BBCS                        = BotBlocker::getInstance();
 		[$ip_not_in_sql, $ip_params] = BotBlockerDb::getIPNotLikeSQL();
 
@@ -22,8 +23,9 @@ trait BotBlockerStatsChartsTrait {
 			}
 		}
 
-		$gmt_offset     = isset( $BBCS->settings->admin_gmt_offset ) ? (float) $BBCS->settings->admin_gmt_offset : 0;
-		$gmt_offset_str = BotBlockerEnv::format_gmt_offset( $gmt_offset );
+		$gmt_offset         = isset( $BBCS->settings->admin_gmt_offset ) ? (float) $BBCS->settings->admin_gmt_offset : 0;
+		$gmt_offset_str     = BotBlockerEnv::format_gmt_offset( $gmt_offset );
+		$gmt_offset_seconds = (int) round( $gmt_offset * HOUR_IN_SECONDS );
 
 		$tz           = new \DateTimeZone( $gmt_offset_str );
 		$current_date = new \DateTime( 'now', $tz );
@@ -33,31 +35,39 @@ trait BotBlockerStatsChartsTrait {
 
 		// REVIEWER NOTE: Exclusion fragment uses only internally controlled self‑IPs and is bound via prepare; no user data flows here.
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
-		$results = $wpdb->get_results(
-			$wpdb->prepare(
-				"
-				SELECT HOUR(CONVERT_TZ(FROM_UNIXTIME(date), '+00:00', %s)) AS hour, COUNT(*) AS hits
-				FROM (
-					SELECT * FROM `{$wpdb->bbcs_hits}`
-					UNION ALL
-					SELECT * FROM `{$wpdb->bbcs_hits_suspicious}`
-				) AS combined_hits
-				WHERE date BETWEEN UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
-								AND UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
-				AND NOT EXISTS (
-					SELECT 1 FROM `{$wpdb->bbcs_page_filters}` AS pf
-					WHERE combined_hits.page LIKE pf.pattern
-				)
-				{$ip_not_in_sql}
-				GROUP BY hour
-				ORDER BY hour
-				",
-				$gmt_offset_str,
+		$branch_params = array_merge(
+			array(
 				$start_of_day->format( 'Y-m-d H:i:s' ),
 				$gmt_offset_str,
 				$end_of_day->format( 'Y-m-d H:i:s' ),
 				$gmt_offset_str,
-				...$ip_params
+			),
+			$ip_params
+		);
+		$query_params  = array_merge( array( $gmt_offset_seconds ), $branch_params, $branch_params );
+
+		$local_hour_expr = BotBlockerDb::localDatetimeExpr( 'date' );
+		$results         = $wpdb->get_results(
+			$wpdb->prepare(
+				"
+				SELECT HOUR({$local_hour_expr}) AS hour, COUNT(*) AS hits
+				FROM (
+					SELECT h.date FROM `{$wpdb->bbcs_hits}` AS h
+					WHERE h.date BETWEEN UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
+									AND UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
+					" . BotBlockerDb::pageFilterNotExists( 'h', $start_of_day->getTimestamp() ) . "
+					{$ip_not_in_sql}
+					UNION ALL
+					SELECT s.date FROM `{$wpdb->bbcs_hits_suspicious}` AS s
+					WHERE s.date BETWEEN UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
+									AND UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
+					" . BotBlockerDb::pageFilterNotExists( 's', $start_of_day->getTimestamp() ) . "
+					{$ip_not_in_sql}
+				) AS combined_hits
+				GROUP BY hour
+				ORDER BY hour
+				",
+				...$query_params
 			)
 		);
 		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
@@ -102,8 +112,9 @@ trait BotBlockerStatsChartsTrait {
 
 		$days = min( max( $days, 1 ), 31 );
 
-		$gmt_offset     = isset( $BBCS->settings->admin_gmt_offset ) ? (float) $BBCS->settings->admin_gmt_offset : 0;
-		$gmt_offset_str = BotBlockerEnv::format_gmt_offset( $gmt_offset );
+		$gmt_offset         = isset( $BBCS->settings->admin_gmt_offset ) ? (float) $BBCS->settings->admin_gmt_offset : 0;
+		$gmt_offset_str     = BotBlockerEnv::format_gmt_offset( $gmt_offset );
+		$gmt_offset_seconds = (int) round( $gmt_offset * HOUR_IN_SECONDS );
 
 		$tz           = new \DateTimeZone( $gmt_offset_str );
 		$current_date = new \DateTime( 'now', $tz );
@@ -114,6 +125,8 @@ trait BotBlockerStatsChartsTrait {
 		$today_str     = $current_date->format( 'Y-m-d' );
 		$yesterday_str = ( clone $current_date )->modify( '-1 day' )->format( 'Y-m-d' );
 		$start_day     = substr( $start_date, 0, 10 );
+		$today_ts      = ( new \DateTime( $today_str . ' 00:00:00', $tz ) )->getTimestamp();
+		$start_ts      = ( new \DateTime( $start_date, $tz ) )->getTimestamp();
 
 		$chart_data = array();
 		$cur        = new \DateTime( $start_date, $tz );
@@ -131,20 +144,21 @@ trait BotBlockerStatsChartsTrait {
 			$past_hits = BotBlockerSummary::getPerDay( 'chart_hits', $start_day, $yesterday_str );
 			$past_uniq = BotBlockerSummary::getPerDay( 'chart_uniques', $start_day, $yesterday_str );
 
+			$today_pf_col = BotBlockerDb::pageFilterColumn( $today_ts );
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
 			$today_live = $wpdb->get_row(
 				$wpdb->prepare(
 					'
                 SELECT COUNT(*) AS hits, COUNT(DISTINCT ch.ip) AS uniques
                 FROM (
-                    SELECT date, ip, page FROM `' . $wpdb->bbcs_hits . '`
+                    SELECT date, CAST(ip AS CHAR(45)) AS ip, ' . $today_pf_col . ' FROM `' . $wpdb->bbcs_hits . '`
                     UNION ALL
-                    SELECT date, ip, page FROM `' . $wpdb->bbcs_hits_suspicious . '`
+                    SELECT date, CAST(ip AS CHAR(45)), ' . $today_pf_col . ' FROM `' . $wpdb->bbcs_hits_suspicious . '`
                 ) AS ch
-                LEFT JOIN `' . $wpdb->bbcs_page_filters . '` AS pf ON ch.page LIKE pf.pattern
+                ' . BotBlockerDb::pageFilterJoin( 'ch', $today_ts ) . '
                 WHERE ch.date BETWEEN UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, \'+00:00\'))
                                 AND UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, \'+00:00\'))
-                AND pf.pattern IS NULL
+                ' . BotBlockerDb::pageFilterWhere( 'ch', $today_ts ) . '
                 ' . $ip_not_in_sql . '
                 ',
 					$today_str . ' 00:00:00',
@@ -168,28 +182,29 @@ trait BotBlockerStatsChartsTrait {
 			}
 			unset( $vals );
 		} else {
+			$start_pf_col = BotBlockerDb::pageFilterColumn( $start_ts );
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
 			$results = $wpdb->get_results(
 				$wpdb->prepare(
 					'
                 SELECT
-                    DATE(CONVERT_TZ(FROM_UNIXTIME(ch.date), \'+00:00\', %s)) AS visit_date,
+                    DATE(' . BotBlockerDb::localDatetimeExpr( 'ch.date' ) . ') AS visit_date,
                     COUNT(DISTINCT ch.ip) AS uniques,
                     COUNT(*) AS hits
                 FROM (
-                    SELECT date, ip, page FROM `' . $wpdb->bbcs_hits . '`
+                    SELECT date, CAST(ip AS CHAR(45)) AS ip, ' . $start_pf_col . ' FROM `' . $wpdb->bbcs_hits . '`
                     UNION ALL
-                    SELECT date, ip, page FROM `' . $wpdb->bbcs_hits_suspicious . '`
+                    SELECT date, CAST(ip AS CHAR(45)), ' . $start_pf_col . ' FROM `' . $wpdb->bbcs_hits_suspicious . '`
                 ) AS ch
-                LEFT JOIN `' . $wpdb->bbcs_page_filters . '` AS pf ON ch.page LIKE pf.pattern
+                ' . BotBlockerDb::pageFilterJoin( 'ch', $start_ts ) . '
                 WHERE ch.date BETWEEN UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, \'+00:00\'))
                                 AND UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, \'+00:00\'))
-                AND pf.pattern IS NULL
+                ' . BotBlockerDb::pageFilterWhere( 'ch', $start_ts ) . '
                 ' . $ip_not_in_sql . '
                 GROUP BY visit_date
                 ORDER BY visit_date ASC
                 ',
-					$gmt_offset_str,
+					$gmt_offset_seconds,
 					$start_date,
 					$gmt_offset_str,
 					$end_date,

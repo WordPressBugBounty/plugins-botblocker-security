@@ -259,7 +259,7 @@ return array(
 	'ContextAd Bot',
 	'ConveraCrawler',
 	'ConveraMultiMediaCrawler',
-	'CoolBot‚Ä†',
+	'CoolBot',
 	'CoolCheck',
 	'Copernic',
 	'Copier',

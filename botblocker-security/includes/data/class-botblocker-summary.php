@@ -162,38 +162,114 @@ class BotBlockerSummary {
 		);
 	}
 
-	public static function aggregateDay( string $date_key ): bool {
+	private static function dropAggregateDayTempTable(): void {
 		global $wpdb;
-		$BBCS = BotBlocker::getInstance();
+	    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+		$wpdb->query( 'DROP TEMPORARY TABLE IF EXISTS bbcs_agg_tmp' );
+	}
 
-		$gmt_offset     = isset( $BBCS->settings->admin_gmt_offset ) ? (float) $BBCS->settings->admin_gmt_offset : 0;
-		$gmt_offset_str = BotBlockerEnv::format_gmt_offset( $gmt_offset );
-		$tz             = new \DateTimeZone( $gmt_offset_str );
+	private static function ensureAggregateDayTempTable(): bool {
+		global $wpdb;
+	    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+		return false !== $wpdb->query(
+			'CREATE TEMPORARY TABLE IF NOT EXISTS bbcs_agg_tmp (
+				ip VARCHAR(45) NOT NULL DEFAULT \'\',
+				device VARCHAR(16) NOT NULL DEFAULT \'\',
+				hit INT NOT NULL DEFAULT 0,
+				method VARCHAR(10) NOT NULL DEFAULT \'\',
+				country VARCHAR(8) NOT NULL DEFAULT \'\',
+				browser VARCHAR(32) NOT NULL DEFAULT \'\',
+				os VARCHAR(32) NOT NULL DEFAULT \'\',
+				wbot VARCHAR(32) NOT NULL DEFAULT \'\'
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4'
+		);
+	    // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+	}
 
-		$day_start = $date_key . ' 00:00:00';
-		$day_end   = $date_key . ' 23:59:59';
+	private static function clearAggregateDayTempTable(): bool {
+		global $wpdb;
+	    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		if ( false !== $wpdb->query( 'TRUNCATE TABLE bbcs_agg_tmp' ) ) {
+			return true;
+		}
+		if ( ! self::ensureAggregateDayTempTable() ) {
+			return false;
+		}
+	    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return false !== $wpdb->query( 'TRUNCATE TABLE bbcs_agg_tmp' );
+	}
 
-		[ $ip_frag, $ip_vals ] = BotBlockerDb::getIPNotLikeSQL();
+	/**
+	 * @param array<int, mixed> $base_params
+	 */
+	private static function materializeAggregateDayTempTable( string $base_from, string $base_where, array $base_params ): bool {
+		global $wpdb;
 
-		$base_from = "FROM (
-	        SELECT date, ip, device, hit, page, method, country, browser, os, wbot FROM `{$wpdb->bbcs_hits}`
-	        UNION ALL
-	        SELECT date, ip, device, hit, page, method, country, browser, os, wbot FROM `{$wpdb->bbcs_hits_suspicious}`
-	    ) AS ch
-	    LEFT JOIN `{$wpdb->bbcs_page_filters}` AS pf ON ch.page LIKE pf.pattern";
+		if ( ! self::ensureAggregateDayTempTable() || ! self::clearAggregateDayTempTable() ) {
+			return false;
+		}
 
-		$base_where = "WHERE ch.date BETWEEN UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
-	                   AND UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
-	                   AND pf.pattern IS NULL {$ip_frag}";
-
-		$date_params = array( $day_start, $gmt_offset_str, $day_end, $gmt_offset_str );
-		$base_params = array_merge( $date_params, $ip_vals );
-
-	    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, PluginCheck.Security.DirectDB.UnescapedDBParameter
-
-		$stats = $wpdb->get_row(
+	    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		$inserted = $wpdb->query(
 			$wpdb->prepare(
-				"SELECT
+				"INSERT INTO bbcs_agg_tmp (ip, device, hit, method, country, browser, os, wbot)
+				SELECT ch.ip, ch.device, ch.hit, ch.method, ch.country, ch.browser, ch.os, ch.wbot
+				{$base_from} {$base_where}",
+				...$base_params
+			)
+		);
+	    // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		if ( false === $inserted ) {
+			self::dropAggregateDayTempTable();
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Reads the three aggregation result sets, either from the materialized temp
+	 * table or straight from the base query.
+	 *
+	 * $wpdb->get_results() returns an empty array both for "no rows" and for a
+	 * failed query, so the only reliable failure signal is last_error. Without
+	 * this distinction a temp table that disappears mid-flight (a $wpdb reconnect
+	 * drops the session) reads back as a day with no traffic.
+	 *
+	 * @param array<int, mixed> $base_params
+	 * @return array{0: array<string, mixed>, 1: array<int, array<string, mixed>>, 2: array<int, array<string, mixed>>}|null Null if any query failed.
+	 */
+	private static function fetchAggregateDayRows( bool $use_tmp, string $base_from, string $base_where, array $base_params ): ?array {
+		global $wpdb;
+
+		if ( $use_tmp ) {
+			$stats_from   = 'FROM bbcs_agg_tmp AS ch';
+			$stats_params = array();
+			$grp_from     = "FROM bbcs_agg_tmp AS ch WHERE ch.method = 'GET' AND ch.ip != ''";
+			$grp_params   = array();
+		} else {
+			$stats_from   = "{$base_from} {$base_where}";
+			$stats_params = $base_params;
+			$grp_from     = "{$base_from} {$base_where} AND ch.method = 'GET' AND ch.ip != ''";
+			$grp_params   = $base_params;
+		}
+
+		$empty_val = defined( 'BOTBLOCKER_EMPTY' ) ? BOTBLOCKER_EMPTY : '-';
+		if ( $use_tmp ) {
+			$top_from   = "FROM bbcs_agg_tmp AS ch
+	            WHERE ch.ip != '' AND ch.ip != %s
+	            AND ch.country != '' AND ch.country != %s AND ch.country != 'XX' AND ch.country != 'XZ'";
+			$top_params = array( $empty_val, $empty_val );
+		} else {
+			$top_from   = "{$base_from} {$base_where}
+	            AND ch.ip != '' AND ch.ip != %s
+	            AND ch.country != '' AND ch.country != %s AND ch.country != 'XX' AND ch.country != 'XZ'";
+			$top_params = array_merge( $base_params, array( $empty_val, $empty_val ) );
+		}
+
+	    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, PluginCheck.Security.DirectDB.UnescapedDBParameter
+
+		$stats_sql = "SELECT
 	                COUNT(*) AS chart_hits,
 	                COUNT(DISTINCT NULLIF(ch.ip, '')) AS chart_uniques,
 	                SUM(CASE WHEN ch.method = 'GET' THEN 1 ELSE 0 END) AS hits,
@@ -205,30 +281,117 @@ class BotBlockerSummary {
 	                COUNT(DISTINCT CASE WHEN ch.method = 'GET' AND IFNULL(ch.device,'NA')='tv' AND ch.ip!='' THEN ch.ip END) AS tv,
 	                COUNT(DISTINCT CASE WHEN ch.method = 'GET' AND ch.hit = 1 AND ch.ip != '' THEN ch.ip END) AS hit_hosts,
 	                SUM(CASE WHEN ch.method = 'GET' THEN NULLIF(ch.hit, 0) ELSE NULL END) AS hit_count
-	            {$base_from} {$base_where}",
-				...$base_params
-			),
+	            {$stats_from}";
+
+		$wpdb->last_error = '';
+		$stats            = $wpdb->get_row(
+			$stats_params ? $wpdb->prepare( $stats_sql, ...$stats_params ) : $stats_sql,
 			ARRAY_A
 		);
+		if ( '' !== $wpdb->last_error || ! is_array( $stats ) ) {
+			return null;
+		}
+
+		$grp_sql = "SELECT
+	                IFNULL(NULLIF(ch.browser,''), 'NA') AS browser,
+	                IFNULL(NULLIF(ch.os,''), 'NA') AS os,
+	                IFNULL(NULLIF(ch.wbot,''), 'NA') AS wbot,
+	                ch.ip
+	            {$grp_from}
+	            GROUP BY ch.ip, browser, os, wbot";
+
+		$wpdb->last_error = '';
+		$grp_rows         = $wpdb->get_results(
+			$grp_params ? $wpdb->prepare( $grp_sql, ...$grp_params ) : $grp_sql,
+			ARRAY_A
+		);
+		if ( '' !== $wpdb->last_error || ! is_array( $grp_rows ) ) {
+			return null;
+		}
+
+		$top_sql = "SELECT ch.ip, ch.country, ch.device, ch.browser, COUNT(*) AS c
+	            {$top_from}
+	            GROUP BY ch.ip, ch.country, ch.device, ch.browser";
+
+		$wpdb->last_error = '';
+		$top_rows         = $wpdb->get_results(
+			$wpdb->prepare( $top_sql, ...$top_params ),
+			ARRAY_A
+		);
+		if ( '' !== $wpdb->last_error || ! is_array( $top_rows ) ) {
+			return null;
+		}
+
+	    // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, PluginCheck.Security.DirectDB.UnescapedDBParameter
+
+		return array( $stats, $grp_rows, $top_rows );
+	}
+
+	public static function aggregateDay( string $date_key ): bool {
+		global $wpdb;
+		$BBCS = BotBlocker::getInstance();
+
+		$gmt_offset     = isset( $BBCS->settings->admin_gmt_offset ) ? (float) $BBCS->settings->admin_gmt_offset : 0;
+		$gmt_offset_str = BotBlockerEnv::format_gmt_offset( $gmt_offset );
+		$tz             = new \DateTimeZone( $gmt_offset_str );
+
+		$day_start_ts = ( new \DateTime( $date_key . ' 00:00:00', $tz ) )->getTimestamp();
+		$day_end_ts   = ( new \DateTime( $date_key . ' 23:59:59', $tz ) )->getTimestamp();
+
+		[ $ip_frag, $ip_vals ] = BotBlockerDb::getIPNotLikeSQL();
+
+		// CAST in the innermost projection: a TEXT column forces every temp table that
+		// carries it onto disk, and this derived table feeds three aggregates (two
+		// four-column GROUP BYs and eight COUNT(DISTINCT ip)). Widths must stay in sync
+		// with bbcs_agg_tmp above, which this same list is INSERTed into. Never cast in a
+		// predicate. pageFilterColumn() swaps `page` for `filtered` on the fast path so
+		// TEXT never enters the derived table there.
+		$day_pf_col = BotBlockerDb::pageFilterColumn( $day_start_ts );
+		$base_from  = "FROM (
+	        SELECT date, CAST(ip AS CHAR(45)) AS ip, CAST(device AS CHAR(16)) AS device, hit, {$day_pf_col},
+	               CAST(method AS CHAR(10)) AS method, CAST(country AS CHAR(8)) AS country,
+	               CAST(browser AS CHAR(32)) AS browser, CAST(os AS CHAR(32)) AS os,
+	               CAST(wbot AS CHAR(32)) AS wbot
+	          FROM `{$wpdb->bbcs_hits}`
+	        UNION ALL
+	        SELECT date, CAST(ip AS CHAR(45)), CAST(device AS CHAR(16)), hit, {$day_pf_col},
+	               CAST(method AS CHAR(10)), CAST(country AS CHAR(8)),
+	               CAST(browser AS CHAR(32)), CAST(os AS CHAR(32)),
+	               CAST(wbot AS CHAR(32))
+	          FROM `{$wpdb->bbcs_hits_suspicious}`
+	    ) AS ch
+	    " . BotBlockerDb::pageFilterJoin( 'ch', $day_start_ts );
+
+		$base_where  = "WHERE ch.date BETWEEN %d AND %d
+	    " . BotBlockerDb::pageFilterWhere( 'ch', $day_start_ts ) . " {$ip_frag}";
+		$date_params = array( $day_start_ts, $day_end_ts );
+		$base_params = array_merge( $date_params, $ip_vals );
+
+		$use_agg_tmp = self::materializeAggregateDayTempTable( $base_from, $base_where, $base_params );
+
+		$fetched = self::fetchAggregateDayRows( $use_agg_tmp, $base_from, $base_where, $base_params );
+		if ( null === $fetched && $use_agg_tmp ) {
+			// The temp table went away mid-flight - $wpdb reconnected, or the session
+			// was reset. Redo the reads against the base query rather than writing a
+			// day with silently missing dimensions.
+			self::dropAggregateDayTempTable();
+			$fetched = self::fetchAggregateDayRows( false, $base_from, $base_where, $base_params );
+		}
+
+		// Dropped before the transaction so every failure path below is already clean.
+		self::dropAggregateDayTempTable();
+
+		if ( null === $fetched ) {
+			return false;
+		}
+		[ $stats, $grp_rows, $top_rows ] = $fetched;
+
+	    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, PluginCheck.Security.DirectDB.UnescapedDBParameter
 
 		$rows = array();
 		foreach ( array( 'hits', 'uniques', 'pc', 'box', 'phone', 'tablet', 'tv', 'hit_hosts', 'hit_count', 'chart_hits', 'chart_uniques' ) as $m ) {
 			$rows[] = array( $date_key, $m, '', (int) ( $stats[ $m ] ?? 0 ) );
 		}
-
-		$grp_rows = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT
-	                IFNULL(NULLIF(ch.browser,''), 'NA') AS browser,
-	                IFNULL(NULLIF(ch.os,''), 'NA') AS os,
-	                IFNULL(NULLIF(ch.wbot,''), 'NA') AS wbot,
-	                ch.ip
-	            {$base_from} {$base_where} AND ch.method = 'GET' AND ch.ip != ''
-	            GROUP BY ch.ip, browser, os, wbot",
-				...$base_params
-			),
-			ARRAY_A
-		);
 
 		$browsers = array();
 		$oses     = array();
@@ -248,20 +411,6 @@ class BotBlockerSummary {
 			$rows[] = array( $date_key, 'grp_wbot', $k, count( $ips ) );
 		}
 
-		$empty_val  = defined( 'BOTBLOCKER_EMPTY' ) ? BOTBLOCKER_EMPTY : '-';
-		$top_params = array_merge( $base_params, array( $empty_val, $empty_val ) );
-
-		$top_rows = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT ch.ip, ch.country, ch.device, ch.browser
-	            {$base_from} {$base_where}
-	            AND ch.ip != '' AND ch.ip != %s
-	            AND ch.country != '' AND ch.country != %s AND ch.country != 'XX' AND ch.country != 'XZ'",
-				...$top_params
-			),
-			ARRAY_A
-		);
-
 		$t_ip        = array();
 		$t_country   = array();
 		$t_device    = array();
@@ -270,12 +419,13 @@ class BotBlockerSummary {
 		$t_device_h  = array();
 		$t_browser_h = array();
 
-		foreach ( (array) $top_rows as $r ) {
+		foreach ( $top_rows as $r ) {
 			$ip = $r['ip'];
+			$c  = (int) $r['c'];
 			if ( ! isset( $t_ip[ $ip ] ) ) {
 				$t_ip[ $ip ] = 0;
 			}
-			++$t_ip[ $ip ];
+			$t_ip[ $ip ] += $c;
 
 			$t_country[ $r['country'] ][ $ip ] = 1;
 			$t_device[ $r['device'] ][ $ip ]   = 1;
@@ -284,17 +434,17 @@ class BotBlockerSummary {
 			if ( ! isset( $t_country_h[ $r['country'] ] ) ) {
 				$t_country_h[ $r['country'] ] = 0;
 			}
-			++$t_country_h[ $r['country'] ];
+			$t_country_h[ $r['country'] ] += $c;
 
 			if ( ! isset( $t_device_h[ $r['device'] ] ) ) {
 				$t_device_h[ $r['device'] ] = 0;
 			}
-			++$t_device_h[ $r['device'] ];
+			$t_device_h[ $r['device'] ] += $c;
 
 			if ( ! isset( $t_browser_h[ $r['browser'] ] ) ) {
 				$t_browser_h[ $r['browser'] ] = 0;
 			}
-			++$t_browser_h[ $r['browser'] ];
+			$t_browser_h[ $r['browser'] ] += $c;
 		}
 
 		arsort( $t_ip );
@@ -329,7 +479,16 @@ class BotBlockerSummary {
 	    // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, PluginCheck.Security.DirectDB.UnescapedDBParameter
 
 	    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->delete( $wpdb->bbcs_daily_summary, array( 'date_key' => $date_key ), array( '%s' ) );
+		$wpdb->query( 'START TRANSACTION' );
+
+		// DELETE + batched INSERT + _complete marker run atomically so a crash cannot leave a half-written day.
+	    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$deleted = $wpdb->delete( $wpdb->bbcs_daily_summary, array( 'date_key' => $date_key ), array( '%s' ) );
+		if ( false === $deleted ) {
+		    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->query( 'ROLLBACK' );
+			return false;
+		}
 
 		$table = $wpdb->bbcs_daily_summary;
 		$batch = array();
@@ -338,20 +497,28 @@ class BotBlockerSummary {
 			if ( count( $batch ) >= 100 ) {
 				$vals = implode( ',', $batch );
 	            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				$wpdb->query( "INSERT INTO `{$table}` (date_key, metric, dim_key, val) VALUES {$vals} ON DUPLICATE KEY UPDATE val = VALUES(val)" );
+				if ( false === $wpdb->query( "INSERT INTO `{$table}` (date_key, metric, dim_key, val) VALUES {$vals} ON DUPLICATE KEY UPDATE val = VALUES(val)" ) ) {
+				    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					$wpdb->query( 'ROLLBACK' );
+					return false;
+				}
 				$batch = array();
 			}
 		}
 		if ( $batch ) {
 			$vals = implode( ',', $batch );
 	        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			$wpdb->query( "INSERT INTO `{$table}` (date_key, metric, dim_key, val) VALUES {$vals} ON DUPLICATE KEY UPDATE val = VALUES(val)" );
+			if ( false === $wpdb->query( "INSERT INTO `{$table}` (date_key, metric, dim_key, val) VALUES {$vals} ON DUPLICATE KEY UPDATE val = VALUES(val)" ) ) {
+			    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->query( 'ROLLBACK' );
+				return false;
+			}
 		}
 
 		$today    = ( new \DateTime( 'now', $tz ) )->format( 'Y-m-d' );
 		$complete = ( $date_key < $today ) ? 1 : 0;
 	    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->replace(
+		$replaced = $wpdb->replace(
 			$table,
 			array(
 				'date_key' => $date_key,
@@ -361,6 +528,14 @@ class BotBlockerSummary {
 			),
 			array( '%s', '%s', '%s', '%d' )
 		);
+		if ( false === $replaced ) {
+		    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->query( 'ROLLBACK' );
+			return false;
+		}
+
+	    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->query( 'COMMIT' );
 
 		return true;
 	}
@@ -379,11 +554,10 @@ class BotBlockerSummary {
 		$processed   = 0;
 		$max_per_run = 3;
 
-		while ( $cursor <= $today && $processed < $max_per_run ) {
-			$dk       = $cursor->format( 'Y-m-d' );
-			$is_today = ( $dk === $today->format( 'Y-m-d' ) );
+		while ( $cursor < $today && $processed < $max_per_run ) {
+			$dk = $cursor->format( 'Y-m-d' );
 
-			if ( ! $is_today && self::getCompleteDays( $dk, $dk ) ) {
+			if ( self::getCompleteDays( $dk, $dk ) ) {
 				$cursor->modify( '+1 day' );
 				continue;
 			}
@@ -410,16 +584,14 @@ class BotBlockerSummary {
 		$max_per_run = 2;
 
 		$cursor = clone $start;
-		while ( $cursor <= $today ) {
+		while ( $cursor < $today ) {
 			$dk = $cursor->format( 'Y-m-d' );
-			if ( ! self::getCompleteDays( $dk, $dk ) || $dk === $today->format( 'Y-m-d' ) ) {
+			if ( ! self::getCompleteDays( $dk, $dk ) ) {
 				if ( $processed < $max_per_run ) {
 					self::aggregateDay( $dk );
 					++$processed;
 				}
-				if ( $dk !== $today->format( 'Y-m-d' ) ) {
-					$all_done = false;
-				}
+				$all_done = false;
 			}
 			$cursor->modify( '+1 day' );
 		}

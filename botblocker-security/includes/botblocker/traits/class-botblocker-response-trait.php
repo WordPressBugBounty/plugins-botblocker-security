@@ -123,8 +123,7 @@ trait BotBlockerResponseTrait {
 	public function perform_check(): void {
 		$guard = null;
 		if ( (int) $this->settings->secure_mode === self::SECURE_MODE_FULL ) {
-			$this->csp_nonce = base64_encode( random_bytes( 16 ) );
-			$guard           = $this->start_output_guard();
+			$guard = $this->start_output_guard();
 		}
 		$this->define_no_cache_constants();
 		$this->reset_post_headers();

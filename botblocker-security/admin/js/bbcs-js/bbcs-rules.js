@@ -26,6 +26,10 @@
         });
     };
  
+    // Alias to the shared Toastify wrapper (bbcs-shared-helpers.js) - kept
+    // under this name since every rules-page module already calls it.
+    window.bbcsRulesToast = window.bbcsToast;
+
     var isProcessingRule = false;
     // local flag for loading the rules table
     var rulesTableLoading = false;
@@ -266,6 +270,9 @@
                                     .data(rowData)
                                     .draw(false);
                                 if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
+                                bbcsRulesToast('success', bbcsRulesL10n.success_toggle);
+                            } else {
+                                bbcsRulesToast('error', response.data);
                             }
                         },
                         complete: function () {
@@ -341,7 +348,7 @@
                 var data = JSON.parse(e.target.result);
                 callback(data);
             } catch (err) {
-                alert(bbcsRulesL10n.invalid_json + err.message);
+                bbcsRulesToast('error', bbcsRulesL10n.invalid_json + err.message);
             }
         };
         reader.readAsText(file);
@@ -402,8 +409,9 @@
                         $("#editRuleModal").modal("hide");
                         $("#botblocker-rules").DataTable().ajax.reload();
                                     if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
+                        bbcsRulesToast('success', bbcsRulesL10n.success_update);
                     } else {
-                        alert(bbcsRulesL10n.failed_update + response.data);
+                        bbcsRulesToast('error', bbcsRulesL10n.failed_update + response.data);
                     }
                 },
             });
@@ -444,7 +452,7 @@
                             .val(expiresFormattedDate);
                         $("#editRuleModal").modal("show");
                     } else {
-                        alert(bbcsRulesL10n.failed_load + response.data);
+                        bbcsRulesToast('error', bbcsRulesL10n.failed_load + response.data);
                     }
                 },
             });
@@ -465,6 +473,9 @@
                         if (response.success) {
                             $("#botblocker-rules").DataTable().ajax.reload();
                                     if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
+                            bbcsRulesToast('success', bbcsRulesL10n.success_delete);
+                        } else {
+                            bbcsRulesToast('error', response.data);
                         }
                     },
                 });
@@ -505,8 +516,9 @@
                         $("#createRuleModal").modal("hide");
                         $("#botblocker-rules").DataTable().ajax.reload();
                                     if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
+                        bbcsRulesToast('success', bbcsRulesL10n.success_create);
                     } else {
-                        alert(bbcsRulesL10n.failed_create + response.data);
+                        bbcsRulesToast('error', bbcsRulesL10n.failed_create + response.data);
                     }
                 },
             });
@@ -533,8 +545,9 @@
                         document.body.appendChild(downloadLink);
                         downloadLink.click();
                         document.body.removeChild(downloadLink);
+                        bbcsRulesToast('success', bbcsRulesL10n.success_export);
                     } else {
-                        alert(bbcsRulesL10n.failed_export + response.data);
+                        bbcsRulesToast('error', bbcsRulesL10n.failed_export + response.data);
                     }
                 },
             });
@@ -562,8 +575,9 @@
                         document.body.appendChild(downloadLink);
                         downloadLink.click();
                         document.body.removeChild(downloadLink);
+                        bbcsRulesToast('success', bbcsRulesL10n.success_export);
                     } else {
-                        alert(bbcsRulesL10n.failed_export + response.data);
+                        bbcsRulesToast('error', bbcsRulesL10n.failed_export + response.data);
                     }
                 },
             });
@@ -591,8 +605,10 @@
                                     $("#botblocker-rules")
                                         .DataTable()
                                         .ajax.reload();
+                                    bbcsRulesToast('success', bbcsRulesL10n.success_import);
                                 } else {
-                                    alert(
+                                    bbcsRulesToast(
+                                        'error',
                                         bbcsRulesL10n.failed_import +
                                             response.data
                                     );
@@ -618,8 +634,9 @@
                         if (response.success) {
                             $("#botblocker-rules").DataTable().ajax.reload();
                                     if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
+                            bbcsRulesToast('success', bbcsRulesL10n.success_clear);
                         } else {
-                            alert(bbcsRulesL10n.failed_clear + response.data);
+                            bbcsRulesToast('error', bbcsRulesL10n.failed_clear + response.data);
                         }
                     },
                 });
@@ -636,7 +653,7 @@
                     nonce: botblockerData.nonce,
                 },
                 success: function (response) {
-                    alert(response.data);
+                    bbcsRulesToast(response.success ? 'success' : 'error', response.data);
                 },
             });
         });
@@ -683,8 +700,9 @@
                                             showImportResultModal(response.data);
                                             $("#botblocker-rules").DataTable().ajax.reload();
                                     if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
+                                            bbcsRulesToast('success', bbcsRulesL10n.success_import);
                                         } else {
-                                            alert(bbcsRulesL10n.failed_import + response.data);
+                                            bbcsRulesToast('error', bbcsRulesL10n.failed_import + response.data);
                                         }
                                     },
                                 });

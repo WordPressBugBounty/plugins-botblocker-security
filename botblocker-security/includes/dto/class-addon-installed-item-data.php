@@ -28,6 +28,10 @@ final class Botblocker_AddonInstalledItemData {
 	public $incompatible_remote;
 	/** @var bool */
 	public $broken;
+	/** @var string */
+	public $update_url;
+	/** @var string */
+	public $update_requires_core;
 
 	public function __construct( string $slug, array $raw ) {
 		$this->name                = (string) ( $raw['name'] ?: $slug );
@@ -41,5 +45,7 @@ final class Botblocker_AddonInstalledItemData {
 		$this->incompatible        = (bool) ( $raw['incompatible'] ?? false );
 		$this->incompatible_remote = (bool) ( $raw['incompatible_remote'] ?? false );
 		$this->broken              = (bool) ( $raw['broken'] ?? false );
+		$this->update_url          = (string) ( $raw['update_url'] ?? '' );
+		$this->update_requires_core = (string) ( $raw['update_requires_core'] ?? '' );
 	}
 }

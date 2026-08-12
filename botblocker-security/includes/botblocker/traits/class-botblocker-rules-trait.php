@@ -370,86 +370,111 @@ trait BotBlockerRulesTrait {
 		return false;
 	}
 
+	private function build_custom_rule_search_terms(): array {
+		$terms = array();
+		if ( ! empty( $this->useragent ) ) {
+			$terms[] = 'useragent=' . $this->useragent;
+		}
+		if ( ! empty( $this->country ) ) {
+			$terms[] = 'country=' . $this->country;
+		}
+		if ( ! empty( $this->lang ) ) {
+			$terms[] = 'lang=' . $this->lang;
+		}
+		if ( ! empty( $this->page ) ) {
+			$terms[] = 'page=' . $this->page;
+		}
+		if ( ! empty( $this->refhost ) ) {
+			$terms[] = 'referer=' . $this->refhost;
+		}
+		if ( ! empty( $this->ym_uid ) ) {
+			$terms[] = 'ym_uid=' . $this->ym_uid;
+		}
+		if ( ! empty( $this->ga_uid ) ) {
+			$terms[] = 'ga_uid=' . $this->ga_uid;
+		}
+		$this->ptr_arr = explode( '.', $this->ptr );
+		$this->ptr_arr = array_reverse( $this->ptr_arr, false );
+		if ( isset( $this->ptr_arr[1] ) ) {
+			$terms[] = 'ptr=' . $this->ptr_arr[1] . '.' . $this->ptr_arr[0];
+		}
+		if ( isset( $this->ptr_arr[2] ) ) {
+			$terms[] = 'ptr=' . $this->ptr_arr[2] . '.' . $this->ptr_arr[1] . '.' . $this->ptr_arr[0];
+		}
+		if ( ! empty( $this->asname ) ) {
+			$terms[] = 'asname=' . $this->asname;
+		}
+		if ( ! empty( $this->asnum ) ) {
+			$terms[] = 'asnum=' . $this->asnum;
+		}
+		if ( ! empty( $this->uri ) ) {
+			$terms[] = 'uri=' . $this->uri;
+		}
+		if ( ! empty( $_SERVER['SCRIPT_NAME'] ) ) {
+			$terms[] = 'scriptname=' . trim( wp_strip_all_tags( wp_unslash( $_SERVER['SCRIPT_NAME'] ) ) );
+		}
+		if ( ! empty( $this->http_accept ) ) {
+			$terms[] = 'httpaccept=' . trim( wp_strip_all_tags( $this->http_accept ) );
+		}
+		return $terms;
+	}
+
 	public function check_rules_database(): bool {
 		if ( $this->has_pending_restrictive_response() ) {
 			return true;
 		}
 
-		global $wpdb;
-		$rule        = null;
-		$search      = null;
-		$rule_data   = null;
-		$bbcs_search = array();
-		if ( ! empty( $this->useragent ) ) {
-			$bbcs_search[] = $wpdb->prepare( 'search LIKE %s', '%' . $wpdb->esc_like( 'useragent=' . $this->useragent ) . '%' );
-		}
-		if ( ! empty( $this->country ) ) {
-			$bbcs_search[] = $wpdb->prepare( 'search LIKE %s', '%' . $wpdb->esc_like( 'country=' . $this->country ) . '%' );
-		}
-		if ( ! empty( $this->lang ) ) {
-			$bbcs_search[] = $wpdb->prepare( 'search LIKE %s', '%' . $wpdb->esc_like( 'lang=' . $this->lang ) . '%' );
-		}
-		if ( ! empty( $this->page ) ) {
-			$bbcs_search[] = $wpdb->prepare( 'search LIKE %s', '%' . $wpdb->esc_like( 'page=' . $this->page ) . '%' );
-		}
-		if ( ! empty( $this->refhost ) ) {
-			$bbcs_search[] = $wpdb->prepare( 'search LIKE %s', '%' . $wpdb->esc_like( 'referer=' ) . '%' . $wpdb->esc_like( $this->refhost ) . '%' );
-		}
-		if ( ! empty( $this->ym_uid ) ) {
-			$bbcs_search[] = $wpdb->prepare( 'search LIKE %s', '%' . $wpdb->esc_like( 'ym_uid=' . $this->ym_uid ) . '%' );
-		}
-		if ( ! empty( $this->ga_uid ) ) {
-			$bbcs_search[] = $wpdb->prepare( 'search LIKE %s', '%' . $wpdb->esc_like( 'ga_uid=' . $this->ga_uid ) . '%' );
-		}
-		$this->ptr_arr = explode( '.', $this->ptr );
-		$this->ptr_arr = array_reverse( $this->ptr_arr, false );
-		if ( isset( $this->ptr_arr[1] ) ) {
-			$bbcs_search[] = $wpdb->prepare( 'search LIKE %s', '%' . $wpdb->esc_like( 'ptr=' . $this->ptr_arr[1] . '.' . $this->ptr_arr[0] ) . '%' );
-		}
-		if ( isset( $this->ptr_arr[2] ) ) {
-			$bbcs_search[] = $wpdb->prepare( 'search LIKE %s', '%' . $wpdb->esc_like( 'ptr=' . $this->ptr_arr[2] . '.' . $this->ptr_arr[1] . '.' . $this->ptr_arr[0] ) . '%' );
-		}
-		if ( ! empty( $this->asname ) ) {
-			$bbcs_search[] = $wpdb->prepare( 'search LIKE %s', '%' . $wpdb->esc_like( 'asname=' . $this->asname ) . '%' );
-		}
-		if ( ! empty( $this->asnum ) ) {
-			$bbcs_search[] = $wpdb->prepare( 'search LIKE %s', '%' . $wpdb->esc_like( 'asnum=' . $this->asnum ) . '%' );
-		}
-		if ( ! empty( $this->uri ) ) {
-			$bbcs_search[] = $wpdb->prepare( 'search LIKE %s', '%' . $wpdb->esc_like( 'uri=' . $this->uri ) . '%' );
-		}
-		if ( ! empty( $_SERVER['SCRIPT_NAME'] ) ) {
-			$bbcs_search[] = $wpdb->prepare(
-				'search LIKE %s',
-				'%' . $wpdb->esc_like( 'scriptname=' . trim( wp_strip_all_tags( wp_unslash( $_SERVER['SCRIPT_NAME'] ) ) ) ) . '%'
-			);
-		}
-		if ( ! empty( $this->http_accept ) ) {
-			$bbcs_search[] = $wpdb->prepare( 'search LIKE %s', '%' . $wpdb->esc_like( 'httpaccept=' . trim( wp_strip_all_tags( $this->http_accept ) ) ) . '%' );
+		$searches = $this->build_custom_rule_search_terms();
+		if ( empty( $searches ) ) {
+			return false;
 		}
 
-		$bbcs_test_visitor = array();
-		if ( ! empty( $bbcs_search ) ) {
-			$query = "SELECT * FROM `{$wpdb->bbcs_rules}` WHERE " . implode( ' OR ', $bbcs_search ) . ' ORDER BY priority ASC';
-			// REVIEWER NOTE: Dynamic WHERE clause is built using $wpdb->prepare() for each filter to ensure all values are properly escaped.
-			// The final query string is assembled from individually prepared clauses. This pattern is secure and prevents SQL injection.
-			// Suppressing the warning with phpcs:ignore is required for dynamic filtering in WordPress plugins.
-            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter
-			$bbcs_test_visitor = $wpdb->get_results( $query, ARRAY_A );
+		if ( method_exists( $this, 'lazy_load_rules' ) ) {
+			$this->lazy_load_rules();
+		} elseif ( empty( $this->bbcs_custom_rules ) && class_exists( 'BotBlockerMultisite' ) ) {
+			$file = BotBlockerMultisite::getDataDir() . 'rules.php';
+			if ( file_exists( $file ) && function_exists( 'bbcs_safe_load_with_recovery' ) ) {
+				$data                    = bbcs_safe_load_with_recovery( $file );
+				$this->bbcs_custom_rules = $data['bbcs_custom_rule'] ?? array();
+			}
 		}
 
-		foreach ( $bbcs_test_visitor as $echo ) {
-			if ( $echo['disable'] == '0' ) {
-				$rule      = $echo['rule'];
-				$search    = isset( $echo['search'] ) ? $echo['search'] : null;
-				$rule_data = $echo;
+		$rule      = null;
+		$search    = null;
+		$rule_data = null;
 
-				break;
+		if ( ! empty( $this->bbcs_custom_rules ) ) {
+			foreach ( $this->bbcs_custom_rules as $item ) {
+				foreach ( $searches as $term ) {
+					if ( strpos( $item['search'], $term ) !== false ) {
+						$rule      = $item['rule'];
+						$search    = $item['search'];
+						$rule_data = $item;
+						break 2;
+					}
+				}
+			}
+		} else {
+			global $wpdb;
+			$clauses = array();
+			foreach ( $searches as $term ) {
+				$clauses[] = $wpdb->prepare( 'search LIKE %s', '%' . $wpdb->esc_like( $term ) . '%' );
+			}
+			if ( ! empty( $clauses ) ) {
+				$query = "SELECT `search`, `rule`, `id` FROM `{$wpdb->bbcs_rules}` WHERE disable = 0 AND (" . implode( ' OR ', $clauses ) . ') ORDER BY priority ASC LIMIT 1';
+				// REVIEWER NOTE: Dynamic WHERE clause is built using $wpdb->prepare() for each filter.
+				// The final query string is assembled from individually prepared clauses.
+				// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter
+				$row = $wpdb->get_row( $query, ARRAY_A );
+				if ( $row ) {
+					$rule      = $row['rule'];
+					$search    = $row['search'];
+					$rule_data = $row;
+				}
 			}
 		}
 
 		if ( $rule === null ) {
-
 			return false;
 		}
 
@@ -533,6 +558,8 @@ trait BotBlockerRulesTrait {
 				$this->set_gray_status( 'GRAY by IP rule: ' . $bbcs_ip_test['search'] );
 			}
 		}
+
+		BotBlockerFileRenderer::ensureHotBansIntegrity();
 
 		$hotBansFile = BotBlockerMultisite::getDataDir() . 'hot-bans.php';
 		if ( file_exists( $hotBansFile ) ) {

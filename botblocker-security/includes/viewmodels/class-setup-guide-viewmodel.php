@@ -14,6 +14,7 @@ require_once __DIR__ . '/class-chain-context-data.php';
 require_once BOTBLOCKER_DIR . 'includes/services/class-botblocker-health-service.php';
 require_once BOTBLOCKER_DIR . 'includes/helpers/class-health-score-helper.php';
 require_once BOTBLOCKER_DIR . 'includes/dto/class-status-item-data.php';
+require_once BOTBLOCKER_DIR . 'includes/class-botblocker-addons-market.php';
 require_once BOTBLOCKER_DIR . 'includes/dto/class-addon-market-item-data.php';
 
 final class Botblocker_SetupGuideViewModel {
@@ -125,9 +126,7 @@ final class Botblocker_SetupGuideViewModel {
 		$this->has_pro       = BotBlockerPro::isActive();
 		$this->has_cloud_api = class_exists( 'BotBlockerPro' ) && BotBlockerPro::isActive();
 
-		$early_addon               = class_exists( 'BotBlockerAddons' )
-			? BotBlockerAddons::hasActiveProvider( 'early_init_provider', 'bbcs_early_init_provider_active' )
-			: false;
+		$early_addon               = class_exists( 'BotBlockerGateway' ) && BotBlockerGateway::isRegistered( 'early_init' );
 		$this->early_addon_active  = $early_addon;
 		$this->early_available     = $this->has_cloud_api && $early_addon;
 
@@ -156,9 +155,9 @@ final class Botblocker_SetupGuideViewModel {
 		);
 
 		// Fetch marketplace add-ons for the add-ons card
-		$addons_ctx = BotBlockerUI::get_addons_context();
+		$addons_ctx = BotBlockerAddonsMarket::getContext();
 		$this->market_addons = array();
-		foreach ( $addons_ctx['market'] as $raw ) {
+		foreach ( $addons_ctx->market as $raw ) {
 			$this->market_addons[] = new Botblocker_AddonMarketItemData( $raw );
 		}
 

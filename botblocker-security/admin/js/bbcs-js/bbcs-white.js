@@ -259,7 +259,7 @@
             var data = JSON.parse(e.target.result);
             callback(data);
           } catch (err) {
-            alert(bbcsWhiteL10n.invalid_json + err.message);
+            window.bbcsRulesToast('error', bbcsWhiteL10n.invalid_json + err.message);
           }
         };
         reader.readAsText(file);
@@ -312,8 +312,9 @@
                   $("#editWhiteModal").modal("hide");
                   $("#botblocker-white").DataTable().ajax.reload();
                                     if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
+                  window.bbcsRulesToast('success', bbcsWhiteL10n.success_update);
                 } else {
-                  alert(bbcsWhiteL10n.failed_update + response.data);
+                  window.bbcsRulesToast('error', bbcsWhiteL10n.failed_update + response.data);
                 }
               },
             });
@@ -342,7 +343,7 @@
                   $("#editWhiteForm").find('[name="distance"]').val(data.distance);
                   $("#editWhiteModal").modal("show");
                 } else {
-                  alert(bbcsWhiteL10n.failed_load + response.data);
+                  window.bbcsRulesToast('error', bbcsWhiteL10n.failed_load + response.data);
                 }
               },
             });
@@ -363,6 +364,9 @@
                   if (response.success) {
                     $("#botblocker-white").DataTable().ajax.reload();
                                     if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
+                    window.bbcsRulesToast('success', bbcsWhiteL10n.success_delete);
+                  } else {
+                    window.bbcsRulesToast('error', response.data);
                   }
                 },
               });
@@ -384,8 +388,9 @@
                   $("#createWhiteModal").modal("hide");
                   $("#botblocker-white").DataTable().ajax.reload();
                                     if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
+                  window.bbcsRulesToast('success', bbcsWhiteL10n.success_create);
                 } else {
-                  alert(bbcsWhiteL10n.failed_create + response.data);
+                  window.bbcsRulesToast('error', bbcsWhiteL10n.failed_create + response.data);
                 }
               },
             });
@@ -409,8 +414,9 @@
                   document.body.appendChild(downloadLink);
                   downloadLink.click();
                   document.body.removeChild(downloadLink);
+                  window.bbcsRulesToast('success', bbcsWhiteL10n.success_export);
                 } else {
-                  alert(bbcsWhiteL10n.failed_export + response.data);
+                  window.bbcsRulesToast('error', bbcsWhiteL10n.failed_export + response.data);
                 }
               },
             });
@@ -435,8 +441,9 @@
                   document.body.appendChild(downloadLink);
                   downloadLink.click();
                   document.body.removeChild(downloadLink);
+                  window.bbcsRulesToast('success', bbcsWhiteL10n.success_export);
                 } else {
-                  alert(bbcsWhiteL10n.failed_export + response.data);
+                  window.bbcsRulesToast('error', bbcsWhiteL10n.failed_export + response.data);
                 }
               },
             });
@@ -463,8 +470,9 @@
                         showImportResultModal(response.data);
                         $("#botblocker-white").DataTable().ajax.reload();
                                     if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
+                        window.bbcsRulesToast('success', bbcsWhiteL10n.success_import);
                       } else {
-                        alert(bbcsWhiteL10n.failed_import + response.data);
+                        window.bbcsRulesToast('error', bbcsWhiteL10n.failed_import + response.data);
                       }
                     },
                   });
@@ -487,8 +495,9 @@
                   if (response.success) {
                     $("#botblocker-white").DataTable().ajax.reload();
                                     if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
+                    window.bbcsRulesToast('success', bbcsWhiteL10n.success_clear);
                   } else {
-                    alert(bbcsWhiteL10n.failed_clear + response.data);
+                    window.bbcsRulesToast('error', bbcsWhiteL10n.failed_clear + response.data);
                   }
                 },
               });
@@ -505,7 +514,7 @@
                     nonce: botblockerData.nonce,
                 },
                 success: function (response) {
-                    alert(response.data);
+                    window.bbcsRulesToast(response.success ? 'success' : 'error', response.data);
                 },
             });
         });
@@ -542,8 +551,9 @@
                                             showImportResultModal(response.data);
                                             $("#botblocker-white").DataTable().ajax.reload();
                                     if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
+                                            window.bbcsRulesToast('success', bbcsWhiteL10n.success_import);
                                         } else {
-                                            alert(bbcsWhiteL10n.failed_import + response.data);
+                                            window.bbcsRulesToast('error', bbcsWhiteL10n.failed_import + response.data);
                                         }
                                     },
                                 });

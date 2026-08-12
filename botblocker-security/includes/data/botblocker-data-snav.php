@@ -538,9 +538,6 @@ function bbcs_get_global_search_index(): array {
 							't' => __( 'Notification Types', 'botblocker-security' ),
 							's' => array(
 								array( __( 'Email', 'botblocker-security' ), 'email_notifications' ),
-								array( __( 'Telegram', 'botblocker-security' ), 'telegram_notifications' ),
-								array( __( 'Bot Token', 'botblocker-security' ), 'telegram_bot_token' ),
-								array( __( 'Chat ID', 'botblocker-security' ), 'telegram_chat_id' ),
 								array( __( 'Pusher', 'botblocker-security' ), 'pusher_notifications' ),
 							),
 						),
@@ -623,6 +620,19 @@ function bbcs_get_global_search_index(): array {
 								array( __( 'Redis Database Index', 'botblocker-security' ), 'redis_database' ),
 								array( __( 'Redis Authentication Password', 'botblocker-security' ), 'redis_password' ),
 								array( __( 'Redis Key Prefix', 'botblocker-security' ), 'redis_prefix' ),
+							),
+						),
+					),
+				),
+				array(
+					't'   => __( 'Cache', 'botblocker-security' ),
+					'tab' => 'cache',
+					'go'  => 'integrations',
+					'sg'  => array(
+						array(
+							't' => __( 'Cache Compatibility', 'botblocker-security' ),
+							's' => array(
+								array( __( 'Cache Compatibility Guide', 'botblocker-security' ), 'cache_compat_guide' ),
 							),
 						),
 					),

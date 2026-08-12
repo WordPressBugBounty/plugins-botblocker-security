@@ -63,11 +63,32 @@ class Botblocker_Activator {
 		}
 	}
 
+	/**
+	 * Drops all cached gates that would block critical logic from re-running
+	 * after a (re)activation: table verification, failed-migration backoff and
+	 * stale ASN database locks.
+	 */
+	public static function clearActivationGates(): void {
+		$gates = array(
+			'bbcs_tables_verified',
+			'bbcs_migration_backoff',
+			'bbcs_migration_failures',
+			'bbcs_asn_db_lock',
+		);
+		foreach ( $gates as $gate ) {
+			delete_transient( $gate );
+		}
+	}
+
 	private static function activateSite( bool $is_fresh_install_context ): void {
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 			error_log( '[BBCS DEBUG] [Activator] activateSite() called, fresh=' . ( $is_fresh_install_context ? '1' : '0' ) );
 		}
+
+		// Re-activation must re-run critical logic: drop the gates that would
+		// short-circuit table verification, failed migrations and stale locks.
+		self::clearActivationGates();
 
 		$is_fresh_install = $is_fresh_install_context && ! BotBlockerInstall::tablesExist();
 

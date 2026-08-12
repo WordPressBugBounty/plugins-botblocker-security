@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 //BBCS-MULTISITE
-require_once BOTBLOCKER_DIR . 'core-helpers.php';
+require_once BOTBLOCKER_DIR . 'core-helpers-shield.php';
 
 final class BotBlockerMultisite {
 
@@ -139,19 +139,35 @@ final class BotBlockerMultisite {
 		}
 	}
 
+	private static $cachedUploadsDir = null;
+
 	public static function getUploadsDir(): string {
+		if ( self::$cachedUploadsDir !== null ) {
+			return self::$cachedUploadsDir;
+		}
 		$dir = bbcs_get_protected_upload_dir();
 		if ( $dir === null || is_wp_error( $dir ) ) {
 			$dir = bbcs_create_protected_upload_dir();
 		}
 		if ( is_wp_error( $dir ) || ! is_string( $dir ) ) {
+			self::$cachedUploadsDir = '';
 			return '';
 		}
+		self::$cachedUploadsDir = $dir;
 		return $dir;
 	}
 
 	public static function getDataDir(): string {
-		return self::getUploadsDir() . 'data/';
+		if ( defined( 'BOTBLOCKER_DATA_DIR' ) ) {
+			return rtrim( (string) BOTBLOCKER_DATA_DIR, '/\\' ) . '/';
+		}
+		static $dataDir = null;
+		if ( $dataDir === null ) {
+			$dataDir = self::$cachedUploadsDir !== null
+				? self::$cachedUploadsDir . 'data/'
+				: self::getUploadsDir() . 'data/';
+		}
+		return $dataDir;
 	}
 
 	public static function getNetworkDataDir(): string {
@@ -180,7 +196,8 @@ final class BotBlockerMultisite {
 	}
 
 	public static function isAddonsLocalMode(): bool {
-		return defined( 'BOTBLOCKER_ADDONS_LOCAL' ) && BOTBLOCKER_ADDONS_LOCAL;
+		return defined( 'BOTBLOCKER_ADDONS_MODE' ) && defined( 'BOTBLOCKER_MODE_LOCAL' )
+			&& BOTBLOCKER_ADDONS_MODE === BOTBLOCKER_MODE_LOCAL;
 	}
 
 	public static function getPluginAddonsDir(): string {

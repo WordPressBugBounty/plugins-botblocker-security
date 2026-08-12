@@ -2,10 +2,10 @@
   "description": "Strings found in JS/JSON that need source-code fixes to be translatable via WordPress gettext.",
   "pot_path": "D:\\_DEV\\BotBlocker\\plugin\\wp-content\\plugins\\botblocker-security\\languages\\botblocker-security.pot",
   "summary": {
-    "php_unique": 3117,
-    "js_total": 97,
-    "js_duplicate": 66,
-    "js_missing": 31,
+    "php_unique": 2755,
+    "js_total": 93,
+    "js_duplicate": 64,
+    "js_missing": 29,
     "json_total": 20,
     "json_duplicate": 10,
     "json_missing": 10
@@ -18,31 +18,6 @@
       ],
       "status": "missing",
       "note": "JS-only — needs __() in PHP source + wp_localize_script()"
-    },
-    {
-      "msgid": "Unknown issue with ",
-      "references": [
-        "admin/js/botblocker-setup-wizard.js:457"
-      ],
-      "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
-    },
-    {
-      "msgid": "Silent Auto-Verify (No Captcha)",
-      "references": [
-        "admin/js/bbcs-js/bbcs-setup-wizard.js:347",
-        "admin/js/botblocker-setup-wizard.js:716"
-      ],
-      "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
-    },
-    {
-      "msgid": "Regular Plugin",
-      "references": [
-        "admin/js/botblocker-setup-wizard.js:723"
-      ],
-      "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
     },
     {
       "msgid": "Please enter a valid 6-digit code.",
@@ -430,14 +405,6 @@
       "note": "JS fallback — already in PHP __()"
     },
     {
-      "msgid": "Early Init cannot be enabled. Please ensure Cloud API and addon are active.",
-      "references": [
-        "admin/js/bbcs-js/bbcs-common.js:280"
-      ],
-      "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
-    },
-    {
       "msgid": "fa-solid fa-question-circle",
       "references": [
         "admin/js/bbcs-js/bbcs-hits.js:142",
@@ -525,8 +492,8 @@
       "references": [
         "admin/js/bbcs-js/bbcs-multipage.js:164"
       ],
-      "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "status": "missing",
+      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
     },
     {
       "msgid": "Add Rule",
@@ -598,6 +565,14 @@
         "admin/js/bbcs-js/bbcs-setup-wizard.js:255",
         "admin/js/bbcs-js/bbcs-setup-wizard.js:315",
         "admin/js/bbcs-js/bbcs-setup-wizard.js:398"
+      ],
+      "status": "duplicate",
+      "note": "JS fallback — already in PHP __()"
+    },
+    {
+      "msgid": "Silent Auto-Verify (No Captcha)",
+      "references": [
+        "admin/js/bbcs-js/bbcs-setup-wizard.js:347"
       ],
       "status": "duplicate",
       "note": "JS fallback — already in PHP __()"
@@ -812,15 +787,6 @@
         "admin/js/jsvectormap/maps/src/world.js:643",
         "admin/js/jsvectormap/maps/world-merc.js:1",
         "admin/js/jsvectormap/maps/world.js:1"
-      ],
-      "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
-    },
-    {
-      "msgid": "abbr article aside audio bdi canvas data datalist details dialog figcaption figure footer header hgroup main mark meter nav output progress section summary template time video",
-      "references": [
-        "admin/js/modernizr/modernizr.js:1253",
-        "admin/js/modernizr/modernizr.min.js:439"
       ],
       "status": "missing",
       "note": "JS-only — needs __() in PHP source + wp_localize_script()"

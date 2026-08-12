@@ -41,6 +41,7 @@ trait BotBlockerCoreTrait {
 			'paths.php'          => 'BotBlockerFileRenderer::renderPaths',
 			'rules.php'          => 'BotBlockerFileRenderer::renderRules',
 			'tls_fingerprints.php' => 'BotBlockerFileRenderer::renderTlsFingerprints',
+			'geo_countries.php'  => 'BotBlockerFileRenderer::renderCountries',
 			'addons.php'         => 'BotBlockerFileRenderer::renderAddons',
 		);
 
@@ -68,6 +69,7 @@ trait BotBlockerCoreTrait {
 		$this->bbcs_good_bots = array();
 		$this->bbcs_proxy     = array();
 		$this->bbcs_path      = array();
+		$this->bbcs_custom_rules = array();
 		$this->bbcs_tls_fingerprints = array();
 
 		$this->media_logo_botblocker = BOTBLOCKER_URL . 'admin/img/logo-small-transparent.webp';
@@ -121,6 +123,13 @@ trait BotBlockerCoreTrait {
 		if ( file_exists( BotBlockerMultisite::getDataDir() . 'llm_trusted.php' ) ) {
 			$llm_data       = bbcs_safe_load_with_recovery( BotBlockerMultisite::getDataDir() . 'llm_trusted.php' );
 			$this->bbcs_llm = $llm_data['bbcs_llm'] ?? $this->bbcs_llm;
+
+			if ( empty( $this->bbcs_llm ) && class_exists( 'BotBlockerLlmSync' ) ) {
+				if ( ! BotBlockerLlmSync::isEventQueued() && BotBlockerCache::fileGet( 'bbcs_llm_selfheal_throttle' ) === null ) {
+					BotBlockerCache::fileSet( 'bbcs_llm_selfheal_throttle', true, HOUR_IN_SECONDS );
+					BotBlockerLlmSync::scheduleSync( 'empty-file', 300 );
+				}
+			}
 		}
 	}
 
@@ -148,6 +157,18 @@ trait BotBlockerCoreTrait {
 		}
 	}
 
+	private function lazy_load_rules(): void {
+		static $loaded = false;
+		if ( $loaded ) {
+			return;
+		}
+		$loaded = true;
+		if ( file_exists( BotBlockerMultisite::getDataDir() . 'rules.php' ) ) {
+			$rules                   = bbcs_safe_load_with_recovery( BotBlockerMultisite::getDataDir() . 'rules.php' );
+			$this->bbcs_custom_rules = $rules['bbcs_custom_rule'] ?? $this->bbcs_custom_rules;
+		}
+	}
+
 	public function lazy_load_tls_fingerprints(): void {
 		static $loaded = false;
 		if ( $loaded ) {
@@ -155,8 +176,15 @@ trait BotBlockerCoreTrait {
 		}
 		$loaded = true;
 		if ( file_exists( BotBlockerMultisite::getDataDir() . 'tls_fingerprints.php' ) ) {
-			$tls_data                   = bbcs_safe_load_with_recovery( BotBlockerMultisite::getDataDir() . 'tls_fingerprints.php' );
+			$tls_data                    = bbcs_safe_load_with_recovery( BotBlockerMultisite::getDataDir() . 'tls_fingerprints.php' );
 			$this->bbcs_tls_fingerprints = $tls_data['bbcs_tls_fingerprints'] ?? $this->bbcs_tls_fingerprints;
+
+			if ( empty( $this->bbcs_tls_fingerprints ) && class_exists( 'BotBlockerTlsFingerprintsSync' ) ) {
+				if ( ! BotBlockerTlsFingerprintsSync::isEventQueued() && BotBlockerCache::fileGet( 'bbcs_tls_selfheal_throttle' ) === null ) {
+					BotBlockerCache::fileSet( 'bbcs_tls_selfheal_throttle', true, HOUR_IN_SECONDS );
+					BotBlockerTlsFingerprintsSync::scheduleSync( 'empty-file', 300 );
+				}
+			}
 		}
 	}
 
@@ -251,19 +279,26 @@ trait BotBlockerCoreTrait {
 		}
 	}
 
-	public function apply_daylight_saving(): void {
+	/**
+	 * Applies the DST hour bump when the configured base offset matches a zone
+	 * currently in daylight saving. Detection derives the zone's STANDARD
+	 * offset (the last non-DST state in the recent window) and compares it to
+	 * the base — DST deltas of 30min (Lord Howe), 1h and negative DST
+	 * (Ireland) all resolve correctly. The $now_ts parameter is a test seam.
+	 */
+	public function apply_daylight_saving( int $now_ts = 0 ): void {
 		if ( $this->settings->daylight_saving_time != 1 || ! empty( $this->_dst_applied ) ) {
 			return;
 		}
 		$this->_dst_applied = true;
+		$now_ts             = $now_ts > 0 ? $now_ts : time();
 		$base_seconds       = (int) ( floatval( $this->settings->admin_gmt_offset ) * 3600 );
-		$now_ts             = time();
 
 		$cache_key = 'bbcs_dst_offset_' . $base_seconds;
 		$cached    = get_transient( $cache_key );
 
 		if ( $cached === '1' ) {
-			$this->settings->admin_gmt_offset = (string) ( (int) $this->settings->admin_gmt_offset + 1 );
+			$this->settings->admin_gmt_offset = (string) ( floatval( $this->settings->admin_gmt_offset ) + 1 );
 			return;
 		}
 		if ( $cached === '0' ) {
@@ -271,13 +306,25 @@ trait BotBlockerCoreTrait {
 		}
 
 		$dst_active = false;
+		$window_start = $now_ts - 2 * 366 * DAY_IN_SECONDS;
 		foreach ( \DateTimeZone::listIdentifiers() as $tz_id ) {
 			$tz    = new \DateTimeZone( $tz_id );
-			$trans = $tz->getTransitions( $now_ts, $now_ts );
+			$trans = $tz->getTransitions( $window_start, $now_ts );
 			if ( empty( $trans ) ) {
 				continue;
 			}
-			if ( $trans[0]['isdst'] && ( $trans[0]['offset'] - 3600 ) === $base_seconds ) {
+			$current = $trans[ count( $trans ) - 1 ];
+			if ( empty( $current['isdst'] ) ) {
+				continue;
+			}
+			$standard = null;
+			for ( $i = count( $trans ) - 2; $i >= 0; $i-- ) {
+				if ( empty( $trans[ $i ]['isdst'] ) ) {
+					$standard = $trans[ $i ]['offset'];
+					break;
+				}
+			}
+			if ( $standard !== null && $standard === $base_seconds ) {
 				$dst_active = true;
 				break;
 			}
@@ -286,7 +333,7 @@ trait BotBlockerCoreTrait {
 		set_transient( $cache_key, $dst_active ? '1' : '0', HOUR_IN_SECONDS );
 
 		if ( $dst_active ) {
-			$this->settings->admin_gmt_offset = (string) ( (int) $this->settings->admin_gmt_offset + 1 );
+			$this->settings->admin_gmt_offset = (string) ( floatval( $this->settings->admin_gmt_offset ) + 1 );
 		}
 	}
 

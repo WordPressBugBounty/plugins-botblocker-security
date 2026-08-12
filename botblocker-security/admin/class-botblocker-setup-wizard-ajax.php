@@ -171,9 +171,7 @@ trait BotBlocker_SetupWizardAjaxTrait {
 
 		// Early Init also requires the Early Init addon to be active
 		if ( $init_mode === 'early' ) {
-			$early_addon_active = class_exists( 'BotBlockerAddons' )
-				? BotBlockerAddons::hasActiveProvider( 'early_init_provider', 'bbcs_early_init_provider_active' )
-				: false;
+			$early_addon_active = class_exists( 'BotBlockerGateway' ) && BotBlockerGateway::isRegistered( 'early_init' );
 			if ( ! $early_addon_active ) {
 				wp_send_json_error( __( 'Early Init requires the Early Init addon to be enabled. Please enable it on the Addons page.', 'botblocker-security' ) );
 			}

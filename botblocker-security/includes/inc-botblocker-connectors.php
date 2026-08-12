@@ -56,7 +56,15 @@ if ( ! function_exists( 'bbcs_register_wp_connector' ) ) {
 		);
 	}
 }
-add_action( 'wp_connectors_init', 'bbcs_register_wp_connector' );
+add_action( 'wp_connectors_init', function ( $registry ) {
+	if ( class_exists( 'BotBlocker' ) ) {
+		$BBCS = BotBlocker::getInstance();
+		if ( isset( $BBCS->settings->bbcs_wp_connectors_enabled ) && (int) $BBCS->settings->bbcs_wp_connectors_enabled !== 1 ) {
+			return;
+		}
+	}
+	bbcs_register_wp_connector( $registry );
+} );
 
 if ( ! function_exists( 'bbcs_enqueue_wp_connector_assets' ) ) {
 	function bbcs_enqueue_wp_connector_assets( string $hook_suffix ): void {

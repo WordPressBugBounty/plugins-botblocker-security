@@ -37,17 +37,16 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                     <strong><?php esc_html_e( 'PRO Feature:', 'botblocker-security' ); ?></strong>
                     <?php esc_html_e( 'Upgrade to Pro for the Behavioral Engine. It features advanced multi-signal scoring and decay-based reputation, preventing bots from spamming your site by tightening thresholds for repeat offenders.', 'botblocker-security' ); ?>
                     <br>
-                    <a href="<?php echo esc_url( $data->addons_url . '&focus=bbcs-behavior' ); ?>" class="bbcs-link bbcs-fs-xs" style="display:inline-block;margin-top:6px;"><?php esc_html_e( 'Upgrade to PRO', 'botblocker-security' ); ?></a>
+                    <a href="<?php echo esc_url( $data->addons_url . '&focus=' . apply_filters( 'bbcs_behavior_engine_tab_id', 'bbcs-behavior' ) ); ?>" class="bbcs-link bbcs-fs-xs" style="display:inline-block;margin-top:6px;"><?php esc_html_e( 'Upgrade to PRO', 'botblocker-security' ); ?></a>
                 </div>
             <?php else :
-                $bbcs_behavior_active = class_exists( 'BotBlockerAddons' )
-			&& BotBlockerAddons::hasActiveFeature( 'behavioral_analysis_engine' );
+                $bbcs_behavior_active = apply_filters( 'bbcs_has_behavioral_analysis_engine', false );
                 if ( $bbcs_behavior_active ) : ?>
                     <div class="bbcs-infocol-note bbcs-infocol-note--success">
                         <strong><?php esc_html_e( 'Pro Feature Active:', 'botblocker-security' ); ?></strong>
                         <?php esc_html_e( 'The Behavioral Engine is installed and active. You can customize the multi-signal thresholds, session limits, and IP reputation decay.', 'botblocker-security' ); ?>
                         <br>
-                        <a href="<?php echo esc_url( $data->addons_url . '#bbcs-behavior' ); ?>" class="bbcs-link bbcs-fs-xs" style="display:inline-block;margin-top:6px;"><?php esc_html_e( 'Configure Behavioral Engine', 'botblocker-security' ); ?></a>
+                        <a href="<?php echo esc_url( $data->addons_url . '#' . apply_filters( 'bbcs_behavior_engine_tab_id', 'bbcs-behavior' ) ); ?>" class="bbcs-link bbcs-fs-xs" style="display:inline-block;margin-top:6px;"><?php esc_html_e( 'Configure Behavioral Engine', 'botblocker-security' ); ?></a>
                     </div>
                 <?php else : ?>
                     <div class="bbcs-infocol-note bbcs-infocol-note--warn">

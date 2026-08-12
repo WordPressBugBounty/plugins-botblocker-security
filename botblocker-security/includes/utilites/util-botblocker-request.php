@@ -121,6 +121,19 @@ class BotBlockerWpRequest {
 	}
 
 	public static function ip2c( string $ip ) {
+		if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
+			return false;
+		}
+
+		$cache_key = 'bbcs_ip2c_' . md5( $ip );
+
+		if ( class_exists( 'BotBlockerCache' ) ) {
+			$cached = BotBlockerCache::getCacheData( $cache_key );
+			if ( $cached !== null ) {
+				return $cached['country'] ? $cached['country'] : false;
+			}
+		}
+
 		$url      = 'https://ip2c.org/?ip=' . rawurlencode( (string) $ip );
 		$args     = array(
 			'method'      => 'GET',
@@ -133,6 +146,9 @@ class BotBlockerWpRequest {
 		);
 		$response = wp_remote_get( $url, $args );
 		if ( is_wp_error( $response ) ) {
+			if ( class_exists( 'BotBlockerCache' ) ) {
+				BotBlockerCache::setCacheData( $cache_key, array( 'country' => false ), DAY_IN_SECONDS );
+			}
 			return false;
 		}
 		$http_code = wp_remote_retrieve_response_code( $response );
@@ -140,8 +156,15 @@ class BotBlockerWpRequest {
 		if ( $http_code === 200 && ! empty( $body ) ) {
 			$reply_ip2c = explode( ';', trim( $body ) );
 			if ( isset( $reply_ip2c[0] ) && $reply_ip2c[0] === '1' && isset( $reply_ip2c[1] ) ) {
-				return mb_strtoupper( $reply_ip2c[1] );
+				$country = mb_strtoupper( $reply_ip2c[1] );
+				if ( class_exists( 'BotBlockerCache' ) ) {
+					BotBlockerCache::setCacheData( $cache_key, array( 'country' => $country ), WEEK_IN_SECONDS );
+				}
+				return $country;
 			}
+		}
+		if ( class_exists( 'BotBlockerCache' ) ) {
+			BotBlockerCache::setCacheData( $cache_key, array( 'country' => false ), DAY_IN_SECONDS );
 		}
 		return false;
 	}

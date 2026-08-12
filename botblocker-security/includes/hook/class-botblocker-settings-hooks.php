@@ -23,6 +23,7 @@ class BotBlockerSettingsHooks {
 			'memcached_enable',
 			'redis_enable',
 			'bbcs_2fa_enable',
+			'bbcs_wp_connectors_enabled',
 		);
 
 		foreach ( $checkbox_fields as $field ) {
@@ -199,7 +200,6 @@ class BotBlockerSettingsHooks {
 			'autosave_admin_ip',
 			'skip_logged_in_users',
 			'daylight_saving_time',
-			'telegram_notifications',
 			'email_notifications',
 			'pusher_notifications',
 			'critical_load_notifications',

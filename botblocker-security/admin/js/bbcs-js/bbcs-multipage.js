@@ -301,6 +301,16 @@ jQuery(function ($) {
             setToggleState($mu, fs.mu_enable === 1 || fs.mu_enable === '1');
             $mu.attr('data-value', fs.mu_enable ? 1 : 0);
           }
+          // Live-update the MU loader file pill without a page reload.
+          if (setting === 'mu_enable' && resp.data && typeof resp.data.mu_loader_exists !== 'undefined') {
+            var $pill = $('#bbcs-mu-loader-pill');
+            if ($pill.length) {
+              var present = !!resp.data.mu_loader_exists;
+              $pill.toggleClass('bbcs-pill--green', present).toggleClass('bbcs-pill--red', !present);
+              $pill.attr('data-present', present ? '1' : '0');
+              $pill.text(present ? (bbcsMultipageL10n.mu_loader_present || 'present') : (bbcsMultipageL10n.mu_loader_missing || 'missing'));
+            }
+          }
         }
       },
       error: function () {

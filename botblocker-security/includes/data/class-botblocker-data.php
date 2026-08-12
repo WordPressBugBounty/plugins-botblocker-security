@@ -12,6 +12,32 @@ class BotBlockerData {
 	}
 
 	public static function getBlockedCountries(): array {
+		global $wpdb;
+
+		$blockedCountries = array();
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		if ( ! empty( $wpdb->bbcs_countries ) && $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $wpdb->bbcs_countries ) ) ) ) {
+			$rows = $wpdb->get_col(
+				$wpdb->prepare(
+					"SELECT `code` FROM `{$wpdb->bbcs_countries}` WHERE `disable` = %d AND `rule` = %s ORDER BY `priority` ASC",
+					0,
+					'block'
+				)
+			);
+			foreach ( (array) $rows as $code ) {
+				$code = strtoupper( trim( (string) $code ) );
+				if ( preg_match( '/^[A-Z]{2}$/', $code ) ) {
+					$blockedCountries[] = $code;
+				}
+			}
+			$blockedCountries = array_values( array_unique( $blockedCountries ) );
+			if ( ! empty( $blockedCountries ) ) {
+				return $blockedCountries;
+			}
+		}
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+		// Bridge until migration 2.10 moves the legacy option into the table.
 		$blockedCountries = BotBlockerMultisite::getOption( 'bbcs_blocked_countries', array() );
 		if ( is_string( $blockedCountries ) ) {
 			$decoded = json_decode( $blockedCountries, true );
@@ -35,11 +61,7 @@ class BotBlockerData {
 			$blockedCountries = array();
 		}
 
-		if ( ! empty( $blockedCountries ) ) {
-			return $blockedCountries;
-		}
-
-		return array();
+		return $blockedCountries;
 	}
 
 	public static function getXRobotTags(): array {
@@ -127,7 +149,14 @@ class BotBlockerData {
 	public static function getBotSignatures(): array {
 		static $decoded = null;
 		if ( $decoded === null ) {
-			$raw = include BOTBLOCKER_DIR . 'data/base/bot-signatures.php';
+			$processed = BotBlockerMultisite::getDataDir() . 'bot-signatures-processed.php';
+			if ( file_exists( $processed ) ) {
+				$decoded = bbcs_safe_load_data_file( $processed );
+				if ( ! empty( $decoded ) ) {
+					return $decoded;
+				}
+			}
+			$raw     = include BOTBLOCKER_DIR . 'data/base/bot-signatures.php';
 			$decoded = array();
 			foreach ( $raw as $signature ) {
 				$s = preg_replace( '/\s+/', ' ', trim( urldecode( $signature ) ) );

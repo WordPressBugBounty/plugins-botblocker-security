@@ -209,5 +209,93 @@
                 }
             }
         });
+
+        loadMarketCatalog();
     });
+
+    function updateUpdatesButton(count) {
+        var $btn = $('#bbcs-update-all');
+        if (!$btn.length) { return; }
+        count = parseInt(count, 10) || 0;
+        if (count > 0) {
+            var tpl = (window.bbcsAddonsL10n && bbcsAddonsL10n.update_all) || 'Update All (%d)';
+            $btn.removeAttr('hidden').text(tpl.replace('%d', String(count)));
+        } else {
+            $btn.attr('hidden', true);
+        }
+    }
+
+    function patchInstalledCards(market) {
+        if (!market || !market.length) { return; }
+        market.forEach(function (item) {
+            if (!item || !item.is_installed || !item.slug) { return; }
+            var $card = $('.bbcs-addon[data-addon-slug="' + item.slug.replace(/[^a-zA-Z0-9_-]/g, '') + '"]');
+            if (!$card.length) { return; }
+            if (item.update_avail) {
+                if (!$card.find('.bbcs-tag--green').filter(function () {
+                    return $(this).hasClass('bbcs-tag--update');
+                }).length) {
+                    $card.find('.bbcs-addon-head-actions').append(
+                        '<span class="bbcs-tag bbcs-tag--green bbcs-tag--update">' + $('<span>').text((window.bbcsAddonsL10n && bbcsAddonsL10n.update_tag) || 'Update').html() + '</span>'
+                    );
+                }
+            }
+            if (item.remote_ver) {
+                var $ver = $card.find('.bbcs-addon-ver');
+                if ($ver.length && !$ver.hasClass('bbcs-ver-patched')) {
+                    var localVer = ($ver.text().match(/v([^\s]+)/) || [])[1] || '';
+                    if (localVer && localVer !== item.remote_ver) {
+                        $ver.addClass('bbcs-ver-patched')
+                            .append('<span class="bbcs-dim"> &rarr; v' + $('<span>').text(item.remote_ver).html() + '</span>');
+                    }
+                }
+            }
+        });
+    }
+
+    function loadMarketCatalog() {
+        var $grid = $('#bbcs-market-grid');
+        if (!$grid.length || String($grid.attr('data-bbcs-market-lazy')) !== '1') { return; }
+        if (typeof botblockerData === 'undefined' || !botblockerData.ajaxurl) { return; }
+
+        $.ajax({
+            url: botblockerData.ajaxurl,
+            method: 'POST',
+            dataType: 'json',
+            data: {
+                action: 'bbcs_load_market',
+                nonce: botblockerData.nonce
+            }
+        }).done(function (res) {
+            $grid.find('.bbcs-addon-skeleton').remove();
+            $('#bbcs-market-catalog').remove();
+
+            if (!res || !res.success) {
+                showNotice('warning', (window.bbcsAddonsL10n && bbcsAddonsL10n.catalog_error) || 'Failed to load add-on catalog.');
+                return;
+            }
+
+            var data = res.data || {};
+            if (data.message) {
+                var $notice = $('#bbcs-market-notice');
+                if ($notice.length) {
+                    $notice.removeAttr('hidden').addClass('bbcs-card bbcs-card-pad bbcs-amber-card bbcs-mb-3').text(data.message);
+                } else {
+                    showNotice('warning', data.message);
+                }
+            }
+
+            if (data.catalog_html) {
+                $grid.append(data.catalog_html);
+            } else if (data.catalog_status === 'unavailable') {
+                showNotice('warning', data.message || ((window.bbcsAddonsL10n && bbcsAddonsL10n.catalog_unavailable) || 'Add-on catalog is currently unavailable.'));
+            }
+
+            patchInstalledCards(data.market);
+            updateUpdatesButton(data.updates_count);
+        }).fail(function () {
+            $grid.find('.bbcs-addon-skeleton').remove();
+            showNotice('warning', (window.bbcsAddonsL10n && bbcsAddonsL10n.catalog_error) || 'Failed to load add-on catalog.');
+        });
+    }
 })(jQuery);

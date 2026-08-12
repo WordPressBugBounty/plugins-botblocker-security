@@ -125,6 +125,7 @@ return static function ( Botblocker_ToolsViewModel $data, bool $isActive ): void
 						->render();
 					ActionButton::make()
 						->withId( 'bbcs-update-asn-database' )
+						->withDataAttribute( 'anchor', 'bbcs-update-asn-database' )
 						->withIcon( 'cloud-download' )
 						->withLabel( __( 'Update ASN database', 'botblocker-security' ) )
 						->withTooltip( __( 'Schedule an immediate background download of the latest ASN (autonomous system) database from BotBlocker servers.', 'botblocker-security' ) )

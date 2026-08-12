@@ -9,11 +9,11 @@ class BotBlockerInstall {
 
 	public static function checkInstall(): void {
 		if ( get_option( 'bbcs_db_version' ) === BOTBLOCKER_DB_VERSION ) {
-			if ( get_transient( 'bbcs_tables_verified' ) ) {
+			if ( get_transient( 'bbcs_tables_verified' ) === BOTBLOCKER_DB_VERSION ) {
 				return;
 			}
 			if ( self::tablesExist() ) {
-				set_transient( 'bbcs_tables_verified', true, HOUR_IN_SECONDS );
+				set_transient( 'bbcs_tables_verified', BOTBLOCKER_DB_VERSION, HOUR_IN_SECONDS );
 				return;
 			}
 		}
@@ -35,6 +35,8 @@ class BotBlockerInstall {
 			} else {
 				self::initDbAndFiles();
 			}
+
+			set_transient( 'bbcs_tables_verified', BOTBLOCKER_DB_VERSION, HOUR_IN_SECONDS );
 		} else {
 			BotBlockerCounters::ensureRow();
 			BotBlockerMigration::maybeUpgradeDb();
@@ -42,12 +44,17 @@ class BotBlockerInstall {
 	}
 
 	public static function initDbAndFiles(): void {
+		// Fresh only: watermark 0. Upgrades use migration timestamp; never set watermark in createTables().
+		update_option( BotBlockerStore::FILTERED_COLUMN_OPTION, '1', true );
+		update_option( BotBlockerStore::FILTERED_WATERMARK_OPTION, 0, true );
+
 		BotBlockerInstallIp::addServerIPs();
 		BotBlockerInstallIp::addAdminIPs();
 		try {
 			BotBlockerInstallIp::fetchAndStoreParentIPs();
 		} catch ( \Exception $e ) {
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 				error_log( '[BBCS DEBUG] [Install] fetchAndStoreParentIPs failed: ' . $e->getMessage() );
 			}
 		}
@@ -187,6 +194,11 @@ class BotBlockerInstall {
 		}
 
 		if ( is_float( $value ) ) {
+			if ( ! is_finite( $value ) ) {
+				// number_format(INF/NAN) === 'inf'/'nan' — bare words fatal the
+				// generated data file include. Export 0 for non-finite floats.
+				return '0';
+			}
 			$repr = rtrim( rtrim( number_format( $value, 12, '.', '' ), '0' ), '.' );
 			return $repr === '' ? '0' : $repr;
 		}
@@ -233,10 +245,29 @@ class BotBlockerInstall {
 		self::createPtrcacheTable();
 		self::createLlmTrustedTable();
 		self::createTlsFingerprintsTable();
+		self::createCountriesTable();
 		self::createCountersTable();
 		self::createDailySummaryTable();
 		self::createPageFiltersTable();
 		self::createFingerprintTable();
+		self::createSessionsTable();
+		// Watermark set by initDbAndFiles() (fresh) or migration 2.10.0 (upgrade) — not here.
+		self::markFilteredColumnReady();
+	}
+
+	private static function markFilteredColumnReady(): void {
+		global $wpdb;
+		$tables = array( $wpdb->bbcs_hits, $wpdb->bbcs_hits_suspicious, $wpdb->bbcs_hits_cloud );
+		$ok     = true;
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		foreach ( $tables as $table ) {
+			if ( empty( $table ) || ! $wpdb->get_var( "SHOW COLUMNS FROM `{$table}` LIKE 'filtered'" ) ) {
+				$ok = false;
+				break;
+			}
+		}
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		update_option( BotBlockerStore::FILTERED_COLUMN_OPTION, $ok ? '1' : '0', true );
 	}
 
 	public static function createHitsTable(): void {
@@ -299,6 +330,7 @@ class BotBlockerInstall {
 	        `recaptcha` TEXT NOT NULL,
 	        `wbot` TEXT NOT NULL,
 	        `fp` TEXT NOT NULL,
+	        `filtered` TINYINT UNSIGNED NOT NULL DEFAULT 0,
 	        UNIQUE KEY cid (cid(191)),
 	        KEY i_ip (ip(191)),
 	        KEY i_passed (passed),
@@ -368,6 +400,7 @@ class BotBlockerInstall {
 	        `recaptcha` TEXT NOT NULL,
 	        `wbot` TEXT NOT NULL,
 	        `fp` TEXT NOT NULL,
+	        `filtered` TINYINT UNSIGNED NOT NULL DEFAULT 0,
 	        UNIQUE KEY cid (cid(191)),
 	        KEY i_ip (ip(191)),
 	        KEY i_passed (passed),
@@ -437,6 +470,7 @@ class BotBlockerInstall {
 	        `recaptcha` TEXT NOT NULL,
 	        `wbot` TEXT NOT NULL,
 	        `fp` TEXT NOT NULL,
+	        `filtered` TINYINT UNSIGNED NOT NULL DEFAULT 0,
 	        UNIQUE KEY cid (cid(191)),
 	        KEY i_ip (ip(191)),
 	        KEY i_passed (passed),
@@ -607,7 +641,8 @@ class BotBlockerInstall {
 	        `ptr` VARCHAR(255) NOT NULL DEFAULT '',
 	        `date` INTEGER NOT NULL DEFAULT 0,
 	        `etime` TEXT,
-	        PRIMARY KEY (ip)
+	        PRIMARY KEY (ip),
+	        KEY i_date (date)
 	    ) $charset_collate;";
 
 		dbDelta( $sql );
@@ -718,6 +753,7 @@ class BotBlockerInstall {
 			$wpdb->bbcs_asn,
 			$wpdb->bbcs_llm_trusted,
 			$wpdb->bbcs_tls_fingerprints,
+			$wpdb->bbcs_countries,
 		);
 
 		$requiredTables = array_values( array_unique( array_filter( $requiredTables, 'is_string' ) ) );
@@ -809,6 +845,25 @@ class BotBlockerInstall {
 		dbDelta( $sql );
 	}
 
+	public static function createCountriesTable(): void {
+		global $wpdb;
+		$charset_collate = $wpdb->get_charset_collate();
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+
+		$sql = "CREATE TABLE `{$wpdb->bbcs_countries}` (
+	        `id` INTEGER NOT NULL AUTO_INCREMENT,
+	        PRIMARY KEY  (`id`),
+	        `priority` INTEGER NOT NULL DEFAULT 50,
+	        `code` VARCHAR(2) NOT NULL,
+	        `rule` VARCHAR(10) NOT NULL DEFAULT 'block',
+	        `comment` VARCHAR(255) NOT NULL DEFAULT '',
+	        `disable` TINYINT(1) NOT NULL DEFAULT 0,
+	        UNIQUE KEY `code` (`code`)
+	    ) $charset_collate;";
+
+		dbDelta( $sql );
+	}
+
 	public static function createFingerprintTable(): void {
 		global $wpdb;
 		$charset_collate = $wpdb->get_charset_collate();
@@ -825,12 +880,28 @@ class BotBlockerInstall {
 	        `last_country` VARCHAR(2) NOT NULL DEFAULT '',
 	        `status` VARCHAR(16) NOT NULL DEFAULT 'watch',
 	        UNIQUE KEY fingerprint (fingerprint),
-	        KEY i_ip (ip),
-	        KEY i_block_count (block_count),
-	        KEY i_status (status)
+	        KEY i_status_last_seen (status, last_seen)
 	    ";
 
 		dbDelta( "CREATE TABLE `{$wpdb->bbcs_fingerprint}` ($structure) $charset_collate;" );
+	}
+
+	public static function createSessionsTable(): void {
+		global $wpdb;
+		$charset_collate = $wpdb->get_charset_collate();
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+
+		$sql = "CREATE TABLE `{$wpdb->bbcs_sessions}` (
+			`session_id` CHAR(32) NOT NULL,
+			`uid` VARCHAR(30) NOT NULL DEFAULT '',
+			`ip` VARCHAR(45) NOT NULL DEFAULT '',
+			`created` INT UNSIGNED NOT NULL DEFAULT 0,
+			`expires` INT UNSIGNED NOT NULL DEFAULT 0,
+			PRIMARY KEY (session_id),
+			KEY i_expires (expires)
+		) $charset_collate;";
+
+		dbDelta( $sql );
 	}
 
 	public static function createSaltFile( $return_salt_bb = false ) {
@@ -952,6 +1023,7 @@ class BotBlockerInstall {
 			BotBlockerMultisite::getDataDir() . 'paths.php',
 			BotBlockerMultisite::getDataDir() . 'rules.php',
 			BotBlockerMultisite::getDataDir() . 'ip.php',
+			BotBlockerMultisite::getDataDir() . 'geo_countries.php',
 		);
 		foreach ( $files as $file ) {
 			if ( file_exists( $file ) ) {
@@ -966,6 +1038,22 @@ class BotBlockerInstall {
 	 */
 	public static function setEarlyInitEnabled( bool $enabled, array $context = array() ): bool {
 		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$current = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT `value` FROM `{$wpdb->bbcs_settings}` WHERE `key` = %s",
+				'early_init_enable'
+			)
+		);
+		$already = ( $current !== null && ( (string) $current === '1' ) === $enabled );
+		if ( $already ) {
+			if ( ! $enabled && ! empty( $context['force_cleanup'] ) ) {
+				do_action( 'bbcs_early_init_toggle', false, $context );
+				return apply_filters( 'bbcs_early_init_files_ok', true, false );
+			}
+			return true;
+		}
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->replace(

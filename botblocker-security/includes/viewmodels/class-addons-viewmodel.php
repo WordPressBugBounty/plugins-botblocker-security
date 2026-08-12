@@ -7,10 +7,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once __DIR__ . '/class-header-viewmodel.php';
 require_once __DIR__ . '/class-sidebar-viewmodel.php';
+require_once BOTBLOCKER_DIR . 'includes/class-botblocker-addons-market.php';
 require_once BOTBLOCKER_DIR . 'includes/dto/class-dashboard-urls.php';
 require_once BOTBLOCKER_DIR . 'includes/dto/class-addon-market-item-data.php';
 require_once BOTBLOCKER_DIR . 'includes/dto/class-addon-installed-item-data.php';
 require_once BOTBLOCKER_DIR . 'includes/dto/class-addon-tab-data.php';
+require_once BOTBLOCKER_DIR . 'includes/dto/class-addon-market-card-data.php';
 require_once BOTBLOCKER_DIR . 'includes/components/class-botblocker-tab-item.php';
 
 use BotBlocker\Component\TabItem;
@@ -41,6 +43,9 @@ final class Botblocker_AddonsViewModel {
 	/** @var bool */
 	public $addons_local_mode;
 
+	/** @var bool */
+	public $market_lazy;
+
 	/** @var int */
 	public $updates_count;
 
@@ -56,7 +61,16 @@ final class Botblocker_AddonsViewModel {
 	/** @var Botblocker_AddonTabData[] */
 	public $addon_tabs;
 
+	/** @var Botblocker_AddonMarketCardData[] */
+	public $marketplace_installed_cards;
+
+	/** @var Botblocker_AddonMarketCardData[] */
+	public $marketplace_available_cards;
+
 	public function __construct() {
+		if ( ! class_exists( 'Botblocker_Admin' ) ) {
+			require_once BOTBLOCKER_DIR . 'admin/class-botblocker-admin.php';
+		}
 		$BBCSA = Botblocker_Admin::getInstance();
 
 		$this->header  = new Botblocker_HeaderViewModel();
@@ -76,16 +90,25 @@ final class Botblocker_AddonsViewModel {
 
 		$this->docs_url = BOTBLOCKER_DOCS_URL;
 
-		$ctx              = BotBlockerUI::get_addons_context();
-		$this->active     = $ctx['active'];
-		$this->addons_locked = $ctx['addons_locked'];
-		$this->has_cloud_api = $ctx['has_cloud_api'];
-		$this->addons_local_mode = ! empty( $ctx['addons_local_mode'] );
-		$this->updates_count = $ctx['updates_count'];
+		$this->addons_local_mode = BotBlockerAddons::isLocalMode();
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$force_requested = isset( $_GET['force'] ) && '1' === sanitize_text_field( wp_unslash( $_GET['force'] ) );
+		if ( $force_requested ) {
+			BotBlockerAddonsMarket::flushActiveChannelCacheIfDev();
+		}
+
+		$this->market_lazy      = ! $this->addons_local_mode && ! BotBlockerAddonsMarket::hasCache();
+
+		$ctx                 = BotBlockerAddonsMarket::getContext( $this->market_lazy );
+		$this->active        = $ctx->active;
+		$this->addons_locked = $ctx->addons_locked;
+		$this->has_cloud_api = $ctx->has_cloud_api;
+		$this->updates_count = $ctx->updates_count;
 
 		// Convert raw market arrays to typed DTOs.
 		$this->market = array();
-		foreach ( $ctx['market'] as $raw ) {
+		foreach ( $ctx->market as $raw ) {
 			$this->market[] = new Botblocker_AddonMarketItemData( $raw );
 		}
 
@@ -96,8 +119,64 @@ final class Botblocker_AddonsViewModel {
 
 		// Convert raw installed addons to typed DTOs.
 		$this->addons = array();
-		foreach ( $ctx['addons'] as $slug => $raw ) {
+		foreach ( $ctx->addons as $slug => $raw ) {
 			$this->addons[ $slug ] = new Botblocker_AddonInstalledItemData( $slug, $raw );
+		}
+
+		$installed_cards = array();
+		$addons_url      = $this->urls->addons;
+		foreach ( $this->market as $item ) {
+			if ( ! $item->is_installed ) {
+				continue;
+			}
+			$local               = isset( $this->addons[ $item->slug ] ) ? $this->addons[ $item->slug ] : null;
+			$card                = Botblocker_AddonMarketCardData::from_installed_market( $item, $local, $addons_url );
+			$installed_cards[]   = array(
+				'name' => $card->name,
+				'card' => $card,
+			);
+		}
+		foreach ( $this->addons as $slug => $addon ) {
+			if ( isset( $this->marketBySlug[ $slug ] ) ) {
+				continue;
+			}
+			$card              = Botblocker_AddonMarketCardData::from_local_installed( $addon, $addons_url );
+			$installed_cards[] = array(
+				'name' => $card->name,
+				'card' => $card,
+			);
+		}
+		usort(
+			$installed_cards,
+			static function ( $a, $b ) {
+				return strcasecmp( $a['name'], $b['name'] );
+			}
+		);
+		$this->marketplace_installed_cards = array();
+		foreach ( $installed_cards as $row ) {
+			$this->marketplace_installed_cards[] = $row['card'];
+		}
+
+		$available_cards = array();
+		foreach ( $this->market as $item ) {
+			if ( $item->is_installed ) {
+				continue;
+			}
+			$card              = Botblocker_AddonMarketCardData::from_available_market( $item );
+			$available_cards[] = array(
+				'name' => $card->name,
+				'card' => $card,
+			);
+		}
+		usort(
+			$available_cards,
+			static function ( $a, $b ) {
+				return strcasecmp( $a['name'], $b['name'] );
+			}
+		);
+		$this->marketplace_available_cards = array();
+		foreach ( $available_cards as $row ) {
+			$this->marketplace_available_cards[] = $row['card'];
 		}
 
 		// Build addon settings tabs - only when add-ons are unlocked (PRO or local mode).
@@ -123,6 +202,13 @@ final class Botblocker_AddonsViewModel {
 				}
 				$this->addon_tabs[ $bbcs_slug ] = $bbcs_tab;
 			}
+
+			uasort(
+				$this->addon_tabs,
+				static function ( $a, $b ) {
+					return strcasecmp( $a->name, $b->name );
+				}
+			);
 		}
 
 		// Vertical sidebar nav: per-addon settings tabs + market items (non-PRO).
@@ -159,6 +245,13 @@ final class Botblocker_AddonsViewModel {
 				$items[] = $tab;
 			}
 		}
+
+		usort(
+			$items,
+			static function ( $a, $b ) {
+				return strcasecmp( $a->label, $b->label );
+			}
+		);
 
 		$this->nav_groups = array(
 			array(

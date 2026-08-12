@@ -25,7 +25,7 @@ function bbcs_dedup_early_phase_toggles( string $changed_key, int $changed_val )
 	$early_key = 'early_init_enable';
 	$mu_key    = 'mu_enable';
 
-	if ( $changed_val === 1 && $changed_key !== 'disable' ) {
+	if ( $changed_val === 1 && $changed_key !== 'disable' && ( $changed_key === $early_key || $changed_key === $mu_key ) ) {
 		// Enabling one → force the other off.
 		$other_key = ( $changed_key === $mu_key ) ? $early_key : $mu_key;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching

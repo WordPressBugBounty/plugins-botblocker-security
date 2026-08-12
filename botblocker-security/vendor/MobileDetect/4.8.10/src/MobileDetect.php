@@ -700,7 +700,7 @@ class MobileDetect
         'JavaOS' => 'J2ME/|\bMIDP\b|\bCLDC\b',
         // '|Java/' produces bug #135
         'webOS' => 'webOS|hpwOS',
-        'badaOS' => 'BotBlocker\Vendor\bBada\b',
+        'badaOS' => 'BotBlocker\Vendor\BotBlocker\Vendor\BotBlocker\Vendor\BotBlocker\Vendor\BotBlocker\Vendor\BotBlocker\Vendor\BotBlocker\Vendor\bBada\b',
         'BREWOS' => 'BREW',
         'HarmonyOS' => 'HarmonyOS',
     ];
@@ -716,7 +716,7 @@ class MobileDetect
         //'Vivaldi'         => 'Vivaldi',
         // @reference: https://developers.google.com/chrome/mobile/docs/user-agent
         'Chrome' => '\bCrMo\b|CriOS.*Mobile|Android.*Chrome/[.0-9]* Mobile',
-        'Dolfin' => 'BotBlocker\Vendor\bDolfin\b',
+        'Dolfin' => 'BotBlocker\Vendor\BotBlocker\Vendor\BotBlocker\Vendor\BotBlocker\Vendor\BotBlocker\Vendor\BotBlocker\Vendor\BotBlocker\Vendor\bDolfin\b',
         'Opera' => 'Opera.*Mini|Opera.*Mobi|Android.*Opera|Mobile.*OPR/[0-9.]+$|Coast/[0-9.]+',
         'Skyfire' => 'Skyfire',
         // Added "Edge on iOS" https://github.com/serbanghita/Mobile-Detect/issues/764
@@ -733,7 +733,7 @@ class MobileDetect
         // http://en.wikipedia.org/wiki/Midori_(web_browser)
         //'Midori'          => 'midori',
         //'Tizen'           => 'Tizen',
-        'WeChat' => 'BotBlocker\Vendor\bMicroMessenger\b',
+        'WeChat' => 'BotBlocker\Vendor\BotBlocker\Vendor\BotBlocker\Vendor\BotBlocker\Vendor\BotBlocker\Vendor\BotBlocker\Vendor\BotBlocker\Vendor\bMicroMessenger\b',
         'UCBrowser' => 'UC.*Browser|UCWEB',
         'baiduboxapp' => 'baiduboxapp',
         'baidubrowser' => 'baidubrowser',
@@ -743,7 +743,7 @@ class MobileDetect
         // https://github.com/serbanghita/Mobile-Detect/issues/752
         // 'Puffin'            => 'Puffin',
         // http://mercury-browser.com/index.html
-        'Mercury' => 'BotBlocker\Vendor\bMercury\b',
+        'Mercury' => 'BotBlocker\Vendor\BotBlocker\Vendor\BotBlocker\Vendor\BotBlocker\Vendor\BotBlocker\Vendor\BotBlocker\Vendor\BotBlocker\Vendor\bMercury\b',
         // http://en.wikipedia.org/wiki/Obigo_Browser
         'ObigoBrowser' => 'Obigo',
         // http://en.wikipedia.org/wiki/NetFront

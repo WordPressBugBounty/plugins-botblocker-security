@@ -48,18 +48,18 @@
             success: function (response) {
                 $btn.prop('disabled', false).html($btn.data('bbcs-original-html'));
                 if (response.success) {
-                    alert(response.data.message || bbcsLLML10n.sync_scheduled);
+                    window.bbcsRulesToast('success', response.data.message || bbcsLLML10n.sync_scheduled);
                     if ($.fn.DataTable.isDataTable('#botblocker-llm')) {
                         $('#botblocker-llm').DataTable().ajax.reload(null, false);
                     if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
                     }
                 } else {
-                    alert(bbcsLLML10n.sync_failed + (response.data || ''));
+                    window.bbcsRulesToast('error', bbcsLLML10n.sync_failed + (response.data || ''));
                 }
             },
             error: function () {
                 $btn.prop('disabled', false).html($btn.data('bbcs-original-html'));
-                alert(bbcsLLML10n.sync_failed);
+                window.bbcsRulesToast('error', bbcsLLML10n.sync_failed);
             }
         });
     }
@@ -86,13 +86,14 @@
                     a.click();
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
+                    window.bbcsRulesToast('success', bbcsLLML10n.success_download);
                 } else {
-                    alert(bbcsLLML10n.failed_update);
+                    window.bbcsRulesToast('error', bbcsLLML10n.failed_update);
                 }
             },
             error: function () {
                 $btn.prop('disabled', false).html($btn.data('bbcs-original-html'));
-                alert(bbcsLLML10n.failed_update);
+                window.bbcsRulesToast('error', bbcsLLML10n.failed_update);
             }
         });
     }
@@ -103,7 +104,7 @@
             type: 'POST',
             data: { action: 'bbcs_llm_to_php', nonce: botblockerData.nonce },
             success: function (response) {
-                alert(response.data);
+                window.bbcsRulesToast(response.success ? 'success' : 'error', response.data);
             }
         });
     }
@@ -288,13 +289,14 @@
                     if (response.success) {
                         $('#botblocker-llm').DataTable().ajax.reload(null, false);
                     if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
+                        window.bbcsRulesToast('success', bbcsLLML10n.success_toggle);
                     } else {
-                        alert(response.data || bbcsLLML10n.failed_update);
+                        window.bbcsRulesToast('error', response.data || bbcsLLML10n.failed_update);
                     }
                 },
                 error: function () {
                     $btn.prop('disabled', false);
-                    alert(bbcsLLML10n.failed_update);
+                    window.bbcsRulesToast('error', bbcsLLML10n.failed_update);
                 }
             });
         });

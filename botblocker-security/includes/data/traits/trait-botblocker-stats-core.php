@@ -9,6 +9,7 @@ trait BotBlockerStatsCoreTrait {
 
 	public static function getStatistics( int $period_days = 7 ): void {
 		global $wpdb;
+		BotBlockerDb::ensureUtcSession();
 		$BBCS = BotBlocker::getInstance();
 
 		$cache_key = 'bbcs_get_statistics';
@@ -31,10 +32,13 @@ trait BotBlockerStatsCoreTrait {
 		$today_start                 = ( clone $current_date )->setTime( 0, 0, 0 );
 		$today_end                   = ( clone $current_date )->setTime( 23, 59, 59 );
 		$period_start                = ( clone $today_start )->modify( '-' . ( $period_days - 1 ) . ' days' );
+		$today_ts                    = $today_start->getTimestamp();
+		$period_ts                   = $period_start->getTimestamp();
 		[$ip_not_in_sql, $ip_params] = BotBlockerDb::getIPNotLikeSQL();
 		// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
 		// Exclusion fragment uses only internally controlled self‑IPs and is bound via prepare; no user data flows here.
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$today_pf_col  = BotBlockerDb::pageFilterColumn( $today_ts );
 		$today_results = $wpdb->get_row(
 			$wpdb->prepare(
 				"
@@ -49,14 +53,16 @@ trait BotBlockerStatsCoreTrait {
 					COUNT(DISTINCT CASE WHEN ch.hit = 1 AND ch.ip != '' THEN ch.ip END)                      AS hit_hosts,
 					SUM(NULLIF(ch.hit, 0))                               AS hit_count
 				FROM (
-					SELECT date, ip, device, hit, page, method FROM `{$wpdb->bbcs_hits}`
+					SELECT date, CAST(ip AS CHAR(45)) AS ip, CAST(device AS CHAR(16)) AS device, hit, {$today_pf_col}, CAST(method AS CHAR(10)) AS method
+						FROM `{$wpdb->bbcs_hits}`
 					UNION ALL
-					SELECT date, ip, device, hit, page, method FROM `{$wpdb->bbcs_hits_suspicious}`
+					SELECT date, CAST(ip AS CHAR(45)), CAST(device AS CHAR(16)), hit, {$today_pf_col}, CAST(method AS CHAR(10))
+						FROM `{$wpdb->bbcs_hits_suspicious}`
 				) AS ch
-				LEFT JOIN `{$wpdb->bbcs_page_filters}` AS pf ON ch.page LIKE pf.pattern
+				" . BotBlockerDb::pageFilterJoin( 'ch', $today_ts ) . "
 				WHERE ch.date BETWEEN UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
 								AND UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
-				AND pf.pattern IS NULL
+				" . BotBlockerDb::pageFilterWhere( 'ch', $today_ts ) . "
 				AND ch.method = 'GET'
 				{$ip_not_in_sql}
 				",
@@ -80,6 +86,7 @@ trait BotBlockerStatsCoreTrait {
 				$period_results[ $sk ] = $past[ $sk ] + (int) ( $today_results[ $sk ] ?? 0 );
 			}
 		} else {
+			$period_pf_col  = BotBlockerDb::pageFilterColumn( $period_ts );
 			$period_results = $wpdb->get_row(
 				$wpdb->prepare(
 					"
@@ -94,14 +101,16 @@ trait BotBlockerStatsCoreTrait {
 						COUNT(DISTINCT CASE WHEN ch.hit = 1 AND ch.ip != '' THEN ch.ip END)                      AS hit_hosts,
 						SUM(NULLIF(ch.hit, 0))                               AS hit_count
 					FROM (
-						SELECT date, ip, device, hit, page, method FROM `{$wpdb->bbcs_hits}`
+						SELECT date, CAST(ip AS CHAR(45)) AS ip, CAST(device AS CHAR(16)) AS device, hit, {$period_pf_col}, CAST(method AS CHAR(10)) AS method
+							FROM `{$wpdb->bbcs_hits}`
 						UNION ALL
-						SELECT date, ip, device, hit, page, method FROM `{$wpdb->bbcs_hits_suspicious}`
+						SELECT date, CAST(ip AS CHAR(45)), CAST(device AS CHAR(16)), hit, {$period_pf_col}, CAST(method AS CHAR(10))
+							FROM `{$wpdb->bbcs_hits_suspicious}`
 					) AS ch
-					LEFT JOIN `{$wpdb->bbcs_page_filters}` AS pf ON ch.page LIKE pf.pattern
+					" . BotBlockerDb::pageFilterJoin( 'ch', $period_ts ) . "
 					WHERE ch.date BETWEEN UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
 									AND UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
-					AND pf.pattern IS NULL
+					" . BotBlockerDb::pageFilterWhere( 'ch', $period_ts ) . "
 					AND ch.method = 'GET'
 					{$ip_not_in_sql}
 					",
@@ -114,7 +123,7 @@ trait BotBlockerStatsCoreTrait {
 				ARRAY_A
 			);
 		}
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		if ( $use_summary ) {
 			$grouped                             = self::getAllGroupedCounts( $today_start, $today_start, $today_end, $gmt_offset_str );
@@ -152,10 +161,12 @@ trait BotBlockerStatsCoreTrait {
 	public static function getAllGroupedCounts( \DateTime $period_start, \DateTime $today_start, \DateTime $today_end, string $gmt_offset_str ): array {
 		global $wpdb;
 		[$ip_not_in_sql, $ip_params] = BotBlockerDb::getIPNotLikeSQL();
+		$period_ts                   = $period_start->getTimestamp();
+		$period_pf_col               = BotBlockerDb::pageFilterColumn( $period_ts );
 
 		// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
 		// Exclusion fragment uses only internally controlled self‑IPs and is bound via prepare; no user data flows here.
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
 				"
@@ -167,14 +178,18 @@ trait BotBlockerStatsCoreTrait {
 					CASE WHEN ch.date >= UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
 						 THEN 1 ELSE 0 END AS is_today
 				FROM (
-					SELECT date, ip, browser, os, wbot, page, method FROM `{$wpdb->bbcs_hits}`
+					SELECT date, CAST(ip AS CHAR(45)) AS ip, CAST(browser AS CHAR(32)) AS browser,
+						CAST(os AS CHAR(32)) AS os, CAST(wbot AS CHAR(32)) AS wbot, {$period_pf_col}, CAST(method AS CHAR(10)) AS method
+						FROM `{$wpdb->bbcs_hits}`
 					UNION ALL
-					SELECT date, ip, browser, os, wbot, page, method FROM `{$wpdb->bbcs_hits_suspicious}`
+					SELECT date, CAST(ip AS CHAR(45)), CAST(browser AS CHAR(32)),
+						CAST(os AS CHAR(32)), CAST(wbot AS CHAR(32)), {$period_pf_col}, CAST(method AS CHAR(10))
+						FROM `{$wpdb->bbcs_hits_suspicious}`
 				) AS ch
-				LEFT JOIN `{$wpdb->bbcs_page_filters}` AS pf ON ch.page LIKE pf.pattern
+				" . BotBlockerDb::pageFilterJoin( 'ch', $period_ts ) . "
 				WHERE ch.date BETWEEN UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
 								AND UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
-				AND pf.pattern IS NULL
+				" . BotBlockerDb::pageFilterWhere( 'ch', $period_ts ) . "
 				AND ch.method = 'GET'
 				AND ch.ip != ''
 				{$ip_not_in_sql}
@@ -189,7 +204,7 @@ trait BotBlockerStatsCoreTrait {
 			),
 			ARRAY_A
 		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 
 		$today  = array(
 			'browsers'          => array(),

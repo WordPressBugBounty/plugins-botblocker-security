@@ -12,6 +12,7 @@ $dir = \dirname(__FILE__);
         "BotBlocker\\Vendor\\Detection\\Exception\\MobileDetectException" => $dir . "/../src/Exception/MobileDetectException.php",
         "BotBlocker\\Vendor\\Detection\\Exception\\MobileDetectExceptionCode" => $dir . "/../src/Exception/MobileDetectExceptionCode.php",
         "BotBlocker\\Vendor\\Detection\\MobileDetect" => $dir . "/../src/MobileDetect.php",
+        "BotBlocker\\Vendor\\Detection\\MobileDetectStandalone" => $dir . "/../src/MobileDetectStandalone.php",
         // "psr/simple-cache"
         "BotBlocker\\Vendor\\Psr\\SimpleCache\\CacheException" => $dir . "/deps/simple-cache/src/CacheException.php",
         "BotBlocker\\Vendor\\Psr\\SimpleCache\\CacheInterface" => $dir . "/deps/simple-cache/src/CacheInterface.php",

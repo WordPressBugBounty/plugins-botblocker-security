@@ -7,6 +7,35 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class BotBlockerStore {
 
+	/** Unix time: rows with date >= this have a trustworthy `filtered` flag. 0 = trust all. */
+	public const FILTERED_WATERMARK_OPTION = 'bbcs_filtered_watermark';
+
+	/** Extra seconds on upgrade/invalidation so late writes land below the watermark. */
+	public const FILTERED_WATERMARK_BUFFER = 300;
+
+	/** '1' after column verified. Autoloaded — hot path is an in-memory get_option. */
+	public const FILTERED_COLUMN_OPTION = 'bbcs_filtered_column';
+
+	/** 1 if page matches a page_filters LIKE pattern, 0 otherwise; null on DB error. */
+	public static function computeFilteredFlag( string $page ): ?int {
+		global $wpdb;
+		if ( empty( $wpdb->bbcs_page_filters ) ) {
+			return null;
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$match = $wpdb->get_var( $wpdb->prepare(
+			"SELECT EXISTS(SELECT 1 FROM `{$wpdb->bbcs_page_filters}` WHERE %s LIKE `pattern`)",
+			$page
+		) );
+		if ( '' !== $wpdb->last_error ) {
+			return null;
+		}
+
+		return $match ? 1 : 0;
+	}
+
+
 	public static function storeData( $reason_message = null, $reason = null ): void {
 		global $wpdb;
 		$BBCS = BotBlocker::getInstance();
@@ -32,6 +61,7 @@ class BotBlockerStore {
 		}
 
 		$execution_time = round( microtime( true ) - $BBCS->time, 3 );
+		$page           = sanitize_text_field( $BBCS->save_page ?? BOTBLOCKER_EMPTY );
 		$query_data     = array(
 			'cid'          => sanitize_text_field( $BBCS->cid ?? BOTBLOCKER_EMPTY ),
 			'date'         => $BBCS->time,
@@ -42,7 +72,7 @@ class BotBlockerStore {
 			'country'      => sanitize_text_field( $BBCS->country ?? BOTBLOCKER_EMPTY ),
 			'country_name' => sanitize_text_field( $BBCS->country_name ?? BOTBLOCKER_EMPTY ),
 			'referer'      => sanitize_text_field( $BBCS->save_referer ?? BOTBLOCKER_EMPTY ),
-			'page'         => sanitize_text_field( $BBCS->save_page ?? BOTBLOCKER_EMPTY ),
+			'page'         => $page,
 			'lang'         => sanitize_text_field( $BBCS->lang ?? BOTBLOCKER_EMPTY ),
 			'accept_lang'  => sanitize_text_field( $BBCS->accept_lang ?? BOTBLOCKER_EMPTY ),
 			'name_lang'    => sanitize_text_field( $BBCS->name_lang ?? BOTBLOCKER_EMPTY ),
@@ -75,6 +105,17 @@ class BotBlockerStore {
 				: sanitize_text_field( $BBCS->post_antidetect_scope ?? BOTBLOCKER_EMPTY ),
 			'wbot'         => sanitize_text_field( $BBCS->white_bot ?? BOTBLOCKER_EMPTY ),
 		);
+
+		// Skip filtered key if column missing (DDL denied) — else every insert breaks.
+		if ( get_option( self::FILTERED_COLUMN_OPTION ) === '1' ) {
+			$flag = self::computeFilteredFlag( $page );
+			if ( null === $flag ) {
+				// DB error: leave DEFAULT 0, bump watermark so reads distrust this window.
+				update_option( self::FILTERED_WATERMARK_OPTION, time(), true );
+			} else {
+				$query_data['filtered'] = $flag;
+			}
+		}
 
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$existing = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM `{$table_name}` WHERE cid = %s", $BBCS->cid ) );

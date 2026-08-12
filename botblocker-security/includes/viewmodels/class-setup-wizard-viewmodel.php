@@ -38,6 +38,8 @@ final class Botblocker_SetupWizard_ViewModel {
 	public $pro_url;
 	/** @var string */
 	public $docs_url;
+	/** @var string */
+	public $early_init_slug;
 
 	/** @var string URL for the silent-mode CAPTCHA preview image. */
 	public $captcha_preview_img_url;
@@ -51,10 +53,9 @@ final class Botblocker_SetupWizard_ViewModel {
 
 		$this->version           = defined( 'BOTBLOCKER_VERSION' ) ? BOTBLOCKER_VERSION : '';
 		$this->has_pro             = class_exists( 'BotBlockerPro' ) && BotBlockerPro::isActive();
-		$this->early_addon_active  = class_exists( 'BotBlockerAddons' )
-			? BotBlockerAddons::hasActiveProvider( 'early_init_provider', 'bbcs_early_init_provider_active' )
-			: false;
+		$this->early_addon_active  = class_exists( 'BotBlockerGateway' ) && BotBlockerGateway::isRegistered( 'early_init' );
 		$this->early_available     = $this->has_pro && $this->early_addon_active;
+		$this->early_init_slug     = class_exists( 'BotBlockerGateway' ) ? BotBlockerGateway::firstSlug( 'early_init', 'bbcs-early-init' ) : 'bbcs-early-init';
 		$this->contact_email     = wp_get_current_user()->user_email;
 		$this->contact_collected = (bool) BotBlockerMultisite::getOption( 'bbcs_contact_email_collected', false );
 		$this->current_ip        = BotBlockerIp::getCurrentIp();

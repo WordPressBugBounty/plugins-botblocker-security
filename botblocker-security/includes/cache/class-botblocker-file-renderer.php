@@ -139,7 +139,7 @@ class BotBlockerFileRenderer {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT `search`, `rule` FROM `{$wpdb->bbcs_rules}` WHERE disable = %d ORDER BY priority ASC",
+				"SELECT `search`, `rule`, `id` FROM `{$wpdb->bbcs_rules}` WHERE disable = %d ORDER BY priority ASC",
 				0
 			),
 			ARRAY_A
@@ -147,12 +147,33 @@ class BotBlockerFileRenderer {
 
 		$rules = '';
 		foreach ( (array) $rows as $row ) {
-			$rules .= "    '" . addslashes( $row['search'] ) . "' => '" . addslashes( $row['rule'] ) . "',\n";
+			$rules .= "    ['search' => '" . addslashes( $row['search'] ) . "', 'rule' => '" . addslashes( $row['rule'] ) . "', 'id' => " . (int) $row['id'] . "],\n";
 		}
 		$rules = rtrim( $rules, ",\n" );
 
-		$content = BBCS_STOP_DIRECT . "\nreturn [\n'bbcs_rule' => [\n$rules\n],\n];";
+		$content = BBCS_STOP_DIRECT . "\nreturn [\n'bbcs_custom_rule' => [\n$rules\n],\n];";
 		self::atomicFileWrite( BotBlockerMultisite::getDataDir() . 'rules.php', $content );
+	}
+
+	public static function renderCountries(): void {
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT `code`, `rule`, `id` FROM `{$wpdb->bbcs_countries}` WHERE disable = %d ORDER BY priority ASC, code ASC",
+				0
+			),
+			ARRAY_A
+		);
+
+		$countries = '';
+		foreach ( (array) $rows as $row ) {
+			$countries .= "    ['code' => '" . addslashes( $row['code'] ) . "', 'rule' => '" . addslashes( $row['rule'] ) . "', 'id' => " . (int) $row['id'] . "],\n";
+		}
+		$countries = rtrim( $countries, ",\n" );
+
+		$content = BBCS_STOP_DIRECT . "\nreturn [\n'bbcs_geo' => [\n$countries\n],\n];";
+		self::atomicFileWrite( BotBlockerMultisite::getDataDir() . 'geo_countries.php', $content );
 	}
 
 	public static function renderSearchEngines(): void {
@@ -200,6 +221,50 @@ class BotBlockerFileRenderer {
 		$se_data .= "];\n";
 
 		self::atomicFileWrite( BotBlockerMultisite::getDataDir() . 'search_engines.php', $se_data );
+	}
+
+	public static function renderBotSignatures(): void {
+		$source = BOTBLOCKER_DIR . 'data/base/bot-signatures.php';
+		if ( ! file_exists( $source ) ) {
+			return;
+		}
+		$raw   = include $source;
+		$items = array();
+		foreach ( $raw as $signature ) {
+			$s = preg_replace( '/\s+/', ' ', trim( urldecode( $signature ) ) );
+			if ( $s !== '' ) {
+				$items[] = $s;
+			}
+		}
+
+		$priority = array();
+		$rest     = array();
+		$common   = array(
+			'googlebot', 'bingbot', 'yandex', 'baiduspider',
+			'facebookexternalhit', 'twitterbot', 'duckduckbot',
+			'slurp', 'semrushbot', 'ahrefsbot', 'mj12bot',
+			'petalbot', 'applebot', 'google-ads', 'adsbot-google',
+		);
+		foreach ( $items as $item ) {
+			$lower  = strtolower( $item );
+			$found  = false;
+			foreach ( $common as $c ) {
+				if ( strpos( $lower, $c ) !== false ) {
+					$priority[] = $item;
+					$found      = true;
+					break;
+				}
+			}
+			if ( ! $found ) {
+				$rest[] = $item;
+			}
+		}
+		$items = array_merge( $priority, $rest );
+
+		$content  = BBCS_STOP_DIRECT . "\n";
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export
+		$content .= 'return ' . var_export( $items, true ) . ";\n";
+		self::atomicFileWrite( BotBlockerMultisite::getDataDir() . 'bot-signatures-processed.php', $content );
 	}
 
 	public static function renderLlmTrusted(): void {
@@ -404,6 +469,24 @@ class BotBlockerFileRenderer {
 		self::releaseHotBanLock( $lockFp );
 	}
 
+	private static function isHotBansTampered(): bool {
+		$file = BotBlockerMultisite::getDataDir() . 'hot-bans.php';
+		if ( ! file_exists( $file ) ) {
+			return false;
+		}
+		$content = @file_get_contents( $file );
+		if ( false === $content || false === strrpos( $content, '// HASH:' ) ) {
+			return false;
+		}
+		return ! bbcs_data_file_verify( $content );
+	}
+
+	public static function ensureHotBansIntegrity(): void {
+		if ( self::isHotBansTampered() ) {
+			self::renderHotBans();
+		}
+	}
+
 	/**
 	 *
 	 * @param mixed $data
@@ -497,6 +580,8 @@ class BotBlockerFileRenderer {
 			return;
 		}
 
+		self::ensureHotBansIntegrity();
+
 		$lockFp = self::acquireHotBanLock();
 		if ( ! $lockFp ) {
 			return;
@@ -544,6 +629,8 @@ class BotBlockerFileRenderer {
 
 		$file = BotBlockerMultisite::getDataDir() . 'hot-bans.php';
 
+		self::ensureHotBansIntegrity();
+
 		$lockFp = self::acquireHotBanLock();
 		if ( ! $lockFp ) {
 			return;
@@ -588,6 +675,8 @@ class BotBlockerFileRenderer {
 		}
 
 		$file = BotBlockerMultisite::getDataDir() . 'hot-bans.php';
+
+		self::ensureHotBansIntegrity();
 
 		$lockFp = self::acquireHotBanLock();
 		if ( ! $lockFp ) {
@@ -649,6 +738,8 @@ class BotBlockerFileRenderer {
 		if ( ! file_exists( $file ) ) {
 			return;
 		}
+
+		self::ensureHotBansIntegrity();
 
 		$lockFp = self::acquireHotBanLock();
 		if ( ! $lockFp ) {

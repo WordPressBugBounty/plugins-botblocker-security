@@ -4,6 +4,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+require_once __DIR__ . '/../data/class-botblocker-summary.php';
+require_once __DIR__ . '/class-botblocker-seed-data.php';
+require_once __DIR__ . '/../cache/class-botblocker-llm-sync.php';
+
 class BotBlockerMigration {
 
 	public static function getRegistry(): array {
@@ -42,6 +46,10 @@ class BotBlockerMigration {
 				'file'     => 'migration-2-9-0.php',
 				'callback' => 'bbcs_migration_2_9_0',
 			),
+			'2.10.0' => array(
+				'file'     => 'migration-2-10-0.php',
+				'callback' => 'bbcs_migration_2_10_0',
+			),
 			)
 		);
 	}
@@ -62,6 +70,12 @@ class BotBlockerMigration {
 		$target    = BOTBLOCKER_DB_VERSION;
 
 		if ( version_compare( $installed, $target, '>=' ) ) {
+			return true;
+		}
+
+		// Exponential backoff: if last migration failed, wait before retrying.
+		$backoff_until = get_transient( 'bbcs_migration_backoff' );
+		if ( $backoff_until && time() < (int) $backoff_until ) {
 			return true;
 		}
 
@@ -112,6 +126,17 @@ class BotBlockerMigration {
 				}
 			}
 			update_option( 'bbcs_db_version', $applied, true );
+
+			if ( $failed ) {
+				$failures = (int) get_transient( 'bbcs_migration_failures' );
+				$failures++;
+				$delay = min( 3600, (int) pow( 2, $failures ) * 30 );
+				set_transient( 'bbcs_migration_backoff', time() + $delay, $delay + 60 );
+				set_transient( 'bbcs_migration_failures', $failures, DAY_IN_SECONDS );
+			} else {
+				delete_transient( 'bbcs_migration_backoff' );
+				delete_transient( 'bbcs_migration_failures' );
+			}
 		} else {
 			update_option( 'bbcs_db_version', $target, true );
 		}

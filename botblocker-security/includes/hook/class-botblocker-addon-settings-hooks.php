@@ -16,6 +16,9 @@ class BotBlockerAddonSettingsHooks {
 		if ( class_exists( 'BotBlockerAddons' ) ) {
 			BotBlockerAddons::saveSettingsFromPost( $_POST );
 		}
+
+		do_action( 'bbcs_addon_settings_saved', $_POST );
+
 		flush_rewrite_rules( true );
 
 		BBCS_Toastify::flash( __( 'Add-on settings saved.', 'botblocker-security' ), BBCS_Toastify::TYPE_SUCCESS, BBCS_Toastify::PAGE_ADDONS );

@@ -194,8 +194,8 @@ trait BotBlockerVisitorTrait {
 			$this->update_cookie_counter();
 			return true;
 		}
-		$cookie_valid = ( $kind === 'sha' || $kind === 'legacy' );
-		if ( $kind === 'legacy' && method_exists( $this, 'set_allow_cookie_uid' ) ) {
+		$cookie_valid = ( $kind === 'sha' || $kind === 'legacy' ) && $this->verification_state !== self::VERIFY_EXPIRED;
+		if ( $cookie_valid && $kind === 'legacy' && method_exists( $this, 'set_allow_cookie_uid' ) ) {
 			$this->set_allow_cookie_uid();
 		}
 		if ( $this->time - $this->cookie_timestamp > $this->settings->cookie_lifetime ) {
@@ -423,7 +423,22 @@ trait BotBlockerVisitorTrait {
 		}
 	}
 
+	/**
+	 * IP-info source selector — test seam (HG-11). The constant read is moved
+	 * behind this protected method so harnesses can switch the source without
+	 * defining globals (BOTBLOCKER_VISITOR_IP_SOURCE is never defined in tests).
+	 */
+	protected function get_ip_info_source(): string {
+		return defined( 'BOTBLOCKER_VISITOR_IP_SOURCE' ) ? BOTBLOCKER_VISITOR_IP_SOURCE : 'local';
+	}
+
 	public function identify_device_type( $userAgent ): string {
+		static $cache = array();
+
+		if ( array_key_exists( $userAgent, $cache ) ) {
+			return $cache[ $userAgent ];
+		}
+
 		$detect = null;
 		if ( version_compare( phpversion(), '8.0', '>=' ) ) {
 			require_once BOTBLOCKER_DIR . 'vendor/MobileDetect/4.8.10/standalone/autoloader.php';
@@ -434,18 +449,24 @@ trait BotBlockerVisitorTrait {
 			$detect = new \BotBlocker\Vendor\Detection\MobileDetect();
 		}
 		if ( $detect === null ) {
+			$cache[ $userAgent ] = BOTBLOCKER_EMPTY;
 			return BOTBLOCKER_EMPTY;
 		}
 		$detect->setUserAgent( $userAgent );
 		if ( $detect->isTablet() ) {
+			$cache[ $userAgent ] = 'tablet';
 			return 'tablet';
 		} elseif ( $detect->isMobile() ) {
+			$cache[ $userAgent ] = 'phone';
 			return 'phone';
 		} elseif ( preg_match( '/smart-tv|smarttv|googletv|appletv|hbbtv|pov_tv|netcast.tv/i', $userAgent ) ) {
+			$cache[ $userAgent ] = 'tv';
 			return 'tv';
 		} elseif ( preg_match( '/xbox|playstation|nintendo/i', $userAgent ) ) {
+			$cache[ $userAgent ] = 'box';
 			return 'box';
 		} else {
+			$cache[ $userAgent ] = 'pc';
 			return 'pc';
 		}
 	}
@@ -464,7 +485,24 @@ trait BotBlockerVisitorTrait {
 	}
 
 	public function get_ip_info(): void {
-		$source = defined( 'BOTBLOCKER_VISITOR_IP_SOURCE' ) ? BOTBLOCKER_VISITOR_IP_SOURCE : 'local';
+		$source = $this->get_ip_info_source();
+
+		if ( $source !== 'cloud' ) {
+			$cache_key = 'bbcs_visitor_' . md5( $this->ip );
+			$cached    = BotBlockerCache::getCacheData( $cache_key );
+			if ( $cached !== null ) {
+				$this->country  = $cached['country'] ?? BOTBLOCKER_EMPTY;
+				$this->asnum    = $cached['asnum'] ?? BOTBLOCKER_EMPTY;
+				$this->asname   = $cached['asname'] ?? BOTBLOCKER_EMPTY;
+				$this->cidr     = $cached['cidr'] ?? BOTBLOCKER_EMPTY;
+				$this->hosting  = $cached['hosting'] ?? BOTBLOCKER_EMPTY;
+				if ( $this->country != BOTBLOCKER_EMPTY && ! empty( $this->country ) ) {
+					$this->country_name = bbcs_get_country_by_code( $this->country );
+				}
+				return;
+			}
+		}
+
 		if ( $source === 'cloud' ) {
 			$this->get_ip_info_legacy();
 		} else {
@@ -473,6 +511,20 @@ trait BotBlockerVisitorTrait {
 
 		if ( $this->country != BOTBLOCKER_EMPTY && ! empty( $this->country ) ) {
 			$this->country_name = bbcs_get_country_by_code( $this->country );
+		}
+
+		if ( $source !== 'cloud' ) {
+			BotBlockerCache::setCacheData(
+				'bbcs_visitor_' . md5( $this->ip ),
+				array(
+					'country' => $this->country,
+					'asnum'   => $this->asnum,
+					'asname'  => $this->asname,
+					'cidr'    => $this->cidr,
+					'hosting' => $this->hosting,
+				),
+				HOUR_IN_SECONDS
+			);
 		}
 	}
 
@@ -496,12 +548,16 @@ trait BotBlockerVisitorTrait {
 
 	private function get_ip_info_pipeline(): void {
 		$local = class_exists( 'BotBlockerAsnDb' ) ? BotBlockerAsnDb::lookup( $this->ip ) : null;
-		if ( is_array( $local ) && ! empty( $local['country'] ) && $local['country'] !== BOTBLOCKER_EMPTY ) {
-			$this->country = $local['country'];
-			$this->asnum   = $local['asn'] ?? BOTBLOCKER_EMPTY;
-			$this->asname  = $local['as_name'] ?? BOTBLOCKER_EMPTY;
-			$this->cidr    = $local['cidr'] ?? BOTBLOCKER_EMPTY;
-		} else {
+		if ( is_array( $local ) ) {
+			$this->asnum  = $local['asn'] ?? BOTBLOCKER_EMPTY;
+			$this->asname = $local['as_name'] ?? BOTBLOCKER_EMPTY;
+			$this->cidr   = $local['cidr'] ?? BOTBLOCKER_EMPTY;
+			if ( ! empty( $local['country'] ) && $local['country'] !== BOTBLOCKER_EMPTY ) {
+				$this->country = $local['country'];
+			}
+		}
+
+		if ( $this->country == BOTBLOCKER_EMPTY || empty( $this->country ) ) {
 			$this->country = $this->get_sxgeo_country();
 		}
 
@@ -544,7 +600,7 @@ trait BotBlockerVisitorTrait {
 			}
 		}
 
-		if ( $this->country == BOTBLOCKER_EMPTY || empty( $this->country ) ) {
+		if ( ( $this->country == BOTBLOCKER_EMPTY || empty( $this->country ) ) && $this->ip_version == 4 ) {
 			$fallback = BotBlockerWpRequest::ip2c( $this->ip );
 			if ( ! empty( $fallback ) ) {
 				$this->country = $fallback;
@@ -621,6 +677,7 @@ trait BotBlockerVisitorTrait {
 			}
 
 			if ( $this->settings->botblocker_log_admin == 1 ) {
+				$this->collect_visitor_data();
 				$this->visitorType = self::VISITOR_ADMIN;
 				BotBlockerStore::storeData( 'Admin access', 59 );
 			}
@@ -722,9 +779,6 @@ trait BotBlockerVisitorTrait {
 		if ( $this->settings->block_http10_users && $this->protocol == 'HTTP/1.0' ) {
 			$this->redirect_to_denied( 53, 'Http/1.0' );
 		}
-		if ( $this->settings->block_simplebot_ua && $this->check_bot_by_useragent( $this->useragent ) !== false ) {
-			$this->redirect_to_denied( 54, 'Black UA' );
-		}
 		if ( $this->settings->block_ip_ptr_match && $this->ptr === $this->ip ) {
 			$this->redirect_to_denied( 60, 'IP equals PTR record' );
 		}
@@ -737,6 +791,9 @@ trait BotBlockerVisitorTrait {
 		}
 		if ( $this->settings->block_proxy_users && $this->isProxy === 'DETECTED' && $this->is_proxy_det === 'CLASSIC' ) {
 			$this->redirect_to_denied( 56, 'Classic proxy' );
+		}
+		if ( $this->settings->block_simplebot_ua && $this->check_bot_by_useragent( $this->useragent ) !== false ) {
+			$this->redirect_to_denied( 54, 'Black UA' );
 		}
 	}
 
@@ -889,7 +946,7 @@ trait BotBlockerVisitorTrait {
 
 	public function read_real_language( $acceptLanguage ): string {
 		$languages = $this->parse_accept_language( $acceptLanguage );
-		$lang      = $languages[0];
+		$lang      = (string) $languages[0];
 		$langCode  = preg_match( '/^[a-z]{2,3}/', $lang, $matches ) ? $matches[0] : BOTBLOCKER_EMPTY;
 		return $langCode;
 	}
@@ -941,11 +998,20 @@ trait BotBlockerVisitorTrait {
 	}
 
 	public function check_bot_by_useragent( $useragent ) {
+		static $cache = array();
+
+		if ( array_key_exists( $useragent, $cache ) ) {
+			return $cache[ $useragent ];
+		}
+
 		foreach ( BotBlockerData::getBotSignatures() as $signature ) {
 			if ( stripos( $useragent, $signature ) !== false ) {
+				$cache[ $useragent ] = $signature;
 				return $signature;
 			}
 		}
+
+		$cache[ $useragent ] = false;
 		return false;
 	}
 
@@ -1031,59 +1097,69 @@ trait BotBlockerVisitorTrait {
 	}
 
 	public function session_bucket_cleanup(): void {
-		delete_transient( 'bbcs_sessions' );
+		global $wpdb;
+		if ( ! empty( $wpdb->bbcs_sessions ) ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->query( "TRUNCATE TABLE `{$wpdb->bbcs_sessions}`" );
+		}
 	}
 
 	private function session_bucket_get( string $session_id ): ?array {
-		$bucket = get_transient( 'bbcs_sessions' );
-		if ( ! is_array( $bucket ) ) {
+		global $wpdb;
+		if ( empty( $wpdb->bbcs_sessions ) ) {
 			return null;
 		}
-		return $bucket[ $session_id ] ?? null;
+		// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared and sanitized.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$row = $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT uid, created, ip FROM `{$wpdb->bbcs_sessions}` WHERE session_id = %s",
+				$session_id
+			),
+			ARRAY_A
+		);
+		if ( $row === null ) {
+			return null;
+		}
+		return array(
+			'u' => $row['uid'],
+			't' => (int) $row['created'],
+			'i' => $row['ip'],
+		);
 	}
 
 	private function session_bucket_set( string $session_id, array $payload ): void {
-		$bucket = get_transient( 'bbcs_sessions' );
-		if ( ! is_array( $bucket ) ) {
-			$bucket = array();
+		global $wpdb;
+		if ( empty( $wpdb->bbcs_sessions ) ) {
+			return;
 		}
 
 		$now = time();
 		$ttl = (int) $this->settings->cookie_lifetime;
 
-		// Clean expired entries. Iterating a 50K-element array costs ~1ms;
-		// acceptable given session creation is a low-frequency event (new
-		// visitors only, not every request).
-		foreach ( $bucket as $sid => $entry ) {
-			if ( isset( $entry['e'] ) && (int) $entry['e'] < $now ) {
-				unset( $bucket[ $sid ] );
-			}
-		}
-
-		$bucket[ $session_id ] = array(
-			'u' => $payload['u'],
-			't' => $payload['t'],
-			'i' => $payload['i'],
-			'e' => $now + $ttl,
+		// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared and sanitized.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->query(
+			$wpdb->prepare(
+				"INSERT INTO `{$wpdb->bbcs_sessions}` (session_id, uid, ip, created, expires)
+				VALUES (%s, %s, %s, %d, %d)
+				ON DUPLICATE KEY UPDATE uid = VALUES(uid), ip = VALUES(ip), expires = VALUES(expires)",
+				$session_id,
+				$payload['u'],
+				$payload['i'],
+				$payload['t'],
+				$now + $ttl
+			)
 		);
 
-		// Hysteresis cap: allow overflow to 50000, trim to 45000.
-		// Avoids O(n log n) uasort on every write after reaching cap.
-		if ( count( $bucket ) > 50000 ) {
-			uasort(
-				$bucket,
-				function ( $a, $b ): int {
-					$ea = isset( $a['e'] ) ? (int) $a['e'] : 0;
-					$eb = isset( $b['e'] ) ? (int) $b['e'] : 0;
-					return $ea - $eb;
-				}
-			);
-			$bucket = array_slice( $bucket, -45000, 45000, true );
+		// Hysteresis cap: if 50000+ rows, delete oldest 5000 to avoid unbounded growth.
+		// Capped DELETE avoids long table locks on large session stores.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->bbcs_sessions}`" );
+		if ( $count > 50000 ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->query( "DELETE FROM `{$wpdb->bbcs_sessions}` ORDER BY expires ASC LIMIT 5000" );
 		}
-
-		// Not atomic (read-modify-write); concurrent requests may lose an entry.
-		// Acceptable: losing a session just means a new verification challenge.
-		set_transient( 'bbcs_sessions', $bucket, $ttl + 86400 );
 	}
 
 	public function update_settings_based_on_visitor_data(): void {

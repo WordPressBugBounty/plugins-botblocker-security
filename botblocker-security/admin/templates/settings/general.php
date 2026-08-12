@@ -13,7 +13,7 @@ use BotBlocker\Component\TextInput;
 return static function (Botblocker_SettingsViewModel $data, bool $isActive): void {
     $sm = (string) $data->get('secure_mode', '2');
     $hits = $data->get('hits_per_user', '500');
-    $ptr_time = (string)($data->get('ptrcache_time', '86400'));
+    $ptr_time = (string)($data->get('ptrcache_time', DAY_IN_SECONDS));
     $ptr_subnet = (string)($data->get('ptrcache_subnet', '24-64'));
     $ptr_ttl = (string)($data->get('ptrcache_rule_ttl', '90'));
 ?>

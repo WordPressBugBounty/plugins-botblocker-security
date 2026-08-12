@@ -9,6 +9,9 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * Handles UI-related functionality for the BotBlocker plugin
  */
+require_once __DIR__ . '/class-botblocker-addons-market.php';
+require_once __DIR__ . '/dto/class-addon-market-item-data.php';
+
 class BotBlockerUI {
 
 	/**
@@ -168,151 +171,28 @@ class BotBlockerUI {
 	}
 
 
-	protected static function market_slug_from_url( string $url ): string {
-		$path = wp_parse_url( $url, PHP_URL_PATH );
-		$b    = basename( (string) $path );
-		return preg_replace( '/\.zip$/', '', $b );
-	}
-
-	/**
-	 * Disk-built market items carry an explicit slug; cloud items derive it from the ZIP url.
-	 *
-	 * @param array<string,mixed> $item
-	 */
-	protected static function market_item_slug( array $item ): string {
-		if ( ! empty( $item['slug'] ) ) {
-			return sanitize_key( (string) $item['slug'] );
-		}
-		return ! empty( $item['url'] ) ? self::market_slug_from_url( (string) $item['url'] ) : '';
-	}
-
-	protected static function filter_market_addons( array $addons ): array {
-		return array_values( array_filter( $addons, function ( $item ) {
-			return ( $item['enabled'] ?? true ) !== false;
-		} ) );
-	}
-
-	protected static function load_market(): array {
-		if ( BotBlockerAddons::isLocalMode() ) {
-			return BotBlockerAddons::buildMarketFromDisk( BotBlockerAddons::scanAll() );
-		}
-		$market    = array();
-		$marketUrl = BotBlockerAddons::getMarketUrl();
-		if ( $marketUrl ) {
-			$res = wp_remote_get( $marketUrl, array( 'timeout' => 10 ) );
-			if ( ! is_wp_error( $res ) && wp_remote_retrieve_response_code( $res ) === 200 ) {
-				$json = json_decode( wp_remote_retrieve_body( $res ), true );
-				if ( is_array( $json ) && isset( $json['addons'] ) && is_array( $json['addons'] ) ) {
-					$market = self::filter_market_addons( $json['addons'] ); }
+	public static function render_market_catalog_html( array $market, Botblocker_AddonsViewModel $data ): string {
+		$render_card = require BOTBLOCKER_DIR . 'admin/templates/addons/marketplace-card.php';
+		ob_start();
+		foreach ( $market as $raw ) {
+			if ( ! empty( $raw['is_installed'] ) ) {
+				continue;
 			}
-		}
-		if ( empty( $market ) ) {
-			// $local = BOTBLOCKER_DIR . 'wp-content/plugins/bbcs-addons/master.json';
-			$local = WP_CONTENT_DIR . '/plugins/bbcs-addons/master.json';
-			if ( file_exists( $local ) ) {
-				$json = json_decode( file_get_contents( $local ), true );
-				if ( is_array( $json ) && isset( $json['addons'] ) && is_array( $json['addons'] ) ) {
-					$market = self::filter_market_addons( $json['addons'] ); }
+			$item = new Botblocker_AddonMarketItemData( $raw );
+			if ( $item->slug === '' ) {
+				continue;
 			}
+			$render_card( $data, $item->slug, $item, null );
 		}
-		if ( empty( $market ) ) {
-			$server   = defined( 'BOTBLOCKER_SERVER' ) ? BOTBLOCKER_SERVER : 'botblocker.top';
-			$fallback = 'https://' . $server . '/wp-content/plugins/bbcs-addons/master.json';
-			$res      = wp_remote_get( $fallback, array( 'timeout' => 10 ) );
-			if ( ! is_wp_error( $res ) && wp_remote_retrieve_response_code( $res ) === 200 ) {
-				$json = json_decode( wp_remote_retrieve_body( $res ), true );
-				if ( is_array( $json ) && isset( $json['addons'] ) && is_array( $json['addons'] ) ) {
-					$market = self::filter_market_addons( $json['addons'] ); }
-			}
-		}
-		return $market;
-	}
-
-	public static function get_addons_context(): array {
-		$addons            = BotBlockerAddons::scanAll();
-		$active            = BotBlockerAddons::getActive();
-		$addons_local_mode = BotBlockerAddons::isLocalMode();
-		$market            = self::load_market();
-		$marketBySlug      = array();
-		foreach ( $market as $it ) {
-			$slug = self::market_item_slug( $it );
-			if ( $slug !== '' ) {
-				$marketBySlug[ $slug ] = $it;
-			}
-		}
-		foreach ( $market as $i => $it ) {
-			$slug           = self::market_item_slug( $it );
-			$is_installed   = isset( $addons[ $slug ] );
-			$installed_ver  = $is_installed ? ( $addons[ $slug ]['version'] ?? '' ) : '';
-			$remote_ver     = $it['version'] ?? '';
-			$item_req       = $it['requires_core'] ?? '';
-			$req_compatible = empty( $item_req ) || ! defined( 'BOTBLOCKER_VERSION' ) || version_compare( BOTBLOCKER_VERSION, $item_req, '>=' );
-			$has_newer_ver  = $is_installed && $installed_ver && $remote_ver && version_compare( $remote_ver, $installed_ver, '>' );
-			$market[ $i ]   = array_merge(
-				$it,
-				array(
-					'slug'               => $slug,
-					'is_installed'       => $is_installed,
-					'installed_ver'      => $installed_ver,
-					'remote_ver'         => $remote_ver,
-					'update_avail'       => $has_newer_ver && $req_compatible,
-					'update_blocked'     => $has_newer_ver && ! $req_compatible,
-					'show_installed_ver' => $is_installed && $installed_ver && $installed_ver !== $remote_ver,
-					'is_active'          => in_array( $slug, $active, true ),
-					'is_incompatible'    => ! $is_installed && ! empty( $item_req ) && defined( 'BOTBLOCKER_VERSION' ) && version_compare( BOTBLOCKER_VERSION, $item_req, '<' ),
-				)
-			);
-		}
-		foreach ( $addons as $slug => $addon ) {
-			$remote              = $marketBySlug[ $slug ] ?? null;
-			$broken              = ! $addon['valid'];
-			$core_ver            = defined( 'BOTBLOCKER_VERSION' ) ? BOTBLOCKER_VERSION : '';
-			$req_local           = trim( $addon['requires_core'] ?? '' );
-			$req_remote          = trim( $remote['requires_core'] ?? '' );
-			$local_req_met       = ! empty( $req_local ) && ! empty( $core_ver ) && version_compare( $core_ver, $req_local, '>=' );
-			$remote_req_met      = empty( $req_remote ) || ( ! empty( $core_ver ) && version_compare( $core_ver, $req_remote, '>=' ) );
-			$incompatible        = ! $broken && ! empty( $req_local ) && ! $local_req_met;
-			$remote_ver          = trim( $remote['version'] ?? '' );
-			$local_ver           = trim( $addon['version'] ?? '' );
-			$has_newer           = ! empty( $remote_ver ) && ! empty( $local_ver ) && version_compare( $remote_ver, $local_ver, '>' );
-			$update_avail        = ! $broken && $has_newer && $remote_req_met;
-			$update_repair       = ! $broken && empty( $req_local ) && ! empty( $remote['url'] ) && $remote_req_met;
-			$incompatible_remote = ! $broken && ! empty( $req_remote ) && ! $remote_req_met;
-			$addons[ $slug ]     = array_merge(
-				$addon,
-				array(
-					'broken'               => $broken,
-					'req_core'             => ! empty( $req_local ) ? $req_local : $req_remote,
-					'req_core_local'       => $req_local,
-					'req_core_remote'      => $req_remote,
-					'incompatible'         => $incompatible,
-					'incompatible_remote'  => $incompatible_remote,
-					'can_activate'         => ! $broken && $local_req_met,
-					'is_active'            => in_array( $slug, $active, true ),
-					'update_avail'         => $update_avail,
-					'update_repair'        => $update_repair,
-					'update_url'           => ( $update_avail || $update_repair ) ? ( $remote['url'] ?? '' ) : '',
-					'update_requires_core' => ( $update_avail || $update_repair ) ? $req_remote : '',
-				)
-			);
-		}
-		$updates_count = 0;
-		foreach ( $addons as $addon ) {
-			if ( $addon['update_avail'] ) {
-				++$updates_count; }
-		}
-		$has_cloud_api = class_exists( 'BotBlockerPro' ) && BotBlockerPro::isActive();
-		// Local mode serves add-ons from disk, so no cloud licence is needed to manage them.
-		$addons_locked = ! $has_cloud_api && ! $addons_local_mode;
-		return compact( 'addons', 'active', 'market', 'marketBySlug', 'addons_locked', 'has_cloud_api', 'updates_count', 'addons_local_mode' );
+		return (string) ob_get_clean();
 	}
 
 	public static function render_dashboard_addons_summary(): void {
-		$ctx           = self::get_addons_context();
-		$addons        = $ctx['addons'];
-		$active        = $ctx['active'];
-		$addons_locked = $ctx['addons_locked'];
-		$has_cloud_api = $ctx['has_cloud_api'];
+		$ctx           = BotBlockerAddonsMarket::getContext();
+		$addons        = $ctx->addons;
+		$active        = $ctx->active;
+		$addons_locked = $ctx->addons_locked;
+		$has_cloud_api = $ctx->has_cloud_api;
 		$BBCSA         = class_exists( 'Botblocker_Admin' ) ? Botblocker_Admin::getInstance() : null;
 		$tools_url     = $BBCSA && isset( $BBCSA->pages_tools ) ? $BBCSA->pages_tools : '';
 		echo '<div class="bbcs-addons-dash">';

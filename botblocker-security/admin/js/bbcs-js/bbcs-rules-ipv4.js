@@ -247,7 +247,7 @@
                 var data = JSON.parse(e.target.result);
                 callback(data);
             } catch (err) {
-                alert(bbcsIpv4L10n.invalid_json + err.message);
+                window.bbcsRulesToast('error', bbcsIpv4L10n.invalid_json + err.message);
             }
         };
         reader.readAsText(file);
@@ -320,9 +320,7 @@
                             .val(expiresFormattedDate);
                         $("#editIPv4Modal").modal("show");
                     } else {
-                        alert(
-                            bbcsIpv4L10n.failed_load + response.data
-                        );
+                        window.bbcsRulesToast('error', bbcsIpv4L10n.failed_load + response.data);
                     }
                 },
             });
@@ -342,8 +340,9 @@
                         $("#editIPv4Modal").modal("hide");
                         $("#botblocker-ipv4-rules").DataTable().ajax.reload();
                                     if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
+                        window.bbcsRulesToast('success', bbcsIpv4L10n.success_update);
                     } else {
-                        alert(bbcsIpv4L10n.failed_update + response.data);
+                        window.bbcsRulesToast('error', bbcsIpv4L10n.failed_update + response.data);
                     }
                 },
             });
@@ -371,6 +370,9 @@
                                     .DataTable()
                                     .ajax.reload();
                                 if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
+                                window.bbcsRulesToast('success', bbcsIpv4L10n.success_delete);
+                            } else {
+                                window.bbcsRulesToast('error', response.data);
                             }
                         },
                     });
@@ -410,8 +412,9 @@
                         $("#addIPv4Modal").modal("hide");
                         $("#botblocker-ipv4-rules").DataTable().ajax.reload();
                                     if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
+                        window.bbcsRulesToast('success', bbcsIpv4L10n.success_create);
                     } else {
-                        alert(bbcsIpv4L10n.failed_create + response.data);
+                        window.bbcsRulesToast('error', bbcsIpv4L10n.failed_create + response.data);
                     }
                 },
             });
@@ -438,8 +441,9 @@
                         document.body.appendChild(downloadLink);
                         downloadLink.click();
                         document.body.removeChild(downloadLink);
+                        window.bbcsRulesToast('success', bbcsIpv4L10n.success_export);
                     } else {
-                        alert(bbcsIpv4L10n.failed_export + response.data);
+                        window.bbcsRulesToast('error', bbcsIpv4L10n.failed_export + response.data);
                     }
                 },
             });
@@ -467,8 +471,9 @@
                         document.body.appendChild(downloadLink);
                         downloadLink.click();
                         document.body.removeChild(downloadLink);
+                        window.bbcsRulesToast('success', bbcsIpv4L10n.success_export);
                     } else {
-                        alert(bbcsIpv4L10n.failed_export + response.data);
+                        window.bbcsRulesToast('error', bbcsIpv4L10n.failed_export + response.data);
                     }
                 },
             });
@@ -497,8 +502,10 @@
                                         .DataTable()
                                         .ajax.reload();
                                     if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
+                                    window.bbcsRulesToast('success', bbcsIpv4L10n.success_import);
                                 } else {
-                                    alert(
+                                    window.bbcsRulesToast(
+                                        'error',
                                         bbcsIpv4L10n.failed_import +
                                             response.data
                                     );
@@ -526,8 +533,10 @@
                                 .DataTable()
                                 .ajax.reload();
                             if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
+                            window.bbcsRulesToast('success', bbcsIpv4L10n.success_clear);
                         } else {
-                            alert(
+                            window.bbcsRulesToast(
+                                'error',
                                 bbcsIpv4L10n.failed_clear + response.data
                             );
                         }
@@ -569,8 +578,10 @@
                                         .DataTable()
                                         .ajax.reload();
                                     if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
+                                    window.bbcsRulesToast('success', bbcsIpv4L10n['success_import_' + listType]);
                                 } else {
-                                    alert(
+                                    window.bbcsRulesToast(
+                                        'error',
                                         bbcsIpv4L10n['failed_import_' + listType] +
                                             response.data
                                     );
@@ -594,7 +605,7 @@
                     nonce: botblockerData.nonce,
                 },
                 success: function (response) {
-                    alert(response.data);
+                    window.bbcsRulesToast(response.success ? 'success' : 'error', response.data);
                 },
             });
         });
@@ -641,8 +652,9 @@
                                             showImportResultModal(response.data);
                                             $("#botblocker-ipv4-rules").DataTable().ajax.reload();
                                     if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
+                                            window.bbcsRulesToast('success', bbcsIpv4L10n.success_import);
                                         } else {
-                                            alert(bbcsIpv4L10n.failed_import + response.data);
+                                            window.bbcsRulesToast('error', bbcsIpv4L10n.failed_import + response.data);
                                         }
                                     },
                                 });

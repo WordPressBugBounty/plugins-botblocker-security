@@ -73,14 +73,6 @@ class BotBlockerTlsFingerprintsSync {
 	}
 
 	public static function selfHeal(): void {
-		if ( defined( 'DOING_CRON' ) && DOING_CRON ) {
-			return;
-		}
-		if ( get_transient( self::SELF_HEAL_KEY ) ) {
-			return;
-		}
-		set_transient( self::SELF_HEAL_KEY, '1', HOUR_IN_SECONDS );
-
 		$settings = ( method_exists( 'BotBlocker', 'getInstance' ) ? (array) BotBlocker::getInstance()->settings : array() );
 		if ( empty( $settings['tls_fingerprint_check'] ) ) {
 			return;
@@ -160,6 +152,9 @@ class BotBlockerTlsFingerprintsSync {
 					'failures'   => 0,
 				)
 			);
+			if ( class_exists( 'BotBlockerAlerts' ) ) {
+				BotBlockerAlerts::clearSyncFailed( 'tls' );
+			}
 			if ( $locked ) {
 				self::releaseLock();
 			}
@@ -248,6 +243,10 @@ class BotBlockerTlsFingerprintsSync {
 		BotBlockerFileRenderer::renderTlsFingerprints();
 		BotBlockerCache::clearFileCache();
 
+		if ( class_exists( 'BotBlockerAlerts' ) ) {
+			BotBlockerAlerts::clearSyncFailed( 'tls' );
+		}
+
 		if ( $locked ) {
 			self::releaseLock();
 		}
@@ -265,6 +264,15 @@ class BotBlockerTlsFingerprintsSync {
 			)
 		);
 
+		if ( class_exists( 'BotBlockerAlerts' ) ) {
+			BotBlockerAlerts::setSyncFailed(
+				'tls',
+				'tls_sync_failed',
+				__( 'TLS Fingerprint Sync Failed', 'botblocker-security' ),
+				__( 'Could not sync the TLS fingerprint list. Bot detection may miss known clients.', 'botblocker-security' )
+			);
+		}
+
 		if ( $failures < 7 && wp_next_scheduled( 'bbcs_tls_fingerprints_sync_event', array( 'retry' ) ) === false ) {
 			$backoff = min( 6, $failures );
 			$delay   = max( HOUR_IN_SECONDS, $backoff * HOUR_IN_SECONDS );
@@ -273,5 +281,5 @@ class BotBlockerTlsFingerprintsSync {
 	}
 }
 
-add_action( 'init', array( 'BotBlockerTlsFingerprintsSync', 'selfHeal' ), 25 );
+
 add_action( 'bbcs_tls_fingerprints_sync_event', array( 'BotBlockerTlsFingerprintsSync', 'doSync' ), 10, 1 );

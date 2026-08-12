@@ -96,6 +96,18 @@ class BotBlockerRugov {
 				'failures'   => $failures,
 			)
 		);
+		if ( class_exists( 'BotBlockerAlerts' ) ) {
+			BotBlockerAlerts::setSyncFailed(
+				'rugov',
+				'rugov_update_failed',
+				__( 'RU-Gov List Update Failed', 'botblocker-security' ),
+				sprintf(
+					/* translators: %s: short error code returned by the downloader. */
+					__( 'Could not update the RU-Gov CIDR list (%s). RKN blocking may run on outdated data.', 'botblocker-security' ),
+					$error
+				)
+			);
+		}
 		if ( $failures < 7 ) {
 			$backoff = min( 6, $failures );
 			$delay   = max( HOUR_IN_SECONDS, $backoff * HOUR_IN_SECONDS );
@@ -174,6 +186,9 @@ class BotBlockerRugov {
 					'failures'   => 0,
 				)
 			);
+			if ( class_exists( 'BotBlockerAlerts' ) ) {
+				BotBlockerAlerts::clearSyncFailed( 'rugov' );
+			}
 			self::releaseLock();
 			return true;
 		}
@@ -275,14 +290,6 @@ class BotBlockerRugov {
 	}
 
 	public static function selfHeal(): void {
-		if ( wp_doing_cron() ) {
-			return;
-		}
-		if ( get_transient( self::SELF_HEAL_KEY ) ) {
-			return;
-		}
-		set_transient( self::SELF_HEAL_KEY, '1', HOUR_IN_SECONDS );
-
 		$settings = (array) BotBlocker::getInstance()->settings;
 		if ( empty( $settings['block_rkn'] ) ) {
 			return;
@@ -299,4 +306,4 @@ class BotBlockerRugov {
 
 add_action( 'bbcs_rugov_update_event', array( 'BotBlockerRugov', 'doSync' ), 10, 1 );
 add_action( 'bbcs_rugov_freshness_task', array( 'BotBlockerRugov', 'freshnessHandler' ) );
-add_action( 'init', array( 'BotBlockerRugov', 'selfHeal' ), 26 );
+

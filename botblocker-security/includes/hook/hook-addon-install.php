@@ -71,10 +71,14 @@ function bbcs_move_addon_into_runtime( string $source_dir, string $slug, array $
 
 	bbcs_addon_install_debug_log( 'move_addon[' . $slug . ']: OK placed at ' . $folder );
 
-	// Post-move probe: verify a key file exists (catches partial copies on restrictive hosts).
-	$data_probe = $folder . '/inc/bbcs-data-file.php';
-	if ( 'bbcs-early-init' === $slug && ! file_exists( $data_probe ) ) {
-		bbcs_addon_install_debug_log( 'move_addon[' . $slug . ']: WARNING - bbcs-data-file.php missing after move at ' . $data_probe );
+	// Post-move probe: verify any gateway-declared key file exists (catches partial copies on restrictive hosts).
+	$addon = BotBlockerAddons::parseManifest( $folder, $slug );
+	$data_probe = $addon['gateway']['early_init']['data_file_probe'] ?? '';
+	if ( $data_probe !== '' ) {
+		$probe_path = $folder . '/' . ltrim( $data_probe, '/' );
+		if ( ! file_exists( $probe_path ) ) {
+			bbcs_addon_install_debug_log( 'move_addon[' . $slug . ']: WARNING - ' . $data_probe . ' missing after move at ' . $probe_path );
+		}
 	}
 
 	if ( $backed_up && is_dir( $backup ) ) {

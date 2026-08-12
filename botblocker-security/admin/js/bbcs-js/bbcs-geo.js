@@ -1,21 +1,16 @@
 (function ($) {
     "use strict";
 
-    var selectedCountries = [];
-    var geoTabInitialized = false;
-    var geoLoading = false;
+    var isProcessingGeo = false;
+    var geoTable = null;
+    var geoTableLoading = false;
 
-    // Register loading state for new UI tab switching guard.
     if (typeof window.BBCS_TabLoadingRegistry !== 'undefined') {
-      window.BBCS_TabLoadingRegistry['GEO'] = function() { return geoLoading; };
+      window.BBCS_TabLoadingRegistry['GEO'] = function() { return geoTableLoading; };
     }
 
     var lastGeoUITab = '';
     var geoJustInitialized = false;
-
-    function normalizeCountryCode(code) {
-        return String(code || '').trim().toUpperCase();
-    }
 
     var geoI18n = (window.botblockerGeoData && botblockerGeoData.i18n) || {};
 
@@ -23,290 +18,278 @@
         return geoI18n[key] || fallback || key;
     }
 
-    function updateGeoTextarea() {
-        $("#geoCountryCodes").val(selectedCountries.join(','));
-        updateGeoCount();
-    }
-
-    function updateGeoCount() {
-        $("#bbcs_geo_count").text(selectedCountries.length);
-    }
-
-    function renderGeoTags() {
-        var container = $("#geoTags");
-        container.empty();
-
-        if (selectedCountries.length === 0) {
-            container.append('<span class="text-muted">' + geoText('no_countries_selected', 'No countries selected') + '</span>');
-            return;
-        }
-
-        selectedCountries.forEach(function (code) {
-            var $labelOpt = $(".bbcs-select-opt[data-value='" + code + "']");
-            if (!$labelOpt.length) {
-                $labelOpt = $("#geoCountrySelect option[value='" + code + "']");
-            }
-            var label = $labelOpt.text() || code;
-            var tag = $('<span></span>', {
-                class: 'bbcs-geo-tag badge rounded-pill d-inline-flex align-items-center',
-                'data-code': code,
-                text: label + ' (' + code + ')',
-                style: 'background: none; color: #000; border: 1px solid #000; padding: 0.35rem 0.75rem;'
-            });
-            var remove = $('<button type="button" class="bbcs-geo-tag-remove ms-2" aria-label="' + geoText('remove_country', 'Remove country') + '">\u00d7</button>');
-            remove.css({
-                background: 'none',
-                border: 'none',
-                color: '#000',
-                padding: '0',
-                marginLeft: '7px',
-                fontSize: '0.9rem',
-                lineHeight: '1',
-                cursor: 'pointer'
-            });
-            remove.on('click', function () {
-                removeCountry(code);
-            });
-            tag.append(remove);
-            container.append(tag);
-        });
-    }
-
-    function showGeoStatus(message, isError) {
-        var container = $("#bbcs_geo_alert");
-        if (!container.length) {
-            container = $("<div id=\"bbcs_geo_alert\" class=\"alert mt-2\" role=\"alert\"></div>");
-            $("#bbcs_geo_list .bbcs_control_panel").after(container);
-        }
-        container.removeClass('alert-success alert-danger').addClass(isError ? 'alert-danger' : 'alert-success').text(message).show();
-        setTimeout(function () {
-            container.fadeOut(300);
-        }, 4000);
-    }
-
-    function addCountry(code) {
-        code = normalizeCountryCode(code);
-        if (!code) {
-            showGeoStatus(geoText('please_select_country', 'Please select a country.'), true);
-            return;
-        }
-        if (selectedCountries.includes(code)) {
-            showGeoStatus(geoText('country_already_added', 'Country already added.'), true);
-            return;
-        }
-        var $opt = $(".bbcs-select-opt[data-value='" + code + "']");
-        if (!$opt.length) {
-            $opt = $("#geoCountrySelect option[value='" + code + "']");
-        }
-        if (!$opt.length) {
-            showGeoStatus(geoText('invalid_country', 'Invalid country.'), true);
-            return;
-        }
-        selectedCountries.push(code);
-        selectedCountries = Array.from(new Set(selectedCountries));
-        renderGeoTags();
-        updateGeoTextarea();
-    }
-
-    function removeCountry(code) {
-        code = normalizeCountryCode(code);
-        selectedCountries = selectedCountries.filter(function (item) {
-            return item !== code;
-        });
-        renderGeoTags();
-        updateGeoTextarea();
-    }
-
-    function clearGeoCountries() {
-        selectedCountries = [];
-        renderGeoTags();
-        updateGeoTextarea();
-    }
-
-    function loadGeoCountriesFromTextarea() {
-        var raw = $("#geoCountryCodes").val() || '';
-        selectedCountries = raw.split(',').map(normalizeCountryCode).filter(function (code) {
-            return code.length === 2;
-        });
-        selectedCountries = Array.from(new Set(selectedCountries));
-        renderGeoTags();
-        updateGeoTextarea();
-    }
-
-    function setButtonLoading($btn, label) {
-        if (!$btn.length) {
-            return;
-        }
-        if (!$btn.data('bbcs-original-html')) {
-            $btn.data('bbcs-original-html', $btn.html());
-        }
-        var text = label || $.trim($btn.text()) || $btn.data('bbcs-original-html');
-        $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin me-2"></i>' + text);
-    }
-
-    function resetButton($btn) {
-        if (!$btn.length) {
-            return;
-        }
-        var originalHtml = $btn.data('bbcs-original-html');
-        if (originalHtml) {
-            $btn.html(originalHtml);
-        }
-        $btn.prop('disabled', false);
-    }
-
-    function showGeoSectionOverlay() {
-        var $section = $('#bbcs_geo_list');
-        if (!$section.length || $section.find('.bbcs-loading-overlay--geo').length) {
-            return;
-        }
-        if ($section.css('position') === 'static') {
-            $section.css('position', 'relative');
-        }
-        $section.append(
-            '<div class="bbcs-loading-overlay bbcs-loading-overlay--geo" style="position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,0.85);display:flex;align-items:center;justify-content:center;z-index:9999;pointer-events:auto;">' +
-            '<i class="fa-solid fa-spinner fa-spin fa-2x" style="color:#0d6efd;"></i>' +
-            '</div>'
-        );
-    }
-
-    function hideGeoSectionOverlay() {
-        var $overlay = $('#bbcs_geo_list').find('.bbcs-loading-overlay--geo');
-        if (!$overlay.length) {
-            return;
-        }
-        $overlay.fadeOut(200, function () {
-            $(this).remove();
-        });
-    }
-
-    function loadGeoCountriesFromServer() {
-        var $refreshBtn = $('#bbcs_geo_refresh');
-        showGeoSectionOverlay();
-        setButtonLoading($refreshBtn, geoText('reloading', 'Reloading...'));
-
-        $.ajax({
-            url: botblockerData.ajaxurl,
-            type: 'POST',
-            data: {
-                action: 'bbcs_get_geo_countries',
-                nonce: botblockerData.nonce
-            },
-            beforeSend: function() { geoLoading = true; },
-            success: function (response) {
-                if (response.success && Array.isArray(response.data)) {
-                    selectedCountries = response.data.map(normalizeCountryCode).filter(function (code) {
-                        return code.length === 2;
+    function initializeGeoTable() {
+        if (!$.fn.DataTable.isDataTable("#botblocker-geo")) {
+            geoTable = $("#botblocker-geo").DataTable({
+                processing: true,
+                serverSide: true,
+                scrollX: true,
+                autoWidth: false,
+                fixedHeader: true,
+                responsive: true,
+                colReorder: true,
+                ajax: {
+                    url: botblockerData.ajaxurl,
+                    type: "POST",
+                    data: function (d) {
+                        d.action = "bbcs_get_countries_table";
+                        d.nonce = botblockerData.nonce;
+                    },
+                    beforeSend: function() {
+                        geoTableLoading = true;
+                    },
+                    complete: function() {
+                        geoTableLoading = false;
+                        setTimeout(function() {
+                            if (geoTable) {
+                                geoTable.columns.adjust();
+                            }
+                        }, 200);
+                    }
+                },
+                columns: [
+                    { data: "id", visible: false },
+                    { data: "priority", width: "80px" },
+                    { data: "code", width: "80px" },
+                    { data: "name", width: "150px" },
+                    { data: "rule", width: "80px" },
+                    { data: "comment", width: "150px" },
+                    {
+                        data: null,
+                        width: "100px",
+                        render: function (data, type, row) {
+                            return (
+                                '<button class="btn btn-sm btn-default bbcs-actions-b delete-country" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="' + geoText('delete', 'Delete') + '" data-id="' +
+                                row.id +
+                                '"><i class="fa-regular fa-trash-can"></i></button> ' +
+                                '<button class="btn btn-sm bbcs-actions-b ' +
+                                (row.disable == 0 ? "btn-default" : "btn-warning") +
+                                ' toggle-country" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="' + geoText('toggle', 'Toggle On/Off') + '" data-id="' +
+                                row.id +
+                                '"><i class="fas ' +
+                                (row.disable == 0 ? "fa-stop" : "fa-play") +
+                                '"></i></button>'
+                            );
+                        },
+                    },
+                ],
+                columnDefs: [
+                    {
+                        targets: "_all",
+                        className: "text-wrap",
+                    },
+                ],
+                createdRow: function (row, data) {
+                    $(row).addClass(data.disable == 0 ? "bbcs-rule-row--active" : "bbcs-rule-row--disabled");
+                },
+                layout: (function () {
+                    var isNewUI = !!document.querySelector('.bbcs-app');
+                    return isNewUI ? {
+                        topStart: {
+                            search: {
+                                text: '',
+                                placeholder: geoText('search_placeholder', 'Search by code, rule, comment…')
+                            }
+                        },
+                        topEnd: {
+                            buttons: ['csv', 'excel']
+                        }
+                    } : {
+                        topStart: {
+                            buttons: [
+                                "copy", "csv", "excel", "pdf", "print", "colvis",
+                                {
+                                    extend: "collection",
+                                    text: "Length Menu",
+                                    buttons: [
+                                        { text: "10", action: function (e, dt) { dt.page.len(10).draw(); } },
+                                        { text: "25", action: function (e, dt) { dt.page.len(25).draw(); } },
+                                        { text: "50", action: function (e, dt) { dt.page.len(50).draw(); } },
+                                        { text: "100", action: function (e, dt) { dt.page.len(100).draw(); } }
+                                    ]
+                                }
+                            ]
+                        }
+                    };
+                })(),
+                drawCallback: function () {
+                    var api = this.api();
+                    api.columns().every(function () {
+                        var column = this;
+                        var header = $(column.header());
+                        var body = $(column.nodes());
+                        if (body.length > 0) {
+                            header.css("min-width", body.first().css("width"));
+                            header.css("max-width", body.first().css("width"));
+                        }
                     });
-                    selectedCountries = Array.from(new Set(selectedCountries));
-                    renderGeoTags();
-                    updateGeoTextarea();
-                    showGeoStatus(geoText('country_list_loaded', 'Country list loaded.'), false);
-                } else {
-                    showGeoStatus(geoText('failed_to_load_saved_countries', 'Failed to load saved countries.'), true);
+                    setTimeout(function() {
+                        api.columns.adjust();
+                    }, 100);
+                },
+            });
+
+            geoJustInitialized = true;
+
+            $(document).on("click", "#botblocker-geo .toggle-country", function (e) {
+                e.preventDefault();
+                if (isProcessingGeo) return;
+
+                var $button = $(this);
+                var id = $button.data("id");
+
+                isProcessingGeo = true;
+                $button.prop("disabled", true);
+
+                $.ajax({
+                    url: botblockerData.ajaxurl,
+                    type: "POST",
+                    data: {
+                        action: "bbcs_toggle_country",
+                        id: id,
+                        nonce: botblockerData.nonce,
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            var rowData = geoTable.row($button.closest("tr")).data();
+                            rowData.disable = rowData.disable == 0 ? 1 : 0;
+                            geoTable.row($button.closest("tr")).data(rowData).draw(false);
+                            if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
+                            window.bbcsRulesToast('success', geoText('success_toggle', 'Country rule toggled successfully.'));
+                        } else {
+                            window.bbcsRulesToast('error', response.data || geoText('failed_toggle', 'Failed to toggle country rule.'));
+                        }
+                    },
+                    complete: function () {
+                        isProcessingGeo = false;
+                        $button.prop("disabled", false);
+                    },
+                });
+            });
+
+            $(document).on("click", "#botblocker-geo .delete-country", function (e) {
+                e.preventDefault();
+                if (isProcessingGeo) return;
+
+                var $button = $(this);
+                var id = $button.data("id");
+                if (!confirm(geoText('confirm_delete', 'Are you sure you want to delete this country rule?'))) {
+                    return;
                 }
-            },
-            error: function () {
-                showGeoStatus(geoText('server_error_loading_saved_countries', 'Server error while loading saved countries.'), true);
-            },
-            complete: function () {
-                geoLoading = false;
-                resetButton($refreshBtn);
-                hideGeoSectionOverlay();
-            }
-        });
-    }
 
-    function saveGeoCountries() {
-        var $saveBtn = $('#bbcs_geo_save');
-        showGeoSectionOverlay();
-        setButtonLoading($saveBtn, geoText('saving', 'Saving...'));
+                isProcessingGeo = true;
+                $button.prop("disabled", true);
 
-        $.ajax({
-            url: botblockerData.ajaxurl,
-            type: 'POST',
-            data: {
-                action: 'bbcs_save_geo_countries',
-                countries: JSON.stringify(selectedCountries),
-                nonce: botblockerData.nonce
-            },
-            success: function (response) {
-                if (response.success && Array.isArray(response.data)) {
-                    selectedCountries = response.data.map(normalizeCountryCode).filter(function (code) {
-                        return code.length === 2;
-                    });
-                    selectedCountries = Array.from(new Set(selectedCountries));
-                    renderGeoTags();
-                    updateGeoTextarea();
-                    showGeoStatus(geoText('country_list_saved', 'Country list saved.'), false);
-                    if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
-                } else {
-                    showGeoStatus(response.data || geoText('failed_to_save_country_list', 'Failed to save country list.'), true);
+                $.ajax({
+                    url: botblockerData.ajaxurl,
+                    type: "POST",
+                    data: {
+                        action: "bbcs_delete_country",
+                        id: id,
+                        nonce: botblockerData.nonce,
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            geoTable.ajax.reload();
+                            if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
+                            window.bbcsRulesToast('success', geoText('success_delete', 'Country rule deleted successfully.'));
+                        } else {
+                            window.bbcsRulesToast('error', response.data || geoText('failed_delete', 'Failed to delete country rule.'));
+                        }
+                    },
+                    complete: function () {
+                        isProcessingGeo = false;
+                        $button.prop("disabled", false);
+                    },
+                });
+            });
+
+            $(document).on("click", "#bbcs_geo_add_country", function (e) {
+                e.preventDefault();
+                if (isProcessingGeo) return;
+
+                var code = String($("#geoCountrySelect").val() || '').trim().toUpperCase();
+                if (!code) {
+                    window.bbcsRulesToast('error', geoText('please_select_country', 'Please select a country.'));
+                    return;
                 }
-            },
-            error: function () {
-                showGeoStatus(geoText('server_error_saving_country_list', 'Server error while saving country list.'), true);
-            },
-            complete: function () {
-                resetButton($saveBtn);
-                hideGeoSectionOverlay();
-            }
-        });
-    }
 
-    function initializeGeoTab() {
-        if (geoTabInitialized) {
-            return;
+                isProcessingGeo = true;
+                var $button = $(this);
+                $button.prop("disabled", true);
+
+                $.ajax({
+                    url: botblockerData.ajaxurl,
+                    type: "POST",
+                    data: {
+                        action: "bbcs_create_country",
+                        code: code,
+                        nonce: botblockerData.nonce,
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            geoTable.ajax.reload();
+                            if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
+                            window.bbcsRulesToast('success', geoText('success_create', 'Country added successfully.'));
+                        } else {
+                            window.bbcsRulesToast('error', response.data || geoText('failed_create', 'Failed to add country.'));
+                        }
+                    },
+                    complete: function () {
+                        isProcessingGeo = false;
+                        $button.prop("disabled", false);
+                    },
+                });
+            });
+
+            $(document).on("click", "#bbcs_geo_clear_all", function (e) {
+                e.preventDefault();
+                if (isProcessingGeo) return;
+                if (!confirm(geoText('confirm_clear', 'Are you sure you want to remove all country rules?'))) {
+                    return;
+                }
+
+                isProcessingGeo = true;
+                var $button = $(this);
+                $button.prop("disabled", true);
+
+                $.ajax({
+                    url: botblockerData.ajaxurl,
+                    type: "POST",
+                    data: {
+                        action: "bbcs_clear_all_countries",
+                        nonce: botblockerData.nonce,
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            geoTable.ajax.reload();
+                            if (typeof window.bbcsRefreshTableOverview === 'function') { window.bbcsRefreshTableOverview(); }
+                            window.bbcsRulesToast('success', geoText('success_clear', 'All country rules have been cleared.'));
+                        } else {
+                            window.bbcsRulesToast('error', response.data || geoText('failed_clear', 'Failed to clear countries.'));
+                        }
+                    },
+                    complete: function () {
+                        isProcessingGeo = false;
+                        $button.prop("disabled", false);
+                    },
+                });
+            });
         }
-        geoTabInitialized = true;
-        geoJustInitialized = true;
-        loadGeoCountriesFromTextarea();
+        return geoTable;
     }
 
     $(document).ready(function () {
-        $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
-            var target = $(e.target).attr('href');
-            if (target === '#bbcs_geo_list') {
-                initializeGeoTab();
-                loadGeoCountriesFromServer();
-            }
-        });
-
         $(document).on('bbcs:tab-changed', function (e, data) {
             if (data.tab === 'GEO') {
                 var sameTab = (lastGeoUITab === data.tab);
                 lastGeoUITab = data.tab;
-                initializeGeoTab();
-                if (!sameTab && !geoJustInitialized) {
-                    loadGeoCountriesFromServer();
+                initializeGeoTable();
+                if (!sameTab && !geoJustInitialized && geoTable) {
+                    geoTable.ajax.reload();
                 }
                 geoJustInitialized = false;
             }
-        });
-
-        if ($('#bbcs_geo_list').hasClass('active')) {
-            initializeGeoTab();
-            loadGeoCountriesFromServer();
-        }
-
-        $('#bbcs_geo_list').on('click', '#bbcs_geo_add_country', function () {
-            addCountry($('#geoCountrySelect').val());
-        });
-
-        $('#bbcs_geo_list').on('click', '#bbcs_geo_save', function () {
-            saveGeoCountries();
-        });
-
-        $('#bbcs_geo_list').on('click', '#bbcs_geo_refresh', function () {
-            loadGeoCountriesFromServer();
-        });
-
-        $('#bbcs_geo_list').on('click', '#bbcs_geo_clear_all', function () {
-            clearGeoCountries();
-        });
-
-        $('#bbcs_geo_list').on('click', '.bbcs-geo-tag .bbcs-geo-tag-remove', function () {
-            removeCountry($(this).closest('.bbcs-geo-tag').data('code'));
         });
     });
 })(jQuery);
