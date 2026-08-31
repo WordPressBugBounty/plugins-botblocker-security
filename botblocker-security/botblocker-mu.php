@@ -27,7 +27,7 @@ if ( ! defined( 'BOTBLOCKER_TABLE_PREFIX' ) ) {
 	define( 'BOTBLOCKER_TABLE_PREFIX', 'bbcs_' );
 }
 
-require_once __DIR__ . '/includes/utilites/util-botblocker-data-file.php';
+require_once __DIR__ . '/includes/data/class-botblocker-data-file.php';
 require_once __DIR__ . '/includes/database/inc-botblocker-tables.php';
 require_once __DIR__ . '/botblocker-mu-phase.php';
 

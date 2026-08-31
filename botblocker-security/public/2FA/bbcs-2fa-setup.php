@@ -9,8 +9,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 add_action(
 	'template_redirect',
 	function (): void {
-		global $bbcs_google_auth;
-
 		// CRITICAL: We check the endpoint instead of the query_var.
 		// We use an underscored query_var, but we also support the hyphenated form for compatibility.
 		if ( ! get_query_var( 'bbcs_2fa_setup' ) ) {
@@ -28,11 +26,17 @@ add_action(
 			exit;
 		}
 
-		if ( ! bbcs_is_2fa_required_for_user( $user_id ) ) {
+		if ( ! BotBlockerTwoFactorAuth::isRequiredForUser( $user_id ) ) {
 			wp_safe_redirect( admin_url() );
 			exit;
 		}
 
+		if ( 'setup' !== BotBlockerTwoFactorAuth::getPendingState( $user_id ) ) {
+			wp_safe_redirect( home_url( '/?bbcs_2fa=1' ) );
+			exit;
+		}
+
+		$auth    = BotBlockerTwoFactorAuth::instance();
 		$user    = wp_get_current_user();
 		$error   = '';
 		$success = false;
@@ -51,17 +55,17 @@ add_action(
 
 		$secret = get_user_meta( $user_id, '_2fa_secret_temp', true );
 		if ( empty( $secret ) ) {
-			$secret = $bbcs_google_auth->createSecret();
+			$secret = $auth->createSecret();
 			update_user_meta( $user_id, '_2fa_secret_temp', $secret );
 		}
 
 		$backup_codes = get_user_meta( $user_id, '_2fa_backup_codes_temp', true );
 		if ( empty( $backup_codes ) ) {
-			$backup_codes = bbcs_generate_backup_codes();
+			$backup_codes = BotBlockerTwoFactorAuth::generateBackupCodes();
 			update_user_meta( $user_id, '_2fa_backup_codes_temp', $backup_codes );
 		}
 
-		$qr_url = $bbcs_google_auth->getQRCodeUrl( $user->user_email, $secret );
+		$qr_url = $auth->getQRCodeUrl( $user->user_email, $secret );
 
 		$request_method = isset( $_SERVER['REQUEST_METHOD'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) : '';
 		$setup_code_raw = filter_input( INPUT_POST, 'bbcs_2fa_code', FILTER_UNSAFE_RAW );
@@ -75,28 +79,37 @@ add_action(
 			$nonce = sanitize_text_field( $nonce_raw );
 			if ( ! wp_verify_nonce( $nonce, 'bbcs_2fa_setup' ) ) {
 				$error = __( 'Security error. Refresh the page and try again.', 'botblocker-security' );
+			} elseif ( ! BotBlockerTwoFactorAuth::checkRateLimit( $user_id ) ) {
+				$error = __( 'Too many attempts. Try again in 5 minutes.', 'botblocker-security' );
 			} else {
 				if ( $setup_code_raw !== null ) {
 					$code_raw = wp_unslash( $setup_code_raw );
 				} else {
 					$code_raw = '';
 				}
-				$code = sanitize_text_field( $code_raw );
+			$code = sanitize_text_field( $code_raw );
 
-				if ( $bbcs_google_auth->verifyCode( $secret, $code ) ) {
+			$bbcs_active_secret = get_user_meta( $user_id, '_2fa_secret', true );
+			if ( $auth->verifyCode( $secret, $code )
+				&& ( empty( $bbcs_active_secret ) || $auth->verifyCode( $bbcs_active_secret, $code ) ) ) {
 					update_user_meta( $user_id, '_2fa_secret', $secret );
 					// We hash the backup codes before saving.
 					$plain_backup_codes  = is_array( $backup_codes ) ? $backup_codes : array();
-					$hashed_backup_codes = array_map( 'bbcs_hash_backup_code', $plain_backup_codes );
+					$hashed_backup_codes = array_map( array( 'BotBlockerTwoFactorAuth', 'hashBackupCode' ), $plain_backup_codes );
 					update_user_meta( $user_id, '_2fa_backup_codes', $hashed_backup_codes );
 					update_user_meta( $user_id, '_2fa_verified', 1 );
 					delete_user_meta( $user_id, '_2fa_secret_temp' );
 					delete_user_meta( $user_id, '_2fa_backup_codes_temp' );
 					delete_user_meta( $user_id, '_2fa_setup_pending' );
 					delete_user_meta( $user_id, '_2fa_pending' );
+					$redirect_after_setup = get_user_meta( $user_id, '_2fa_redirect_to', true );
+					delete_user_meta( $user_id, '_2fa_redirect_to' );
+					BotBlockerTwoFactorAuth::resetRateLimit( $user_id );
 
 					// Session cookie regeneration
 					wp_set_auth_cookie( $user_id, true );
+
+					do_action( 'bbcs_2fa_setup_completed', $user_id );
 
 					$success = true;
 				} else {
@@ -138,7 +151,7 @@ add_action(
 						<h3><?php esc_html_e( '2FA Setup Complete', 'botblocker-security' ); ?></h3>
 						<p><?php esc_html_e( 'Two-factor authentication is now active on your account.', 'botblocker-security' ); ?></p>
 						<div style="margin-top: 20px;">
-							<a href="<?php echo esc_url( get_user_meta( $user_id, '_2fa_redirect_to', true ) ?: admin_url() ); ?>" style="display: inline-block; padding: 12px 24px; background: #48bb78; color: white; text-decoration: none; border-radius: 6px; font-weight: 600;"><?php esc_html_e( 'Go to Dashboard', 'botblocker-security' ); ?></a>
+							<a href="<?php echo esc_url( $redirect_after_setup ?: admin_url() ); ?>" style="display: inline-block; padding: 12px 24px; background: #48bb78; color: white; text-decoration: none; border-radius: 6px; font-weight: 600;"><?php esc_html_e( 'Go to Dashboard', 'botblocker-security' ); ?></a>
 						</div>
 					</div>
 				<?php else : ?>
@@ -193,3 +206,5 @@ add_action(
 		exit;
 	}
 );
+
+BotBlockerTwoFactorAuth::markPagesLoaded();

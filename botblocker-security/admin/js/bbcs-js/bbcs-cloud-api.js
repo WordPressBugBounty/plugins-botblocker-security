@@ -27,17 +27,17 @@
                         $('#bbcs_stat_hits').text(Number(hits).toLocaleString());
                         $('#bbcs_stat_days').text(days);
                         if (!isAutomaticRefresh) {
-                            alert(bbcsCloudApiL10n.refreshed);
+                            bbcsToast('success', bbcsCloudApiL10n.refreshed);
                         }
                     } else {
                         if (!isAutomaticRefresh) {
-                            alert(response.data.error || bbcsCloudApiL10n.failed_refresh);
+                            bbcsToast('error', response.data.error || bbcsCloudApiL10n.failed_refresh);
                         }
                     }
                 },
                 error: function (xhr, status, error) {
                     if (!isAutomaticRefresh) {
-                        alert(bbcsCloudApiL10n.ajax_error + error);
+                        bbcsToast('error', bbcsCloudApiL10n.ajax_error + error);
                     }
                 },
                 complete: function () {
@@ -85,7 +85,7 @@
                     location.reload();
                     return;
                 }
-                alert(response.data.message);
+                bbcsToast('error', response.data.message);
                 $btn.prop('disabled', false);
             }).fail(function() {
                 $btn.prop('disabled', false);
@@ -109,7 +109,7 @@
                         location.reload();
                         return;
                     }
-                    alert(response.data.message);
+                    bbcsToast('error', response.data.message);
                     $btn.prop('disabled', false);
                 }).fail(function() {
                     $btn.prop('disabled', false);
@@ -127,7 +127,7 @@
                         location.reload();
                         return;
                     }
-                    alert(response.data.message);
+                    bbcsToast('error', response.data.message);
                     $btn.prop('disabled', false);
                 }).fail(function() {
                     $btn.prop('disabled', false);

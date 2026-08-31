@@ -56,6 +56,9 @@ final class InfoColumn extends Base {
 	 */
 	private $notes = array();
 
+	/** @var string Version string displayed between descriptions and documentation links. */
+	private $version = '';
+
 	/**
 	 * Set the icon using a standard sprite reference (settings style).
 	 * Renders: <svg class="bbcs-ico bbcs-ico--lg"><use href="#bbcs-i-{name}"/></svg>
@@ -165,6 +168,16 @@ final class InfoColumn extends Base {
 		return $this;
 	}
 
+	/**
+	 * Set the addon/plugin version displayed between descriptions and documentation links.
+	 *
+	 * @param string $version Version string (e.g. "1.0.3").
+	 */
+	public function withVersion( string $version ): self {
+		$this->version = $version;
+		return $this;
+	}
+
 	public function render( bool $return = false ): string {
 		$html = '<div class="bbcs-infocol">';
 
@@ -209,6 +222,10 @@ final class InfoColumn extends Base {
 					. wp_kses_post( $content )
 					. '</div>';
 			}
+		}
+
+		if ( $this->version !== '' ) {
+			$html .= '<div class="bbcs-infocol-version">' . esc_html( __( 'Version', 'botblocker-security' ) . ' ' . $this->version ) . '</div>';
 		}
 
 		if ( ! empty( $this->doc_links ) ) {

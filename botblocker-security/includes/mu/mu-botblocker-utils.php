@@ -53,7 +53,7 @@ trait BotBlockerMuUtils {
 		$this->settings = array();
 		$settings_file  = $this->dirs['data'] . 'settings.php';
 		if ( file_exists( $settings_file ) && is_readable( $settings_file ) ) {
-			$loaded = bbcs_safe_load_data_file( $settings_file );
+			$loaded = BotBlockerDataFile::safeLoad( $settings_file );
 			if ( is_array( $loaded ) ) {
 				$this->settings = $loaded;
 			}
@@ -89,14 +89,7 @@ trait BotBlockerMuUtils {
 
 	private function is_wordpress_maintenance_request(): bool {
 
-		$uri = isset( $_SERVER['REQUEST_URI'] )
-			? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) )
-		: '';
-
-		$path = strtok( $uri, '?' );
-		if ( $path === false ) {
-			$path = '';
-		}
+		$path = $this->request_path();
 
 		$excluded_patterns = array(
 			'/wp-cron.php',
@@ -107,12 +100,12 @@ trait BotBlockerMuUtils {
 		);
 
 		foreach ( $excluded_patterns as $pattern ) {
-			if ( $path !== '' && strpos( $path, $pattern ) !== false ) {
+			if ( $this->path_matches( $path, $pattern ) ) {
 				return true;
 			}
 		}
 
-		if ( $path !== '' && strpos( $path, '/wp-admin/admin-ajax.php' ) !== false ) {
+		if ( $this->path_matches( $path, '/wp-admin/admin-ajax.php' ) ) {
 				$action = '';
 			// phpcs:disable WordPress.Security.NonceVerification.Recommended -- checking AJAX action name only, no state change
 			if ( isset( $_REQUEST['action'] ) ) {
@@ -130,6 +123,40 @@ trait BotBlockerMuUtils {
 		}
 
 		return false;
+	}
+
+	private function request_path(): string {
+		$uri = isset( $_SERVER['REQUEST_URI'] )
+			? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) )
+		: '';
+
+		$q = strpos( $uri, '?' );
+		if ( $q !== false ) {
+			$uri = substr( $uri, 0, $q );
+		}
+		return $uri;
+	}
+
+	private function path_matches( string $path, string $pattern ): bool {
+		if ( $path === $pattern ) {
+			return true;
+		}
+
+		$base = $this->site_url_path();
+		return $base !== '' && $path === $base . $pattern;
+	}
+
+	private function site_url_path(): string {
+		if ( ! function_exists( 'site_url' ) ) {
+			return '';
+		}
+
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url -- MU layer; native parse_url for path-only extract
+		$parsed = parse_url( (string) site_url(), PHP_URL_PATH );
+		if ( ! is_string( $parsed ) || $parsed === '/' ) {
+			return '';
+		}
+		return rtrim( $parsed, '/' );
 	}
 
 	private function is_wordpress_self_request(): bool {
@@ -153,7 +180,7 @@ trait BotBlockerMuUtils {
 		if ( ! file_exists( $ip_file ) ) {
 			return false;
 		}
-		$ip_rule_list = bbcs_safe_load_data_file( $ip_file );
+		$ip_rule_list = BotBlockerDataFile::safeLoad( $ip_file );
 		if ( ! is_array( $ip_rule_list ) ) {
 			return false;
 		}

@@ -26,10 +26,6 @@
         });
     };
  
-    // Alias to the shared Toastify wrapper (bbcs-shared-helpers.js) - kept
-    // under this name since every rules-page module already calls it.
-    window.bbcsRulesToast = window.bbcsToast;
-
     var isProcessingRule = false;
     // local flag for loading the rules table
     var rulesTableLoading = false;
@@ -460,7 +456,7 @@
 
         $("#botblocker-rules").on("click", ".delete-rule", function () {
             var id = $(this).data("id");
-            if (confirm(bbcsRulesL10n.confirm_delete)) {
+            bbcsConfirm(bbcsRulesL10n.confirm_delete, function () {
                 $.ajax({
                     url: botblockerData.ajaxurl,
                     type: "POST",
@@ -479,7 +475,7 @@
                         }
                     },
                 });
-            }
+            });
         });
 
         $("#bbcs_rules_add").on("click", function () {

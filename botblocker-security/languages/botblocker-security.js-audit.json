@@ -2,13 +2,13 @@
   "description": "Strings found in JS/JSON that need source-code fixes to be translatable via WordPress gettext.",
   "pot_path": "D:\\_DEV\\BotBlocker\\plugin\\wp-content\\plugins\\botblocker-security\\languages\\botblocker-security.pot",
   "summary": {
-    "php_unique": 2755,
-    "js_total": 93,
-    "js_duplicate": 64,
-    "js_missing": 29,
-    "json_total": 20,
-    "json_duplicate": 10,
-    "json_missing": 10
+    "php_unique": 3092,
+    "js_total": 102,
+    "js_duplicate": 75,
+    "js_missing": 27,
+    "json_total": 28,
+    "json_duplicate": 16,
+    "json_missing": 12
   },
   "js_strings": [
     {
@@ -17,56 +17,72 @@
         "admin/js/admin.js:26"
       ],
       "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
+      "note": "JS-only — wrap in __() with the text domain (PHP or wp.i18n JS) to make it translatable"
     },
     {
       "msgid": "Please enter a valid 6-digit code.",
       "references": [
-        "admin/js/bbcs-js/bbcs-2fa.js:134"
+        "admin/js/bbcs-js/bbcs-2fa.js:122"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Two-Factor Authentication enabled.",
       "references": [
-        "admin/js/bbcs-js/bbcs-2fa.js:156"
+        "admin/js/bbcs-js/bbcs-2fa.js:144"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Invalid verification code.",
       "references": [
-        "admin/js/bbcs-js/bbcs-2fa.js:162",
-        "admin/js/bbcs-js/bbcs-2fa.js:185"
+        "admin/js/bbcs-js/bbcs-2fa.js:150",
+        "admin/js/bbcs-js/bbcs-2fa.js:173"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Verification failed.",
       "references": [
-        "admin/js/bbcs-js/bbcs-2fa.js:163"
+        "admin/js/bbcs-js/bbcs-2fa.js:151"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Connection error. Please try again.",
       "references": [
-        "admin/js/bbcs-js/bbcs-2fa.js:179"
+        "admin/js/bbcs-js/bbcs-2fa.js:167"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Two-Factor Authentication has been reset.",
       "references": [
-        "admin/js/bbcs-js/bbcs-2fa.js:227"
+        "admin/js/bbcs-js/bbcs-2fa.js:215"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
+    },
+    {
+      "msgid": "Failed to revoke trusted devices.",
+      "references": [
+        "admin/js/bbcs-js/bbcs-2fa.js:328"
+      ],
+      "status": "missing",
+      "note": "JS-only — wrap in __() with the text domain (PHP or wp.i18n JS) to make it translatable"
+    },
+    {
+      "msgid": "All trusted devices have been revoked.",
+      "references": [
+        "admin/js/bbcs-js/bbcs-2fa.js:331"
+      ],
+      "status": "duplicate",
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Add-on installed successfully.",
@@ -74,7 +90,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:65"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Add-on package uploaded. Find it below, then activate it when ready.",
@@ -82,7 +98,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:69"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "All add-ons have been updated.",
@@ -90,7 +106,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:73"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Add-on updated successfully.",
@@ -98,7 +114,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:77"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Add-on was updated but not reactivated - it requires BotBlocker version %s or higher. Please update the plugin.",
@@ -106,7 +122,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:81"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Add-on deleted.",
@@ -114,7 +130,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:86"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Operation failed.",
@@ -122,7 +138,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:90"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "The add-on is invalid or broken.",
@@ -130,7 +146,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:91"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Installation arguments are missing.",
@@ -138,7 +154,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:92"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Failed to download the add-on package.",
@@ -146,7 +162,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:93"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Failed to unpack the add-on package.",
@@ -154,7 +170,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:94"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Filesystem API is not available.",
@@ -162,7 +178,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:95"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "The add-on download URL is not allowed.",
@@ -170,7 +186,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:96"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Choose an add-on ZIP package first.",
@@ -178,7 +194,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:97"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "The add-on upload failed.",
@@ -186,7 +202,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:98"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "The uploaded file was not accepted by WordPress.",
@@ -194,7 +210,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:99"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Add-on package is missing or unreadable.",
@@ -202,7 +218,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:100"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "The add-on package must be a ZIP file.",
@@ -210,7 +226,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:101"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "The add-on package is too large.",
@@ -218,7 +234,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:102"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "The add-on package cannot be opened.",
@@ -226,7 +242,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:103"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "The add-on package has an invalid file count.",
@@ -234,7 +250,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:104"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "The package contains an unsafe file path.",
@@ -242,7 +258,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:105"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "The package contains an oversized file.",
@@ -250,7 +266,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:106"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "The temporary extraction folder is missing.",
@@ -258,7 +274,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:107"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "The package must contain exactly one root folder.",
@@ -266,7 +282,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:108"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "The package root folder must be a valid slug.",
@@ -274,7 +290,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:109"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "The package does not match the BotBlocker add-on contract.",
@@ -282,7 +298,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:110"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Official BotBlocker add-ons require BotBlocker PRO. Custom ZIP add-ons can still be uploaded.",
@@ -290,7 +306,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:111"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "The package must declare Requires-Core.",
@@ -298,7 +314,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:112"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "The package slug does not match the requested add-on.",
@@ -306,7 +322,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:113"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "This add-on requires a newer PHP version.",
@@ -314,7 +330,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:114"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "File modifications are disabled for this WordPress installation.",
@@ -322,7 +338,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:115"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Failed to create a temporary add-on folder.",
@@ -330,7 +346,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:116"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "The validated add-on source is missing.",
@@ -338,7 +354,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:117"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Failed to backup the existing add-on.",
@@ -346,7 +362,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:118"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Failed to install the add-on package.",
@@ -354,7 +370,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:119"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "This add-on requires a newer version of BotBlocker.",
@@ -362,7 +378,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:124"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Required:",
@@ -370,7 +386,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:125"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Please update the plugin first.",
@@ -378,7 +394,7 @@
         "admin/js/bbcs-js/bbcs-addons.js:126"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "No file selected",
@@ -386,14 +402,40 @@
         "admin/js/bbcs-js/bbcs-addons.js:166"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
+    },
+    {
+      "msgid": "Update All (%d)",
+      "references": [
+        "admin/js/bbcs-js/bbcs-addons.js:221"
+      ],
+      "status": "duplicate",
+      "note": "already in POT (PHP or JS gettext)"
+    },
+    {
+      "msgid": "Failed to load add-on catalog.",
+      "references": [
+        "admin/js/bbcs-js/bbcs-addons.js:274",
+        "admin/js/bbcs-js/bbcs-addons.js:298"
+      ],
+      "status": "duplicate",
+      "note": "already in POT (PHP or JS gettext)"
+    },
+    {
+      "msgid": "Add-on catalog is currently unavailable.",
+      "references": [
+        "admin/js/bbcs-js/bbcs-addons.js:291"
+      ],
+      "status": "duplicate",
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Length Menu",
       "references": [
         "admin/js/bbcs-js/bbcs-asn.js:127",
-        "admin/js/bbcs-js/bbcs-hits.js:461",
-        "admin/js/bbcs-js/bbcs-llm.js:189",
+        "admin/js/bbcs-js/bbcs-geo.js:103",
+        "admin/js/bbcs-js/bbcs-hits.js:462",
+        "admin/js/bbcs-js/bbcs-llm.js:190",
         "admin/js/bbcs-js/bbcs-path.js:146",
         "admin/js/bbcs-js/bbcs-proxy.js:148",
         "admin/js/bbcs-js/bbcs-rules-ipv4.js:141",
@@ -402,7 +444,55 @@
         "admin/js/bbcs-js/bbcs-white.js:148"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
+    },
+    {
+      "msgid": "Object type",
+      "references": [
+        "admin/js/bbcs-js/bbcs-audit.js:90"
+      ],
+      "status": "duplicate",
+      "note": "already in POT (PHP or JS gettext)"
+    },
+    {
+      "msgid": "Object ID",
+      "references": [
+        "admin/js/bbcs-js/bbcs-audit.js:91"
+      ],
+      "status": "duplicate",
+      "note": "already in POT (PHP or JS gettext)"
+    },
+    {
+      "msgid": "User agent",
+      "references": [
+        "admin/js/bbcs-js/bbcs-audit.js:95"
+      ],
+      "status": "duplicate",
+      "note": "already in POT (PHP or JS gettext)"
+    },
+    {
+      "msgid": "Search audit log…",
+      "references": [
+        "admin/js/bbcs-js/bbcs-audit.js:231"
+      ],
+      "status": "duplicate",
+      "note": "already in POT (PHP or JS gettext)"
+    },
+    {
+      "msgid": "No data yet",
+      "references": [
+        "admin/js/bbcs-js/bbcs-charts.js:326"
+      ],
+      "status": "duplicate",
+      "note": "already in POT (PHP or JS gettext)"
+    },
+    {
+      "msgid": "Shows up after the first hits",
+      "references": [
+        "admin/js/bbcs-js/bbcs-charts.js:330"
+      ],
+      "status": "duplicate",
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "fa-solid fa-question-circle",
@@ -412,80 +502,64 @@
         "admin/js/bbcs-js/bbcs-hits.js:230"
       ],
       "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
+      "note": "JS-only — wrap in __() with the text domain (PHP or wp.i18n JS) to make it translatable"
+    },
+    {
+      "msgid": "Reports Dashboard",
+      "references": [
+        "admin/js/bbcs-js/bbcs-hits.js:612"
+      ],
+      "status": "duplicate",
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Not saved!",
       "references": [
-        "admin/js/bbcs-js/bbcs-integrations.js:37",
+        "admin/js/bbcs-js/bbcs-integrations.js:40",
         "admin/js/bbcs-js/bbcs-tools.js:41"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "RU-Gov list update scheduled.",
       "references": [
-        "admin/js/bbcs-js/bbcs-maintenance.js:554"
+        "admin/js/bbcs-js/bbcs-maintenance.js:548"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Failed to schedule RU-Gov list update.",
       "references": [
-        "admin/js/bbcs-js/bbcs-maintenance.js:556"
+        "admin/js/bbcs-js/bbcs-maintenance.js:550"
       ],
       "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
+      "note": "JS-only — wrap in __() with the text domain (PHP or wp.i18n JS) to make it translatable"
     },
     {
       "msgid": "Error scheduling RU-Gov list update.",
       "references": [
-        "admin/js/bbcs-js/bbcs-maintenance.js:561"
+        "admin/js/bbcs-js/bbcs-maintenance.js:555"
       ],
       "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
+      "note": "JS-only — wrap in __() with the text domain (PHP or wp.i18n JS) to make it translatable"
     },
     {
       "msgid": "LLM providers synced successfully.",
       "references": [
-        "admin/js/bbcs-js/bbcs-maintenance.js:582"
+        "admin/js/bbcs-js/bbcs-maintenance.js:576"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "LLM sync failed.",
       "references": [
-        "admin/js/bbcs-js/bbcs-maintenance.js:584"
+        "admin/js/bbcs-js/bbcs-maintenance.js:578"
       ],
       "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
-    },
-    {
-      "msgid": "Error syncing LLM providers.",
-      "references": [
-        "admin/js/bbcs-js/bbcs-maintenance.js:589"
-      ],
-      "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
-    },
-    {
-      "msgid": "Are you sure you want to re-install Database?",
-      "references": [
-        "admin/js/bbcs-js/bbcs-maintenance.js:158"
-      ],
-      "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
-    },
-    {
-      "msgid": "Are you sure you want to make a backup?",
-      "references": [
-        "admin/js/bbcs-js/bbcs-maintenance.js:199"
-      ],
-      "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
+      "note": "JS-only — wrap in __() with the text domain (PHP or wp.i18n JS) to make it translatable"
     },
     {
       "msgid": "Early Init requires active BotBlocker PRO and the Early Init add-on. Open Add-ons page?",
@@ -493,40 +567,40 @@
         "admin/js/bbcs-js/bbcs-multipage.js:164"
       ],
       "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
+      "note": "JS-only — wrap in __() with the text domain (PHP or wp.i18n JS) to make it translatable"
     },
     {
       "msgid": "Add Rule",
       "references": [
-        "admin/js/bbcs-js/bbcs-multipage.js:373",
-        "admin/js/bbcs-js/bbcs-multipage.js:420"
+        "admin/js/bbcs-js/bbcs-multipage.js:386",
+        "admin/js/bbcs-js/bbcs-multipage.js:433"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Add Path",
       "references": [
-        "admin/js/bbcs-js/bbcs-multipage.js:374"
+        "admin/js/bbcs-js/bbcs-multipage.js:387"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Add Proxy",
       "references": [
-        "admin/js/bbcs-js/bbcs-multipage.js:378"
+        "admin/js/bbcs-js/bbcs-multipage.js:391"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Nothing found for",
       "references": [
-        "admin/js/bbcs-js/bbcs-multipage.js:507"
+        "admin/js/bbcs-js/bbcs-multipage.js:520"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Error: ",
@@ -537,7 +611,7 @@
         "admin/js/bbcs-js/bbcs-setup-wizard.js:328"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Unknown error",
@@ -548,7 +622,7 @@
         "admin/js/bbcs-js/bbcs-setup-wizard.js:328"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Test failed",
@@ -556,7 +630,7 @@
         "admin/js/bbcs-js/bbcs-setup-wizard.js:202"
       ],
       "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
+      "note": "JS-only — wrap in __() with the text domain (PHP or wp.i18n JS) to make it translatable"
     },
     {
       "msgid": "Saving...",
@@ -567,7 +641,7 @@
         "admin/js/bbcs-js/bbcs-setup-wizard.js:398"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Silent Auto-Verify (No Captcha)",
@@ -575,7 +649,7 @@
         "admin/js/bbcs-js/bbcs-setup-wizard.js:347"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Regular plugin",
@@ -583,7 +657,7 @@
         "admin/js/bbcs-js/bbcs-setup-wizard.js:349"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Are you sure?",
@@ -591,7 +665,7 @@
         "admin/js/bbcs-js/bbcs-setup-wizard.js:429"
       ],
       "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
+      "note": "JS-only — wrap in __() with the text domain (PHP or wp.i18n JS) to make it translatable"
     },
     {
       "msgid": "Auto-fix applied. Moving on.",
@@ -599,15 +673,15 @@
         "admin/js/bbcs-js/bbcs-setup-wizard.js:502"
       ],
       "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
+      "note": "JS-only — wrap in __() with the text domain (PHP or wp.i18n JS) to make it translatable"
     },
     {
       "msgid": "Please Confirm",
       "references": [
-        "admin/js/bbcs-js/bbcs-shared-helpers.js:139"
+        "admin/js/bbcs-js/bbcs-toast.js:33"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "DataTables warning: Formatted date without Moment.js or Luxon - https://datatables.net/tn/17",
@@ -616,7 +690,7 @@
         "admin/js/datatables/datatables.min.js:30"
       ],
       "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
+      "note": "JS-only — wrap in __() with the text domain (PHP or wp.i18n JS) to make it translatable"
     },
     {
       "msgid": "Exported data",
@@ -624,7 +698,7 @@
         "admin/js/datatables/datatables.min.js:40"
       ],
       "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
+      "note": "JS-only — wrap in __() with the text domain (PHP or wp.i18n JS) to make it translatable"
     },
     {
       "msgid": "Burkina Faso",
@@ -635,7 +709,7 @@
         "admin/js/jsvectormap/maps/world.js:1"
       ],
       "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
+      "note": "JS-only — wrap in __() with the text domain (PHP or wp.i18n JS) to make it translatable"
     },
     {
       "msgid": "United Kingdom",
@@ -646,7 +720,7 @@
         "admin/js/jsvectormap/maps/world.js:1"
       ],
       "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
+      "note": "JS-only — wrap in __() with the text domain (PHP or wp.i18n JS) to make it translatable"
     },
     {
       "msgid": "Puerto Rico",
@@ -657,7 +731,7 @@
         "admin/js/jsvectormap/maps/world.js:1"
       ],
       "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
+      "note": "JS-only — wrap in __() with the text domain (PHP or wp.i18n JS) to make it translatable"
     },
     {
       "msgid": "Papua New Guinea",
@@ -668,7 +742,7 @@
         "admin/js/jsvectormap/maps/world.js:1"
       ],
       "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
+      "note": "JS-only — wrap in __() with the text domain (PHP or wp.i18n JS) to make it translatable"
     },
     {
       "msgid": "South Africa",
@@ -679,7 +753,7 @@
         "admin/js/jsvectormap/maps/world.js:1"
       ],
       "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
+      "note": "JS-only — wrap in __() with the text domain (PHP or wp.i18n JS) to make it translatable"
     },
     {
       "msgid": "New Caledonia",
@@ -690,7 +764,7 @@
         "admin/js/jsvectormap/maps/world.js:1"
       ],
       "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
+      "note": "JS-only — wrap in __() with the text domain (PHP or wp.i18n JS) to make it translatable"
     },
     {
       "msgid": "New Zealand",
@@ -701,7 +775,7 @@
         "admin/js/jsvectormap/maps/world.js:1"
       ],
       "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
+      "note": "JS-only — wrap in __() with the text domain (PHP or wp.i18n JS) to make it translatable"
     },
     {
       "msgid": "Costa Rica",
@@ -712,7 +786,7 @@
         "admin/js/jsvectormap/maps/world.js:1"
       ],
       "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
+      "note": "JS-only — wrap in __() with the text domain (PHP or wp.i18n JS) to make it translatable"
     },
     {
       "msgid": "El Salvador",
@@ -723,7 +797,7 @@
         "admin/js/jsvectormap/maps/world.js:1"
       ],
       "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
+      "note": "JS-only — wrap in __() with the text domain (PHP or wp.i18n JS) to make it translatable"
     },
     {
       "msgid": "Sierra Leone",
@@ -734,7 +808,7 @@
         "admin/js/jsvectormap/maps/world.js:1"
       ],
       "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
+      "note": "JS-only — wrap in __() with the text domain (PHP or wp.i18n JS) to make it translatable"
     },
     {
       "msgid": "Saudi Arabia",
@@ -745,7 +819,7 @@
         "admin/js/jsvectormap/maps/world.js:1"
       ],
       "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
+      "note": "JS-only — wrap in __() with the text domain (PHP or wp.i18n JS) to make it translatable"
     },
     {
       "msgid": "United States",
@@ -756,7 +830,7 @@
         "admin/js/jsvectormap/maps/world.js:1"
       ],
       "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
+      "note": "JS-only — wrap in __() with the text domain (PHP or wp.i18n JS) to make it translatable"
     },
     {
       "msgid": "Trinidad and Tobago",
@@ -767,7 +841,7 @@
         "admin/js/jsvectormap/maps/world.js:1"
       ],
       "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
+      "note": "JS-only — wrap in __() with the text domain (PHP or wp.i18n JS) to make it translatable"
     },
     {
       "msgid": "Sri Lanka",
@@ -778,7 +852,7 @@
         "admin/js/jsvectormap/maps/world.js:1"
       ],
       "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
+      "note": "JS-only — wrap in __() with the text domain (PHP or wp.i18n JS) to make it translatable"
     },
     {
       "msgid": "United Arab Emirates",
@@ -789,42 +863,58 @@
         "admin/js/jsvectormap/maps/world.js:1"
       ],
       "status": "missing",
-      "note": "JS-only — needs __() in PHP source + wp_localize_script()"
+      "note": "JS-only — wrap in __() with the text domain (PHP or wp.i18n JS) to make it translatable"
     },
     {
       "msgid": "Verifying...",
       "references": [
-        "public/js/check-core.js:49"
+        "public/js/check-core.js:51"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Retrying...",
       "references": [
-        "public/js/check-core.js:55"
+        "public/js/check-core.js:57"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Verification failed. Please complete the challenge below.",
       "references": [
-        "public/js/check-core.js:61"
+        "public/js/check-core.js:63"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     },
     {
       "msgid": "Access approved. Redirecting...",
       "references": [
-        "public/js/check-core.js:66"
+        "public/js/check-core.js:68"
       ],
       "status": "duplicate",
-      "note": "JS fallback — already in PHP __()"
+      "note": "already in POT (PHP or JS gettext)"
     }
   ],
   "json_strings": [
+    {
+      "msgid": "AI-powered comment spam detection via WebSocket API.",
+      "references": [
+        "addons/bbcs-antispam/bbcs-addon.json:0"
+      ],
+      "status": "missing",
+      "note": "JSON-only — needs __() in PHP when rendering addon description"
+    },
+    {
+      "msgid": "AI Anti-Spam Comments",
+      "references": [
+        "addons/bbcs-antispam/bbcs-addon.json:0"
+      ],
+      "status": "duplicate",
+      "note": "Addon metadata — already in PHP __()"
+    },
     {
       "msgid": "Multi-signal behavioral analysis for advanced bot detection.",
       "references": [
@@ -870,13 +960,29 @@
       "references": [
         "addons/bbcs-cron-jobs/bbcs-addon.json:0"
       ],
-      "status": "duplicate",
-      "note": "Addon metadata — already in PHP __()"
+      "status": "missing",
+      "note": "JSON-only — needs __() in PHP when rendering addon description"
     },
     {
       "msgid": "Runs BotBlocker filtering before WordPress loads through wp-config bootstrap integration.",
       "references": [
         "addons/bbcs-early-init/bbcs-addon.json:0"
+      ],
+      "status": "duplicate",
+      "note": "Addon metadata — already in PHP __()"
+    },
+    {
+      "msgid": "Shows the plugin files and system files that WordPress runs automatically without listing them on the Plugins screen, and lets you turn them off or delete them.",
+      "references": [
+        "addons/bbcs-forced-inclusions/bbcs-addon.json:0"
+      ],
+      "status": "missing",
+      "note": "JSON-only — needs __() in PHP when rendering addon description"
+    },
+    {
+      "msgid": "Forced Inclusions (MU-Plugins & Drop-ins)",
+      "references": [
+        "addons/bbcs-forced-inclusions/bbcs-addon.json:0"
       ],
       "status": "missing",
       "note": "JSON-only — needs __() in PHP when rendering addon description"
@@ -918,8 +1024,8 @@
       "references": [
         "addons/bbcs-malware/bbcs-addon.json:0"
       ],
-      "status": "missing",
-      "note": "JSON-only — needs __() in PHP when rendering addon description"
+      "status": "duplicate",
+      "note": "Addon metadata — already in PHP __()"
     },
     {
       "msgid": "Malware Scanner",
@@ -930,12 +1036,28 @@
       "note": "Addon metadata — already in PHP __()"
     },
     {
+      "msgid": "Weekly site statistics digest pushed to your browser via Pusher Channels.",
+      "references": [
+        "addons/bbcs-pusher/bbcs-addon.json:0"
+      ],
+      "status": "missing",
+      "note": "JSON-only — needs __() in PHP when rendering addon description"
+    },
+    {
+      "msgid": "Pusher Weekly Digest",
+      "references": [
+        "addons/bbcs-pusher/bbcs-addon.json:0"
+      ],
+      "status": "duplicate",
+      "note": "Addon metadata — already in PHP __()"
+    },
+    {
       "msgid": "Adds security headers, CSP controls, and optional MU-phase header dispatch.",
       "references": [
         "addons/bbcs-security-headers/bbcs-addon.json:0"
       ],
-      "status": "missing",
-      "note": "JSON-only — needs __() in PHP when rendering addon description"
+      "status": "duplicate",
+      "note": "Addon metadata — already in PHP __()"
     },
     {
       "msgid": "Security Headers",
@@ -950,8 +1072,24 @@
       "references": [
         "addons/bbcs-speedup/bbcs-addon.json:0"
       ],
+      "status": "duplicate",
+      "note": "Addon metadata — already in PHP __()"
+    },
+    {
+      "msgid": "Weekly security report delivered straight to your Telegram chat.",
+      "references": [
+        "addons/bbcs-telegram/bbcs-addon.json:0"
+      ],
       "status": "missing",
       "note": "JSON-only — needs __() in PHP when rendering addon description"
+    },
+    {
+      "msgid": "Telegram Notifications",
+      "references": [
+        "addons/bbcs-telegram/bbcs-addon.json:0"
+      ],
+      "status": "duplicate",
+      "note": "Addon metadata — already in PHP __()"
     },
     {
       "msgid": "Verify installed WP core, plugins, and themes against official wp.org sources. Detect modified, added, and missing files.",

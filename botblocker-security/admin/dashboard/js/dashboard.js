@@ -10,9 +10,9 @@
             success: function (response) {
                 if (response.success) {
                     form[0].reset();
-                    alert(bbcsDashboardWidgetL10n.rule_added);
+                    bbcsToast('success', bbcsDashboardWidgetL10n.rule_added);
                 } else {
-                    alert(bbcsDashboardWidgetL10n.failed_create_rule + response.data);
+                    bbcsToast('error', bbcsDashboardWidgetL10n.failed_create_rule + response.data);
                 }
             },
         });
@@ -55,11 +55,11 @@
                         },
                         success: function (response) {
                             if (response.success) {
-                                alert(bbcsDashboardWidgetL10n.import_success_prefix + ipVersion.toUpperCase() + " " + listType + ":\n" + 
+                                bbcsToast('success', bbcsDashboardWidgetL10n.import_success_prefix + ipVersion.toUpperCase() + " " + listType + ":\n" + 
                                       bbcsDashboardWidgetL10n.import_imported + response.data.imported + "\n" + 
                                       bbcsDashboardWidgetL10n.import_skipped + response.data.skipped);
                             } else {
-                                alert(bbcsDashboardWidgetL10n.failed_import_prefix + ipVersion.toUpperCase() + " " + listType + ": " + response.data);
+                                bbcsToast('error', bbcsDashboardWidgetL10n.failed_import_prefix + ipVersion.toUpperCase() + " " + listType + ": " + response.data);
                             }
                         },
                     });
@@ -89,9 +89,9 @@
                         },
                         success: function (response) {
                             if (response.success) {
-                                alert(bbcsDashboardWidgetL10n.import_imported + response.data.imported + " | " + bbcsDashboardWidgetL10n.import_skipped + response.data.skipped);
+                                bbcsToast('success', bbcsDashboardWidgetL10n.import_imported + response.data.imported + " | " + bbcsDashboardWidgetL10n.import_skipped + response.data.skipped);
                             } else {
-                                alert(
+                                bbcsToast('error',
                                     bbcsDashboardWidgetL10n.failed_import_prefix +
                                         "IPv4 rules: " +
                                         response.data
@@ -123,9 +123,9 @@
                         },
                         success: function (response) {
                             if (response.success) {
-                                alert(bbcsDashboardWidgetL10n.import_imported + response.data.imported + " | " + bbcsDashboardWidgetL10n.import_skipped + response.data.skipped);
+                                bbcsToast('success', bbcsDashboardWidgetL10n.import_imported + response.data.imported + " | " + bbcsDashboardWidgetL10n.import_skipped + response.data.skipped);
                             } else {
-                                alert(
+                                bbcsToast('error',
                                     bbcsDashboardWidgetL10n.failed_import_prefix +
                                         "IPv6 rules: " +
                                         response.data
@@ -146,7 +146,7 @@
                 var data = JSON.parse(e.target.result);
                 callback(data);
             } catch (err) {
-                alert(bbcsDashboardWidgetL10n.invalid_json + err.message);
+                bbcsToast('error', bbcsDashboardWidgetL10n.invalid_json + err.message);
             }
         };
         reader.readAsText(file);

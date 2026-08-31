@@ -10,7 +10,14 @@ use BotBlocker\Component\InfoColumn;
 use BotBlocker\Component\SettingsGroup;
 use BotBlocker\Component\FieldPair;
 use BotBlocker\Component\ToggleOption;
-return static function (Botblocker_SettingsViewModel $data, bool $isActive): void {
+
+$bbcs_ddos_md = '';
+$bbcs_ddos_md_path = BOTBLOCKER_DIR . 'docs/DDOS-COMPATIBILITY.md';
+if ( file_exists( $bbcs_ddos_md_path ) ) {
+	$bbcs_ddos_md = (string) file_get_contents( $bbcs_ddos_md_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+}
+
+return static function (Botblocker_SettingsViewModel $data, bool $isActive) use ( $bbcs_ddos_md ): void {
 ?>
 	<div role="tabpanel" class="bbcs-tabpanel bbcs-protect-layout" data-tabpanel="advanced-protection"<?php echo $isActive ? '' : ' hidden' ?>>
 		<?php
@@ -48,11 +55,73 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
 						} )
 						->render();
 
+					?>
+					<div class="bbcs-option bbcs-hoverbg">
+						<button type="button" class="bbcs-btn" id="bbcs-ddos-compat-guide-trigger">
+							<svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-doc"></use></svg>
+							<?php esc_html_e( 'Open DDOS-COMPATIBILITY.md', 'botblocker-security' ); ?>
+						</button>
+						<span class="bbcs-option-label"><?php esc_html_e( 'Full guide: running behind DDoS-Guard, Stormwall, Cloudflare UAM, Qrator and similar services.', 'botblocker-security' ); ?></span>
+						<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_attr_e( 'Shows the raw contents of docs/DDOS-COMPATIBILITY.md shipped with the plugin.', 'botblocker-security' ); ?></span></span>
+					</div>
+					<?php
+
 
 				} )
 				->render();
 			?>
 		</div>
 	</div>
+
+	<div class="bbcs-modal-overlay" id="bbcsDdosCompatModal" style="display:none;">
+		<div class="bbcs-modal bbcs-modal--wide">
+			<div class="bbcs-modal-header">
+				<div class="bbcs-modal-title">
+					<svg class="bbcs-ico bbcs-ico--sm" style="margin-right:var(--bbcs-sp-1);"><use href="#bbcs-i-doc"></use></svg>
+					<?php esc_html_e( 'DDOS-COMPATIBILITY.md', 'botblocker-security' ); ?>
+				</div>
+				<button type="button" class="bbcs-modal-close" data-modal-close>
+					<svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-x"></use></svg>
+				</button>
+			</div>
+			<div class="bbcs-modal-body">
+				<pre class="bbcs-md-view"><?php echo esc_html( $bbcs_ddos_md ); ?></pre>
+			</div>
+			<div class="bbcs-modal-footer">
+				<button type="button" class="bbcs-btn" data-modal-close><?php esc_html_e( 'Close', 'botblocker-security' ); ?></button>
+			</div>
+		</div>
+	</div>
+
+	<script>
+	(function() {
+		'use strict';
+		var trigger = document.getElementById('bbcs-ddos-compat-guide-trigger');
+		var overlay = document.getElementById('bbcsDdosCompatModal');
+		if (!trigger || !overlay) return;
+
+		trigger.addEventListener('click', function(e) {
+			e.preventDefault();
+			overlay.style.display = 'flex';
+		});
+
+		overlay.addEventListener('click', function(e) {
+			var btn = e.target.closest('[data-modal-close]');
+			if (btn) {
+				overlay.style.display = 'none';
+				return;
+			}
+			if (e.target === overlay) {
+				overlay.style.display = 'none';
+			}
+		});
+
+		document.addEventListener('keydown', function(e) {
+			if (e.key === 'Escape' && overlay.style.display === 'flex') {
+				overlay.style.display = 'none';
+			}
+		});
+	})();
+	</script>
 <?php
 };

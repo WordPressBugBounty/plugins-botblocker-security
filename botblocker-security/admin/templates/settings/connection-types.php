@@ -59,6 +59,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
 					->withTitle( __( 'Self Connections', 'botblocker-security' ) )
 					->withItems( static function () use ( $data ): void {
 						ToggleOption::make()->withName( 'allow_self_ip_req' )->withChecked( $data->is_checked( 'allow_self_ip_req' ) )->withLabel( __( 'Allow requests from your server IP', 'botblocker-security' ) )->withTooltip( __( 'Allow your server IP to bypass security checks for updates and automated tasks.', 'botblocker-security' ) )->render();
+						ToggleOption::make()->withName( 'allow_self_call_header' )->withChecked( $data->is_checked( 'allow_self_call_header' ) )->withLabel( __( 'Self-call secret header proof', 'botblocker-security' ) )->withTooltip( __( 'Attach a signed X-BotBlocker-Self header to outgoing WordPress HTTP API calls to your own domain and accept it as self-call proof. Disable only if your hosting/WAF interferes with unknown request headers.', 'botblocker-security' ) )->render();
 					} )
 					->render();
 				?>

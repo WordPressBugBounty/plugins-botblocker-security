@@ -8,7 +8,6 @@ if (! defined('ABSPATH')) {
 
 return static function (Botblocker_IntegrationsViewModel $data, bool $isActive): void {
 	$redis_available = $data->has_redis_ext;
-	$has_pro = BotBlockerPro::isActive();
 ?>
 	<div role="tabpanel" class="bbcs-tabpanel bbcs-protect-layout" data-tabpanel="redis"<?php echo $isActive ? '' : ' hidden' ?>>
 		<div class="bbcs-infocol">
@@ -30,7 +29,7 @@ return static function (Botblocker_IntegrationsViewModel $data, bool $isActive):
 		<div>
 			<div class="bbcs-setgroup">
 				<div class="bbcs-setgroup-head"><?php esc_html_e('Redis Cache Integration', 'botblocker-security'); ?></div>
-				<div class="bbcs-option bbcs-hoverbg<?php echo !$has_pro ? ' bbcs-option--pro' : ''; ?>"><button class="bbcs-toggle<?php echo $data->is_checked('redis_enable', '1') ? ' is-on' : ''; ?>" role="switch" type="button" aria-checked="<?php echo $data->is_checked('redis_enable', '1') ? 'true' : 'false'; ?>" data-field="redis_enable"<?php echo $redis_available && $has_pro ? '' : ' disabled'; ?>><span class="bbcs-toggle-knob"></span></button><input type="hidden" name="redis_enable" value="<?php echo $data->is_checked('redis_enable', '1') ? '1' : '0'; ?>"><span class="bbcs-option-label<?php echo !$has_pro ? ' bbcs-cloud-api-color' : ''; ?>"><?php esc_html_e('Enable Redis counters', 'botblocker-security'); ?></span><?php if (!$has_pro) : ?><span class="bbcs-pill bbcs-pill--violet bbcs-pill--pro"><?php esc_html_e( 'PRO', 'botblocker-security' ); ?></span><?php endif; ?><span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_attr_e('Cache security counters and visitor data in Redis instead of the database.', 'botblocker-security'); ?></span></span></div>
+				<div class="bbcs-option bbcs-hoverbg"><button class="bbcs-toggle<?php echo $data->is_checked('redis_enable', '1') ? ' is-on' : ''; ?>" role="switch" type="button" aria-checked="<?php echo $data->is_checked('redis_enable', '1') ? 'true' : 'false'; ?>" data-field="redis_enable"<?php echo $redis_available ? '' : ' disabled'; ?>><span class="bbcs-toggle-knob"></span></button><input type="hidden" name="redis_enable" value="<?php echo $data->is_checked('redis_enable', '1') ? '1' : '0'; ?>"><span class="bbcs-option-label"><?php esc_html_e('Enable Redis counters', 'botblocker-security'); ?></span><span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_attr_e('Cache security counters and visitor data in Redis instead of the database.', 'botblocker-security'); ?></span></span></div>
 				<div class="bbcs-field">
 					<div class="bbcs-field-label"><?php esc_html_e('Server Host:', 'botblocker-security'); ?>
 						<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_attr_e('Specify the Redis server hostname or IP address. Default is localhost (127.0.0.1) for local Redis installations.', 'botblocker-security'); ?></span></span>
@@ -41,7 +40,7 @@ return static function (Botblocker_IntegrationsViewModel $data, bool $isActive):
 					<div class="bbcs-field-label"><?php esc_html_e('Key Prefix:', 'botblocker-security'); ?>
 						<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_attr_e('Define a unique prefix for all Redis keys to organize data and prevent conflicts with other applications using the same Redis instance.', 'botblocker-security'); ?></span></span>
 					</div>
-					<div class="bbcs-field-box"><input type="text" class="bbcs-input bbcs-input--mono" name="redis_prefix" value="<?php echo esc_attr($data->get('redis_prefix', '')); ?>"></div>
+					<div class="bbcs-field-box"><input type="text" class="bbcs-input bbcs-input--mono" name="redis_prefix" value="<?php echo esc_attr($data->get('redis_prefix', BOTBLOCKER_PREFIX)); ?>"></div>
 				</div>
 				<div class="bbcs-field">
 					<div class="bbcs-field-label"><?php esc_html_e('Password:', 'botblocker-security'); ?>

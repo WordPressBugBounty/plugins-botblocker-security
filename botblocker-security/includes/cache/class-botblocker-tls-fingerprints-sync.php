@@ -72,9 +72,13 @@ class BotBlockerTlsFingerprintsSync {
 		return false;
 	}
 
-	public static function selfHeal(): void {
+	public static function isFeatureEnabled(): bool {
 		$settings = ( method_exists( 'BotBlocker', 'getInstance' ) ? (array) BotBlocker::getInstance()->settings : array() );
-		if ( empty( $settings['tls_fingerprint_check'] ) ) {
+		return ! empty( $settings['tls_fingerprint_check'] );
+	}
+
+	public static function selfHeal(): void {
+		if ( ! self::isFeatureEnabled() ) {
 			return;
 		}
 
@@ -115,8 +119,7 @@ class BotBlockerTlsFingerprintsSync {
 	}
 
 	public static function doSync( string $reason = '', bool $force = false ): bool {
-		$settings = ( method_exists( 'BotBlocker', 'getInstance' ) ? (array) BotBlocker::getInstance()->settings : array() );
-		if ( empty( $settings['tls_fingerprint_check'] ) ) {
+		if ( ! self::isFeatureEnabled() ) {
 			return false;
 		}
 

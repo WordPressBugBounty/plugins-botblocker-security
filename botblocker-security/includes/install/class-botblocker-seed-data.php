@@ -215,6 +215,7 @@ class BotBlockerSeedData {
 			array(
 				'priority' => 5,
 				'search'   => 'Google-CloudVertexBot',
+				// phpcs:ignore PluginCheck.CodeAnalysis.Offloading.OffloadedContent -- bot allowlist domain, not remote resource loading
 				'data'     => '.google.com .googleusercontent.com',
 				'rule'     => 'allow',
 				'comment'  => 'Vertex AI',
@@ -567,6 +568,7 @@ class BotBlockerSeedData {
 			array(
 				'priority' => 70,
 				'search'   => 'Cloudflare Web Analytics',
+				// phpcs:ignore PluginCheck.CodeAnalysis.Offloading.OffloadedContent -- bot allowlist domain, not remote resource loading
 				'data'     => '.cloudflare.com',
 				'rule'     => 'allow',
 				'comment'  => 'Cloudflare analytics service',
@@ -636,7 +638,7 @@ class BotBlockerSeedData {
 		$default_asn = array(
 			array(
 				'priority' => 1,
-				'asnum'    => 15169,
+				'asnum'    => '15169',
 				'asname'   => 'Google LLC',
 				'rule'     => 'allow',
 				'comment'  => 'Googlebot, Google crawlers',
@@ -644,7 +646,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 2,
-				'asnum'    => 13238,
+				'asnum'    => '13238',
 				'asname'   => 'Yandex LLC',
 				'rule'     => 'allow',
 				'comment'  => 'YandexBot',
@@ -652,7 +654,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 3,
-				'asnum'    => 714,
+				'asnum'    => '714',
 				'asname'   => 'Apple Inc',
 				'rule'     => 'allow',
 				'comment'  => 'Applebot',
@@ -660,7 +662,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 3,
-				'asnum'    => 6185,
+				'asnum'    => '6185',
 				'asname'   => 'Apple Inc',
 				'rule'     => 'allow',
 				'comment'  => 'Applebot (additional)',
@@ -668,7 +670,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 4,
-				'asnum'    => 55967,
+				'asnum'    => '55967',
 				'asname'   => 'Beijing Baidu Netcom',
 				'rule'     => 'allow',
 				'comment'  => 'Baiduspider',
@@ -676,7 +678,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 5,
-				'asnum'    => 36647,
+				'asnum'    => '36647',
 				'asname'   => 'Yahoo Inc',
 				'rule'     => 'allow',
 				'comment'  => 'Yahoo Slurp',
@@ -684,7 +686,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 10,
-				'asnum'    => 32934,
+				'asnum'    => '32934',
 				'asname'   => 'Meta Platforms Inc',
 				'rule'     => 'allow',
 				'comment'  => 'Facebook, Instagram, WhatsApp crawler',
@@ -692,7 +694,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 11,
-				'asnum'    => 13414,
+				'asnum'    => '13414',
 				'asname'   => 'X Corp',
 				'rule'     => 'allow',
 				'comment'  => 'Twitterbot',
@@ -700,7 +702,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 12,
-				'asnum'    => 62041,
+				'asnum'    => '62041',
 				'asname'   => 'Telegram Messenger Inc',
 				'rule'     => 'allow',
 				'comment'  => 'Telegram link preview',
@@ -708,7 +710,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 12,
-				'asnum'    => 59930,
+				'asnum'    => '59930',
 				'asname'   => 'Telegram Messenger LLP',
 				'rule'     => 'allow',
 				'comment'  => 'Telegram link preview',
@@ -716,7 +718,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 12,
-				'asnum'    => 62014,
+				'asnum'    => '62014',
 				'asname'   => 'Telegram Messenger Inc',
 				'rule'     => 'allow',
 				'comment'  => 'Telegram link preview',
@@ -724,7 +726,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 12,
-				'asnum'    => 44907,
+				'asnum'    => '44907',
 				'asname'   => 'Telegram Messenger LLP',
 				'rule'     => 'allow',
 				'comment'  => 'Telegram link preview',
@@ -732,7 +734,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 15,
-				'asnum'    => 23576,
+				'asnum'    => '23576',
 				'asname'   => 'NAVER Cloud Corp',
 				'rule'     => 'allow',
 				'comment'  => 'NaverBot (Korean search)',
@@ -740,7 +742,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 15,
-				'asnum'    => 43037,
+				'asnum'    => '43037',
 				'asname'   => 'Seznam.cz a.s.',
 				'rule'     => 'allow',
 				'comment'  => 'SeznamBot (Czech search)',
@@ -748,7 +750,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 15,
-				'asnum'    => 10158,
+				'asnum'    => '10158',
 				'asname'   => 'Kakao Corp',
 				'rule'     => 'allow',
 				'comment'  => 'DaumBot (Korean search)',
@@ -756,7 +758,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 15,
-				'asnum'    => 199064,
+				'asnum'    => '199064',
 				'asname'   => 'QWANT SAS',
 				'rule'     => 'allow',
 				'comment'  => 'Qwantify (French search)',
@@ -764,7 +766,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 15,
-				'asnum'    => 63046,
+				'asnum'    => '63046',
 				'asname'   => 'Brave Software Inc',
 				'rule'     => 'allow',
 				'comment'  => 'Brave SearchBot',
@@ -772,7 +774,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 20,
-				'asnum'    => 40428,
+				'asnum'    => '40428',
 				'asname'   => 'LinkedIn Corporation',
 				'rule'     => 'allow',
 				'comment'  => 'LinkedInBot',
@@ -780,7 +782,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 21,
-				'asnum'    => 54115,
+				'asnum'    => '54115',
 				'asname'   => 'Pinterest Inc',
 				'rule'     => 'allow',
 				'comment'  => 'Pinterest crawler',
@@ -788,7 +790,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 22,
-				'asnum'    => 396986,
+				'asnum'    => '396986',
 				'asname'   => 'ByteDance Ltd',
 				'rule'     => 'allow',
 				'comment'  => 'TikTok crawler',
@@ -796,7 +798,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 22,
-				'asnum'    => 395291,
+				'asnum'    => '395291',
 				'asname'   => 'Snapchat Inc',
 				'rule'     => 'allow',
 				'comment'  => 'Snapchat link preview',
@@ -804,7 +806,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 23,
-				'asnum'    => 47541,
+				'asnum'    => '47541',
 				'asname'   => 'VK LLC',
 				'rule'     => 'allow',
 				'comment'  => 'Mail.RU_Bot',
@@ -812,7 +814,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 24,
-				'asnum'    => 2635,
+				'asnum'    => '2635',
 				'asname'   => 'Automattic Inc',
 				'rule'     => 'allow',
 				'comment'  => 'WordPress.com, Jetpack',
@@ -820,7 +822,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 30,
-				'asnum'    => 14907,
+				'asnum'    => '14907',
 				'asname'   => 'Wikimedia Foundation Inc',
 				'rule'     => 'allow',
 				'comment'  => 'Wikipedia bots',
@@ -828,7 +830,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 30,
-				'asnum'    => 7941,
+				'asnum'    => '7941',
 				'asname'   => 'Internet Archive',
 				'rule'     => 'allow',
 				'comment'  => 'Wayback Machine',
@@ -836,7 +838,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 50,
-				'asnum'    => 13335,
+				'asnum'    => '13335',
 				'asname'   => 'Cloudflare Inc',
 				'rule'     => 'gray',
 				'comment'  => 'Cloudflare CDN + Workers',
@@ -844,7 +846,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 50,
-				'asnum'    => 16509,
+				'asnum'    => '16509',
 				'asname'   => 'Amazon.com Inc',
 				'rule'     => 'gray',
 				'comment'  => 'AWS',
@@ -852,7 +854,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 50,
-				'asnum'    => 14618,
+				'asnum'    => '14618',
 				'asname'   => 'Amazon.com Inc',
 				'rule'     => 'gray',
 				'comment'  => 'AWS',
@@ -860,7 +862,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 50,
-				'asnum'    => 8075,
+				'asnum'    => '8075',
 				'asname'   => 'Microsoft Corporation',
 				'rule'     => 'gray',
 				'comment'  => 'Azure',
@@ -868,7 +870,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 50,
-				'asnum'    => 396982,
+				'asnum'    => '396982',
 				'asname'   => 'Google LLC',
 				'rule'     => 'gray',
 				'comment'  => 'Google Cloud Platform',
@@ -876,7 +878,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 50,
-				'asnum'    => 45102,
+				'asnum'    => '45102',
 				'asname'   => 'Alibaba Cloud Computing Ltd',
 				'rule'     => 'gray',
 				'comment'  => 'Alibaba Cloud',
@@ -884,7 +886,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 50,
-				'asnum'    => 31898,
+				'asnum'    => '31898',
 				'asname'   => 'Oracle Corporation',
 				'rule'     => 'gray',
 				'comment'  => 'Oracle Cloud',
@@ -892,7 +894,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 50,
-				'asnum'    => 16276,
+				'asnum'    => '16276',
 				'asname'   => 'OVH SAS',
 				'rule'     => 'gray',
 				'comment'  => 'OVHcloud',
@@ -900,7 +902,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 50,
-				'asnum'    => 24940,
+				'asnum'    => '24940',
 				'asname'   => 'Hetzner Online GmbH',
 				'rule'     => 'gray',
 				'comment'  => 'Hetzner',
@@ -908,7 +910,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 50,
-				'asnum'    => 14061,
+				'asnum'    => '14061',
 				'asname'   => 'DigitalOcean LLC',
 				'rule'     => 'gray',
 				'comment'  => 'DigitalOcean',
@@ -916,7 +918,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 50,
-				'asnum'    => 63949,
+				'asnum'    => '63949',
 				'asname'   => 'Akamai Connected Cloud',
 				'rule'     => 'gray',
 				'comment'  => 'Linode',
@@ -924,7 +926,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 50,
-				'asnum'    => 20473,
+				'asnum'    => '20473',
 				'asname'   => 'The Constant Company LLC',
 				'rule'     => 'gray',
 				'comment'  => 'Vultr',
@@ -932,7 +934,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 50,
-				'asnum'    => 36351,
+				'asnum'    => '36351',
 				'asname'   => 'SoftLayer Technologies Inc',
 				'rule'     => 'gray',
 				'comment'  => 'IBM Cloud',
@@ -940,7 +942,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 50,
-				'asnum'    => 8560,
+				'asnum'    => '8560',
 				'asname'   => 'IONOS SE',
 				'rule'     => 'gray',
 				'comment'  => '1&1 IONOS',
@@ -948,7 +950,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 50,
-				'asnum'    => 51167,
+				'asnum'    => '51167',
 				'asname'   => 'Contabo GmbH',
 				'rule'     => 'gray',
 				'comment'  => 'Contabo',
@@ -956,7 +958,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 50,
-				'asnum'    => 197540,
+				'asnum'    => '197540',
 				'asname'   => 'Netcup GmbH',
 				'rule'     => 'gray',
 				'comment'  => 'Netcup',
@@ -964,7 +966,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 50,
-				'asnum'    => 9009,
+				'asnum'    => '9009',
 				'asname'   => 'M247 Europe SRL',
 				'rule'     => 'gray',
 				'comment'  => 'M247 / VPN hosting',
@@ -972,7 +974,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 50,
-				'asnum'    => 12876,
+				'asnum'    => '12876',
 				'asname'   => 'SCALEWAY S.A.S.',
 				'rule'     => 'gray',
 				'comment'  => 'Scaleway',
@@ -980,7 +982,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 50,
-				'asnum'    => 33070,
+				'asnum'    => '33070',
 				'asname'   => 'Rackspace Hosting',
 				'rule'     => 'gray',
 				'comment'  => 'Rackspace',
@@ -988,7 +990,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 50,
-				'asnum'    => 30633,
+				'asnum'    => '30633',
 				'asname'   => 'Leaseweb USA Inc',
 				'rule'     => 'gray',
 				'comment'  => 'Leaseweb US',
@@ -996,7 +998,7 @@ class BotBlockerSeedData {
 			),
 			array(
 				'priority' => 50,
-				'asnum'    => 60781,
+				'asnum'    => '60781',
 				'asname'   => 'Leaseweb Netherlands B.V.',
 				'rule'     => 'gray',
 				'comment'  => 'Leaseweb NL',
@@ -1008,7 +1010,7 @@ class BotBlockerSeedData {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->query(
 				$wpdb->prepare(
-					"INSERT IGNORE INTO `{$wpdb->bbcs_asn}` (priority, asnum, asname, rule, comment, disable) VALUES (%d, %d, %s, %s, %s, %d)",
+					"INSERT IGNORE INTO `{$wpdb->bbcs_asn}` (priority, asnum, asname, rule, comment, disable) VALUES (%d, %s, %s, %s, %s, %d)",
 					$asn['priority'],
 					$asn['asnum'],
 					$asn['asname'],
@@ -1237,6 +1239,16 @@ class BotBlockerSeedData {
 		}
 	}
 
+	public static function generateSecretLinks( string $salt_bb ): array {
+		$secret_param = md5( BOTBLOCKER_URL . time() );
+		return array(
+			'secret_botblocker_get_param' => $secret_param,
+			'action_disable'              => BOTBLOCKER_PREFIX . md5( $secret_param . $salt_bb . 'disable' ) . '_disable',
+			'action_off'                  => BOTBLOCKER_PREFIX . md5( $secret_param . $salt_bb . 'off' ) . '_off',
+			'action_on'                   => BOTBLOCKER_PREFIX . md5( $secret_param . $salt_bb . 'on' ) . '_on',
+		);
+	}
+
 	public static function insertDefaultSettings( string $salt_bb ): void {
 		global $wpdb;
 
@@ -1244,10 +1256,9 @@ class BotBlockerSeedData {
 		$cloud_api_pass   = md5( md5( $cloud_api_email ) . $salt_bb );
 		$cloud_api_key    = BotBlockerPro::generateKey( BOTBLOCKER_SHORT_NAME, $cloud_api_email );
 		$cloud_api_secret = BotBlockerPro::generateKey( BOTBLOCKER_SHORT_NAME, $cloud_api_pass );
-		$secret_param     = md5( BOTBLOCKER_URL . time() );
 
-		require_once BOTBLOCKER_DIR . 'includes/data/botblocker-data-settings.php';
-		$default_settings   = bbcs_loadDefaultSettings();
+		require_once BOTBLOCKER_DIR . 'includes/pro/class-botblocker-settings-presets.php';
+		$default_settings   = BotBlockerSettingsPresets::loadDefaultSettings();
 		$generated_settings = array(
 			'salt'                        => $salt_bb,
 			'cloud_api_key'               => $cloud_api_key,
@@ -1256,13 +1267,8 @@ class BotBlockerSeedData {
 			'cloud_api_pass'              => $cloud_api_pass,
 			'cloud_api_tier'              => '',
 			'cloud_fallback_block'        => 0,
-
-			'secret_botblocker_get_param' => $secret_param,
-
-			'action_disable'              => BOTBLOCKER_PREFIX . md5( $secret_param . $salt_bb . 'disable' ) . '_disable',
-			'action_off'                  => BOTBLOCKER_PREFIX . md5( $secret_param . $salt_bb . 'off' ) . '_off',
-			'action_on'                   => BOTBLOCKER_PREFIX . md5( $secret_param . $salt_bb . 'on' ) . '_on',
 		);
+		$generated_settings = array_merge( $generated_settings, self::generateSecretLinks( $salt_bb ) );
 
 		$all_settings = array_merge( $default_settings, $generated_settings );
 
@@ -1331,17 +1337,17 @@ class BotBlockerSeedData {
 
 		if ( $row_count == 0 ) {
 			$patterns = array(
-				array( '%/wp-admin/%', 'admin' ),
-				array( '%/wp-login%', 'admin' ),
-				array( '%/wp-content/%', 'wp_system' ),
-				array( '%/wp-includes/%', 'wp_system' ),
-				array( '%/favicon.ico%', 'content' ),
-				array( '%/wp-cron.php%', 'wp_system' ),
-				array( '%/feed/%', 'seo' ),
-				array( '%/xmlrpc.php%', 'api' ),
-				array( '%/wp-json/%', 'api' ),
-				array( '%/robots.txt%', 'seo' ),
-				array( '%/sitemap%', 'seo' ),
+				array( '%/wp-admin/%', BotBlockerStore::PAGE_FILTER_CATEGORY_ADMIN ),
+				array( '%/wp-login%', BotBlockerStore::PAGE_FILTER_CATEGORY_ADMIN ),
+				array( '%/wp-content/%', BotBlockerStore::PAGE_FILTER_CATEGORY_WP_SYSTEM ),
+				array( '%/wp-includes/%', BotBlockerStore::PAGE_FILTER_CATEGORY_WP_SYSTEM ),
+				array( '%/favicon.ico%', BotBlockerStore::PAGE_FILTER_CATEGORY_CONTENT ),
+				array( '%/wp-cron.php%', BotBlockerStore::PAGE_FILTER_CATEGORY_WP_SYSTEM ),
+				array( '%/feed/%', BotBlockerStore::PAGE_FILTER_CATEGORY_SEO ),
+				array( '%/xmlrpc.php%', BotBlockerStore::PAGE_FILTER_CATEGORY_API ),
+				array( '%/wp-json/%', BotBlockerStore::PAGE_FILTER_CATEGORY_API ),
+				array( '%/robots.txt%', BotBlockerStore::PAGE_FILTER_CATEGORY_SEO ),
+				array( '%/sitemap%', BotBlockerStore::PAGE_FILTER_CATEGORY_SEO ),
 			);
 
 			foreach ( $patterns as $pattern ) {

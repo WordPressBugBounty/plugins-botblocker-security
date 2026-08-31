@@ -86,7 +86,7 @@ return static function (
 							<input type="hidden" name="slug" value="<?php echo esc_attr($slug); ?>">
 							<?php wp_nonce_field('bbcs_toggle_addon', 'bbcs_toggle_addon_nonce'); ?>
 							<div class="bbcs-toggle-wrap">
-								<button class="bbcs-toggle<?php echo $is_active ? ' is-on' : ''; ?>" role="switch" type="submit" aria-checked="<?php echo $is_active ? 'true' : 'false'; ?>" title="<?php $is_active ? esc_attr_e('Deactivate', 'botblocker-security') : esc_attr_e('Activate', 'botblocker-security'); ?>"><span class="bbcs-toggle-knob"></span></button>
+								<button class="bbcs-toggle<?php echo $is_active ? ' is-on' : ''; ?>" role="switch" type="submit" aria-checked="<?php echo $is_active ? 'true' : 'false'; ?>" title="<?php $is_active ? esc_attr_e('Deactivate', 'botblocker-security') : esc_attr_e('Activate', 'botblocker-security'); ?>"<?php echo ( ! $is_active && ! ( class_exists( 'BotBlockerPro' ) && BotBlockerPro::isActive() ) ) ? ' disabled' : ''; ?>><span class="bbcs-toggle-knob"></span></button>
 								<span class="bbcs-toggle-label"><?php echo $is_active ? esc_html__('Enabled', 'botblocker-security') : esc_html__('Disabled', 'botblocker-security'); ?></span>
 							</div>
 						</form>

@@ -105,6 +105,8 @@ class BotBlockerAjaxTlsFingerprints {
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' cache cleared, sending success' );
 		}
 
+		BotBlockerAudit::ruleChanged( BotBlockerAuditEvents::RULE_LIST_TLS, BotBlockerAuditEvents::RULE_ACTION_IMPORTED, array( 'imported' => $imported, 'skipped' => $skipped ) );
+
 		wp_send_json_success(
 			array(
 				'imported' => $imported,
@@ -147,6 +149,8 @@ class BotBlockerAjaxTlsFingerprints {
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' complete' );
 		}
 
+		BotBlockerAudit::ruleChanged( BotBlockerAuditEvents::RULE_LIST_TLS, BotBlockerAuditEvents::RULE_ACTION_CLEARED );
+
 		wp_send_json_success( __( 'All TLS fingerprints cleared.', 'botblocker-security' ) );
 	}
 
@@ -172,6 +176,16 @@ class BotBlockerAjaxTlsFingerprints {
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' cap check passed' );
 		}
 
+		if ( ! BotBlockerTlsFingerprintsSync::isFeatureEnabled() ) {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' feature disabled' );
+			}
+			wp_send_json_error(
+				__( 'Enable TLS Fingerprint Check and save settings before syncing.', 'botblocker-security' )
+			);
+		}
+
 		$ok = BotBlockerTlsFingerprintsSync::doSync( 'manual', true );
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
@@ -188,6 +202,8 @@ class BotBlockerAjaxTlsFingerprints {
 				__( 'TLS fingerprint sync failed: ', 'botblocker-security' ) . ( $status['last_error'] ?? '' )
 			);
 		}
+
+		BotBlockerAudit::ruleChanged( BotBlockerAuditEvents::RULE_LIST_TLS, BotBlockerAuditEvents::RULE_ACTION_SYNCED );
 
 		$status = BotBlockerTlsFingerprintsSync::getStatus();
 		wp_send_json_success(

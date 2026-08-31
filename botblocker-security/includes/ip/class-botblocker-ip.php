@@ -85,6 +85,34 @@ class BotBlockerIp {
 		return 0;
 	}
 
+	public static function isPublicIp( string $ip ): bool {
+		if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
+			return filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) !== false;
+		}
+		if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
+			$bytes = inet_pton( $ip );
+			if ( $bytes === false ) {
+				return false;
+			}
+			$b0 = ord( $bytes[0] );
+			$b1 = ord( $bytes[1] );
+			if ( ( $b0 & 0xfe ) === 0xfc ) {
+				return false; // fc00::/7 unique-local
+			}
+			if ( $b0 === 0xfe && ( $b1 & 0xc0 ) === 0x80 ) {
+				return false; // fe80::/10 link-local
+			}
+			if ( $bytes === inet_pton( '::1' ) ) {
+				return false; // loopback
+			}
+			if ( strncmp( $bytes, "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff", 12 ) === 0 ) {
+				return false; // ::ffff:0:0/96 v4-mapped
+			}
+			return true;
+		}
+		return false;
+	}
+
 	public static function toNumeric( string $ip ) {
 		if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
 			return ip2long( $ip );
@@ -243,7 +271,7 @@ class BotBlockerIp {
 	}
 
 	/**
-	 * @param int $ttl `ptrcache_time` setting, in SECONDS (see bbcs_get_ptr_lifetimes(),
+	 * @param int $ttl `ptrcache_time` setting, in SECONDS (see BotBlockerDataTime::getPtrLifetimes(),
 	 *                 e.g. 86400 = 1 day). Do not multiply by 60 - it is not minutes.
 	 */
 	public static function getPtr( string $ip, int $time, int $ttl ): string {
@@ -463,5 +491,25 @@ class BotBlockerIp {
 			}
 		}
 		return implode( ':', $result_groups ) . '/' . $mask_v6;
+	}
+
+	/**
+	 * Parse a rate-limit subnet mask like '24-64' or 'ipv6-48' into [v4, v6] ints.
+	 * Empty/non-numeric parts fall back to the documented defaults [24, 64] — a bare '-'
+	 * or 'x-y' previously yielded [0, 0] (whole-internet /0 subnet pressure). Fix B-01.
+	 *
+	 * @param string $mask Subnet mask string.
+	 * @return array{0:int,1:int} [ipv4_prefix, ipv6_prefix].
+	 */
+	public static function parseRateSubnetMask( string $mask = '24-64' ): array {
+		$parts = explode( '-', $mask );
+		if ( isset( $parts[0] ) && $parts[0] === 'ipv6' ) {
+			// IPv4 mask unused for these rows; placeholder kept for return-shape consistency.
+			$v6 = isset( $parts[1] ) && is_numeric( $parts[1] ) ? (int) $parts[1] : 64;
+			return array( 24, $v6 );
+		}
+		$v4 = isset( $parts[0] ) && is_numeric( $parts[0] ) ? (int) $parts[0] : 24;
+		$v6 = isset( $parts[1] ) && is_numeric( $parts[1] ) ? (int) $parts[1] : 64;
+		return array( $v4, $v6 );
 	}
 }

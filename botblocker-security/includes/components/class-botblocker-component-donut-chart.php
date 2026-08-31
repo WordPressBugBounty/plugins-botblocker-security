@@ -65,6 +65,14 @@ final class DonutChart extends Base {
 			$container_id = self::escape( $this->id, 'attr' );
 		}
 
+		$has_data = false;
+		foreach ( $this->values as $bbcs_value ) {
+			if ( (float) $bbcs_value > 0 ) {
+				$has_data = true;
+				break;
+			}
+		}
+
 		$labels = wp_json_encode( array_values( $this->labels ) );
 		$values = wp_json_encode( array_values( $this->values ) );
 		$title  = self::escape( $this->title );
@@ -81,6 +89,7 @@ final class DonutChart extends Base {
 			. ' data-bbcs-title=\'' . $title . '\''
 			. ' data-bbcs-labels=\'' . $labels . '\''
 			. ' data-bbcs-values=\'' . $values . '\''
+			. ( $has_data ? '' : ' data-bbcs-empty="1"' )
 			. ' style="width: ' . $width . '; height: ' . $height . ';"></div>', $return );
 	}
 }

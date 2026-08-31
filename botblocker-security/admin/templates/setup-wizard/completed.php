@@ -28,6 +28,8 @@ return static function ( array $data ): void {
 		<link rel="stylesheet" href="<?php echo esc_url( add_query_arg( 'ver', BOTBLOCKER_VERSION, BOTBLOCKER_URL . 'admin/css/bbcs-tokens.css' ) ); ?>">
 		<link rel="stylesheet" href="<?php echo esc_url( add_query_arg( 'ver', BOTBLOCKER_VERSION, BOTBLOCKER_URL . 'admin/css/bbcs.css' ) ); ?>">
 		<link rel="stylesheet" href="<?php echo esc_url( add_query_arg( 'ver', BOTBLOCKER_VERSION, BOTBLOCKER_URL . 'admin/css/bbcs-setup-wizard-new.css' ) ); ?>">
+		<link rel="stylesheet" href="<?php echo esc_url( add_query_arg( 'ver', BOTBLOCKER_VERSION, BOTBLOCKER_URL . 'admin/css/toastify/toastify.min.css' ) ); ?>">
+		<style><?php echo BBCS_Toastify::custom_css(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static CSS from plugin class ?></style>
 		<?php // phpcs:enable WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet ?>
 	</head>
 	<body class="bbcs-app" style="align-items:center;justify-content:center;background:var(--bbcs-bg)">
@@ -59,11 +61,22 @@ return static function ( array $data ): void {
 		</div>
 
 		<script>
+		var bbcsConfirmL10n = <?php echo wp_json_encode( array(
+			'title'   => __( 'Please Confirm', 'botblocker-security' ),
+			'cancel'  => __( 'Cancel', 'botblocker-security' ),
+			'confirm' => __( 'Confirm', 'botblocker-security' ),
+		) ); ?>;
+		</script>
+		<?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
+		<script src="<?php echo esc_url( add_query_arg( 'ver', BOTBLOCKER_VERSION, BOTBLOCKER_URL . 'admin/js/toastify/toastify.min.js' ) ); ?>"></script>
+		<?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
+		<script src="<?php echo esc_url( add_query_arg( 'ver', BOTBLOCKER_VERSION, BOTBLOCKER_URL . 'admin/js/bbcs-js/bbcs-toast.js' ) ); ?>"></script>
+		<script>
 		(function(){
 			var btn = document.getElementById('bbcs-wiz-reset-btn');
 			if (!btn) return;
 			btn.addEventListener('click', function(){
-				if (!confirm('<?php echo esc_js( __( 'Are you sure you want to reset and restart the setup wizard?', 'botblocker-security' ) ); ?>')) return;
+				bbcsConfirm('<?php echo esc_js( __( 'Are you sure you want to reset and restart the setup wizard?', 'botblocker-security' ) ); ?>', function(){
 				btn.disabled = true;
 				btn.innerHTML = '<svg class="bbcs-ico bbcs-ico--sm bbcs-ico--spinner"><use href="#bbcs-i-refresh"></use></svg> <?php echo esc_js( __( 'Resetting...', 'botblocker-security' ) ); ?>';
 				var data = new URLSearchParams();
@@ -78,6 +91,7 @@ return static function ( array $data ): void {
 					window.location.reload();
 				}).catch(function(){
 					window.location.reload();
+				});
 				});
 			});
 		})();

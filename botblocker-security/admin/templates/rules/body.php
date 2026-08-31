@@ -129,6 +129,30 @@ return static function (Botblocker_RulesViewModel $data): void {
 				</tr>
 			</thead>
 		</table>
+		<div class="bbcs-asn-db-note">
+			<svg class="bbcs-ico bbcs-ico--xs"><use href="#bbcs-i-database"></use></svg>
+			<div>
+				<?php if ( $data->asn_db_present ) : ?>
+					<div>
+						<?php esc_html_e( 'ASN database', 'botblocker-security' ); ?>:
+						<span class="bbcs-tx-violet"><?php echo esc_html( number_format_i18n( $data->asn_db_count ) ); ?></span>
+						<?php if ( $data->asn_db_updated_at > 0 ) : ?>
+							<?php
+							$bbcs_asn_age = sprintf(
+								/* translators: %1$s: time since last update */
+								__( 'updated %1$s ago', 'botblocker-security' ),
+								human_time_diff( $data->asn_db_updated_at, time() )
+							);
+							?>
+							<span class="bbcs-dim">· <?php echo esc_html( $bbcs_asn_age ); ?></span>
+						<?php endif; ?>
+					</div>
+				<?php else : ?>
+					<div class="bbcs-dim"><?php esc_html_e( 'ASN database: not yet downloaded.', 'botblocker-security' ); ?></div>
+				<?php endif; ?>
+				<div class="bbcs-dim"><?php esc_html_e( 'Maintained automatically by BotBlocker cloud - read-only. Manage your own ASN rules in the table above.', 'botblocker-security' ); ?></div>
+			</div>
+		</div>
 	</div>
 
 	<div role="tabpanel" class="bbcs-tabpanel" data-tabpanel="LLM" id="bbcs_llm_list" hidden>
@@ -155,7 +179,7 @@ return static function (Botblocker_RulesViewModel $data): void {
 							</svg></span>
 					</div>
 					<div class="bbcs-select-menu">
-						<?php foreach (BBCS_COUNTRIES as $bbcs_key => $bbcs_country_name) : ?>
+						<?php foreach (BotBlockerGeo::getCountries() as $bbcs_key => $bbcs_country_name) : ?>
 							<div class="bbcs-select-opt" data-value="<?php echo esc_attr(strtoupper($bbcs_key)); ?>"><?php echo esc_html($bbcs_country_name . ' - ' . strtoupper($bbcs_key)); ?></div>
 						<?php endforeach; ?>
 					</div>

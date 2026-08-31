@@ -224,7 +224,7 @@ final class SidebarNav extends Base {
 					$html .= self::svg_icon( $item->icon, 'sm' );
 				}
 
-				$html .= '<span class="bbcs-snav-label">' . $item->label . '</span>' // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped - safe HTML from translation
+				$html .= '<span class="bbcs-snav-label">' . self::escape( $item->label ) . '</span>'
 					. '</button>';
 			}
 

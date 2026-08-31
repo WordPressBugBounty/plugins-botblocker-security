@@ -13,24 +13,24 @@ class BotBlockerInstallIp {
 		self::addIPv4Rule( $localhostIPv4, 'Local IP' );
 		if ( isset( $_SERVER['SERVER_ADDR'] ) && ! empty( $_SERVER['SERVER_ADDR'] ) ) {
 			$server_addr = sanitize_text_field( wp_unslash( $_SERVER['SERVER_ADDR'] ) );
-			if ( filter_var( $server_addr, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
+			if ( filter_var( $server_addr, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) && ! BotBlockerIp::isPublicIp( $server_addr ) ) {
 				self::addIPv4Rule( $server_addr, 'Local IP from SERVER_ADDR' );
 			}
 		}
 		$serverIPv4 = self::getServerIPv4();
-		if ( $serverIPv4 ) {
+		if ( $serverIPv4 && ! BotBlockerIp::isPublicIp( $serverIPv4 ) ) {
 			self::addIPv4Rule( $serverIPv4, 'Server IPv4' );
 		}
 
 		self::addIPv6Rule( $localhostIPv6, 'Local IPv6' );
 		if ( isset( $_SERVER['SERVER_ADDR'] ) && ! empty( $_SERVER['SERVER_ADDR'] ) ) {
 			$server_addr = sanitize_text_field( wp_unslash( $_SERVER['SERVER_ADDR'] ) );
-			if ( filter_var( $server_addr, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
+			if ( filter_var( $server_addr, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) && ! BotBlockerIp::isPublicIp( $server_addr ) ) {
 				self::addIPv6Rule( $server_addr, 'Local IP from SERVER_ADDR' );
 			}
 		}
 		$serverIPv6 = self::getServerIPv6();
-		if ( $serverIPv6 ) {
+		if ( $serverIPv6 && ! BotBlockerIp::isPublicIp( $serverIPv6 ) ) {
 			self::addIPv6Rule( $serverIPv6, 'Server IPv6' );
 		}
 	}

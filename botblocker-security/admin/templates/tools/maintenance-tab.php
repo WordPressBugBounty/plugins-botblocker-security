@@ -59,7 +59,7 @@ return static function ( Botblocker_ToolsViewModel $data, bool $isActive ): void
 			__( '%s list: not yet downloaded.', 'botblocker-security' ),
 			sprintf(
 				'<a href="%s">%s</a>',
-				esc_url( bbcs_get_setting_link( 'block_rkn', true ) ),
+				esc_url( BotBlockerSnav::getSettingLink( 'block_rkn', true ) ),
 				esc_html( __( 'RU-Gov', 'botblocker-security' ) )
 			)
 		);

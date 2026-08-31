@@ -20,9 +20,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 trait BotBlockerCoreRateTrait {
 
-	private static $rpmDirtyBuckets = array();
-	private static $rpmFlushRegistered = false;
-
 	public function apply_core_rate_limit(): bool {
 		if ( empty( $this->settings->bbcs_rate_check_enabled ) ) {
 			return false;
@@ -50,7 +47,7 @@ trait BotBlockerCoreRateTrait {
 		$this->core_individual_rpm = $individual_rpm;
 
 		if ( ! empty( $this->settings->bbcs_rate_subnet_enabled ) ) {
-			$mask_parts    = bbcs_parse_rate_subnet_mask( (string) ( $this->settings->bbcs_rate_subnet_mask ?? '24-64' ) );
+			$mask_parts    = BotBlockerIp::parseRateSubnetMask( (string) ( $this->settings->bbcs_rate_subnet_mask ?? '24-64' ) );
 			$mask_v4       = $mask_parts[0];
 			$mask_v6       = $mask_parts[1];
 			$ip_version    = (int) ( $this->ip_version ?? 4 );
@@ -80,13 +77,13 @@ trait BotBlockerCoreRateTrait {
 
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
-			error_log( '[BBCS DEBUG] [CoreRate] evaluate IP=' . $ip . ' rpm=' . $individual_rpm . ' eff_captcha=' . $effective_captcha_rpm . ' eff_block=' . $effective_block_rpm . ' base_captcha=' . $captcha_rpm . ' base_block=' . $block_rpm . ' pressure=' . $this->rate_subnet_pressure );
+			error_log( '[BBCS DEBUG] [CoreRate] evaluate IP=' . $ip . ' rpm=' . $this->rateFmt( (float) $individual_rpm ) . ' eff_captcha=' . $this->rateFmt( $effective_captcha_rpm ) . ' eff_block=' . $this->rateFmt( $effective_block_rpm ) . ' base_captcha=' . $captcha_rpm . ' base_block=' . $block_rpm . ' pressure=' . $this->rateFmt( (float) $this->rate_subnet_pressure, 6 ) );
 		}
 
 		if ( $individual_rpm >= $effective_block_rpm ) {
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
-				error_log( '[BBCS DEBUG] [CoreRate] BLOCK action IP=' . $ip . ' rpm=' . $individual_rpm . ' >= eff_block=' . $effective_block_rpm );
+				error_log( '[BBCS DEBUG] [CoreRate] BLOCK action IP=' . $ip . ' rpm=' . $this->rateFmt( (float) $individual_rpm ) . ' >= eff_block=' . $this->rateFmt( $effective_block_rpm ) );
 			}
 			$this->insertRateLimitBlock();
 			$this->redirect_to_block( 429, 'Rate limit block' );
@@ -96,13 +93,17 @@ trait BotBlockerCoreRateTrait {
 		if ( $individual_rpm >= $effective_captcha_rpm ) {
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
-				error_log( '[BBCS DEBUG] [CoreRate] CAPTCHA action IP=' . $ip . ' rpm=' . $individual_rpm . ' >= eff_captcha=' . $effective_captcha_rpm );
+				error_log( '[BBCS DEBUG] [CoreRate] CAPTCHA action IP=' . $ip . ' rpm=' . $this->rateFmt( (float) $individual_rpm ) . ' >= eff_captcha=' . $this->rateFmt( $effective_captcha_rpm ) );
 			}
 			$this->redirect_to_dark( 'Rate limit Captcha' );
 			return true;
 		}
 
 		return false;
+	}
+
+	private function rateFmt( float $value, int $precision = 4 ): string {
+		return (string) round( $value, $precision );
 	}
 
 	private function insertRateLimitBlock(): void {
@@ -123,24 +124,23 @@ trait BotBlockerCoreRateTrait {
 
 		if ( $exists ) {
 			$wpdb->update( $table, array( 'expires' => $expires ), array( 'id' => $exists ) );
-			do_action( 'bbcs_rate_limit_blocked', $ip );
-			return;
+		} else {
+			$encoded_ip = $this->ip_version == 4
+				? BotBlockerIp::toNumeric( $ip )
+				: BotBlockerIp::toBinary( $ip );
+
+			$wpdb->insert( $table, array(
+				'priority' => '1',
+				'search'   => $ip,
+				'ip1'      => $encoded_ip,
+				'ip2'      => $encoded_ip,
+				'rule'     => 'block',
+				'comment'  => 'Rate Limit Block',
+				'expires'  => $expires,
+			) );
 		}
 
-		$encoded_ip = $this->ip_version == 4
-			? BotBlockerIp::toNumeric( $ip )
-			: BotBlockerIp::toBinary( $ip );
-
-		$wpdb->insert( $table, array(
-			'priority' => '1',
-			'search'   => $ip,
-			'ip1'      => $encoded_ip,
-			'ip2'      => $encoded_ip,
-			'rule'     => 'block',
-			'comment'  => 'Rate Limit Block',
-			'expires'  => $expires,
-		) );
-
+		$this->rate_limit_block_emitted = true;
 		do_action( 'bbcs_rate_limit_blocked', $ip );
 		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 	}
@@ -161,6 +161,22 @@ trait BotBlockerCoreRateTrait {
 
 	private function recordAndGetRpm( string $prefix, string $value, int $window_minutes ): float {
 		$key    = $prefix . md5( $value );
+		$handle = BotBlockerCache::fileLock( $key );
+
+		if ( $handle !== false && flock( $handle, LOCK_EX ) ) {
+			try {
+				return $this->recordBucketHit( $key, $window_minutes );
+			} finally {
+				flock( $handle, LOCK_UN );
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- release native lock handle
+				fclose( $handle );
+			}
+		}
+
+		return $this->recordBucketHit( $key, $window_minutes );
+	}
+
+	private function recordBucketHit( string $key, int $window_minutes ): float {
 		$bucket = $this->getAndCleanBucket( $key, $window_minutes );
 
 		$current_minute = (int) ( time() / 60 );
@@ -170,7 +186,7 @@ trait BotBlockerCoreRateTrait {
 		$bucket['b'][ $current_minute ]++;
 		$bucket['t'] = (int) ( $bucket['t'] ?? 0 ) + 1;
 
-		$this->saveBucket( $key, $bucket, $window_minutes );
+		BotBlockerCache::fileSet( $key, $bucket, max( 60, $window_minutes * 60 ) );
 
 		return (float) $bucket['t'] / $window_minutes;
 	}
@@ -202,39 +218,5 @@ trait BotBlockerCoreRateTrait {
 		$bucket['lp'] = $current_minute;
 
 		return $bucket;
-	}
-
-	private function saveBucket( string $key, array $bucket, int $window_minutes ): void {
-		$ttl = $window_minutes * 60;
-		if ( $ttl < 60 ) {
-			$ttl = 60;
-		}
-		if ( defined( 'WP_TESTS_DOMAIN' ) ) {
-			BotBlockerCache::fileSet( $key, $bucket, $ttl );
-			return;
-		}
-		self::$rpmDirtyBuckets[ $key ] = array( 'bucket' => $bucket, 'ttl' => $ttl );
-		self::ensureRpmFlushRegistered();
-	}
-
-	private static function ensureRpmFlushRegistered(): void {
-		if ( self::$rpmFlushRegistered ) {
-			return;
-		}
-		self::$rpmFlushRegistered = true;
-		add_action( 'shutdown', function (): void {
-			self::flushRpmBuckets();
-		}, 10000 );
-	}
-
-	public static function flushRpmBuckets(): void {
-		if ( empty( self::$rpmDirtyBuckets ) ) {
-			return;
-		}
-		$dirty = self::$rpmDirtyBuckets;
-		self::$rpmDirtyBuckets = array();
-		foreach ( $dirty as $key => $data ) {
-			BotBlockerCache::fileSet( $key, $data['bucket'], $data['ttl'] );
-		}
 	}
 }

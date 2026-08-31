@@ -50,7 +50,7 @@ class BotBlockerUI {
 	 */
 	public static function is_realtime(): string {
 		$BBCS          = BotBlocker::getInstance();
-		$durations     = bbcs_get_cache_durations();
+		$durations     = BotBlockerDataTime::getCacheDurations();
 		$duration_name = $durations[ $BBCS->settings->cache_ui_duration ] ?? __( 'Unknown period', 'botblocker-security' );
 		if ( $BBCS->settings->cache_ui_data == 1 ) {
 			// translators: %s is the cache update interval duration name (e.g. "1 hour").
@@ -186,90 +186,5 @@ class BotBlockerUI {
 		}
 		return (string) ob_get_clean();
 	}
-
-	public static function render_dashboard_addons_summary(): void {
-		$ctx           = BotBlockerAddonsMarket::getContext();
-		$addons        = $ctx->addons;
-		$active        = $ctx->active;
-		$addons_locked = $ctx->addons_locked;
-		$has_cloud_api = $ctx->has_cloud_api;
-		$BBCSA         = class_exists( 'Botblocker_Admin' ) ? Botblocker_Admin::getInstance() : null;
-		$tools_url     = $BBCSA && isset( $BBCSA->pages_tools ) ? $BBCSA->pages_tools : '';
-		echo '<div class="bbcs-addons-dash">';
-		if ( $addons_locked ) {
-			echo '<div class="alert alert-warning p-2 mb-2 bbcs-addons-off-text">' . esc_html__( 'Add-ons locked. Activate Cloud API to use marketplace features.', 'botblocker-security' ) . '</div>';
-		}
-		if ( empty( $addons ) ) {
-			$addons_page = ( $BBCSA && isset( $BBCSA->pages_addons ) ) ? $BBCSA->pages_addons : BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' );
-			echo '<div class="bbcs-addons-empty border rounded p-3 text-center">'
-				. '<p class="mb-2 mbcs-empty-text">' . esc_html__( 'Enhance speed, security and user experience with official BotBlocker add-ons.', 'botblocker-security' ) . '</p>'
-				. '<a href="' . esc_url( $addons_page ) . '" class="btn btn-xs btn-primary"><i class="fa-solid fa-puzzle-piece"></i> ' . esc_html__( 'Browse Add-ons', 'botblocker-security' ) . '</a>'
-				. '</div>';
-			echo '</div>';
-			return;
-		}
-		echo '<ul class="list-unstyled m-0">';
-		foreach ( $addons as $slug => $addon ) {
-			$name     = $addon['name'] ?: $slug;
-			$isActive = in_array( $slug, $active, true );
-			$ver      = isset( $addon['version'] ) ? $addon['version'] : '';
-
-			echo '<li class="d-flex align-items-center mb-1 bbcs-dash-addon-li">';
-			// Status icon
-			$icon_classes = 'fa-solid fa-circle ' . ( $isActive ? 'text-success' : 'text-danger' ) . ' me-2';
-			echo '<i class="' . esc_attr( $icon_classes ) . '"></i>';
-
-			// Optional link wrapper when active and tools URL is available
-			$has_link = ( $isActive && ! empty( $tools_url ) );
-			if ( $has_link ) {
-				echo '<a href="' . esc_url( $tools_url . '#addon-' . rawurlencode( (string) $slug ) ) . '" class="bbcs-addon-link">';
-			}
-
-			echo esc_html( $name );
-			if ( $ver ) {
-				echo ' <small class="text-muted">' . esc_html( ' (' . $ver . ')' ) . '</small>';
-			}
-
-			if ( $has_link ) {
-				echo '</a>';
-			}
-
-			echo '</li>';
-		}
-		echo '</ul>';
-		if ( ! $has_cloud_api ) {
-			if ( $BBCSA && isset( $BBCSA->pages_cloud_api ) ) {
-				echo '<a class="btn btn-xs btn-default mt-2" href="' . esc_url( $BBCSA->pages_cloud_api ) . '"><i class="fa-solid fa-crown"></i> ' . esc_html__( 'Connect Cloud API now!', 'botblocker-security' ) . '</a>';
-			}
-		}
-		echo '</div>';
-	}
 }
 
-// Feathured function to render an info column with icon, text and links in the dashboard or settings pages. Used for "Why choose BotBlocker?" section and similar contexts.
-function bbcs_render_info_column( string $icon, string $alt, array $paragraphs, array $links, string $col_xxl = '3' ): void {
-	?>
-	<div class="col-xxl-<?php echo esc_attr( $col_xxl ); ?> col-xl-6 col-lg-6 col-sm-12 col-md-12 bbcs-info-column">
-		<div class="bbcs-info-inner">
-			<?php
-			// REVIEWER NOTE: This image is a static plugin asset, not a user-uploaded Media Library image.
-			// phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage ?>
-			<img src="<?php echo esc_url( BOTBLOCKER_URL . 'public/icons/' . $icon ); ?>"
-				alt="<?php echo esc_attr( $alt ); ?>"
-				class="img-fluid bbcs-info-image mb-3">
-			<?php foreach ( $paragraphs as $p ) : ?>
-				<p class="bbcs-info-text"><?php echo esc_html( $p ); ?></p>
-			<?php endforeach; ?>
-			<?php if ( ! empty( $links ) ) : ?>
-				<hr class="bbcs-info-hr">
-				<div class="bbcs-info-footer">
-					<i class="fa-regular fa-circle-question"></i>
-					<?php foreach ( $links as $link ) : ?>
-						<a href="<?php echo esc_url( $link['url'] ); ?>" target="_blank" class="bbcs-info-footer-a"><?php echo esc_html( $link['text'] ); ?></a>
-					<?php endforeach; ?>
-				</div>
-			<?php endif; ?>
-		</div>
-	</div>
-	<?php
-}

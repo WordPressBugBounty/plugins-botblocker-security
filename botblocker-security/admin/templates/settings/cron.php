@@ -8,27 +8,6 @@ use BotBlocker\Component\InfoColumn;
 use BotBlocker\Component\SettingsGroup;
 use BotBlocker\Component\ToggleOption;
 
-/**
- * Format seconds into a human-readable time remaining string.
- * Matches the format used in the legacy header JS (bbcs-common.js).
- */
-function bbcs_format_time_remaining( int $seconds ): string {
-	if ( $seconds < 60 ) {
-		// translators: %d: seconds count, e.g. "34s"
-		return sprintf( _n( '%ds', '%ds', $seconds, 'botblocker-security' ), $seconds );
-	}
-	if ( $seconds < 3600 ) {
-		// translators: %1$d minutes, %2$d seconds, e.g. "12m 30s"
-		return sprintf( __( '%1$dm %2$ds', 'botblocker-security' ), intdiv( $seconds, 60 ), $seconds % 60 );
-	}
-	if ( $seconds < 86400 ) {
-		// translators: %1$d hours, %2$d minutes, e.g. "12h 30m"
-		return sprintf( __( '%1$dh %2$dm', 'botblocker-security' ), intdiv( $seconds, 3600 ), intdiv( $seconds % 3600, 60 ) );
-	}
-	// translators: %1$d days, %2$d hours, e.g. "2d 5h"
-	return sprintf( __( '%1$dd %2$dh', 'botblocker-security' ), intdiv( $seconds, 86400 ), intdiv( $seconds % 86400, 3600 ) );
-}
-
 return static function (Botblocker_SettingsViewModel $data, bool $isActive): void {
 	$tasks           = $data->cron_tasks;
 	$total           = $data->cron_total_count;
@@ -210,7 +189,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
 							<td data-label="<?php esc_attr_e( 'Progress', 'botblocker-security' ); ?>">
 								<div class="bbcs-cron-progress" title="<?php echo esc_attr( round( $task->progress ) ); ?>%" data-interval="<?php echo esc_attr( (string) $task->interval ); ?>">
 									<div class="bbcs-cron-progress-bar bbcs-cron-progress-bar--animated" style="width: <?php echo esc_attr( (string) $task->progress ); ?>%;"></div>
-									<span class="bbcs-cron-progress-s" data-seconds="<?php echo esc_attr( (string) $task->time_remaining ); ?>"><?php echo esc_html( bbcs_format_time_remaining( $task->time_remaining ) ); ?></span>
+									<span class="bbcs-cron-progress-s" data-seconds="<?php echo esc_attr( (string) $task->time_remaining ); ?>"><?php echo esc_html( BotBlockerDataTime::formatTimeRemaining( $task->time_remaining ) ); ?></span>
 								</div>
 							</td>
 							<td data-label="<?php esc_attr_e( 'Status', 'botblocker-security' ); ?>">

@@ -157,6 +157,7 @@ function bbcs_migration_2_3_0() {
 
         ['priority' => 5,  'search' => 'GoogleOther-Image',     'data' => '.google.com',                        'rule' => 'allow', 'comment' => 'GoogleOther Images',         'disable' => 0],
         ['priority' => 5,  'search' => 'GoogleOther-Video',     'data' => '.google.com',                        'rule' => 'allow', 'comment' => 'GoogleOther Videos',         'disable' => 0],
+        // phpcs:ignore PluginCheck.CodeAnalysis.Offloading.OffloadedContent -- bot allowlist domain, not remote resource loading
         ['priority' => 5,  'search' => 'Google-CloudVertexBot', 'data' => '.google.com .googleusercontent.com', 'rule' => 'allow', 'comment' => 'Vertex AI',                  'disable' => 0],
 
         ['priority' => 10, 'search' => 'GoogleOther',           'data' => '.google.com',                        'rule' => 'allow', 'comment' => 'GoogleOther (Catch-all)',    'disable' => 0],

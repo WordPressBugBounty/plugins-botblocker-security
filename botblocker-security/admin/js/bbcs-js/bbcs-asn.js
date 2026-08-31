@@ -228,11 +228,16 @@
         $("#confirmClearAsnModal").modal("show");
     }
 
+    function parseAsnJSON(text) {
+        var normalized = text.replace(/("asnum"\s*:\s*)(\d+)(?=\s*[,}])/g, '$1"$2"');
+        return JSON.parse(normalized);
+    }
+
     function readJSONFile(file, callback) {
         var reader = new FileReader();
         reader.onload = function(e) {
             try {
-                var data = JSON.parse(e.target.result);
+                var data = parseAsnJSON(e.target.result);
                 callback(data);
             } catch (err) {
                 window.bbcsRulesToast('error', bbcsAsnL10n.invalid_json + err.message);
@@ -334,7 +339,7 @@
 
         $("#botblocker-asn-rules").on("click", ".delete-asn", function () {
             var id = $(this).data("id");
-            if (confirm(bbcsAsnL10n.confirm_delete)) {
+            bbcsConfirm(bbcsAsnL10n.confirm_delete, function () {
                 $.ajax({
                     url: botblockerData.ajaxurl,
                     type: "POST",
@@ -353,7 +358,7 @@
                         }
                     },
                 });
-            }
+            });
         });
 
         $("#bbcs_asn_add").on("click", function () {

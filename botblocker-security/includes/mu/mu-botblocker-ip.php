@@ -10,7 +10,7 @@ trait BotBlockerMuIP {
 	private function read_ip_rules(): array {
 		$res = array();
 		if ( file_exists( $ip_file = $this->dirs['data'] . 'ip.php' ) ) {
-			$ip_rule_list = bbcs_safe_load_data_file( $ip_file );
+			$ip_rule_list = BotBlockerDataFile::safeLoad( $ip_file );
 			if ( is_array( $ip_rule_list ) ) {
 				$res = $ip_rule_list[ 'ipv' . $this->ip_version ] ?? array();
 				unset( $ip_rule_list['ipv4'], $ip_rule_list['ipv6'] );
@@ -22,7 +22,7 @@ trait BotBlockerMuIP {
 
 		$hotBansFile = $this->dirs['data'] . 'hot-bans.php';
 		if ( file_exists( $hotBansFile ) ) {
-			$hotData = bbcs_safe_load_data_file( $hotBansFile );
+			$hotData = BotBlockerDataFile::safeLoad( $hotBansFile );
 			if ( is_array( $hotData ) ) {
 				$now = time();
 				$family = 'ipv' . $this->ip_version;
@@ -109,7 +109,7 @@ trait BotBlockerMuIP {
 		return false;
 	}
 
-	private function read_ip(): void {
+	protected function read_ip(): void {
 		if ( isset( $_SERVER['REMOTE_ADDR'] ) ) {
 			$raw = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) );
 			$ip  = trim( wp_strip_all_tags( $raw ) );

@@ -15,6 +15,7 @@ class BotBlockerSettings
 	public $admin_store_period		= 7;
 	public $admin_uniq_type			= 'host';
 	public $allow_self_ip_req		= 1;
+	public $allow_self_call_header	= 1;
 	public $autosave_admin_ip		= 0;
 	public $skip_logged_in_users	= 0;
 
@@ -26,6 +27,7 @@ class BotBlockerSettings
 	public $bbcs_captcha_img_pack   = 1;
 	public $bbcs_captcha_mode       = 1;
 	public $bbcs_captcha_wait       = 30;
+	public $bbcs_honeypot_enabled   = 0;
 	public $bbcs_cors_strict_headers    = 0;
 	public $bbcs_wp_connectors_enabled   = 0;
 	public $bbcs_ddos_resilience    = 0;
@@ -69,6 +71,9 @@ class BotBlockerSettings
 	public $botblocker_log_local    = 1;
 	public $botblocker_log_tests    = 1;
 	public $botblocker_log_wp       = 0;
+	public $audit_log_enable        = 1;
+	public $audit_log_retention_days = 7;
+	public $audit_log_roles         = '';
 
 	public $payment_bypass_enable	= 0;
 	public $payment_bypass_log		= 1;
@@ -109,7 +114,7 @@ class BotBlockerSettings
 	public $memcached_enable = 0;
 	public $memcached_host   = '127.0.0.1';
 	public $memcached_port   = 11211;
-	public $memcached_prefix = 'bb_';
+	public $memcached_prefix = BOTBLOCKER_PREFIX;
 
 	public $noarchive          = 0;
 	public $ptr_cache_in_db    = 1;
@@ -132,10 +137,12 @@ class BotBlockerSettings
 	public $login_brutforce_secondary_block_time = 1800;
 
 	public $redis_enable   = 0;
+	public $transients_enable = 1;
 	public $redis_host     = '127.0.0.1';
 	public $redis_password = '';
 	public $redis_port     = 6379;
-	public $redis_prefix   = 'bb_';
+	public $redis_prefix   = BOTBLOCKER_PREFIX;
+	public $redis_database = 0;
 
 	public $mu_enable = 0;
 	public $mu_geo_enable = 0;
@@ -166,11 +173,12 @@ class BotBlockerSettings
 	public $utm_referrer            = 1;
 
 	public $email_notifications             = 0;
-	public $pusher_notifications            = 0;
 	public $critical_load_notifications     = 0;
 	public $regular_notifications_frequency = 'disabled';
 
 	public $bbcs_2fa_enable = 0;
+	public $bbcs_2fa_roles = array();
+	public $bbcs_2fa_xmlrpc_block = 0;
 
 	public $tls_fingerprint_check 			= 0;
 	public $tls_fingerprint_header_ja3		= 'X-TLS-JA3';
@@ -191,7 +199,7 @@ class BotBlockerSettings
 
 	public function load(string $settingsFile): bool
 	{
-		$settings = bbcs_safe_load_with_recovery($settingsFile);
+		$settings = BotBlockerDataFile::safeLoadWithRecovery($settingsFile);
 		if (is_array($settings) && ! empty($settings)) {
 			$this->assignSettings($settings);
 			return true;

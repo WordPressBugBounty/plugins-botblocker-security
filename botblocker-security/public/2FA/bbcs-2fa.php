@@ -9,16 +9,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 add_action(
 	'template_redirect',
 	function (): void {
-		global $bbcs_google_auth;
-
 		// CRITICAL: We check the endpoint instead of the query_var.
 		// We use an underscored query_var, but we also support the hyphenated form for compatibility.
 		if ( ! get_query_var( 'bbcs_2fa' ) ) {
 			return;
 		}
 
+		$recovery_raw = isset( $_GET['recovery'] ) ? sanitize_text_field( wp_unslash( $_GET['recovery'] ) ) : '';
+
 		if ( ! is_user_logged_in() ) {
-			wp_safe_redirect( wp_login_url() );
+			if ( $recovery_raw !== '' ) {
+				wp_safe_redirect( wp_login_url( home_url( '/?bbcs_2fa=1&recovery=' . rawurlencode( $recovery_raw ) ) ) );
+			} else {
+				wp_safe_redirect( wp_login_url() );
+			}
 			exit;
 		}
 
@@ -28,13 +32,15 @@ add_action(
 			exit;
 		}
 
-		if ( ! bbcs_is_2fa_required_for_user( $user_id ) ) {
+		if ( ! BotBlockerTwoFactorAuth::isRequiredForUser( $user_id ) ) {
 			wp_safe_redirect( admin_url() );
 			exit;
 		}
 
-		$user  = wp_get_current_user();
-		$error = '';
+		$auth          = BotBlockerTwoFactorAuth::instance();
+		$user          = wp_get_current_user();
+		$error         = '';
+		$recovery_sent = false;
 
 		$secret       = get_user_meta( $user_id, '_2fa_secret', true );
 		$backup_codes = get_user_meta( $user_id, '_2fa_backup_codes', true );
@@ -52,6 +58,25 @@ add_action(
 
 		$request_method = isset( $_SERVER['REQUEST_METHOD'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) : '';
 
+		// One-time recovery email link (?recovery=TOKEN).
+		if ( $recovery_raw !== '' ) {
+			if ( BotBlockerTwoFactorAuth::handleRecoveryForUser( $user_id, $recovery_raw ) ) {
+				wp_safe_redirect( home_url( '/?bbcs_2fa_setup=1' ) );
+				exit;
+			}
+			$error = __( 'Invalid or expired recovery link.', 'botblocker-security' );
+		}
+
+		// "Lost access?" form: rate-limited recovery email.
+		if ( $request_method === 'POST' && isset( $_POST['bbcs_2fa_recovery'] ) ) {
+			$nonce_raw = isset( $_POST['bbcs_2fa_recovery_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['bbcs_2fa_recovery_nonce'] ) ) : '';
+			if ( empty( $nonce_raw ) || ! wp_verify_nonce( $nonce_raw, 'bbcs_2fa_recovery' ) ) {
+				$error = __( 'Security error. Refresh the page and try again.', 'botblocker-security' );
+			} else {
+				$recovery_sent = BotBlockerTwoFactorAuth::sendRecoveryEmail( $user_id );
+			}
+		}
+
 		$code_raw = filter_input( INPUT_POST, 'code', FILTER_UNSAFE_RAW );
 		if ( $code_raw !== null ) {
 			$code_raw = wp_unslash( $code_raw );
@@ -62,16 +87,17 @@ add_action(
 			$nonce_raw = isset( $_POST['bbcs_2fa_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['bbcs_2fa_nonce'] ) ) : '';
 			if ( empty( $nonce_raw ) || ! wp_verify_nonce( $nonce_raw, 'bbcs_2fa_verify' ) ) {
 				$error = __( 'Security error. Refresh the page and try again.', 'botblocker-security' );
-			} elseif ( ! bbcs_check_rate_limit( $user_id ) ) {
+			} elseif ( ! BotBlockerTwoFactorAuth::checkRateLimit( $user_id ) ) {
 				$rate_limited = true;
 				$error        = __( 'Too many attempts. Try again in 5 minutes.', 'botblocker-security' );
 			} else {
 				$code          = sanitize_text_field( $code_raw );
 				$code_verified = false;
+				$verified_via  = BotBlockerTwoFactorAuth::VERIFIED_VIA_TOTP;
 
 				// Verify the TOTP code (6 digits)
 				if ( strlen( $code ) === 6 && ctype_digit( $code ) ) {
-					if ( $bbcs_google_auth->verifyCode( $secret, $code ) ) {
+					if ( $auth->verifyCode( $secret, $code ) ) {
 						$code_verified = true;
 					}
 				}
@@ -79,9 +105,10 @@ add_action(
 				// Verify the backup codes (16-character hex)
 				if ( ! $code_verified && ! empty( $backup_codes ) && strlen( $code ) > 6 ) {
 					$code_trim = strtoupper( $code );
-					$found     = bbcs_verify_backup_code( $code_trim, $backup_codes );
+					$found     = BotBlockerTwoFactorAuth::verifyBackupCode( $code_trim, $backup_codes );
 					if ( $found !== false ) {
 						$code_verified = true;
+						$verified_via  = BotBlockerTwoFactorAuth::VERIFIED_VIA_BACKUP_CODE;
 						// Delete the used backup code (supporting both hashes and plaintext)
 						unset( $backup_codes[ $found ] );
 						update_user_meta( $user_id, '_2fa_backup_codes', array_values( $backup_codes ) );
@@ -90,7 +117,13 @@ add_action(
 
 				if ( $code_verified ) {
 					delete_user_meta( $user_id, '_2fa_pending' );
-					bbcs_reset_rate_limit( $user_id );
+					BotBlockerTwoFactorAuth::resetRateLimit( $user_id );
+
+					do_action( 'bbcs_2fa_verified', $user_id, $verified_via );
+
+					if ( isset( $_POST['bbcs_2fa_remember'] ) ) {
+						BotBlockerTwoFactorAuth::setTrustedDevice( $user_id );
+					}
 
 					// Session cookie regeneration
 					wp_set_auth_cookie( $user_id, true );
@@ -103,13 +136,14 @@ add_action(
 					exit;
 				} else {
 					$error = __( 'Invalid verification code.', 'botblocker-security' );
+					do_action( 'bbcs_2fa_verification_failed', $user_id );
 					$attempts_left--;
 				}
 			}
 		}
 
-		// Handle user-initiated 2FA reset
-		if ( isset( $_GET['bbcs_2fa_reset'] ) ) {
+		// Handle user-initiated 2FA reset (fully authenticated sessions only).
+		if ( isset( $_GET['bbcs_2fa_reset'] ) && 'none' === BotBlockerTwoFactorAuth::getPendingState( $user_id ) ) {
 
 			if (
 			! isset( $_GET['_wpnonce'] ) ||
@@ -130,10 +164,14 @@ add_action(
 
 			delete_transient( 'bbcs_2fa_attempts_' . $user_id );
 
+			BotBlockerTwoFactorAuth::revokeAllTrustedDevices( $user_id );
+
+			do_action( 'bbcs_2fa_reset', $user_id );
+
 			// Generate new secret and backup codes
-			$new_secret = $bbcs_google_auth->createSecret();
+			$new_secret = $auth->createSecret();
 			update_user_meta( $user_id, '_2fa_secret_temp', $new_secret );
-			update_user_meta( $user_id, '_2fa_backup_codes_temp', bbcs_generate_backup_codes() );
+			update_user_meta( $user_id, '_2fa_backup_codes_temp', BotBlockerTwoFactorAuth::generateBackupCodes() );
 			update_user_meta( $user_id, '_2fa_setup_pending', 1 );
 
 			wp_safe_redirect( home_url( '/?bbcs_2fa_setup=1' ) );
@@ -220,10 +258,27 @@ add_action(
 							placeholder="000000"
 							<?php echo $rate_limited ? 'disabled' : ''; ?>>
 					</div>
+					<label class="bbcs-2fa-remember">
+						<input type="checkbox" name="bbcs_2fa_remember" value="1" <?php echo $rate_limited ? 'disabled' : ''; ?>>
+						<span><?php esc_html_e( 'Remember this device for 30 days', 'botblocker-security' ); ?></span>
+					</label>
 					<button type="submit" class="bbcs-2fa-btn-submit" <?php echo $rate_limited ? 'disabled' : ''; ?>>
 						<?php esc_html_e( 'Verify', 'botblocker-security' ); ?>
 					</button>
 				</form>
+
+				<?php if ( ! empty( $user->user_email ) ) : ?>
+					<div class="bbcs-2fa-recovery-link">
+						<?php if ( $recovery_sent ) : ?>
+							<span class="bbcs-2fa-recovery-sent"><?php esc_html_e( 'Recovery email sent. Check your inbox.', 'botblocker-security' ); ?></span>
+						<?php else : ?>
+							<form method="POST" class="bbcs-2fa-recovery-form">
+								<?php wp_nonce_field( 'bbcs_2fa_recovery', 'bbcs_2fa_recovery_nonce' ); ?>
+								<button type="submit" name="bbcs_2fa_recovery" value="1" class="bbcs-2fa-recovery-btn"><?php esc_html_e( 'Lost access? Send recovery email', 'botblocker-security' ); ?></button>
+							</form>
+						<?php endif; ?>
+					</div>
+				<?php endif; ?>
 
 				<div class="bbcs-2fa-help-text">
 					<?php esc_html_e( 'Enter a 6-digit TOTP code', 'botblocker-security' ); ?><br>
@@ -241,3 +296,5 @@ add_action(
 		exit;
 	}
 );
+
+BotBlockerTwoFactorAuth::markPagesLoaded();

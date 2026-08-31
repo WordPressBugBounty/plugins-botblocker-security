@@ -10,6 +10,7 @@ use BotBlocker\Component\InfoColumn;
 use BotBlocker\Component\SettingsGroup;
 use BotBlocker\Component\CustomSelect;
 use BotBlocker\Component\TextInput;
+use BotBlocker\Component\ToggleOption;
 
 return static function (Botblocker_SettingsViewModel $data, bool $isActive): void {
 	$cm  = $data->get('bbcs_captcha_mode', (string) BOTBLOCKER_CAPTCHA_MODE_DEFAULT);
@@ -18,16 +19,36 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
 	$wait = (string) $data->get('bbcs_captcha_wait', '30');
 
 	$mode_options = array(
-		'8' => __('Silent Auto-Verify (No Captcha)', 'botblocker-security'),
-		'0' => __('Button - "I am not a robot"', 'botblocker-security'),
-		'1' => __('Color Buttons', 'botblocker-security'),
-		'2' => __('BotBlocker Image Captcha', 'botblocker-security'),
-		'3' => __('reCaptcha v2 - "I am not a robot"', 'botblocker-security'),
-		'4' => __('reCaptcha v2', 'botblocker-security'),
-		'5' => __('Dynamic Shape Captcha', 'botblocker-security'),
-		'6' => __('Dynamic Digit Captcha', 'botblocker-security'),
-		'7' => __('Hold Button Captcha', 'botblocker-security'),
+		(string) BOTBLOCKER_CAPTCHA_MODE_SILENT            => __( 'Silent Auto-Verify (No Captcha)', 'botblocker-security' ),
+		(string) BOTBLOCKER_CAPTCHA_MODE_BUTTON            => __( 'Button - "I am not a robot"', 'botblocker-security' ),
+		(string) BOTBLOCKER_CAPTCHA_MODE_COLOR_BUTTONS     => __( 'Color Buttons', 'botblocker-security' ),
+		(string) BOTBLOCKER_CAPTCHA_MODE_IMAGE             => __( 'BotBlocker Image Captcha', 'botblocker-security' ),
+		(string) BOTBLOCKER_CAPTCHA_MODE_RECAPTCHA_V2_BUTTON => __( 'reCaptcha v2 - "I am not a robot"', 'botblocker-security' ),
+		(string) BOTBLOCKER_CAPTCHA_MODE_RECAPTCHA_V2      => __( 'reCaptcha v2', 'botblocker-security' ),
+		(string) BOTBLOCKER_CAPTCHA_MODE_SHAPE             => __( 'Dynamic Shape Captcha', 'botblocker-security' ),
+		(string) BOTBLOCKER_CAPTCHA_MODE_DIGIT             => __( 'Dynamic Digit Captcha', 'botblocker-security' ),
+		(string) BOTBLOCKER_CAPTCHA_MODE_HOLD              => __( 'Hold Button Captcha', 'botblocker-security' ),
 	);
+
+	// Active addon captcha modes appear automatically; the filter may
+	// override labels or add extras.
+	if ( class_exists( 'BotBlockerCaptchaRegistry' ) ) {
+		$mode_options = BotBlockerCaptchaRegistry::optionsForSelect( $mode_options );
+	}
+	$mode_options = apply_filters( 'bbcs_captcha_mode_options', $mode_options );
+
+	// Without configured Site/Secret keys the reCaptcha v2 modes must not be selectable.
+	if ( ! $data->has_recaptcha_v2 ) {
+		foreach ( array( BOTBLOCKER_CAPTCHA_MODE_RECAPTCHA_V2_BUTTON, BOTBLOCKER_CAPTCHA_MODE_RECAPTCHA_V2 ) as $rc_mode ) {
+			$rc_key = (string) $rc_mode;
+			if ( isset( $mode_options[ $rc_key ] ) && ! is_array( $mode_options[ $rc_key ] ) ) {
+				$mode_options[ $rc_key ] = array(
+					'label'    => $mode_options[ $rc_key ],
+					'disabled' => true,
+				);
+			}
+		}
+	}
 
 	$inline_options = array(
 		'1' => __('Inline Base64 (Recommended)', 'botblocker-security'),
@@ -65,6 +86,22 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
 				. ' <a href="' . esc_url( $data->integrations_url . '#bbcs_recaptchav2' ) . '">'
 				. esc_html__( 'Configure now', 'botblocker-security' )
 				. '</a>'
+			);
+		}
+
+		$selected_mode = (int) $cm;
+		if ( $selected_mode >= 90
+			&& ( ! class_exists( 'BotBlockerCaptchaRegistry' ) || ! BotBlockerCaptchaRegistry::has( $selected_mode ) ) ) {
+			$info->withNote(
+				esc_html__( 'The selected CAPTCHA provider addon is not active. Visitors get the simple button challenge until it is activated.', 'botblocker-security' )
+			);
+		}
+		if ( $selected_mode >= 90
+			&& class_exists( 'BotBlockerCaptchaRegistry' )
+			&& BotBlockerCaptchaRegistry::has( $selected_mode )
+			&& ! BotBlockerCaptchaRegistry::hasKeys( $selected_mode ) ) {
+			$info->withNote(
+				esc_html__( 'CAPTCHA provider keys are not configured. Enter the site key and secret in the add-on settings before selecting this mode.', 'botblocker-security' )
 			);
 		}
 
@@ -128,6 +165,14 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
 								esc_url( $data->integrations_url ) . '#bbcs_recaptchav3'
 							);
 						?></div>
+						<?php
+						ToggleOption::make()
+							->withName( 'bbcs_honeypot_enabled' )
+							->withChecked( $data->is_checked( 'bbcs_honeypot_enabled' ) )
+							->withLabel( __( 'Honeypot Field on Challenge Page', 'botblocker-security' ) )
+							->withTooltip( __( 'Adds a hidden anti-bot trap field and a submit-timing check to the verification page. Disabled by default.', 'botblocker-security' ) )
+							->render();
+						?>
 					</div>
 					<?php
 				} )

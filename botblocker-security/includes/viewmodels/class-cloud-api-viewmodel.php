@@ -9,7 +9,7 @@ require_once __DIR__ . '/class-header-viewmodel.php';
 require_once __DIR__ . '/class-sidebar-viewmodel.php';
 require_once BOTBLOCKER_DIR . 'includes/dto/class-dashboard-urls.php';
 require_once BOTBLOCKER_DIR . 'includes/dto/class-pro-comparison-row-data.php';
-require_once BOTBLOCKER_DIR . 'includes/data/botblocker-pro-features.php';
+require_once BOTBLOCKER_DIR . 'includes/data/class-botblocker-pro-features.php';
 
 final class Botblocker_CloudApiViewModel {
 	/** @var Botblocker_HeaderViewModel */
@@ -76,10 +76,10 @@ final class Botblocker_CloudApiViewModel {
 		$this->deactivate_nonce = '';
 		$this->fetch_key_nonce  = '';
 
-		$this->pro_features = bbcs_get_pro_features();
+		$this->pro_features = BotBlockerProFeatures::getProFeatures();
 
 		$this->pro_comparison = array();
-		foreach ( bbcs_get_pro_comparison() as $row ) {
+		foreach ( BotBlockerProFeatures::getProComparison() as $row ) {
 			$this->pro_comparison[] = new Botblocker_ProComparisonRowData(
 				$row['feature'],
 				! empty( $row['free'] ),

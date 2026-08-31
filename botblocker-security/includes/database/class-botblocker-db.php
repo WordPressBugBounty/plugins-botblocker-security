@@ -7,6 +7,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class BotBlockerDb {
 
+	/** SQL alias for hits + hits_suspicious UNION subqueries. */
+	public const COMBINED_HITS_ALIAS = 'combined_hits';
+
 	/**
 	 * Shifts a UTC unix-timestamp column by an offset (seconds), returns DATETIME.
 	 * Avoids FROM_UNIXTIME()/CONVERT_TZ() — both depend on MySQL's session time_zone.
@@ -116,6 +119,11 @@ class BotBlockerDb {
 			$result = $wpdb->insert( $wpdb->bbcs_ipv6rules, $data );
 		}
 		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		if ( $result !== false ) {
+			// PTR-allow has a finite TTL and never lands in ip.php (permanent
+			// only); hot-bans.php carries it with TTL filtering in all layers.
+			BotBlockerFileRenderer::appendHotBan( $search_cidr, BBCS_RULE_ALLOW, (int) $data['expires'] );
+		}
 		return ( $result !== false );
 	}
 
@@ -267,6 +275,22 @@ class BotBlockerDb {
 			return 'filtered';
 		}
 		return 'page';
+	}
+
+	/** EXISTS page_filters match for given categories (no fast path; category not in filtered bit). */
+	public static function pageFilterCategoryExists( string $alias, $categories, int $range_start ): string {
+		global $wpdb;
+		$categories = array_values( (array) $categories );
+		if ( empty( $categories ) ) {
+			return 'AND 1=0';
+		}
+		$in_list = "'" . implode( "','", array_map( 'esc_sql', $categories ) ) . "'";
+		return "AND EXISTS (SELECT 1 FROM `{$wpdb->bbcs_page_filters}` AS pf WHERE {$alias}.page LIKE pf.pattern AND pf.category IN ({$in_list}))";
+	}
+
+	/** pageFilterCategoryExists() without leading AND. */
+	public static function pageFilterWhereCategoryExists( string $alias, $categories, int $range_start ): string {
+		return substr( self::pageFilterCategoryExists( $alias, $categories, $range_start ), 4 );
 	}
 
 	public static function generateAllFiles(): bool {

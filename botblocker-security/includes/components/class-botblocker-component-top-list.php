@@ -43,7 +43,7 @@ final class TopList extends Base {
 
 			if ( $this->type === 'country' ) {
 				$flag       = strtolower( $key );
-				$country_name = bbcs_get_country_by_code( $key );
+				$country_name = \BotBlockerGeo::getCountryByCode( $key );
 				$output    .= '<li class="bbcs-top-li">'
 					. '<span class="bbcs-top-span">'
 					. '<div class="bbcs-flag-wrapper">'

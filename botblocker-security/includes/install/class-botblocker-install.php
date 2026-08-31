@@ -231,6 +231,11 @@ class BotBlockerInstall {
 	}
 
 	public static function createTables(): void {
+		global $wpdb;
+		if ( empty( $wpdb->bbcs_hits ) ) {
+			self::markFilteredColumnReady();
+			return;
+		}
 		self::createHitsTable();
 		self::createHitsSuspiciousTable();
 		self::createHitsCloudTable();
@@ -251,6 +256,7 @@ class BotBlockerInstall {
 		self::createPageFiltersTable();
 		self::createFingerprintTable();
 		self::createSessionsTable();
+		self::createAuditLogTable();
 		// Watermark set by initDbAndFiles() (fresh) or migration 2.10.0 (upgrade) — not here.
 		self::markFilteredColumnReady();
 	}
@@ -754,6 +760,7 @@ class BotBlockerInstall {
 			$wpdb->bbcs_llm_trusted,
 			$wpdb->bbcs_tls_fingerprints,
 			$wpdb->bbcs_countries,
+			$wpdb->bbcs_audit_log,
 		);
 
 		$requiredTables = array_values( array_unique( array_filter( $requiredTables, 'is_string' ) ) );
@@ -834,7 +841,7 @@ class BotBlockerInstall {
 	        `id` INTEGER NOT NULL AUTO_INCREMENT,
 	        PRIMARY KEY  (`id`),
 	        `priority` INTEGER NOT NULL DEFAULT 50,
-	        `asnum` INTEGER NOT NULL,
+	        `asnum` BIGINT UNSIGNED NOT NULL,
 	        `asname` VARCHAR(255) NOT NULL DEFAULT '',
 	        `rule` VARCHAR(10) NOT NULL DEFAULT 'block',
 	        `comment` VARCHAR(255) NOT NULL DEFAULT '',
@@ -904,12 +911,39 @@ class BotBlockerInstall {
 		dbDelta( $sql );
 	}
 
+	public static function createAuditLogTable(): void {
+		global $wpdb;
+		$charset_collate = $wpdb->get_charset_collate();
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+
+		$sql = "CREATE TABLE `{$wpdb->bbcs_audit_log}` (
+			`id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+			`event_key` VARCHAR(191) NOT NULL DEFAULT '',
+			`severity` SMALLINT UNSIGNED NOT NULL DEFAULT 100,
+			`actor_user_id` BIGINT UNSIGNED NOT NULL DEFAULT 0,
+			`actor_username` VARCHAR(60) NOT NULL DEFAULT '',
+			`actor_role` VARCHAR(60) NOT NULL DEFAULT '',
+			`object_type` VARCHAR(60) NOT NULL DEFAULT '',
+			`object_id` BIGINT UNSIGNED NOT NULL DEFAULT 0,
+			`ip` VARCHAR(45) NOT NULL DEFAULT '',
+			`context` VARCHAR(20) NOT NULL DEFAULT '',
+			`request_path` VARCHAR(500) NOT NULL DEFAULT '',
+			`user_agent` VARCHAR(255) NOT NULL DEFAULT '',
+			`data` TEXT NOT NULL,
+			`created_at` INT UNSIGNED NOT NULL DEFAULT 0,
+			PRIMARY KEY (id),
+			KEY i_created_at (created_at)
+		) $charset_collate;";
+
+		dbDelta( $sql );
+	}
+
 	public static function createSaltFile( $return_salt_bb = false ) {
 		$saltFilePath = BotBlockerMultisite::getNetworkDataDir() . 'salt.php';
 
 		if ( is_multisite() && file_exists( $saltFilePath ) ) {
 			if ( $return_salt_bb ) {
-				$existing = bbcs_safe_load_data_file( $saltFilePath );
+				$existing = BotBlockerDataFile::safeLoad( $saltFilePath );
 				if ( is_array( $existing ) && isset( $existing['salt_bb'] ) ) {
 					return (string) $existing['salt_bb'];
 				}
@@ -919,10 +953,18 @@ class BotBlockerInstall {
 		}
 
 		if ( ! file_exists( $saltFilePath ) || $return_salt_bb === true ) {
-			$host_key = md5( get_option( 'siteurl' ) );
-			$salt_bb  = bin2hex( random_bytes( 12 ) );
-			$salt_ps  = bin2hex( random_bytes( 12 ) );
-			$salt_pz  = time();
+			$fallback = get_option( 'bbcs_salt_fallback' );
+			if ( is_array( $fallback ) && ! empty( $fallback['salt_bb'] ) ) {
+				$host_key = ! empty( $fallback['host_key'] ) ? (string) $fallback['host_key'] : md5( get_option( 'siteurl' ) );
+				$salt_bb  = (string) $fallback['salt_bb'];
+				$salt_ps  = ! empty( $fallback['salt_ps'] ) ? (string) $fallback['salt_ps'] : bin2hex( random_bytes( 12 ) );
+				$salt_pz  = ! empty( $fallback['salt_pz'] ) ? (string) $fallback['salt_pz'] : time();
+			} else {
+				$host_key = md5( get_option( 'siteurl' ) );
+				$salt_bb  = bin2hex( random_bytes( 12 ) );
+				$salt_ps  = bin2hex( random_bytes( 12 ) );
+				$salt_pz  = time();
+			}
 
 			$salt_data = array(
 				'host_key' => $host_key,
@@ -953,9 +995,16 @@ class BotBlockerInstall {
 			 */
 	         /* phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export */
 			$fileContent = "<?php\nreturn " . var_export( $salt_data, true ) . ";\n";
-			$fileContent = bbcs_data_file_sign( $fileContent );
+			$fileContent = BotBlockerDataFile::sign( $fileContent );
 
-			$result = file_put_contents( $saltFilePath, $fileContent );
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents, WordPress.PHP.NoSilencedErrors.Discouraged
+			$result = @file_put_contents( $saltFilePath, $fileContent );
+
+			if ( $result !== false ) {
+				BotBlockerCompiledFile::invalidate( $saltFilePath );
+				delete_option( 'bbcs_salt_fallback' );
+				delete_transient( 'bbcs_salt_write_error' );
+			}
 
 			if ( $result === false ) {
 				update_option( 'bbcs_salt_fallback', $salt_data );

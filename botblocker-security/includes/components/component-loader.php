@@ -36,6 +36,7 @@ require_once __DIR__ . '/class-botblocker-component-quick-link.php';
 require_once __DIR__ . '/class-botblocker-component-info-column.php';
 require_once __DIR__ . '/class-botblocker-component-settings-group.php';
 require_once __DIR__ . '/class-botblocker-component-custom-select.php';
+require_once __DIR__ . '/class-botblocker-component-retention-days-select.php';
 require_once __DIR__ . '/class-botblocker-component-action-button.php';
 require_once __DIR__ . '/class-botblocker-component-toggle-option.php';
 require_once __DIR__ . '/class-botblocker-component-text-input.php';

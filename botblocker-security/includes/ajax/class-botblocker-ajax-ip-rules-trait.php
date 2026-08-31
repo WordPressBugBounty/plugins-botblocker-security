@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 trait BotBlockerAjaxIpRulesTrait {
 
 	abstract protected static function getTableName(): string;
+	abstract protected static function getRuleListName(): string;
 	abstract protected static function getIpVersionLabel(): string;
 	abstract protected static function encodeIpForStorage( string $ip ): string;
 	abstract protected static function getOverlapPlaceholder(): string;
@@ -122,7 +123,7 @@ trait BotBlockerAjaxIpRulesTrait {
 				'id'       => $row['id'],
 				'priority' => $row['priority'],
 				'ip'       => $row['search'],
-				'expires'  => bbcs_wp_date( 'Y-m-d H:i:s', (int) $row['expires'] ),
+				'expires'  => BotBlockerCompatibility::wpDate( 'Y-m-d H:i:s', (int) $row['expires'] ),
 				'disable'  => $row['disable'],
 				'rule'     => $row['rule'],
 				'comment'  => $row['comment'],
@@ -209,7 +210,7 @@ trait BotBlockerAjaxIpRulesTrait {
 			if ( $rule && ! empty( $rule->search ) ) {
 				delete_transient( 'bbcs_fr_' . md5( $rule->search ) );
 
-				$mask_parts = bbcs_parse_rate_subnet_mask( BotBlocker::getInstance()->settings->bbcs_rate_subnet_mask ?? '' );
+				$mask_parts = BotBlockerIp::parseRateSubnetMask( BotBlocker::getInstance()->settings->bbcs_rate_subnet_mask ?? '' );
 				if ( $mask_parts[0] > 0 && $mask_parts[1] > 0 ) {
 					$ip_version  = BotBlockerIp::getVersion( $rule->search );
 					if ( $ip_version ) {
@@ -242,6 +243,8 @@ trait BotBlockerAjaxIpRulesTrait {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log, WordPress.PHP.DevelopmentFunctions.error_log_var_export -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [AJAX] ' . $ip_label . '_delete_rule clearFileCache done, sending success' );
 			}
+
+			BotBlockerAudit::ruleChanged( static::getRuleListName(), BotBlockerAuditEvents::RULE_ACTION_DELETED, array( 'id' => $id ) );
 
 			// translators: %s is the IP version label (IPv4 or IPv6).
 			wp_send_json_success( sprintf( __( '%s rule deleted successfully.', 'botblocker-security' ), static::getIpVersionLabel() ) );
@@ -354,6 +357,8 @@ trait BotBlockerAjaxIpRulesTrait {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log, WordPress.PHP.DevelopmentFunctions.error_log_var_export -- guarded by BBCS_DEBUG
 			error_log( '[BBCS DEBUG] [AJAX] ' . $ip_label . '_toggle_rule complete, sending success' );
 		}
+
+		BotBlockerAudit::ruleChanged( static::getRuleListName(), BotBlockerAuditEvents::RULE_ACTION_TOGGLED, array( 'id' => $id ) );
 
 		// translators: %s is the IP version label (IPv4 or IPv6).
 		wp_send_json_success( sprintf( __( '%s rule toggled successfully.', 'botblocker-security' ), static::getIpVersionLabel() ) );
@@ -530,6 +535,8 @@ trait BotBlockerAjaxIpRulesTrait {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log, WordPress.PHP.DevelopmentFunctions.error_log_var_export -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [AJAX] ' . $ip_label . '_create_rule complete, sending success' );
 			}
+
+			BotBlockerAudit::ruleChanged( static::getRuleListName(), BotBlockerAuditEvents::RULE_ACTION_CREATED, array( 'id' => (int) $wpdb->insert_id ) );
 
 			// translators: %s is the IP version label (IPv4 or IPv6).
 			wp_send_json_success( sprintf( __( '%s rule created successfully.', 'botblocker-security' ), static::getIpVersionLabel() ) );
@@ -722,6 +729,8 @@ trait BotBlockerAjaxIpRulesTrait {
 				error_log( '[BBCS DEBUG] [AJAX] ' . $ip_label . '_update_rule complete, sending success' );
 			}
 
+			BotBlockerAudit::ruleChanged( static::getRuleListName(), BotBlockerAuditEvents::RULE_ACTION_UPDATED, array( 'id' => $id ) );
+
 			// translators: %s is the IP version label (IPv4 or IPv6).
 			wp_send_json_success( sprintf( __( '%s rule updated successfully.', 'botblocker-security' ), static::getIpVersionLabel() ) );
 		} else {
@@ -913,6 +922,8 @@ trait BotBlockerAjaxIpRulesTrait {
 				error_log( '[BBCS DEBUG] [AJAX] ' . $ip_label . '_import complete, sending success' );
 			}
 
+			BotBlockerAudit::ruleChanged( static::getRuleListName(), BotBlockerAuditEvents::RULE_ACTION_IMPORTED, array( 'imported' => $imported, 'skipped' => $skipped ) );
+
 			wp_send_json_success(
 				array(
 					'imported' => $imported,
@@ -975,7 +986,7 @@ trait BotBlockerAjaxIpRulesTrait {
 			if ( ! empty( $cleared_ips ) ) {
 				$mask_parts = array( 0, 0 );
 				if ( class_exists( 'BotBlocker' ) && ! empty( BotBlocker::getInstance()->settings ) ) {
-					$mask_parts = bbcs_parse_rate_subnet_mask( BotBlocker::getInstance()->settings->bbcs_rate_subnet_mask ?? '' );
+					$mask_parts = BotBlockerIp::parseRateSubnetMask( BotBlocker::getInstance()->settings->bbcs_rate_subnet_mask ?? '' );
 				}
 
 				$do_subnet = $mask_parts[0] > 0 && $mask_parts[1] > 0;
@@ -1016,6 +1027,8 @@ trait BotBlockerAjaxIpRulesTrait {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log, WordPress.PHP.DevelopmentFunctions.error_log_var_export -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [AJAX] ' . $ip_label . '_clear_all complete, sending success' );
 			}
+
+			BotBlockerAudit::ruleChanged( static::getRuleListName(), BotBlockerAuditEvents::RULE_ACTION_CLEARED );
 
 			// translators: %s is the IP version label (IPv4 or IPv6).
 			wp_send_json_success( sprintf( __( 'All %s rules have been cleared.', 'botblocker-security' ), static::getIpVersionLabel() ) );
@@ -1312,6 +1325,8 @@ trait BotBlockerAjaxIpRulesTrait {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log, WordPress.PHP.DevelopmentFunctions.error_log_var_export -- guarded by BBCS_DEBUG
 			error_log( '[BBCS DEBUG] [AJAX] ' . $ip_label . '_import_list complete, sending success' );
 		}
+
+		BotBlockerAudit::ruleChanged( static::getRuleListName(), BotBlockerAuditEvents::RULE_ACTION_IMPORTED, array( 'imported' => $imported, 'skipped' => $skipped ) );
 
 		wp_send_json_success(
 			array(

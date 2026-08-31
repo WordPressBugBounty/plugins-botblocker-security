@@ -23,7 +23,7 @@ class BotBlockerRkn {
 				continue;
 			}
 
-			$data = bbcs_safe_load_data_file( $file );
+			$data = BotBlockerDataFile::safeLoad( $file );
 			if ( ! is_array( $data ) ) {
 				continue;
 			}

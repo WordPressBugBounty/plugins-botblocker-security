@@ -16,6 +16,22 @@ class BotBlockerStore {
 	/** '1' after column verified. Autoloaded — hot path is an in-memory get_option. */
 	public const FILTERED_COLUMN_OPTION = 'bbcs_filtered_column';
 
+	public const PAGE_FILTER_CATEGORY_ADMIN     = 'admin';
+	public const PAGE_FILTER_CATEGORY_WP_SYSTEM = 'wp_system';
+	public const PAGE_FILTER_CATEGORY_CONTENT   = 'content';
+	public const PAGE_FILTER_CATEGORY_SEO       = 'seo';
+	public const PAGE_FILTER_CATEGORY_API       = 'api';
+
+	/** Non-admin page_filters categories shown in the WordPress Actions hits tab. */
+	public static function getPageFilterWordpressActionCategories(): array {
+		return array(
+			self::PAGE_FILTER_CATEGORY_WP_SYSTEM,
+			self::PAGE_FILTER_CATEGORY_CONTENT,
+			self::PAGE_FILTER_CATEGORY_SEO,
+			self::PAGE_FILTER_CATEGORY_API,
+		);
+	}
+
 	/** 1 if page matches a page_filters LIKE pattern, 0 otherwise; null on DB error. */
 	public static function computeFilteredFlag( string $page ): ?int {
 		global $wpdb;
@@ -54,7 +70,7 @@ class BotBlockerStore {
 		}
 
 		$reason     = is_numeric( $reason ) ? (int) $reason : null;
-		$code       = bbcs_codeList( $reason );
+		$code       = BotBlockerDataCodes::codeList( $reason );
 		$table_name = $wpdb->bbcs_hits_suspicious;
 		if ( $code['allow'] ) {
 			$table_name = $wpdb->bbcs_hits;
@@ -221,7 +237,7 @@ class BotBlockerStore {
 		) );
 
 		$now      = time();
-		$code     = bbcs_codeList( $reason );
+		$code     = BotBlockerDataCodes::codeList( $reason );
 		$is_block = ( $reason > 0 && ! empty( $code ) && ! $code['allow'] );
 
 		if ( $existing ) {

@@ -188,6 +188,8 @@ class BotBlocker_SetupWizard {
 			<link rel="stylesheet" href="<?php echo esc_url( add_query_arg( 'ver', $plugin_version, $admin_dir_url . 'css/bbcs.css' ) ); ?>">
 			<link rel="stylesheet" href="<?php echo esc_url( add_query_arg( 'ver', $plugin_version, $admin_dir_url . 'css/all.min.css' ) ); ?>">
 			<link rel="stylesheet" href="<?php echo esc_url( add_query_arg( 'ver', $plugin_version, $admin_dir_url . 'css/bbcs-setup-wizard-new.css' ) ); ?>">
+			<link rel="stylesheet" href="<?php echo esc_url( add_query_arg( 'ver', $plugin_version, $admin_dir_url . 'css/toastify/toastify.min.css' ) ); ?>">
+			<style><?php echo BBCS_Toastify::custom_css(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static CSS from plugin class ?></style>
 			<script>
 				var bbcs_setup_wizard_vars = 
 				<?php
@@ -221,6 +223,15 @@ class BotBlocker_SetupWizard {
 				?>
 												;
 			</script>
+			<script>
+				var bbcsConfirmL10n = <?php echo wp_json_encode( array(
+					'title'   => __( 'Please Confirm', 'botblocker-security' ),
+					'cancel'  => __( 'Cancel', 'botblocker-security' ),
+					'confirm' => __( 'Confirm', 'botblocker-security' ),
+				) ); ?>;
+			</script>
+			<script src="<?php echo esc_url( add_query_arg( 'ver', $plugin_version, $admin_dir_url . 'js/toastify/toastify.min.js' ) ); ?>"></script>
+			<script src="<?php echo esc_url( add_query_arg( 'ver', $plugin_version, $admin_dir_url . 'js/bbcs-js/bbcs-toast.js' ) ); ?>"></script>
 			<script src="<?php echo esc_url( add_query_arg( 'ver', $plugin_version, $admin_dir_url . 'js/bbcs-js/bbcs-setup-wizard.js' ) ); ?>"></script>
 		</head>
 		<body class="botblocker-security-setup-wizard">

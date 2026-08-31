@@ -232,7 +232,6 @@ class BotBlockerPaymentData {
 			'gf_page',
 			'wcb_listener',
 			'wcs-listener',
-			'callback_handler',
 			'jigoshop_action',
 			'shopp_xco',
 			'sc_action',
@@ -416,6 +415,12 @@ class BotBlockerPaymentData {
 			'yandex_money_callback',
 			'yandex_kassa_callback',
 			'yoomoney_callback',
+		);
+	}
+
+	public static function getGenericQueryKeys(): array {
+		return array(
+			'callback_handler',
 			'postback',
 			'payment_postback',
 			'gateway_postback',
@@ -758,6 +763,11 @@ class BotBlockerPaymentData {
 			'yandex_money_callback',
 			'wc_yandex_money_callback',
 			'subscription_status_changed_via_webhook',
+		);
+	}
+
+	public static function getGenericActions(): array {
+		return array(
 			'gateway_ipn',
 			'gateway_callback',
 			'gateway_webhook',
@@ -876,6 +886,11 @@ class BotBlockerPaymentData {
 			'clearpay_',
 			'sezzle_',
 			'affirm_',
+		);
+	}
+
+	public static function getGenericActionSubstrings(): array {
+		return array(
 			'payment_callback',
 			'payment_notification',
 			'gateway_callback',

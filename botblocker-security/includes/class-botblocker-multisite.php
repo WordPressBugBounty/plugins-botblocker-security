@@ -54,8 +54,13 @@ final class BotBlockerMultisite {
 		return get_site_url();
 	}
 
+	public static function fullDomainWithUnderscores( string $url ): string {
+		$host = wp_parse_url( $url, PHP_URL_HOST );
+		return str_replace( '.', '_', $host );
+	}
+
 	public static function getCurrentSiteClear(): string {
-		return bbcs_full_domain_with_underscores( get_site_url() );
+		return self::fullDomainWithUnderscores( get_site_url() );
 	}
 
 	public static function getCurrentSiteName(): string {
@@ -96,8 +101,9 @@ final class BotBlockerMultisite {
 			return array( get_current_blog_id() );
 		}
 
-		$all_ids = array();
-		$offset  = 0;
+		$per_page = max( 1, $per_page );
+		$all_ids  = array();
+		$offset   = 0;
 
 		do {
 			$batch = get_sites(
@@ -139,21 +145,22 @@ final class BotBlockerMultisite {
 		}
 	}
 
-	private static $cachedUploadsDir = null;
+	private static $cachedUploadsDir = array();
 
 	public static function getUploadsDir(): string {
-		if ( self::$cachedUploadsDir !== null ) {
-			return self::$cachedUploadsDir;
+		$blog_id = function_exists( 'get_current_blog_id' ) ? get_current_blog_id() : 0;
+		if ( isset( self::$cachedUploadsDir[ $blog_id ] ) ) {
+			return self::$cachedUploadsDir[ $blog_id ];
 		}
-		$dir = bbcs_get_protected_upload_dir();
+		$dir = BotBlockerUploads::getProtectedUploadDir();
 		if ( $dir === null || is_wp_error( $dir ) ) {
-			$dir = bbcs_create_protected_upload_dir();
+			$dir = BotBlockerUploads::createProtectedUploadDir();
 		}
 		if ( is_wp_error( $dir ) || ! is_string( $dir ) ) {
-			self::$cachedUploadsDir = '';
+			self::$cachedUploadsDir[ $blog_id ] = '';
 			return '';
 		}
-		self::$cachedUploadsDir = $dir;
+		self::$cachedUploadsDir[ $blog_id ] = $dir;
 		return $dir;
 	}
 
@@ -161,13 +168,12 @@ final class BotBlockerMultisite {
 		if ( defined( 'BOTBLOCKER_DATA_DIR' ) ) {
 			return rtrim( (string) BOTBLOCKER_DATA_DIR, '/\\' ) . '/';
 		}
-		static $dataDir = null;
-		if ( $dataDir === null ) {
-			$dataDir = self::$cachedUploadsDir !== null
-				? self::$cachedUploadsDir . 'data/'
-				: self::getUploadsDir() . 'data/';
+		static $dataDir = array();
+		$blog_id        = function_exists( 'get_current_blog_id' ) ? get_current_blog_id() : 0;
+		if ( ! isset( $dataDir[ $blog_id ] ) ) {
+			$dataDir[ $blog_id ] = self::getUploadsDir() . 'data/';
 		}
-		return $dataDir;
+		return $dataDir[ $blog_id ];
 	}
 
 	public static function getNetworkDataDir(): string {
@@ -215,7 +221,7 @@ final class BotBlockerMultisite {
 		if ( self::isAddonsLocalMode() ) {
 			return trailingslashit( BOTBLOCKER_URL ) . 'addons/';
 		}
-		$url = bbcs_get_protected_upload_dir( true );
+		$url = BotBlockerUploads::getProtectedUploadDir( true );
 		if ( ! is_string( $url ) || $url === '' ) {
 			return '';
 		}

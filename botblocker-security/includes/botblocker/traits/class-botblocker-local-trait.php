@@ -6,11 +6,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 trait BotBlockerLocalTrait {
 
+	use BotBlockerHoneypotTrait;
+
 	public function processLocalRequest() {
 		check_ajax_referer( 'botblocker_nonce', 'nonce' );
 
-		if ( isset( $_COOKIE[ $this->settings->cookie ] ) ) {
-			$this->uid = preg_replace( '/[^a-zA-Z0-9]/', '', sanitize_text_field( wp_unslash( $_COOKIE[ $this->settings->cookie ] ) ) );
+		if ( empty( $this->uid ) ) {
+			$this->uid = $this->sanitize_cookie_uid();
+			if ( empty( $this->uid ) ) {
+				$this->uid = $this->generate_uid();
+				$this->set_bot_blocker_cookie();
+			}
 		}
 
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
@@ -34,6 +40,19 @@ trait BotBlockerLocalTrait {
 				$payload = $this->sign_response_payload( $payload );
 			}
 			$this->process_die( wp_json_encode( $payload ) );
+		}
+
+		$honeypot_reason = self::honeypotViolation( $_POST, $this->settings );
+		if ( $honeypot_reason !== '' ) {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+				error_log( '[BBCS DEBUG] [Local] EXIT: ' . $honeypot_reason );
+			}
+			$payload = BotBlockerStore::localCheckResult( BBCS_LOCAL_RESULT_ERROR, $honeypot_reason, '' );
+			if ( $this->settings->bbcs_ddos_resilience == 1 ) {
+				$payload = $this->sign_response_payload( (array) $payload );
+			}
+			wp_send_json( $payload );
 		}
 
 		if ( isset( $_POST['cid'] ) ) {

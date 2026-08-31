@@ -22,8 +22,8 @@ trait BBCS_RenderImageButtonTrait {
 
 		$colors = $this->BBCS->list_of_colors_for_captcha;
 		shuffle( $colors );
-		$color     = $colors[0];
-		$colorhash = hash( 'sha256', $this->BBCS->settings->salt . $color . $this->BBCS->time . $this->BBCS->settings->cloud_api_pass . $this->BBCS->ip );
+		$color = $colors[0];
+		$nonce = $this->createChallenge( $color, 2 );
 
 		$img_dir = $this->BBCS->dirs['public'] . 'img/' . $this->BBCS->settings->bbcs_captcha_img_pack . '/';
 
@@ -42,7 +42,7 @@ trait BBCS_RenderImageButtonTrait {
 				$button_images[] = array(
 					'id'        => $hash_for_id,
 					'imageData' => base64_encode( $raw ),
-					'clickHash' => $btn_color . '|' . $colorhash,
+					'clickHash' => $this->answerHash( $nonce, $btn_color ),
 				);
 			}
 			shuffle( $button_images );
@@ -55,7 +55,7 @@ trait BBCS_RenderImageButtonTrait {
 			$image_requests  = array();
 			foreach ( $colors as $btn_color ) {
 				$hash_for_id       = md5( $this->BBCS->time . $this->BBCS->settings->salt . $color_ids[ $btn_color ] );
-				$button_elements[] = '<span id="' . $hash_for_id . '" style="cursor: pointer;" onclick="' . $this->botblocker_check_function_name . '(\'post\', data, \'' . $btn_color . '|' . $colorhash . '\')"></span>';
+				$button_elements[] = '<span id="' . $hash_for_id . '" style="cursor: pointer;" onclick="' . $this->botblocker_check_function_name . '(\'post\', data, \'' . $this->answerHash( $nonce, $btn_color ) . '\')"></span>';
 				$image_requests[]  = array(
 					'imageParam' => $color_ids[ $btn_color ],
 					'elementId'  => $hash_for_id,

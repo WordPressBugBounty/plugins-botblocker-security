@@ -71,21 +71,37 @@ trait BotBlockerVisitorTrait {
 	}
 
 	private function is_tls_fingerprint_source_trusted(): bool {
-		if ( isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) || isset( $_SERVER['CF-IPCOUNTRY'] ) ) {
+		$remote = isset( $_SERVER['REMOTE_ADDR'] )
+			? sanitize_text_field( wp_unslash( (string) $_SERVER['REMOTE_ADDR'] ) ) : '';
+
+		if ( $remote !== '' && $this->is_cloudflare_edge_request( $remote ) ) {
 			return true;
 		}
+
 		$trusted = isset( $this->settings->tls_fingerprint_trusted_proxy )
 			? trim( (string) $this->settings->tls_fingerprint_trusted_proxy ) : '';
-		if ( $trusted === '' ) {
-			return false;
-		}
-		$remote = isset( $_SERVER['REMOTE_ADDR'] )
-			? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
-		if ( $remote === '' ) {
+		if ( $trusted === '' || $remote === '' ) {
 			return false;
 		}
 		if ( BotBlockerIp::netMatch( $trusted, $remote ) == 1 ) {
 			return true;
+		}
+		return false;
+	}
+
+	private function is_cloudflare_edge_request( string $remote ): bool {
+		if ( ! isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ) {
+			return false;
+		}
+		if ( method_exists( $this, 'lazy_load_proxy' ) ) {
+			$this->lazy_load_proxy();
+		}
+		$proxy_map = isset( $this->bbcs_proxy ) && is_array( $this->bbcs_proxy )
+			? $this->bbcs_proxy : array();
+		foreach ( $proxy_map as $proxy_mask => $proxy_attr ) {
+			if ( $proxy_attr === 'HTTP_CF_CONNECTING_IP' && BotBlockerIp::netMatch( (string) $proxy_mask, $remote ) == 1 ) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -114,8 +130,8 @@ trait BotBlockerVisitorTrait {
 		}
 
 		// --- uid ---
-		if ( isset( $_COOKIE[ $this->settings->cookie ] ) ) {
-			$this->uid = preg_replace( '/[^a-zA-Z0-9]/', '', sanitize_text_field( wp_unslash( $_COOKIE[ $this->settings->cookie ] ) ) );
+		if ( empty( $this->uid ) ) {
+			$this->uid = $this->sanitize_cookie_uid();
 		}
 		if ( empty( $this->uid ) ) {
 			$this->uid = $this->generate_uid();
@@ -209,6 +225,19 @@ trait BotBlockerVisitorTrait {
 		}
 		$this->redirect_to_dark( 'No cookies users(Human?)' );
 		return false;
+	}
+
+	/**
+	 * Read the uid from the main cookie, sanitized and length-capped.
+	 * Returns '' when the cookie is absent, contains no alphanumeric
+	 * characters, or exceeds BOTBLOCKER_UID_MAX_LEN (oversized uids flow
+	 * into X-BBCS-* header names and cookie names - nginx 502 vector).
+	 */
+	public function sanitize_cookie_uid(): string {
+		$cookie_uid = isset( $_COOKIE[ $this->settings->cookie ] )
+			? preg_replace( '/[^a-zA-Z0-9]/', '', sanitize_text_field( wp_unslash( $_COOKIE[ $this->settings->cookie ] ) ) )
+			: '';
+		return strlen( $cookie_uid ) <= BOTBLOCKER_UID_MAX_LEN ? $cookie_uid : '';
 	}
 
 	public function generate_uid(): string {
@@ -362,18 +391,32 @@ trait BotBlockerVisitorTrait {
 	}
 
 	private function extract_proxy_header_ip( $raw_header ): string {
-		$header = sanitize_text_field( wp_unslash( (string) $raw_header ) );
-		foreach ( explode( ',', $header ) as $candidate ) {
-			$candidate = trim( $candidate );
+		$header     = sanitize_text_field( wp_unslash( (string) $raw_header ) );
+		$candidates = explode( ',', $header );
+		for ( $i = count( $candidates ) - 1; $i >= 0; $i-- ) {
+			$candidate = trim( $candidates[ $i ] );
 			if ( $candidate === '' ) {
 				continue;
 			}
 			$candidate = trim( $candidate, " \t\n\r\0\x0B[]" );
-			if ( filter_var( $candidate, FILTER_VALIDATE_IP ) ) {
-				return $candidate;
+			if ( ! filter_var( $candidate, FILTER_VALIDATE_IP ) ) {
+				continue;
 			}
+			if ( $this->isTrustedProxyIp( $candidate ) ) {
+				continue;
+			}
+			return $candidate;
 		}
 		return '';
+	}
+
+	private function isTrustedProxyIp( string $ip ): bool {
+		foreach ( $this->bbcs_proxy as $proxy_mask => $proxy_attr ) {
+			if ( BotBlockerIp::netMatch( $proxy_mask, $ip ) == 1 ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public function validate_referer(): void {
@@ -407,12 +450,12 @@ trait BotBlockerVisitorTrait {
 
 	public function identify_by_user_agent(): void {
 		if ( $this->settings->get_browser_type == 1 ) {
-			$this->browser = bbcs_getBrowserType( $this->useragent );
+			$this->browser = BotBlockerDataReports::getBrowserType( $this->useragent );
 		} else {
 			$this->browser = BOTBLOCKER_EMPTY;
 		}
 		if ( $this->settings->get_os_type == 1 ) {
-			$this->os = bbcs_getOSType( $this->useragent );
+			$this->os = BotBlockerDataReports::getOSType( $this->useragent );
 		} else {
 			$this->os = BOTBLOCKER_EMPTY;
 		}
@@ -484,6 +527,24 @@ trait BotBlockerVisitorTrait {
 		}
 	}
 
+	private function normalize_asnum_value( $value ): string {
+		if ( $value === null || $value === '' || ! is_scalar( $value ) ) {
+			return BOTBLOCKER_EMPTY;
+		}
+
+		$raw = trim( (string) $value );
+		if ( strlen( $raw ) >= 2 && strncasecmp( $raw, 'AS', 2 ) === 0 ) {
+			$raw = substr( $raw, 2 );
+		}
+
+		$normalized = BotBlockerAsnValue::normalize( $raw );
+		if ( $normalized === null ) {
+			return BOTBLOCKER_EMPTY;
+		}
+
+		return $normalized;
+	}
+
 	public function get_ip_info(): void {
 		$source = $this->get_ip_info_source();
 
@@ -492,12 +553,12 @@ trait BotBlockerVisitorTrait {
 			$cached    = BotBlockerCache::getCacheData( $cache_key );
 			if ( $cached !== null ) {
 				$this->country  = $cached['country'] ?? BOTBLOCKER_EMPTY;
-				$this->asnum    = $cached['asnum'] ?? BOTBLOCKER_EMPTY;
+				$this->asnum    = $this->normalize_asnum_value( $cached['asnum'] ?? null );
 				$this->asname   = $cached['asname'] ?? BOTBLOCKER_EMPTY;
 				$this->cidr     = $cached['cidr'] ?? BOTBLOCKER_EMPTY;
 				$this->hosting  = $cached['hosting'] ?? BOTBLOCKER_EMPTY;
 				if ( $this->country != BOTBLOCKER_EMPTY && ! empty( $this->country ) ) {
-					$this->country_name = bbcs_get_country_by_code( $this->country );
+					$this->country_name = BotBlockerGeo::getCountryByCode( $this->country );
 				}
 				return;
 			}
@@ -510,7 +571,7 @@ trait BotBlockerVisitorTrait {
 		}
 
 		if ( $this->country != BOTBLOCKER_EMPTY && ! empty( $this->country ) ) {
-			$this->country_name = bbcs_get_country_by_code( $this->country );
+			$this->country_name = BotBlockerGeo::getCountryByCode( $this->country );
 		}
 
 		if ( $source !== 'cloud' ) {
@@ -537,7 +598,7 @@ trait BotBlockerVisitorTrait {
 				$this->country = $cloud['country'] ?? BOTBLOCKER_EMPTY;
 				$this->cidr    = $cloud['cidr'] ?? BOTBLOCKER_EMPTY;
 				$this->asname  = $cloud['asname'] ?? BOTBLOCKER_EMPTY;
-				$this->asnum   = $cloud['asnum'] ?? BOTBLOCKER_EMPTY;
+				$this->asnum   = $this->normalize_asnum_value( $cloud['asnum'] ?? null );
 				$this->hosting = $cloud['hosting'] ?? BOTBLOCKER_EMPTY;
 			}
 		} else {
@@ -549,7 +610,7 @@ trait BotBlockerVisitorTrait {
 	private function get_ip_info_pipeline(): void {
 		$local = class_exists( 'BotBlockerAsnDb' ) ? BotBlockerAsnDb::lookup( $this->ip ) : null;
 		if ( is_array( $local ) ) {
-			$this->asnum  = $local['asn'] ?? BOTBLOCKER_EMPTY;
+			$this->asnum  = $this->normalize_asnum_value( $local['asn'] ?? null );
 			$this->asname = $local['as_name'] ?? BOTBLOCKER_EMPTY;
 			$this->cidr   = $local['cidr'] ?? BOTBLOCKER_EMPTY;
 			if ( ! empty( $local['country'] ) && $local['country'] !== BOTBLOCKER_EMPTY ) {
@@ -592,7 +653,7 @@ trait BotBlockerVisitorTrait {
 					$this->asname = $cloud['asname'] ?? BOTBLOCKER_EMPTY;
 				}
 				if ( $this->asnum === BOTBLOCKER_EMPTY ) {
-					$this->asnum = $cloud['asnum'] ?? BOTBLOCKER_EMPTY;
+					$this->asnum = $this->normalize_asnum_value( $cloud['asnum'] ?? null );
 				}
 				if ( $cloud_active ) {
 					$this->hosting = $cloud['hosting'] ?? BOTBLOCKER_EMPTY;
@@ -662,12 +723,6 @@ trait BotBlockerVisitorTrait {
 		$isCron      = $this->is_wordpress_system_cron();
 		$isHeartbeat = $this->is_wordpress_heartbeat();
 
-		if ( $isHeartbeat ) {
-			BotBlockerStore::storeData( 'WordPress heartbeat request', 73 );
-			BotBlockerCounters::processHit( 73 );
-			return true;
-		}
-
 		if ( $this->isAdmin ) {
 			$isAdminIP = isset( $this->admin_ips[ $this->ip ] ) && $this->admin_ips[ $this->ip ] === BBCS_RULE_ALLOW;
 			if ( ! $isAdminIP && $this->settings->autosave_admin_ip == 1 ) {
@@ -699,6 +754,12 @@ trait BotBlockerVisitorTrait {
 		$isSelfIP       = isset( $this->self_ips[ $this->ip ] ) && $this->self_ips[ $this->ip ] === BBCS_RULE_ALLOW;
 		$allowSelfIPReq = $this->settings->allow_self_ip_req ?? false;
 
+		if ( $isHeartbeat && ( is_user_logged_in() || ( $isSelfIP && $allowSelfIPReq ) ) ) {
+			BotBlockerStore::storeData( 'WordPress heartbeat request', 73 );
+			BotBlockerCounters::processHit( 73 );
+			return true;
+		}
+
 		if ( $isSelfIP ) {
 			if ( $isCron ) {
 				BotBlockerStore::storeData( 'WordPress self request', 70 );
@@ -711,7 +772,8 @@ trait BotBlockerVisitorTrait {
 			}
 		}
 
-		if ( ! $this->isAdmin && $this->is_wordpress_http_api_request() ) {
+		if ( ! $this->isAdmin && $this->is_wordpress_http_api_request()
+			&& ( $this->has_valid_self_call_header() || ( $isSelfIP && $allowSelfIPReq ) ) ) {
 			BotBlockerStore::storeData( 'WordPress API request', 71 );
 			BotBlockerCounters::processHit( 71 );
 			return true;
@@ -733,6 +795,59 @@ trait BotBlockerVisitorTrait {
 			return false;
 		}
 		return BotBlockerCheck::string_contains_host_www( $ua, (string) $home_host );
+	}
+
+	public function inject_self_call_header( array $args, $url ): array {
+		if ( ! $this->is_self_call_header_enabled() ) {
+			return $args;
+		}
+		if ( ! is_string( $url ) || $url === '' || ! isset( $args['headers'] ) || ! is_array( $args['headers'] ) ) {
+			return $args;
+		}
+		$target_host = wp_parse_url( $url, PHP_URL_HOST );
+		$home_host   = wp_parse_url( home_url(), PHP_URL_HOST );
+		if ( ! is_string( $target_host ) || $target_host === '' || ! is_string( $home_host ) || $home_host === '' ) {
+			return $args;
+		}
+		if ( ! BotBlockerCheck::hosts_equal_www( $target_host, $home_host ) ) {
+			return $args;
+		}
+		$salt = isset( $this->settings->salt ) ? (string) $this->settings->salt : '';
+		if ( $salt === '' ) {
+			return $args;
+		}
+		$ts                                   = time();
+		$args['headers']['X-BotBlocker-Self'] = $ts . '.' . hash_hmac( 'sha256', 'self-call:' . $ts, $salt );
+		return $args;
+	}
+
+	private function has_valid_self_call_header(): bool {
+		if ( ! $this->is_self_call_header_enabled() ) {
+			return false;
+		}
+		if ( ! isset( $_SERVER['HTTP_X_BOTBLOCKER_SELF'] ) ) {
+			return false;
+		}
+		$header = sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_BOTBLOCKER_SELF'] ) );
+		$parts  = explode( '.', $header, 2 );
+		if ( count( $parts ) !== 2 || $parts[0] === '' || ! ctype_digit( $parts[0] ) ) {
+			return false;
+		}
+		$ts = (int) $parts[0];
+		if ( abs( time() - $ts ) > BOTBLOCKER_SELF_CALL_WINDOW ) {
+			return false;
+		}
+		$salt = isset( $this->settings->salt ) ? (string) $this->settings->salt : '';
+		if ( $salt === '' ) {
+			return false;
+		}
+		return hash_equals( hash_hmac( 'sha256', 'self-call:' . $ts, $salt ), $parts[1] );
+	}
+
+	private function is_self_call_header_enabled(): bool {
+		$enabled = isset( $this->settings->allow_self_call_header )
+			? (int) $this->settings->allow_self_call_header : 1;
+		return $enabled === 1;
 	}
 
 	public function is_wordpress_system_cron(): bool {
@@ -799,7 +914,7 @@ trait BotBlockerVisitorTrait {
 
 	public function read_host(): void {
 		if ( isset( $_SERVER['HTTP_HOST'] ) ) {
-			$this->host = preg_replace( '/[^0-9a-z.:-]/', '', sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) );
+			$this->host = preg_replace( '/[^0-9a-z.:-]/', '', strtolower( sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) ) );
 		} else {
 			$this->host = 'errorhost.local';
 		}
@@ -936,7 +1051,7 @@ trait BotBlockerVisitorTrait {
 		if ( isset( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) ) {
 			$this->accept_lang = trim( wp_strip_all_tags( wp_unslash( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) ) );
 			$this->lang        = $this->read_real_language( $this->accept_lang );
-			$this->name_lang   = bbcs_get_language_by_code( $this->lang );
+			$this->name_lang   = BotBlockerGeo::getLanguageByCode( $this->lang );
 		} else {
 			$this->accept_lang = '';
 			$this->lang        = '';
@@ -1008,6 +1123,13 @@ trait BotBlockerVisitorTrait {
 			if ( stripos( $useragent, $signature ) !== false ) {
 				$cache[ $useragent ] = $signature;
 				return $signature;
+			}
+		}
+
+		foreach ( BotBlockerData::getBotSignaturePatterns() as $pattern ) {
+			if ( preg_match( '~' . $pattern . '~i', $useragent ) === 1 ) {
+				$cache[ $useragent ] = $pattern;
+				return $pattern;
 			}
 		}
 

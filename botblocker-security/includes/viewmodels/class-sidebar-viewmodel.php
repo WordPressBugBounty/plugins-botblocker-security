@@ -58,8 +58,8 @@ final class Botblocker_SidebarViewModel {
 	public $early_init_disabled_message;
 
 	public function __construct() {
-		require_once BOTBLOCKER_DIR . 'includes/data/botblocker-pro-features.php';
-		require_once BOTBLOCKER_DIR . 'includes/data/botblocker-marketing-blocks.php';
+		require_once BOTBLOCKER_DIR . 'includes/data/class-botblocker-pro-features.php';
+		require_once BOTBLOCKER_DIR . 'includes/data/class-botblocker-marketing-blocks.php';
 		require_once BOTBLOCKER_DIR . 'includes/viewmodels/class-social-proof-data.php';
 		require_once BOTBLOCKER_DIR . 'includes/dto/class-status-toggles.php';
 
@@ -89,24 +89,34 @@ final class Botblocker_SidebarViewModel {
 		$this->toggles->early_init_disabled  = ! $this->early_available;
 		$this->toggles->mu_checked           = (int) ( isset( $settings->mu_enable ) ? $settings->mu_enable : 0 );
 		$this->toggles->redis_disabled       = ! extension_loaded( 'redis' );
+		$this->toggles->redis_outage         = false;
 		$this->toggles->redis_checked        = (int) ( isset( $settings->redis_enable ) ? $settings->redis_enable : 0 );
 		if ( $this->toggles->redis_disabled ) {
 			$this->toggles->redis_checked = 0;
+		} elseif ( get_transient( 'bbcs_redis_unavailable' ) ) {
+			// Transient outage window: show the real effective state.
+			$this->toggles->redis_checked = 0;
+			$this->toggles->redis_outage  = true;
 		}
 		$this->toggles->memcached_disabled   = ! extension_loaded( 'memcached' );
+		$this->toggles->memcached_outage     = false;
 		$this->toggles->memcached_checked    = (int) ( isset( $settings->memcached_enable ) ? $settings->memcached_enable : 0 );
 		if ( $this->toggles->memcached_disabled ) {
 			$this->toggles->memcached_checked = 0;
+		} elseif ( get_transient( 'bbcs_memcached_unavailable' ) ) {
+			// Transient outage window: show the real effective state.
+			$this->toggles->memcached_checked = 0;
+			$this->toggles->memcached_outage  = true;
 		}
 		$this->toggles->ptr_cache_checked    = (int) ( isset( $settings->ptr_cache_in_db ) ? $settings->ptr_cache_in_db : 1 );
 		
 		$ptr_time = (int) ( isset( $settings->ptrcache_time ) ? $settings->ptrcache_time : DAY_IN_SECONDS );
-		$ptr_labels = function_exists( 'bbcs_get_ptr_lifetimes' ) ? bbcs_get_ptr_lifetimes() : array();
+		$ptr_labels = class_exists( 'BotBlockerDataTime' ) ? BotBlockerDataTime::getPtrLifetimes() : array();
 		$this->toggles->ptrcache_time_label = $ptr_labels[ $ptr_time ] ?? ( $ptr_time / 3600 ) . 'h';
 
 		$this->toggles->cache_ui_checked = (int) ( isset( $settings->cache_ui_data ) ? $settings->cache_ui_data : 0 );
 		$ui_dur = (int) ( isset( $settings->cache_ui_duration ) ? $settings->cache_ui_duration : 300 );
-		$ui_labels = function_exists( 'bbcs_get_cache_durations' ) ? bbcs_get_cache_durations() : array();
+		$ui_labels = class_exists( 'BotBlockerDataTime' ) ? BotBlockerDataTime::getCacheDurations() : array();
 		$this->toggles->cache_ui_duration_label = $ui_labels[ $ui_dur ] ?? ( $ui_dur / 60 ) . 'm';
 
 		$this->today_blocked = BotBlockerStats::blockedToday();
@@ -120,9 +130,9 @@ final class Botblocker_SidebarViewModel {
 		$this->display_news = defined( 'BOTBLOCKER_DISPLAY_NEWS' ) && BOTBLOCKER_DISPLAY_NEWS;
 		$this->news_url     = defined( 'BOTBLOCKER_NEWS_URL' ) ? BOTBLOCKER_NEWS_URL : '';
 		if ( $this->display_news ) {
-			$this->news_items           = function_exists( 'bbcs_get_news_items' ) ? bbcs_get_news_items( 5 ) : array();
-			$this->database_update_text = function_exists( 'bbcs_getDatabaseUpdate' ) ? bbcs_getDatabaseUpdate() : '';
-			$this->database_total_text  = function_exists( 'bbcs_getDatabaseAll' ) ? bbcs_getDatabaseAll() : '';
+			$this->news_items           = class_exists( 'BotBlockerNews' ) ? BotBlockerNews::getItems( 5 ) : array();
+			$this->database_update_text = class_exists( 'BotBlockerSidebarShortcodes' ) ? BotBlockerSidebarShortcodes::getDatabaseUpdate() : '';
+			$this->database_total_text  = class_exists( 'BotBlockerSidebarShortcodes' ) ? BotBlockerSidebarShortcodes::getDatabaseAll() : '';
 		} else {
 			$this->news_items           = array();
 			$this->database_update_text = '';
@@ -130,7 +140,7 @@ final class Botblocker_SidebarViewModel {
 		}
 
 		$this->system_info  = BotBlockerSystemInfoData::getInstance();
-		$this->pro_features = function_exists( 'bbcs_get_pro_features' ) ? bbcs_get_pro_features() : array();
+		$this->pro_features = class_exists( 'BotBlockerProFeatures' ) ? BotBlockerProFeatures::getProFeatures() : array();
 		$this->social_proof = $this->build_social_proof_data();
 
 		$this->contact_email = BotBlockerInstall::getCloudAPIEmail();
@@ -147,7 +157,7 @@ final class Botblocker_SidebarViewModel {
 	}
 
 	private function build_social_proof_data(): ?Botblocker_SocialProofData {
-		$stats = function_exists( 'bbcs_get_wp_org_stats' ) ? bbcs_get_wp_org_stats() : null;
+		$stats = class_exists( 'BotBlockerMarketingBlocks' ) ? BotBlockerMarketingBlocks::getWpOrgStats() : null;
 		if ( ! $stats || ( $stats['active_installs'] < 10 && $stats['num_ratings'] < 1 ) ) {
 			return null;
 		}

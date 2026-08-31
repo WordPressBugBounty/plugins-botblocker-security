@@ -118,7 +118,7 @@
 				var data = JSON.parse(e.target.result);
 				callback(data);
 			} catch (err) {
-				alert(bbcsTlsL10n.invalid_json + err.message);
+				bbcsToast('error', bbcsTlsL10n.invalid_json + err.message);
 			}
 		};
 		reader.readAsText(file);
@@ -142,9 +142,9 @@
 						},
 						success: function(response) {
 							if (response.success) {
-								alert(bbcsTlsL10n.import_success + ': ' + response.data.imported + ' ' + (bbcsTlsL10n.imported || 'imported') + ', ' + response.data.skipped + ' ' + (bbcsTlsL10n.skipped || 'skipped') + '.');
+								bbcsToast('success', bbcsTlsL10n.import_success + ': ' + response.data.imported + ' ' + (bbcsTlsL10n.imported || 'imported') + ', ' + response.data.skipped + ' ' + (bbcsTlsL10n.skipped || 'skipped') + '.');
 							} else {
-								alert(bbcsTlsL10n.failed_import + response.data);
+								bbcsToast('error', bbcsTlsL10n.failed_import + response.data);
 							}
 						},
 					});
@@ -155,7 +155,7 @@
 	});
 
 	$("#bbcs_tls_clear").on("click", function() {
-		if (confirm(bbcsTlsL10n.confirm_ask)) {
+		bbcsConfirm(bbcsTlsL10n.confirm_ask, function () {
 			$.ajax({
 				url: botblockerData.ajaxurl,
 				type: "POST",
@@ -165,17 +165,20 @@
 				},
 				success: function(response) {
 					if (response.success) {
-						alert(bbcsTlsL10n.cleared);
+						bbcsToast('success', bbcsTlsL10n.cleared);
 					} else {
-						alert(bbcsTlsL10n.failed_clear + response.data);
+						bbcsToast('error', bbcsTlsL10n.failed_clear + response.data);
 					}
 				},
 			});
-		}
+		});
 	});
 
 	$("#bbcs_tls_sync").on("click", function() {
 		var btn = $(this);
+		if (btn.prop("disabled")) {
+			return;
+		}
 		btn.prop("disabled", true).html('<i class="fa-solid fa-sync"></i> ' + bbcsTlsL10n.syncing_process);
 		$.ajax({
 			url: botblockerData.ajaxurl,
@@ -186,13 +189,16 @@
 			},
 			success: function(response) {
 				if (response.success) {
-					alert(bbcsTlsL10n.sync_success + ' (' + response.data.fingerprint_count + ' fingerprints)');
+					bbcsToast('success', bbcsTlsL10n.sync_success + ' (' + response.data.fingerprint_count + ' fingerprints)');
 				} else {
-					alert(bbcsTlsL10n.failed_sync + response.data);
+					bbcsToast('error', bbcsTlsL10n.failed_sync + response.data);
 				}
 			},
 			complete: function() {
-				btn.prop("disabled", false).html('<i class="fa-solid fa-sync"></i> ' + bbcsTlsL10n.sync_now);
+				if (bbcsTlsL10n.tls_sync_saved === "1") {
+					btn.prop("disabled", false);
+				}
+				btn.html('<i class="fa-solid fa-sync"></i> ' + bbcsTlsL10n.sync_now);
 			},
 		});
 	});

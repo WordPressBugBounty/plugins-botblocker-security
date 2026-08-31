@@ -6,6 +6,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 class BotBlockerAjaxIpv6Rules {
 	use BotBlockerAjaxIpRulesTrait;
 
+	protected static function getRuleListName(): string {
+		return BotBlockerAuditEvents::RULE_LIST_IPV6;
+	}
+
 	protected static function getTableName(): string {
 		return 'bbcs_ipv6rules';
 	}

@@ -10,7 +10,7 @@ require_once __DIR__ . '/class-sidebar-viewmodel.php';
 require_once BOTBLOCKER_DIR . 'includes/dto/class-dashboard-urls.php';
 require_once BOTBLOCKER_DIR . 'includes/dto/class-secret-links.php';
 require_once BOTBLOCKER_DIR . 'includes/dto/class-cron-task-data.php';
-require_once BOTBLOCKER_DIR . 'includes/data/botblocker-data-time.php';
+require_once BOTBLOCKER_DIR . 'includes/data/class-botblocker-data-time.php';
 require_once BOTBLOCKER_DIR . 'includes/components/class-botblocker-tab-item.php';
 
 use BotBlocker\Component\TabItem;
@@ -185,6 +185,8 @@ final class Botblocker_SettingsViewModel {
 						->withIconImage( BOTBLOCKER_URL . 'public/icons/security.svg' ),
 					( new TabItem( 'captcha', '', false, '', '', __( 'Captcha', 'botblocker-security' ), 'captcha' ) )
 						->withIconImage( BOTBLOCKER_URL . 'public/icons/captcha.svg' ),
+					( new TabItem( 'in-app', '', false, '', '', __( 'In-App Browser Mode', 'botblocker-security' ), 'chat' ) )
+						->withIconImage( BOTBLOCKER_URL . 'public/icons/chat.svg' ),
 					( new TabItem( 'payment', '', false, '', '', __( 'Payment Gateways', 'botblocker-security' ), 'payment' ) )
 						->withIconImage( BOTBLOCKER_URL . 'public/icons/tarifs.svg' ),
 				),
@@ -227,12 +229,12 @@ final class Botblocker_SettingsViewModel {
 		$this->preset_name = __( 'Recommended preset', 'botblocker-security' );
 		$this->mode_label  = $sm === 2 ? __( 'Full mode', 'botblocker-security' ) : __( 'Frontend only mode', 'botblocker-security' );
 
-		$this->cache_durations         = bbcs_get_cache_durations();
-		$this->cookie_lifetimes        = bbcs_get_cookie_lifetimes();
-		$this->ptr_lifetimes           = bbcs_get_ptr_lifetimes();
-		$this->subnet_mask_options     = bbcs_get_subnet_mask_options();
-		$this->ptrcache_rule_ttl_options = bbcs_get_ptrcache_rule_ttl_options();
-		$this->rate_subnet_mask_options = bbcs_get_rate_subnet_mask_options();
+		$this->cache_durations         = BotBlockerDataTime::getCacheDurations();
+		$this->cookie_lifetimes        = BotBlockerDataTime::getCookieLifetimes();
+		$this->ptr_lifetimes           = BotBlockerDataTime::getPtrLifetimes();
+		$this->subnet_mask_options     = BotBlockerDataTime::getSubnetMaskOptions();
+		$this->ptrcache_rule_ttl_options = BotBlockerDataTime::getPtrcacheRuleTtlOptions();
+		$this->rate_subnet_mask_options = BotBlockerDataTime::getRateSubnetMaskOptions();
 
 		$this->error_headers = isset( $BBCS->error_headers ) && is_array( $BBCS->error_headers ) ? $BBCS->error_headers : array();
 
@@ -314,7 +316,7 @@ final class Botblocker_SettingsViewModel {
 					}
 
 					if ( $hook === 'bbcs_one_time_task' ) {
-						$one_time_event = bbcs_get_scheduled_event( 'bbcs_one_time_task' );
+						$one_time_event = BotBlockerCompatibility::getScheduledEvent( 'bbcs_one_time_task' );
 						if ( is_object( $one_time_event ) ) {
 							$time_left = $one_time_event->timestamp - $current_time;
 							$task->progress = $time_left > 0
@@ -336,7 +338,7 @@ final class Botblocker_SettingsViewModel {
 			}
 
 			if ( $task->next_run !== null ) {
-				$task->next_run_display = bbcs_wp_date( 'Y-m-d H:i', $task->next_run );
+				$task->next_run_display = BotBlockerCompatibility::wpDate( 'Y-m-d H:i', $task->next_run );
 			} else {
 				$task->next_run_display = null;
 			}
@@ -388,7 +390,7 @@ final class Botblocker_SettingsViewModel {
 				$task->progress = $interval > 0
 					? round( min( 100, max( 0, ( ( $current_time - ( $timestamp - $interval ) ) / $interval ) * 100 ) ), 2 )
 					: 0.0;
-				$task->next_run_display = bbcs_wp_date( 'Y-m-d H:i', $timestamp );
+				$task->next_run_display = BotBlockerCompatibility::wpDate( 'Y-m-d H:i', $timestamp );
 
 				$this->cron_tasks[] = $task;
 				break;
@@ -413,24 +415,12 @@ final class Botblocker_SettingsViewModel {
 		return $this->settings[ $key ] ?? $default;
 	}
 
-	public function is_on( string $key ): bool {
-		return ! empty( $this->settings[ $key ] );
-	}
-
 	public function is_checked( string $key, $expected = 1 ): bool {
 		$val = $this->settings[ $key ] ?? 0;
 		if ( is_bool( $val ) ) {
 			return $val;
 		}
 		return (string) $val === (string) $expected;
-	}
-
-	public function get_selected( string $key, $value ): string {
-		$current = $this->settings[ $key ] ?? '';
-		if ( is_numeric( $current ) && is_numeric( $value ) ) {
-			return (float) $current === (float) $value ? 'selected' : '';
-		}
-		return (string) $current === (string) $value ? 'selected' : '';
 	}
 
 	public function get_secure_mode(): int {
@@ -449,6 +439,23 @@ final class Botblocker_SettingsViewModel {
 		return (string) ( $this->settings['cloud_api_timeout'] ?? '5' );
 	}
 
+	public function get_store_period(): string {
+		return (string) ( $this->settings['admin_store_period'] ?? '7' );
+	}
+
+	/** Absent means on, matching BotBlockerAudit::isEnabled(), so the toggle cannot show OFF while logging runs. */
+	public function is_audit_log_enabled(): bool {
+		if ( ! isset( $this->settings['audit_log_enable'] ) ) {
+			return true;
+		}
+
+		return (string) $this->settings['audit_log_enable'] === '1';
+	}
+
+	public function get_audit_retention_days(): string {
+		return (string) ( $this->settings['audit_log_retention_days'] ?? '7' );
+	}
+
 	public function get_selected_directive( string $directive ): bool {
 		$selected = $this->settings['x_robots_directives'] ?? array();
 		if ( ! is_array( $selected ) ) {
@@ -456,6 +463,27 @@ final class Botblocker_SettingsViewModel {
 			$selected = is_array( $decoded ) ? $decoded : array();
 		}
 		return in_array( $directive, $selected, true );
+	}
+
+	public function audit_roles_map(): array {
+		$value = $this->settings['audit_log_roles'] ?? '';
+		if ( is_array( $value ) ) {
+			return $value;
+		}
+		if ( is_string( $value ) && $value !== '' ) {
+			$decoded = json_decode( $value, true );
+			if ( is_array( $decoded ) ) {
+				return $decoded;
+			}
+		}
+		return array();
+	}
+
+	/**
+	 * @return array<string, array<string, mixed>>
+	 */
+	public function wp_roles_list(): array {
+		return wp_roles()->roles;
 	}
 
 	public function is_payment_enabled(): bool {

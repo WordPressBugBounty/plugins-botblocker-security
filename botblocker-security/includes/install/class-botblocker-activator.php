@@ -122,18 +122,28 @@ class Botblocker_Activator {
 			BotBlockerCloudApiHooks::registerRewriteRules();
 		}
 
-		if ( function_exists( 'bbcs_register_2fa_rewrite_rules' ) ) {
-			bbcs_register_2fa_rewrite_rules();
+		if ( class_exists( 'BotBlockerTwoFactorAuth' ) ) {
+			BotBlockerTwoFactorAuth::registerRewriteRules();
 		}
-		if ( function_exists( 'bbcs_register_verify_rewrite_rules' ) ) {
-			bbcs_register_verify_rewrite_rules();
+		if ( class_exists( 'BotBlockerVerifyEndpoint' ) ) {
+			BotBlockerVerifyEndpoint::registerRewriteRules();
 		}
 
 		if ( $is_fresh_install ) {
+			// Temporarily unused: kept for future post-activation flows (no reader exists yet).
 			set_transient( 'bbcs_just_activated', true, 60 );
 			if ( $is_fresh_install_context ) {
 				BotBlockerMultisite::updateOption( 'bbcs_activation_redirect', true );
 			}
+		}
+
+		$first_activated = (int) BotBlockerMultisite::getOption( 'bbcs_first_activated_at', 0 );
+		if ( $first_activated <= 0 ) {
+			BotBlockerMultisite::updateOption( 'bbcs_first_activated_at', time() );
+		}
+
+		if ( ! BotBlockerMultisite::getOption( 'bbcs_initial_version', '' ) ) {
+			BotBlockerMultisite::updateOption( 'bbcs_initial_version', BOTBLOCKER_VERSION );
 		}
 
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {

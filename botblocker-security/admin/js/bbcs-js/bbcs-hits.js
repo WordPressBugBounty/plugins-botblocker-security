@@ -270,7 +270,8 @@
       "Site Visitors":      "botblocker-hits",
       "Admin Panel Log":    "botblocker-hits-admin",
       "WordPress Actions":  "botblocker-other-admin",
-      "Full Log":           "botblocker-hits-full"
+      "Full Log":           "botblocker-hits-full",
+      "Audit Log":          "botblocker-audit-log"
     };
 
     // Register loading states for new UI tab switching guard.
@@ -533,12 +534,15 @@
 
       function initializeTabByUITabName(tabName) {
           var tableId = newUITabMap[tabName];
-          if (tableId) {
+          // The audit table is built by bbcs-audit.js; it only rides along here for
+          // the shared page-head export buttons.
+          if (tableId && tableId !== 'botblocker-audit-log') {
               initializeDataTable(tableId);
           }
       }
   
       const hash = window.location.hash;
+      var uiTabName = '';
       if (hash) {
           const tabLink = $(`a[data-bs-toggle="tab"][href="${hash}"], a[data-bs-toggle="tab"][href="${hash.toLowerCase()}"]`);
           if (tabLink.length) {
@@ -550,11 +554,12 @@
                   '#site-visitors': 'Site Visitors',
                   '#admin-panel-log': 'Admin Panel Log',
                   '#wordpress-actions': 'WordPress Actions',
+                  '#audit-log': 'Audit Log',
                   '#full-log': 'Full Log',
                   '#reports-dashboard': 'Reports Dashboard'
               };
               var cleanHash = hash.replace(/^#/, '');
-              var uiTabName = hashToTab['#' + cleanHash] || hashToTab[hash];
+              uiTabName = hashToTab['#' + cleanHash] || hashToTab[hash];
               if (uiTabName) {
                   lastUITab = uiTabName;
                   initializeTabByUITabName(uiTabName);
@@ -562,14 +567,6 @@
           }
       } else {
          // initializeDataTable("botblocker-hits");
-      }
-
-      // New UI: hide pagehead-actions when Dashboard tab is active (default state).
-      if (!!document.querySelector('.bbcs-app')) {
-          var $actionsInit = $('.bbcs-pagehead-actions');
-          if ($actionsInit.length && $actionsInit.is(':visible')) {
-              $actionsInit.hide();
-          }
       }
 
       $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
@@ -585,7 +582,9 @@
 
               initializeTabByUITabName(data.tab);
               var tableId = newUITabMap[data.tab] || '';
-              if (tableId && $.fn.DataTable.isDataTable('#' + tableId)) {
+              // The audit table has no entry in `tables`; touching it here threw and
+              // aborted the handler before syncPageheadActions could show the buttons.
+              if (tableId && tables[tableId] && $.fn.DataTable.isDataTable('#' + tableId)) {
                   var dt = $('#' + tableId).DataTable();
                   dt.columns.adjust();
                   if (sameTab || tables[tableId].justInitialized) {
@@ -595,36 +594,58 @@
                   }
               }
           }
-          // Toggle pagehead-actions visibility: hidden on Dashboard, shown on table tabs.
-          var $actions = $('.bbcs-pagehead-actions');
-          if ($actions.length) {
-              if (data.tab === 'Reports Dashboard') {
-                  $actions.hide();
-              } else {
-                  var tableId = newUITabMap[data.tab] || '';
-                  $actions.attr('data-bbcs-active-table', tableId);
-                  $actions.show();
-              }
-          }
+          syncPageheadActions(data && data.tab);
       });
 
+      // Hidden on the Dashboard, shown on table tabs.
+      function syncPageheadActions(tabName) {
+          var $actions = $('.bbcs-pagehead-actions');
+          if (!$actions.length || !tabName) return;
+          if (tabName === 'Reports Dashboard') {
+              $actions.hide();
+              return;
+          }
+          $actions.attr('data-bbcs-active-table', newUITabMap[tabName] || '');
+          $actions.show();
+      }
+
+      var initialTab = uiTabName || $('.bbcs-tab.is-active').first().data('tab') || 'Reports Dashboard';
+      syncPageheadActions(initialTab);
+
       // Pagehead export buttons - delegate to the active DataTable API.
-      $(document).on('click', '.bbcs-pagehead-actions .bbcs-btn--copy', function () {
-          var tableId = $('.bbcs-pagehead-actions').attr('data-bbcs-active-table');
+      // The table is resolved from the tab that is active right now: a cached attribute
+      // goes stale and silently exports whichever table it still points at.
+      function activeReportTable() {
+          var tab = $('.bbcs-tab.is-active').first().data('tab') || lastUITab;
+          return newUITabMap[tab] || '';
+      }
+
+      function triggerTableButton(selector) {
+          var tableId = activeReportTable();
           if (!tableId || !$.fn.DataTable.isDataTable('#' + tableId)) return;
-          $('#' + tableId).DataTable().button('.buttons-copy').trigger();
+          $('#' + tableId).DataTable().button(selector).trigger();
+      }
+
+      $(document).on('click', '.bbcs-pagehead-actions .bbcs-btn--copy', function () {
+          triggerTableButton('.buttons-copy');
+      });
+
+      // The audit log exports server-side: a client-side export would only contain the
+      // batch currently loaded in the browser.
+      function isAuditTab() {
+          return activeReportTable() === 'botblocker-audit-log';
+      }
+
+      $(document).on('click', '.bbcs-pagehead-actions .bbcs-btn--excel', function () {
+          triggerTableButton('.buttons-excel');
       });
 
       $(document).on('click', '.bbcs-pagehead-actions .bbcs-btn--csv', function () {
-          var tableId = $('.bbcs-pagehead-actions').attr('data-bbcs-active-table');
-          if (!tableId || !$.fn.DataTable.isDataTable('#' + tableId)) return;
-          $('#' + tableId).DataTable().button('.buttons-csv').trigger();
-      });
-
-      $(document).on('click', '.bbcs-pagehead-actions .bbcs-btn--excel', function () {
-          var tableId = $('.bbcs-pagehead-actions').attr('data-bbcs-active-table');
-          if (!tableId || !$.fn.DataTable.isDataTable('#' + tableId)) return;
-          $('#' + tableId).DataTable().button('.buttons-excel').trigger();
+          if (isAuditTab()) {
+              window.bbcsAuditExportCsv();
+              return;
+          }
+          triggerTableButton('.buttons-csv');
       });
       });
 
@@ -716,7 +737,7 @@
                     $('#this_ip').val('');
                     modalAction(document.getElementById("AddRuleModal"), "hide");                    
                 } else {
-                    alert(bbcsHitsL10n.failed_create_rule + response.data);
+                    bbcsToast('error', bbcsHitsL10n.failed_create_rule + response.data);
                 }
             },
         });

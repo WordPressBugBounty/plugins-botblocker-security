@@ -103,7 +103,7 @@ final class Botblocker_DashboardViewModel {
 		BotBlockerStats::getStatistics( $this->admin_report_period );
 		$this->has_pro          = BotBlockerPro::isActive();
 		$this->wizard_completed = (bool) BotBlockerMultisite::getOption( 'bbcs_setup_wizard_completed', false );
-		$this->health_score     = bbcs_calculateSiteHealth();
+		$this->health_score     = BotBlockerHealthShortcodes::calculateSiteHealth();
 		$this->health_label     = Botblocker_HealthScoreHelper::getLabel( $this->health_score );
 		$this->apply_protection_status();
 		$this->urls              = new Botblocker_DashboardUrls();
@@ -155,12 +155,12 @@ final class Botblocker_DashboardViewModel {
 		$settings = $bbcs->settings;
 		return array(
 			new Botblocker_HealthCheckItemData( __( 'Cloud threat checking', 'botblocker-security' ), $this->has_pro ),
-			new Botblocker_HealthCheckItemData( __( 'Empty User-Agent blocking', 'botblocker-security' ), ! empty( $settings->check_empty_user_agent ) ),
-			new Botblocker_HealthCheckItemData( __( 'PTR / DNS anomalies', 'botblocker-security' ), ! empty( $settings->ptr_enable ) ),
-			new Botblocker_HealthCheckItemData( __( 'Brute-force protection', 'botblocker-security' ), ! empty( $settings->check_login_bruteforce ) ),
-			new Botblocker_HealthCheckItemData( __( 'Captcha enabled', 'botblocker-security' ), ! empty( $settings->captcha_type ) && 'none' !== $settings->captcha_type ),
-			new Botblocker_HealthCheckItemData( __( 'Simple bot UA blocking', 'botblocker-security' ), ! empty( $settings->check_simple_bots ) ),
-			new Botblocker_HealthCheckItemData( __( 'VPN and Tor blocking', 'botblocker-security' ), $this->has_pro && ! empty( $settings->proxy_check ), true ),
+			new Botblocker_HealthCheckItemData( __( 'Empty User-Agent blocking', 'botblocker-security' ), ! empty( $settings->block_empty_ua ) ),
+			new Botblocker_HealthCheckItemData( __( 'PTR / DNS anomalies', 'botblocker-security' ), ! empty( $settings->block_ip_ptr_match ) ),
+			new Botblocker_HealthCheckItemData( __( 'Brute-force protection', 'botblocker-security' ), ! empty( $settings->login_brutforce_enabled ) ),
+			new Botblocker_HealthCheckItemData( __( 'Captcha enabled', 'botblocker-security' ), ! empty( $settings->bbcs_captcha_mode ) ),
+			new Botblocker_HealthCheckItemData( __( 'Simple bot UA blocking', 'botblocker-security' ), ! empty( $settings->block_simplebot_ua ) ),
+			new Botblocker_HealthCheckItemData( __( 'VPN and Tor blocking', 'botblocker-security' ), $this->has_pro && ( ! empty( $settings->block_proxy_users ) || ! empty( $settings->block_vpn_users ) || ! empty( $settings->block_tor_users ) ), true ),
 		);
 	}
 

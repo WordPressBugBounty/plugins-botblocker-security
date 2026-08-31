@@ -49,7 +49,7 @@ class BotBlockerWpRequest {
 
 		if ( $http_code === 200 && ! empty( $body ) && self::is_json( $body ) ) {
 			delete_transient( 'bbcs_cloud_connection_failed_alert' );
-			return json_decode( trim( $body ), true );
+			return json_decode( trim( $body ), true, 512, JSON_BIGINT_AS_STRING );
 		}
 
 		BotBlockerAlerts::setCloudConnectionFailed();

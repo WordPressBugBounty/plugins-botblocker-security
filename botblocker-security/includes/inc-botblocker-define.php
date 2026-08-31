@@ -9,11 +9,11 @@ define( 'BOTBLOCKER_SHORT_NAME', 'BotBlocker' ); // A shorter version of the plu
 if ( ! defined( 'BOTBLOCKER_TABLE_PREFIX' ) ) {
 	define( 'BOTBLOCKER_TABLE_PREFIX', 'bbcs_' ); // The prefix used for database tables
 }
-define( 'BOTBLOCKER_PREFIX', 'bb_' ); // The prefix used for settings and options
+define( 'BOTBLOCKER_PREFIX', 'bb_' ); // The prefix for cache keys (Redis/Memcached) and secret-link values
 
-define( 'BOTBLOCKER_VERSION', '1.7.4' );
+define( 'BOTBLOCKER_VERSION', '1.7.5' );
 // The version number of the plugin
-define( 'BOTBLOCKER_DB_VERSION', '2.10.0' ); // The database version of the plugin
+define( 'BOTBLOCKER_DB_VERSION', '2.11.0' ); // The database version of the plugin
 define( 'BOTBLOCKER_WIZARD_ON_UPDATE', false ); // Show setup wizard after plugin update
 define( 'BOTBLOCKER_MODE_STABLE', 'stable' );
 define( 'BOTBLOCKER_MODE_DEV', 'dev' );
@@ -47,6 +47,9 @@ if ( ! defined( 'BOTBLOCKER_ADDONS_MODE' ) ) {
 // BotBlockerMultisite::getCurrentSiteEmail(), BotBlockerMultisite::getCurrentUserAgent()
 
 define( 'BOTBLOCKER_EXP_INF', 9999999999 ); // The maximum value for the expires field in the Unix timestamp format
+define( 'BOTBLOCKER_UID_MAX_LEN', 64 ); // Max visitor uid length adopted from the main cookie; oversized uids flow into header/cookie names (nginx 502)
+define( 'BOTBLOCKER_SELF_CALL_WINDOW', 120 ); // Replay window (seconds) for the X-BotBlocker-Self self-call proof header
+define( 'BOTBLOCKER_HONEYPOT_NAME_WINDOW', 60 ); // Accepted staleness (seconds) for a filled honeypot field name rendered by a non-JS client
 
 define( 'BBCS_GLOBAL_LANGUAGES', array( 'en', 'es', 'fr', 'zh', 'ar', 'pt' ) );
 
@@ -236,59 +239,6 @@ if (!defined(\'ABSPATH\') || (!defined(\'WPINC\') && !defined(\'BOTBLOCKER\'))) 
 }'
 );
 
-define(
-	'BBCS_SQL_PAGE_NOT_LIKE',
-	"(page NOT LIKE '%/wp-admin/%'
-AND page NOT LIKE '%/wp-content/%'
-AND page NOT LIKE '%/wp-login%'
-AND page NOT LIKE '%/wp-includes/%'
-AND page NOT LIKE '%/favicon.ico%'
-AND page NOT LIKE '%/wp-cron.php%'
-AND page NOT LIKE '%/feed/%'
-AND page NOT LIKE '%/xmlrpc.php%'
-AND page NOT LIKE '%/wp-json/%'
-AND page NOT LIKE '%/robots.txt%'
-AND page NOT LIKE '%/sitemap%')"
-);
-
-define(
-	'BBCS_SQL_PAGE_LIKE_ADMIN',
-	"(page LIKE '%/wp-admin/%'
-OR page LIKE '%/wp-login%')"
-);
-
-define(
-	'BBCS_SQL_PAGE_NOT_LIKE_ADMIN',
-	"(page NOT LIKE '%/wp-admin/%'
-AND page NOT LIKE '%/wp-login%')"
-);
-
-define(
-	'BBCS_SQL_PAGE_LIKE_WP',
-	"(page LIKE '%/wp-content/%'
-OR page LIKE '%/wp-includes/%'
-OR page LIKE '%/favicon.ico%'
-OR page LIKE '%/wp-cron.php%'
-OR page LIKE '%/feed/%'
-OR page LIKE '%/xmlrpc.php%'
-OR page LIKE '%/wp-json/%'
-OR page LIKE '%/robots.txt%'
-OR page LIKE '%/sitemap%')"
-);
-
-define(
-	'BBCS_SQL_PAGE_NOT_LIKE_WP',
-	"(page NOT LIKE '%/wp-content/%'
-AND page NOT LIKE '%/wp-includes/%'
-AND page NOT LIKE '%/favicon.ico%'
-AND page NOT LIKE '%/wp-cron.php%'
-AND page NOT LIKE '%/feed/%'
-AND page NOT LIKE '%/xmlrpc.php%'
-AND page NOT LIKE '%/wp-json/%'
-AND page NOT LIKE '%/robots.txt%'
-AND page NOT LIKE '%/sitemap%')"
-);
-
 define( 'BOTBLOCKER_INTEGRATE_MU_PLUGINS', true );
 
 // =====================================================================
@@ -330,23 +280,4 @@ if ( ! defined( 'BOTBLOCKER_VISITOR_IP_SOURCE' ) ) {
 }
 if ( ! defined( 'BOTBLOCKER_VISITOR_IP_STRICT' ) ) {
 	define( 'BOTBLOCKER_VISITOR_IP_STRICT', false );
-}
-
-function bbcs_full_domain_with_underscores( string $url ): string {
-	$host = wp_parse_url( $url, PHP_URL_HOST );
-	return str_replace( '.', '_', $host );
-}
-
-// Ensure that the HTTP_HOST is set correctly if SERVER_NAME is available
-// This is useful in cases where the server does not set HTTP_HOST but does set SERVER_NAME.
-if ( empty( $_SERVER['HTTP_HOST'] ) && ! empty( $_SERVER['SERVER_NAME'] ) ) {
-	$bbcs_port = '';
-	if (
-		! empty( $_SERVER['SERVER_PORT'] )
-		&& ! in_array( $_SERVER['SERVER_PORT'], array( '80', '443' ), true )
-	) {
-		$bbcs_port = ':' . sanitize_text_field( wp_unslash( $_SERVER['SERVER_PORT'] ) );
-	}
-
-	$_SERVER['HTTP_HOST'] = sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) . $bbcs_port;
 }

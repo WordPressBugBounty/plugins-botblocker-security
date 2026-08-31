@@ -85,31 +85,15 @@ class BotBlockerAjaxMaintenance {
 		// No user-provided table or value is interpolated into the SQL.
 		global $wpdb;
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-
-		$columns        = BotBlockerDb::sharedColumnList( $wpdb->bbcs_hits_suspicious, $wpdb->bbcs_hits_cloud );
-		$archive_result = $columns === '' ? false : $wpdb->query( "INSERT INTO `{$wpdb->bbcs_hits_cloud}` ({$columns}) SELECT {$columns} FROM `{$wpdb->bbcs_hits_suspicious}`" );
-		if ( $archive_result === false ) {
+		if (
+			$wpdb->query( "TRUNCATE TABLE `{$wpdb->bbcs_hits}`" ) === false ||
+			$wpdb->query( "TRUNCATE TABLE `{$wpdb->bbcs_hits_suspicious}`" ) === false ||
+			$wpdb->query( "TRUNCATE TABLE `{$wpdb->bbcs_hits_cloud}`" ) === false
+		) {
 			// phpcs:enable
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
-				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' insert into hits_cloud FAILED: ' . $wpdb->last_error );
-			}
-			wp_send_json_error( array( 'message' => __( 'Failed to clear visitors data.', 'botblocker-security' ) ) );
-		}
-
-		if ( $wpdb->query( "TRUNCATE TABLE `{$wpdb->bbcs_hits}`" ) === false ) {
-			// phpcs:enable
-			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
-				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' truncate hits FAILED: ' . $wpdb->last_error );
-			}
-			wp_send_json_error( array( 'message' => __( 'Failed to clear visitors data.', 'botblocker-security' ) ) );
-		}
-		if ( $wpdb->query( "TRUNCATE TABLE `{$wpdb->bbcs_hits_suspicious}`" ) === false ) {
-			// phpcs:enable
-			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
-				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' truncate hits_suspicious FAILED: ' . $wpdb->last_error );
+				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' truncate FAILED: ' . $wpdb->last_error );
 			}
 			wp_send_json_error( array( 'message' => __( 'Failed to clear visitors data.', 'botblocker-security' ) ) );
 		}

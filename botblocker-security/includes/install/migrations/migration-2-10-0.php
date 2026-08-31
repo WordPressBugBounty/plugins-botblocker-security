@@ -70,6 +70,10 @@ function bbcs_migration_2_10_0_drop_tools_infix(): bool {
 		delete_option( $old_key );
 	}
 
+	// Orphaned since 2.10: early-init reads bbcs_settings table keys, these options have no reader.
+	delete_option( 'bbcs_early_init_settings' );
+	delete_option( 'bbcs_early_init_enable' );
+
 	return true;
 }
 

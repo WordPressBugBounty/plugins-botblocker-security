@@ -282,7 +282,7 @@
             .done(function (res) {
 
                 if (!res || !res.success) {
-                    alert(bbcs2faL10n.reset_failed);
+                    bbcsToast('error', bbcs2faL10n.reset_failed);
                     return;
                 }
 
@@ -305,6 +305,30 @@
 
                 $('.bbcs-2fa-reset').hide();
                 $('.bbcs-2fa-verified').show();
+            })
+            .always(function () {
+                hideLoadingOverlayFor2FA();
+                $btn.prop('disabled', false);
+            });
+    });
+
+    $(document).on('click', '[data-bbcs-action="revoke-devices"]', function () {
+        const $btn = $(this);
+        if ($btn.prop('disabled')) return;
+
+        showLoadingOverlayFor2FA();
+        $btn.prop('disabled', true);
+
+        $.post(botblockerData.ajaxurl, {
+            action: 'bbcs_revoke_2fa_devices',
+            nonce: botblockerData.nonce
+        })
+            .done(function (res) {
+                if (!res || !res.success) {
+                    bbcsToast('error', (window.bbcs2faL10n && window.bbcs2faL10n.revoke_failed) || 'Failed to revoke trusted devices.');
+                    return;
+                }
+                bbcsToast('success', (window.bbcs2faL10n && window.bbcs2faL10n.revoke_ok) || 'All trusted devices have been revoked.');
             })
             .always(function () {
                 hideLoadingOverlayFor2FA();

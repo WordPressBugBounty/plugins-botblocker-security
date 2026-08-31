@@ -596,10 +596,14 @@ class BotBlockerSummary {
 			$cursor->modify( '+1 day' );
 		}
 
-		if ( ! $all_done && ! wp_next_scheduled( 'bbcs_summary_backfill' ) ) {
+	if ( ! $all_done ) {
+		if ( ! wp_next_scheduled( 'bbcs_summary_backfill' ) ) {
 			wp_schedule_single_event( time() + 120, 'bbcs_summary_backfill' );
 		}
+	} else {
+		wp_clear_scheduled_hook( 'bbcs_summary_backfill' );
 	}
+}
 
 	public static function mergeArrays( array $past, array $today ): array {
 		$merged = $past;

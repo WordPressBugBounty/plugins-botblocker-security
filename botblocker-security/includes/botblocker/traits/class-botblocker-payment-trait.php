@@ -28,7 +28,7 @@ trait BotBlockerPaymentTrait {
 		$keep_ip_rules = isset( $this->settings->payment_keep_ip_rules )
 			? (int) $this->settings->payment_keep_ip_rules : 0;
 
-		if ( $keep_ip_rules === 1 ) {
+		if ( $keep_ip_rules === 1 || ! empty( $this->payment_bypass_generic ) ) {
 			$this->payment_bypass_partial = true;
 		} else {
 			$this->visitorType = self::VISITOR_LEGALBOT;
@@ -74,31 +74,56 @@ trait BotBlockerPaymentTrait {
 		$strict = isset( $this->settings->payment_strict_method )
 			? (int) $this->settings->payment_strict_method : 0;
 
+		$this->payment_bypass_generic = false;
+		$post_required                = $strict === 1;
+
 		$matched = $this->match_payment_path( $uri );
-		if ( $matched !== null && ( $strict !== 1 || $method === 'POST' ) ) {
+		if ( $matched !== null && ( ! $post_required || $method === 'POST' ) ) {
 			$this->payment_bypass_reason = 'Payment bypass: path ' . $matched;
 			return true;
 		}
 
 		$matched = $this->match_payment_query_key( $uri );
-		if ( $matched !== null && ( $strict !== 1 || $method === 'POST' ) ) {
-			$this->payment_bypass_reason = 'Payment bypass: query ' . $matched;
+		if ( $matched !== null && ( ! $post_required || $method === 'POST' ) ) {
+			$this->payment_bypass_reason  = 'Payment bypass: query ' . $matched;
+			$this->payment_bypass_generic = in_array( strtolower( $matched ), BotBlockerPaymentData::getGenericQueryKeys(), true );
 			return true;
 		}
 
 		$matched = $this->match_payment_action( $uri );
-		if ( $matched !== null ) {
-			$this->payment_bypass_reason = 'Payment bypass: action ' . $matched;
+		if ( $matched !== null && ( ! $post_required || $method === 'POST' ) ) {
+			$this->payment_bypass_reason  = 'Payment bypass: action ' . $matched;
+			$this->payment_bypass_generic = $this->is_generic_payment_action( $uri );
 			return true;
 		}
 
-		$matched = $this->match_payment_signature_header( $strict );
-		if ( $matched !== null ) {
+		$matched = $this->match_payment_signature_header();
+		if ( $matched !== null && $method === 'POST' ) {
 			$this->payment_bypass_reason = 'Payment bypass: header ' . $matched;
 			return true;
 		}
 
 		return false;
+	}
+
+	private function matches_generic_substring( string $action, array $needles ): bool {
+		foreach ( $needles as $needle ) {
+			if ( $needle !== '' && stripos( $action, $needle ) !== false ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private function is_generic_payment_action( string $uri ): bool {
+		$action = $this->extract_payment_action( $uri );
+		if ( $action === '' ) {
+			return false;
+		}
+		if ( in_array( $action, BotBlockerPaymentData::getGenericActions(), true ) ) {
+			return true;
+		}
+		return $this->matches_generic_substring( $action, BotBlockerPaymentData::getGenericActionSubstrings() );
 	}
 
 	public function match_payment_path( string $uri ): ?string {
@@ -153,6 +178,14 @@ trait BotBlockerPaymentTrait {
 				return $key;
 			}
 		}
+
+		foreach ( BotBlockerPaymentData::getGenericQueryKeys() as $key ) {
+			$key_lc = strtolower( $key );
+			if ( array_key_exists( $key_lc, $keys_lc ) ) {
+				return $key;
+			}
+		}
+
 		return null;
 	}
 
@@ -162,37 +195,19 @@ trait BotBlockerPaymentTrait {
 			return null;
 		}
 
-		$action = '';
-		if ( ! empty( $_REQUEST['action'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- 'action' parameter is used for matching against known payment gateway callback patterns and does not require nonce verification.
-			$action = strtolower( sanitize_text_field( wp_unslash( (string) $_REQUEST['action'] ) ) );  // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- 'action' parameter is used for matching against known payment gateway callback patterns and does not require nonce verification.
-		}
-
-		if ( $action === '' ) {
-			$qpos = strpos( $uri, '?' );
-			if ( $qpos !== false ) {
-				parse_str( substr( $uri, $qpos + 1 ), $parsed );
-				if ( ! empty( $parsed['action'] ) ) {
-					$action = strtolower( (string) $parsed['action'] );
-				}
-			}
-		}
-
+		$action = $this->extract_payment_action( $uri );
 		if ( $action === '' ) {
 			return null;
 		}
 
-		$exact = BotBlockerPaymentData::getActions();
-		foreach ( $exact as $known ) {
+		foreach ( BotBlockerPaymentData::getActions() as $known ) {
 			if ( strtolower( $known ) === $action ) {
 				return $known;
 			}
 		}
 
 		foreach ( BotBlockerPaymentData::getActionSubstrings() as $needle ) {
-			if ( $needle === '' ) {
-				continue;
-			}
-			if ( stripos( $action, $needle ) !== false ) {
+			if ( $needle !== '' && stripos( $action, $needle ) !== false ) {
 				return $needle;
 			}
 		}
@@ -200,13 +215,29 @@ trait BotBlockerPaymentTrait {
 		return null;
 	}
 
-	public function match_payment_signature_header( int $strict = 0 ): ?string {
+	private function extract_payment_action( string $uri ): string {
+		if ( ! empty( $_REQUEST['action'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- 'action' parameter is used for matching against known payment gateway callback patterns and does not require nonce verification.
+			return strtolower( sanitize_text_field( wp_unslash( (string) $_REQUEST['action'] ) ) );  // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- 'action' parameter is used for matching against known payment gateway callback patterns and does not require nonce verification.
+		}
+
+		$qpos = strpos( $uri, '?' );
+		if ( $qpos === false ) {
+			return '';
+		}
+
+		parse_str( substr( $uri, $qpos + 1 ), $parsed );
+		if ( empty( $parsed['action'] ) ) {
+			return '';
+		}
+
+		return strtolower( (string) $parsed['action'] );
+	}
+
+	public function match_payment_signature_header(): ?string {
 		foreach ( BotBlockerPaymentData::getSignatureHeaders() as $header ) {
-			if ( ! empty( $_SERVER[ $header ] ) ) {
+			if ( ! empty( $_SERVER[ $header ] )
 				// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-				if ( $strict === 1 && strlen( (string) $_SERVER[ $header ] ) < 8 ) {
-					continue;
-				}
+				&& strlen( (string) $_SERVER[ $header ] ) >= 8 ) {
 				return $header;
 			}
 		}

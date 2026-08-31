@@ -119,9 +119,9 @@ class BotBlockerAjaxHits {
 			$search_values[] = $like;
 
 			$matched_codes = array();
-			if ( function_exists( 'bbcs_codeList' ) ) {
+			if ( class_exists( 'BotBlockerDataCodes' ) ) {
 				for ( $code = 0; $code <= 100; $code++ ) {
-					$code_data = bbcs_codeList( $code );
+					$code_data = BotBlockerDataCodes::codeList( $code );
 					$message   = isset( $code_data['msg'] ) ? wp_strip_all_tags( (string) $code_data['msg'] ) : '';
 
 					if ( $message !== '' && $message !== 'Unknown code' && stripos( $message, $search ) !== false ) {
@@ -153,20 +153,29 @@ class BotBlockerAjaxHits {
 		}
 
 		$where_clause = trim( $where );
+		$hits_alias   = BotBlockerDb::COMBINED_HITS_ALIAS;
 
 		$union_query = "
-	        SELECT date, cid, ip, ptr, asnum, asname, lang, name_lang, country_name, useragent,
+	        SELECT date, cid, ip, ptr, CAST(asnum AS CHAR) AS asnum, asname, lang, name_lang, country_name, useragent,
 	               js_w, js_h, js_cw, js_ch, js_co, js_pi, adblock, country, referer, page,
 	               passed, result, method, browser, os, device
 	        FROM (
 	            SELECT * FROM `{$wpdb->bbcs_hits}`
 	            UNION ALL
 	            SELECT * FROM `{$wpdb->bbcs_hits_suspicious}`
-	        ) AS combined_hits
+	        ) AS {$hits_alias}
 	        {$where_clause}
 	    ";
 
-		$total_query = "SELECT (SELECT COUNT(*) FROM `{$wpdb->bbcs_hits}` {$where_clause}) + (SELECT COUNT(*) FROM `{$wpdb->bbcs_hits_suspicious}` {$where_clause})";
+	    $total_query = "SELECT COUNT(*) FROM (
+	        SELECT 1
+	        FROM (
+	            SELECT * FROM `{$wpdb->bbcs_hits}`
+	            UNION ALL
+	            SELECT * FROM `{$wpdb->bbcs_hits_suspicious}`
+	        ) AS {$hits_alias}
+	        {$where_clause}
+	    ) AS counted";
 		// REVIEWER NOTE: Query string is dynamically built from sanitized input data.
 		// $where is constructed internally by the plugin and all user input is sanitized
 		// (esc_like, absint, sanitize_text_field) and values are prepared where possible.
@@ -241,7 +250,7 @@ class BotBlockerAjaxHits {
 				'modal'    => self::clean_modal_row( $row ),
 				'r_info'   => array(
 					'passed' => $row['passed'],
-					'pi'     => bbcs_codeList( $row['passed'] )['msg'],
+					'pi'     => BotBlockerDataCodes::codeList( $row['passed'] )['msg'],
 					'result' => $row['result'],
 				),
 			);
@@ -271,7 +280,7 @@ class BotBlockerAjaxHits {
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' called' );
 		}
 		global $wpdb;
-		$where                       = 'WHERE ' . BBCS_SQL_PAGE_NOT_LIKE . " AND method = 'GET'";
+		$where                       = 'WHERE ' . BotBlockerDb::pageFilterWhereNotExists( BotBlockerDb::COMBINED_HITS_ALIAS, 0 ) . " AND method = 'GET'";
 		[$ip_not_in_sql, $ip_params] = BotBlockerDb::getIPNotLikeSQL();
 		// REVIEWER NOTE: IP values are sourced from the plugin's own
 		// stored rules (not raw user input) and are fully escaped via $wpdb->prepare().
@@ -289,7 +298,7 @@ class BotBlockerAjaxHits {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' called' );
 		}
-		$where = 'WHERE ' . BBCS_SQL_PAGE_LIKE_ADMIN . ' AND ' . BBCS_SQL_PAGE_NOT_LIKE_WP . " AND method = 'GET'";
+		$where = 'WHERE ' . BotBlockerDb::pageFilterWhereCategoryExists( BotBlockerDb::COMBINED_HITS_ALIAS, BotBlockerStore::PAGE_FILTER_CATEGORY_ADMIN, 0 ) . " AND method = 'GET'";
 		self::handleGetHits( $where );
 	}
 
@@ -302,7 +311,7 @@ class BotBlockerAjaxHits {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' called' );
 		}
-		$where = 'WHERE ' . BBCS_SQL_PAGE_NOT_LIKE_ADMIN . ' AND ' . BBCS_SQL_PAGE_LIKE_WP . " AND method = 'GET'";
+		$where = 'WHERE ' . BotBlockerDb::pageFilterWhereCategoryExists( BotBlockerDb::COMBINED_HITS_ALIAS, BotBlockerStore::getPageFilterWordpressActionCategories(), 0 ) . " AND method = 'GET'";
 		self::handleGetHits( $where );
 	}
 

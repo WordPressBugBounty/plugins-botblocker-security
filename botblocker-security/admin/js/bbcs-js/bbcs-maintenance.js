@@ -154,10 +154,7 @@
     // ── Dynamically created modals (reinstall DB, backup) ──────
     function showConfirmClearModalReinstallDB(onConfirm) {
         if (isNewUI) {
-            // New UI: use native confirm()
-            if (confirm('Are you sure you want to re-install Database?')) {
-                onConfirm();
-            }
+            bbcsConfirm('Are you sure you want to re-install Database?', onConfirm);
         } else {
             // Legacy: Bootstrap modal
             if ($("#confirmClearModal").length) {
@@ -195,10 +192,7 @@
 
     function showConfirmClearModalBackup(onConfirm) {
         if (isNewUI) {
-            // New UI: use native confirm()
-            if (confirm('Are you sure you want to make a backup?')) {
-                onConfirm();
-            }
+            bbcsConfirm('Are you sure you want to make a backup?', onConfirm);
         } else {
             // Legacy: Bootstrap modal
             if ($("#confirmClearModal").length) {
@@ -247,14 +241,14 @@
                     },
                     success: function (response) {
                         if (response.success) {
-                            alert(bbcsMaintenanceL10n.db_reinstalled);
+                            bbcsToast('success', bbcsMaintenanceL10n.db_reinstalled);
                             location.reload();
                         } else {
-                            alert(bbcsMaintenanceL10n.failed_reinstall + response.data);
+                            bbcsToast('error', bbcsMaintenanceL10n.failed_reinstall + response.data);
                         }
                     },
                     error: function (xhr, status, error) {
-                        alert(bbcsMaintenanceL10n.ajax_error + error);
+                        bbcsToast('error', bbcsMaintenanceL10n.ajax_error + error);
                     },
                 });
             });
@@ -280,11 +274,11 @@
                             tempLink.click();
                             document.body.removeChild(tempLink);
                         } else {
-                            alert(bbcsMaintenanceL10n.failed_backup + response.data.message);
+                            bbcsToast('error', bbcsMaintenanceL10n.failed_backup + response.data.message);
                         }
                     },
                     error: function (xhr, status, error) {
-                        alert(bbcsMaintenanceL10n.ajax_error + error);
+                        bbcsToast('error', bbcsMaintenanceL10n.ajax_error + error);
                     },
                 });
             });
@@ -312,14 +306,14 @@
                         contentType: false,
                         success: function (response) {
                             if (response.success) {
-                                alert(bbcsMaintenanceL10n.import_success);
+                                bbcsToast('success', bbcsMaintenanceL10n.import_success);
                                 window.location.reload();
                             } else {
-                                alert(bbcsMaintenanceL10n.failed_import + response.data.message);
+                                bbcsToast('error', bbcsMaintenanceL10n.failed_import + response.data.message);
                             }
                         },
                         error: function (xhr, status, error) {
-                            alert(bbcsMaintenanceL10n.ajax_error + error);
+                            bbcsToast('error', bbcsMaintenanceL10n.ajax_error + error);
                         },
                     });
                 }
@@ -340,14 +334,14 @@
                 },
                 success: function (response) {
                     if (response.success) {
-                        alert(response.data.message || bbcsMaintenanceL10n.salt_created);
+                        bbcsToast('success', response.data.message || bbcsMaintenanceL10n.salt_created);
                     } else {
-                        alert(response.data.message || bbcsMaintenanceL10n.failed_salt);
+                        bbcsToast('error', response.data.message || bbcsMaintenanceL10n.failed_salt);
                     }
                 },
                 error: function (xhr, status, error) {
                     console.error('AJAX error:', error);
-                    alert(bbcsMaintenanceL10n.operation_error);
+                    bbcsToast('error', bbcsMaintenanceL10n.operation_error);
                 }
             });
         });
@@ -364,14 +358,14 @@
                 },
                 success: function (response) {
                     if (response.success) {
-                        alert(response.data.message || bbcsMaintenanceL10n.log_cleared);
+                        bbcsToast('success', response.data.message || bbcsMaintenanceL10n.log_cleared);
                     } else {
-                        alert(response.data.message || bbcsMaintenanceL10n.failed_clear_log);
+                        bbcsToast('error', response.data.message || bbcsMaintenanceL10n.failed_clear_log);
                     }
                 },
                 error: function (xhr, status, error) {
                     console.error('AJAX error:', error);
-                    alert(bbcsMaintenanceL10n.operation_error);
+                    bbcsToast('error', bbcsMaintenanceL10n.operation_error);
                 }
             });
         });
@@ -395,12 +389,12 @@
                     tempLink.click();
                     document.body.removeChild(tempLink);
                 } else {
-                    alert(response.data.message || bbcsMaintenanceL10n.failed_get_log);
+                    bbcsToast('error', response.data.message || bbcsMaintenanceL10n.failed_get_log);
                 }
             },
             error: function (xhr, status, error) {
                 console.error('AJAX error:', error);
-                alert(bbcsMaintenanceL10n.operation_error);
+                bbcsToast('error', bbcsMaintenanceL10n.operation_error);
             }
         });
     });
@@ -424,14 +418,14 @@
                 },
                 success: function (response) {
                     if (response.success) {
-                        alert(response.data.message || bbcsMaintenanceL10n.transients_cleared);
+                        bbcsToast('success', response.data.message || bbcsMaintenanceL10n.transients_cleared);
                     } else {
-                        alert(response.data.message || bbcsMaintenanceL10n.failed_clear_transients);
+                        bbcsToast('error', response.data.message || bbcsMaintenanceL10n.failed_clear_transients);
                     }
                 },
                 error: function (xhr, status, error) {
                     console.error('AJAX error:', error);
-                    alert(bbcsMaintenanceL10n.operation_error);
+                    bbcsToast('error', bbcsMaintenanceL10n.operation_error);
                 }
             });
         });
@@ -448,15 +442,15 @@
                 },
                 success: function (response) {
                     if (response.success) {
-                        alert(response.data.message || bbcsMaintenanceL10n.visitors_cleared);
+                        bbcsToast('success', response.data.message || bbcsMaintenanceL10n.visitors_cleared);
                         window.location.reload();
                     } else {
-                        alert(response.data.message || bbcsMaintenanceL10n.failed_clear_visitors);
+                        bbcsToast('error', response.data.message || bbcsMaintenanceL10n.failed_clear_visitors);
                     }
                 },
                 error: function (xhr, status, error) {
                     console.error('AJAX error:', error);
-                    alert(bbcsMaintenanceL10n.operation_error);
+                    bbcsToast('error', bbcsMaintenanceL10n.operation_error);
                 }
             });
         });
@@ -473,14 +467,14 @@
                 },
                 success: function (response) {
                     if (response.success) {
-                        alert(response.data.message || bbcsMaintenanceL10n.rewrite_flushed);
+                        bbcsToast('success', response.data.message || bbcsMaintenanceL10n.rewrite_flushed);
                     } else {
-                        alert(response.data.message || bbcsMaintenanceL10n.failed_flush_rewrite);
+                        bbcsToast('error', response.data.message || bbcsMaintenanceL10n.failed_flush_rewrite);
                     }
                 },
                 error: function (xhr, status, error) {
                     console.error('AJAX error:', error);
-                    alert(bbcsMaintenanceL10n.operation_error);
+                    bbcsToast('error', bbcsMaintenanceL10n.operation_error);
                 }
             });
         });
@@ -497,14 +491,14 @@
                 },
                 success: function (response) {
                     if (response.success) {
-                        alert(response.data.message || bbcsMaintenanceL10n.cache_cleared);
+                        bbcsToast('success', response.data.message || bbcsMaintenanceL10n.cache_cleared);
                     } else {
-                        alert(response.data.message || bbcsMaintenanceL10n.failed_clear_cache);
+                        bbcsToast('error', response.data.message || bbcsMaintenanceL10n.failed_clear_cache);
                     }
                 },
                 error: function (xhr, status, error) {
                     console.error('AJAX error:', error);
-                    alert(bbcsMaintenanceL10n.operation_error);
+                    bbcsToast('error', bbcsMaintenanceL10n.operation_error);
                 }
             });
         });
@@ -523,14 +517,14 @@
             },
             success: function (response) {
                 if (response && response.success) {
-                    alert((response.data && response.data.message) || bbcsMaintenanceL10n.asn_scheduled);
+                    bbcsToast('success', (response.data && response.data.message) || bbcsMaintenanceL10n.asn_scheduled);
                 } else {
-                    alert((response && response.data && response.data.message) || bbcsMaintenanceL10n.failed_schedule_asn);
+                    bbcsToast('error', (response && response.data && response.data.message) || bbcsMaintenanceL10n.failed_schedule_asn);
                 }
             },
             error: function (xhr, status, error) {
                 console.error('AJAX error:', error);
-                alert(bbcsMaintenanceL10n.asn_error);
+                bbcsToast('error', bbcsMaintenanceL10n.asn_error);
             },
             complete: function () {
                 $btn.prop('disabled', false);
@@ -551,14 +545,14 @@
             },
             success: function (response) {
                 if (response && response.success) {
-                    alert((response.data && response.data.message) || response.data || bbcsMaintenanceL10n.rugov_scheduled || 'RU-Gov list update scheduled.');
+                    bbcsToast('success', (response.data && response.data.message) || response.data || bbcsMaintenanceL10n.rugov_scheduled || 'RU-Gov list update scheduled.');
                 } else {
-                    alert((response && response.data) || (bbcsMaintenanceL10n && bbcsMaintenanceL10n.rugov_failed) || 'Failed to schedule RU-Gov list update.');
+                    bbcsToast('error', (response && response.data) || (bbcsMaintenanceL10n && bbcsMaintenanceL10n.rugov_failed) || 'Failed to schedule RU-Gov list update.');
                 }
             },
             error: function (xhr, status, error) {
                 console.error('AJAX error:', error);
-                alert((bbcsMaintenanceL10n && bbcsMaintenanceL10n.rugov_error) || 'Error scheduling RU-Gov list update.');
+                bbcsToast('error', (bbcsMaintenanceL10n && bbcsMaintenanceL10n.rugov_error) || 'Error scheduling RU-Gov list update.');
             },
             complete: function () {
                 $btn.prop('disabled', false);
@@ -579,14 +573,14 @@
             },
             success: function (response) {
                 if (response && response.success) {
-                    alert((response.data && response.data.message) || response.data || 'LLM providers synced successfully.');
+                    bbcsToast('success', (response.data && response.data.message) || response.data || 'LLM providers synced successfully.');
                 } else {
-                    alert((response && response.data) || 'LLM sync failed.');
+                    bbcsToast('error', (response && response.data) || 'LLM sync failed.');
                 }
             },
             error: function (xhr, status, error) {
                 console.error('AJAX error:', error);
-                alert('Error syncing LLM providers.');
+                bbcsToast('error', 'Error syncing LLM providers.');
             },
             complete: function () {
                 $btn.prop('disabled', false);

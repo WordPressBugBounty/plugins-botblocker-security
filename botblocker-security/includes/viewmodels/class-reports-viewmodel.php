@@ -116,7 +116,7 @@ final class Botblocker_ReportsViewModel {
 				$this->{$key} = $value;
 			}
 		}
-		$this->kpi_health_score   = (string) bbcs_calculateSiteHealth();
+		$this->kpi_health_score   = (string) BotBlockerHealthShortcodes::calculateSiteHealth();
 		$this->health_label       = Botblocker_HealthScoreHelper::getLabel( (int) $this->kpi_health_score );
 
 		$this->donut_hosts     = $this->build_donut( 'ip_hits_hosts' );

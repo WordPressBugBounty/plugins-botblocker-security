@@ -119,7 +119,7 @@
 				showStep(2);
 				runCompatibilityTests();
 			} else {
-				alert((bbcsSetWizVars.i18n && bbcsSetWizVars.i18n.error_prefix || 'Error: ') + (r.data || 'Unknown error'));
+				bbcsToast('error', (bbcsSetWizVars.i18n && bbcsSetWizVars.i18n.error_prefix || 'Error: ') + (r.data || 'Unknown error'));
 			}
 		}).catch(function () {
 			btn.disabled = false;
@@ -242,7 +242,7 @@
 				saveNotifications();
 				showStep(5);
 			} else {
-				alert((bbcsSetWizVars.i18n && bbcsSetWizVars.i18n.error_prefix || 'Error: ') + (r.data || 'Unknown error'));
+				bbcsToast('error', (bbcsSetWizVars.i18n && bbcsSetWizVars.i18n.error_prefix || 'Error: ') + (r.data || 'Unknown error'));
 			}
 		}).catch(function () { btn.disabled = false; btn.innerHTML = orig; });
 	}
@@ -264,7 +264,7 @@
 			if (r.success) {
 				showStep(6);
 			} else {
-				alert((bbcsSetWizVars.i18n && bbcsSetWizVars.i18n.error_prefix || 'Error: ') + (r.data || 'Unknown error'));
+				bbcsToast('error', (bbcsSetWizVars.i18n && bbcsSetWizVars.i18n.error_prefix || 'Error: ') + (r.data || 'Unknown error'));
 			}
 		}).catch(function () { btn.disabled = false; btn.innerHTML = orig; });
 	}
@@ -325,7 +325,7 @@
 				completeWizard();
 				showStep(7);
 			} else {
-				alert((bbcsSetWizVars.i18n && bbcsSetWizVars.i18n.error_prefix || 'Error: ') + (r.data || 'Unknown error'));
+				bbcsToast('error', (bbcsSetWizVars.i18n && bbcsSetWizVars.i18n.error_prefix || 'Error: ') + (r.data || 'Unknown error'));
 			}
 		}).catch(function () { btn.disabled = false; btn.innerHTML = orig; });
 	}
@@ -426,7 +426,7 @@
 	function bindEvents() {
 		$('#bbcs-wiz-start') && $('#bbcs-wiz-start').addEventListener('click', function () { goToStep(1); });
 		$('#bbcs-wiz-skip') && $('#bbcs-wiz-skip').addEventListener('click', function () {
-			if (confirm(bbcsSetWizVars.i18n && bbcsSetWizVars.i18n.confirm_apply_defaults || 'Are you sure?')) skipToDefaults();
+			bbcsConfirm(bbcsSetWizVars.i18n && bbcsSetWizVars.i18n.confirm_apply_defaults || 'Are you sure?', skipToDefaults);
 		});
 
 		$$('.bbcs-wizcard[data-preset]').forEach(function (card) {
@@ -499,7 +499,7 @@
 		$('#bbcs-wiz-next6') && $('#bbcs-wiz-next6').addEventListener('click', saveCacheAndAdvance);
 
 		$('#bbcs-wiz-fix-auto') && $('#bbcs-wiz-fix-auto').addEventListener('click', function () {
-			alert(bbcsSetWizVars.i18n && bbcsSetWizVars.i18n.auto_fix_stub || 'Auto-fix applied. Moving on.');
+			bbcsToast('success', bbcsSetWizVars.i18n && bbcsSetWizVars.i18n.auto_fix_stub || 'Auto-fix applied. Moving on.');
 			goToStep(3);
 		});
 

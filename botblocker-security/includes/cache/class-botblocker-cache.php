@@ -32,88 +32,68 @@ class BotBlockerCache {
 			isset( $BBCS->settings->redis_enable ) &&
 			$BBCS->settings->redis_enable === 1
 		) {
-			try {
-				require_once BOTBLOCKER_DIR . 'includes/cache/class-redis-storage.php';
+			if ( get_transient( 'bbcs_redis_unavailable' ) ) {
+				// Fast-fail during a transient outage; retried after the TTL.
+				$BBCS->settings->redis_enable = 0;
+			} else {
+				try {
+					require_once BOTBLOCKER_DIR . 'includes/cache/class-redis-storage.php';
 
-				$redis = BBCS_RedisStorage::getInstance(
-					$BBCS->settings->redis_host ?? '127.0.0.1',
-					$BBCS->settings->redis_port ?? 6379,
-					$BBCS->settings->redis_password ?? '',
-					$BBCS->settings->redis_prefix ?? 'bbcs_',
-					$BBCS->settings->redis_database ?? 0
-				);
+					$redis = BBCS_RedisStorage::getInstance(
+						$BBCS->settings->redis_host ?? '127.0.0.1',
+						$BBCS->settings->redis_port ?? 6379,
+						$BBCS->settings->redis_password ?? '',
+						$BBCS->settings->redis_prefix ?? BOTBLOCKER_PREFIX,
+						$BBCS->settings->redis_database ?? 0
+					);
 
-				if ( $redis && $redis->isAvailable() ) {
-					return $redis;
+					if ( $redis && $redis->isAvailable() ) {
+						delete_transient( 'bbcs_redis_unavailable' );
+						return $redis;
+					}
+
+					// Transient outage: degrade the runtime only — never persist
+					// redis_enable=0, or the backend stays disabled forever.
+					$BBCS->settings->redis_enable = 0;
+					set_transient( 'bbcs_redis_unavailable', 1, 60 );
+					self::logDebug( 'Redis connection failed: ' . $redis->getLastError() . ' — transient outage, retry in 60s' );
+				} catch ( \Exception $e ) {
+					$BBCS->settings->redis_enable = 0;
+					set_transient( 'bbcs_redis_unavailable', 1, 60 );
+					self::logDebug( 'Redis exception: ' . $e->getMessage() . ' — transient outage, retry in 60s' );
 				}
-
-			$was_enabled                = ( $BBCS->settings->redis_enable == 1 );
-			$lastError = 'Redis connection failed: ' . $redis->getLastError();
-			// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$wpdb->update( $wpdb->bbcs_settings, array( 'value' => 0 ), array( 'key' => 'redis_enable' ) );
-			$BBCS->settings->redis_enable = 0;
-
-			if ( $was_enabled ) {
-				BotBlockerFileRenderer::generateSettingsFile();
-			}
-
-			self::logDebug( $lastError );
-			self::logDebug( 'Redis disabled, falling back to Memcached if enabled' );
-		} catch ( \Exception $e ) {
-			$was_enabled = ( $BBCS->settings->redis_enable == 1 );
-			$lastError = 'Redis exception: ' . $e->getMessage();
-			// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$wpdb->update( $wpdb->bbcs_settings, array( 'value' => 0 ), array( 'key' => 'redis_enable' ) );
-			$BBCS->settings->redis_enable = 0;
-
-			if ( $was_enabled ) {
-				BotBlockerFileRenderer::generateSettingsFile();
-			}
-
-			self::logDebug( $lastError );
-			self::logDebug( 'Redis disabled due to exception, falling back to Memcached if enabled' );
 			}
 		}
 
 		if ( isset( $BBCS->settings->memcached_enable ) && $BBCS->settings->memcached_enable === 1 ) {
-			try {
-				require_once BOTBLOCKER_DIR . 'includes/cache/class-memcached-storage.php';
+			if ( get_transient( 'bbcs_memcached_unavailable' ) ) {
+				// Fast-fail during a transient outage; retried after the TTL.
+				$BBCS->settings->memcached_enable = 0;
+			} else {
+				try {
+					require_once BOTBLOCKER_DIR . 'includes/cache/class-memcached-storage.php';
 
-				$mmc = BBCS_MemcachedStorage::getInstance(
-					$BBCS->settings->memcached_host ?? '127.0.0.1',
-					$BBCS->settings->memcached_port ?? 11211,
-					$BBCS->settings->memcached_prefix ?? 'bbcs_'
-				);
+					$mmc = BBCS_MemcachedStorage::getInstance(
+						$BBCS->settings->memcached_host ?? '127.0.0.1',
+						$BBCS->settings->memcached_port ?? 11211,
+						$BBCS->settings->memcached_prefix ?? BOTBLOCKER_PREFIX
+					);
 
-				if ( $mmc && $mmc->isAvailable() ) {
-					return $mmc;
+					if ( $mmc && $mmc->isAvailable() ) {
+						delete_transient( 'bbcs_memcached_unavailable' );
+						return $mmc;
+					}
+
+					// Transient outage: degrade the runtime only — never persist
+					// memcached_enable=0, or the backend stays disabled forever.
+					$BBCS->settings->memcached_enable = 0;
+					set_transient( 'bbcs_memcached_unavailable', 1, 60 );
+					self::logDebug( 'Memcached connection failed: ' . $mmc->getLastError() . ' — transient outage, retry in 60s' );
+				} catch ( \Exception $e ) {
+					$BBCS->settings->memcached_enable = 0;
+					set_transient( 'bbcs_memcached_unavailable', 1, 60 );
+					self::logDebug( 'Memcached exception: ' . $e->getMessage() . ' — transient outage, retry in 60s' );
 				}
-
-			$was_enabled                   = ( $BBCS->settings->memcached_enable === 1 );
-			$lastError = 'Memcached connection failed: ' . $mmc->getLastError();
-			// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$wpdb->update( $wpdb->bbcs_settings, array( 'value' => 0 ), array( 'key' => 'memcached_enable' ) );
-			if ( $was_enabled ) {
-				BotBlockerFileRenderer::generateSettingsFile();
-			}
-
-			self::logDebug( $lastError );
-			self::logDebug( 'Memcached disabled, falling back to transients' );
-		} catch ( \Exception $e ) {
-			$was_enabled = ( $BBCS->settings->memcached_enable === 1 );
-			$lastError = 'Memcached exception: ' . $e->getMessage();
-			// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$wpdb->update( $wpdb->bbcs_settings, array( 'value' => 0 ), array( 'key' => 'memcached_enable' ) );
-			if ( $was_enabled ) {
-				BotBlockerFileRenderer::generateSettingsFile();
-			}
-
-			self::logDebug( $lastError );
-			self::logDebug( 'Memcached disabled due to exception, falling back to transients' );
 			}
 		}
 
@@ -129,7 +109,7 @@ class BotBlockerCache {
 				$BBCS->settings->redis_host ?? '127.0.0.1',
 				$BBCS->settings->redis_port ?? 6379,
 				$BBCS->settings->redis_password ?? '',
-				$BBCS->settings->redis_prefix ?? 'bbcs_',
+				$BBCS->settings->redis_prefix ?? BOTBLOCKER_PREFIX,
 				$BBCS->settings->redis_database ?? 0
 			);
 
@@ -154,7 +134,7 @@ class BotBlockerCache {
 			$mmc = BBCS_MemcachedStorage::getInstance(
 				$BBCS->settings->memcached_host ?? '127.0.0.1',
 				$BBCS->settings->memcached_port ?? 11211,
-				$BBCS->settings->memcached_prefix ?? 'bbcs_'
+				$BBCS->settings->memcached_prefix ?? BOTBLOCKER_PREFIX
 			);
 
 			$available = $mmc && $mmc->isAvailable();
@@ -170,6 +150,79 @@ class BotBlockerCache {
 		}
 	}
 
+	/**
+	 * Explicit connection probe for the Redis backend. Bypasses the retry
+	 * throttle so an admin action always gets a fresh answer. Reads the
+	 * current settings when no explicit parameter is supplied.
+	 *
+	 * @param string|null $host
+	 * @param string|int|null $port
+	 * @param string|null $password
+	 * @param string|null $prefix
+	 * @param string|int|null $database
+	 * @return array{ok:bool,error:string}
+	 */
+	public static function testRedisConnection( $host = null, $port = null, $password = null, $prefix = null, $database = null ): array {
+		$BBCS = BotBlocker::getInstance();
+
+		$host     = ( $host === null || $host === '' ) ? ( isset( $BBCS->settings->redis_host ) && $BBCS->settings->redis_host !== '' ? (string) $BBCS->settings->redis_host : '127.0.0.1' ) : (string) $host;
+		$port     = ( $port === null || $port === '' ) ? ( isset( $BBCS->settings->redis_port ) && $BBCS->settings->redis_port !== '' ? (int) $BBCS->settings->redis_port : 6379 ) : (int) $port;
+		$password = ( $password === null ) ? ( isset( $BBCS->settings->redis_password ) ? (string) $BBCS->settings->redis_password : '' ) : (string) $password;
+		$prefix   = ( $prefix === null || $prefix === '' ) ? ( isset( $BBCS->settings->redis_prefix ) && $BBCS->settings->redis_prefix !== '' ? (string) $BBCS->settings->redis_prefix : BOTBLOCKER_PREFIX ) : (string) $prefix;
+		$database = ( $database === null ) ? ( isset( $BBCS->settings->redis_database ) ? (int) $BBCS->settings->redis_database : 0 ) : (int) $database;
+
+		try {
+			require_once BOTBLOCKER_DIR . 'includes/cache/class-redis-storage.php';
+
+			// A fresh instance: the singleton is param-locked on first call and
+			// throttles reconnects — an explicit probe must test exactly the
+			// supplied configuration, not whatever the request cached earlier.
+			BBCS_RedisStorage::resetInstance();
+			$storage = BBCS_RedisStorage::getInstance( $host, $port, $password, $prefix, $database );
+
+			if ( ! $storage->isAvailable() ) {
+				return array( 'ok' => false, 'error' => (string) $storage->getLastError() );
+			}
+
+			return array( 'ok' => true );
+		} catch ( \Exception $e ) {
+			return array( 'ok' => false, 'error' => (string) $e->getMessage() );
+		}
+	}
+
+	/**
+	 * Explicit connection probe for the Memcached backend. Reads the current
+	 * settings when no explicit parameter is supplied.
+	 *
+	 * @param string|null $host
+	 * @param string|int|null $port
+	 * @param string|null $prefix
+	 * @return array{ok:bool,error:string}
+	 */
+	public static function testMemcachedConnection( $host = null, $port = null, $prefix = null ): array {
+		$BBCS = BotBlocker::getInstance();
+
+		$host   = ( $host === null || $host === '' ) ? ( isset( $BBCS->settings->memcached_host ) && $BBCS->settings->memcached_host !== '' ? (string) $BBCS->settings->memcached_host : '127.0.0.1' ) : (string) $host;
+		$port   = ( $port === null || $port === '' ) ? ( isset( $BBCS->settings->memcached_port ) && $BBCS->settings->memcached_port !== '' ? (int) $BBCS->settings->memcached_port : 11211 ) : (int) $port;
+		$prefix = ( $prefix === null || $prefix === '' ) ? ( isset( $BBCS->settings->memcached_prefix ) && $BBCS->settings->memcached_prefix !== '' ? (string) $BBCS->settings->memcached_prefix : BOTBLOCKER_PREFIX ) : (string) $prefix;
+
+		try {
+			require_once BOTBLOCKER_DIR . 'includes/cache/class-memcached-storage.php';
+
+			// Fresh instance, same rationale as testRedisConnection().
+			BBCS_MemcachedStorage::resetInstance();
+			$storage = BBCS_MemcachedStorage::getInstance( $host, $port, $prefix );
+
+			if ( ! $storage->isAvailable() ) {
+				return array( 'ok' => false, 'error' => (string) $storage->getLastError() );
+			}
+
+			return array( 'ok' => true );
+		} catch ( \Exception $e ) {
+			return array( 'ok' => false, 'error' => (string) $e->getMessage() );
+		}
+	}
+
 	public static function flush(): bool {
 		$BBCS    = BotBlocker::getInstance();
 		$flushed = false;
@@ -181,7 +234,7 @@ class BotBlockerCache {
 				$BBCS->settings->redis_host ?? '127.0.0.1',
 				$BBCS->settings->redis_port ?? 6379,
 				$BBCS->settings->redis_password ?? '',
-				$BBCS->settings->redis_prefix ?? 'bbcs_',
+				$BBCS->settings->redis_prefix ?? BOTBLOCKER_PREFIX,
 				$BBCS->settings->redis_database ?? 0
 			);
 
@@ -203,7 +256,7 @@ class BotBlockerCache {
 			$mmc = BBCS_MemcachedStorage::getInstance(
 				$BBCS->settings->memcached_host ?? '127.0.0.1',
 				$BBCS->settings->memcached_port ?? 11211,
-				$BBCS->settings->memcached_prefix ?? 'bbcs_'
+				$BBCS->settings->memcached_prefix ?? BOTBLOCKER_PREFIX
 			);
 
 			if ( $mmc && $mmc->isAvailable() ) {
@@ -358,7 +411,7 @@ class BotBlockerCache {
 		if ( $content === false || $content === '' ) {
 			return self::transientFallbackGet( $key );
 		}
-		$data = @unserialize( $content );
+		$data = @unserialize( $content, array( 'allowed_classes' => false ) );
 		if ( ! is_array( $data ) || ! isset( $data['d'], $data['e'] ) ) {
 			// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
 			@unlink( $file );
@@ -372,7 +425,19 @@ class BotBlockerCache {
 		return $data['d'];
 	}
 
+	public static function transientsEnabled(): bool {
+		$BBCS = BotBlocker::getInstance();
+		if ( ! isset( $BBCS->settings->transients_enable ) ) {
+			return true;
+		}
+		return (int) $BBCS->settings->transients_enable === 1;
+	}
+
 	private static function transientFallbackGet( string $key ) {
+		if ( ! self::transientsEnabled() ) {
+			self::logDebug( 'Transient fallback disabled by setting (get key: ' . $key . ')' );
+			return null;
+		}
 		$value = get_transient( $key );
 		if ( $value === false ) {
 			return null;
@@ -404,6 +469,10 @@ class BotBlockerCache {
 	}
 
 	private static function transientFallbackSet( string $key, $data, int $ttl ): bool {
+		if ( ! self::transientsEnabled() ) {
+			self::logDebug( 'Transient fallback disabled by setting (set key: ' . $key . ')' );
+			return false;
+		}
 		return set_transient( $key, $data, $ttl );
 	}
 
@@ -414,6 +483,25 @@ class BotBlockerCache {
 			@unlink( $file );
 		}
 		delete_transient( $key );
+	}
+
+	/**
+	 * Opens (creates) a persistent lock handle for a cache key so callers can
+	 * serialize read-modify-write cycles across processes.
+	 *
+	 * @return resource|false
+	 */
+	public static function fileLock( string $key ) {
+		$dir = self::cacheDir();
+		if ( ! is_dir( $dir ) && ! wp_mkdir_p( $dir ) ) {
+			return false;
+		}
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- temporary lock requires native fopen and flock before filesystem abstraction is available
+		$handle = @fopen( self::cacheDir() . md5( $key ) . '.lock', 'c' );
+		if ( ! $handle ) {
+			return false;
+		}
+		return $handle;
 	}
 
 	public static function resetHealthTransients(): bool {
@@ -523,7 +611,7 @@ class BotBlockerCache {
 					$BBCS->settings->redis_host ?? '127.0.0.1',
 					$BBCS->settings->redis_port ?? 6379,
 					$BBCS->settings->redis_password ?? '',
-					$BBCS->settings->redis_prefix ?? 'bbcs_',
+					$BBCS->settings->redis_prefix ?? BOTBLOCKER_PREFIX,
 					$BBCS->settings->redis_database ?? 0
 				);
 
@@ -537,6 +625,7 @@ class BotBlockerCache {
 					$redis->forceReconnect();
 
 					if ( $redis->isAvailable() ) {
+						delete_transient( 'bbcs_redis_unavailable' );
 						self::logDebug( 'Redis connection successfully recovered' );
 						return true;
 					} else {
@@ -545,7 +634,11 @@ class BotBlockerCache {
 					}
 				}
 
-				return $redis && $redis->isAvailable();
+				$available = $redis && $redis->isAvailable();
+				if ( $available ) {
+					delete_transient( 'bbcs_redis_unavailable' );
+				}
+				return $available;
 			}
 
 			return false;

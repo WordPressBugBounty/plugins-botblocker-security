@@ -1,6 +1,8 @@
 // BotBlocker Check Core - Shared JS for FULL and FRONTEND modes
 // Requires: window.bbcsJsData to be set BEFORE this script runs.
 
+window.__bbcs_hp_t = Date.now();
+
 window.bbcs_cleanAndDecodeBase64ToUtf8 = function(str) {
     str = str.replace(/\s/g, '');
     return decodeURIComponent(escape(window.atob(str)));
@@ -10,7 +12,7 @@ window.ipv4 = '';
 window.ipdbc = '';
 window.rct = '';
 
-window.bbcsDebugEnabled = bbcsJsData.debugEnabled ? 'true' : 'false';
+window.bbcsDebugEnabled = !!bbcsJsData.debugEnabled;
 
 window.bbcsDebugLog = function(...args) {
     if (window.bbcsDebugEnabled) {
@@ -227,14 +229,24 @@ document.getElementById("content").innerHTML = bbcsJsData.loadingText;
 function handleWorkerSignal() {
     return new Promise(function(resolve) {
         if (bbcsJsData.recaptchaEnabled) {
-            grecaptcha.ready(function() {
-                grecaptcha.execute(bbcsJsData.recaptchaKey3, {
-                    action: bbcsJsData.country
-                }).then(function(token) {
-                    window.rct = token;
-                    resolve('HWS');
+            try {
+                grecaptcha.ready(function() {
+                    grecaptcha.execute(bbcsJsData.recaptchaKey3, {
+                        action: bbcsJsData.country
+                    }).then(function(token) {
+                        window.rct = token;
+                        resolve('HWS');
+                    }).catch(function(e) {
+                        bbcsDebugError('reCAPTCHA execute failed:', e);
+                        window.rct = '';
+                        resolve('HWS');
+                    });
                 });
-            });
+            } catch (e) {
+                bbcsDebugError('reCAPTCHA unavailable:', e);
+                window.rct = '';
+                resolve('HWS');
+            }
         } else {
             window.rct = '';
             resolve('HWS');
@@ -310,6 +322,13 @@ function initProcessHandler(result1, result2) {
         '&rct=' + window.rct +
         '&cookieoff=' + cookieoff +
         bbcs_detectionParams;
+
+    var bbcsHpInput = document.querySelector('[data-bbcs-honeypot]');
+    window.__bbcs_hp_present = !!(bbcsHpInput && bbcsHpInput.name);
+    if (window.__bbcs_hp_present) {
+        window.data += '&bbcs_hp_name=' + encodeURIComponent(bbcsHpInput.name);
+        window.data += '&' + bbcsHpInput.name + '=' + encodeURIComponent(bbcsHpInput.value || '');
+    }
     window[bbcsJsData.checkFunctionName]('botblocker-security', window.data, '');
     bbcsDebugLog('initProcessHandler -> ', result1, result2);
 }
@@ -332,6 +351,7 @@ function botblocker_captcha_render() {
         return;
     }
     if (typeof renderCaptcha === 'function') {
+        window.__bbcs_hp_t = Date.now();
         renderCaptcha();
     }
 }
@@ -371,6 +391,10 @@ window[bbcsJsData.checkFunctionName] = function(s, d, x, ajaxEndpoint) {
         formData.append(pair[0], pair[1]);
     }
 
+    if (window.__bbcs_hp_present) {
+        formData.append('bbcs_hp_time', String(Date.now() - window.__bbcs_hp_t));
+    }
+
     var xhr = new XMLHttpRequest();
     xhr.open('POST', ajaxEndpoint, true);
     xhr.timeout = bbcsDdosRetryCount > 0 ? 10000 : 5000;
@@ -401,16 +425,13 @@ window[bbcsJsData.checkFunctionName] = function(s, d, x, ajaxEndpoint) {
                         }
                     }
 
-                    if (typeof(obj.cookie) == "string") {
+                    // ddos mode: a cookie is only trusted from a signed response
+                    if (typeof(obj.cookie) == "string" && (!bbcsJsData.ddosResilience || bbcsSigValid)) {
                         bbcsDebugLog('Cookie received, value=' + obj.cookie.substring(0,20) + '... uid=' + bbcsJsData.uid + ' redirectUrl=' + bbcsJsData.redirectUrl);
                         if (bbcsJsData.ddosResilience) {
                             bbcsCheckUI.showSuccess();
                             if (typeof bbcsCircuitBreaker !== 'undefined') {
-                                if (bbcsSigValid) {
-                                    bbcsCircuitBreaker.recordSuccess();
-                                } else {
-                                    bbcsCircuitBreaker.recordFailure();
-                                }
+                                bbcsCircuitBreaker.recordSuccess();
                             }
                         }
                         var expiryDate = new Date();

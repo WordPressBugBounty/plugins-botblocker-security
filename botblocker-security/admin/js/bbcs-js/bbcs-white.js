@@ -351,7 +351,7 @@
 
         $("#botblocker-white").on("click", ".delete-white", function () {
             var id = $(this).data("id");
-            if (confirm(bbcsWhiteL10n.confirm_delete)) {
+            bbcsConfirm(bbcsWhiteL10n.confirm_delete, function () {
               $.ajax({
                 url: botblockerData.ajaxurl,
                 type: "POST",
@@ -370,7 +370,7 @@
                   }
                 },
               });
-            }
+            });
         });
 
         $("#bbcs_se_add").on("click", function() {

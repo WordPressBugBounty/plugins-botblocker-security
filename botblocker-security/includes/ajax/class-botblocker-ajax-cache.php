@@ -43,6 +43,41 @@ class BotBlockerAjaxCache {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' redis_enable=' . $redis_enable . ' memcached_enable=' . $memcached_enable );
 		}
+
+		// Truth-toggle: an enable is persisted only when the backend answers a
+		// real connection probe; the two backends stay mutually exclusive.
+		if ( $redis_enable === 1 ) {
+			$probe = BotBlockerCache::testRedisConnection();
+			if ( ! $probe['ok'] ) {
+				if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+					error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' redis probe failed: ' . (string) $probe['error'] );
+				}
+				wp_send_json_error(
+					array(
+						'message' => __( 'Redis backend is not reachable.', 'botblocker-security' ),
+						'error'   => (string) $probe['error'],
+					)
+				);
+			}
+			$memcached_enable = 0;
+		} elseif ( $memcached_enable === 1 ) {
+			$probe = BotBlockerCache::testMemcachedConnection();
+			if ( ! $probe['ok'] ) {
+				if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+					error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' memcached probe failed: ' . (string) $probe['error'] );
+				}
+				wp_send_json_error(
+					array(
+						'message' => __( 'Memcached backend is not reachable.', 'botblocker-security' ),
+						'error'   => (string) $probe['error'],
+					)
+				);
+			}
+			$redis_enable = 0;
+		}
+
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->update( $wpdb->bbcs_settings, array( 'value' => $redis_enable ), array( 'key' => 'redis_enable' ) );
 		$wpdb->update( $wpdb->bbcs_settings, array( 'value' => $memcached_enable ), array( 'key' => 'memcached_enable' ) );

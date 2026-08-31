@@ -85,4 +85,23 @@ class BotBlockerEnv {
 		$minutes = ( abs( $offset ) - $hours ) * 60;
 		return sprintf( '%s%02d:%02d', $sign, $hours, $minutes );
 	}
+
+	public static function fixHttpHost(): void {
+		if ( ! empty( $_SERVER['HTTP_HOST'] ) || empty( $_SERVER['SERVER_NAME'] ) ) {
+			return;
+		}
+
+		$bbcs_port = '';
+		if (
+			! empty( $_SERVER['SERVER_PORT'] )
+			&& ! in_array( $_SERVER['SERVER_PORT'], array( '80', '443' ), true )
+		) {
+			$bbcs_port = ':' . sanitize_text_field( wp_unslash( $_SERVER['SERVER_PORT'] ) );
+		}
+
+		$_SERVER['HTTP_HOST'] = sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) . $bbcs_port;
+	}
 }
+
+// Some servers expose SERVER_NAME only; HTTP_HOST is required by WP and the plugin.
+BotBlockerEnv::fixHttpHost();

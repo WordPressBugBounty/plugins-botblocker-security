@@ -107,6 +107,12 @@ This prevents trivial header spoofing - a bot could send `X-TLS-JA3:
 chrome-real-hash` in its HTTP request. The trusted proxy requirement ensures
 headers are only accepted from your own reverse proxy that generated them.
 
+One automatic exception: a request whose `REMOTE_ADDR` falls into a proxy-map
+range mapped to `CF-Connecting-IP` is treated as coming from a real Cloudflare
+edge and its TLS headers are accepted without an explicit Trusted Proxy
+setting. A client-sent `CF-Connecting-IP` header from any other address is
+never trusted on its own.
+
 ---
 
 ## Fingerprint Database
@@ -157,6 +163,6 @@ fingerprints as received by the server. If both show "(not detected)":
 
 On a fresh install with default settings:
 - `tls_fingerprint_check = 0` → feature disabled
-- `tls_fingerprint_trusted_proxy = ''` → headers ignored even if enabled
+- `tls_fingerprint_trusted_proxy = ''` → headers ignored even if enabled (the only exception is a request from a proxy-map range mapped to `CF-Connecting-IP`)
 - `check_tls_fingerprint()` in the main detection flow returns `false` immediately
 - Zero performance impact, zero network calls, zero false positives

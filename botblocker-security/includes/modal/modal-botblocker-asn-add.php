@@ -49,7 +49,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 								<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Autonomous System Number', 'botblocker-security' ); ?></span></span>
 								</div>
 								<div class="bbcs_text_input_inner">
-									<input type="number" class="bbcs_text_input_input" id="asnNum" name="asnum" min="1" required>
+									<input type="text" inputmode="numeric" pattern="[0-9]{1,20}" maxlength="20" class="bbcs_text_input_input" id="asnNum" name="asnum" required>
 								</div>
 							</div>
 						</div>

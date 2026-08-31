@@ -5,6 +5,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class BotBlockerAjaxAsn {
 
+	private static function normalizePostedAsn( $value ): ?string {
+		if ( ! is_string( $value ) ) {
+			return null;
+		}
+
+		return BotBlockerAsnValue::normalize( sanitize_text_field( wp_unslash( $value ) ) );
+	}
+
 	public static function handleGetAsn(): void {
 		$bbcs_action = 'asn_get_asn';
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
@@ -62,7 +70,7 @@ class BotBlockerAjaxAsn {
 	        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$results = $wpdb->get_results(
 				$wpdb->prepare(
-					"SELECT id, priority, asnum, asname, `rule`, comment, disable
+					"SELECT id, priority, CAST(asnum AS CHAR) AS asnum, asname, `rule`, comment, disable
 	                 FROM `{$wpdb->bbcs_asn}`
 	                 WHERE CAST(asnum AS CHAR) LIKE %s
 	                    OR asname LIKE %s
@@ -84,7 +92,7 @@ class BotBlockerAjaxAsn {
 	        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$results = $wpdb->get_results(
 				$wpdb->prepare(
-					"SELECT id, priority, asnum, asname, `rule`, comment, disable
+					"SELECT id, priority, CAST(asnum AS CHAR) AS asnum, asname, `rule`, comment, disable
 	                 FROM `{$wpdb->bbcs_asn}`
 	                 WHERE 1 = %d
 	                 ORDER BY priority ASC
@@ -154,7 +162,11 @@ class BotBlockerAjaxAsn {
 		}
 	    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$row = $wpdb->get_row(
-			$wpdb->prepare( "SELECT * FROM `{$wpdb->bbcs_asn}` WHERE id = %d", $id ),
+			$wpdb->prepare(
+				"SELECT id, priority, CAST(asnum AS CHAR) AS asnum, asname, `rule`, comment, disable
+				 FROM `{$wpdb->bbcs_asn}` WHERE id = %d",
+				$id
+			),
 			ARRAY_A
 		);
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
@@ -214,7 +226,11 @@ class BotBlockerAjaxAsn {
 
 		global $wpdb;
 
-		$asnum = absint( wp_unslash( $_POST['asnum'] ) );
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- unslash+sanitize inside normalizePostedAsn
+		$asnum = self::normalizePostedAsn( $_POST['asnum'] );
+		if ( $asnum === null ) {
+			wp_send_json_error( __( 'Invalid ASN number.', 'botblocker-security' ) );
+		}
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' asnum=' . $asnum );
@@ -222,7 +238,7 @@ class BotBlockerAjaxAsn {
 	    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$exists = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT COUNT(*) FROM `{$wpdb->bbcs_asn}` WHERE asnum = %d",
+				"SELECT COUNT(*) FROM `{$wpdb->bbcs_asn}` WHERE asnum = %s",
 				$asnum
 			)
 		);
@@ -246,7 +262,7 @@ class BotBlockerAjaxAsn {
 	    /* phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotValidated */
 
 	    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$result = $wpdb->insert( $wpdb->bbcs_asn, $data );
+		$result = $wpdb->insert( $wpdb->bbcs_asn, $data, array( '%d', '%s', '%s', '%s', '%s', '%d' ) );
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' insert result=' . ( false === $result ? 'false' : 'true' ) . ' last_error=' . $wpdb->last_error );
@@ -263,6 +279,8 @@ class BotBlockerAjaxAsn {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' cache cleared, sending success' );
 			}
+			BotBlockerAudit::ruleChanged( BotBlockerAuditEvents::RULE_LIST_ASN, BotBlockerAuditEvents::RULE_ACTION_CREATED, array( 'id' => (int) $wpdb->insert_id ) );
+
 			wp_send_json_success( __( 'ASN rule created successfully.', 'botblocker-security' ) );
 		} else {
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
@@ -315,9 +333,14 @@ class BotBlockerAjaxAsn {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' id=' . $id );
 		}
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- unslash+sanitize inside normalizePostedAsn
+		$asnum = self::normalizePostedAsn( $_POST['asnum'] );
+		if ( $asnum === null ) {
+			wp_send_json_error( __( 'Invalid ASN number.', 'botblocker-security' ) );
+		}
 		$data = array(
 			'priority' => isset( $_POST['priority'] ) ? absint( wp_unslash( $_POST['priority'] ) ) : 50,
-			'asnum'    => absint( wp_unslash( $_POST['asnum'] ) ),
+			'asnum'    => $asnum,
 			'asname'   => isset( $_POST['asname'] ) ? sanitize_text_field( wp_unslash( $_POST['asname'] ) ) : '',
 			'rule'     => sanitize_text_field( wp_unslash( $_POST['rule'] ) ),
 			'comment'  => isset( $_POST['comment'] ) ? sanitize_textarea_field( wp_unslash( $_POST['comment'] ) ) : '',
@@ -325,7 +348,7 @@ class BotBlockerAjaxAsn {
 	    /* phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotValidated */
 
 	    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$result = $wpdb->update( $wpdb->bbcs_asn, $data, array( 'id' => $id ) );
+		$result = $wpdb->update( $wpdb->bbcs_asn, $data, array( 'id' => $id ), array( '%d', '%s', '%s', '%s', '%s' ), array( '%d' ) );
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' update result=' . ( false === $result ? 'false' : 'true' ) . ' last_error=' . $wpdb->last_error );
@@ -342,6 +365,8 @@ class BotBlockerAjaxAsn {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' cache cleared, sending success' );
 			}
+			BotBlockerAudit::ruleChanged( BotBlockerAuditEvents::RULE_LIST_ASN, BotBlockerAuditEvents::RULE_ACTION_UPDATED, array( 'id' => $id ) );
+
 			wp_send_json_success( __( 'ASN rule updated successfully.', 'botblocker-security' ) );
 		} else {
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
@@ -406,6 +431,8 @@ class BotBlockerAjaxAsn {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' cache cleared, sending success' );
 			}
+			BotBlockerAudit::ruleChanged( BotBlockerAuditEvents::RULE_LIST_ASN, BotBlockerAuditEvents::RULE_ACTION_DELETED, array( 'id' => $id ) );
+
 			wp_send_json_success( __( 'ASN rule deleted successfully.', 'botblocker-security' ) );
 		} else {
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
@@ -474,6 +501,8 @@ class BotBlockerAjaxAsn {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' cache cleared, sending success' );
 			}
+			BotBlockerAudit::ruleChanged( BotBlockerAuditEvents::RULE_LIST_ASN, BotBlockerAuditEvents::RULE_ACTION_TOGGLED, array( 'id' => $id ) );
+
 			wp_send_json_success( __( 'ASN rule toggled successfully.', 'botblocker-security' ) );
 		} else {
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
@@ -508,7 +537,11 @@ class BotBlockerAjaxAsn {
 
 		global $wpdb;
 	    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$rows = $wpdb->get_results( "SELECT * FROM `{$wpdb->bbcs_asn}`", ARRAY_A );
+		$rows = $wpdb->get_results(
+			"SELECT id, priority, CAST(asnum AS CHAR) AS asnum, asname, `rule`, comment, disable
+			 FROM `{$wpdb->bbcs_asn}`",
+			ARRAY_A
+		);
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' exported ' . count( (array) $rows ) . ' rows' );
@@ -548,7 +581,7 @@ class BotBlockerAjaxAsn {
 
 		global $wpdb;
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- JSON is decoded, each field sanitized individually below
-		$items = json_decode( wp_unslash( $_POST['asn_rules'] ), true );
+		$items = json_decode( wp_unslash( $_POST['asn_rules'] ), true, 512, JSON_BIGINT_AS_STRING );
 
 		if ( ! is_array( $items ) ) {
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
@@ -566,15 +599,15 @@ class BotBlockerAjaxAsn {
 		$imported = 0;
 		$skipped  = 0;
 		foreach ( $items as $item ) {
-			$asnum = isset( $item['asnum'] ) ? absint( $item['asnum'] ) : 0;
-			if ( ! $asnum ) {
+			$asnum = is_array( $item ) && isset( $item['asnum'] ) ? BotBlockerAsnValue::normalize( $item['asnum'] ) : null;
+			if ( $asnum === null ) {
 				++$skipped;
 				continue; }
 
 	        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$exists = $wpdb->get_var(
 				$wpdb->prepare(
-					"SELECT COUNT(*) FROM `{$wpdb->bbcs_asn}` WHERE asnum = %d",
+					"SELECT COUNT(*) FROM `{$wpdb->bbcs_asn}` WHERE asnum = %s",
 					$asnum
 				)
 			);
@@ -590,7 +623,8 @@ class BotBlockerAjaxAsn {
 						'rule'     => isset( $item['rule'] ) ? sanitize_text_field( $item['rule'] ) : 'block',
 						'comment'  => isset( $item['comment'] ) ? sanitize_textarea_field( $item['comment'] ) : '',
 						'disable'  => isset( $item['disable'] ) ? absint( $item['disable'] ) : 0,
-					)
+					),
+					array( '%d', '%s', '%s', '%s', '%s', '%d' )
 				);
 				if ( $result !== false ) {
 					++$imported; }
@@ -614,6 +648,8 @@ class BotBlockerAjaxAsn {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' cache cleared, sending success' );
 		}
+
+		BotBlockerAudit::ruleChanged( BotBlockerAuditEvents::RULE_LIST_ASN, BotBlockerAuditEvents::RULE_ACTION_IMPORTED, array( 'imported' => $imported, 'skipped' => $skipped ) );
 
 		wp_send_json_success(
 			array(
@@ -664,6 +700,8 @@ class BotBlockerAjaxAsn {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' cache cleared, sending success' );
 			}
+			BotBlockerAudit::ruleChanged( BotBlockerAuditEvents::RULE_LIST_ASN, BotBlockerAuditEvents::RULE_ACTION_CLEARED );
+
 			wp_send_json_success( __( 'All ASN rules have been cleared.', 'botblocker-security' ) );
 		} else {
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {

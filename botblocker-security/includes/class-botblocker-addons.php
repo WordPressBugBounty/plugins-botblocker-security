@@ -53,6 +53,9 @@ class BotBlockerAddons {
 	}
 
 	public static function loadCore( array $addon ): void {
+		if ( isset( $GLOBALS['bbcs_upgrade_swap_in_progress'] ) && $GLOBALS['bbcs_upgrade_swap_in_progress'] ) {
+			return;
+		}
 		$slug = isset( $addon['slug'] ) ? sanitize_key( (string) $addon['slug'] ) : '';
 		$core = ! empty( $addon['core'] ) ? (string) $addon['core'] : '';
 
@@ -98,8 +101,8 @@ class BotBlockerAddons {
 		}
 
 		// Load upload helpers used by BotBlockerMultisite::getAddonsDir().
-		$upload_file = $base . '/inc-botblocker-upload.php';
-		if ( file_exists( $upload_file ) && ! function_exists( 'bbcs_get_protected_upload_dir' ) ) {
+		$upload_file = $base . '/class-botblocker-uploads.php';
+		if ( file_exists( $upload_file ) && ! class_exists( 'BotBlockerUploads' ) ) {
 			require_once $upload_file;
 		}
 	}
@@ -107,6 +110,330 @@ class BotBlockerAddons {
 	const CHANNEL_LOCAL  = 'local';
 	const CHANNEL_DEV    = 'dev';
 	const CHANNEL_STABLE = 'stable';
+
+	const LEDGER_OPTION = 'bbcs_addon_ledger';
+
+	const LEDGER_LOCK_FILE = 'bbcs-ledger-lock';
+
+	const LEDGER_LOCK_HASH_LEN = 12;
+
+	const CEILING_OPTION = 'bbcs_maxcore_deactivated';
+
+	const STATE_OK           = 'ok';
+	const STATE_TOO_OLD_CORE = 'too_old_core';
+	const STATE_TOO_NEW_CORE = 'too_new_core';
+
+	const FAIL_LIFECYCLE_THROW    = 'lifecycle_throw';
+	const FAIL_VERSION_SUSPICIOUS = 'version_suspicious';
+	const FAIL_MANIFEST_INVALID   = 'manifest_invalid';
+	const FAIL_INSTALLER_MISSING  = 'installer_unavailable';
+	const FAIL_DOWNLOAD           = 'download';
+
+	const FAIL_INSTALL            = 'install';
+
+	const SHARED_CLASS_FILES = array(
+		'class-botblocker-data-file.php',
+		'class-botblocker-mu-path-resolver.php',
+		'class-botblocker-mu-geo.php',
+	);
+	private static $ledger_lock_handle = null;
+
+	public static function getLedger(): array {
+		$raw = BotBlockerMultisite::getOption( self::LEDGER_OPTION, array() );
+		if ( ! is_array( $raw ) ) {
+			$raw = array();
+		}
+
+		$addons = ( isset( $raw['addons'] ) && is_array( $raw['addons'] ) ) ? $raw['addons'] : array();
+		$clean  = array();
+		foreach ( $addons as $slug => $version ) {
+			$slug = sanitize_key( (string) $slug );
+			if ( $slug !== '' && ( is_string( $version ) || is_numeric( $version ) ) ) {
+				$clean[ $slug ] = (string) $version;
+			}
+		}
+
+		$fingerprint = ( isset( $raw['fingerprint'] ) && is_string( $raw['fingerprint'] ) ) ? $raw['fingerprint'] : '';
+
+		return array(
+			'addons'      => $clean,
+			'fingerprint' => $fingerprint,
+		);
+	}
+
+	private static function saveLedger( array $ledger ): bool {
+		return BotBlockerMultisite::updateOption( self::LEDGER_OPTION, $ledger, true );
+	}
+
+	public static function forgetLedgerSlug( string $slug ): void {
+		$slug = sanitize_key( $slug );
+		if ( $slug === '' ) {
+			return;
+		}
+		$ledger = self::getLedger();
+		if ( ! isset( $ledger['addons'][ $slug ] ) ) {
+			return;
+		}
+		unset( $ledger['addons'][ $slug ] );
+		self::saveLedger( $ledger );
+	}
+
+	/**
+	 * @param array<int,string> $slugs
+	 */
+	private static function recordCeilingDeactivated( array $slugs ): void {
+		$stored = BotBlockerMultisite::getOption( self::CEILING_OPTION, array() );
+		if ( ! is_array( $stored ) ) {
+			$stored = array();
+		}
+		foreach ( $slugs as $slug ) {
+			$slug = sanitize_key( (string) $slug );
+			if ( $slug !== '' && ! in_array( $slug, $stored, true ) ) {
+				$stored[] = $slug;
+			}
+		}
+		BotBlockerMultisite::updateOption( self::CEILING_OPTION, $stored );
+	}
+
+	/**
+	 * @param array<int,string> $slugs
+	 */
+	private static function forgetCeilingSlug( array $slugs ): void {
+		$stored = BotBlockerMultisite::getOption( self::CEILING_OPTION, array() );
+		if ( ! is_array( $stored ) ) {
+			return;
+		}
+		$stored = array_values( array_diff( $stored, $slugs ) );
+		BotBlockerMultisite::updateOption( self::CEILING_OPTION, $stored );
+	}
+
+	/**
+	 * Switch broken add-ons off and alert. Site stays up. No retry, no repair.
+	 *
+	 * @param array<int,string>               $slugs
+	 * @param array<int,array<string,string>> $failed
+	 */
+	public static function panic( array $slugs, array $failed ): void {
+		$clean = array();
+		foreach ( $slugs as $slug ) {
+			$slug = sanitize_key( (string) $slug );
+			if ( $slug !== '' ) {
+				$clean[] = $slug;
+			}
+		}
+		if ( ! empty( $clean ) ) {
+			self::setActive( array_values( array_diff( self::getActive(), $clean ) ) );
+		}
+		if ( ! empty( $failed ) ) {
+			BotBlockerAlerts::setAddonFailed( $failed );
+		}
+	}
+
+	/**
+	 * Layer-1 / boot throw: drop early-init, strip wp-config, keep the site up.
+	 */
+	public static function panicEarlyInitLayer( \Throwable $e ): void {
+		$early_slug = defined( 'BBCS_EARLY_INIT_SLUG' ) ? BBCS_EARLY_INIT_SLUG : 'bbcs-early-init';
+		$slugs      = array();
+		foreach ( self::getActive() as $slug ) {
+			$slug = sanitize_key( (string) $slug );
+			if ( $slug === $early_slug ) {
+				$slugs[] = $slug;
+			}
+		}
+		if ( class_exists( 'BotBlockerGateway' ) ) {
+			foreach ( array_keys( BotBlockerGateway::listByType( 'early_init' ) ) as $gw_slug ) {
+				$gw_slug = sanitize_key( (string) $gw_slug );
+				if ( $gw_slug !== '' && in_array( $gw_slug, self::getActive(), true ) ) {
+					$slugs[] = $gw_slug;
+				}
+			}
+		}
+		$slugs = array_values( array_unique( $slugs ) );
+		if ( ! empty( $slugs ) ) {
+			$failed = array();
+			foreach ( $slugs as $slug ) {
+				$failed[] = array(
+					'name'  => $slug,
+					'error' => self::FAIL_LIFECYCLE_THROW,
+				);
+			}
+			self::panic( $slugs, $failed );
+		}
+		if ( method_exists( 'BotBlockerInstall', 'setEarlyInitEnabled' ) ) {
+			try {
+				BotBlockerInstall::setEarlyInitEnabled( false, array( 'force_cleanup' => true ) );
+			} catch ( \Throwable $ignore ) {
+				unset( $ignore );
+			}
+		}
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- a fatal early-init must always be recorded
+		error_log( '[BBCS] [Addons] panicEarlyInitLayer: early-init threw and was switched off: ' . $e->getMessage() );
+	}
+
+	/**
+	 * Swap failed (download/install WP_Error): drop from active, update-failed alert.
+	 *
+	 * @param array<int,array<string,string>> $failed
+	 */
+	public static function failUpdates( array $failed ): void {
+		if ( empty( $failed ) ) {
+			return;
+		}
+		$slugs = array();
+		foreach ( $failed as $item ) {
+			$slug = isset( $item['slug'] ) ? sanitize_key( (string) $item['slug'] ) : '';
+			if ( $slug !== '' ) {
+				$slugs[] = $slug;
+			}
+		}
+		if ( ! empty( $slugs ) ) {
+			self::setActive( array_values( array_diff( self::getActive(), $slugs ) ) );
+		}
+		BotBlockerAlerts::setAddonUpdateFailed( $failed );
+	}
+
+	public static function getLedgerLockPath(): string {
+		$hash = substr( md5( (string) get_current_blog_id() . '|' . get_site_url() ), 0, self::LEDGER_LOCK_HASH_LEN );
+		return trailingslashit( get_temp_dir() ) . self::LEDGER_LOCK_FILE . '-' . $hash . '.lock';
+	}
+
+	private static function claimLedgerLock(): bool {
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- temporary lock requires native fopen and flock before filesystem abstraction is available
+		$handle = @fopen( self::getLedgerLockPath(), 'c' );
+		if ( ! $handle ) {
+			return true;
+		}
+
+		if ( ! flock( $handle, LOCK_EX | LOCK_NB ) ) {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- release native lock handle
+			fclose( $handle );
+			return false;
+		}
+
+		self::$ledger_lock_handle = $handle;
+		return true;
+	}
+
+	private static function releaseLedgerLock(): void {
+		if ( is_resource( self::$ledger_lock_handle ) ) {
+			flock( self::$ledger_lock_handle, LOCK_UN );
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- release native lock handle
+			fclose( self::$ledger_lock_handle );
+		}
+		self::$ledger_lock_handle = null;
+	}
+
+	private static function runLedgerMigrations( array $addons, array $loaded ): void {
+		$fp_pairs = array();
+		foreach ( $loaded as $slug ) {
+			if ( isset( $addons[ $slug ] ) ) {
+				$fp_pairs[ $slug ] = (string) ( $addons[ $slug ]['version'] ?? '' );
+			}
+		}
+		ksort( $fp_pairs );
+		$fingerprint = md5( wp_json_encode( $fp_pairs ) );
+
+		$ledger = self::getLedger();
+		if ( $ledger['fingerprint'] === $fingerprint ) {
+			return;
+		}
+		$ledger['fingerprint'] = $fingerprint;
+
+		self::debugLog( 'runLedgerMigrations: start loaded=' . count( $loaded ) );
+
+		$pending     = array();
+		$baseline    = array();
+		$suspicious  = array();
+		foreach ( $loaded as $slug ) {
+			if ( ! isset( $addons[ $slug ] ) ) {
+				continue;
+			}
+			$disk = (string) ( $addons[ $slug ]['version'] ?? '' );
+			if ( ! isset( $ledger['addons'][ $slug ] ) ) {
+				$baseline[ $slug ] = $disk;
+				continue;
+			}
+			$seen = $ledger['addons'][ $slug ];
+			if ( version_compare( $disk, $seen, '>' ) ) {
+				$pending[ $slug ] = array(
+					'from' => $seen,
+					'to'   => $disk,
+				);
+			} elseif ( $seen !== $disk ) {
+				$suspicious[] = $slug;
+			}
+		}
+
+		self::debugLog( 'runLedgerMigrations: pending=' . implode( ',', array_keys( $pending ) ) . ' baseline=' . implode( ',', array_keys( $baseline ) ) . ' suspicious=' . implode( ',', $suspicious ) );
+
+		if ( empty( $pending ) && empty( $baseline ) && empty( $suspicious ) ) {
+			self::saveLedger( $ledger );
+			return;
+		}
+
+		if ( ! self::claimLedgerLock() ) {
+			self::debugLog( 'runLedgerMigrations: lock held by another request, pass skipped' );
+			return;
+		}
+
+		self::debugLog( 'runLedgerMigrations: lock acquired' );
+
+		$failed       = array();
+		$failed_slugs = array();
+
+		try {
+			foreach ( $baseline as $slug => $version ) {
+				self::debugLog( 'runLedgerMigrations: baseline ' . $slug . '=' . $version );
+				$ledger['addons'][ $slug ] = $version;
+			}
+			if ( ! empty( $baseline ) ) {
+				self::saveLedger( $ledger );
+			}
+
+			foreach ( $pending as $slug => $versions ) {
+				try {
+					self::debugLog( 'runLedgerMigrations: dispatch update ' . $slug . ' from=' . $versions['from'] . ' to=' . $versions['to'] );
+					self::dispatchLifecycle(
+						$slug,
+						'update',
+						$addons[ $slug ],
+						array(
+							'from' => $versions['from'],
+							'to'   => $versions['to'],
+						)
+					);
+					$ledger['addons'][ $slug ] = $versions['to'];
+					self::saveLedger( $ledger );
+					self::debugLog( 'runLedgerMigrations: advanced ' . $slug . ' to=' . $versions['to'] );
+				} catch ( \Throwable $e ) {
+					$failed[]       = array(
+						'name'  => $addons[ $slug ]['name'] ?: $slug,
+						'error' => self::FAIL_LIFECYCLE_THROW,
+					);
+					$failed_slugs[] = $slug;
+					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- a failed migration must always be recorded
+					error_log( '[BBCS] [Addons] ledger migration of "' . $slug . '" threw and the add-on was switched off: ' . $e->getMessage() );
+				}
+			}
+
+			foreach ( $suspicious as $slug ) {
+				$failed[]       = array(
+					'name'  => $addons[ $slug ]['name'] ?: $slug,
+					'error' => self::FAIL_VERSION_SUSPICIOUS,
+				);
+				$failed_slugs[] = $slug;
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- a suspicious version change must always be recorded
+				error_log( '[BBCS] [Addons] ledger of "' . $slug . '" saw a non-upgrade version change and the add-on was switched off' );
+			}
+		} finally {
+			self::releaseLedgerLock();
+		}
+
+		if ( ! empty( $failed_slugs ) ) {
+			self::panic( $failed_slugs, $failed );
+		}
+	}
 
 	public static function getChannel(): string {
 		$override = apply_filters( 'bbcs_addons_channel', '' );
@@ -310,6 +637,7 @@ class BotBlockerAddons {
 		);
 		$requires_core     = isset( $manifest['requires_core'] ) ? trim( (string) $manifest['requires_core'] ) : '';
 		$requires_php      = isset( $manifest['requires_php'] ) ? trim( (string) $manifest['requires_php'] ) : '';
+		$max_core          = isset( $manifest['max_core'] ) ? trim( (string) $manifest['max_core'] ) : '';
 		$schema            = isset( $manifest['schema'] ) ? trim( (string) $manifest['schema'] ) : '2.0';
 		$settings_option   = isset( $settings['option'] ) ? sanitize_key( (string) $settings['option'] ) : '';
 		$settings_sanitize = isset( $settings['sanitize'] ) && is_string( $settings['sanitize'] ) ? trim( $settings['sanitize'] ) : '';
@@ -347,6 +675,7 @@ class BotBlockerAddons {
 			'version'           => isset( $manifest['version'] ) ? trim( (string) $manifest['version'] ) : '',
 			'requires_core'     => $requires_core,
 			'requires_php'      => $requires_php,
+			'max_core'          => $max_core,
 			'schema'            => $schema,
 			'source_format'     => 'v2',
 			'has_settings'      => $settings_path !== '' && file_exists( $settings_path ),
@@ -360,7 +689,89 @@ class BotBlockerAddons {
 			'gateway'           => $gateway,
 			'ui'                => $ui,
 			'storage'           => $storage,
+			'captcha_modes'     => self::normalizeCaptcha( $manifest, $base ),
 		);
+	}
+
+	private static function normalizeCaptcha( array $manifest, string $base ): array {
+		$raw   = isset( $manifest['captcha']['modes'] ) && is_array( $manifest['captcha']['modes'] ) ? $manifest['captcha']['modes'] : array();
+		$modes = array();
+
+		foreach ( $raw as $mode_cfg ) {
+			if ( ! is_array( $mode_cfg ) ) {
+				continue;
+			}
+			if ( ! isset( $mode_cfg['id'] ) || ! is_numeric( $mode_cfg['id'] ) || (int) $mode_cfg['id'] < 90 ) {
+				self::debugLog( 'normalizeCaptcha: dropped mode without valid id (>= 90 required)' );
+				continue;
+			}
+			$id = (int) $mode_cfg['id'];
+			if ( isset( $modes[ $id ] ) ) {
+				self::debugLog( 'normalizeCaptcha: duplicate id ' . $id . ' within manifest' );
+				continue;
+			}
+			$name = isset( $mode_cfg['name'] ) ? trim( (string) $mode_cfg['name'] ) : '';
+			if ( '' === $name ) {
+				self::debugLog( 'normalizeCaptcha: dropped mode ' . $id . ' with empty name' );
+				continue;
+			}
+			$params_callback = isset( $mode_cfg['params_callback'] ) ? self::safeCallableName( $mode_cfg['params_callback'] ) : '';
+			$verify_callback = isset( $mode_cfg['verify_callback'] ) ? self::safeCallableName( $mode_cfg['verify_callback'] ) : '';
+			if ( '' === $params_callback || '' === $verify_callback ) {
+				self::debugLog( 'normalizeCaptcha: dropped mode ' . $id . ' with invalid callback name' );
+				continue;
+			}
+			$keys_callback = '';
+			if ( isset( $mode_cfg['keys_callback'] ) ) {
+				$keys_callback = self::safeCallableName( $mode_cfg['keys_callback'] );
+				if ( '' === $keys_callback ) {
+					self::debugLog( 'normalizeCaptcha: dropped mode ' . $id . ' with invalid keys_callback' );
+					continue;
+				}
+			}
+			$js_relative = isset( $mode_cfg['assets']['js'] ) ? self::safeRelativePath( $mode_cfg['assets']['js'] ) : '';
+			$js          = '' !== $js_relative ? self::absPath( $base, $js_relative ) : '';
+			if ( '' === $js || ! file_exists( $js ) ) {
+				self::debugLog( 'normalizeCaptcha: dropped mode ' . $id . ' with missing js file' );
+				continue;
+			}
+
+			$external = array();
+			if ( isset( $mode_cfg['assets']['external'] ) && is_array( $mode_cfg['assets']['external'] ) ) {
+				foreach ( $mode_cfg['assets']['external'] as $external_url ) {
+					$safe_url = esc_url_raw( (string) $external_url );
+					if ( '' !== $safe_url && strpos( $safe_url, 'https://' ) === 0 ) {
+						$external[] = $safe_url;
+					}
+				}
+			}
+
+			$wizard_icon     = '';
+			$wizard_subtitle = '';
+			if ( isset( $mode_cfg['wizard'] ) && is_array( $mode_cfg['wizard'] ) ) {
+				$wizard_icon_rel = isset( $mode_cfg['wizard']['icon'] ) ? self::safeRelativePath( $mode_cfg['wizard']['icon'] ) : '';
+				$wizard_icon_abs = '' !== $wizard_icon_rel ? self::absPath( $base, $wizard_icon_rel ) : '';
+				if ( '' !== $wizard_icon_abs && file_exists( $wizard_icon_abs ) ) {
+					$wizard_icon = $wizard_icon_rel;
+				}
+				$wizard_subtitle = isset( $mode_cfg['wizard']['subtitle'] ) ? sanitize_text_field( (string) $mode_cfg['wizard']['subtitle'] ) : '';
+			}
+
+			$modes[ $id ] = array(
+				'id'               => $id,
+				'name'             => $name,
+				'params_callback'  => $params_callback,
+				'verify_callback'  => $verify_callback,
+				'keys_callback'    => $keys_callback,
+				'js_relative'      => $js_relative,
+				'js'               => $js,
+				'external'         => $external,
+				'wizard_icon'      => $wizard_icon,
+				'wizard_subtitle'  => $wizard_subtitle,
+			);
+		}
+
+		return array_values( $modes );
 	}
 
 	private static function normalizeGateway( array $manifest ): array {
@@ -512,6 +923,20 @@ class BotBlockerAddons {
 	private static $scanCache = null;
 
 	public static function scanAll(): array {
+		try {
+			return self::scanAllUnchecked();
+		} catch ( \Throwable $e ) {
+			self::panicEarlyInitLayer( $e );
+			try {
+				return self::scanAllRaw();
+			} catch ( \Throwable $e2 ) {
+				unset( $e2 );
+				return array();
+			}
+		}
+	}
+
+	private static function scanAllUnchecked(): array {
 		if ( defined( 'WP_TESTS_DOMAIN' ) ) {
 			return self::scanAllRaw();
 		}
@@ -528,7 +953,7 @@ class BotBlockerAddons {
 
 		$dataFile = BotBlockerMultisite::getDataDir() . 'addons.php';
 		if ( file_exists( $dataFile ) ) {
-			$loaded = bbcs_safe_load_data_file( $dataFile );
+			$loaded = BotBlockerDataFile::safeLoad( $dataFile );
 			if ( is_array( $loaded ) ) {
 				self::$scanCache = $loaded;
 				return self::$scanCache;
@@ -579,7 +1004,35 @@ class BotBlockerAddons {
 	 */
 	public static function setActive( array $active ): void {
 		self::ensureMultisiteLoaded();
+		$previous = self::getActive();
 		BotBlockerMultisite::updateOption( self::getActiveOptionName(), array_values( $active ) );
+		// A captcha provider that just left the active list must not keep
+		// owning the selected captcha mode (deactivate, delete, panic, bulk).
+		foreach ( array_diff( $previous, array_values( $active ) ) as $removed_slug ) {
+			self::maybeResetCaptchaModeFor( (string) $removed_slug );
+		}
+	}
+
+	public static function maybeResetCaptchaModeFor( string $slug ): void {
+		$slug = sanitize_key( $slug );
+		if ( '' === $slug ) {
+			return;
+		}
+		try {
+			global $wpdb;
+			if ( ! ( isset( $wpdb ) && property_exists( $wpdb, 'bbcs_settings' ) && $wpdb->bbcs_settings ) ) {
+				return;
+			}
+			if ( ! class_exists( 'BotBlockerSettingsHooks' ) ) {
+				require_once BOTBLOCKER_DIR . 'includes/hook/class-botblocker-settings-hooks.php';
+			}
+			BotBlockerSettingsHooks::handleAddonCaptchaFallback( $slug, false );
+		} catch ( \Throwable $e ) {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [Addons] captcha mode reset failed for slug ' . $slug . ': ' . $e->getMessage() );
+			}
+		}
 	}
 
 	public static function isActive( string $slug ): bool {
@@ -587,19 +1040,34 @@ class BotBlockerAddons {
 		return in_array( $slug, self::getActive(), true );
 	}
 
+	/**
+	 * Three-state compatibility: ok | too_old_core | too_new_core.
+	 * too_old_core: core_version < requires_core (or requires_core missing).
+	 * too_new_core: max_core set and core_version > max_core.
+	 */
+	public static function compatibilityState( array $addon, string $core_version = '' ): string {
+		$requires_core = isset( $addon['requires_core'] ) ? (string) $addon['requires_core'] : '';
+		$max_core      = isset( $addon['max_core'] ) ? (string) $addon['max_core'] : '';
+		$version       = $core_version !== '' ? $core_version : BOTBLOCKER_VERSION;
+		static $stateCache = array();
+		$cache_key = $requires_core . '|' . $max_core . '|' . $version;
+		if ( array_key_exists( $cache_key, $stateCache ) ) {
+			return $stateCache[ $cache_key ];
+		}
+		if ( $requires_core === '' || version_compare( $version, $requires_core, '<' ) ) {
+			$stateCache[ $cache_key ] = self::STATE_TOO_OLD_CORE;
+			return self::STATE_TOO_OLD_CORE;
+		}
+		if ( $max_core !== '' && version_compare( $version, $max_core, '>' ) ) {
+			$stateCache[ $cache_key ] = self::STATE_TOO_NEW_CORE;
+			return self::STATE_TOO_NEW_CORE;
+		}
+		$stateCache[ $cache_key ] = self::STATE_OK;
+		return self::STATE_OK;
+	}
+
 	public static function isCompatible( array $addon, string $core_version = '' ): bool {
-		if ( empty( $addon['requires_core'] ) ) {
-			return false;
-		}
-		$version = $core_version !== '' ? $core_version : BOTBLOCKER_VERSION;
-		static $compatCache = array();
-		$cache_key = $addon['requires_core'] . '|' . $version;
-		if ( array_key_exists( $cache_key, $compatCache ) ) {
-			return $compatCache[ $cache_key ];
-		}
-		$result = version_compare( $version, $addon['requires_core'], '>=' );
-		$compatCache[ $cache_key ] = $result;
-		return $result;
+		return self::compatibilityState( $addon, $core_version ) === self::STATE_OK;
 	}
 
 	public static function fileRequiresCore( string $slug ): string {
@@ -619,6 +1087,9 @@ class BotBlockerAddons {
 	}
 
 	public static function includeLifecycleFile( array $addon ): void {
+		if ( isset( $GLOBALS['bbcs_upgrade_swap_in_progress'] ) && $GLOBALS['bbcs_upgrade_swap_in_progress'] ) {
+			return;
+		}
 		static $included = array();
 
 		$lifecycle = isset( $addon['lifecycle'] ) && is_array( $addon['lifecycle'] ) ? $addon['lifecycle'] : array();
@@ -626,14 +1097,13 @@ class BotBlockerAddons {
 			return;
 		}
 
-		$file = $lifecycle['file'];
-		if ( array_key_exists( $file, $included ) ) {
+		$path = self::absPath( $addon['base'] ?? '', $lifecycle['file'] );
+		if ( $path === '' || array_key_exists( $path, $included ) ) {
 			return;
 		}
 
-		$path = self::absPath( $addon['base'] ?? '', $file );
-		if ( $path !== '' && file_exists( $path ) ) {
-			$included[ $file ] = true;
+		if ( file_exists( $path ) ) {
+			$included[ $path ] = true;
 			include_once $path;
 		}
 	}
@@ -763,16 +1233,20 @@ class BotBlockerAddons {
 
 	public static function includePreRunAddons(): array {
 
+		if ( isset( $GLOBALS['bbcs_upgrade_swap_in_progress'] ) && $GLOBALS['bbcs_upgrade_swap_in_progress'] ) {
+			return array();
+		}
+
 		if ( ! class_exists( 'BotBlockerTrafficDecisions' ) ) {
 			require_once BOTBLOCKER_DIR . 'includes/class-botblocker-traffic-decisions.php';
 		}
-		BotBlockerTrafficDecisions::reset();
 
 		$addons = self::scanAll();
 		$active = self::getActive();
 		$loaded = array();
 		if ( ! isset( $GLOBALS['bbcs_pre_run_addons_loaded'] ) || ! is_array( $GLOBALS['bbcs_pre_run_addons_loaded'] ) ) {
 			$GLOBALS['bbcs_pre_run_addons_loaded'] = array();
+			BotBlockerTrafficDecisions::reset();
 		}
 
 		foreach ( $active as $slug ) {
@@ -790,22 +1264,85 @@ class BotBlockerAddons {
 				continue;
 			}
 
-			include_once $pre_run['file'];
-			if ( ! self::isPreRunMarkerReady( $pre_run, $addons[ $slug ], $slug ) ) {
-				continue;
-			}
+			try {
+				include_once $pre_run['file'];
+				if ( ! self::isPreRunMarkerReady( $pre_run, $addons[ $slug ], $slug ) ) {
+					continue;
+				}
 
-			if ( ! is_callable( $pre_run['register'] ) ) {
-				continue;
-			}
+				if ( ! is_callable( $pre_run['register'] ) ) {
+					continue;
+				}
 
-			call_user_func( $pre_run['register'], $addons[ $slug ], array( 'phase' => 'pre_run' ), 'pre_run', $slug );
-			$GLOBALS['bbcs_pre_run_addons_loaded'][ $slug ] = true;
-			$loaded[]                                       = $slug;
-			do_action( 'bbcs_addon_pre_run_loaded', $slug, $addons[ $slug ] );
+				call_user_func( $pre_run['register'], $addons[ $slug ], array( 'phase' => 'pre_run' ), 'pre_run', $slug );
+				$GLOBALS['bbcs_pre_run_addons_loaded'][ $slug ] = true;
+				$loaded[]                                       = $slug;
+				do_action( 'bbcs_addon_pre_run_loaded', $slug, $addons[ $slug ] );
+			} catch ( \Throwable $e ) {
+				self::panic(
+					array( $slug ),
+					array(
+					array(
+						'name'  => $addons[ $slug ]['name'] ?: $slug,
+						'error' => self::FAIL_LIFECYCLE_THROW,
+					),
+					)
+				);
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- a fatal add-on must always be recorded
+				error_log( '[BBCS] [Addons] includePreRunAddons: add-on "' . $slug . '" threw and was switched off: ' . $e->getMessage() );
+			}
 		}
 
+		// Captcha callbacks live in addon core files; load them pre-run so the
+		// check page (rendered inside run()) and the POST verify can call them.
+		self::preRunLoadCaptchaAddonCores( $addons, $active );
+		self::registerCaptchaModes( $addons, $active );
+
 		return $loaded;
+	}
+
+	public static function registerCaptchaModes( array $addons, $active = null ): void {
+		if ( ! class_exists( 'BotBlockerCaptchaRegistry' ) ) {
+			require_once BOTBLOCKER_DIR . 'includes/class-botblocker-captcha-registry.php';
+		}
+		BotBlockerCaptchaRegistry::reset();
+
+		// Iterate ACTIVE addons in activation order (getActive()) — the spec
+		// §6.1 order: the first ACTIVATED addon to claim an id wins a collision.
+		$active_slugs = is_array( $active ) ? array_values( $active ) : self::getActive();
+		foreach ( $active_slugs as $slug ) {
+			$slug = sanitize_key( (string) $slug );
+			if ( $slug === '' || ! isset( $addons[ $slug ] ) || ! is_array( $addons[ $slug ] ) ) {
+				continue; // ACTIVE addons only — an inactive provider must never verify
+			}
+			$configs = isset( $addons[ $slug ]['captcha_modes'] ) && is_array( $addons[ $slug ]['captcha_modes'] ) ? $addons[ $slug ]['captcha_modes'] : array();
+			foreach ( $configs as $config ) {
+				BotBlockerCaptchaRegistry::register(
+					(int) $config['id'],
+					(string) $slug,
+					(string) $config['name'],
+					$config
+				);
+			}
+		}
+	}
+
+	private static function preRunLoadCaptchaAddonCores( array $addons, array $active ): void {
+		$active_flip = array_flip( array_values( $active ) );
+		foreach ( $addons as $slug => $addon ) {
+			if ( ! isset( $active_flip[ $slug ] ) || ! is_array( $addon ) ) {
+				continue;
+			}
+			if ( empty( $addon['valid'] ) || empty( $addon['captcha_modes'] ) || ! self::isCompatible( $addon ) ) {
+				continue;
+			}
+			try {
+				self::loadCore( $addon );
+			} catch ( \Throwable $e ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- a fatal add-on must always be recorded
+				error_log( '[BBCS] [Addons] includePreRunAddons: captcha add-on "' . $slug . '" core threw: ' . $e->getMessage() );
+			}
+		}
 	}
 
 	public static function registerGatewayConfigs( array $addons ): void {
@@ -840,6 +1377,7 @@ class BotBlockerAddons {
 
 		$gateway_settings = array(
 			'early_init_enable' => 'early_init',
+			'mu_enable'         => 'mu_plugin',
 		);
 
 		foreach ( $gateway_settings as $db_key => $gateway_type ) {
@@ -859,6 +1397,12 @@ class BotBlockerAddons {
 			$slug = BotBlockerGateway::firstSlug( $gateway_type );
 			if ( $slug !== '' ) {
 				BotBlockerGateway::restoreState( $gateway_type, $slug );
+				if ( $gateway_type === 'mu_plugin' && self::isActive( $slug ) ) {
+					$config = BotBlockerGateway::getConfig( $slug, 'mu_plugin' );
+					if ( ! empty( $config['auto_deploy'] ) ) {
+						do_action( 'bbcs_gateway_mu_plugin_restored', $slug, $config );
+					}
+				}
 			}
 		}
 	}
@@ -892,10 +1436,38 @@ class BotBlockerAddons {
 				continue;
 			}
 			$raw = wp_unslash( $post[ $option ] );
-			self::loadCore( $addons[ $slug ] );
-			$sanitize = $addons[ $slug ]['settings_sanitize'] ?? '';
-			$clean    = is_callable( $sanitize ) ? call_user_func( $sanitize, $raw ) : self::sanitizeSettingsValue( $raw );
-			update_option( $option, $clean );
+			try {
+				self::loadCore( $addons[ $slug ] );
+				$sanitize = $addons[ $slug ]['settings_sanitize'] ?? '';
+				$clean    = is_callable( $sanitize ) ? call_user_func( $sanitize, $raw ) : self::sanitizeSettingsValue( $raw );
+				update_option( $option, $clean );
+			} catch ( \Throwable $e ) {
+				self::panic(
+					array( $slug ),
+					array(
+						array(
+							'name'  => $addons[ $slug ]['name'] ?: $slug,
+							'error' => self::FAIL_LIFECYCLE_THROW,
+						),
+					)
+				);
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- a fatal add-on must always be recorded
+				error_log( '[BBCS] [Addons] saveSettingsFromPost: add-on "' . $slug . '" threw and was switched off: ' . $e->getMessage() );
+			}
+		}
+	}
+
+	private static function debugLog( string $msg ): void {
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+			error_log( '[BBCS DEBUG] [Addons] ' . $msg );
+		}
+	}
+
+	private static function debugLogAutoUpdateSkip( string $slug, string $reason ): void {
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+			error_log( '[BBCS DEBUG] [Addons] autoUpdate: skipped ' . $slug . ' (' . $reason . ')' );
 		}
 	}
 
@@ -963,114 +1535,107 @@ class BotBlockerAddons {
 			}
 		}
 
-		$active = self::getActive();
-		$active_changed = false;
-		$reactivate     = array();
-
 		foreach ( $addons as $slug => $addon ) {
-			if ( ! isset( $marketBySlug[ $slug ] ) ) {
-				continue;
-			}
-			$remote    = $marketBySlug[ $slug ];
-			$remoteVer = $remote['version'] ?? '';
-			$localVer  = $addon['version'] ?? '';
+			self::debugLog( 'autoUpdate: consider ' . $slug . ' local=' . ( $addon['version'] ?? '' ) );
+			try {
+				if ( ! isset( $marketBySlug[ $slug ] ) ) {
+					self::debugLogAutoUpdateSkip( $slug, 'not present in market' );
+					continue;
+				}
+				$remote    = $marketBySlug[ $slug ];
+				$remoteVer = $remote['version'] ?? '';
+				$localVer  = $addon['version'] ?? '';
 
-			if ( ! $remoteVer || ! $localVer ) {
-				continue;
-			}
-			if ( ! version_compare( $remoteVer, $localVer, '>' ) ) {
-				continue;
-			}
+				if ( ! $remoteVer || ! $localVer ) {
+					self::debugLogAutoUpdateSkip( $slug, 'empty remote or local version' );
+					continue;
+				}
+				if ( ! version_compare( $remoteVer, $localVer, '>' ) ) {
+					self::debugLogAutoUpdateSkip( $slug, 'no newer version available' );
+					continue;
+				}
 
-			$url = $remote['url'] ?? '';
-			if ( empty( $url ) || ! function_exists( 'bbcs_is_allowed_addon_url' ) || ! bbcs_is_allowed_addon_url( $url ) ) {
-				continue;
-			}
+				$url = $remote['url'] ?? '';
+				if ( empty( $url ) || ! BotBlockerAddonFiles::isAllowedAddonUrl( $url ) ) {
+					self::debugLogAutoUpdateSkip( $slug, 'url missing or not allowed' );
+					continue;
+				}
 
-			if ( ! empty( $remote['requires_core'] ) && version_compare( $version, $remote['requires_core'], '<' ) ) {
-				continue;
-			}
+				if ( ! empty( $remote['requires_core'] ) && version_compare( $version, $remote['requires_core'], '<' ) ) {
+					self::debugLogAutoUpdateSkip( $slug, 'requires_core newer than core' );
+					continue;
+				}
 
-			$tmp = download_url( $url );
-			if ( is_wp_error( $tmp ) ) {
-				$result['failed'][] = array(
-					'slug'  => $slug,
-					'name'  => $addon['name'] ?: $slug,
-					'error' => $tmp->get_error_message(),
+				self::debugLog( 'autoUpdate: download ' . $slug . ' from ' . $url );
+				$tmp = download_url( $url );
+				if ( is_wp_error( $tmp ) ) {
+					self::debugLog( 'autoUpdate: download failed ' . $slug . ': ' . $tmp->get_error_message() );
+					$result['failed'][] = array(
+						'slug'  => $slug,
+						'name'  => $addon['name'] ?: $slug,
+						'error' => self::FAIL_DOWNLOAD,
+					);
+					continue;
+				}
+				self::debugLog( 'autoUpdate: downloaded ' . $slug . ' to ' . $tmp );
+
+				$installed = BotBlockerAddonFiles::installAddonPackage(
+					$tmp,
+					array(
+						'slug'            => $slug,
+						'filename'        => basename( (string) wp_parse_url( $url, PHP_URL_PATH ) ),
+						'core_version'    => $version,
+						'lifecycle_event' => 'update',
+					)
 				);
-				continue;
-			}
-
-			$wasActive = in_array( $slug, $active, true );
-			if ( $wasActive ) {
-				self::dispatchLifecycle( $slug, 'deactivate', $addon, array( 'reason' => 'auto_update' ) );
-				do_action( 'bbcs_addon_toggled', $slug, false );
-				$active         = array_values( array_diff( $active, array( $slug ) ) );
-				$active_changed = true;
-			}
-
-			if ( ! function_exists( 'bbcs_install_addon_package' ) ) {
 				if ( file_exists( $tmp ) ) {
 					wp_delete_file( $tmp );
 				}
-				if ( $wasActive ) {
-					$active[] = $slug; }
+
+				if ( is_wp_error( $installed ) ) {
+					self::debugLog( 'autoUpdate: install failed ' . $slug . ': ' . $installed->get_error_code() . ' ' . $installed->get_error_message() );
+					$result['failed'][] = array(
+						'slug'  => $slug,
+						'name'  => $addon['name'] ?: $slug,
+						'error' => (string) $installed->get_error_code(),
+					);
+					continue;
+				}
+
+				self::debugLog( 'autoUpdate: installed ' . $slug . ' replaced=' . ( $installed['replaced'] ? 'yes' : 'no' ) );
+				$result['updated'][] = $slug;
+
+				// Ceiling recovery: a fixed version inside the range comes back on.
+				$ceiling = BotBlockerMultisite::getOption( self::CEILING_OPTION, array() );
+				if ( is_array( $ceiling ) && in_array( $slug, $ceiling, true ) ) {
+					$new_addon = self::parseManifest( trailingslashit( BotBlockerMultisite::getAddonsDir() ) . $slug, $slug );
+					if ( ! empty( $new_addon['valid'] ) && self::compatibilityState( $new_addon, $version ) === self::STATE_OK ) {
+						$active_now = self::getActive();
+						if ( ! in_array( $slug, $active_now, true ) ) {
+							$active_now[] = $slug;
+							self::setActive( $active_now );
+						}
+						self::forgetCeilingSlug( array( $slug ) );
+					}
+				}
+			} catch ( \Throwable $e ) {
+				self::panic(
+					array( $slug ),
+					array(
+						array(
+							'name'  => $addon['name'] ?: $slug,
+							'error' => self::FAIL_LIFECYCLE_THROW,
+						),
+					)
+				);
 				$result['failed'][] = array(
 					'slug'  => $slug,
 					'name'  => $addon['name'] ?: $slug,
-					'error' => 'Add-on package installer is unavailable',
+					'error' => self::FAIL_LIFECYCLE_THROW,
 				);
-				continue;
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- a fatal add-on must always be recorded
+				error_log( '[BBCS] [Addons] autoUpdate: add-on "' . $slug . '" threw and was switched off: ' . $e->getMessage() );
 			}
-
-			$installed = bbcs_install_addon_package(
-				$tmp,
-				array(
-					'slug'            => $slug,
-					'filename'        => basename( (string) wp_parse_url( $url, PHP_URL_PATH ) ),
-					'core_version'    => $version,
-					'lifecycle_event' => 'update',
-				)
-			);
-			if ( file_exists( $tmp ) ) {
-				wp_delete_file( $tmp );
-			}
-
-			if ( is_wp_error( $installed ) ) {
-				if ( $wasActive ) {
-					$active[] = $slug;
-					self::dispatchLifecycle( $slug, 'activate', $addon, array( 'reason' => 'auto_update_rollback' ) );
-					do_action( 'bbcs_addon_toggled', $slug, true );
-				}
-				$result['failed'][] = array(
-					'slug'  => $slug,
-					'name'  => $addon['name'] ?: $slug,
-					'error' => $installed->get_error_message(),
-				);
-				continue;
-			}
-
-			$result['updated'][] = $slug;
-			if ( $wasActive ) {
-				$reactivate[] = $slug;
-			}
-		}
-
-		if ( ! empty( $reactivate ) ) {
-			$updated_addons = self::scanAll();
-			foreach ( $reactivate as $slug ) {
-				if ( isset( $updated_addons[ $slug ] ) && $updated_addons[ $slug ]['valid'] && self::isCompatible( $updated_addons[ $slug ], $version ) ) {
-					$active[] = $slug;
-					self::dispatchLifecycle( $slug, 'activate', $updated_addons[ $slug ], array( 'reason' => 'auto_update' ) );
-					do_action( 'bbcs_addon_toggled', $slug, true );
-				}
-			}
-			$active         = array_values( array_unique( $active ) );
-			$active_changed = true;
-		}
-
-		if ( $active_changed ) {
-			self::setActive( $active );
 		}
 
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
@@ -1082,17 +1647,55 @@ class BotBlockerAddons {
 	}
 
 	public static function includeAll(): void {
+		// Request boundary: a new boot starts a fresh request; the swap freeze dies with it.
+		unset( $GLOBALS['bbcs_upgrade_swap_in_progress'] );
+		self::debugLog( 'includeAll: start' );
 		$addons = self::scanAll();
 		$active = self::getActive();
-
-		self::registerGatewayConfigs( $addons );
+		self::debugLog( 'includeAll: active=' . implode( ',', $active ) );
 
 		$incompatible       = array();
 		$incompatible_slugs = array();
+
+		// max_core ceiling: refuse before any PHP or gateway registration runs.
+		foreach ( $active as $slug ) {
+			if ( isset( $addons[ $slug ] ) && $addons[ $slug ]['valid']
+				&& self::compatibilityState( $addons[ $slug ] ) === self::STATE_TOO_NEW_CORE ) {
+				$incompatible[]       = array(
+					'name'     => $addons[ $slug ]['name'] ?: $slug,
+					'max_core' => $addons[ $slug ]['max_core'],
+				);
+				$incompatible_slugs[] = $slug;
+			}
+		}
+		if ( ! empty( $incompatible_slugs ) ) {
+			$active = array_values( array_diff( $active, $incompatible_slugs ) );
+			self::setActive( $active );
+			self::recordCeilingDeactivated( $incompatible_slugs );
+		}
+		$gateway_addons = $addons;
+		foreach ( $incompatible_slugs as $ceiling_slug ) {
+			unset( $gateway_addons[ $ceiling_slug ] );
+		}
+		self::registerGatewayConfigs( $gateway_addons );
+
 		$loaded             = array();
+		$failed             = array();
+		$failed_slugs       = array();
 
 		foreach ( $active as $slug ) {
 			if ( ! isset( $addons[ $slug ] ) || ! $addons[ $slug ]['valid'] ) {
+				$name = $slug;
+				if ( isset( $addons[ $slug ]['name'] ) && $addons[ $slug ]['name'] !== '' ) {
+					$name = $addons[ $slug ]['name'];
+				}
+				$failed[]       = array(
+					'name'  => $name,
+					'error' => self::FAIL_MANIFEST_INVALID,
+				);
+				$failed_slugs[] = $slug;
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- a broken add-on must always be recorded
+				error_log( '[BBCS] [Addons] includeAll: add-on "' . $slug . '" is invalid or missing and was switched off' );
 				continue;
 			}
 
@@ -1105,9 +1708,26 @@ class BotBlockerAddons {
 				continue;
 			}
 
-			self::loadCore( $addons[ $slug ] );
-			$loaded[] = $slug;
-			self::dispatchLifecycle( $slug, 'load', $addons[ $slug ] );
+			try {
+				self::loadCore( $addons[ $slug ] );
+				$loaded[] = $slug;
+				self::dispatchLifecycle( $slug, 'load', $addons[ $slug ] );
+				self::debugLog( 'includeAll: loaded ' . $slug );
+			} catch ( \Throwable $e ) {
+				$loaded         = array_values( array_diff( $loaded, array( $slug ) ) );
+				$failed[]       = array(
+					'name'  => $addons[ $slug ]['name'] ?: $slug,
+					'error' => self::FAIL_LIFECYCLE_THROW,
+				);
+				$failed_slugs[] = $slug;
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- a fatal add-on must always be recorded
+				error_log( '[BBCS] [Addons] includeAll: add-on "' . $slug . '" failed to load and was switched off: ' . $e->getMessage() );
+			}
+		}
+
+		if ( ! empty( $failed_slugs ) ) {
+			self::panic( $failed_slugs, $failed );
+			$active = array_values( array_diff( $active, $failed_slugs ) );
 		}
 
 		if ( ! empty( $incompatible ) ) {
@@ -1127,47 +1747,404 @@ class BotBlockerAddons {
 				self::setActive( $new_active );
 			}
 			BotBlockerAlerts::setAddonIncompatible( $incompatible );
-
-			foreach ( $incompatible_slugs as $slug ) {
-				if ( isset( $addons[ $slug ] ) && ! empty( $addons[ $slug ]['core'] ) ) {
-					$gateway = $addons[ $slug ]['gateway'] ?? array();
-					if ( ! empty( $gateway['early_init'] ) ) {
-						self::loadCore( $addons[ $slug ] );
-					}
-				}
-			}
-
-			foreach ( $incompatible_slugs as $slug ) {
-				if ( isset( $addons[ $slug ] ) ) {
-					self::dispatchLifecycle( $slug, 'deactivate', $addons[ $slug ], array( 'reason' => 'incompatible' ) );
-				}
-			}
 		}
 
 		foreach ( $loaded as $slug ) {
-			if ( isset( $addons[ $slug ] ) ) {
+			if ( ! isset( $addons[ $slug ] ) ) {
+				continue;
+			}
+			try {
 				self::dispatchLifecycle( $slug, 'health_check', $addons[ $slug ] );
+			} catch ( \Throwable $e ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- a fatal add-on must always be recorded
+				error_log( '[BBCS] [Addons] includeAll: health_check of "' . $slug . '" threw: ' . $e->getMessage() );
 			}
 		}
+		self::runLedgerMigrations( $addons, $loaded );
+		self::debugLog( 'includeAll: complete loaded=' . implode( ',', $loaded ) );
+
 		$cloud_api_active = ( class_exists( 'BotBlockerPro' ) && BotBlockerPro::isActive() );
 		self::restoreGatewayStates();
-		$early_init_loaded = class_exists( 'BotBlockerGateway' ) && BotBlockerGateway::isRegistered( 'early_init' );
 
-		if ( $early_init_loaded && is_multisite() && get_site_option( 'bbcs_sites_map_dirty' ) ) {
-			if ( function_exists( 'bbcs_generateSitesMapFile' ) ) {
-				bbcs_generateSitesMapFile( true );
+		// Layer 1 panic stamp: a thrown early-init must panic, not silently skip.
+		if ( class_exists( 'BBCS_Early_Init_Core' ) ) {
+			$panic_stamp = BBCS_Early_Init_Core::getMainDataDir() . BBCS_EARLY_INIT_PANIC_STAMP;
+			if ( is_file( $panic_stamp ) ) {
+				$stamp_mtime = (int) @filemtime( $panic_stamp );
+				if ( $stamp_mtime === 0 || $stamp_mtime > time() - HOUR_IN_SECONDS ) {
+					$stamp_text = (string) @file_get_contents( $panic_stamp );
+					self::panic(
+						array( 'bbcs-early-init' ),
+						array(
+							array(
+								'name'  => 'bbcs-early-init',
+								'error' => 'Layer 1 early-init threw and was switched off: ' . sanitize_text_field( $stamp_text ),
+							),
+						)
+					);
+					if ( method_exists( 'BotBlockerInstall', 'setEarlyInitEnabled' ) ) {
+						try {
+							BotBlockerInstall::setEarlyInitEnabled( false, array( 'force_cleanup' => true ) );
+						} catch ( \Throwable $ignore ) {
+							unset( $ignore );
+						}
+					}
+				}
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- remove native early-init panic marker
+				@unlink( $panic_stamp );
 			}
 		}
 
-		if ( ! $early_init_loaded || ! $cloud_api_active ) {
-			if ( $early_init_loaded && function_exists( 'bbcs_early_init_check_consistency' ) ) {
-				bbcs_early_init_check_consistency();
-			} elseif ( method_exists( 'BotBlockerInstall', 'setEarlyInitEnabled' ) ) {
-				BotBlockerInstall::setEarlyInitEnabled( false );
+		$early_init_ok = false;
+		if ( class_exists( 'BotBlockerGateway' ) ) {
+			foreach ( array_keys( BotBlockerGateway::listByType( 'early_init' ) ) as $early_slug ) {
+				if ( in_array( $early_slug, $loaded, true ) ) {
+					$early_init_ok = true;
+					break;
+				}
+			}
+		}
+
+		if ( is_multisite() && get_site_option( 'bbcs_sites_map_dirty' ) ) {
+			if ( class_exists( 'BBCS_Early_Init_Core' ) ) {
+				try {
+					BBCS_Early_Init_Core::generateSitesMapFile( true );
+				} catch ( \Throwable $e ) {
+					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- a broken early-init must always be recorded
+					error_log( '[BBCS] [Addons] includeAll: sites-map rebuild threw: ' . $e->getMessage() );
+				}
+			}
+		}
+
+		if ( ! $early_init_ok || ! $cloud_api_active ) {
+			try {
+				if ( $early_init_ok && class_exists( 'BBCS_Early_Init_Core' ) ) {
+					BBCS_Early_Init_Core::checkConsistency();
+				} elseif ( method_exists( 'BotBlockerInstall', 'setEarlyInitEnabled' ) ) {
+					BotBlockerInstall::setEarlyInitEnabled( false );
+				}
+			} catch ( \Throwable $e ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- a broken early-init must always be recorded
+				error_log( '[BBCS] [Addons] includeAll: early-init cleanup threw: ' . $e->getMessage() );
+				if ( method_exists( 'BotBlockerInstall', 'setEarlyInitEnabled' ) ) {
+					try {
+						BotBlockerInstall::setEarlyInitEnabled( false );
+					} catch ( \Throwable $ignore ) {
+						unset( $ignore );
+					}
+				}
 			}
 			return;
 		}
 
+	}
+
+	public static function maybeRedeployBuiltins(): void {
+		$class_stale = ! BotBlockerCompiledFile::isCurrent();
+
+		if ( $class_stale ) {
+			if ( false === get_transient( 'bbcs_class_drift_notice' ) ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- a shadowed shared class is a live-site hazard, always record it
+				error_log( '[BBCS] [Addons] shared class drift detected (BotBlockerDataFile not current) - refreshing runtime addon copies' );
+				set_transient( 'bbcs_class_drift_notice', 1, HOUR_IN_SECONDS );
+			}
+			if ( false === get_transient( 'bbcs_class_drift_refresh_retry' ) ) {
+				self::refreshSharedClassCopies();
+				set_transient( 'bbcs_class_drift_refresh_retry', 1, 5 * MINUTE_IN_SECONDS );
+			}
+		} else {
+			if ( false !== get_transient( 'bbcs_class_drift_notice' ) ) {
+				delete_transient( 'bbcs_class_drift_notice' );
+				delete_transient( 'bbcs_class_drift_refresh_retry' );
+			}
+		}
+
+		if ( get_option( 'bbcs_plugin_version' ) !== BOTBLOCKER_VERSION
+			&& false === get_transient( 'bbcs_addon_redeploy_retry' ) ) {
+			$redeploy = self::redeployBuiltins();
+			if ( ! empty( $redeploy['failed'] ) ) {
+				$names = array();
+				foreach ( self::scanAll() as $scan_slug => $scan_addon ) {
+					if ( in_array( $scan_slug, $redeploy['failed'], true ) ) {
+						$names[] = $scan_addon['name'] ?: $scan_slug;
+					}
+				}
+				foreach ( $redeploy['failed'] as $failed_slug ) {
+					self::deactivateAddon( $failed_slug );
+				}
+				if ( class_exists( 'BotBlockerAlerts' ) ) {
+					BotBlockerAlerts::setCustom(
+						'bbcs_addon_redeploy_failed_alert',
+						self::redeployFailedAlert( $names )
+					);
+				}
+				set_transient( 'bbcs_addon_redeploy_retry', 1, 15 * MINUTE_IN_SECONDS );
+			} else {
+				delete_transient( 'bbcs_addon_redeploy_failed_alert' );
+				update_option( 'bbcs_plugin_version', BOTBLOCKER_VERSION, true );
+			}
+		}
+	}
+
+	/**
+	 * Alert payload for a failed built-in addon redeploy. Extracted so the
+	 * pre-init maybeRedeployBuiltins() path can be tested: it must use the
+	 * init-gated BotBlockerAlerts::t() (no premature translation).
+	 *
+	 * @param array $names Add-on display names.
+	 * @return array
+	 */
+	public static function redeployFailedAlert( array $names ): array {
+		return array(
+			'type'      => 'addon_redeploy_failed',
+			'icon'      => 'fas fa-exclamation-triangle bg-warning text-light',
+			'title'     => BotBlockerAlerts::t( 'Add-ons Deactivated' ),
+			'message'   => sprintf(
+				/* translators: %s: comma-separated list of add-on names. */
+				BotBlockerAlerts::t( 'Add-ons were deactivated because their runtime copy is outdated and could not be refreshed automatically: %s. Check uploads write permissions and re-enable them.' ),
+				implode( ', ', $names )
+			),
+			'link'      => method_exists( 'BotBlockerMultisite', 'getAdminPageUrl' ) ? BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' ) : '',
+			'link_text' => BotBlockerAlerts::t( 'View Add-ons' ),
+		);
+	}
+
+	/**
+	 * Refresh the Layer-1 shared classes of runtime addon copies by byte
+	 * comparison. Addon version headers do not change with every core release,
+	 * so the version-based redeploy can never heal an equal-version runtime
+	 * copy that carries an older shared class.
+	 *
+	 * @param string $source_root Addon source root (defaults to the bundled addons dir).
+	 * @param string $dest_root   Runtime addon root (defaults to the uploads addons dir).
+	 * @return string[] Slugs of addons whose shared classes were refreshed.
+	 */
+	public static function refreshSharedClassCopies( string $source_root = '', string $dest_root = '' ): array {
+		if ( self::isLocalMode() ) {
+			return array();
+		}
+		if ( $source_root === '' ) {
+			$source_root = BOTBLOCKER_DIR . 'addons/';
+		}
+		if ( $dest_root === '' ) {
+			$dest_root = trailingslashit( BotBlockerMultisite::getAddonsDir() );
+		}
+		$source_root = trailingslashit( $source_root );
+		$dest_root   = trailingslashit( $dest_root );
+
+		if ( ! is_dir( $source_root ) || ! is_dir( $dest_root ) ) {
+			return array();
+		}
+
+		$refreshed = array();
+		foreach ( (array) scandir( $source_root ) as $entry ) {
+			if ( $entry === '.' || $entry === '..' ) {
+				continue;
+			}
+			$slug = sanitize_key( $entry );
+			if ( $slug === '' || $slug !== $entry || ! is_dir( $source_root . $entry ) ) {
+				continue;
+			}
+			$src_dir  = trailingslashit( $source_root . $entry ) . 'inc';
+			$dest_dir = trailingslashit( $dest_root . $entry ) . 'inc';
+			if ( ! is_dir( $src_dir ) || ! is_dir( $dest_dir ) ) {
+				continue;
+			}
+			$stale = false;
+			foreach ( self::SHARED_CLASS_FILES as $file ) {
+				$src_file  = trailingslashit( $src_dir ) . $file;
+				$dest_file = trailingslashit( $dest_dir ) . $file;
+				if ( ! is_file( $src_file ) || ! is_file( $dest_file ) ) {
+					continue;
+				}
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- shared class refresh, byte compare before write
+				$src_content  = (string) file_get_contents( $src_file );
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- shared class refresh, byte compare before write
+				$dest_content = (string) file_get_contents( $dest_file );
+				if ( $src_content !== $dest_content ) {
+					// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- runtime addon copy refresh
+					$written = @file_put_contents( $dest_file, $src_content, LOCK_EX );
+					if ( $written !== false ) {
+						$stale = true;
+						if ( class_exists( 'BotBlockerCompiledFile' ) ) {
+							BotBlockerCompiledFile::invalidate( $dest_file );
+						}
+					}
+				}
+			}
+			if ( $stale ) {
+				$refreshed[] = $entry;
+			}
+		}
+
+		return $refreshed;
+	}
+
+	public static function redeployBuiltins( string $source_root = '', string $dest_root = '' ): array {
+		if ( self::isLocalMode() ) {
+			return array( 'redeployed' => array(), 'failed' => array() );
+		}
+		if ( $source_root === '' ) {
+			$source_root = BOTBLOCKER_DIR . 'addons/';
+		}
+		if ( $dest_root === '' ) {
+			$dest_root = trailingslashit( BotBlockerMultisite::getAddonsDir() );
+		}
+		$source_root = trailingslashit( $source_root );
+		$dest_root   = trailingslashit( $dest_root );
+
+		if ( ! is_dir( $source_root ) || ! is_dir( $dest_root ) || ! self::ensureCopyFilesystem() ) {
+			return array( 'redeployed' => array(), 'failed' => array() );
+		}
+
+		$redeployed = array();
+		$failed     = array();
+
+		foreach ( (array) scandir( $source_root ) as $entry ) {
+			if ( $entry === '.' || $entry === '..' ) {
+				continue;
+			}
+			$src = $source_root . $entry;
+			if ( ! is_dir( $src ) ) {
+				continue;
+			}
+			$slug = sanitize_key( $entry );
+			if ( $slug === '' || $slug !== $entry ) {
+				continue;
+			}
+
+			$dest = $dest_root . $entry;
+			if ( ! is_dir( $dest ) ) {
+				continue; // Not installed in uploads - activation is the client's choice.
+			}
+
+			$src_version  = self::addonVersion( $src . '/' . $entry . '.php' );
+			$dest_version = self::addonVersion( $dest . '/' . $entry . '.php' );
+			if ( $src_version === '' || version_compare( $src_version, $dest_version, '<=' ) ) {
+				continue; // No upgrade - never downgrade market-installed addons.
+			}
+
+			if ( self::replaceRuntimeCopy( $src, $dest ) ) {
+				$redeployed[] = $entry;
+			} else {
+				$failed[] = $entry;
+			}
+		}
+
+		return array( 'redeployed' => $redeployed, 'failed' => $failed );
+	}
+
+	public static function redeployBuiltin( string $slug, string $source_root = '', string $dest_root = '' ): bool {
+		$slug = sanitize_key( $slug );
+		if ( $slug === '' || self::isLocalMode() ) {
+			return true;
+		}
+		if ( $source_root === '' ) {
+			$source_root = BOTBLOCKER_DIR . 'addons/';
+		}
+		if ( $dest_root === '' ) {
+			$dest_root = trailingslashit( BotBlockerMultisite::getAddonsDir() );
+		}
+		$src  = trailingslashit( $source_root ) . $slug;
+		$dest = trailingslashit( $dest_root ) . $slug;
+		if ( ! is_dir( $src ) || ! is_dir( $dest ) || ! self::ensureCopyFilesystem() ) {
+			return true; // Not a bundled add-on - market copies are managed by the update flow.
+		}
+
+		$src_version  = self::addonVersion( $src . '/' . $slug . '.php' );
+		$dest_version = self::addonVersion( $dest . '/' . $slug . '.php' );
+		if ( $src_version === '' || version_compare( $src_version, $dest_version, '<=' ) ) {
+			return true;
+		}
+		return self::replaceRuntimeCopy( $src, $dest );
+	}
+
+	public static function deactivateAddon( string $slug ): void {
+		$slug   = sanitize_key( $slug );
+		$active = self::getActive();
+		if ( ! in_array( $slug, $active, true ) ) {
+			return;
+		}
+		$active = array_values( array_diff( $active, array( $slug ) ) );
+		self::setActive( $active );
+		// No lifecycle dispatch: the stale copy itself is what may fatal.
+		do_action( 'bbcs_addon_toggled', $slug, false );
+	}
+
+	private static function addonVersion( string $root_file ): string {
+		if ( ! file_exists( $root_file ) ) {
+			return '';
+		}
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Addon header peek before WP filesystem layer is initialized.
+		$contents = (string) file_get_contents( $root_file, false, null, 0, 4096 );
+		if ( preg_match( '/^Version:\s*([0-9][0-9a-z.\-]*)/mi', $contents, $m ) ) {
+			return trim( (string) $m[1] );
+		}
+		return '';
+	}
+
+	private static function ensureCopyFilesystem(): bool {
+		if ( ! function_exists( 'copy_dir' ) || ! function_exists( 'WP_Filesystem' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
+		if ( ! function_exists( 'copy_dir' ) ) {
+			return false;
+		}
+		global $wp_filesystem;
+		if ( empty( $wp_filesystem ) && ! WP_Filesystem() ) {
+			return false;
+		}
+		return true;
+	}
+
+	private static function replaceRuntimeCopy( string $src, string $dest ): bool {
+		$backup = $dest . '_bbcs_bak';
+		if ( is_dir( $backup ) ) {
+			self::rrmdir( $backup );
+		}
+		$backed_up = false;
+		if ( is_dir( $dest ) ) {
+			// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.rename_rename
+			$backed_up = @rename( $dest, $backup );
+			if ( ! $backed_up ) {
+				return false;
+			}
+		}
+		$copied = copy_dir( $src, $dest );
+		if ( is_wp_error( $copied ) ) {
+			if ( is_dir( $dest ) ) {
+				self::rrmdir( $dest );
+			}
+			if ( $backed_up && is_dir( $backup ) ) {
+				// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.rename_rename
+				@rename( $backup, $dest );
+			}
+			return false;
+		}
+		if ( is_dir( $backup ) ) {
+			self::rrmdir( $backup );
+		}
+		return true;
+	}
+
+	private static function rrmdir( string $dir ): void {
+		if ( ! is_dir( $dir ) ) {
+			return;
+		}
+		$items = scandir( $dir );
+		foreach ( (array) $items as $item ) {
+			if ( $item === '.' || $item === '..' ) {
+				continue;
+			}
+			$path = $dir . DIRECTORY_SEPARATOR . $item;
+			if ( is_dir( $path ) ) {
+				self::rrmdir( $path );
+			} elseif ( file_exists( $path ) ) {
+				wp_delete_file( $path );
+			}
+		}
+		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.delete_unlink, WordPress.WP.AlternativeFunctions.file_system_operations_rmdir -- native recursive cleanup fallback when WP_Filesystem is unavailable
+		@rmdir( $dir );
 	}
 
 	public static function deactivateAll(): void {
@@ -1179,9 +2156,23 @@ class BotBlockerAddons {
 			if ( ! isset( $addons[ $slug ] ) || ! $addons[ $slug ]['valid'] ) {
 				continue;
 			}
-			self::loadCore( $addons[ $slug ] );
-			self::dispatchLifecycle( $slug, 'deactivate', $addons[ $slug ], array( 'reason' => 'plugin_deactivation' ) );
-			do_action( 'bbcs_addon_toggled', $slug, false );
+			try {
+				self::loadCore( $addons[ $slug ] );
+				self::dispatchLifecycle( $slug, 'deactivate', $addons[ $slug ], array( 'reason' => 'plugin_deactivation' ) );
+				do_action( 'bbcs_addon_toggled', $slug, false );
+			} catch ( \Throwable $e ) {
+				self::panic(
+					array( $slug ),
+					array(
+					array(
+						'name'  => $addons[ $slug ]['name'] ?: $slug,
+						'error' => self::FAIL_LIFECYCLE_THROW,
+					),
+					)
+				);
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- a fatal add-on must always be recorded
+				error_log( '[BBCS] [Addons] deactivateAll: add-on "' . $slug . '" threw and was switched off: ' . $e->getMessage() );
+			}
 		}
 	}
 }

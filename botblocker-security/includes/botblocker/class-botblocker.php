@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * This class is responsible for all the operations against bots.
  * It handles detections, logging, and blocking of suspicious bot activities.
  *
- * @version    1.7.4
+ * @version    1.7.5
  * @author     BotBlocker Team
  * @package    Botblocker
  * @subpackage Botblocker/includes
@@ -26,6 +26,7 @@ require_once BOTBLOCKER_DIR . 'includes/botblocker/traits/class-botblocker-payme
 require_once BOTBLOCKER_DIR . 'includes/botblocker/traits/class-botblocker-response-trait.php';
 require_once BOTBLOCKER_DIR . 'includes/botblocker/traits/class-botblocker-local-data-trait.php';
 require_once BOTBLOCKER_DIR . 'includes/botblocker/traits/class-botblocker-local-validation-trait.php';
+require_once BOTBLOCKER_DIR . 'includes/botblocker/traits/class-botblocker-honeypot-trait.php';
 require_once BOTBLOCKER_DIR . 'includes/botblocker/traits/class-botblocker-local-trait.php';
 require_once BOTBLOCKER_DIR . 'includes/botblocker/traits/class-botblocker-local-recaptcha-trait.php';
 require_once BOTBLOCKER_DIR . 'includes/botblocker/traits/class-botblocker-local-cloud-trait.php';
@@ -39,6 +40,7 @@ require_once BOTBLOCKER_DIR . 'includes/botblocker/traits/class-botblocker-denie
 require_once BOTBLOCKER_DIR . 'includes/botblocker/traits/class-botblocker-response-signing-trait.php';
 require_once BOTBLOCKER_DIR . 'includes/botblocker/traits/class-botblocker-core-rate-trait.php';
 require_once BOTBLOCKER_DIR . 'includes/botblocker/traits/class-botblocker-tls-trait.php';
+require_once BOTBLOCKER_DIR . 'includes/botblocker/inapp/class-botblocker-inapp.php';
 
 class BotBlocker extends BotBlockerBase {
 
@@ -84,6 +86,7 @@ class BotBlocker extends BotBlockerBase {
 		$this->initialize_config();
 		$this->load_settings();
 		$this->generate_connection_id();
+		add_filter( 'http_request_args', array( $this, 'inject_self_call_header' ), 10, 2 );
 
 		if ( $this->check_secret_parameter() ) {
 			$this->finalize_allowed_headers();
@@ -95,9 +98,13 @@ class BotBlocker extends BotBlockerBase {
 		}
 
 		$guard = $this->start_output_guard();
-		$this->run();
-		$this->finalize_allowed_headers();
-		$this->end_output_guard( $guard );
+		// finally keeps the guard closed when run() throws (fail-secure: exception still escapes).
+		try {
+			$this->run();
+			$this->finalize_allowed_headers();
+		} finally {
+			$this->end_output_guard( $guard );
+		}
 	}
 
 	public function run(): void {
@@ -233,6 +240,9 @@ class BotBlocker extends BotBlockerBase {
 			'secret',
 			'api_key',
 			'token',
+			'action_disable',
+			'action_off',
+			'action_on',
 		);
 
 		/**
@@ -303,7 +313,7 @@ class BotBlocker extends BotBlockerBase {
 		}
 	}
 
-	private function maybe_spawn_cron(): void {
+	public function maybe_spawn_cron(): void {
 		$mode = $this->cron_dispatch_mode(
 			defined( 'DOING_CRON' ),
 			(bool) ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ),
@@ -322,7 +332,7 @@ class BotBlocker extends BotBlockerBase {
 		spawn_cron();
 	}
 
-	private function cron_dispatch_mode( bool $doing_cron, bool $cron_disabled, bool $alternate ): string {
+	public function cron_dispatch_mode( bool $doing_cron, bool $cron_disabled, bool $alternate ): string {
 		if ( $doing_cron || $cron_disabled ) {
 			return BBCS_CRON_MODE_NONE;
 		}
@@ -340,7 +350,7 @@ class BotBlocker extends BotBlockerBase {
 		BotBlockerCron::fallbackRunner();
 	}
 
-	private function ensure_cron_lock_timeout( bool $already_defined ): void {
+	public function ensure_cron_lock_timeout( bool $already_defined ): void {
 		// Core defines WP_CRON_LOCK_TIMEOUT after plugins_loaded - too late for process_die().
 		if ( ! $already_defined ) {
 			define( 'WP_CRON_LOCK_TIMEOUT', MINUTE_IN_SECONDS );

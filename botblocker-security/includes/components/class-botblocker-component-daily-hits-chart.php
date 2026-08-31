@@ -25,12 +25,21 @@ final class DailyHitsChart extends Base {
 	public function render( bool $return = false ): string {
 		$id     = self::escape( $this->id, 'attr' );
 		$class  = self::escape( 'bbcs-daily-hits-chart', 'attr' );
+		$has_data = false;
+		foreach ( $this->values as $bbcs_value ) {
+			if ( (float) $bbcs_value > 0 ) {
+				$has_data = true;
+				break;
+			}
+		}
+
 		$labels = wp_json_encode( array_values( $this->labels ) );
 		$values = wp_json_encode( array_values( $this->values ) );
 
 		return self::output( '<div id="' . $id . '" class="' . $class . '"'
 			. " data-bbcs-labels='" . $labels . "'"
 			. " data-bbcs-values='" . $values . "'"
+			. ( $has_data ? '' : ' data-bbcs-empty="1"' )
 			. ' style="width: 100%; height: 200px;"></div>', $return );
 	}
 }

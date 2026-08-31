@@ -32,15 +32,15 @@ trait BotBlockerStatsChartsTrait {
 
 		$start_of_day = ( clone $current_date )->setTime( 0, 0, 0 );
 		$end_of_day   = ( clone $current_date )->setTime( 23, 59, 59 );
+		$start_ts     = $start_of_day->getTimestamp();
+		$end_ts       = $end_of_day->getTimestamp();
 
 		// REVIEWER NOTE: Exclusion fragment uses only internally controlled self‑IPs and is bound via prepare; no user data flows here.
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
 		$branch_params = array_merge(
 			array(
-				$start_of_day->format( 'Y-m-d H:i:s' ),
-				$gmt_offset_str,
-				$end_of_day->format( 'Y-m-d H:i:s' ),
-				$gmt_offset_str,
+				$start_ts,
+				$end_ts,
 			),
 			$ip_params
 		);
@@ -53,17 +53,17 @@ trait BotBlockerStatsChartsTrait {
 				SELECT HOUR({$local_hour_expr}) AS hour, COUNT(*) AS hits
 				FROM (
 					SELECT h.date FROM `{$wpdb->bbcs_hits}` AS h
-					WHERE h.date BETWEEN UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
-									AND UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
+					WHERE h.date BETWEEN %d AND %d
+					AND h.method = 'GET'
 					" . BotBlockerDb::pageFilterNotExists( 'h', $start_of_day->getTimestamp() ) . "
 					{$ip_not_in_sql}
 					UNION ALL
 					SELECT s.date FROM `{$wpdb->bbcs_hits_suspicious}` AS s
-					WHERE s.date BETWEEN UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
-									AND UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
+					WHERE s.date BETWEEN %d AND %d
+					AND s.method = 'GET'
 					" . BotBlockerDb::pageFilterNotExists( 's', $start_of_day->getTimestamp() ) . "
 					{$ip_not_in_sql}
-				) AS combined_hits
+				) AS " . BotBlockerDb::COMBINED_HITS_ALIAS . "
 				GROUP BY hour
 				ORDER BY hour
 				",
@@ -126,7 +126,9 @@ trait BotBlockerStatsChartsTrait {
 		$yesterday_str = ( clone $current_date )->modify( '-1 day' )->format( 'Y-m-d' );
 		$start_day     = substr( $start_date, 0, 10 );
 		$today_ts      = ( new \DateTime( $today_str . ' 00:00:00', $tz ) )->getTimestamp();
+		$today_end_ts  = ( new \DateTime( $today_str . ' 23:59:59', $tz ) )->getTimestamp();
 		$start_ts      = ( new \DateTime( $start_date, $tz ) )->getTimestamp();
+		$end_ts        = ( new \DateTime( $end_date, $tz ) )->getTimestamp();
 
 		$chart_data = array();
 		$cur        = new \DateTime( $start_date, $tz );
@@ -156,15 +158,12 @@ trait BotBlockerStatsChartsTrait {
                     SELECT date, CAST(ip AS CHAR(45)), ' . $today_pf_col . ' FROM `' . $wpdb->bbcs_hits_suspicious . '`
                 ) AS ch
                 ' . BotBlockerDb::pageFilterJoin( 'ch', $today_ts ) . '
-                WHERE ch.date BETWEEN UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, \'+00:00\'))
-                                AND UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, \'+00:00\'))
+                WHERE ch.date BETWEEN %d AND %d
                 ' . BotBlockerDb::pageFilterWhere( 'ch', $today_ts ) . '
                 ' . $ip_not_in_sql . '
                 ',
-					$today_str . ' 00:00:00',
-					$gmt_offset_str,
-					$today_str . ' 23:59:59',
-					$gmt_offset_str,
+					$today_ts,
+					$today_end_ts,
 					...$ip_params
 				),
 				ARRAY_A
@@ -197,18 +196,15 @@ trait BotBlockerStatsChartsTrait {
                     SELECT date, CAST(ip AS CHAR(45)), ' . $start_pf_col . ' FROM `' . $wpdb->bbcs_hits_suspicious . '`
                 ) AS ch
                 ' . BotBlockerDb::pageFilterJoin( 'ch', $start_ts ) . '
-                WHERE ch.date BETWEEN UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, \'+00:00\'))
-                                AND UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, \'+00:00\'))
+                WHERE ch.date BETWEEN %d AND %d
                 ' . BotBlockerDb::pageFilterWhere( 'ch', $start_ts ) . '
                 ' . $ip_not_in_sql . '
                 GROUP BY visit_date
                 ORDER BY visit_date ASC
                 ',
 					$gmt_offset_seconds,
-					$start_date,
-					$gmt_offset_str,
-					$end_date,
-					$gmt_offset_str,
+					$start_ts,
+					$end_ts,
 					...$ip_params
 				)
 			);

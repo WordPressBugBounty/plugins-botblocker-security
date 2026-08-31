@@ -9,7 +9,7 @@ class BotBlockerFileRenderer {
 
 	public static function atomicFileWrite( string $filePath, string $content ): bool {
 		if ( strpos( $content, '<?php' ) === 0 ) {
-			$content = bbcs_data_file_sign( $content );
+			$content = BotBlockerDataFile::sign( $content );
 		}
 
 		$dir = dirname( $filePath );
@@ -35,9 +35,7 @@ class BotBlockerFileRenderer {
 		// Atomic rename (same-filesystem guarantee on Linux/macOS)
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename
 		if ( @rename( $tmpFile, $filePath ) ) {
-			if ( function_exists( 'opcache_invalidate' ) ) {
-				@opcache_invalidate( $filePath, true );
-			}
+			BotBlockerCompiledFile::invalidate( $filePath );
 			return true;
 		}
 		// Fallback for Windows or cross-device mounts
@@ -45,9 +43,7 @@ class BotBlockerFileRenderer {
 		if ( @copy( $tmpFile, $filePath ) ) {
 			// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
 			@unlink( $tmpFile );
-			if ( function_exists( 'opcache_invalidate' ) ) {
-				@opcache_invalidate( $filePath, true );
-			}
+			BotBlockerCompiledFile::invalidate( $filePath );
 			return true;
 		}
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
@@ -139,15 +135,16 @@ class BotBlockerFileRenderer {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT `search`, `rule`, `id` FROM `{$wpdb->bbcs_rules}` WHERE disable = %d ORDER BY priority ASC",
-				0
+				"SELECT `search`, `rule`, `id`, `expires` FROM `{$wpdb->bbcs_rules}` WHERE disable = %d AND (expires = 0 OR expires > %d) ORDER BY priority ASC",
+				0,
+				time()
 			),
 			ARRAY_A
 		);
 
 		$rules = '';
 		foreach ( (array) $rows as $row ) {
-			$rules .= "    ['search' => '" . addslashes( $row['search'] ) . "', 'rule' => '" . addslashes( $row['rule'] ) . "', 'id' => " . (int) $row['id'] . "],\n";
+			$rules .= "    ['search' => '" . addslashes( $row['search'] ) . "', 'rule' => '" . addslashes( $row['rule'] ) . "', 'expires' => " . (int) $row['expires'] . ", 'id' => " . (int) $row['id'] . "],\n";
 		}
 		$rules = rtrim( $rules, ",\n" );
 
@@ -228,10 +225,11 @@ class BotBlockerFileRenderer {
 		if ( ! file_exists( $source ) ) {
 			return;
 		}
-		$raw   = include $source;
-		$items = array();
-		foreach ( $raw as $signature ) {
-			$s = preg_replace( '/\s+/', ' ', trim( urldecode( $signature ) ) );
+		$raw     = include $source;
+		$raw_sub = isset( $raw['substrings'] ) && is_array( $raw['substrings'] ) ? $raw['substrings'] : $raw;
+		$items   = array();
+		foreach ( $raw_sub as $signature ) {
+			$s = preg_replace( '/\s+/', ' ', trim( urldecode( (string) $signature ) ) );
 			if ( $s !== '' ) {
 				$items[] = $s;
 			}
@@ -261,10 +259,31 @@ class BotBlockerFileRenderer {
 		}
 		$items = array_merge( $priority, $rest );
 
+		$patterns = isset( $raw['patterns'] ) && is_array( $raw['patterns'] ) ? array_values( $raw['patterns'] ) : array();
+
 		$content  = BBCS_STOP_DIRECT . "\n";
+		$content .= '// BASE_HASH: ' . hash_file( 'sha256', $source ) . "\n";
 		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export
-		$content .= 'return ' . var_export( $items, true ) . ";\n";
+		$content .= 'return ' . var_export( array( 'substrings' => $items, 'patterns' => $patterns ), true ) . ";\n";
 		self::atomicFileWrite( BotBlockerMultisite::getDataDir() . 'bot-signatures-processed.php', $content );
+	}
+
+	/**
+	 * True when the generated bot-signatures-processed.php was built from a
+	 * different data/base/bot-signatures.php than the one shipped with this
+	 * plugin build (plugin update without a migration re-render).
+	 */
+	public static function isBotSignaturesStale(): bool {
+		$source = BOTBLOCKER_DIR . 'data/base/bot-signatures.php';
+		if ( ! file_exists( $source ) ) {
+			return false;
+		}
+		$target = BotBlockerMultisite::getDataDir() . 'bot-signatures-processed.php';
+		if ( ! file_exists( $target ) ) {
+			return true;
+		}
+		$content = (string) @file_get_contents( $target );
+		return strpos( $content, '// BASE_HASH: ' . hash_file( 'sha256', $source ) ) === false;
 	}
 
 	public static function renderLlmTrusted(): void {
@@ -312,7 +331,7 @@ class BotBlockerFileRenderer {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT `asnum`, `rule` FROM `{$wpdb->bbcs_asn}` WHERE disable = %d ORDER BY priority ASC",
+				"SELECT CAST(`asnum` AS CHAR) AS `asnum`, `rule` FROM `{$wpdb->bbcs_asn}` WHERE disable = %d ORDER BY priority ASC",
 				0
 			),
 			ARRAY_A
@@ -321,7 +340,11 @@ class BotBlockerFileRenderer {
 		$asn_data  = BBCS_STOP_DIRECT . "\nreturn [\n";
 		$asn_data .= "    'bbcs_asn' => [\n";
 		foreach ( (array) $results as $row ) {
-			$asn_data .= '        ' . intval( $row['asnum'] ) . " => '" . addslashes( $row['rule'] ) . "',\n";
+			$asnum = BotBlockerAsnValue::normalize( $row['asnum'] );
+			if ( $asnum === null ) {
+				continue;
+			}
+			$asn_data .= "        '" . $asnum . "' => '" . addslashes( $row['rule'] ) . "',\n";
 		}
 		$asn_data .= "    ]\n";
 		$asn_data .= "];\n";
@@ -338,14 +361,13 @@ class BotBlockerFileRenderer {
 			'ipv6'     => array(),
 		);
 
-		$one_day_later = time() + DAY_IN_SECONDS;
 		// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared and sanitized. No direct unsanitized SQL is executed.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$rows_ipv4 = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT `search`, `rule`, `readonly`, `comment` FROM `{$wpdb->bbcs_ipv4rules}` WHERE disable = %d AND expires > %d",
+				"SELECT `search`, `rule`, `readonly`, `comment` FROM `{$wpdb->bbcs_ipv4rules}` WHERE disable = %d AND expires = %d",
 				0,
-				$one_day_later
+				BOTBLOCKER_EXP_INF
 			),
 			ARRAY_A
 		);
@@ -354,7 +376,8 @@ class BotBlockerFileRenderer {
 			if ( (int) $ip['readonly'] === 1 ) {
 				if ( $ip['comment'] === 'Admin IP' ) {
 					$ip_from_db['admin'][ $ip['search'] ] = $ip['rule'];
-				} else {
+				} elseif ( ! in_array( $ip['comment'], array( 'Local IP', 'Local IP from SERVER_ADDR', 'Server IPv4', 'Server IPv6' ), true )
+					|| ! BotBlockerIp::isPublicIp( (string) $ip['search'] ) ) {
 					$ip_from_db['self_ips'][ $ip['search'] ] = 'allow';
 				}
 			} else {
@@ -365,9 +388,9 @@ class BotBlockerFileRenderer {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$rows_ipv6 = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT `search`, `rule`, `readonly`, `comment` FROM `{$wpdb->bbcs_ipv6rules}` WHERE disable = %d AND expires > %d",
+				"SELECT `search`, `rule`, `readonly`, `comment` FROM `{$wpdb->bbcs_ipv6rules}` WHERE disable = %d AND expires = %d",
 				0,
-				$one_day_later
+				BOTBLOCKER_EXP_INF
 			),
 			ARRAY_A
 		);
@@ -376,7 +399,8 @@ class BotBlockerFileRenderer {
 			if ( (int) $ip['readonly'] === 1 ) {
 				if ( $ip['comment'] === 'Admin IP' ) {
 					$ip_from_db['admin'][ $ip['search'] ] = $ip['rule'];
-				} else {
+				} elseif ( ! in_array( $ip['comment'], array( 'Local IP', 'Local IP from SERVER_ADDR', 'Server IPv4', 'Server IPv6' ), true )
+					|| ! BotBlockerIp::isPublicIp( (string) $ip['search'] ) ) {
 					$ip_from_db['self_ips'][ $ip['search'] ] = 'allow';
 				}
 			} else {
@@ -398,17 +422,17 @@ class BotBlockerFileRenderer {
 	}
 
 	/**
-	 * Rebuild hot-bans.php from the DB - mirrors renderIps() for short-term bans.
+	 * Rebuild hot-bans.php from the DB - mirrors renderIps() for temporary bans.
 	 *
-	 * Queries both IPv4/IPv6 tables for active short-term bans
-	 * (disable = 0 AND expires > time() AND expires <= time() + DAY_IN_SECONDS)
+	 * Queries both IPv4/IPv6 tables for active temporary bans
+	 * (disable = 0 AND expires > time() AND expires < BOTBLOCKER_EXP_INF)
 	 * and writes a fresh file. Any orphan entries (no DB row) are dropped.
+	 * Permanent bans (BOTBLOCKER_EXP_INF) live in ip.php only.
 	 */
 	public static function renderHotBans(): void {
 		global $wpdb;
 
 		$now            = time();
-		$one_day_later  = $now + DAY_IN_SECONDS;
 
 		$hot = array(
 			'ipv4' => array(),
@@ -418,10 +442,10 @@ class BotBlockerFileRenderer {
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$rows_ipv4 = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT `search`, `rule`, `expires` FROM `{$wpdb->bbcs_ipv4rules}` WHERE disable = %d AND expires > %d AND expires <= %d",
+				"SELECT `search`, `rule`, `expires` FROM `{$wpdb->bbcs_ipv4rules}` WHERE disable = %d AND expires > %d AND expires < %d",
 				0,
 				$now,
-				$one_day_later
+				BOTBLOCKER_EXP_INF
 			),
 			ARRAY_A
 		);
@@ -432,10 +456,10 @@ class BotBlockerFileRenderer {
 
 		$rows_ipv6 = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT `search`, `rule`, `expires` FROM `{$wpdb->bbcs_ipv6rules}` WHERE disable = %d AND expires > %d AND expires <= %d",
+				"SELECT `search`, `rule`, `expires` FROM `{$wpdb->bbcs_ipv6rules}` WHERE disable = %d AND expires > %d AND expires < %d",
 				0,
 				$now,
-				$one_day_later
+				BOTBLOCKER_EXP_INF
 			),
 			ARRAY_A
 		);
@@ -457,9 +481,7 @@ class BotBlockerFileRenderer {
 			if ( file_exists( $file ) ) {
 				// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
 				@unlink( $file );
-				if ( function_exists( 'opcache_invalidate' ) ) {
-					@opcache_invalidate( $file, true );
-				}
+				BotBlockerCompiledFile::invalidate( $file );
 			}
 			self::releaseHotBanLock( $lockFp );
 			return;
@@ -478,7 +500,7 @@ class BotBlockerFileRenderer {
 		if ( false === $content || false === strrpos( $content, '// HASH:' ) ) {
 			return false;
 		}
-		return ! bbcs_data_file_verify( $content );
+		return ! BotBlockerDataFile::verify( $content );
 	}
 
 	public static function ensureHotBansIntegrity(): void {
@@ -545,9 +567,9 @@ class BotBlockerFileRenderer {
 	}
 
 	public static function syncIpBanFiles( string $ip, string $rule, int $expires ): void {
-		// Only hot-ban short-term bans (won't appear in ip.php).
-		// Permanent/long-term bans go to ip.php only via renderIps().
-		$short_term = $expires <= time() + DAY_IN_SECONDS;
+		// Temporary bans (any finite expiry) go to hot-bans.php (TTL-filtered at
+		// match time in all three layers). Permanent bans go to ip.php only.
+		$short_term = $expires < BOTBLOCKER_EXP_INF;
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 			error_log( '[BBCS DEBUG] [HotBan] syncIpBanFiles ip=' . $ip . ' rule=' . $rule . ' expires=' . $expires . ' short_term=' . ( $short_term ? 'YES' : 'NO' ) );
@@ -587,7 +609,7 @@ class BotBlockerFileRenderer {
 			return;
 		}
 
-		$data = self::normalizeHotBansData( bbcs_safe_load_data_file( $file ) );
+		$data = self::normalizeHotBansData( BotBlockerDataFile::safeLoad( $file ) );
 
 		$key   = filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ? 'ipv6' : 'ipv4';
 		$found = false;
@@ -638,7 +660,7 @@ class BotBlockerFileRenderer {
 
 		$existing = array( 'ipv4' => array(), 'ipv6' => array() );
 		if ( file_exists( $file ) ) {
-			$existing = self::normalizeHotBansData( bbcs_safe_load_data_file( $file ) );
+			$existing = self::normalizeHotBansData( BotBlockerDataFile::safeLoad( $file ) );
 		}
 
 		self::pruneExpiredHotBans( $existing );
@@ -652,8 +674,8 @@ class BotBlockerFileRenderer {
 			return;
 		}
 
-		// atomicFileWrite() calls bbcs_data_file_sign() again because content starts with
-		// <?php (via BBCS_STOP_DIRECT). This is safe - bbcs_data_file_verify() uses strrpos()
+		// atomicFileWrite() calls BotBlockerDataFile::sign() again because content starts with
+		// <?php (via BBCS_STOP_DIRECT). This is safe - BotBlockerDataFile::verify() uses strrpos()
 		// to find the last // HASH: line and verifies against the content before it.
 		// A second hash simply overwrites the first; verification always succeeds.
 		self::atomicFileWrite( $file, self::buildHotBansContent( $existing ) );
@@ -664,8 +686,8 @@ class BotBlockerFileRenderer {
 	/**
 	 * Batch-add multiple entries to hot-bans.php in a single read+write.
 	 *
-	 * Only short-term bans (expires <= time() + DAY_IN_SECONDS) are stored;
-	 * permanent/long-term bans belong in ip.php only (see syncIpBanFiles).
+	 * Only temporary bans (expires < BOTBLOCKER_EXP_INF) are stored;
+	 * permanent bans belong in ip.php only (see syncIpBanFiles).
 	 *
 	 * @param array<int, array{ip: string, action: string, expires: int}> $entries
 	 */
@@ -685,7 +707,7 @@ class BotBlockerFileRenderer {
 
 		$existing = array( 'ipv4' => array(), 'ipv6' => array() );
 		if ( file_exists( $file ) ) {
-			$existing = self::normalizeHotBansData( bbcs_safe_load_data_file( $file ) );
+			$existing = self::normalizeHotBansData( BotBlockerDataFile::safeLoad( $file ) );
 		}
 
 		// Prune expired entries inline - no extra I/O (already read the file).
@@ -696,8 +718,8 @@ class BotBlockerFileRenderer {
 			if ( $ip === '' ) {
 				continue;
 			}
-			// Long-term/permanent bans do not belong in hot-bans (Gap 2).
-			if ( ( $entry['expires'] ?? 0 ) > time() + DAY_IN_SECONDS ) {
+			// Permanent bans do not belong in hot-bans (Gap 2).
+			if ( (int) ( $entry['expires'] ?? 0 ) >= BOTBLOCKER_EXP_INF ) {
 				continue;
 			}
 			$key                           = filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ? 'ipv6' : 'ipv4';
@@ -746,7 +768,7 @@ class BotBlockerFileRenderer {
 			return;
 		}
 
-		$data = self::normalizeHotBansData( bbcs_safe_load_data_file( $file ) );
+		$data = self::normalizeHotBansData( BotBlockerDataFile::safeLoad( $file ) );
 
 		$changed = self::pruneExpiredHotBans( $data );
 		if ( ! $changed ) {
@@ -798,7 +820,7 @@ class BotBlockerFileRenderer {
 
 	public static function renderAddons(): void {
 		$content = BBCS_STOP_DIRECT . "\nreturn " . BotBlockerInstall::phpExport( BotBlockerAddons::scanAllRaw(), 0, true ) . ";\n";
-		self::atomicFileWrite( BotBlockerMultisite::getDataDir() . 'addons.php', bbcs_data_file_sign( $content ) );
+		self::atomicFileWrite( BotBlockerMultisite::getDataDir() . 'addons.php', BotBlockerDataFile::sign( $content ) );
 	}
 
 	public static function generateSettingsFile( $type = null ) {
@@ -833,6 +855,16 @@ class BotBlockerFileRenderer {
 		$settingsContent = BBCS_STOP_DIRECT . "\nreturn " . BotBlockerInstall::phpExport( $settings, 0, true ) . ";\n";
 
 		$settingsFile = BotBlockerMultisite::getDataDir() . 'settings.php';
+
+		$previous = array();
+		if ( is_file( $settingsFile ) && is_readable( $settingsFile ) ) {
+			$loaded = BotBlockerDataFile::safeLoad( $settingsFile );
+			if ( is_array( $loaded ) ) {
+				$previous = $loaded;
+			}
+		}
+		do_action( 'bbcs_audit_settings_diff', $previous, $settings );
+
 		$wrote        = self::atomicFileWrite( $settingsFile, $settingsContent );
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
@@ -840,6 +872,11 @@ class BotBlockerFileRenderer {
 		}
 
 		BotBlockerCache::clearFileCache();
+
+		if ( class_exists( 'BotBlockerTwoFactorAuth' ) ) {
+			BotBlockerTwoFactorAuth::flushSettingsCache();
+		}
+
 		if ( ! isset( $type ) ) {
 			return true;
 		} elseif ( isset( $type ) && $type == true ) {

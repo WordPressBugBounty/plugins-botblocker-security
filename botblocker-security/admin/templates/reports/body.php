@@ -14,6 +14,7 @@ return static function (Botblocker_ReportsViewModel $data): void {
 		<div role="tab" class="bbcs-tab" aria-selected="false" data-tab="Site Visitors" tabindex="0"><?php esc_html_e('Site Visitors', 'botblocker-security'); ?></div>
 		<div role="tab" class="bbcs-tab" aria-selected="false" data-tab="Admin Panel Log" tabindex="0"><?php esc_html_e('Admin Panel Log', 'botblocker-security'); ?></div>
 		<div role="tab" class="bbcs-tab" aria-selected="false" data-tab="WordPress Actions" tabindex="0"><?php esc_html_e('WordPress Actions', 'botblocker-security'); ?></div>
+		<div role="tab" class="bbcs-tab" aria-selected="false" data-tab="Audit Log" tabindex="0"><?php esc_html_e('Audit Log', 'botblocker-security'); ?></div>
 		<div role="tab" class="bbcs-tab" aria-selected="false" data-tab="Full Log" tabindex="0"><?php esc_html_e('Full Log', 'botblocker-security'); ?></div>
 	</div>
 
@@ -46,6 +47,10 @@ return static function (Botblocker_ReportsViewModel $data): void {
 				<?php $table_header(); ?>
 			</table>
 		</div>
+	</div>
+
+	<div role="tabpanel" class="bbcs-tabpanel" data-tabpanel="Audit Log" hidden>
+		<?php (require BOTBLOCKER_DIR . 'admin/templates/reports/audit-log.php')($data); ?>
 	</div>
 
 	<div role="tabpanel" class="bbcs-tabpanel" data-tabpanel="Full Log" hidden>

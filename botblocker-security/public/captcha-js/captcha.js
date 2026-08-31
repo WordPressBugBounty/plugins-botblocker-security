@@ -63,7 +63,14 @@ function renderCaptcha() {
       }
       break;
     default:
-      console.error('[BBCS DEBUG] Unknown CAPTCHA mode:', mode);
+      const renderer = window['renderMode' + mode + 'Captcha'];
+      if (typeof renderer === "function") {
+        renderer(params);
+      } else if (typeof renderMode0Captcha === "function") {
+        renderMode0Captcha(params);
+      } else {
+        console.error('[BBCS DEBUG] Unknown CAPTCHA mode:', mode);
+      }
       break;
   }
 }

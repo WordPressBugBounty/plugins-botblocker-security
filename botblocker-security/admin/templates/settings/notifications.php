@@ -24,7 +24,6 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
             ->withIconImage( BOTBLOCKER_URL . 'public/icons/notification.svg', __( 'Notifications', 'botblocker-security' ) )
             ->withDescription( __( 'Configure how and when you receive alerts about bot activity.', 'botblocker-security' ) )
             ->withDescription( __( 'Choose notification channels, set up load alerts, and configure report frequency.', 'botblocker-security' ) )
-            ->withDocLink( 'https://pusher.com/', __( 'Pusher', 'botblocker-security' ) )
             ->render();
         ?>
         <div>
@@ -59,29 +58,6 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                 } )
                 ->render();
 
-            FieldPair::make()
-                ->withItems( static function () use ( $data ): void {
-                    SettingsGroup::make()
-                        ->withTitle( __( 'Pusher', 'botblocker-security' ) )
-                        ->withItems( static function () use ( $data ): void {
-                            ?>
-                            <div class="bbcs-option bbcs-hoverbg">
-                                <button class="bbcs-toggle" role="switch" aria-checked="false" type="button" disabled>
-                                    <span class="bbcs-toggle-knob"></span>
-                                </button>
-                                <input type="hidden" name="pusher_notifications" value="0">
-                                <span class="bbcs-option-label"><?php esc_html_e( 'Pusher', 'botblocker-security' ); ?></span>
-                                <span class="bbcs-help">
-                                    <span class="bbcs-help-q">?</span>
-                                    <span class="bbcs-help-tip"><?php esc_attr_e( 'Receive real-time security alerts via Pusher.', 'botblocker-security' ); ?></span>
-                                </span>
-                                <small class="text-muted bbcs-ps-5"><?php esc_html_e( 'Coming soon', 'botblocker-security' ); ?> (<a href="<?php echo esc_url( $data->addons_url ); ?>"><?php esc_html_e( 'Add-ons', 'botblocker-security' ); ?></a>)</small>
-                            </div>
-                            <?php
-                        } )
-                        ->render();
-                } )
-                ->render();
             ?>
         </div>
     </div>

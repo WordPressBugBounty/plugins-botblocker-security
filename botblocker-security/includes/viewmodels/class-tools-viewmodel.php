@@ -8,6 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once __DIR__ . '/class-header-viewmodel.php';
 require_once __DIR__ . '/class-sidebar-viewmodel.php';
 require_once BOTBLOCKER_DIR . 'includes/dto/class-dashboard-urls.php';
+require_once BOTBLOCKER_DIR . 'includes/dto/class-addon-tab-data.php';
 require_once BOTBLOCKER_DIR . 'includes/components/class-botblocker-tab-item.php';
 
 use BotBlocker\Component\TabItem;
@@ -49,6 +50,9 @@ final class Botblocker_ToolsViewModel {
 	public $active_tab_id;
 
 	public function __construct() {
+		if ( ! class_exists( 'Botblocker_Admin' ) ) {
+			require_once BOTBLOCKER_DIR . 'admin/class-botblocker-admin.php';
+		}
 		$BBCSA = Botblocker_Admin::getInstance();
 
 		$this->header  = new Botblocker_HeaderViewModel();
@@ -97,6 +101,39 @@ final class Botblocker_ToolsViewModel {
 				'items' => $items,
 			),
 		);
+
+		$addon_tabs = array();
+		if ( class_exists( 'BotBlockerAddons' ) ) {
+			$bbcs_addons = BotBlockerAddons::scanAll();
+			$bbcs_active = BotBlockerAddons::getActive();
+
+			foreach ( $bbcs_active as $bbcs_slug ) {
+				if ( ! isset( $bbcs_addons[ $bbcs_slug ] ) || ! $bbcs_addons[ $bbcs_slug ]['valid'] ) {
+					continue;
+				}
+				if ( empty( $bbcs_addons[ $bbcs_slug ]['has_settings'] ) ) {
+					continue;
+				}
+				$bbcs_name = $bbcs_addons[ $bbcs_slug ]['name'] ? $bbcs_addons[ $bbcs_slug ]['name'] : $bbcs_slug;
+				$bbcs_tab  = new Botblocker_AddonTabData( $bbcs_slug, $bbcs_name );
+				if ( ! empty( $bbcs_addons[ $bbcs_slug ]['icon'] ) ) {
+					$bbcs_tab->withIconImage( $bbcs_addons[ $bbcs_slug ]['icon'] );
+				} else {
+					$bbcs_tab->withIconImage( BOTBLOCKER_URL . 'public/icons/plugins.svg' );
+				}
+				$addon_tabs[ $bbcs_slug ] = $bbcs_tab;
+			}
+
+			uasort(
+				$addon_tabs,
+				static function ( $a, $b ) {
+					return strcasecmp( $a->name, $b->name );
+				}
+			);
+		}
+
+		$this->nav_groups = apply_filters( 'bbcs_tools_nav_groups', $this->nav_groups, $addon_tabs );
+		$this->tabpanels  = apply_filters( 'bbcs_tools_tabpanels', $this->tabpanels, $addon_tabs );
 
 		$this->active_tab_id = 'WordPress';
 	}

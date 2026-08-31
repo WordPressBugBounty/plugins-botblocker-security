@@ -353,9 +353,7 @@
             ".delete-ipv4-rule",
             function () {
                 var id = $(this).data("id");
-                if (
-                    confirm(bbcsIpv4L10n.confirm_delete)
-                ) {
+                bbcsConfirm(bbcsIpv4L10n.confirm_delete, function () {
                     $.ajax({
                         url: botblockerData.ajaxurl,
                         type: "POST",
@@ -376,7 +374,7 @@
                             }
                         },
                     });
-                }
+                });
             }
         );
 

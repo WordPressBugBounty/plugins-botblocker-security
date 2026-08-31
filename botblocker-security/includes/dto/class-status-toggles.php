@@ -20,10 +20,14 @@ final class Botblocker_StatusToggles {
 	public $redis_checked;
 	/** @var bool */
 	public $redis_disabled;
+	/** @var bool */
+	public $redis_outage;
 	/** @var int */
 	public $memcached_checked;
 	/** @var bool */
 	public $memcached_disabled;
+	/** @var bool */
+	public $memcached_outage;
 	/** @var int */
 	public $ptr_cache_checked;
 	/** @var string */

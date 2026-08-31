@@ -33,6 +33,12 @@ return static function ( Botblocker_IntegrationsViewModel $data, bool $isActive 
 					<span class="bbcs-option-label"><?php esc_html_e( 'Enable Two-Factor Authentication', 'botblocker-security' ); ?></span>
 					<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_attr_e( 'Enable BotBlocker Two-Factor Authentication for enhanced security.', 'botblocker-security' ); ?></span></span>
 				</div>
+				<div class="bbcs-option bbcs-hoverbg">
+					<button class="bbcs-toggle<?php echo $data->is_checked( 'bbcs_2fa_xmlrpc_block', '1' ) ? ' is-on' : ''; ?>" role="switch" type="button" aria-checked="<?php echo $data->is_checked( 'bbcs_2fa_xmlrpc_block', '1' ) ? 'true' : 'false'; ?>" data-field="bbcs_2fa_xmlrpc_block"><span class="bbcs-toggle-knob"></span></button>
+					<input type="hidden" name="bbcs_2fa_xmlrpc_block" value="<?php echo $data->is_checked( 'bbcs_2fa_xmlrpc_block', '1' ) ? '1' : '0'; ?>">
+					<span class="bbcs-option-label"><?php esc_html_e( 'Block XML-RPC login for 2FA users', 'botblocker-security' ); ?></span>
+					<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_attr_e( 'XML-RPC has no 2FA step — when enabled, 2FA-required accounts cannot authenticate through XML-RPC.', 'botblocker-security' ); ?></span></span>
+				</div>
 			</div>
 
 			<?php if ( ! $data->is_2fa_verified ) : ?>
@@ -79,7 +85,7 @@ return static function ( Botblocker_IntegrationsViewModel $data, bool $isActive 
 								<div class="bbcs-grid bbcs-grid--2" style="gap: var(--bbcs-sp-3) var(--bbcs-sp-2);">
 									<?php foreach ( $data->backup_codes as $code ) : ?>
 										<div class="bbcs-field-box">
-											<input type="text" class="bbcs-input bbcs-input--mono" value="<?php echo esc_attr( $code ); ?>" readonly style="background: transparent; border: none; text-align:center;">
+											<input type="text" name="bbcs_2fa_backup_code" class="bbcs-input bbcs-input--mono" value="<?php echo esc_attr( $code ); ?>" readonly style="background: transparent; border: none; text-align:center;">
 										</div>
 									<?php endforeach; ?>
 								</div>
@@ -115,6 +121,11 @@ return static function ( Botblocker_IntegrationsViewModel $data, bool $isActive 
 					<div class="bbcs-field">
 						<button type="button" class="bbcs-btn bbcs-btn--danger bbcs-btn--block" data-bbcs-action="reset">
 							<i class="fa-solid fa-rotate-left"></i> <?php esc_html_e( 'Reset 2FA', 'botblocker-security' ); ?>
+						</button>
+					</div>
+					<div class="bbcs-field">
+						<button type="button" class="bbcs-btn bbcs-btn--danger bbcs-btn--block" data-bbcs-action="revoke-devices">
+							<i class="fa-solid fa-mobile-screen-button"></i> <?php esc_html_e( 'Revoke all trusted devices', 'botblocker-security' ); ?>
 						</button>
 					</div>
 				</div>

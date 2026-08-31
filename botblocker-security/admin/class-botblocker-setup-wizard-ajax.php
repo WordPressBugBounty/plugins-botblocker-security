@@ -23,20 +23,20 @@ trait BotBlocker_SetupWizardAjaxTrait {
 		// Apply preset settings
 		switch ( $preset ) {
 			case 'light':
-				if ( function_exists( 'bbcs_loadSettingsLight' ) ) {
-					bbcs_loadSettingsLight();
+				if ( class_exists( 'BotBlockerSettingsPresets' ) ) {
+					BotBlockerSettingsPresets::loadSettingsLight();
 				}
 				break;
 			case 'strong':
-				if ( function_exists( 'bbcs_loadSettingsStrong' ) ) {
-					bbcs_loadSettingsStrong();
+				if ( class_exists( 'BotBlockerSettingsPresets' ) ) {
+					BotBlockerSettingsPresets::loadSettingsStrong();
 				}
 				break;
 			case 'full':
 				// Full protection requires PRO
 				if ( BotBlockerPro::isActive() ) {
-					if ( function_exists( 'bbcs_loadSettingsFull' ) ) {
-						bbcs_loadSettingsFull();
+					if ( class_exists( 'BotBlockerSettingsPresets' ) ) {
+						BotBlockerSettingsPresets::loadSettingsFull();
 					}
 				} else {
 					wp_send_json_error( __( 'Full protection requires PRO license.', 'botblocker-security' ) );
@@ -109,8 +109,6 @@ trait BotBlocker_SetupWizardAjaxTrait {
 			wp_send_json_error( __( 'Invalid UX mode.', 'botblocker-security' ) );
 		}
 
-		BotBlockerMultisite::updateOption( 'bbcs_wizard_ux_mode', $ux_mode );
-
 		wp_send_json_success( array( 'ux_mode' => $ux_mode ) );
 	}
 
@@ -126,6 +124,16 @@ trait BotBlocker_SetupWizardAjaxTrait {
 		// Valid CAPTCHA modes: 0-8 (based on botblocker-set-captcha.php)
 		if ( ! in_array( $captcha_mode, array( 0, 1, 2, 3, 4, 5, 6, 7, 8 ) ) ) {
 			wp_send_json_error( __( 'Invalid Captcha mode.', 'botblocker-security' ) );
+		}
+
+		// reCAPTCHA v2 modes require configured Site/Secret keys.
+		$recaptcha_v2_modes = array( BOTBLOCKER_CAPTCHA_MODE_RECAPTCHA_V2_BUTTON, BOTBLOCKER_CAPTCHA_MODE_RECAPTCHA_V2 );
+		if ( in_array( $captcha_mode, $recaptcha_v2_modes, true ) ) {
+			$has_recaptcha_v2 = ! empty( BotBlocker::getInstance()->settings->recaptcha_key2 )
+				&& ! empty( BotBlocker::getInstance()->settings->recaptcha_secret2 );
+			if ( ! $has_recaptcha_v2 ) {
+				wp_send_json_error( __( 'reCaptcha v2 keys are not configured. Configure them in Integrations first.', 'botblocker-security' ) );
+			}
 		}
 
 		// Save CAPTCHA mode to settings
@@ -145,8 +153,6 @@ trait BotBlocker_SetupWizardAjaxTrait {
 		if ( class_exists( 'BotBlockerFileRenderer' ) ) {
 			BotBlockerFileRenderer::generateSettingsFile();
 		}
-
-		BotBlockerMultisite::updateOption( 'bbcs_wizard_captcha_mode', $captcha_mode );
 
 		wp_send_json_success( array( 'captcha_mode' => $captcha_mode ) );
 	}
@@ -216,8 +222,6 @@ trait BotBlocker_SetupWizardAjaxTrait {
 			BotBlockerFileRenderer::generateSettingsFile();
 		}
 
-		BotBlockerMultisite::updateOption( 'bbcs_wizard_init_mode', $init_mode );
-
 		wp_send_json_success( array( 'init_mode' => $init_mode ) );
 	}
 
@@ -255,6 +259,10 @@ trait BotBlocker_SetupWizardAjaxTrait {
 		global $wpdb;
 
 		if ( $cache_type === 'redis' ) {
+			$probe = BotBlockerCache::testRedisConnection();
+			if ( ! $probe['ok'] ) {
+				wp_send_json_error( __( 'Redis is not reachable. Connect it before enabling the cache.', 'botblocker-security' ) );
+			}
 			// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->replace(
@@ -276,6 +284,10 @@ trait BotBlocker_SetupWizardAjaxTrait {
 				array( '%s', '%s' )
 			);
 		} elseif ( $cache_type === 'memcached' ) {
+			$probe = BotBlockerCache::testMemcachedConnection();
+			if ( ! $probe['ok'] ) {
+				wp_send_json_error( __( 'Memcached is not reachable. Connect it before enabling the cache.', 'botblocker-security' ) );
+			}
 			// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->replace(
@@ -322,8 +334,6 @@ trait BotBlocker_SetupWizardAjaxTrait {
 		if ( class_exists( 'BotBlockerFileRenderer' ) ) {
 			BotBlockerFileRenderer::generateSettingsFile();
 		}
-
-		BotBlockerMultisite::updateOption( 'bbcs_wizard_cache_type', $cache_type );
 
 		wp_send_json_success( array( 'cache_type' => $cache_type ) );
 	}
@@ -441,7 +451,7 @@ trait BotBlocker_SetupWizardAjaxTrait {
 			}
 		}
 
-		$score = bbcs_calculateSiteHealth();
+		$score = BotBlockerHealthShortcodes::calculateSiteHealth();
 
 		wp_send_json_success(
 			array(

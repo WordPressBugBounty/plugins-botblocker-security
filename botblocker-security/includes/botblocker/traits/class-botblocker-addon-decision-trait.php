@@ -118,8 +118,6 @@ trait BotBlockerAddonDecisionTrait {
 			// @codeCoverageIgnoreEnd
 		}
 
-		do_action( 'bbcs_botblocker_blocked_request', $decision, $this, $stage, $provider );
-
 		if ( $decision['action'] === BBCS_ADDON_ACTION_CAPTCHA ) {
 			// A CAPTCHA addon decision is a DARK challenge: skip it for a visitor
 			// who already holds a valid verification cookie, and let the pipeline continue.
@@ -130,6 +128,8 @@ trait BotBlockerAddonDecisionTrait {
 			$this->redirect_to_dark( $reason );
 			return true;
 		}
+
+		do_action( 'bbcs_botblocker_blocked_request', $decision, $this, $stage, $provider );
 
 		$this->redirect_to_denied( $code, $reason );
 		return true;

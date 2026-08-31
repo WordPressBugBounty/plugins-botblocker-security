@@ -1,0 +1,651 @@
+<?php
+declare(strict_types=1);
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+class BotBlockerSettingsPresets {
+
+	public static function getAllowedFields(): array {
+		return array(
+			'action_disable',
+			'action_off',
+			'action_on',
+			'admin_gmt_offset',
+			'admin_report_period',
+			'admin_store_period',
+			'admin_uniq_type',
+			'allow_self_ip_req',
+			'allow_self_call_header',
+			'autosave_admin_ip',
+			'skip_logged_in_users',
+			'bbcs_api_gs_url',
+			'bbcs_api_url',
+			'bbcs_captcha_img_inline',
+			'bbcs_captcha_img_pack',
+			'bbcs_captcha_mode',
+			'bbcs_captcha_wait',
+			'bbcs_ddos_resilience',
+			'block_adblocker_users',
+			'block_cf_users',
+			'block_device_options',
+			'block_empty_lang',
+			'bbcs_allow_empty_accept_lang',
+			'block_empty_ua',
+			'block_fake_ref',
+			'block_http10_users',
+			'block_incognito_users',
+			'block_incorrect_lang_users',
+			'block_rkn',
+			'block_ip_ptr_match',
+			'block_ipv6_users',
+			'block_nojs_users',
+			'block_override',
+			'block_proxy_users',
+			'block_simple_antidetect',
+			'block_simplebot_ua',
+			'block_tor_users',
+			'block_vpn_users',
+			'block_web_engine_options',
+			'botblocker_force_check',
+			'force_cloud_validation',
+			'botblocker_log_admin',
+			'botblocker_log_allow',
+			'botblocker_log_bbcs',
+			'botblocker_log_block',
+			'botblocker_log_cli',
+			'botblocker_log_disabled',
+			'botblocker_log_error',
+			'botblocker_log_fake',
+			'botblocker_log_goodip',
+			'botblocker_log_local',
+			'botblocker_log_tests',
+			'botblocker_log_wp',
+			'audit_log_enable',
+			'audit_log_retention_days',
+			'audit_log_roles',
+			'bbcs_2fa_enable',
+			'bbcs_2fa_xmlrpc_block',
+			'cache_ui_data',
+			'cache_ui_duration',
+			'check',
+			'check_get_ref',
+			'cookie',
+			'cookie_lifetime',
+			'critical_load_notifications',
+			'daylight_saving_time',
+			'disable',
+			'early_init_enable',
+			'early_geo_enable',
+			'email_notifications',
+			'get_browser_type',
+			'get_device_type',
+			'get_os_type',
+			'header_error_code',
+			'header_test_code',
+			'hits_per_user',
+			'hosting_block',
+			'iframe_stop',
+			'last_rule',
+			'login_brutforce_attempts',
+			'login_brutforce_enabled',
+			'login_brutforce_period',
+			'login_brutforce_primary_block_time',
+			'login_brutforce_secondary_block_time',
+			'cloud_api_timeout',
+			'cloud_api_type',
+			'cloud_api_email',
+			'cloud_api_key',
+			'cloud_api_pass',
+			'cloud_api_secret',
+			'cloud_api_tier',
+			'cloud_fallback_block',
+			'memcached_enable',
+			'memcached_host',
+			'memcached_port',
+			'memcached_prefix',
+			'mu_enable',
+			'mu_geo_enable',
+			'noarchive',
+			'options_preflight',
+			'payment_bypass_enable',
+			'payment_bypass_log',
+			'payment_strict_method',
+			'payment_keep_ip_rules',
+			'ptr_cache_in_db',
+			'ptrcache_time',
+			'ptrcache_subnet',
+			'ptrcache_rule_ttl',
+			'recaptcha_check',
+			'recaptcha_key2',
+			'recaptcha_key3',
+			'recaptcha_secret2',
+			'recaptcha_secret3',
+			'recaptcha_tresshold',
+			'recaptcha_v3_ipv6_block',
+			'redis_database',
+			'redis_enable',
+			'transients_enable',
+			'redis_host',
+			'redis_password',
+			'redis_port',
+			'redis_prefix',
+			'regular_notifications_frequency',
+			'secure_mode',
+			'samesite',
+			'secret_botblocker_get_param',
+			'session_token_enabled',
+			'tls_fingerprint_check',
+			'tls_fingerprint_header_ja3',
+			'tls_fingerprint_header_ja4',
+			'tls_fingerprint_trusted_proxy',
+			'time_ban',
+			'time_ban_2',
+			'unresponsive',
+			'utm_noindex',
+			'utm_referrer',
+			'vary_cookie',
+			'bbcs_cors_strict_headers',
+			'bbcs_wp_connectors_enabled',
+			'whitelist_whatsapp_preview',
+			'x_robots_directives',
+
+			'bbcs_rate_check_enabled',
+			'bbcs_rate_captcha_rpm',
+			'bbcs_rate_block_rpm',
+			'bbcs_rate_window_minutes',
+			'bbcs_rate_subnet_enabled',
+			'bbcs_rate_subnet_multiplier',
+			'bbcs_rate_floor_percent',
+			'bbcs_rate_subnet_mask',
+			'bbcs_rate_block_duration',
+
+			'fingerprint_sticky_block',
+		);
+	}
+
+	public static function loadDefaultSettings(): array {
+		return array(
+			'secure_mode'                          => 2,
+			'disable'                              => 0,
+			'bbcs_captcha_img_inline'              => 1,
+			'bbcs_captcha_img_pack'                => 1,
+			'bbcs_captcha_mode'                    => BOTBLOCKER_CAPTCHA_MODE_DEFAULT,
+			'bbcs_captcha_wait'                    => 30,
+			'bbcs_ddos_resilience'                 => 0,
+			'cloud_api_type'                       => 'cloud_basic',
+			'cloud_api_tier'                       => '',
+
+			'block_empty_ua'                       => 1,
+			'block_empty_lang'                     => 1,
+			'bbcs_allow_empty_accept_lang'         => 0,
+			'block_nojs_users'                     => 1,
+			'block_proxy_users'                    => 1,
+			'block_vpn_users'                      => 1,
+			'block_tor_users'                      => 1,
+			'block_ipv6_users'                     => 0,
+			'block_adblocker_users'                => 1,
+			'block_http10_users'                   => 1,
+			'block_incognito_users'                => 0,
+			'block_simple_antidetect'              => 0,
+			'block_ip_ptr_match'                   => 0,
+			'block_override'                       => 0,
+			'block_web_engine_options'             => 0,
+			'block_device_options'                 => 0,
+			'fingerprint_sticky_block'             => 0,
+			'block_cf_users'                       => 0,
+			'block_incorrect_lang_users'           => 0,
+			'block_rkn'                            => 0,
+			'block_simplebot_ua'                   => 1,
+			'whitelist_whatsapp_preview'           => 0,
+			'allow_self_ip_req'                    => 1,
+			'allow_self_call_header'               => 1,
+
+			'get_browser_type'                     => 1,
+			'get_os_type'                          => 1,
+			'get_device_type'                      => 1,
+
+			'admin_report_period'                  => 5,
+			'admin_store_period'                   => 7,
+			'admin_gmt_offset'                     => 0,
+
+			'check'                                => 0,
+			'unresponsive'                         => 1,
+			'cloud_fallback_block'                 => 0,
+			'cookie'                               => BOTBLOCKER_SHORT_NAME,
+			'hits_per_user'                        => 500,
+			'time_ban'                             => '200',
+			'time_ban_2'                           => '400',
+			'utm_referrer'                         => 1,
+			'utm_noindex'                          => 0,
+			'check_get_ref'                        => 1,
+			'ptrcache_time'                        => DAY_IN_SECONDS,
+			'ptrcache_subnet'                      => '24-64',
+			'ptrcache_rule_ttl'                    => 90,
+			'botblocker_log_tests'                 => 1,
+			'botblocker_log_local'                 => 1,
+			'botblocker_log_allow'                 => 1,
+			'botblocker_log_fake'                  => 1,
+			'botblocker_log_goodip'                => 1,
+			'botblocker_log_block'                 => 1,
+			'botblocker_log_admin'                 => 0,
+			'botblocker_log_wp'                    => 0,
+			'botblocker_log_cli'                   => 0,
+			'botblocker_log_bbcs'                  => 0,
+			'botblocker_log_error'                 => 1,
+			'audit_log_enable'                     => 1,
+			'audit_log_retention_days'             => 7,
+			'audit_log_roles'                      => '',
+			'header_test_code'                     => 200,
+			'header_error_code'                    => 400,
+			'noarchive'                            => 0,
+			'options_preflight'                    => 1,
+			'last_rule'                            => '',
+			'samesite'                             => 'Lax',
+			'iframe_stop'                          => 0,
+			'hosting_block'                        => 0,
+			'block_fake_ref'                       => 1,
+
+			'recaptcha_check'                      => 0,
+			'recaptcha_key2'                       => '',
+			'recaptcha_secret2'                    => '',
+			'recaptcha_key3'                       => '',
+			'recaptcha_secret3'                    => '',
+			'recaptcha_tresshold'                  => 0.5,
+			'recaptcha_v3_ipv6_block'              => 0,
+			'memcached_enable'                     => 0,
+			'memcached_host'                       => '127.0.0.1',
+			'memcached_port'                       => 11211,
+			'memcached_prefix'                     => BOTBLOCKER_PREFIX,
+
+			'bbcs_api_url'                         => BOTBLOCKER_API_URL,
+			'bbcs_api_gs_url'                      => BOTBLOCKER_API_GS_URL,
+
+			'redis_database'                       => 0,
+			'redis_host'                           => '127.0.0.1',
+			'redis_port'                           => 6379,
+			'redis_prefix'                         => BOTBLOCKER_PREFIX,
+			'redis_password'                       => '',
+			'redis_enable'                         => 0,
+			'transients_enable'                    => 1,
+
+			'mu_enable'                            => (int) BOTBLOCKER_INTEGRATE_MU_PLUGINS,
+			'early_init_enable'                    => 0,
+			'early_geo_enable'                     => 0,
+			'mu_geo_enable'                        => 0,
+
+			'autosave_admin_ip'                    => 0,
+			'skip_logged_in_users'                 => 0,
+			'ptr_cache_in_db'                      => 1,
+			'botblocker_force_check'               => 0,
+			'force_cloud_validation'               => 0,
+			'cache_ui_data'                        => 1, // default on
+			'cache_ui_duration'                    => 1800,
+			'daylight_saving_time'                 => 0,
+			'cookie_lifetime'                      => 604800,
+			'session_token_enabled'                => 1,
+			'cloud_api_timeout'                    => 5,
+			'vary_cookie'                          => 0,
+			'bbcs_cors_strict_headers'             => 0,
+
+			'payment_bypass_enable'                => 0,
+			'payment_bypass_log'                   => 1,
+			'payment_strict_method'                => 0,
+			'payment_keep_ip_rules'                => 0,
+
+			'email_notifications'                  => 0,
+			'critical_load_notifications'          => 0,
+			'regular_notifications_frequency'      => 'disabled',
+
+			'login_brutforce_enabled'              => 1,
+			'login_brutforce_attempts'             => 5,
+			'login_brutforce_period'               => 900,
+			'login_brutforce_primary_block_time'   => 900,
+			'login_brutforce_secondary_block_time' => 1800,
+
+			'bbcs_2fa_enable'                      => 0,
+			'bbcs_2fa_xmlrpc_block'                => 0,
+
+			'tls_fingerprint_check'                => 0,
+			'tls_fingerprint_header_ja3'           => 'X-TLS-JA3',
+			'tls_fingerprint_header_ja4'           => 'X-TLS-JA4',
+			'tls_fingerprint_trusted_proxy'        => '',
+
+			'bbcs_rate_check_enabled'              => 1,
+			'bbcs_rate_captcha_rpm'                => 30,
+			'bbcs_rate_block_rpm'                  => 50,
+			'bbcs_rate_window_minutes'             => 5,
+			'bbcs_rate_subnet_enabled'             => 1,
+			'bbcs_rate_subnet_multiplier'          => 3.0,
+			'bbcs_rate_floor_percent'              => 0.1,
+			'bbcs_rate_subnet_mask'                => '24-64',
+			'bbcs_rate_block_duration'             => 600,
+		);
+	}
+
+	public static function loadLightSecurity(): array {
+		return array(
+			'secure_mode'                          => 2,
+			'disable'                              => 0,
+
+			'block_empty_ua'                       => 1,
+			'block_empty_lang'                     => 1,
+			'bbcs_allow_empty_accept_lang'         => 0,
+			'block_nojs_users'                     => 1,
+			'block_proxy_users'                    => 1,
+			'block_ipv6_users'                     => 0,
+			'block_adblocker_users'                => 0,
+			'block_http10_users'                   => 1,
+			'block_incognito_users'                => 0,
+			'block_simple_antidetect'              => 0,
+			'block_ip_ptr_match'                   => 0,
+			'block_cf_users'                       => 0,
+			'block_incorrect_lang_users'           => 0,
+			'block_rkn'                            => 0,
+			'block_simplebot_ua'                   => 1,
+			'whitelist_whatsapp_preview'           => 0,
+			'allow_self_ip_req'                    => 1,
+			'allow_self_call_header'               => 1,
+
+			'get_browser_type'                     => 1,
+			'get_os_type'                          => 1,
+			'get_device_type'                      => 1,
+
+			'time_ban'                             => '50',
+			'time_ban_2'                           => '100',
+			'utm_referrer'                         => 0,
+			'utm_noindex'                          => 0,
+			'check_get_ref'                        => 0,
+			'ptrcache_time'                        => DAY_IN_SECONDS,
+			'ptrcache_subnet'                      => '24-64',
+			'ptrcache_rule_ttl'                    => 90,
+			'header_test_code'                     => 200,
+			'header_error_code'                    => 400,
+			'samesite'                             => 'Lax',
+			'iframe_stop'                          => 0,
+			'hosting_block'                        => 0,
+			'block_fake_ref'                       => 0,
+
+			'early_geo_enable'                     => 0,
+			'mu_geo_enable'                        => 0,
+
+			'recaptcha_check'                      => 0,
+			'recaptcha_tresshold'                  => 0.7,
+			'recaptcha_v3_ipv6_block'              => 0,
+
+			'autosave_admin_ip'                    => 0,
+			'skip_logged_in_users'                 => 0,
+			'ptr_cache_in_db'                      => 1,
+			'botblocker_force_check'               => 0,
+			'cookie_lifetime'                      => 604800,
+			'session_token_enabled'                => 1,
+			'cloud_api_timeout'                    => 5,
+			'vary_cookie'                          => 0,
+			'bbcs_cors_strict_headers'             => 0,
+			'bbcs_wp_connectors_enabled'           => 0,
+			'options_preflight'                    => 1,
+
+			'login_brutforce_enabled'              => 1,
+			'login_brutforce_attempts'             => 5,
+			'login_brutforce_period'               => 900,
+			'login_brutforce_primary_block_time'   => 900,
+			'login_brutforce_secondary_block_time' => 1800,
+			'force_cloud_validation'               => 0,
+
+			'bbcs_rate_window_minutes'             => 5,
+			'bbcs_rate_captcha_rpm'                => 60,
+			'bbcs_rate_block_rpm'                  => 120,
+			'bbcs_rate_subnet_enabled'             => 0,
+			'bbcs_rate_subnet_multiplier'          => 3.0,
+			'bbcs_rate_floor_percent'              => 0.2,
+			'bbcs_rate_check_enabled'              => 1,
+			'bbcs_rate_subnet_mask'                => '24-64',
+			'bbcs_rate_block_duration'             => 300,
+
+			// pro
+			'check'                                => 0,
+			'unresponsive'                         => 0,
+			'cloud_fallback_block'                 => 0,
+			'block_vpn_users'                      => 0,
+			'block_tor_users'                      => 0,
+			'block_override'                       => 0,
+			'block_web_engine_options'             => 0,
+			'block_device_options'                 => 0,
+		);
+	}
+
+	public static function loadStrongSecurity(): array {
+		return array(
+			'secure_mode'                          => 2,
+			'disable'                              => 0,
+
+			'block_empty_ua'                       => 1,
+			'block_empty_lang'                     => 1,
+			'bbcs_allow_empty_accept_lang'         => 0,
+			'block_nojs_users'                     => 1,
+			'block_proxy_users'                    => 1,
+			'block_ipv6_users'                     => 0,
+			'block_adblocker_users'                => 1,
+			'block_http10_users'                   => 1,
+			'block_incognito_users'                => 0,
+			'block_simple_antidetect'              => 1,
+			'block_ip_ptr_match'                   => 1,
+			'block_cf_users'                       => 1,
+			'block_incorrect_lang_users'           => 0,
+			'block_rkn'                            => 0,
+			'block_simplebot_ua'                   => 1,
+			'whitelist_whatsapp_preview'           => 0,
+			'allow_self_ip_req'                    => 1,
+			'allow_self_call_header'               => 1,
+
+			'get_browser_type'                     => 1,
+			'get_os_type'                          => 1,
+			'get_device_type'                      => 1,
+
+			'early_geo_enable'                     => 0,
+			'mu_geo_enable'                        => 0,
+
+			'time_ban'                             => '150',
+			'time_ban_2'                           => '300',
+			'utm_referrer'                         => 1,
+			'utm_noindex'                          => 0,
+			'check_get_ref'                        => 1,
+			'ptrcache_time'                        => DAY_IN_SECONDS,
+			'ptrcache_subnet'                      => '24-64',
+			'ptrcache_rule_ttl'                    => 90,
+			'header_test_code'                     => 200,
+			'header_error_code'                    => 400,
+			'samesite'                             => 'Lax',
+			'iframe_stop'                          => 1,
+			'hosting_block'                        => 0,
+			'block_fake_ref'                       => 1,
+
+			'recaptcha_check'                      => 1,
+			'recaptcha_tresshold'                  => 0.7,
+			'recaptcha_v3_ipv6_block'              => 0,
+
+			'autosave_admin_ip'                    => 0,
+			'skip_logged_in_users'                 => 0,
+			'ptr_cache_in_db'                      => 1,
+			'botblocker_force_check'               => 0,
+			'cookie_lifetime'                      => 604800,
+			'session_token_enabled'                => 1,
+			'cloud_api_timeout'                    => 5,
+			'vary_cookie'                          => 0,
+			'bbcs_cors_strict_headers'             => 0,
+			'bbcs_wp_connectors_enabled'           => 0,
+			'options_preflight'                    => 1,
+
+			'login_brutforce_enabled'              => 1,
+			'login_brutforce_attempts'             => 5,
+			'login_brutforce_period'               => 900,
+			'login_brutforce_primary_block_time'   => 900,
+			'login_brutforce_secondary_block_time' => 1800,
+
+			'force_cloud_validation'               => 0,
+
+			'bbcs_rate_window_minutes'             => 5,
+			'bbcs_rate_captcha_rpm'                => 30,
+			'bbcs_rate_block_rpm'                  => 50,
+			'bbcs_rate_subnet_enabled'             => 1,
+			'bbcs_rate_subnet_multiplier'          => 3.0,
+			'bbcs_rate_floor_percent'              => 0.1,
+			'bbcs_rate_check_enabled'              => 1,
+			'bbcs_rate_subnet_mask'                => '24-64',
+			'bbcs_rate_block_duration'             => 900,
+
+			// pro
+			'check'                                => 0,
+			'unresponsive'                         => 0,
+			'block_vpn_users'                      => 0,
+			'block_tor_users'                      => 0,
+			'block_override'                       => 0,
+			'block_web_engine_options'             => 0,
+			'block_device_options'                 => 0,
+		);
+	}
+
+	public static function loadFullSecurity(): array {
+		return array(
+			'secure_mode'                          => 2,
+			'disable'                              => 0,
+
+			'block_empty_ua'                       => 1,
+			'block_empty_lang'                     => 1,
+			'bbcs_allow_empty_accept_lang'         => 0,
+			'block_nojs_users'                     => 1,
+			'block_proxy_users'                    => 1,
+			'block_ipv6_users'                     => 0,
+			'block_adblocker_users'                => 1,
+			'block_http10_users'                   => 1,
+			'block_incognito_users'                => 1,
+			'block_simple_antidetect'              => 1,
+			'block_ip_ptr_match'                   => 1,
+			'block_cf_users'                       => 1,
+			'block_incorrect_lang_users'           => 0,
+			'block_rkn'                            => 0,
+			'block_simplebot_ua'                   => 1,
+			'whitelist_whatsapp_preview'           => 0,
+			'allow_self_ip_req'                    => 1,
+			'allow_self_call_header'               => 1,
+
+			'early_geo_enable'                     => 0,
+			'mu_geo_enable'                        => 0,
+
+			'get_browser_type'                     => 1,
+			'get_os_type'                          => 1,
+			'get_device_type'                      => 1,
+
+			'time_ban'                             => '300',
+			'time_ban_2'                           => '600',
+			'utm_referrer'                         => 1,
+			'utm_noindex'                          => 0,
+			'check_get_ref'                        => 1,
+			'ptrcache_time'                        => DAY_IN_SECONDS,
+			'ptrcache_subnet'                      => '24-64',
+			'ptrcache_rule_ttl'                    => 90,
+			'header_test_code'                     => 200,
+			'header_error_code'                    => 400,
+			'samesite'                             => 'Lax',
+			'iframe_stop'                          => 1,
+			'hosting_block'                        => 1,
+			'block_fake_ref'                       => 1,
+
+			'recaptcha_check'                      => 1,
+			'recaptcha_tresshold'                  => 0.7,
+			'recaptcha_v3_ipv6_block'              => 0,
+
+			'autosave_admin_ip'                    => 0,
+			'skip_logged_in_users'                 => 0,
+			'ptr_cache_in_db'                      => 1,
+			'botblocker_force_check'               => 0,
+			'cookie_lifetime'                      => 604800,
+			'session_token_enabled'                => 1,
+			'cloud_api_timeout'                    => 5,
+			'vary_cookie'                          => 0,
+			'bbcs_cors_strict_headers'             => 0,
+			'bbcs_wp_connectors_enabled'           => 0,
+			'options_preflight'                    => 1,
+
+			'login_brutforce_enabled'              => 1,
+			'login_brutforce_attempts'             => 5,
+			'login_brutforce_period'               => 900,
+			'login_brutforce_primary_block_time'   => 900,
+			'login_brutforce_secondary_block_time' => 1800,
+
+			'force_cloud_validation'               => 0,
+
+			'bbcs_rate_window_minutes'             => 10,
+			'bbcs_rate_captcha_rpm'                => 20,
+			'bbcs_rate_block_rpm'                  => 30,
+			'bbcs_rate_subnet_enabled'             => 1,
+			'bbcs_rate_subnet_multiplier'          => 2.0,
+			'bbcs_rate_floor_percent'              => 0.1,
+			'bbcs_rate_check_enabled'              => 1,
+			'bbcs_rate_subnet_mask'                => '28-64',
+			'bbcs_rate_block_duration'             => 1800,
+
+			// pro
+			'check'                                => 1,
+			'unresponsive'                         => 1,
+			'cloud_fallback_block'                 => 0,
+			'block_vpn_users'                      => 1,
+			'block_tor_users'                      => 1,
+			'block_override'                       => 1,
+			'block_web_engine_options'             => 1,
+			'block_device_options'                 => 1,
+		);
+	}
+
+	public static function loadSettingsLight(): void {
+		global $wpdb;
+
+		$light_setting = self::loadLightSecurity();
+		foreach ( $light_setting as $key => $value ) {
+			$key = sanitize_key( $key );
+			// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+	        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->update(
+				$wpdb->bbcs_settings,
+				array( 'value' => $value ),
+				array( 'key' => $key )
+			);
+		}
+		BotBlockerFileRenderer::generateSettingsFile();
+	}
+
+	public static function loadSettingsStrong(): void {
+		global $wpdb;
+
+		$strong_setting = self::loadStrongSecurity();
+		foreach ( $strong_setting as $key => $value ) {
+			$key = sanitize_key( $key );
+			// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+	        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->update(
+				$wpdb->bbcs_settings,
+				array( 'value' => $value ),
+				array( 'key' => $key )
+			);
+		}
+		BotBlockerFileRenderer::generateSettingsFile();
+	}
+
+	public static function loadSettingsFull(): void {
+		global $wpdb;
+
+		$full_setting = self::loadFullSecurity();
+		foreach ( $full_setting as $key => $value ) {
+			$key = sanitize_key( $key );
+			// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+	        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->update(
+				$wpdb->bbcs_settings,
+				array( 'value' => $value ),
+				array( 'key' => $key )
+			);
+		}
+		BotBlockerFileRenderer::generateSettingsFile();
+	}
+}

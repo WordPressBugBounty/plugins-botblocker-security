@@ -89,7 +89,7 @@ class BotBlockerAjaxGeo {
 				'id'       => (int) $row['id'],
 				'priority' => (int) $row['priority'],
 				'code'     => $row['code'],
-				'name'     => function_exists( 'bbcs_get_country_by_code' ) ? bbcs_get_country_by_code( $row['code'] ) : $row['code'],
+				'name'     => BotBlockerGeo::getCountryByCode( $row['code'] ),
 				'rule'     => $row['rule'],
 				'comment'  => $row['comment'],
 				'disable'  => (int) $row['disable'],
@@ -143,6 +143,7 @@ class BotBlockerAjaxGeo {
 
 		BotBlockerFileRenderer::renderCountries();
 		BotBlockerCache::clearFileCache();
+		BotBlockerAudit::ruleChanged( BotBlockerAuditEvents::RULE_LIST_GEO, BotBlockerAuditEvents::RULE_ACTION_TOGGLED, array( 'id' => $id, 'disabled' => $new_value ) );
 
 		wp_send_json_success( array( 'disable' => $new_value ) );
 	}
@@ -186,13 +187,14 @@ class BotBlockerAjaxGeo {
 
 		BotBlockerFileRenderer::renderCountries();
 		BotBlockerCache::clearFileCache();
+		BotBlockerAudit::ruleChanged( BotBlockerAuditEvents::RULE_LIST_GEO, BotBlockerAuditEvents::RULE_ACTION_CREATED, array( 'id' => (int) $wpdb->insert_id, 'code' => $code ) );
 
 		wp_send_json_success(
 			array(
 				'id'       => (int) $wpdb->insert_id,
 				'priority' => 50,
 				'code'     => $code,
-				'name'     => function_exists( 'bbcs_get_country_by_code' ) ? bbcs_get_country_by_code( $code ) : $code,
+				'name'     => BotBlockerGeo::getCountryByCode( $code ),
 				'rule'     => 'block',
 				'comment'  => '',
 				'disable'  => 0,
@@ -221,6 +223,7 @@ class BotBlockerAjaxGeo {
 
 		BotBlockerFileRenderer::renderCountries();
 		BotBlockerCache::clearFileCache();
+		BotBlockerAudit::ruleChanged( BotBlockerAuditEvents::RULE_LIST_GEO, BotBlockerAuditEvents::RULE_ACTION_DELETED, array( 'id' => $id ) );
 
 		wp_send_json_success();
 	}
@@ -241,6 +244,7 @@ class BotBlockerAjaxGeo {
 
 		BotBlockerFileRenderer::renderCountries();
 		BotBlockerCache::clearFileCache();
+		BotBlockerAudit::ruleChanged( BotBlockerAuditEvents::RULE_LIST_GEO, BotBlockerAuditEvents::RULE_ACTION_CLEARED );
 
 		wp_send_json_success();
 	}

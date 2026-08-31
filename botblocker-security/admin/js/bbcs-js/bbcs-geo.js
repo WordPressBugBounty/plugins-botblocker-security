@@ -173,9 +173,8 @@
 
                 var $button = $(this);
                 var id = $button.data("id");
-                if (!confirm(geoText('confirm_delete', 'Are you sure you want to delete this country rule?'))) {
-                    return;
-                }
+                bbcsConfirm(geoText('confirm_delete', 'Are you sure you want to delete this country rule?'), function () {
+                if (isProcessingGeo) return;
 
                 isProcessingGeo = true;
                 $button.prop("disabled", true);
@@ -201,6 +200,7 @@
                         isProcessingGeo = false;
                         $button.prop("disabled", false);
                     },
+                });
                 });
             });
 
@@ -245,12 +245,11 @@
             $(document).on("click", "#bbcs_geo_clear_all", function (e) {
                 e.preventDefault();
                 if (isProcessingGeo) return;
-                if (!confirm(geoText('confirm_clear', 'Are you sure you want to remove all country rules?'))) {
-                    return;
-                }
+                var $button = $(this);
+                bbcsConfirm(geoText('confirm_clear', 'Are you sure you want to remove all country rules?'), function () {
+                if (isProcessingGeo) return;
 
                 isProcessingGeo = true;
-                var $button = $(this);
                 $button.prop("disabled", true);
 
                 $.ajax({
@@ -273,6 +272,7 @@
                         isProcessingGeo = false;
                         $button.prop("disabled", false);
                     },
+                });
                 });
             });
         }

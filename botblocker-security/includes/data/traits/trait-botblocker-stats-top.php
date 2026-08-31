@@ -51,7 +51,9 @@ trait BotBlockerStatsTopTrait {
 		$yesterday_str = ( clone $now )->modify( '-1 day' )->format( 'Y-m-d' );
 		$start_str     = $start_date_obj->format( 'Y-m-d' );
 		$today_ts      = ( new \DateTime( $today_str . ' 00:00:00', $tz ) )->getTimestamp();
+		$today_end_ts  = ( new \DateTime( $today_str . ' 23:59:59', $tz ) )->getTimestamp();
 		$start_ts      = ( new \DateTime( $start_date, $tz ) )->getTimestamp();
+		$end_ts        = $end_date_obj->getTimestamp();
 
 		if ( $days > 1 && BotBlockerSummary::getCompleteDays( $start_str, $yesterday_str ) ) {
 			$metric = 'top_' . $type;
@@ -76,8 +78,7 @@ trait BotBlockerStatsTopTrait {
 							FROM `{$wpdb->bbcs_hits_suspicious}`
 					) AS ch
 					" . BotBlockerDb::pageFilterJoin( 'ch', $today_ts ) . "
-					WHERE ch.date BETWEEN UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
-									AND UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
+					WHERE ch.date BETWEEN %d AND %d
 					" . BotBlockerDb::pageFilterWhere( 'ch', $today_ts ) . "
 					AND ch.country != '' AND ch.country != %s AND ch.country != 'XX' AND ch.country != 'XZ'
 					AND ch.ip != '' AND ch.ip != %s
@@ -85,7 +86,7 @@ trait BotBlockerStatsTopTrait {
 					GROUP BY ch.{$type}
 					ORDER BY count DESC
 					",
-					...array_merge( array( $today_str . ' 00:00:00', $gmt_offset_str, $today_str . ' 23:59:59', $gmt_offset_str, BOTBLOCKER_EMPTY, BOTBLOCKER_EMPTY ), $ip_params )
+					...array_merge( array( $today_ts, $today_end_ts, BOTBLOCKER_EMPTY, BOTBLOCKER_EMPTY ), $ip_params )
 				),
 				ARRAY_A
 			);
@@ -147,8 +148,7 @@ trait BotBlockerStatsTopTrait {
 						FROM `{$wpdb->bbcs_hits_suspicious}`
 				) AS ch
 				" . BotBlockerDb::pageFilterJoin( 'ch', $start_ts ) . "
-				WHERE ch.date BETWEEN UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
-								AND UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
+				WHERE ch.date BETWEEN %d AND %d
 				" . BotBlockerDb::pageFilterWhere( 'ch', $start_ts ) . "
 				AND ch.country != '' AND ch.country != %s AND ch.country != 'XX' AND ch.country != 'XZ'
 				AND ch.ip != '' AND ch.ip != %s
@@ -157,7 +157,7 @@ trait BotBlockerStatsTopTrait {
 				ORDER BY count DESC
 				LIMIT %d
 				",
-				...array_merge( array( $start_date, $gmt_offset_str, $end_date, $gmt_offset_str, BOTBLOCKER_EMPTY, BOTBLOCKER_EMPTY ), $ip_params, array( $limit ) )
+				...array_merge( array( $start_ts, $end_ts, BOTBLOCKER_EMPTY, BOTBLOCKER_EMPTY ), $ip_params, array( $limit ) )
 			),
 			ARRAY_A
 		);

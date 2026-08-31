@@ -8,21 +8,6 @@ if (! defined('ABSPATH')) {
 
 use BotBlocker\Component\SidebarNav;
 
-/**
- * Tab IDs that belong to the Simple / General group (visible in simple mode).
- * All other tabs are hidden when simple mode is on.
- * Matches the first block of the old layout.
- */
-function bbcs_get_simple_tab_ids(): array {
-	return array(
-		'simple-detection',
-		'connection-types',
-		'browser-plugins',
-		'data-log',
-		'advanced-protection',
-	);
-}
-
 return static function (Botblocker_SettingsViewModel $data): void {
 	$active_tab = '';
 	foreach ($data->nav_groups as $group) {
@@ -34,8 +19,8 @@ return static function (Botblocker_SettingsViewModel $data): void {
 		}
 	}
 
-	$bbcs_tabpanels = bbcs_get_tabpanels();
-	$simple_ids     = bbcs_get_simple_tab_ids();
+	$bbcs_tabpanels = BotBlockerSnav::getTabpanels();
+	$simple_ids     = BotBlockerSnav::getSimpleTabIds();
 
 	// Build list of simple nav item IDs so the sidebar nav can mark advanced items.
 	$simple_nav_ids = array();

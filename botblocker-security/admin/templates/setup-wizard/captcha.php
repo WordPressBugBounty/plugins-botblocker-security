@@ -64,6 +64,44 @@ return static function ( Botblocker_SetupWizard_ViewModel $d ): void { ?>
 				<div class="bbcs-wizcard-title"><?php esc_html_e( 'Hold Button Captcha', 'botblocker-security' ); ?></div>
 				<div class="bbcs-wizcard-sub"><?php esc_html_e( 'Press and hold to confirm. No images or calculations.', 'botblocker-security' ); ?></div>
 			</div>
+
+			<?php
+			// Standardized cards for ACTIVE captcha addons: title/subtitle/icon
+			// come from the addon manifest (captcha.modes[].wizard) + package.
+			if ( class_exists( 'BotBlockerCaptchaRegistry' ) ) {
+				foreach ( BotBlockerCaptchaRegistry::wizardCards() as $wizard_card ) {
+					?>
+					<div class="bbcs-wizcard" data-captcha="<?php echo (int) $wizard_card['id']; ?>">
+						<div class="bbcs-wizcaptcha-preview">
+							<?php if ( '' !== $wizard_card['icon_url'] ) : ?>
+								<img src="<?php echo esc_url( $wizard_card['icon_url'] ); ?>" alt="<?php echo esc_attr( $wizard_card['title'] ); ?>" style="width:100%;height:100%;object-fit:cover" />
+							<?php endif; ?>
+						</div>
+						<div class="bbcs-wizcard-title"><?php echo esc_html( $wizard_card['title'] ); ?></div>
+						<div class="bbcs-wizcard-sub"><?php echo esc_html( $wizard_card['subtitle'] ); ?></div>
+					</div>
+					<?php
+				}
+			}
+
+			$addon_modes = apply_filters( 'bbcs_setup_wizard_captcha_modes', array() );
+			foreach ( $addon_modes as $addon_mode ) {
+				if ( empty( $addon_mode['id'] ) || (int) $addon_mode['id'] < 90 ) {
+					continue;
+				}
+				?>
+				<div class="bbcs-wizcard" data-captcha="<?php echo (int) $addon_mode['id']; ?>">
+					<div class="bbcs-wizcaptcha-preview">
+						<?php if ( ! empty( $addon_mode['icon_url'] ) ) : ?>
+							<img src="<?php echo esc_url( $addon_mode['icon_url'] ); ?>" alt="<?php echo esc_attr( $addon_mode['title'] ); ?>" style="width:100%;height:100%;object-fit:cover" />
+						<?php endif; ?>
+					</div>
+					<div class="bbcs-wizcard-title"><?php echo esc_html( $addon_mode['title'] ); ?></div>
+					<div class="bbcs-wizcard-sub"><?php echo esc_html( $addon_mode['subtitle'] ); ?></div>
+				</div>
+				<?php
+			}
+			?>
 		</div>
 
 		<div class="bbcs-card bbcs-card-pad bbcs-mb-3h bbcs-blue-card">

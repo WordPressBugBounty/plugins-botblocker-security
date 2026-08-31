@@ -32,13 +32,47 @@
                 },
                 success: function (response) {
                     if (response.success) {
-                        alert(response.data.message); 
+                        bbcsToast('success', response.data.message); 
                     } else {
-                        alert(bbcsDashL10n.error_prefix + response.data.message); 
+                        bbcsToast('error', bbcsDashL10n.error_prefix + response.data.message); 
                     }
                 },
                 error: function (xhr, status, error) {
-                    alert(bbcsDashL10n.ajax_error + error);
+                    bbcsToast('error', bbcsDashL10n.ajax_error + error);
+                },
+            });
+        });
+
+        $('#bbcs-regenerate-secret-links').on('click', function (e) {
+            e.preventDefault();
+            if (!window.confirm(bbcsDashL10n.regenerate_confirm)) {
+                return;
+            }
+            var $btn = $(this).prop('disabled', true);
+            $.ajax({
+                url: botblockerData.ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'bbcs_regenerate_secret_links',
+                    nonce: botblockerData.nonce,
+                },
+                success: function (response) {
+                    $btn.prop('disabled', false);
+                    if (response.success) {
+                        $('input[data-url-type]').each(function () {
+                            var type = $(this).data('url-type');
+                            if (response.data[type]) {
+                                $(this).val(response.data[type]);
+                            }
+                        });
+                        bbcsToast('success', response.data.message);
+                    } else {
+                        bbcsToast('error', bbcsDashL10n.error_prefix + response.data.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    $btn.prop('disabled', false);
+                    bbcsToast('error', bbcsDashL10n.ajax_error + error);
                 },
             });
         });

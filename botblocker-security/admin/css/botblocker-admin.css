@@ -426,6 +426,18 @@ table.table.dataTable tbody tr td {
   white-space: normal;
 }
 
+#botblocker-audit-log {
+  table-layout: fixed;
+  width: 100% !important;
+}
+
+#botblocker-audit-log th,
+#botblocker-audit-log td {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
 .dataTables_wrapper {
   width: 100%;
   overflow-x: auto;

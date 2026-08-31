@@ -28,6 +28,15 @@ class BotBlockerTrafficDecisions {
 		return true;
 	}
 
+	public static function has( string $slug ): bool {
+		$slug = sanitize_key( $slug );
+		if ( $slug === '' ) {
+			return false;
+		}
+		$providers = isset( $GLOBALS['bbcs_traffic_decision_providers'] ) && is_array( $GLOBALS['bbcs_traffic_decision_providers'] ) ? $GLOBALS['bbcs_traffic_decision_providers'] : array();
+		return isset( $providers[ $slug ] );
+	}
+
 	public static function getAll(): array {
 		$providers = isset( $GLOBALS['bbcs_traffic_decision_providers'] ) && is_array( $GLOBALS['bbcs_traffic_decision_providers'] ) ? $GLOBALS['bbcs_traffic_decision_providers'] : array();
 		uasort(

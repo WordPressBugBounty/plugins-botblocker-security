@@ -130,7 +130,7 @@ class BotBlockerCheck {
 	}
 
 	public static function languageToCountryCompare( string $country_code, string $lang_code ): bool {
-		$country_lang_map = bbcs_CountrylanguageMap();
+		$country_lang_map = BotBlockerGeo::getCountryLanguageMap();
 		$country_code     = strtoupper( $country_code );
 		$lang_code        = strtolower( $lang_code );
 		if ( isset( $country_lang_map[ $country_code ] ) ) {

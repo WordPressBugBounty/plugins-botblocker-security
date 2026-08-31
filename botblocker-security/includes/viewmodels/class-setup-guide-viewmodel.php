@@ -87,9 +87,6 @@ final class Botblocker_SetupGuideViewModel {
 	/** @var string */
 	public $system_upload_max_filesize;
 
-	/** @var string HTML-formatted changelog */
-	public $changelog_html;
-
 	/** @var bool */
 	public $early_init_active;
 	/** @var bool */
@@ -130,7 +127,7 @@ final class Botblocker_SetupGuideViewModel {
 		$this->early_addon_active  = $early_addon;
 		$this->early_available     = $this->has_cloud_api && $early_addon;
 
-		$this->health_score = bbcs_calculateSiteHealth();
+		$this->health_score = BotBlockerHealthShortcodes::calculateSiteHealth();
 		$this->health_label = Botblocker_HealthScoreHelper::getLabel( $this->health_score );
 
 		$this->health_gauge = HealthGauge::make()
@@ -255,9 +252,6 @@ final class Botblocker_SetupGuideViewModel {
 		$this->system_max_execution_time = ini_get( 'max_execution_time' );
 		$this->system_upload_max_filesize = ini_get( 'upload_max_filesize' );
 
-		// Changelog
-		$this->changelog_html = $this->build_changelog_html();
-
 		// Chain active flags
 		$this->early_init_active = $this->has_cloud_api && $this->early_addon_active && ! empty( $settings->early_init_enable );
 		$this->mu_active         = ! empty( $settings->mu_enable );
@@ -273,55 +267,11 @@ final class Botblocker_SetupGuideViewModel {
 	 * Build a tab URL for a given health key, including &focus=key
 	 * so the JS (checkUrlFocusAndJump) can scroll directly to the specific field.
 	 *
-	 * Uses the centralized bbcs_get_setting_link() which resolves the correct
+	 * Uses the centralized BotBlockerSnav::getSettingLink() which resolves the correct
 	 * admin page (Settings, Integrations, Tools, etc.) from the global search index.
 	 */
 	public function getItemTabUrl( string $key ): string {
-		return bbcs_get_setting_link( $key, true );
-	}
-
-	private function build_changelog_html(): string {
-		$changelog_file = BOTBLOCKER_DIR . 'readme.md';
-		if ( ! file_exists( $changelog_file ) ) {
-			return '';
-		}
-		$content = file_get_contents( $changelog_file );
-		if ( $content === false ) {
-			return '';
-		}
-
-		// Extract the most recent version entries (max 2) from the changelog section
-		$lines   = explode( "\n", $content );
-		$ver_idx = 0;
-		$result  = array();
-		$buffer  = array();
-
-		foreach ( $lines as $line ) {
-			$trimmed = trim( $line );
-			if ( preg_match( '/^= \d+\.\d+\.\d+ =$/', $trimmed ) ) {
-				// Flush previous buffer if we already have one version collected
-				if ( count( $buffer ) > 0 && $ver_idx >= 1 ) {
-					$result   = array_merge( $result, $buffer );
-					$result[] = '';
-				}
-				$buffer = array( $trimmed );
-				$ver_idx++;
-				if ( $ver_idx > 2 ) {
-					break;
-				}
-				continue;
-			}
-			if ( $ver_idx > 0 && $trimmed !== '' && substr( $trimmed, 0, 2 ) !== '==' ) {
-				$buffer[] = '* ' . $trimmed;
-			}
-		}
-
-		// Flush remaining buffer (last version we were collecting)
-		if ( count( $buffer ) > 0 && $ver_idx <= 2 ) {
-			$result = array_merge( $result, $buffer );
-		}
-
-		return implode( "\n", $result );
+		return BotBlockerSnav::getSettingLink( $key, true );
 	}
 
 	/**

@@ -9,7 +9,13 @@ use BotBlocker\Component\ToggleOption;
 use BotBlocker\Component\TextInput;
 use BotBlocker\Component\FieldPair;
 
-return static function (Botblocker_SettingsViewModel $data, bool $isActive): void {
+$bbcs_tls_md = '';
+$bbcs_tls_md_path = BOTBLOCKER_DIR . 'docs/TLS-FINGERPRINTING.md';
+if ( file_exists( $bbcs_tls_md_path ) ) {
+    $bbcs_tls_md = (string) file_get_contents( $bbcs_tls_md_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+}
+
+return static function (Botblocker_SettingsViewModel $data, bool $isActive) use ( $bbcs_tls_md ): void {
     $ja3 = $data->current_ja3 !== '' ? $data->current_ja3 : __('(not detected)', 'botblocker-security');
     $ja4 = $data->current_ja4 !== '' ? $data->current_ja4 : __('(not detected)', 'botblocker-security');
     ?>
@@ -60,7 +66,8 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
 
                 SettingsGroup::make()
                     ->withTitle( __( 'Fingerprint Database', 'botblocker-security' ) )
-                    ->withItems( static function (): void {
+                    ->withItems( static function () use ( $data ): void {
+                        $tls_sync_enabled = $data->is_checked( 'tls_fingerprint_check' );
                         ?>
                         <div class="bbcs-button-container">
                             <div class="bbcs_settings_button">
@@ -74,7 +81,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                                 <?php echo \BotBlocker\Component\Base::tooltip( __( 'Clear all known JA3/JA4 TLS fingerprints.', 'botblocker-security' ) ); ?>
                             </div>
                             <div class="bbcs_settings_button">
-                                <button type="button" id="bbcs_tls_sync" class="mb-1 bbcs-btn bbcs-btn--xs btn-default"><i class="fa-solid fa-sync"></i> <?php esc_html_e( 'Sync Now', 'botblocker-security' ); ?></button>
+                                <button type="button" id="bbcs_tls_sync" class="mb-1 bbcs-btn bbcs-btn--xs btn-default<?php echo $tls_sync_enabled ? '' : ' is-disabled'; ?>"<?php echo $tls_sync_enabled ? '' : ' disabled title="' . esc_attr__( 'Enable TLS Fingerprint Check and save settings before syncing.', 'botblocker-security' ) . '"'; ?>><i class="fa-solid fa-sync"></i> <?php esc_html_e( 'Sync Now', 'botblocker-security' ); ?></button>
                                 <?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
                                 <?php echo \BotBlocker\Component\Base::tooltip( __( 'Sync known JA3/JA4 TLS fingerprints from the BotBlocker server.', 'botblocker-security' ) ); ?>
                             </div>
@@ -117,6 +124,22 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                         <?php
                     } )
                     ->render();
+
+                SettingsGroup::make()
+                    ->withTitle( __( 'Documentation', 'botblocker-security' ) )
+                    ->withItems( static function (): void {
+                        ?>
+                        <div class="bbcs-option bbcs-hoverbg">
+                            <button type="button" class="bbcs-btn" id="bbcs-tls-fingerprint-guide-trigger">
+                                <svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-doc"></use></svg>
+                                <?php esc_html_e( 'Open TLS-FINGERPRINTING.md', 'botblocker-security' ); ?>
+                            </button>
+                            <span class="bbcs-option-label"><?php esc_html_e( 'Full guide: JA3/JA4 requirements, server modules and setup options.', 'botblocker-security' ); ?></span>
+                            <span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_attr_e( 'Shows the raw contents of docs/TLS-FINGERPRINTING.md shipped with the plugin.', 'botblocker-security' ); ?></span></span>
+                        </div>
+                        <?php
+                    } )
+                    ->render();
                 ?>
             </div>
                 <?php
@@ -124,4 +147,55 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
             ->render();
         ?>
     </div>
+
+    <div class="bbcs-modal-overlay" id="bbcsTlsFingerprintModal" style="display:none;">
+        <div class="bbcs-modal bbcs-modal--wide">
+            <div class="bbcs-modal-header">
+                <div class="bbcs-modal-title">
+                    <svg class="bbcs-ico bbcs-ico--sm" style="margin-right:var(--bbcs-sp-1);"><use href="#bbcs-i-doc"></use></svg>
+                    <?php esc_html_e( 'TLS-FINGERPRINTING.md', 'botblocker-security' ); ?>
+                </div>
+                <button type="button" class="bbcs-modal-close" data-modal-close>
+                    <svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-x"></use></svg>
+                </button>
+            </div>
+            <div class="bbcs-modal-body">
+                <pre class="bbcs-md-view"><?php echo esc_html( $bbcs_tls_md ); ?></pre>
+            </div>
+            <div class="bbcs-modal-footer">
+                <button type="button" class="bbcs-btn" data-modal-close><?php esc_html_e( 'Close', 'botblocker-security' ); ?></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        'use strict';
+        var trigger = document.getElementById('bbcs-tls-fingerprint-guide-trigger');
+        var overlay = document.getElementById('bbcsTlsFingerprintModal');
+        if (!trigger || !overlay) return;
+
+        trigger.addEventListener('click', function(e) {
+            e.preventDefault();
+            overlay.style.display = 'flex';
+        });
+
+        overlay.addEventListener('click', function(e) {
+            var btn = e.target.closest('[data-modal-close]');
+            if (btn) {
+                overlay.style.display = 'none';
+                return;
+            }
+            if (e.target === overlay) {
+                overlay.style.display = 'none';
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && overlay.style.display === 'flex') {
+                overlay.style.display = 'none';
+            }
+        });
+    })();
+    </script>
 <?php };

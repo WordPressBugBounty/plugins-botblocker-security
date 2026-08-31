@@ -121,7 +121,7 @@ final class Botblocker_HeaderViewModel {
 		$this->display_name = $display_name;
 		$this->user_role    = $user_role;
 
-		$this->lang_options = self::mapLangOptions( bbcs_get_lang_options() );
+		$this->lang_options = self::mapLangOptions( BotBlockerLangOptions::getOptions() );
 
 		$preferred_locale = isset( $_COOKIE['bbcs_preferred_language'] )
 			? sanitize_text_field( wp_unslash( $_COOKIE['bbcs_preferred_language'] ) )

@@ -1,9 +1,12 @@
 (function ($) {
     "use strict";
 
-    document.getElementById('bbcs_recaptcha_tresshold').addEventListener('input', function () {
-        document.getElementById('bbcs_recaptcha_tresshold_value').textContent = this.value;
-    });        
+    var bbcsRecaptchaThreshold = document.getElementById('bbcs_recaptcha_tresshold');
+    if (bbcsRecaptchaThreshold) {
+        bbcsRecaptchaThreshold.addEventListener('input', function () {
+            document.getElementById('bbcs_recaptcha_tresshold_value').textContent = this.value;
+        });
+    }
 })(jQuery);
 
 (function($) {

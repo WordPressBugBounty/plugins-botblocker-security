@@ -248,6 +248,8 @@ class BotBlockerAjaxPaths {
 				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' paths rendered + cache cleared' );
 			}
 
+			BotBlockerAudit::ruleChanged( BotBlockerAuditEvents::RULE_LIST_PATH, BotBlockerAuditEvents::RULE_ACTION_UPDATED, array( 'id' => $id ) );
+
 			wp_send_json_success( __( 'Path updated successfully.', 'botblocker-security' ) );
 		} else {
 			global $wpdb;
@@ -310,6 +312,8 @@ class BotBlockerAjaxPaths {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' paths rendered + cache cleared' );
 			}
+
+			BotBlockerAudit::ruleChanged( BotBlockerAuditEvents::RULE_LIST_PATH, BotBlockerAuditEvents::RULE_ACTION_DELETED, array( 'id' => $id ) );
 
 			wp_send_json_success( __( 'Path deleted successfully.', 'botblocker-security' ) );
 		} else {
@@ -378,6 +382,8 @@ class BotBlockerAjaxPaths {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' paths rendered + cache cleared' );
 			}
+
+			BotBlockerAudit::ruleChanged( BotBlockerAuditEvents::RULE_LIST_PATH, BotBlockerAuditEvents::RULE_ACTION_TOGGLED, array( 'id' => $id ) );
 
 			wp_send_json_success( __( 'Path toggled successfully.', 'botblocker-security' ) );
 		} else {
@@ -481,6 +487,8 @@ class BotBlockerAjaxPaths {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' paths rendered + cache cleared' );
 			}
+
+			BotBlockerAudit::ruleChanged( BotBlockerAuditEvents::RULE_LIST_PATH, BotBlockerAuditEvents::RULE_ACTION_CREATED, array( 'id' => (int) $wpdb->insert_id ) );
 
 			wp_send_json_success( __( 'Path created successfully.', 'botblocker-security' ) );
 		} else {
@@ -610,6 +618,8 @@ class BotBlockerAjaxPaths {
 			BotBlockerFileRenderer::renderPaths();
 			BotBlockerCache::clearFileCache();
 
+			BotBlockerAudit::ruleChanged( BotBlockerAuditEvents::RULE_LIST_PATH, BotBlockerAuditEvents::RULE_ACTION_IMPORTED, array( 'imported' => $imported, 'skipped' => $skipped ) );
+
 			wp_send_json_success(
 				array(
 					'imported' => $imported,
@@ -662,6 +672,8 @@ class BotBlockerAjaxPaths {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' paths rendered + cache cleared' );
 			}
+
+			BotBlockerAudit::ruleChanged( BotBlockerAuditEvents::RULE_LIST_PATH, BotBlockerAuditEvents::RULE_ACTION_CLEARED );
 
 			wp_send_json_success( __( 'All paths have been cleared.', 'botblocker-security' ) );
 		} else {

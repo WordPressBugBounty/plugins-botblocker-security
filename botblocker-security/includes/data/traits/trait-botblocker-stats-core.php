@@ -33,6 +33,7 @@ trait BotBlockerStatsCoreTrait {
 		$today_end                   = ( clone $current_date )->setTime( 23, 59, 59 );
 		$period_start                = ( clone $today_start )->modify( '-' . ( $period_days - 1 ) . ' days' );
 		$today_ts                    = $today_start->getTimestamp();
+		$today_end_ts                = $today_end->getTimestamp();
 		$period_ts                   = $period_start->getTimestamp();
 		[$ip_not_in_sql, $ip_params] = BotBlockerDb::getIPNotLikeSQL();
 		// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
@@ -60,16 +61,13 @@ trait BotBlockerStatsCoreTrait {
 						FROM `{$wpdb->bbcs_hits_suspicious}`
 				) AS ch
 				" . BotBlockerDb::pageFilterJoin( 'ch', $today_ts ) . "
-				WHERE ch.date BETWEEN UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
-								AND UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
+				WHERE ch.date BETWEEN %d AND %d
 				" . BotBlockerDb::pageFilterWhere( 'ch', $today_ts ) . "
 				AND ch.method = 'GET'
 				{$ip_not_in_sql}
 				",
-				$today_start->format( 'Y-m-d H:i:s' ),
-				$gmt_offset_str,
-				$today_end->format( 'Y-m-d H:i:s' ),
-				$gmt_offset_str,
+				$today_ts,
+				$today_end_ts,
 				...$ip_params
 			),
 			ARRAY_A
@@ -108,16 +106,13 @@ trait BotBlockerStatsCoreTrait {
 							FROM `{$wpdb->bbcs_hits_suspicious}`
 					) AS ch
 					" . BotBlockerDb::pageFilterJoin( 'ch', $period_ts ) . "
-					WHERE ch.date BETWEEN UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
-									AND UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
+					WHERE ch.date BETWEEN %d AND %d
 					" . BotBlockerDb::pageFilterWhere( 'ch', $period_ts ) . "
 					AND ch.method = 'GET'
 					{$ip_not_in_sql}
 					",
-					$period_start->format( 'Y-m-d H:i:s' ),
-					$gmt_offset_str,
-					$today_end->format( 'Y-m-d H:i:s' ),
-					$gmt_offset_str,
+					$period_ts,
+					$today_end_ts,
 					...$ip_params
 				),
 				ARRAY_A
@@ -162,6 +157,8 @@ trait BotBlockerStatsCoreTrait {
 		global $wpdb;
 		[$ip_not_in_sql, $ip_params] = BotBlockerDb::getIPNotLikeSQL();
 		$period_ts                   = $period_start->getTimestamp();
+		$today_ts                    = $today_start->getTimestamp();
+		$today_end_ts                = $today_end->getTimestamp();
 		$period_pf_col               = BotBlockerDb::pageFilterColumn( $period_ts );
 
 		// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
@@ -175,7 +172,7 @@ trait BotBlockerStatsCoreTrait {
 					IFNULL(NULLIF(ch.browser,''), 'NA') AS browser,
 					IFNULL(NULLIF(ch.os,''), 'NA')      AS os,
 					IFNULL(NULLIF(ch.wbot,''), 'NA')    AS wbot,
-					CASE WHEN ch.date >= UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
+					CASE WHEN ch.date >= %d
 						 THEN 1 ELSE 0 END AS is_today
 				FROM (
 					SELECT date, CAST(ip AS CHAR(45)) AS ip, CAST(browser AS CHAR(32)) AS browser,
@@ -187,19 +184,15 @@ trait BotBlockerStatsCoreTrait {
 						FROM `{$wpdb->bbcs_hits_suspicious}`
 				) AS ch
 				" . BotBlockerDb::pageFilterJoin( 'ch', $period_ts ) . "
-				WHERE ch.date BETWEEN UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
-								AND UNIX_TIMESTAMP(CONVERT_TZ(%s, %s, '+00:00'))
+				WHERE ch.date BETWEEN %d AND %d
 				" . BotBlockerDb::pageFilterWhere( 'ch', $period_ts ) . "
 				AND ch.method = 'GET'
 				AND ch.ip != ''
 				{$ip_not_in_sql}
 				",
-				$today_start->format( 'Y-m-d H:i:s' ),
-				$gmt_offset_str,
-				$period_start->format( 'Y-m-d H:i:s' ),
-				$gmt_offset_str,
-				$today_end->format( 'Y-m-d H:i:s' ),
-				$gmt_offset_str,
+				$today_ts,
+				$period_ts,
+				$today_end_ts,
 				...$ip_params
 			),
 			ARRAY_A

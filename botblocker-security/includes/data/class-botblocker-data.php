@@ -147,24 +147,71 @@ class BotBlockerData {
 	}
 
 	public static function getBotSignatures(): array {
-		static $decoded = null;
-		if ( $decoded === null ) {
-			$processed = BotBlockerMultisite::getDataDir() . 'bot-signatures-processed.php';
-			if ( file_exists( $processed ) ) {
-				$decoded = bbcs_safe_load_data_file( $processed );
-				if ( ! empty( $decoded ) ) {
-					return $decoded;
-				}
-			}
-			$raw     = include BOTBLOCKER_DIR . 'data/base/bot-signatures.php';
-			$decoded = array();
-			foreach ( $raw as $signature ) {
-				$s = preg_replace( '/\s+/', ' ', trim( urldecode( $signature ) ) );
-				if ( $s !== '' ) {
-					$decoded[] = $s;
+		self::loadBotSignatures();
+		return self::$bbcs_bot_substrings;
+	}
+
+	public static function getBotSignaturePatterns(): array {
+		self::loadBotSignatures();
+		return self::$bbcs_bot_patterns;
+	}
+
+	private static $bbcs_bot_substrings = null;
+	private static $bbcs_bot_patterns   = null;
+
+	private static function loadBotSignatures(): void {
+		if ( self::$bbcs_bot_substrings !== null ) {
+			return;
+		}
+		$substrings = array();
+		$patterns   = array();
+		$processed  = BotBlockerMultisite::getDataDir() . 'bot-signatures-processed.php';
+		if ( file_exists( $processed ) ) {
+			$data = BotBlockerDataFile::safeLoad( $processed );
+			if ( ! empty( $data ) ) {
+				if ( isset( $data['substrings'] ) && isset( $data['patterns'] ) ) {
+					$substrings = self::normalizeBotSubstrings( $data['substrings'] );
+					$patterns   = self::validateBotPatterns( $data['patterns'] );
+				} else {
+					$substrings = self::normalizeBotSubstrings( $data );
 				}
 			}
 		}
-		return $decoded;
+		if ( $substrings === array() && $patterns === array() ) {
+			$raw = include BOTBLOCKER_DIR . 'data/base/bot-signatures.php';
+			if ( isset( $raw['substrings'] ) && isset( $raw['patterns'] ) ) {
+				$substrings = self::normalizeBotSubstrings( $raw['substrings'] );
+				$patterns   = self::validateBotPatterns( $raw['patterns'] );
+			} else {
+				$substrings = self::normalizeBotSubstrings( $raw );
+			}
+		}
+		self::$bbcs_bot_substrings = $substrings;
+		self::$bbcs_bot_patterns   = $patterns;
+	}
+
+	private static function normalizeBotSubstrings( array $items ): array {
+		$out = array();
+		foreach ( $items as $signature ) {
+			$s = preg_replace( '/\s+/', ' ', trim( urldecode( (string) $signature ) ) );
+			if ( $s !== '' ) {
+				$out[] = $s;
+			}
+		}
+		return $out;
+	}
+
+	private static function validateBotPatterns( array $items ): array {
+		$out = array();
+		foreach ( $items as $pattern ) {
+			$p = (string) $pattern;
+			if ( $p !== '' && @preg_match( '~' . $p . '~i', '' ) !== false ) {
+				$out[] = $p;
+			} elseif ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG && $p !== '' ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [BotSignatures] invalid pattern dropped: ' . $p );
+			}
+		}
+		return $out;
 	}
 }

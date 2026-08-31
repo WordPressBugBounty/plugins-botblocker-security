@@ -57,34 +57,26 @@ class BotBlockerWpUtility {
 
 	public static function is_wordpress_maintenance_page( $page ): bool {
 
+		$path = self::path_of( $page );
+
 		$excluded_patterns = array( '/wp-cron.php', '/wp-admin/update.php', '/wp-admin/update-core.php', '/wp-admin/plugins.php', '/wp-admin/plugin-install.php' );
-		if ( $page != null ) {
-			$path = strtok( (string) $page, '?' );
-			if ( $path === false ) {
-				$path = '';
-			}
-			foreach ( $excluded_patterns as $pattern ) {
-				if ( strpos( $path, $pattern ) !== false ) {
-					return true;
-				}
-			}
-
-			if ( strpos( $path, '/wp-admin/admin-ajax.php' ) !== false ) {
-				$action = '';
-			// phpcs:disable WordPress.Security.NonceVerification.Recommended -- checking AJAX action name only, no state change
-				if ( isset( $_REQUEST['action'] ) ) {
-					$action = sanitize_key( wp_unslash( $_REQUEST['action'] ) );
-				}
-			// phpcs:enable WordPress.Security.NonceVerification.Recommended
-
-				if ( in_array( $action, array( 'update-plugin', 'install-plugin', 'delete-plugin', 'update-theme', 'install-theme', 'delete-theme' ), true ) ) {
-					return true;
-				}
+		foreach ( $excluded_patterns as $pattern ) {
+			if ( self::path_matches( $path, $pattern ) ) {
+				return true;
 			}
 		}
 
-		if ( function_exists( 'wp_doing_cron' ) && wp_doing_cron() ) {
-			return true;
+		if ( self::path_matches( $path, '/wp-admin/admin-ajax.php' ) ) {
+			$action = '';
+			// phpcs:disable WordPress.Security.NonceVerification.Recommended -- checking AJAX action name only, no state change
+			if ( isset( $_REQUEST['action'] ) ) {
+				$action = sanitize_key( wp_unslash( $_REQUEST['action'] ) );
+			}
+			// phpcs:enable WordPress.Security.NonceVerification.Recommended
+
+			if ( in_array( $action, array( 'update-plugin', 'install-plugin', 'delete-plugin', 'update-theme', 'install-theme', 'delete-theme' ), true ) ) {
+				return true;
+			}
 		}
 
 		if ( wp_doing_cron() ) {
@@ -92,6 +84,38 @@ class BotBlockerWpUtility {
 		}
 
 		return false;
+	}
+
+	public static function path_of( $page ): string {
+		$uri = ( $page !== null ) ? (string) $page : '';
+
+		$q = strpos( $uri, '?' );
+		if ( $q !== false ) {
+			$uri = substr( $uri, 0, $q );
+		}
+		return $uri;
+	}
+
+	public static function path_matches( string $path, string $pattern ): bool {
+		if ( $path === $pattern ) {
+			return true;
+		}
+
+		$base = self::site_url_path();
+		return $base !== '' && $path === $base . $pattern;
+	}
+
+	public static function site_url_path(): string {
+		if ( ! function_exists( 'site_url' ) ) {
+			return '';
+		}
+
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url -- path-only extract; same contract as MU util
+		$parsed = parse_url( (string) site_url(), PHP_URL_PATH );
+		if ( ! is_string( $parsed ) || $parsed === '/' ) {
+			return '';
+		}
+		return rtrim( $parsed, '/' );
 	}
 
 	public static function is_botblocker_page(): bool {

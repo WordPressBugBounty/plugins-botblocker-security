@@ -59,54 +59,70 @@ class BotBlockerAjaxEarlyPhase {
 		$fs_error       = null;
 		$mu_plugin_file = trailingslashit( WPMU_PLUGIN_DIR ) . 'botblocker-mu-plugin.php';
 
-		if ( $setting_key === 'mu_enable' ) {
-			if ( $setting_value ) {
-				BotBlockerInstall::setEarlyInitEnabled( false, array( 'reason' => 'mu_switch' ) );
-				BotBlockerInstall::installMuPlugin();
-				if ( ! file_exists( $mu_plugin_file ) ) {
-					$fs_error = __( 'Failed to install MU plugin. Check filesystem permissions.', 'botblocker-security' );
+		try {
+			if ( $setting_key === 'mu_enable' ) {
+				if ( $setting_value ) {
+					BotBlockerInstall::setEarlyInitEnabled( false, array( 'reason' => 'mu_switch' ) );
+					BotBlockerInstall::installMuPlugin();
+					if ( ! file_exists( $mu_plugin_file ) ) {
+						$fs_error = __( 'Failed to install MU plugin. Check filesystem permissions.', 'botblocker-security' );
+					}
+				} else {
+					BotBlockerInstall::uninstallMuPlugin();
 				}
-			} else {
-				BotBlockerInstall::uninstallMuPlugin();
-			}
-		} elseif ( $setting_key === 'early_init_enable' ) {
-			if ( $setting_value ) {
-				if ( ! BotBlockerInstall::setEarlyInitEnabled( true ) ) {
-					$fs_error = __( 'Failed to write to wp-config.php. Check filesystem permissions.', 'botblocker-security' );
+			} elseif ( $setting_key === 'early_init_enable' ) {
+				if ( $setting_value ) {
+					if ( ! BotBlockerInstall::setEarlyInitEnabled( true ) ) {
+						$fs_error = __( 'Failed to write to wp-config.php. Check filesystem permissions.', 'botblocker-security' );
+					}
+				} else {
+					BotBlockerInstall::setEarlyInitEnabled( false );
 				}
-			} else {
-				BotBlockerInstall::setEarlyInitEnabled( false );
 			}
-		}
 
-		if ( $fs_error !== null ) {
-			wp_send_json_error( array( 'message' => $fs_error ) );
-		}
+			if ( $fs_error !== null ) {
+				wp_send_json_error( array( 'message' => $fs_error ) );
+			}
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->replace( $wpdb->bbcs_settings, array( 'key' => $setting_key, 'value' => $setting_value ), array( '%s', '%s' ) );
-		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
-			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' DB update executed' );
-		}
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$old_value = $wpdb->get_var( $wpdb->prepare( "SELECT `value` FROM `{$wpdb->bbcs_settings}` WHERE `key` = %s", $setting_key ) );
 
-		// Shared dedup – ensures mutual exclusion between early_init_enable and mu_enable.
-		$final_state = bbcs_dedup_early_phase_toggles( $setting_key, $setting_value );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->replace( $wpdb->bbcs_settings, array( 'key' => $setting_key, 'value' => $setting_value ), array( '%s', '%s' ) );
 
-		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
-			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' before generateSettingsFile' );
-		}
-		BotBlockerFileRenderer::generateSettingsFile();
+			do_action( 'bbcs_audit_protection_toggled', $setting_key, $old_value, $setting_value );
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' DB update executed' );
+			}
 
-		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
-			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' success' );
+			// Shared dedup – ensures mutual exclusion between early_init_enable and mu_enable.
+			$final_state = BotBlockerEarlyPhaseDedup::dedup( $setting_key, $setting_value );
+
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' before generateSettingsFile' );
+			}
+			BotBlockerFileRenderer::generateSettingsFile();
+
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' success' );
+			}
+			wp_send_json_success( array(
+				'message'          => __( 'Success!', 'botblocker-security' ),
+				'final_state'      => $final_state,
+				'mu_loader_exists' => ( $setting_key === 'mu_enable' && file_exists( $mu_plugin_file ) ),
+			) );
+		} catch ( \Throwable $e ) {
+			if ( $e instanceof \WPDieException ) {
+				throw $e;
+			}
+			if ( $setting_key === 'early_init_enable' && class_exists( 'BotBlockerAddons' ) ) {
+				BotBlockerAddons::panicEarlyInitLayer( $e );
+				wp_send_json_error( array( 'message' => __( 'Early Init failed and was switched off to keep the site running.', 'botblocker-security' ) ) );
+			}
+			wp_send_json_error( array( 'message' => __( 'Operation failed.', 'botblocker-security' ) ) );
 		}
-		wp_send_json_success( array(
-			'message'          => __( 'Success!', 'botblocker-security' ),
-			'final_state'      => $final_state,
-			'mu_loader_exists' => ( $setting_key === 'mu_enable' && file_exists( $mu_plugin_file ) ),
-		) );
 	}
 }

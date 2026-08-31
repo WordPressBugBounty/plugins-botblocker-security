@@ -16,6 +16,10 @@ class BotBlockerAlerts {
 	/** Shared transient holding all background data-sync failure alerts. */
 	private const SYNC_ALERTS_KEY = 'bbcs_sync_failed_alerts';
 
+	const TRANSIENT_ADDON_UPDATE_FAILED = 'bbcs_addon_update_failed_alert';
+	const TRANSIENT_ADDON_INCOMPATIBLE  = 'bbcs_addon_incompatible_alert';
+	const TRANSIENT_ADDON_FAILED        = 'bbcs_addon_failed_alert';
+
 	/**
 	 * Default destination per alert type: admin page slug + tab anchor + label.
 	 * Used by resolveLink() when an alert does not carry its own link.
@@ -29,7 +33,9 @@ class BotBlockerAlerts {
 		'cloud_api_hits_exhausted' => array( 'bbcs_cloud_api', '', 'Go to Cloud API' ),
 		'asn_db_failed'            => array( 'bbcs_tools', '#maintenance&focus=bbcs-update-asn-database', 'Go to Tools' ),
 		'addon_update_failed'      => array( 'bbcs_addons', '', 'Go to Add-ons' ),
+		'addon_updates_available'  => array( 'bbcs_addons', '', 'Go to Add-ons' ),
 		'addon_incompatible'       => array( 'bbcs_addons', '', 'Go to Add-ons' ),
+		'addon_failed'             => array( 'bbcs_addons', '', 'Go to Add-ons' ),
 		'early_init_broken'        => array( 'bbcs_addons', '', 'Go to Add-ons' ),
 		'rugov_update_failed'      => array( 'bbcs_tools', '#maintenance', 'Go to Tools' ),
 		'llm_sync_failed'          => array( 'bbcs_tools', '#maintenance', 'Go to Tools' ),
@@ -372,14 +378,24 @@ class BotBlockerAlerts {
 			$alerts[] = $cloud_api_hits_exhausted_alert;
 		}
 
-		$addon_update_failed_alert = get_transient( 'bbcs_addon_update_failed_alert' );
+		$addon_update_failed_alert = get_transient( self::TRANSIENT_ADDON_UPDATE_FAILED );
 		if ( ! empty( $addon_update_failed_alert ) ) {
 			$alerts[] = $addon_update_failed_alert;
 		}
 
-		$addon_incompatible_alert = get_transient( 'bbcs_addon_incompatible_alert' );
+		$addon_incompatible_alert = get_transient( self::TRANSIENT_ADDON_INCOMPATIBLE );
 		if ( ! empty( $addon_incompatible_alert ) ) {
 			$alerts[] = $addon_incompatible_alert;
+		}
+
+		$addon_failed_alert = get_transient( self::TRANSIENT_ADDON_FAILED );
+		if ( ! empty( $addon_failed_alert ) ) {
+			$alerts[] = $addon_failed_alert;
+		}
+
+		$addon_updates_alert = self::addonUpdatesAlert();
+		if ( ! empty( $addon_updates_alert ) ) {
+			$alerts[] = $addon_updates_alert;
 		}
 
 		$asn_db_failed_alert = get_transient( 'bbcs_asn_db_failed_alert' );
@@ -413,12 +429,60 @@ class BotBlockerAlerts {
 			return array();
 		}
 
-		return array_map(
-			static function ( $alert ): array {
-				return is_array( $alert ) ? self::resolveLink( $alert ) : array();
-			},
-			$alerts
+		return array_values(
+			array_filter(
+				array_map(
+					static function ( $alert ): array {
+						return is_array( $alert ) ? self::resolveLink( $alert ) : array();
+					},
+					$alerts
+				)
+			)
 		);
+	}
+
+	/**
+	 * Header bell alert for add-ons with a newer market version. Derived from
+	 * the precomputed bbcs_addon_updates_available option — one autoloaded
+	 * read, no HTTP, no add-on directory scan.
+	 */
+	private static function addonUpdatesAlert(): array {
+		if ( ! class_exists( 'BotBlockerAddonsMarket' ) || ! class_exists( 'BotBlockerAddons' ) ) {
+			return array();
+		}
+		if ( BotBlockerAddons::isLocalMode() ) {
+			return array();
+		}
+		$slugs = BotBlockerAddonsMarket::getAvailableUpdates();
+		if ( empty( $slugs ) ) {
+			return array();
+		}
+		$count = count( $slugs );
+		return array(
+			'type'      => 'addon_updates_available',
+			'icon'      => 'fas fa-arrow-circle-up bg-info text-light',
+			'title'     => __( 'Add-on Updates Available', 'botblocker-security' ),
+			'message'   => sprintf(
+				/* translators: %d: number of add-ons with a newer version available. */
+				_n( '%d add-on has a new version available.', '%d add-ons have new versions available.', $count, 'botblocker-security' ),
+				$count
+			),
+			'link'      => method_exists( 'BotBlockerMultisite', 'getAdminPageUrl' ) ? BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' ) : '',
+			'link_text' => __( 'Go to Add-ons', 'botblocker-security' ),
+		);
+	}
+
+	/**
+	 * Init-gated translation: alert setters are reachable from the
+	 * plugins_loaded boot path (addons redeploy/panic, missing data files,
+	 * cloud request failure) where the textdomain is not loaded yet —
+	 * pre-init callers get plain English instead of a premature __().
+	 */
+	public static function t( string $text ): string {
+		if ( did_action( 'init' ) ) {
+			return __( $text, 'botblocker-security' );
+		}
+		return $text;
 	}
 
 	public static function setCustom( string $key, array $alert, int $ttl = DAY_IN_SECONDS ): bool {
@@ -441,7 +505,7 @@ class BotBlockerAlerts {
 		$alert = array(
 			'type'    => 'no_connection_bbcloud',
 			'icon'    => 'fas fa-signal bg-success text-light',
-			'title'   => __( 'No connection to BotBlocker Cloud', 'botblocker-security' ),
+			'title'   => self::t( 'No connection to BotBlocker Cloud' ),
 			'message' => gmdate( 'd/m/Y' ),
 		);
 
@@ -453,8 +517,8 @@ class BotBlockerAlerts {
 		$alert = array(
 			'type'    => 'missing_files',
 			'icon'    => 'fas fa-exclamation-triangle bg-warning text-light',
-			'title'   => __( 'Missing Files', 'botblocker-security' ),
-			'message' => __( 'Required files missing. Regenerated.', 'botblocker-security' ),
+			'title'   => self::t( 'Missing Files' ),
+			'message' => self::t( 'Required files missing. Regenerated.' ),
 		);
 
 		set_transient( 'bbcs_missing_files_alert', $alert, HOUR_IN_SECONDS );
@@ -656,6 +720,15 @@ class BotBlockerAlerts {
 		);
 	}
 
+	private static function replaceTransient( string $key, array $value, int $expiration ): void {
+		delete_transient( $key );
+		delete_option( '_transient_' . $key );
+		delete_option( '_transient_timeout_' . $key );
+		wp_cache_delete( '_transient_' . $key, 'options' );
+		wp_cache_delete( '_transient_timeout_' . $key, 'options' );
+		set_transient( $key, $value, $expiration );
+	}
+
 	/**
 	 * @param array $failed_addons Array of ['slug'=>..., 'name'=>..., 'error'=>...].
 	 */
@@ -680,18 +753,48 @@ class BotBlockerAlerts {
 			'link_text' => __( 'Go to Add-ons', 'botblocker-security' ),
 		);
 
-		set_transient( 'bbcs_addon_update_failed_alert', $alert, DAY_IN_SECONDS );
+		self::replaceTransient( self::TRANSIENT_ADDON_UPDATE_FAILED, $alert, DAY_IN_SECONDS );
+	}
+
+	public static function setAddonFailed( array $failed ): void {
+		$names = array();
+		foreach ( $failed as $item ) {
+			if ( ! empty( $item['name'] ) ) {
+				$names[] = (string) $item['name'];
+			}
+		}
+		if ( empty( $names ) ) {
+			return;
+		}
+
+		$alert = array(
+			'type'      => 'addon_failed',
+			'icon'      => 'fas fa-exclamation-triangle bg-danger text-light',
+			'title'     => self::t( 'Add-ons Switched Off' ),
+			'message'   => sprintf(
+				/* translators: %s: comma-separated list of add-on names that failed to load. */
+				self::t( 'These add-ons could not start and were switched off to keep the site running: %s. Your settings are kept. Please update or reinstall them.' ),
+				implode( ', ', $names )
+			),
+			'link'      => method_exists( 'BotBlockerMultisite', 'getAdminPageUrl' ) ? BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' ) : '',
+			'link_text' => self::t( 'View Add-ons' ),
+		);
+
+		self::replaceTransient( self::TRANSIENT_ADDON_FAILED, $alert, DAY_IN_SECONDS );
 	}
 
 	/**
-	 * @param array $deactivated Array of ['name'=>..., 'requires_core'=>...].
+	 * @param array $deactivated Array of ['name'=>..., 'requires_core'=>...] or ['name'=>..., 'max_core'=>...].
 	 */
 	public static function setAddonIncompatible( array $deactivated ): void {
 		$lines = array();
 		foreach ( $deactivated as $item ) {
 			if ( ! empty( $item['requires_core'] ) ) {
 				/* translators: 1: add-on name, 2: required BotBlocker version. */
-				$lines[] = sprintf( __( '%1$s (requires >= %2$s)', 'botblocker-security' ), $item['name'], $item['requires_core'] );
+				$lines[] = sprintf( self::t( '%1$s (requires >= %2$s)' ), $item['name'], $item['requires_core'] );
+			} elseif ( ! empty( $item['max_core'] ) ) {
+				/* translators: 1: add-on name, 2: highest supported BotBlocker version. */
+				$lines[] = sprintf( self::t( '%1$s (supports BotBlocker <= %2$s)' ), $item['name'], $item['max_core'] );
 			} else {
 				$lines[] = $item['name'];
 			}
@@ -699,22 +802,17 @@ class BotBlockerAlerts {
 		$alert = array(
 			'type'      => 'addon_incompatible',
 			'icon'      => 'fas fa-exclamation-triangle bg-warning text-light',
-			'title'     => __( 'Add-ons Deactivated', 'botblocker-security' ),
+			'title'     => self::t( 'Add-ons Deactivated' ),
 			'message'   => sprintf(
 				/* translators: %s: comma-separated list of deactivated add-on names with version requirements. */
-				__( 'Incompatible add-ons were deactivated: %s. Please update BotBlocker.', 'botblocker-security' ),
+				self::t( 'Incompatible add-ons were deactivated: %s. Please update BotBlocker.' ),
 				implode( ', ', $lines )
 			),
 			'link'      => method_exists( 'BotBlockerMultisite', 'getAdminPageUrl' ) ? BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' ) : '',
-			'link_text' => __( 'View Add-ons', 'botblocker-security' ),
+			'link_text' => self::t( 'View Add-ons' ),
 		);
 
-		delete_transient( 'bbcs_addon_incompatible_alert' );
-		delete_option( '_transient_bbcs_addon_incompatible_alert' );
-		delete_option( '_transient_timeout_bbcs_addon_incompatible_alert' );
-		wp_cache_delete( '_transient_bbcs_addon_incompatible_alert', 'options' );
-		wp_cache_delete( '_transient_timeout_bbcs_addon_incompatible_alert', 'options' );
-		set_transient( 'bbcs_addon_incompatible_alert', $alert, DAY_IN_SECONDS );
+		self::replaceTransient( self::TRANSIENT_ADDON_INCOMPATIBLE, $alert, DAY_IN_SECONDS );
 	}
 }
 

@@ -54,6 +54,10 @@ trait BotBlockerCoreTrait {
 			}
 		}
 
+		if ( BotBlockerFileRenderer::isBotSignaturesStale() ) {
+			BotBlockerFileRenderer::renderBotSignatures();
+		}
+
 		if ( $is_any_missing ) {
 			BotBlockerAlerts::setMissingFiles();
 		}
@@ -83,7 +87,7 @@ trait BotBlockerCoreTrait {
 		}
 		$loaded = true;
 		if ( file_exists( BotBlockerMultisite::getDataDir() . 'search_engines.php' ) ) {
-			$rules           = bbcs_safe_load_with_recovery( BotBlockerMultisite::getDataDir() . 'search_engines.php' );
+			$rules           = BotBlockerDataFile::safeLoadWithRecovery( BotBlockerMultisite::getDataDir() . 'search_engines.php' );
 			$this->bbcs_rule = $rules['bbcs_rule'] ?? $this->bbcs_rule;
 			$this->bbcs_se   = $rules['bbcs_se'] ?? $this->bbcs_se;
 		}
@@ -96,7 +100,7 @@ trait BotBlockerCoreTrait {
 		}
 		$loaded = true;
 		if ( file_exists( BotBlockerMultisite::getDataDir() . 'asn_rules.php' ) ) {
-			$asn_rules      = bbcs_safe_load_with_recovery( BotBlockerMultisite::getDataDir() . 'asn_rules.php' );
+			$asn_rules      = BotBlockerDataFile::safeLoadWithRecovery( BotBlockerMultisite::getDataDir() . 'asn_rules.php' );
 			$this->bbcs_asn = $asn_rules['bbcs_asn'] ?? $this->bbcs_asn;
 		}
 	}
@@ -108,7 +112,7 @@ trait BotBlockerCoreTrait {
 		}
 		$loaded = true;
 		if ( file_exists( BotBlockerMultisite::getDataDir() . 'ip.php' ) ) {
-			$self_ip_rules   = bbcs_safe_load_with_recovery( BotBlockerMultisite::getDataDir() . 'ip.php' );
+			$self_ip_rules   = BotBlockerDataFile::safeLoadWithRecovery( BotBlockerMultisite::getDataDir() . 'ip.php' );
 			$this->self_ips  = $self_ip_rules['self_ips'] ?? $this->self_ips;
 			$this->admin_ips = $self_ip_rules['admin'] ?? $this->admin_ips;
 		}
@@ -121,7 +125,7 @@ trait BotBlockerCoreTrait {
 		}
 		$loaded = true;
 		if ( file_exists( BotBlockerMultisite::getDataDir() . 'llm_trusted.php' ) ) {
-			$llm_data       = bbcs_safe_load_with_recovery( BotBlockerMultisite::getDataDir() . 'llm_trusted.php' );
+			$llm_data       = BotBlockerDataFile::safeLoadWithRecovery( BotBlockerMultisite::getDataDir() . 'llm_trusted.php' );
 			$this->bbcs_llm = $llm_data['bbcs_llm'] ?? $this->bbcs_llm;
 
 			if ( empty( $this->bbcs_llm ) && class_exists( 'BotBlockerLlmSync' ) ) {
@@ -140,7 +144,7 @@ trait BotBlockerCoreTrait {
 		}
 		$loaded = true;
 		if ( file_exists( BotBlockerMultisite::getDataDir() . 'proxy.php' ) ) {
-			$proxy            = bbcs_safe_load_with_recovery( BotBlockerMultisite::getDataDir() . 'proxy.php' );
+			$proxy            = BotBlockerDataFile::safeLoadWithRecovery( BotBlockerMultisite::getDataDir() . 'proxy.php' );
 			$this->bbcs_proxy = $proxy['bbcs_proxy'] ?? $this->bbcs_proxy;
 		}
 	}
@@ -152,7 +156,7 @@ trait BotBlockerCoreTrait {
 		}
 		$loaded = true;
 		if ( file_exists( BotBlockerMultisite::getDataDir() . 'paths.php' ) ) {
-			$path            = bbcs_safe_load_with_recovery( BotBlockerMultisite::getDataDir() . 'paths.php' );
+			$path            = BotBlockerDataFile::safeLoadWithRecovery( BotBlockerMultisite::getDataDir() . 'paths.php' );
 			$this->bbcs_path = $path['bbcs_path'] ?? $this->bbcs_path;
 		}
 	}
@@ -164,7 +168,7 @@ trait BotBlockerCoreTrait {
 		}
 		$loaded = true;
 		if ( file_exists( BotBlockerMultisite::getDataDir() . 'rules.php' ) ) {
-			$rules                   = bbcs_safe_load_with_recovery( BotBlockerMultisite::getDataDir() . 'rules.php' );
+			$rules                   = BotBlockerDataFile::safeLoadWithRecovery( BotBlockerMultisite::getDataDir() . 'rules.php' );
 			$this->bbcs_custom_rules = $rules['bbcs_custom_rule'] ?? $this->bbcs_custom_rules;
 		}
 	}
@@ -176,7 +180,7 @@ trait BotBlockerCoreTrait {
 		}
 		$loaded = true;
 		if ( file_exists( BotBlockerMultisite::getDataDir() . 'tls_fingerprints.php' ) ) {
-			$tls_data                    = bbcs_safe_load_with_recovery( BotBlockerMultisite::getDataDir() . 'tls_fingerprints.php' );
+			$tls_data                    = BotBlockerDataFile::safeLoadWithRecovery( BotBlockerMultisite::getDataDir() . 'tls_fingerprints.php' );
 			$this->bbcs_tls_fingerprints = $tls_data['bbcs_tls_fingerprints'] ?? $this->bbcs_tls_fingerprints;
 
 			if ( empty( $this->bbcs_tls_fingerprints ) && class_exists( 'BotBlockerTlsFingerprintsSync' ) ) {
@@ -370,7 +374,7 @@ trait BotBlockerCoreTrait {
 		}
 
 		if ( file_exists( $salt_file ) ) {
-			$salt_data = bbcs_safe_load_with_recovery( $salt_file );
+			$salt_data = BotBlockerDataFile::safeLoadWithRecovery( $salt_file );
 			if ( is_array( $salt_data ) ) {
 				foreach ( $salt_data as $key => $value ) {
 					if ( property_exists( $this->settings, $key ) ) {
@@ -380,12 +384,24 @@ trait BotBlockerCoreTrait {
 			}
 		}
 
-		if ( isset( $this->settings->salt_pz ) ) {
+		if ( ! empty( $this->settings->salt_pz ) ) {
 			$this->settings->salt = $this->settings->salt_pz . $this->settings->salt;
 		}
 
 		if ( empty( $this->settings->salt ) ) {
-			$this->settings->salt = bin2hex( random_bytes( 16 ) );
+			$fallback = get_option( 'bbcs_salt_fallback' );
+			if ( is_array( $fallback ) && ! empty( $fallback['salt_bb'] ) ) {
+				foreach ( $fallback as $key => $value ) {
+					if ( property_exists( $this->settings, $key ) ) {
+						$this->settings->$key = (string) $value;
+					}
+				}
+				if ( empty( $this->settings->salt ) && ! empty( $this->settings->salt_bb ) ) {
+					$this->settings->salt = $this->settings->salt_bb;
+				}
+			} else {
+				$this->settings->salt = bin2hex( random_bytes( 16 ) );
+			}
 			BotBlockerInstall::createSaltFile( true );
 		}
 	}

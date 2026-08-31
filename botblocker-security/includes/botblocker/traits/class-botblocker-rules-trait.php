@@ -175,6 +175,7 @@ trait BotBlockerRulesTrait {
 
 				if ( isset( $_GET[ $param ] ) && hash_equals( (string) $this->action_disable, sanitize_text_field( wp_unslash( $_GET[ $param ] ) ) ) ) {  // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					$this->isDisabled = true;
+					$this->secret_link_action = self::SECRET_LINK_BYPASS;
 					BotBlockerStore::storeData( 'BotBlocker skip by secret', 23 );
 					BotBlockerCounters::processHit( 23 );
 					return true;
@@ -182,6 +183,7 @@ trait BotBlockerRulesTrait {
 
 				if ( isset( $_GET[ $param ] ) && hash_equals( (string) $this->action_off, sanitize_text_field( wp_unslash( $_GET[ $param ] ) ) ) ) {  // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					$this->result_of_action = 'BotBlocker stop by secret';
+					$this->secret_link_action = self::SECRET_LINK_OFF;
 					BotBlockerDb::togglePower( 1 );
 					BotBlockerStore::storeData( 'BotBlocker stop by secret', 23 );
 					BotBlockerCounters::processHit( 23 );
@@ -194,6 +196,7 @@ trait BotBlockerRulesTrait {
 
 				if ( isset( $_GET[ $param ] ) && hash_equals( (string) $this->action_on, sanitize_text_field( wp_unslash( $_GET[ $param ] ) ) ) ) {  // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					$this->result_of_action = 'BotBlocker start by secret';
+					$this->secret_link_action = self::SECRET_LINK_ON;
 					BotBlockerStore::storeData( 'BotBlocker start by secret', 98 );
 					BotBlockerCounters::processHit( 98 );
 					BotBlockerDb::togglePower( 0 );
@@ -322,7 +325,9 @@ trait BotBlockerRulesTrait {
 		}
 
 		if ( $this->visitorType == self::VISITOR_LEGALBOT ) {
-			BotBlockerStore::storeData( null, 5 );
+			if ( $this->settings->botblocker_log_goodip == 1 ) {
+				BotBlockerStore::storeData( null, 5 );
+			}
 			BotBlockerCounters::processHit( 5 );
 			return true;
 		}
@@ -433,8 +438,8 @@ trait BotBlockerRulesTrait {
 			$this->lazy_load_rules();
 		} elseif ( empty( $this->bbcs_custom_rules ) && class_exists( 'BotBlockerMultisite' ) ) {
 			$file = BotBlockerMultisite::getDataDir() . 'rules.php';
-			if ( file_exists( $file ) && function_exists( 'bbcs_safe_load_with_recovery' ) ) {
-				$data                    = bbcs_safe_load_with_recovery( $file );
+			if ( file_exists( $file ) && class_exists( 'BotBlockerDataFile' ) ) {
+				$data                    = BotBlockerDataFile::safeLoadWithRecovery( $file );
 				$this->bbcs_custom_rules = $data['bbcs_custom_rule'] ?? array();
 			}
 		}
@@ -445,6 +450,9 @@ trait BotBlockerRulesTrait {
 
 		if ( ! empty( $this->bbcs_custom_rules ) ) {
 			foreach ( $this->bbcs_custom_rules as $item ) {
+				if ( isset( $item['expires'] ) && (int) $item['expires'] > 0 && (int) $item['expires'] <= $this->time ) {
+					continue;
+				}
 				foreach ( $searches as $term ) {
 					if ( strpos( $item['search'], $term ) !== false ) {
 						$rule      = $item['rule'];
@@ -461,7 +469,7 @@ trait BotBlockerRulesTrait {
 				$clauses[] = $wpdb->prepare( 'search LIKE %s', '%' . $wpdb->esc_like( $term ) . '%' );
 			}
 			if ( ! empty( $clauses ) ) {
-				$query = "SELECT `search`, `rule`, `id` FROM `{$wpdb->bbcs_rules}` WHERE disable = 0 AND (" . implode( ' OR ', $clauses ) . ') ORDER BY priority ASC LIMIT 1';
+				$query = "SELECT `search`, `rule`, `id` FROM `{$wpdb->bbcs_rules}` WHERE disable = 0 AND (expires = 0 OR expires > " . time() . ') AND (' . implode( ' OR ', $clauses ) . ') ORDER BY priority ASC LIMIT 1';
 				// REVIEWER NOTE: Dynamic WHERE clause is built using $wpdb->prepare() for each filter.
 				// The final query string is assembled from individually prepared clauses.
 				// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter
@@ -508,10 +516,15 @@ trait BotBlockerRulesTrait {
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$bbcs_ip_test = $wpdb->get_row(
 				$wpdb->prepare(
-					"SELECT * FROM `{$wpdb->bbcs_ipv4rules}` WHERE disable = %d AND ip1 <= %s AND ip2 >= %s ORDER BY priority ASC",
+					"SELECT * FROM `{$wpdb->bbcs_ipv4rules}` WHERE disable = %d AND ip1 <= %s AND ip2 >= %s AND NOT ( readonly = %d AND comment IN ( %s, %s, %s, %s ) ) ORDER BY priority ASC",
 					0,
 					$this->ipnum,
-					$this->ipnum
+					$this->ipnum,
+					1,
+					'Local IP',
+					'Local IP from SERVER_ADDR',
+					'Server IPv4',
+					'Server IPv6'
 				),
 				ARRAY_A
 			);
@@ -520,10 +533,15 @@ trait BotBlockerRulesTrait {
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$bbcs_ip_test = $wpdb->get_row(
 				$wpdb->prepare(
-					"SELECT * FROM `{$wpdb->bbcs_ipv6rules}` WHERE disable = %d AND ip1 <= %s AND ip2 >= %s ORDER BY priority ASC",
+					"SELECT * FROM `{$wpdb->bbcs_ipv6rules}` WHERE disable = %d AND ip1 <= %s AND ip2 >= %s AND NOT ( readonly = %d AND comment IN ( %s, %s, %s, %s ) ) ORDER BY priority ASC",
 					0,
 					$this->ipnum,
-					$this->ipnum
+					$this->ipnum,
+					1,
+					'Local IP',
+					'Local IP from SERVER_ADDR',
+					'Server IPv4',
+					'Server IPv6'
 				),
 				ARRAY_A
 			);
@@ -563,7 +581,7 @@ trait BotBlockerRulesTrait {
 
 		$hotBansFile = BotBlockerMultisite::getDataDir() . 'hot-bans.php';
 		if ( file_exists( $hotBansFile ) ) {
-			$hotData = bbcs_safe_load_data_file( $hotBansFile );
+			$hotData = BotBlockerDataFile::safeLoad( $hotBansFile );
 			if ( is_array( $hotData ) ) {
 				$family = 'ipv' . $this->ip_version;
 				$entries = isset( $hotData[ $family ] ) && is_array( $hotData[ $family ] ) ? $hotData[ $family ] : array();
@@ -639,8 +657,8 @@ trait BotBlockerRulesTrait {
 
 	public function allow_access( $echo ): bool {
 		// Read main cookie to get existing uid (process_cookies may not have run yet)
-		if ( empty( $this->uid ) && isset( $_COOKIE[ $this->settings->cookie ] ) ) {
-			$this->uid = preg_replace( '/[^a-zA-Z0-9]/', '', sanitize_text_field( wp_unslash( $_COOKIE[ $this->settings->cookie ] ) ) );
+		if ( empty( $this->uid ) ) {
+			$this->uid = $this->sanitize_cookie_uid();
 		}
 		if ( empty( $this->uid ) ) {
 			$this->uid = $this->generate_uid();
@@ -670,10 +688,15 @@ trait BotBlockerRulesTrait {
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$bbcs_ip_test = $wpdb->get_row(
 				$wpdb->prepare(
-					"SELECT * FROM `{$wpdb->bbcs_ipv4rules}` WHERE disable = %d AND ip1 <= %s AND ip2 >= %s ORDER BY priority ASC",
+					"SELECT * FROM `{$wpdb->bbcs_ipv4rules}` WHERE disable = %d AND ip1 <= %s AND ip2 >= %s AND NOT ( readonly = %d AND comment IN ( %s, %s, %s, %s ) ) ORDER BY priority ASC",
 					0,
 					$this->ipnum,
-					$this->ipnum
+					$this->ipnum,
+					1,
+					'Local IP',
+					'Local IP from SERVER_ADDR',
+					'Server IPv4',
+					'Server IPv6'
 				),
 				ARRAY_A
 			);
@@ -682,10 +705,15 @@ trait BotBlockerRulesTrait {
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$bbcs_ip_test = $wpdb->get_row(
 				$wpdb->prepare(
-					"SELECT * FROM `{$wpdb->bbcs_ipv6rules}` WHERE disable = %d AND ip1 <= %s AND ip2 >= %s ORDER BY priority ASC",
+					"SELECT * FROM `{$wpdb->bbcs_ipv6rules}` WHERE disable = %d AND ip1 <= %s AND ip2 >= %s AND NOT ( readonly = %d AND comment IN ( %s, %s, %s, %s ) ) ORDER BY priority ASC",
 					0,
 					$this->ipnum,
-					$this->ipnum
+					$this->ipnum,
+					1,
+					'Local IP',
+					'Local IP from SERVER_ADDR',
+					'Server IPv4',
+					'Server IPv6'
 				),
 				ARRAY_A
 			);

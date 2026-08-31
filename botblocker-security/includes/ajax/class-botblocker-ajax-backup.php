@@ -209,10 +209,12 @@ class BotBlockerAjaxBackup {
 
 		delete_transient( 'bbcs_backup_download_' . $token );
 
-		header( 'Content-Type: application/zip' );
-		header( 'Content-Disposition: attachment; filename="botblocker_backup_' . gmdate( 'Ymd' ) . '.zip"' );
-		header( 'Content-Length: ' . filesize( $zip_file ) );
-		header( 'X-Robots-Tag: noindex' );
+		if ( ! headers_sent() ) {
+			header( 'Content-Type: application/zip' );
+			header( 'Content-Disposition: attachment; filename="botblocker_backup_' . gmdate( 'Ymd' ) . '.zip"' );
+			header( 'Content-Length: ' . filesize( $zip_file ) );
+			header( 'X-Robots-Tag: noindex' );
+		}
 
 		$sent = readfile( $zip_file );    // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile
 		if ( $sent === false ) {

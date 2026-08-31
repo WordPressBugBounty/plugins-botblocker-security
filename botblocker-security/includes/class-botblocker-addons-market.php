@@ -16,6 +16,8 @@ class BotBlockerAddonsMarket {
 	const CACHE_KEY_PREFIX     = 'bbcs_market_';
 	const LAST_GOOD_KEY_PREFIX = 'bbcs_market_last_good_';
 
+	const UPDATES_OPTION = 'bbcs_addon_updates_available';
+
 	const STATUS_UNKNOWN     = 'unknown';
 	const STATUS_LOCAL       = 'local';
 	const STATUS_CACHED      = 'cached';
@@ -218,6 +220,28 @@ class BotBlockerAddonsMarket {
 	}
 
 	/**
+	 * Sanitize text fields of market items before they are cached, stored in
+	 * options, or returned to renderers.
+	 *
+	 * @param array<int,array<string,mixed>> $market
+	 * @return array<int,array<string,mixed>>
+	 */
+	private static function sanitizeItems( array $market ): array {
+		foreach ( $market as $i => $item ) {
+			if ( ! is_array( $item ) ) {
+				continue;
+			}
+			if ( isset( $item['name'] ) ) {
+				$market[ $i ]['name'] = sanitize_text_field( (string) $item['name'] );
+			}
+			if ( isset( $item['description'] ) ) {
+				$market[ $i ]['description'] = sanitize_text_field( (string) $item['description'] );
+			}
+		}
+		return $market;
+	}
+
+	/**
 	 * Load the active channel's market feed.
 	 *
 	 * @return array<int,array<string,mixed>>
@@ -225,7 +249,7 @@ class BotBlockerAddonsMarket {
 	public static function load( bool $force = false ): array {
 		if ( BotBlockerAddons::isLocalMode() ) {
 			self::$status = self::STATUS_LOCAL;
-			return BotBlockerAddons::buildMarketFromDisk( BotBlockerAddons::scanAll() );
+			return self::sanitizeItems( BotBlockerAddons::buildMarketFromDisk( BotBlockerAddons::scanAll() ) );
 		}
 
 		$channel = BotBlockerAddons::getChannel();
@@ -243,20 +267,21 @@ class BotBlockerAddonsMarket {
 
 		$cached = get_transient( self::cacheKey( $channel ) );
 		if ( is_array( $cached ) && ! empty( $cached['addons'] ) ) {
-			self::$memo[ $channel ] = $cached['addons'];
+			self::$memo[ $channel ] = self::sanitizeItems( $cached['addons'] );
 			self::$status           = self::STATUS_CACHED;
-			return $cached['addons'];
+			return self::$memo[ $channel ];
 		}
 
 		list( $market, $ok ) = self::fetchRemote( $channel );
 
 		if ( $ok ) {
+			$market = self::sanitizeItems( $market );
 			set_transient( self::cacheKey( $channel ), array( 'addons' => $market ), self::CACHE_TTL );
 			update_option( self::lastGoodKey( $channel ), $market, false );
 			self::$status = self::STATUS_FRESH;
 		} else {
 			$last   = get_option( self::lastGoodKey( $channel ), array() );
-			$market = is_array( $last ) ? $last : array();
+			$market = is_array( $last ) ? self::sanitizeItems( $last ) : array();
 			set_transient( self::cacheKey( $channel ), array( 'addons' => $market ), self::FAIL_TTL );
 			self::$status = ! empty( $market ) ? self::STATUS_LAST_GOOD : self::STATUS_UNAVAILABLE;
 		}
@@ -357,12 +382,80 @@ class BotBlockerAddonsMarket {
 		);
 	}
 
+	/**
+	 * Stored slugs of installed add-ons whose remote version is newer. Feeds
+	 * the admin-menu bubble; written by context builds and refreshes, read on
+	 * every admin page load without HTTP.
+	 */
+	public static function getAvailableUpdates(): array {
+		$stored = BotBlockerMultisite::getOption( self::UPDATES_OPTION, array() );
+		if ( ! is_array( $stored ) ) {
+			return array();
+		}
+		return array_values( array_filter( $stored, 'is_string' ) );
+	}
+
+	public static function countAvailableUpdates(): int {
+		return count( self::getAvailableUpdates() );
+	}
+
+	public static function menuBubbleHtml(): string {
+		$count = self::countAvailableUpdates();
+		if ( $count < 1 ) {
+			return '';
+		}
+		return sprintf(
+			' <span class="update-plugins count-%1$d"><span class="plugin-count">%1$d</span></span>',
+			$count
+		);
+	}
+
+	/**
+	 * Recompute the stored list of add-on updates. Without $force a cold
+	 * market cache returns the stored list untouched: admin page loads must
+	 * not trigger an HTTP fetch — the daily cron and explicit add-on actions
+	 * own the fetch. An unavailable catalog preserves the stored list inside
+	 * storeAvailableUpdates().
+	 */
+	public static function refreshAvailableUpdates( bool $force = false ): array {
+		if ( BotBlockerAddons::isLocalMode() ) {
+			BotBlockerMultisite::deleteOption( self::UPDATES_OPTION );
+			return array();
+		}
+		if ( ! $force && ! self::hasCache() ) {
+			return self::getAvailableUpdates();
+		}
+		$market = self::load( $force );
+		$ctx    = self::buildContext( BotBlockerAddons::scanAll(), BotBlockerAddons::getActive(), $market, false );
+		self::storeAvailableUpdates( $ctx, false );
+		return self::getAvailableUpdates();
+	}
+
+	private static function storeAvailableUpdates( Botblocker_AddonsMarketContext $ctx, bool $local_mode ): void {
+		if ( $local_mode ) {
+			BotBlockerMultisite::deleteOption( self::UPDATES_OPTION );
+			return;
+		}
+		if ( empty( $ctx->market ) ) {
+			return;
+		}
+		$slugs = array();
+		foreach ( $ctx->addons as $slug => $addon ) {
+			if ( ! empty( $addon['update_avail'] ) ) {
+				$slugs[] = (string) $slug;
+			}
+		}
+		BotBlockerMultisite::updateOption( self::UPDATES_OPTION, $slugs );
+	}
+
 	public static function getContext( bool $defer_market = false ): Botblocker_AddonsMarketContext {
 		$addons            = BotBlockerAddons::scanAll();
 		$active            = BotBlockerAddons::getActive();
 		$addons_local_mode = BotBlockerAddons::isLocalMode();
 		$market            = ( $defer_market && ! $addons_local_mode ) ? array() : self::load();
-		return self::buildContext( $addons, $active, $market, $addons_local_mode );
+		$ctx               = self::buildContext( $addons, $active, $market, $addons_local_mode );
+		self::storeAvailableUpdates( $ctx, $addons_local_mode );
+		return $ctx;
 	}
 
 	/**
@@ -390,6 +483,7 @@ class BotBlockerAddonsMarket {
 		$active = BotBlockerAddons::getActive();
 		$market = self::load( $force );
 		$ctx    = self::buildContext( $addons, $active, $market, false );
+		self::storeAvailableUpdates( $ctx, false );
 
 		$status  = self::$status;
 		$message = '';

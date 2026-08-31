@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 trait BotBlockerMuDB {
 
 
-	private function increment_blocked_hit(): void {
+	protected function increment_blocked_hit(): void {
 		global $wpdb;
 		$gmt_offset     = isset( $this->settings['admin_gmt_offset'] ) ? (float) $this->settings['admin_gmt_offset'] : 0;
 		$sign           = ( $gmt_offset >= 0 ) ? '+' : '-';

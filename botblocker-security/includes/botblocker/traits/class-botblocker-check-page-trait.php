@@ -97,7 +97,7 @@ trait BotBlockerCheckPageTrait {
 			'ptr'                   => $this->ptr,
 			'httpAccept'            => urlencode( $this->http_accept ),
 			'ipVersion'             => $this->ip_version,
-			'recaptchaEnabled'      => ( $this->settings->recaptcha_check == 1 && ! empty( $this->settings->recaptcha_key3 ) ),
+			'recaptchaEnabled'      => ( $this->settings->recaptcha_check == 1 && ! empty( $this->settings->recaptcha_key3 ) && ! ( (int) $this->settings->recaptcha_v3_ipv6_block === 1 && $this->ip_version == 6 ) ),
 			'recaptchaKey3'         => $this->settings->recaptcha_key3,
 			'apiIpv6'               => BOTBLOCKER_API_IPV6,
 			'apiGsIpv6'             => BOTBLOCKER_API_GS_IPV6,
@@ -186,9 +186,34 @@ trait BotBlockerCheckPageTrait {
 		if ( $this->settings->bbcs_ddos_resilience == 1 ) {
 			$scripts[] = BotBlockerSecurityPageAssets::read( $this->dirs['public'], 'js/bbcs-circuit-breaker.js' );
 		}
+
+		$addon_js = null;
+		if ( $captcha_mode >= 90 && class_exists( 'BotBlockerCaptchaRegistry' ) && BotBlockerCaptchaRegistry::has( $captcha_mode ) ) {
+			try {
+				$assets = BotBlockerCaptchaRegistry::getAssets( $captcha_mode );
+				if ( '' !== $assets['js_content'] ) {
+					$addon_js = $assets;
+				}
+			} catch ( \Throwable $e ) {
+				$addon_js = null;
+			}
+			if ( null === $addon_js ) {
+				// Provider JS vanished between render and asset assembly —
+				// rebuild the page data as a full mode-0 challenge.
+				$this->fallback_check_captcha_data_to_mode0();
+				$captcha_mode = 0;
+			}
+		}
+
 		$scripts[] = 'var bbcsCaptchaData = ' . BotBlockerSecurityPageAssets::json( $this->captcha_data ) . ';';
 		$scripts[] = BotBlockerSecurityPageAssets::read( $this->dirs['public'], 'captcha-js/captcha.js' );
-		$scripts[] = BotBlockerSecurityPageAssets::read( $this->dirs['public'], 'captcha-js/mode' . $captcha_mode . '.js' );
+
+		if ( null !== $addon_js ) {
+			$scripts[] = $addon_js['js_content'];
+			$external  = array_merge( $external, $addon_js['external'] );
+		} else {
+			$scripts[] = BotBlockerSecurityPageAssets::read( $this->dirs['public'], 'captcha-js/mode' . $captcha_mode . '.js' );
+		}
 
 		$scripts[] = BotBlockerSecurityPageAssets::read( $this->dirs['public'], 'js/check-core.js' );
 
@@ -196,6 +221,46 @@ trait BotBlockerCheckPageTrait {
 			'styles'           => $styles,
 			'scripts'          => $scripts,
 			'external_scripts' => $external,
+		);
+	}
+
+	private function fallback_check_captcha_data_to_mode0(): void {
+		$renderer   = null;
+		$saved      = isset( $this->settings->bbcs_captcha_mode ) ? (int) $this->settings->bbcs_captcha_mode : 0;
+		$singleton  = class_exists( 'BotBlocker' ) ? BotBlocker::getInstance() : null;
+		$saved_real = ( null !== $singleton && isset( $singleton->settings->bbcs_captcha_mode ) ) ? (int) $singleton->settings->bbcs_captcha_mode : null;
+
+		try {
+			require_once $this->dirs['public'] . 'class-botblocker-captcha-renderer.php';
+			$this->settings->bbcs_captcha_mode          = 0;
+			if ( null !== $saved_real ) {
+				$singleton->settings->bbcs_captcha_mode = 0;
+			}
+			$renderer = new BotBlockerCaptchaRenderer( (string) $this->js_data['checkFunctionName'] );
+			$fresh    = $renderer->getCaptchaData();
+		} catch ( \Throwable $e ) {
+			$fresh = array(
+				'mode'   => 0,
+				'params' => array(),
+			);
+		} finally {
+			$this->settings->bbcs_captcha_mode = $saved;
+			if ( null !== $saved_real && null !== $singleton ) {
+				$singleton->settings->bbcs_captcha_mode = $saved_real;
+			}
+		}
+
+		if ( ! is_array( $fresh ) || ! isset( $fresh['mode'], $fresh['params'] ) || ! is_array( $fresh['params'] ) ) {
+			return;
+		}
+
+		$this->captcha_data = array_merge(
+			$this->captcha_data,
+			array(
+				'mode'           => (int) $fresh['mode'],
+				'params'         => $fresh['params'],
+				'challengeToken' => ( null !== $renderer ) ? $renderer->getChallengeToken() : '',
+			)
 		);
 	}
 

@@ -21,6 +21,11 @@ abstract class BotBlockerBase {
 	public const VERIFY_VALID   = 'valid';
 	public const VERIFY_EXPIRED = 'expired';
 
+	// Secret link actions
+	public const SECRET_LINK_BYPASS = 'bypass';
+	public const SECRET_LINK_OFF    = 'off';
+	public const SECRET_LINK_ON     = 'on';
+
 	protected static ?self $instance = null;
 	public $time;
 	public $isProxy     = BOTBLOCKER_EMPTY;
@@ -40,6 +45,9 @@ abstract class BotBlockerBase {
 	public $action_disable;
 	public $action_off;
 	public $action_on;
+
+	public $secret_link_action = null;
+	
 	public $date;
 	public $cid;
 	public $prefly;
@@ -129,6 +137,7 @@ abstract class BotBlockerBase {
 	public $result_of_action       = BOTBLOCKER_EMPTY;
 	public $payment_bypass_reason  = '';
 	public $payment_bypass_partial = false;
+	public $payment_bypass_generic = false;
 
 	// Initial config properties
 	public $delete_query_string_from_referrer;
@@ -188,6 +197,8 @@ abstract class BotBlockerBase {
 	public $should_show_denied_page     = false;
 	public $addon_traffic_decision      = array();
 	public $addon_traffic_decision_stop = false;
+
+	public $rate_limit_block_emitted = false;
 
 	/**
 	 * @var BotBlockerSettings

@@ -50,6 +50,89 @@ body.wp-admin.toplevel_page_bbcs_dashboard #wpbody-content {
 .bbcs-grid--report { grid-template-columns: repeat(auto-fit, minmax(min(422px, 100%), 1fr)); }
 .bbcs-grid--status-bot { grid-template-columns: 1.4fr 1fr; }
 
+/* ── KPI counters beside today's activity chart ────────────────────── */
+.bbcs-kpi-row {
+	display: grid;
+	grid-template-columns: minmax(15rem, 0.55fr) minmax(0, 2fr);
+	gap: var(--bbcs-gap);
+	align-items: stretch;
+	margin-bottom: var(--bbcs-sp-3h);
+}
+
+/* One narrow column of four compact rows that split the chart height. */
+.bbcs-kpi-row > .bbcs-grid--4 {
+	grid-template-columns: minmax(0, 1fr);
+	grid-auto-rows: 1fr;
+	margin-bottom: 0;
+}
+
+.bbcs-kpi-row > .bbcs-card {
+	margin-bottom: 0;
+}
+
+/* Label and caption on the left, the number on the right. */
+.bbcs-kpi-row .bbcs-kpi,
+.bbcs-kpi-row .bbcs-kpi-swap__layer {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	grid-template-areas:
+		"label value"
+		"sub   value";
+	align-content: center;
+	align-items: center;
+	column-gap: var(--bbcs-sp-3);
+	row-gap: var(--bbcs-sp-1);
+}
+
+.bbcs-kpi-row .bbcs-kpi-swap {
+	display: block;
+}
+
+.bbcs-kpi-row .bbcs-kpi-swap__stage {
+	min-height: 0;
+	height: 100%;
+}
+
+.bbcs-kpi-row .bbcs-kpi-swap__layer {
+	height: 100%;
+	bottom: 0;
+}
+
+.bbcs-kpi-row .bbcs-kpi-label {
+	grid-area: label;
+	align-self: end;
+}
+
+.bbcs-kpi-row .bbcs-kpi-n {
+	grid-area: value;
+	align-self: center;
+	margin-top: 0;
+	line-height: 1;
+}
+
+.bbcs-kpi-row .bbcs-kpi-sub {
+	grid-area: sub;
+	align-self: start;
+	margin-top: 0;
+}
+
+@media (max-width: 1280px) {
+	.bbcs-kpi-row {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.bbcs-kpi-row > .bbcs-grid--4 {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		grid-auto-rows: auto;
+	}
+}
+
+@media (max-width: 760px) {
+	.bbcs-kpi-row > .bbcs-grid--4 {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
 /* responsive degradation of wide grids */
 @media (max-width: 1280px) {
   .bbcs-grid--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -104,22 +187,33 @@ body.wp-admin.toplevel_page_bbcs_dashboard #wpbody-content {
 .bbcs-logo-text span { color: var(--bbcs-tx2); }
 
 /* ─────────────── app shell ─────────────── */
-.bbcs-app { position: relative; min-height: 100vh; display: flex; flex-direction: column; }
+/* Plughead fixed in shell; .bbcs-content scrolls. Sidebars sticky inside scrollport only. */
+.bbcs-app {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - var(--bbcs-sticky-admin-offset));
+  max-height: calc(100vh - var(--bbcs-sticky-admin-offset));
+  overflow: hidden;
+}
 
-/* content wrapper */
-.bbcs-content { flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; background: var(--bbcs-bg); }
+/* content wrapper - scrollport below plughead */
+.bbcs-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  background: var(--bbcs-bg);
+}
 .bbcs-plughead {
   background: var(--bbcs-s1); border-bottom: 1px solid var(--bbcs-line);
   padding: 0 var(--bbcs-sp-6); height: var(--bbcs-plughead-h); flex: 0 0 var(--bbcs-plughead-h);
   display: flex; align-items: center; justify-content: space-between; gap: var(--bbcs-sp-4);
-  position: sticky; top: 0; z-index: 100000; overflow-x: clip;
-}
-.admin-bar .bbcs-plughead { top: var(--wp-admin--admin-bar--height, 32px); }
-@media screen and (max-width: 782px) {
-  .admin-bar .bbcs-plughead { top: var(--wp-admin--admin-bar--height, 46px); }
-}
-@media screen and (max-width: 600px) {
-  .admin-bar .bbcs-plughead { top: 0; }
+  position: relative; z-index: var(--bbcs-z-plughead); overflow-x: clip;
 }
 .bbcs-plughead-left { display: flex; align-items: center; gap: var(--bbcs-sp-3h); min-width: 0; }
 .bbcs-search {
@@ -663,6 +757,8 @@ a.bbcs-btn.is-disabled { pointer-events: none; }
 .bbcs-select.is-disabled .bbcs-select-trigger { opacity: .5; cursor: default; border-color: var(--bbcs-line); pointer-events: none; }
 .bbcs-select.is-disabled .bbcs-select-value { color: var(--bbcs-tx3); }
 .bbcs-select-opt:hover { background: var(--bbcs-s2); }
+.bbcs-select-opt.is-disabled { color: var(--bbcs-tx3); opacity: .5; cursor: default; }
+.bbcs-select-opt.is-disabled:hover { background: transparent; }
 .bbcs-select-opt.is-sel { color: var(--bbcs-blue); font-weight: var(--bbcs-fw-semibold); }
 
 /* GEO tab toolbar: equal heights for select trigger and action buttons. */
@@ -783,14 +879,7 @@ a.bbcs-btn.is-disabled { pointer-events: none; }
 /* ─────────────── dashboard: layout ─────────────── */
 .bbcs-home { display: grid; grid-template-columns: minmax(0, 1fr) var(--bbcs-rail-w); gap: var(--bbcs-sp-4h); align-items: start; }
 @media (max-width: 1400px) { .bbcs-home { grid-template-columns: minmax(0, 1fr); } }
-.bbcs-rail { position: sticky; top: calc(var(--bbcs-plughead-h) + var(--bbcs-sp-2h)); display: flex; flex-direction: column; gap: var(--bbcs-sp-3h); align-self: start; }
-.admin-bar .bbcs-rail { top: calc(var(--bbcs-plughead-h) + var(--bbcs-sp-2h) + 32px); }
-@media screen and (max-width: 782px) {
-  .admin-bar .bbcs-rail { top: calc(var(--bbcs-plughead-h) + var(--bbcs-sp-2h) + 46px); }
-}
-@media screen and (max-width: 600px) {
-  .admin-bar .bbcs-rail { top: calc(var(--bbcs-plughead-h) + var(--bbcs-sp-2h)); }
-}
+.bbcs-rail { position: sticky; top: var(--bbcs-sp-2h); display: flex; flex-direction: column; gap: var(--bbcs-sp-3h); align-self: start; }
 .bbcs-rail-card { padding: var(--bbcs-sp-4h); }
 .bbcs-rail-title { font-weight: var(--bbcs-fw-bold); font-size: var(--bbcs-fs-md); }
 
@@ -840,6 +929,8 @@ a.bbcs-btn.is-disabled { pointer-events: none; }
 .bbcs-infocol { align-self: start; }
 .bbcs-infocol-ic { width: 56px; height: 56px; border-radius: var(--bbcs-r-2xl); background: var(--bbcs-blue-dim); color: var(--bbcs-blue); display: flex; align-items: center; justify-content: center; margin-bottom: var(--bbcs-sp-3h); font-size: var(--bbcs-fs-xl); }
 .bbcs-infocol-desc { color: var(--bbcs-tx2); font-size: var(--bbcs-fs-xs); line-height: 1.55; }
+.bbcs-infocol-version { border-top: 1px solid var(--bbcs-line); margin-top: var(--bbcs-sp-3h); padding-top: var(--bbcs-sp-3h); font-size: var(--bbcs-fs-2xs); color: var(--bbcs-tx3); }
+.bbcs-infocol-version + .bbcs-doclist { margin-top: var(--bbcs-sp-3h); }
 .bbcs-infocol-note { margin-top: var(--bbcs-sp-2); padding: var(--bbcs-sp-2) var(--bbcs-sp-3); border-radius: var(--bbcs-r-lg); font-size: var(--bbcs-fs-xs); line-height: 1.5; }
 .bbcs-infocol-note--warn { background: var(--bbcs-amber-dim); color: var(--bbcs-amber-d); }
 .bbcs-infocol-note--success { background: var(--bbcs-green-dim); color: var(--bbcs-green); }
@@ -855,6 +946,7 @@ a.bbcs-btn.is-disabled { pointer-events: none; }
   .bbcs-doclist { flex-direction: row; flex-wrap: wrap; gap: var(--bbcs-sp-2h); align-items: center; }
   .bbcs-doclist-head { margin-bottom: 0; flex: 0 0 auto; }
   .bbcs-doclist a { white-space: nowrap; }
+  .bbcs-infocol-version { display: none; }
 }
 .bbcs-preset { padding: var(--bbcs-sp-3h) var(--bbcs-sp-4); margin-bottom: var(--bbcs-sp-4h); display: flex; align-items: center; gap: var(--bbcs-sp-3h); background: var(--bbcs-green-dim); border-color: var(--bbcs-green-border); }
 .bbcs-preset-title { font-weight: var(--bbcs-fw-bold); font-size: var(--bbcs-fs-sm); }
@@ -946,6 +1038,15 @@ a.bbcs-btn.is-disabled { pointer-events: none; }
 .bbcs-searchbar { display: flex; align-items: center; gap: var(--bbcs-sp-2); padding: var(--bbcs-sp-2) var(--bbcs-sp-3); flex: 1; color: var(--bbcs-tx3); }
 .bbcs-pager { display: flex; align-items: center; gap: var(--bbcs-sp-1h); }
 .bbcs-guide-row { font-size: var(--bbcs-fs-sm); line-height: 1.5; }
+.bbcs-asn-db-note {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--bbcs-sp-1h);
+  margin-top: var(--bbcs-sp-2);
+  font-size: var(--bbcs-fs-xs);
+  line-height: 1.5;
+}
+.bbcs-asn-db-note > .bbcs-ico { flex: 0 0 auto; margin-top: 2px; }
 
 /* ─────────────── integrations ─────────────── */
 .bbcs-int-layout { display: grid; grid-template-columns: var(--bbcs-int-form-w) 1fr; gap: var(--bbcs-sp-5h); align-items: start; }
@@ -1367,7 +1468,7 @@ a.bbcs-btn.is-disabled { pointer-events: none; }
   border: 1px solid var(--bbcs-line);
   border-radius: var(--bbcs-r-md);
   position: sticky;
-  top: var(--bbcs-sp-4);
+  top: var(--bbcs-sp-2h);
 }
 .bbcs-info-image {
   width: 48px; height: 48px;
@@ -1412,10 +1513,10 @@ a.bbcs-btn.is-disabled { pointer-events: none; }
 
 /* dvh fix (iOS Safari) - keep 100vh as fallback */
 @supports (height: 100dvh) {
-  .bbcs-app { min-height: 100dvh; }
-  .admin-bar .bbcs-app { min-height: calc(100dvh - 32px); }
-  @media screen and (max-width: 782px) {
-    .admin-bar .bbcs-app { min-height: calc(100dvh - 46px); }
+  :root { --bbcs-scrollport-h: calc(100dvh - var(--bbcs-sticky-admin-offset) - var(--bbcs-plughead-h)); }
+  .bbcs-app {
+    min-height: calc(100dvh - var(--bbcs-sticky-admin-offset));
+    max-height: calc(100dvh - var(--bbcs-sticky-admin-offset));
   }
 }
 
@@ -1613,6 +1714,21 @@ a.bbcs-btn.is-disabled { pointer-events: none; }
   gap: var(--bbcs-sp-2h); padding: var(--bbcs-sp-3h) var(--bbcs-sp-5);
   border-top: 1px solid var(--bbcs-line);
 }
+.bbcs-modal-body > p { color: var(--bbcs-tx2); margin: 0 0 var(--bbcs-sp-3) 0; }
+.bbcs-modal-body label { font-size: var(--bbcs-fs-sm); }
+#bbcs-deactivation-reasons label {
+  display: flex; align-items: center;
+  padding: var(--bbcs-sp-2) var(--bbcs-sp-2h);
+  cursor: pointer;
+}
+#bbcs-deactivation-reasons input[type="radio"] {
+  accent-color: var(--bbcs-wp-blue);
+  width: 16px; height: 16px;
+  margin: 0; padding: 0;
+  flex-shrink: 0;
+}
+#bbcs-deactivation-reasons label span { line-height: 16px; }
+#bbcs-deactivation-details { margin-top: var(--bbcs-sp-1); }
 
 /* ─────────────── notification badge ─────────────── */
 .bbcs-badge {
@@ -1669,6 +1785,26 @@ input.bbcs-input, textarea.bbcs-input {
   background: var(--bbcs-s2); border: none; resize: vertical;
   border-radius: var(--bbcs-r-sm); color: var(--bbcs-tx);
   transition: border-color var(--bbcs-t-fast), box-shadow var(--bbcs-t-fast);
+}
+/* The rule above targets input/textarea only, so a <select class="bbcs-input">
+   kept the raw browser chrome. Scoped to .bbcs-page to outrank WP admin's own
+   `select` rule, which otherwise resets padding and re-adds its arrow. */
+.bbcs-page select.bbcs-input {
+  box-sizing: border-box; min-width: 160px; line-height: 1.4;
+  font-family: inherit; font-size: var(--bbcs-fs-sm); font-weight: inherit;
+  /* Same vertical padding as .dt-search input, so the row lines up. */
+  padding: var(--bbcs-sp-1h) var(--bbcs-sp-7) var(--bbcs-sp-1h) var(--bbcs-sp-3);
+  margin: 0; box-shadow: none;
+  background-color: var(--bbcs-s2); border: 1px solid var(--bbcs-line);
+  border-radius: var(--bbcs-r-sm); color: var(--bbcs-tx); cursor: pointer;
+  appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right var(--bbcs-sp-3) center;
+  transition: border-color var(--bbcs-t-fast), box-shadow var(--bbcs-t-fast);
+}
+.bbcs-page select.bbcs-input:hover { border-color: var(--bbcs-wp-blue); }
+.bbcs-page select.bbcs-input:focus {
+  border-color: var(--bbcs-blue); outline: none; box-shadow: 0 0 0 2px var(--bbcs-blue-dim);
 }
 .bbcs-input:focus { outline: none; box-shadow: 0 0 0 2px var(--bbcs-blue-dim); }
 .bbcs-page input:focus { border-color: var(--bbcs-blue); outline: none; box-shadow: 0 0 0 2px var(--bbcs-blue-dim); }
@@ -2088,9 +2224,9 @@ table.dataTable thead .sorting_desc:after { opacity: .4; }
 /* ── settings nav sidebar ── */
 .bbcs-snav {
   position: sticky;
-  top: var(--bbcs-sp-4);
+  top: var(--bbcs-sp-2h);
   align-self: start;
-  max-height: 80vh;
+  max-height: calc(var(--bbcs-scrollport-h) - var(--bbcs-sp-6));
   display: flex;
   flex-direction: column;
   background: var(--bbcs-s1);
@@ -2778,3 +2914,98 @@ body.wp-admin #wpbody-content button.bbcs-snav-collapse-btn:focus-visible {
 /* Cache Compatibility tab: system state badges */
 .bbcs-text-success { color: var(--bbcs-green); }
 .bbcs-text-danger { color: var(--bbcs-red); }
+
+/* ─────────────── audit log table ─────────────── */
+.bbcs-audit-toolbar {
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: var(--bbcs-sp-2h); margin-left: var(--bbcs-sp-4);
+}
+/* Rows are two-line (message + key), so top-aligned cells left the one-line
+   columns floating at the top. Centre everything against the tallest cell. */
+#botblocker-audit-log td { vertical-align: middle; }
+.bbcs-audit-event { display: flex; align-items: center; gap: var(--bbcs-sp-2); }
+.bbcs-audit-event-icon { color: var(--bbcs-tx3); flex: 0 0 auto; }
+/* min-width:0 lets the flex child shrink; without it long messages overflowed
+   the cell and printed on top of the Actor column. */
+.bbcs-audit-event-text { display: flex; flex-direction: column; line-height: 1.35; min-width: 0; }
+.bbcs-audit-event-msg { color: var(--bbcs-tx); overflow-wrap: anywhere; }
+/* Event key and role are lookup values, not reading material: keep them quiet. */
+.bbcs-audit-event-key {
+  font-family: var(--bbcs-mono); font-size: var(--bbcs-fs-2xs); color: var(--bbcs-tx3);
+}
+.bbcs-audit-mono { font-family: var(--bbcs-mono); font-size: var(--bbcs-fs-xs); }
+.bbcs-audit-col-time { white-space: nowrap; }
+.bbcs-audit-col-sev, .bbcs-audit-col-ip, .bbcs-audit-col-actor { white-space: nowrap; }
+.bbcs-audit-col-sev { text-align: center; }
+.bbcs-audit-col-actions { text-align: right; white-space: nowrap; }
+/* The event message needs the room; the fixed-width columns must not steal it. */
+/* DataTables 2 tags columns by detected type and right-aligns dt-type-date and
+   dt-type-numeric, which is why Time and Severity drifted off on their own.
+   The audit log is text, so pin every column left and let Actions sit right. */
+#botblocker-audit-log th,
+#botblocker-audit-log td { text-align: left; }
+#botblocker-audit-log th.bbcs-audit-col-actions,
+#botblocker-audit-log td.bbcs-audit-col-actions { text-align: right; }
+
+/* .bbcs-table is table-layout: fixed, so without explicit widths every column
+   got an equal slice and Event, the only column with real text, was crushed
+   into three wrapped lines. Give the fixed columns just what they need. */
+#botblocker-audit-log { table-layout: fixed; }
+#botblocker-audit-log thead th.bbcs-audit-col-time { width: 160px; }
+#botblocker-audit-log thead th.bbcs-audit-col-sev { width: 120px; }
+#botblocker-audit-log thead th.bbcs-audit-col-actor { width: 150px; }
+#botblocker-audit-log thead th.bbcs-audit-col-ip { width: 130px; }
+#botblocker-audit-log thead th.bbcs-audit-col-actions { width: 110px; }
+/* Wrap the event key at its own width rather than mid-token, so it no longer
+   splits into "botblocker.settings.ch / anged". */
+#botblocker-audit-log .bbcs-audit-event-key { overflow-wrap: break-word; }
+.bbcs-audit-details-btn { padding: var(--bbcs-sp-1) var(--bbcs-sp-2h); font-size: var(--bbcs-fs-xs); }
+
+/* Audit search + filter row on narrow screens.
+   .dt-container .row is flex-wrap: nowrap, so the search box and the three
+   selects were forced onto one line and overflowed. Let them stack instead. */
+@media (max-width: 760px) {
+  #botblocker-audit-log_wrapper .row { flex-wrap: wrap; gap: var(--bbcs-sp-2h); }
+  #botblocker-audit-log_wrapper .dt-layout-start,
+  #botblocker-audit-log_wrapper .dt-layout-end { width: 100%; margin: 0; }
+  #botblocker-audit-log_wrapper .dt-search { width: 100%; }
+  #botblocker-audit-log_wrapper .dt-search input { width: 100%; box-sizing: border-box; }
+  .bbcs-audit-toolbar { margin-left: 0; width: 100%; gap: var(--bbcs-sp-2); }
+  /* Two per row, so the selects stay tappable instead of shrinking to nothing. */
+  .bbcs-audit-toolbar .bbcs-input { flex: 1 1 calc(50% - var(--bbcs-sp-2)); min-width: 0; }
+}
+@media (max-width: 500px) {
+  .bbcs-audit-toolbar .bbcs-input { flex: 1 1 100%; }
+}
+
+/* datatables.min.css bundles the Bootstrap grid, so every row cell carries a
+   gutter padding. Zeroing it on only one row made that row wider than the others.
+   Zero it on all of them so the toolbar, the table and the pager share one edge. */
+#botblocker-audit-log_wrapper .row,
+#botblocker-audit-log_wrapper .row > * { padding-left: 0; padding-right: 0; margin-left: 0; margin-right: 0; }
+#botblocker-audit-log_wrapper .dt-layout-start { margin-right: auto; }
+#botblocker-audit-log_wrapper .dt-layout-end { margin-left: auto; }
+#botblocker-audit-log_wrapper .dt-layout-table > div { width: 100%; }
+
+/* Sideways scroll only where the columns genuinely do not fit, so on desktop the
+   table keeps filling its container instead of sitting in a scroll box. */
+@media (max-width: 760px) {
+  #botblocker-audit-log_wrapper .dt-layout-table > div { overflow-x: auto; max-width: 100%; }
+  #botblocker-audit-log_wrapper table.dataTable { min-width: 720px; }
+}
+
+.bbcs-audit-details {
+  display: grid; grid-template-columns: minmax(110px, max-content) 1fr;
+  gap: var(--bbcs-sp-2) var(--bbcs-sp-4); margin: 0;
+}
+.bbcs-audit-details dt { color: var(--bbcs-tx3); font-size: var(--bbcs-fs-xs); }
+.bbcs-audit-details dd { margin: 0; word-break: break-word; }
+.bbcs-audit-data-title {
+  margin: var(--bbcs-sp-5) 0 var(--bbcs-sp-2); font-size: var(--bbcs-fs-xs); color: var(--bbcs-tx3);
+}
+.bbcs-audit-data {
+  margin: 0; padding: var(--bbcs-sp-3); border-radius: var(--bbcs-r-sm);
+  background: var(--bbcs-s3); border: 1px solid var(--bbcs-line);
+  font-family: var(--bbcs-mono); font-size: var(--bbcs-fs-xs);
+  white-space: pre-wrap; word-break: break-word; max-height: 320px; overflow: auto;
+}

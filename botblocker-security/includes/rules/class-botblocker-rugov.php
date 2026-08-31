@@ -227,7 +227,7 @@ class BotBlockerRugov {
 		}
 		$php .= "\t),\n);\n";
 
-		$php = bbcs_data_file_sign( $php );
+		$php = BotBlockerDataFile::sign( $php );
 
 		$tmp = $out_path . '.tmp-' . wp_generate_password( 8, false, false );
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
@@ -256,6 +256,7 @@ class BotBlockerRugov {
 		}
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod
 		@chmod( $out_path, 0644 );
+		BotBlockerCompiledFile::invalidate( $out_path );
 
 		self::setStatus(
 			array(

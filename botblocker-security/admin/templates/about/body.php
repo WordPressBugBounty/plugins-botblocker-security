@@ -6,7 +6,26 @@ if (! defined('ABSPATH')) {
 	exit;
 }
 
-return static function (Botblocker_AboutViewModel $data): void {
+$bbcs_docs = array(
+	'payment' => array(
+		'file'  => BOTBLOCKER_DIR . 'docs/PAYMENT-BYPASS.md',
+		'title' => __( 'PAYMENT-BYPASS.md', 'botblocker-security' ),
+	),
+	'ddos'    => array(
+		'file'  => BOTBLOCKER_DIR . 'docs/DDOS-COMPATIBILITY.md',
+		'title' => __( 'DDOS-COMPATIBILITY.md', 'botblocker-security' ),
+	),
+	'tls'     => array(
+		'file'  => BOTBLOCKER_DIR . 'docs/TLS-FINGERPRINTING.md',
+		'title' => __( 'TLS-FINGERPRINTING.md', 'botblocker-security' ),
+	),
+);
+
+foreach ( $bbcs_docs as $bbcs_doc_key => $bbcs_doc ) {
+	$bbcs_docs[ $bbcs_doc_key ]['content'] = file_exists( $bbcs_doc['file'] ) ? (string) file_get_contents( $bbcs_doc['file'] ) : ''; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+}
+
+return static function (Botblocker_AboutViewModel $data) use ( $bbcs_docs ): void {
 ?>
 	<div class="bbcs-card bbcs-card-pad bbcs-mb-5h">
 		<div class="bbcs-row bbcs-ai-center bbcs-g-3">
@@ -205,11 +224,100 @@ return static function (Botblocker_AboutViewModel $data): void {
 		<div class="bbcs-card bbcs-card-pad bbcs-card--stretch">
 			<div class="bbcs-section-title bbcs-fs-md bbcs-mb-3h"><?php esc_html_e('Software versions', 'botblocker-security'); ?></div>
 			<?php
-			require_once BOTBLOCKER_DIR . 'includes/shortcode/botblocker-shortcode-sidebar.php';
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML
-			echo bbcs_plugins_themes_view();
+			if ( class_exists( 'BotBlockerSidebarShortcodes' ) ) {
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML
+				echo BotBlockerSidebarShortcodes::pluginsThemesView();
+			}
 			?>
 		</div>
 	</div>
+	<div class="bbcs-card bbcs-card-pad bbcs-mb-5h">
+		<div class="bbcs-section-title bbcs-fs-md bbcs-mb-3h"><?php esc_html_e('Plugin compatibility guides', 'botblocker-security'); ?></div>
+		<div class="bbcs-option bbcs-hoverbg">
+			<button type="button" class="bbcs-btn" id="bbcs-about-doc-payment-trigger">
+				<svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-doc"></use></svg>
+				<?php esc_html_e( 'Open PAYMENT-BYPASS.md', 'botblocker-security' ); ?>
+			</button>
+			<span class="bbcs-option-label"><?php esc_html_e( 'Full guide: recognition layers, bypass modes and hardening recommendations for payment callbacks.', 'botblocker-security' ); ?></span>
+			<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_attr_e( 'Shows the raw contents of docs/PAYMENT-BYPASS.md shipped with the plugin.', 'botblocker-security' ); ?></span></span>
+		</div>
+		<div class="bbcs-option bbcs-hoverbg">
+			<button type="button" class="bbcs-btn" id="bbcs-about-doc-ddos-trigger">
+				<svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-doc"></use></svg>
+				<?php esc_html_e( 'Open DDOS-COMPATIBILITY.md', 'botblocker-security' ); ?>
+			</button>
+			<span class="bbcs-option-label"><?php esc_html_e( 'Full guide: running behind DDoS-Guard, Stormwall, Cloudflare UAM, Qrator and similar services.', 'botblocker-security' ); ?></span>
+			<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_attr_e( 'Shows the raw contents of docs/DDOS-COMPATIBILITY.md shipped with the plugin.', 'botblocker-security' ); ?></span></span>
+		</div>
+		<div class="bbcs-option bbcs-hoverbg">
+			<button type="button" class="bbcs-btn" id="bbcs-about-doc-tls-trigger">
+				<svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-doc"></use></svg>
+				<?php esc_html_e( 'Open TLS-FINGERPRINTING.md', 'botblocker-security' ); ?>
+			</button>
+			<span class="bbcs-option-label"><?php esc_html_e( 'Full guide: JA3/JA4 requirements, server modules and setup options.', 'botblocker-security' ); ?></span>
+			<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_attr_e( 'Shows the raw contents of docs/TLS-FINGERPRINTING.md shipped with the plugin.', 'botblocker-security' ); ?></span></span>
+		</div>
+	</div>
+
+	<?php foreach ( $bbcs_docs as $bbcs_doc_key => $bbcs_doc ) : ?>
+	<div class="bbcs-modal-overlay" id="bbcsAboutDoc<?php echo esc_attr( ucfirst( $bbcs_doc_key ) ); ?>Modal" style="display:none;">
+		<div class="bbcs-modal bbcs-modal--wide">
+			<div class="bbcs-modal-header">
+				<div class="bbcs-modal-title">
+					<svg class="bbcs-ico bbcs-ico--sm" style="margin-right:var(--bbcs-sp-1);"><use href="#bbcs-i-doc"></use></svg>
+					<?php echo esc_html( $bbcs_doc['title'] ); ?>
+				</div>
+				<button type="button" class="bbcs-modal-close" data-modal-close>
+					<svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-x"></use></svg>
+				</button>
+			</div>
+			<div class="bbcs-modal-body">
+				<pre class="bbcs-md-view"><?php echo esc_html( $bbcs_doc['content'] ); ?></pre>
+			</div>
+			<div class="bbcs-modal-footer">
+				<button type="button" class="bbcs-btn" data-modal-close><?php esc_html_e( 'Close', 'botblocker-security' ); ?></button>
+			</div>
+		</div>
+	</div>
+	<?php endforeach; ?>
+
+	<script>
+	(function() {
+		'use strict';
+		var pairs = {
+			'bbcs-about-doc-payment-trigger': 'bbcsAboutDocPaymentModal',
+			'bbcs-about-doc-ddos-trigger': 'bbcsAboutDocDdosModal',
+			'bbcs-about-doc-tls-trigger': 'bbcsAboutDocTlsModal'
+		};
+
+		Object.keys(pairs).forEach(function(triggerId) {
+			var trigger = document.getElementById(triggerId);
+			var overlay = document.getElementById(pairs[triggerId]);
+			if (!trigger || !overlay) return;
+
+			trigger.addEventListener('click', function(e) {
+				e.preventDefault();
+				overlay.style.display = 'flex';
+			});
+
+			overlay.addEventListener('click', function(e) {
+				var btn = e.target.closest('[data-modal-close]');
+				if (btn) {
+					overlay.style.display = 'none';
+					return;
+				}
+				if (e.target === overlay) {
+					overlay.style.display = 'none';
+				}
+			});
+
+			document.addEventListener('keydown', function(e) {
+				if (e.key === 'Escape' && overlay.style.display === 'flex') {
+					overlay.style.display = 'none';
+				}
+			});
+		});
+	})();
+	</script>
 <?php
 };

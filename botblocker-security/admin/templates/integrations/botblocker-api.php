@@ -57,11 +57,11 @@ return static function (Botblocker_IntegrationsViewModel $data, bool $isActive):
 				<div class="bbcs-setgroup-head"><?php esc_html_e('Usage', 'botblocker-security'); ?></div>
 				<div class="bbcs-grid bbcs-grid--2" style="margin: var(--bbcs-sp-2) var(--bbcs-sp-3); gap: var(--bbcs-sp-3h);">
 					<div class="bbcs-statbox">
-						<div class="bbcs-stat bbcs-stat--sm"><?php echo esc_html( number_format_i18n( (int) $data->remaining_hits ) ); ?></div>
+						<div class="bbcs-stat bbcs-stat--sm" id="bbcs_stat_hits"><?php echo esc_html( number_format_i18n( (int) $data->remaining_hits ) ); ?></div>
 						<div class="bbcs-statbox-lbl"><?php esc_html_e( 'requests remaining', 'botblocker-security' ); ?></div>
 					</div>
 					<div class="bbcs-statbox">
-						<div class="bbcs-stat bbcs-stat--sm"><?php echo esc_html( (string) $data->remaining_days ); ?></div>
+						<div class="bbcs-stat bbcs-stat--sm" id="bbcs_stat_days"><?php echo esc_html( (string) $data->remaining_days ); ?></div>
 						<div class="bbcs-statbox-lbl"><?php esc_html_e( 'days remaining', 'botblocker-security' ); ?></div>
 					</div>
 				</div>
@@ -77,7 +77,7 @@ return static function (Botblocker_IntegrationsViewModel $data, bool $isActive):
 				<div class="bbcs-setgroup-head"><?php esc_html_e('API Endpoints', 'botblocker-security'); ?></div>
 				<div class="bbcs-field">
 					<div class="bbcs-field-label"><?php esc_html_e('BotBlocker API URL:', 'botblocker-security'); ?>
-						<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_attr_e('BotBlocker API endpoint for threat intelligence and security updates.', 'botblocker-security'); ?></span></span>
+						<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_attr_e('BotBlocker API endpoint for threat intelligence and security updates. Displayed for reference - not editable.', 'botblocker-security'); ?></span></span>
 					</div>
 					<div class="bbcs-field-box"><input type="text" class="bbcs-input bbcs-input--mono"
 						name="bbcs_api_url"
@@ -86,7 +86,7 @@ return static function (Botblocker_IntegrationsViewModel $data, bool $isActive):
 				</div>
 				<div class="bbcs-field">
 					<div class="bbcs-field-label"><?php esc_html_e('Additional API URL:', 'botblocker-security'); ?>
-						<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_attr_e('Enter the additional API endpoint URL for advanced security analytics and threat monitoring services.', 'botblocker-security'); ?></span></span>
+						<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_attr_e('Reserve Globus Studio API endpoint used as a fallback. Displayed for reference - not editable.', 'botblocker-security'); ?></span></span>
 					</div>
 					<div class="bbcs-field-box"><input type="text" class="bbcs-input bbcs-input--mono"
 						name="bbcs_api_gs_url"

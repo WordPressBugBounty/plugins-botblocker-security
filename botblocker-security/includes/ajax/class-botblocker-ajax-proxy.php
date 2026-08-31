@@ -265,6 +265,8 @@ class BotBlockerAjaxProxy {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' after clearFileCache' );
 			}
+			BotBlockerAudit::ruleChanged( BotBlockerAuditEvents::RULE_LIST_PROXY, BotBlockerAuditEvents::RULE_ACTION_UPDATED, array( 'id' => $id ) );
+
 			wp_send_json_success( __( 'Proxy updated successfully.', 'botblocker-security' ) );
 		} else {
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
@@ -334,6 +336,8 @@ class BotBlockerAjaxProxy {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' after clearFileCache' );
 			}
+			BotBlockerAudit::ruleChanged( BotBlockerAuditEvents::RULE_LIST_PROXY, BotBlockerAuditEvents::RULE_ACTION_DELETED, array( 'id' => $id ) );
+
 			wp_send_json_success( __( 'Proxy deleted successfully.', 'botblocker-security' ) );
 		} else {
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
@@ -439,6 +443,8 @@ class BotBlockerAjaxProxy {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' after clearFileCache' );
 			}
+			BotBlockerAudit::ruleChanged( BotBlockerAuditEvents::RULE_LIST_PROXY, BotBlockerAuditEvents::RULE_ACTION_CREATED, array( 'id' => (int) $wpdb->insert_id ) );
+
 			wp_send_json_success( __( 'Proxy created successfully.', 'botblocker-security' ) );
 		} else {
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
@@ -568,6 +574,8 @@ class BotBlockerAjaxProxy {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' after clearFileCache' );
 			}
+			BotBlockerAudit::ruleChanged( BotBlockerAuditEvents::RULE_LIST_PROXY, BotBlockerAuditEvents::RULE_ACTION_IMPORTED, array( 'imported' => $imported, 'skipped' => $skipped ) );
+
 			wp_send_json_success(
 				array(
 					'imported' => $imported,
@@ -632,6 +640,8 @@ class BotBlockerAjaxProxy {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' after clearFileCache' );
 			}
+			BotBlockerAudit::ruleChanged( BotBlockerAuditEvents::RULE_LIST_PROXY, BotBlockerAuditEvents::RULE_ACTION_CLEARED );
+
 			wp_send_json_success( __( 'All proxies have been cleared.', 'botblocker-security' ) );
 		} else {
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {

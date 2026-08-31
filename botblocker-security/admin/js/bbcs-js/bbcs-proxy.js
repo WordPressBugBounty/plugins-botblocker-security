@@ -350,7 +350,7 @@
 
         $("#botblocker-proxy-rules").on("click", ".delete-proxy", function () {
             var id = $(this).data("id");
-            if (confirm(bbcsProxyL10n.confirm_delete)) {
+            bbcsConfirm(bbcsProxyL10n.confirm_delete, function () {
                 $.ajax({
                     url: botblockerData.ajaxurl,
                     type: "POST",
@@ -369,7 +369,7 @@
                         }
                     },
                 });
-            }
+            });
         });
 
         $("#bbcs_proxy_add").on("click", function () {

@@ -9,6 +9,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 trait BBCS_RenderRecaptchaWithButtonTrait {
 
 	private function getRecaptchaWithButtonData() {
+		if ( (int) $this->BBCS->settings->recaptcha_v3_ipv6_block === 1 && $this->BBCS->ip_version == 6 ) {
+			return $this->getSimpleButtonData();
+		}
 		$nonce       = $this->createChallenge( 'confirm', 3 );
 		$correctHash = $this->answerHash( $nonce, 'confirm' );
 		$style0      = 'o' . md5( $correctHash );

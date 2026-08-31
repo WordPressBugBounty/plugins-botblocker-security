@@ -36,10 +36,12 @@
             
             // Check if Full Protection requires PRO
             if (mode === 'full') {
-                var $modal = $btn.closest('.modal');
-                var hasPro = $modal.data('pro') === 1 || $modal.data('pro') === '1';
+                var $modal = $btn.closest('.bbcs-oneclick-modal, .modal');
+                if (!$modal.length) { $modal = $('#bbcsOneClickSetupModal'); }
+                var proAttr = $modal.attr('data-pro');
+                var hasPro = proAttr === '1' || proAttr === 1;
                 if (!hasPro) {
-                    alert(bbcsSetupL10n.pro_required);
+                    bbcsToast('error', bbcsSetupL10n.pro_required);
                     return;
                 }
             }
@@ -69,13 +71,13 @@
                 if (resp && resp.success) {
                     window.location.reload();
                 } else {
-                    alert(resp && resp.data && resp.data.message ? resp.data.message : bbcsSetupL10n.error_apply);
+                    bbcsToast('error', resp && resp.data && resp.data.message ? resp.data.message : bbcsSetupL10n.error_apply);
                     $('.bbcs-apply-profile').prop('disabled', false).removeClass('disabled');
                     $btn.find('.bbcs-btn-text').text($btn.data('original-text') || bbcsSetupL10n.apply_now);
                     $btn.find('.spinner-border').addClass('d-none');
                 }
             }).fail(function () {
-                alert(bbcsSetupL10n.request_failed);
+                bbcsToast('error', bbcsSetupL10n.request_failed);
                 $('.bbcs-apply-profile').prop('disabled', false).removeClass('disabled');
                 $btn.find('.bbcs-btn-text').text($btn.data('original-text') || bbcsSetupL10n.apply_now);
                 $btn.find('.spinner-border').addClass('d-none');

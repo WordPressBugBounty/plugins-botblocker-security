@@ -11,7 +11,7 @@ class BotBlockerLoginBruteForce {
 
 	public static function getIp(): string {
 		$BBCS = BotBlocker::getInstance();
-		return $BBCS->ip;
+		return is_string( $BBCS->ip ) ? $BBCS->ip : '';
 	}
 
 	public static function getCacheKey( string $ip ): string {

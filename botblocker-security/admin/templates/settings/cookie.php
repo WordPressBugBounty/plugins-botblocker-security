@@ -102,7 +102,8 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                         ->withName( 'salt' )
                         ->withValue( (string) $data->get( 'salt', '' ) )
                         ->withLabel( __( 'Salt', 'botblocker-security' ) )
-                        ->withTooltip( __( 'Random string that makes cookie values unpredictable.', 'botblocker-security' ) )
+                        ->withTooltip( __( 'Random string that makes cookie values unpredictable. Generated automatically.', 'botblocker-security' ) )
+                        ->withReadonly()
                         ->render();
                 } )
                 ->render();

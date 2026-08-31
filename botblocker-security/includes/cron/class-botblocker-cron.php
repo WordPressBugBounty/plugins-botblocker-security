@@ -75,6 +75,11 @@ class BotBlockerCron
 			'interval' => 5 * MINUTE_IN_SECONDS,
 			'label'    => 'Cleanup Hot Bans',
 		),
+		'bbcs_addon_updates_task'          => array(
+			'schedule' => 'daily',
+			'interval' => DAY_IN_SECONDS,
+			'label'    => 'Add-on Updates Check',
+		),
 	);
 
 	public static function getAllTasks(): array
@@ -97,6 +102,7 @@ class BotBlockerCron
 			'bbcs_tls_fingerprints_sync_event' => __('TLS Fingerprint Sync', 'botblocker-security'),
 			'bbcs_summary_backfill'		 => __('Daily Summary Backfill', 'botblocker-security'),
 			'bbcs_cleanup_hot_bans'            => __('Cleanup Hot Bans', 'botblocker-security'),
+			'bbcs_addon_updates_task'          => __('Add-on Updates Check', 'botblocker-security'),
 		);
 	}
 
@@ -161,7 +167,7 @@ class BotBlockerCron
 			wp_send_json_error(__('No permission.', 'botblocker-security'));
 		}
 
-		$one_time_event = bbcs_get_scheduled_event('bbcs_one_time_task');
+		$one_time_event = BotBlockerCompatibility::getScheduledEvent('bbcs_one_time_task');
 
 		$cron_jobs = _get_cron_array();
 		if (! is_array($cron_jobs)) {
@@ -228,6 +234,9 @@ class BotBlockerCron
 	public static function dailyHandler(): void
 	{
 		self::cleanOldHits();
+		if ( class_exists( 'BotBlockerAudit' ) ) {
+			BotBlockerAudit::cleanOldEntries();
+		}
 		BotBlockerIp::clearExpiredPtrCache();
 		BotBlockerCloudApiHooks::refreshApiInternal();
 		self::updateIpFiles();
@@ -253,6 +262,12 @@ class BotBlockerCron
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 			error_log('[BBCS DEBUG] [Cron] One-time task executed at ' . current_time('mysql'));
 		}
+	}
+
+	public static function addonUpdatesHandler(): void
+	{
+		require_once BOTBLOCKER_DIR . 'includes/class-botblocker-addons-market.php';
+		BotBlockerAddonsMarket::refreshAvailableUpdates(true);
 	}
 
 	public static function updateIpFiles(): void
@@ -299,7 +314,7 @@ class BotBlockerCron
 		self::runTask( $hook );
 
 		$now   = time();
-		$event = bbcs_get_scheduled_event( $hook );
+		$event = BotBlockerCompatibility::getScheduledEvent( $hook );
 		if ( $event ) {
 			wp_unschedule_event( $event->timestamp, $hook );
 		}
@@ -335,7 +350,7 @@ class BotBlockerCron
 		foreach ( $tasks as $hook => $config ) {
 			self::runTask( $hook );
 
-			$event = bbcs_get_scheduled_event( $hook );
+			$event = BotBlockerCompatibility::getScheduledEvent( $hook );
 			if ( $event ) {
 				wp_unschedule_event( $event->timestamp, $hook );
 			}
@@ -370,7 +385,7 @@ class BotBlockerCron
 		$ran          = array();
 
 		foreach ( $tasks as $hook => $config ) {
-			$event = bbcs_get_scheduled_event( $hook );
+			$event = BotBlockerCompatibility::getScheduledEvent( $hook );
 			if ( ! $event ) {
 				continue;
 			}
@@ -638,7 +653,7 @@ class BotBlockerCron
 			$tasks        = self::getFallbackTasks();
 
 			foreach ($tasks as $hook => $config) {
-				$event = bbcs_get_scheduled_event($hook);
+				$event = BotBlockerCompatibility::getScheduledEvent($hook);
 				if (! $event) {
 					// Cron is missing - recreate it
 					if (! empty($config['schedule'])) {
@@ -716,6 +731,7 @@ add_action('bbcs_daily_task', array('BotBlockerCron', 'dailyHandler'));
 add_action('bbcs_hourly_task', array('BotBlockerCron', 'hourlyHandler'));
 add_action('bbcs_weekly_task', array('BotBlockerCron', 'weeklyHandler'));
 add_action('bbcs_one_time_task', array('BotBlockerCron', 'oneTimeHandler'));
+add_action('bbcs_addon_updates_task', array('BotBlockerCron', 'addonUpdatesHandler'));
 add_action('wp_ajax_bbcs_get_cron_tasks', array('BotBlockerCron', 'getTasksList'));
 add_action('wp_ajax_bbcs_run_cron_task', array('BotBlockerCron', 'handleRunCronTask'));
 add_action('wp_ajax_bbcs_run_all_cron_tasks', array('BotBlockerCron', 'handleRunAllCronTasks'));

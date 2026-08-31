@@ -310,7 +310,31 @@ class BotBlockerCaptchaRenderer {
 			case 8:
 				return $this->getSilentAutoData();
 			default:
+				return $this->getCaptchaDataAddon( (int) $mode );
+		}
+	}
+
+	private function getCaptchaDataAddon( int $mode ): array {
+		if ( ! class_exists( 'BotBlockerCaptchaRegistry' ) || ! BotBlockerCaptchaRegistry::has( $mode ) ) {
+			return $this->getSimpleButtonData();
+		}
+
+		try {
+			$data = BotBlockerCaptchaRegistry::getParams( $mode );
+			if ( ! isset( $data['params'] ) || ! is_array( $data['params'] ) ) {
 				return $this->getSimpleButtonData();
+			}
+			// Core owns the challenge token — the addon never sees the salt.
+			$nonce                  = $this->createChallenge( 'confirm', $mode );
+			$data['mode']           = $mode;
+			$data['params']['hash'] = $this->answerHash( $nonce, 'confirm' );
+			return $data;
+		} catch ( \Throwable $e ) {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [Renderer] addon captcha mode ' . $mode . ' failed, falling back to mode 0: ' . $e->getMessage() );
+			}
+			return $this->getSimpleButtonData();
 		}
 	}
 

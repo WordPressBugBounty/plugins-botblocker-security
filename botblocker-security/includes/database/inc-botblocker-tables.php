@@ -27,6 +27,7 @@ $bbcs_tables = array(
 	'bbcs_countries'       => 'countries',
 	'bbcs_fingerprint'     => 'fingerprint',
 	'bbcs_sessions'        => 'sessions',
+	'bbcs_audit_log'       => 'audit_log',
 );
 
 foreach ( $bbcs_tables as $bbcs_prop => $bbcs_suffix ) {

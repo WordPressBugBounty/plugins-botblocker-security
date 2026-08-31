@@ -54,12 +54,18 @@ final class BBCS_Toastify
 	private const DEFAULT_DURATION = 6000;
 
 	public static function init(): void {
-		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_assets' ) );
+		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_assets' ), 1 );
 		add_action( 'admin_print_footer_scripts', array( __CLASS__, 'render_toasts' ), 5 );
 	}
 
 	public static function enqueue_assets(): void {
 		if ( self::$assets_enqueued ) {
+			return;
+		}
+
+		$screen        = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+		$on_dashboard  = $screen && $screen->id === 'dashboard';
+		if ( ! BotBlockerWpUtility::is_botblocker_page() && ! $on_dashboard ) {
 			return;
 		}
 
@@ -72,9 +78,39 @@ final class BBCS_Toastify
 			BOTBLOCKER_VERSION
 		);
 
-		wp_add_inline_style(
+		wp_add_inline_style( BOTBLOCKER_SHORT_NAME . '-toastify', self::custom_css() );
+
+		wp_enqueue_script(
 			BOTBLOCKER_SHORT_NAME . '-toastify',
-			'.bbcs-app .toastify{position:fixed;font-size:15px;font-weight:500;border-radius:10px;padding:14px 24px;'
+			$base_url . 'js/toastify/toastify.min.js',
+			array(),
+			BOTBLOCKER_VERSION,
+			true
+		);
+
+		wp_enqueue_script(
+			BOTBLOCKER_SHORT_NAME . '-toast-js',
+			$base_url . 'js/bbcs-js/bbcs-toast.js',
+			array( BOTBLOCKER_SHORT_NAME . '-toastify' ),
+			BOTBLOCKER_VERSION,
+			true
+		);
+
+		wp_localize_script(
+			BOTBLOCKER_SHORT_NAME . '-toast-js',
+			'bbcsConfirmL10n',
+			array(
+				'title'   => __( 'Please Confirm', 'botblocker-security' ),
+				'cancel'  => __( 'Cancel', 'botblocker-security' ),
+				'confirm' => __( 'Confirm', 'botblocker-security' ),
+			)
+		);
+
+		self::$assets_enqueued = true;
+	}
+
+	public static function custom_css(): string {
+		return '.toastify{position:fixed;font-size:15px;font-weight:500;border-radius:10px;padding:14px 24px;'
 			. 'box-shadow:0 8px 32px rgba(0,0,0,.22);z-index:999999;opacity:0;'
 			. 'transform-origin:top right;transition:none!important;'
 			. 'animation:bbcs-toast-in .45s cubic-bezier(.34,1.56,.64,1) both}'
@@ -87,22 +123,11 @@ final class BBCS_Toastify
 			. '55%{opacity:1;scale:1.03}'
 			. '80%{scale:.99}'
 			. '100%{opacity:1;scale:1}}'
-			. '.bbcs-app .toast-close{position:absolute;right:10px;top:50%;transform:translateY(-50%);padding:4px 8px;font-size:16px;line-height:1}'
-			. '.bbcs-app .toastify{padding-right:44px}'
+			. '.toast-close{position:absolute;right:10px;top:50%;transform:translateY(-50%);padding:4px 8px;font-size:16px;line-height:1}'
+			. '.toastify{padding-right:44px}'
 			. '@media(max-width:782px){'
-			. '.bbcs-app .toastify{font-size:13px;padding:10px 18px;max-width:calc(100% - 32px)}'
-			. '}'
-		);
-
-		wp_enqueue_script(
-			BOTBLOCKER_SHORT_NAME . '-toastify',
-			$base_url . 'js/toastify/toastify.min.js',
-			array(),
-			BOTBLOCKER_VERSION,
-			true
-		);
-
-		self::$assets_enqueued = true;
+			. '.toastify{font-size:13px;padding:10px 18px;max-width:calc(100% - 32px)}'
+			. '}';
 	}
 
 	/**
@@ -140,25 +165,13 @@ final class BBCS_Toastify
 
 		$js = '';
 		foreach ( $toasts as $toast ) {
-			$class_name = self::TYPE_CSS_MAP[ $toast['type'] ] ?? 'toast-info';
-			$duration   = (int) ( $toast['duration'] ?? self::DEFAULT_DURATION );
-			$message    = wp_json_encode( $toast['message'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
-
-			$el = 'document.querySelector(\'.bbcs-app\')||document.body';
-			$js .= 'Toastify({text:' . $message
-				. ',duration:' . $duration
-				. ',close:true'
-				. ',gravity:"top"'
-				. ',position:"right"'
-				. ',offset:{y:65}'
-				. ',className:"' . $class_name . '"'
-				. ',selector:' . $el
-				. ',stopOnFocus:true'
-				. '}).showToast();';
+			$type    = $toast['type'];
+			$message = wp_json_encode( $toast['message'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
+			$js     .= 'bbcsToast(' . wp_json_encode( $type ) . ',' . $message . ');';
 		}
 
 		if ( $js !== '' ) {
-			wp_add_inline_script( BOTBLOCKER_SHORT_NAME . '-toastify', $js );
+			wp_add_inline_script( BOTBLOCKER_SHORT_NAME . '-toast-js', $js );
 		}
 	}
 
@@ -254,6 +267,7 @@ final class BBCS_Toastify
 			'requires_core_missing' => __( 'The package must declare Requires-Core.', 'botblocker-security' ),
 			'slug_mismatch'        => __( 'The package slug does not match the requested add-on.', 'botblocker-security' ),
 			'requires_php'         => __( 'This add-on requires a newer PHP version.', 'botblocker-security' ),
+			'redeploy_failed'      => __( 'Activation refused: the add-on runtime copy is outdated and could not be refreshed automatically. Check uploads write permissions and try again.', 'botblocker-security' ),
 			'file_mods_disabled'   => __( 'File modifications are disabled for this WordPress installation.', 'botblocker-security' ),
 			'tmp_failed'           => __( 'Failed to create a temporary add-on folder.', 'botblocker-security' ),
 			'move_source'          => __( 'The validated add-on source is missing.', 'botblocker-security' ),
@@ -262,6 +276,7 @@ final class BBCS_Toastify
 			'fs_unavailable'       => __( 'Filesystem API is not available.', 'botblocker-security' ),
 			'scan_failed'          => __( 'Failed to scan extraction directory.', 'botblocker-security' ),
 			'download'             => __( 'Failed to download the add-on package.', 'botblocker-security' ),
+			'addon_lifecycle_failed' => __( 'The add-on could not be activated after installation.', 'botblocker-security' ),
 		);
 
 		$msg = $map[ $code ] ?? __( 'Operation failed.', 'botblocker-security' );

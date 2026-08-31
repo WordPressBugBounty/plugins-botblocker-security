@@ -16,7 +16,7 @@ class BBCS_RedisStorage extends BBCS_ObjectCacheStorage {
 	/** @var int */
 	private $database = 0;
 	/** @var int */
-	private $connectionTimeout = 2;
+	private $connectionTimeout = 1;
 	/** @var int */
 	private $retryInterval = 60;
 	/** @var int */
@@ -63,6 +63,10 @@ class BBCS_RedisStorage extends BBCS_ObjectCacheStorage {
 			}
 		}
 		return self::$instance;
+	}
+
+	public static function resetInstance(): void {
+		self::$instance = null;
 	}
 
 	public function connect(): bool {
@@ -275,6 +279,9 @@ class BBCS_RedisStorage extends BBCS_ObjectCacheStorage {
 		try {
 
 			$this->isAvailableCache = null;
+			// Bypass the retry throttle: a health-check recovery must be able
+			// to reconnect even right after a failed attempt.
+			$this->lastConnectionAttempt = 0;
 
 			if ( $this->redis && $this->redis->isConnected() ) {
 				$this->redis->close();

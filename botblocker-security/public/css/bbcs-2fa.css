@@ -316,3 +316,52 @@ button.bbcs-2fa-btn-submit:disabled {
     color: #06b6d4;
     transform: translateX(-2px);
 }
+
+.bbcs-2fa-remember {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    color: #4a5568;
+    font-size: 14px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.bbcs-2fa-remember input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #06b6d4;
+}
+
+.bbcs-2fa-recovery-link {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.bbcs-2fa-recovery-form {
+    display: inline-block;
+}
+
+.bbcs-2fa-recovery-btn {
+    background: none;
+    border: none;
+    color: #718096;
+    font-size: 13px;
+    text-decoration: underline;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.bbcs-2fa-recovery-btn:hover {
+    color: #06b6d4;
+}
+
+.bbcs-2fa-recovery-sent {
+    display: inline-block;
+    background: rgba(72, 187, 120, 0.15);
+    color: #276749;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+}

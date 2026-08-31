@@ -6,12 +6,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 trait BotBlockerPostTrait {
 
+	use BotBlockerHoneypotTrait;
 
 	public function processPostRequest() {
 		check_ajax_referer( 'botblocker_nonce', 'nonce' );
 
-		if ( isset( $_COOKIE[ $this->settings->cookie ] ) ) {
-			$this->uid = preg_replace( '/[^a-zA-Z0-9]/', '', sanitize_text_field( wp_unslash( $_COOKIE[ $this->settings->cookie ] ) ) );
+		if ( empty( $this->uid ) ) {
+			$this->uid = $this->sanitize_cookie_uid();
+			if ( empty( $this->uid ) ) {
+				$this->uid = $this->generate_uid();
+				$this->set_bot_blocker_cookie();
+			}
 		}
 
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
@@ -36,6 +41,19 @@ trait BotBlockerPostTrait {
 				error_log( '[BBCS DEBUG] [Post] STEP_DIE: NoPost' );
 			}
 			$payload = array( 'error' => 'Error NoPost' );
+			if ( $this->settings->bbcs_ddos_resilience == 1 ) {
+				$payload = $this->sign_response_payload( $payload );
+			}
+			$this->process_die( wp_json_encode( $payload ) );
+		}
+
+		$honeypot_reason = self::honeypotViolation( $_POST, $this->settings, true );
+		if ( $honeypot_reason !== '' ) {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [Post] STEP_DIE: ' . $honeypot_reason );
+			}
+			$payload = array( 'error' => $honeypot_reason );
 			if ( $this->settings->bbcs_ddos_resilience == 1 ) {
 				$payload = $this->sign_response_payload( $payload );
 			}
@@ -314,17 +332,54 @@ trait BotBlockerPostTrait {
 					$this->process_wrong_click();
 				}
 			}
+		// Bind the challenge to the IP it was issued for: a stolen triplet
+		// (token, hash, date) must not verify from another address. No ban —
+		// IP rotation (mobile/IPv6 privacy) is indistinguishable from a steal;
+		// the visitor reloads and gets a fresh challenge.
+		if ( ! hash_equals( (string) ( $ct_result['i'] ?? '' ), (string) $this->ip ) ) {
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
-				error_log( '[BBCS DEBUG] [Post] STEP: challenge_token_passed' );
+				error_log( '[BBCS DEBUG] [Post] STEP_DIE: challenge_ip_mismatch' );
 			}
+			$payload = array( 'error' => 'Wrong Click' );
+			if ( $this->settings->bbcs_ddos_resilience == 1 ) {
+				$payload = $this->sign_response_payload( $payload );
+			}
+			$this->process_die( wp_json_encode( $payload ) );
+		}
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+			error_log( '[BBCS DEBUG] [Post] STEP: challenge_token_passed' );
+		}
 			// If reCAPTCHA verification changed the mode (failed), reject
 			$token_mode = isset( $ct_result['m'] ) ? (int) $ct_result['m'] : -1;
+			if ( $token_mode >= 90 ) {
+				$addon_registered = class_exists( 'BotBlockerCaptchaRegistry' ) && BotBlockerCaptchaRegistry::has( $token_mode );
+				if ( ! $addon_registered ) {
+					// Provider deactivated/deleted between render and verify —
+					// degrade like a provider error; never grant access unverified.
+					$this->settings->bbcs_captcha_mode = 1;
+					if ( $this->settings->time_ban < 1 ) {
+						$this->settings->time_ban = '1';
+					}
+				} else {
+					$addon_verified = BotBlockerCaptchaRegistry::verify( $token_mode, $_POST, $this );
+					if ( null === $addon_verified ) {
+						// Provider error — mirror reCAPTCHA network-failure semantics (degrade, never hard-ban).
+						$this->settings->bbcs_captcha_mode = 1;
+						if ( $this->settings->time_ban < 1 ) {
+							$this->settings->time_ban = '1';
+						}
+					} elseif ( ! $addon_verified ) {
+						$this->process_wrong_click( defined( 'BBCS_CAPTCHA_DIAG' ) && BBCS_CAPTCHA_DIAG ? 'AV' : '' );
+					}
+				}
+			}
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [Post] STEP: token_mode=' . $token_mode . ' captcha_mode=' . $this->settings->bbcs_captcha_mode );
 			}
-			if ( in_array( $token_mode, array( 3, 4 ) ) && (int) $this->settings->bbcs_captcha_mode !== $token_mode ) {
+			if ( ( in_array( $token_mode, array( 3, 4 ) ) || $token_mode >= 90 ) && (int) $this->settings->bbcs_captcha_mode !== $token_mode ) {
 				if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 					error_log( '[BBCS DEBUG] [Post] STEP_DIE: wrong_click mode_mismatch' );
@@ -408,7 +463,7 @@ trait BotBlockerPostTrait {
 
 			$cid = isset( $_POST['cid'] ) ? sanitize_text_field( wp_unslash( $_POST['cid'] ) ) : '';
 
-			$code_data = bbcs_codeList( 0 );
+			$code_data = BotBlockerDataCodes::codeList( 0 );
 
 			if ( $code_data['allow'] ) {
 				// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
@@ -480,30 +535,28 @@ trait BotBlockerPostTrait {
 
 		global $wpdb;
 
-		// Use server-side IP to prevent ban spoofing via POST parameter
-		if ( ! isset( $_SERVER['REMOTE_ADDR'] ) ) {
-			$payload = array( 'error' => 'Bad IP' );
+		// Ban the server-resolved client IP (trusted proxy map); REMOTE_ADDR is the fallback only.
+		$remote_addr = isset( $_SERVER['REMOTE_ADDR'] ) ? trim( preg_replace( '/[^0-9a-zA-Z\.\:]/', '', sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) ) ) : '';
+		$ip          = BotBlockerBanTargetResolver::resolve( (string) $this->ip, $remote_addr, (string) $this->isProxy, (int) $this->settings->block_proxy_users === 1 );
+
+		if ( $ip === '' ) {
+			$payload = array(
+				'error' => BotBlockerBanTargetResolver::hasValidIp( (string) $this->ip, $remote_addr ) ? 'Wrong Click' : 'Bad IP',
+			);
 			if ( $this->settings->bbcs_ddos_resilience == 1 ) {
 				$payload = $this->sign_response_payload( $payload );
 			}
 			$this->process_die( wp_json_encode( $payload ) );
 		}
-		$ip_sanitized = trim( preg_replace( '/[^0-9a-zA-Z\.\:]/', '', sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) ) );
-		if ( filter_var( $ip_sanitized, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
+		if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
 			$this->ip_version = 4;
-		} elseif ( filter_var( $ip_sanitized, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
+		} elseif ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
 			$this->ip_version = 6;
-		} else {
-			$payload = array( 'error' => 'Bad IP' );
-			if ( $this->settings->bbcs_ddos_resilience == 1 ) {
-				$payload = $this->sign_response_payload( $payload );
-			}
-			$this->process_die( wp_json_encode( $payload ) );
 		}
 
 		$fromdate = $this->time - 86401;
 
-		$ip_from_post = $ip_sanitized;
+		$ip_from_post = $ip;
 		$passed_code  = 8;
 		$fromdate     = (int) $fromdate;
 		// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
@@ -530,8 +583,6 @@ trait BotBlockerPostTrait {
 		if ( $this->settings->time_ban == 0 ) {
 			$this->settings->time_ban = 400;
 		}
-
-		$ip = $ip_sanitized;
 
 		if ( $this->ip_version == 4 ) {
 			// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
@@ -584,7 +635,7 @@ trait BotBlockerPostTrait {
 
 		if ( $this->settings->botblocker_log_tests == 1 ) {
 
-			$code_data = bbcs_codeList( 8 );
+			$code_data = BotBlockerDataCodes::codeList( 8 );
 
 			$cid_from_post = isset( $_POST['cid'] ) ? sanitize_text_field( wp_unslash( $_POST['cid'] ) ) : '';
 

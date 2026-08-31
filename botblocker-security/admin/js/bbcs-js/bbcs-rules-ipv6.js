@@ -353,9 +353,7 @@
             ".delete-ipv6-rule",
             function () {
                 var id = $(this).data("id");
-                if (
-                    confirm(bbcsIpv6L10n.confirm_delete)
-                ) {
+                bbcsConfirm(bbcsIpv6L10n.confirm_delete, function () {
                     $.ajax({
                         url: botblockerData.ajaxurl,
                         type: "POST",
@@ -376,7 +374,7 @@
                             }
                         },
                     });
-                }
+                });
             }
         );
 

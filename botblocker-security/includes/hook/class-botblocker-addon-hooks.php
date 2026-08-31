@@ -5,8 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-require_once __DIR__ . '/hook-addon-validation.php';
-require_once __DIR__ . '/hook-addon-install.php';
+require_once __DIR__ . '/class-botblocker-addon-files.php';
 require_once BOTBLOCKER_DIR . 'includes/class-botblocker-toastify.php';
 
 class BotBlockerAddonHooks {
@@ -40,17 +39,28 @@ class BotBlockerAddonHooks {
 		BotBlockerMultisite::forEachSite(
 			function ( $site_id ) use ( $new_version ) {
 				// autoUpdate() is a no-op in local add-on mode, so $result stays empty there.
-				$result = BotBlockerAddons::autoUpdate( $new_version );
+				try {
+					$result = BotBlockerAddons::autoUpdate( $new_version );
+				} catch ( \Throwable $e ) {
+					$result = array(
+						'updated' => array(),
+						'failed'  => array(),
+					);
+					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- a fatal add-on must always be recorded
+					error_log( '[BBCS] [Addons] onPluginUpdated: autoUpdate threw: ' . $e->getMessage() );
+				}
 				if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 					error_log( '[BBCS DEBUG] [Addons] PluginUpdate: site=' . $site_id . ' updated=' . count( $result['updated'] ) . ' failed=' . count( $result['failed'] ) );
 				}
 				if ( ! empty( $result['failed'] ) ) {
-					$failed_slugs = array_column( $result['failed'], 'slug' );
-					BotBlockerAddons::setActive( array_values( array_diff( BotBlockerAddons::getActive(), $failed_slugs ) ) );
-					BotBlockerAlerts::setAddonUpdateFailed( $result['failed'] );
+					BotBlockerAddons::failUpdates( $result['failed'] );
 				}
 				self::deactivateIncompatible( $new_version );
+				if ( class_exists( 'BotBlockerAddonsMarket' ) ) {
+					BotBlockerAddonsMarket::flushCache();
+					BotBlockerAddonsMarket::refreshAvailableUpdates( true );
+				}
 				if ( class_exists( 'BotBlockerAsnDb' ) ) {
 					BotBlockerAsnDb::scheduleDownload( 'upgrade' );
 				}
@@ -64,7 +74,7 @@ class BotBlockerAddonHooks {
 			return;
 		}
 
-		$addons       = BotBlockerAddons::scanAll();
+		$addons       = BotBlockerAddons::scanAllRaw();
 		$incompatible = array();
 
 		foreach ( $active as $slug ) {
@@ -75,6 +85,7 @@ class BotBlockerAddonHooks {
 				$incompatible[] = array(
 					'name'          => $addons[ $slug ]['name'] ?: $slug,
 					'requires_core' => $addons[ $slug ]['requires_core'],
+					'max_core'      => $addons[ $slug ]['max_core'] ?? '',
 				);
 			}
 		}
@@ -106,7 +117,16 @@ class BotBlockerAddonHooks {
 			wp_die( 'Nonce verification failed' );
 		}
 		self::denyWhenLocalMode();
-		$result = BotBlockerAddons::autoUpdate();
+		try {
+			$result = BotBlockerAddons::autoUpdate();
+		} catch ( \Throwable $e ) {
+			$result = array(
+				'updated' => array(),
+				'failed'  => array(),
+			);
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- a fatal add-on must always be recorded
+			error_log( '[BBCS] [Addons] handleUpdateAll: autoUpdate threw: ' . $e->getMessage() );
+		}
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 			error_log( '[BBCS DEBUG] [Addons] UpdateAll: updated=' . count( $result['updated'] ?? array() ) . ' failed=' . count( $result['failed'] ?? array() ) );
@@ -114,7 +134,7 @@ class BotBlockerAddonHooks {
 		self::deactivateIncompatible();
 
 		if ( ! empty( $result['failed'] ) ) {
-			BotBlockerAlerts::setAddonUpdateFailed( $result['failed'] );
+			BotBlockerAddons::failUpdates( $result['failed'] );
 			$failed_names = wp_list_pluck( $result['failed'], 'name' );
 			if ( ! empty( $result['updated'] ) ) {
 				BBCS_Toastify::flash(
@@ -198,6 +218,11 @@ class BotBlockerAddonHooks {
 			wp_safe_redirect( BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' ) );
 			exit;
 		}
+		if ( ! in_array( $slug, $active, true ) && ! BotBlockerPro::isActive() ) {
+			BBCS_Toastify::flash_addon_error( 'pro_required' );
+			wp_safe_redirect( BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' ) );
+			exit;
+		}
 		$was_active = in_array( $slug, $active, true );
 
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
@@ -205,33 +230,73 @@ class BotBlockerAddonHooks {
 			error_log( '[BBCS DEBUG] [Addons] Toggle: slug=' . $slug . ' was_active=' . ( $was_active ? '1' : '0' ) . ' step=before_loadCore' );
 		}
 
-		BotBlockerAddons::loadCore( $addons[ $slug ] );
+		try {
+			if ( ! $was_active && ! BotBlockerAddons::redeployBuiltin( $slug ) ) {
+				BBCS_Toastify::flash_addon_error( 'redeploy_failed' );
+				wp_safe_redirect( BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' ) );
+				exit;
+			}
 
-		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-			error_log( '[BBCS DEBUG] [Addons] Toggle: slug=' . $slug . ' step=after_loadCore' );
+			BotBlockerAddons::loadCore( $addons[ $slug ] );
+
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+				error_log( '[BBCS DEBUG] [Addons] Toggle: slug=' . $slug . ' step=after_loadCore' );
+			}
+
+			BotBlockerAddons::includeLifecycleFile( $addons[ $slug ] );
+
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+				error_log( '[BBCS DEBUG] [Addons] Toggle: slug=' . $slug . ' step=after_includeLifecycleFile' );
+			}
+
+			if ( $was_active ) {
+				$active = array_values( array_diff( $active, array( $slug ) ) );
+			} else {
+				$active[] = $slug;
+				$active   = array_values( array_unique( $active ) );
+			}
+			BotBlockerAddons::setActive( $active );
+
+			$is_now_active = in_array( $slug, $active, true );
+
+			if ( $is_now_active ) {
+				BotBlockerAddons::dispatchLifecycle( $slug, 'load', $addons[ $slug ] );
+			}
+
+			BotBlockerAddons::dispatchLifecycle( $slug, $is_now_active ? 'activate' : 'deactivate', $addons[ $slug ] );
+
+			do_action( 'bbcs_addon_toggled', $slug, $is_now_active );
+		} catch ( \Throwable $e ) {
+			$early_slug = defined( 'BBCS_EARLY_INIT_SLUG' ) ? BBCS_EARLY_INIT_SLUG : 'bbcs-early-init';
+			if ( $slug === $early_slug ) {
+				BotBlockerAddons::panicEarlyInitLayer( $e );
+			} else {
+				BotBlockerAddons::panic(
+					array( $slug ),
+					array(
+						array(
+							'name'  => $addons[ $slug ]['name'] ?: $slug,
+							'error' => BotBlockerAddons::FAIL_LIFECYCLE_THROW,
+						),
+					)
+				);
+			}
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- a fatal add-on must always be recorded
+			error_log( '[BBCS] [Addons] handleToggle: add-on "' . $slug . '" threw and was switched off: ' . $e->getMessage() );
+			BBCS_Toastify::flash(
+				sprintf(
+					/* translators: %s: add-on name */
+					__( 'Add-on "%s" failed and was switched off to keep the site running.', 'botblocker-security' ),
+					$addons[ $slug ]['name'] ?: $slug
+				),
+				BBCS_Toastify::TYPE_ERROR,
+				BBCS_Toastify::PAGE_ADDONS
+			);
+			wp_safe_redirect( BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' ) );
+			exit;
 		}
-
-		BotBlockerAddons::includeLifecycleFile( $addons[ $slug ] );
-
-		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-			error_log( '[BBCS DEBUG] [Addons] Toggle: slug=' . $slug . ' step=after_includeLifecycleFile' );
-		}
-
-		if ( $was_active ) {
-			$active = array_values( array_diff( $active, array( $slug ) ) );
-		} else {
-			$active[] = $slug;
-			$active   = array_values( array_unique( $active ) );
-		}
-		BotBlockerAddons::setActive( $active );
-
-		$is_now_active = in_array( $slug, $active, true );
-
-		BotBlockerAddons::dispatchLifecycle( $slug, $is_now_active ? 'activate' : 'deactivate', $addons[ $slug ] );
-
-		do_action( 'bbcs_addon_toggled', $slug, $is_now_active );
 
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
@@ -266,7 +331,7 @@ class BotBlockerAddonHooks {
 			wp_safe_redirect( $redir );
 			exit;
 		}
-		if ( ! bbcs_is_allowed_addon_url( $url ) ) {
+		if ( ! BotBlockerAddonFiles::isAllowedAddonUrl( $url ) ) {
 			BBCS_Toastify::flash_addon_error( 'url_not_allowed' );
 			wp_safe_redirect( $redir );
 			exit;
@@ -291,14 +356,34 @@ class BotBlockerAddonHooks {
 			exit;
 		}
 
-		$installed = bbcs_install_addon_package(
-			$tmp,
-			array(
-				'slug'            => $slug,
-				'filename'        => basename( (string) wp_parse_url( $url, PHP_URL_PATH ) ),
-				'lifecycle_event' => 'install',
-			)
-		);
+		try {
+			$installed = BotBlockerAddonFiles::installAddonPackage(
+				$tmp,
+				array(
+					'slug'            => $slug,
+					'filename'        => basename( (string) wp_parse_url( $url, PHP_URL_PATH ) ),
+					'lifecycle_event' => 'install',
+				)
+			);
+		} catch ( \Throwable $e ) {
+			if ( file_exists( $tmp ) ) {
+				wp_delete_file( $tmp );
+			}
+			BotBlockerAddons::panic(
+				array( $slug ),
+				array(
+					array(
+						'name'  => $slug,
+						'error' => BotBlockerAddons::FAIL_LIFECYCLE_THROW,
+					),
+				)
+			);
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- a fatal add-on must always be recorded
+			error_log( '[BBCS] [Addons] handleInstall: add-on "' . $slug . '" threw and was switched off: ' . $e->getMessage() );
+			BBCS_Toastify::flash_addon_error( 'download' );
+			wp_safe_redirect( $redir );
+			exit;
+		}
 		if ( file_exists( $tmp ) ) {
 			wp_delete_file( $tmp );
 		}
@@ -307,7 +392,7 @@ class BotBlockerAddonHooks {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [Addons] Install: slug=' . $slug . ' status=failed error=' . $installed->get_error_code() );
 			}
-			BBCS_Toastify::flash_addon_error( $installed->get_error_code(), $installed->get_error_message() );
+			BBCS_Toastify::flash_addon_error( $installed->get_error_code() );
 			wp_safe_redirect( $redir );
 			exit;
 		}
@@ -343,7 +428,7 @@ class BotBlockerAddonHooks {
 		$file  = $_FILES['bbcs_addon_zip'];
 		$error = isset( $file['error'] ) ? (int) $file['error'] : UPLOAD_ERR_NO_FILE;
 		if ( $error !== UPLOAD_ERR_OK ) {
-			BBCS_Toastify::flash_addon_error( 'upload_failed', (string) $error );
+			BBCS_Toastify::flash_addon_error( 'upload_failed' );
 			wp_safe_redirect( $redir );
 			exit;
 		}
@@ -361,19 +446,37 @@ class BotBlockerAddonHooks {
 			exit;
 		}
 
-		$installed = bbcs_install_addon_package(
-			$tmp_name,
-			array(
-				'filename'        => $name,
-				'lifecycle_event' => 'install',
-			)
-		);
+		try {
+			$installed = BotBlockerAddonFiles::installAddonPackage(
+				$tmp_name,
+				array(
+					'filename'        => $name,
+					'lifecycle_event' => 'install',
+				)
+			);
+		} catch ( \Throwable $e ) {
+			$caught_slug = sanitize_key( (string) pathinfo( $name, PATHINFO_FILENAME ) );
+			BotBlockerAddons::panic(
+				array( $caught_slug ),
+				array(
+					array(
+						'name'  => $caught_slug !== '' ? $caught_slug : $name,
+						'error' => BotBlockerAddons::FAIL_LIFECYCLE_THROW,
+					),
+				)
+			);
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- a fatal add-on must always be recorded
+			error_log( '[BBCS] [Addons] handleUpload: package "' . $name . '" threw and was switched off: ' . $e->getMessage() );
+			BBCS_Toastify::flash_addon_error( 'upload_failed' );
+			wp_safe_redirect( $redir );
+			exit;
+		}
 		if ( is_wp_error( $installed ) ) {
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [Addons] Upload: file=' . $name . ' status=failed error=' . $installed->get_error_code() );
 			}
-			BBCS_Toastify::flash_addon_error( $installed->get_error_code(), $installed->get_error_message() );
+			BBCS_Toastify::flash_addon_error( $installed->get_error_code() );
 			wp_safe_redirect( $redir );
 			exit;
 		}
@@ -406,28 +509,43 @@ class BotBlockerAddonHooks {
 		$addons     = class_exists( 'BotBlockerAddons' ) ? BotBlockerAddons::scanAll() : array();
 		$addon      = $addons[ $slug ] ?? array();
 		$was_active = in_array( $slug, $active, true );
-		if ( class_exists( 'BotBlockerAddons' ) ) {
-			BotBlockerAddons::loadCore( $addon );
-		}
-		if ( ! empty( $addon ) ) {
-			BotBlockerAddons::includeLifecycleFile( $addon );
-		}
-
-		if ( $was_active ) {
-			$active = array_values( array_diff( $active, array( $slug ) ) );
-			BotBlockerAddons::setActive( $active );
-			if ( ! empty( $addon ) ) {
-				BotBlockerAddons::dispatchLifecycle( $slug, 'deactivate', $addon, array( 'reason' => 'delete' ) );
+		try {
+			if ( class_exists( 'BotBlockerAddons' ) ) {
+				BotBlockerAddons::loadCore( $addon );
 			}
-			do_action( 'bbcs_addon_toggled', $slug, false );
-		}
-		if ( ! empty( $addon ) ) {
-			BotBlockerAddons::dispatchLifecycle( $slug, 'delete', $addon );
+			if ( ! empty( $addon ) ) {
+				BotBlockerAddons::includeLifecycleFile( $addon );
+			}
+
+			if ( $was_active ) {
+				$active = array_values( array_diff( $active, array( $slug ) ) );
+				BotBlockerAddons::setActive( $active );
+				if ( ! empty( $addon ) ) {
+					BotBlockerAddons::dispatchLifecycle( $slug, 'deactivate', $addon, array( 'reason' => 'delete' ) );
+				}
+				do_action( 'bbcs_addon_toggled', $slug, false );
+			}
+			if ( ! empty( $addon ) ) {
+				BotBlockerAddons::dispatchLifecycle( $slug, 'delete', $addon );
+			}
+		} catch ( \Throwable $e ) {
+			BotBlockerAddons::panic(
+				array( $slug ),
+				array(
+					array(
+						'name'  => ( isset( $addon['name'] ) && $addon['name'] !== '' ) ? $addon['name'] : $slug,
+						'error' => BotBlockerAddons::FAIL_LIFECYCLE_THROW,
+					),
+				)
+			);
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- a fatal add-on must always be recorded
+			error_log( '[BBCS] [Addons] handleDelete: add-on "' . $slug . '" threw and was switched off: ' . $e->getMessage() );
 		}
 		$folder = trailingslashit( BotBlockerMultisite::getAddonsDir() ) . $slug;
 		if ( is_dir( $folder ) ) {
-			bbcs_rrmdir( $folder );
+			BotBlockerAddonFiles::rrmdir( $folder );
 		}
+		BotBlockerAddons::forgetLedgerSlug( $slug );
 
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
@@ -456,7 +574,7 @@ class BotBlockerAddonHooks {
 			wp_safe_redirect( esc_url_raw( $redir ) );
 			exit;
 		}
-		if ( ! bbcs_is_allowed_addon_url( $url ) ) {
+		if ( ! BotBlockerAddonFiles::isAllowedAddonUrl( $url ) ) {
 			BBCS_Toastify::flash_addon_error( 'url_not_allowed' );
 			wp_safe_redirect( $redir );
 			exit;
@@ -485,74 +603,81 @@ class BotBlockerAddonHooks {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [Addons] download failed: ' . $tmp->get_error_message() );
 			}
+			$addons_now = BotBlockerAddons::scanAll();
+			BotBlockerAddons::failUpdates(
+				array(
+					array(
+						'slug'  => $slug,
+						'name'  => ( isset( $addons_now[ $slug ]['name'] ) && $addons_now[ $slug ]['name'] !== '' ) ? $addons_now[ $slug ]['name'] : $slug,
+						'error' => BotBlockerAddons::FAIL_DOWNLOAD,
+					),
+				)
+			);
 			BBCS_Toastify::flash_addon_error( 'download' );
 			wp_safe_redirect( $redir );
 			exit;
 		}
 
-		$active = BotBlockerAddons::getActive();
-		$wasActive  = in_array( $slug, $active, true );
-		$old_addons = class_exists( 'BotBlockerAddons' ) ? BotBlockerAddons::scanAll() : array();
-		$old_addon  = $old_addons[ $slug ] ?? array();
-
-		if ( $wasActive ) {
-			if ( ! empty( $old_addon['core'] ) && file_exists( $old_addon['core'] ) ) {
-				include_once $old_addon['core'];
+		try {
+			$installed = BotBlockerAddonFiles::installAddonPackage(
+				$tmp,
+				array(
+					'slug'            => $slug,
+					'filename'        => basename( (string) wp_parse_url( $url, PHP_URL_PATH ) ),
+					'lifecycle_event' => 'update',
+				)
+			);
+		} catch ( \Throwable $e ) {
+			if ( file_exists( $tmp ) ) {
+				wp_delete_file( $tmp );
 			}
-			if ( ! empty( $old_addon ) ) {
-				BotBlockerAddons::dispatchLifecycle( $slug, 'deactivate', $old_addon, array( 'reason' => 'update' ) );
-			}
-			do_action( 'bbcs_addon_toggled', $slug, false );
-			$active = array_values( array_diff( $active, array( $slug ) ) );
-			BotBlockerAddons::setActive( $active );
+			BotBlockerAddons::panic(
+				array( $slug ),
+				array(
+					array(
+						'name'  => $slug,
+						'error' => BotBlockerAddons::FAIL_LIFECYCLE_THROW,
+					),
+				)
+			);
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- a fatal add-on must always be recorded
+			error_log( '[BBCS] [Addons] handleUpdate: add-on "' . $slug . '" threw and was switched off: ' . $e->getMessage() );
+			BBCS_Toastify::flash_addon_error( 'download' );
+			wp_safe_redirect( $redir );
+			exit;
 		}
-
-		$installed = bbcs_install_addon_package(
-			$tmp,
-			array(
-				'slug'            => $slug,
-				'filename'        => basename( (string) wp_parse_url( $url, PHP_URL_PATH ) ),
-				'lifecycle_event' => 'update',
-			)
-		);
 		if ( file_exists( $tmp ) ) {
 			wp_delete_file( $tmp );
 		}
 
 		if ( is_wp_error( $installed ) ) {
-			if ( $wasActive ) {
-				$active   = BotBlockerAddons::getActive();
-				$active[] = $slug;
-				BotBlockerAddons::setActive( array_values( array_unique( $active ) ) );
-				if ( ! empty( $old_addon ) ) {
-					BotBlockerAddons::dispatchLifecycle( $slug, 'activate', $old_addon, array( 'reason' => 'update_rollback' ) );
-				}
-				do_action( 'bbcs_addon_toggled', $slug, true );
-			}
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [Addons] Update: slug=' . $slug . ' status=failed error=' . $installed->get_error_code() );
 			}
-			BBCS_Toastify::flash_addon_error( $installed->get_error_code(), $installed->get_error_message() );
+			$addons_now = BotBlockerAddons::scanAll();
+			BotBlockerAddons::failUpdates(
+				array(
+					array(
+						'slug'  => $slug,
+						'name'  => ( isset( $addons_now[ $slug ]['name'] ) && $addons_now[ $slug ]['name'] !== '' ) ? $addons_now[ $slug ]['name'] : $slug,
+						'error' => (string) $installed->get_error_code(),
+					),
+				)
+			);
+			BBCS_Toastify::flash_addon_error( $installed->get_error_code() );
 			wp_safe_redirect( $redir );
 			exit;
 		}
 
 		$requires_core_after_update = '';
-		if ( $wasActive ) {
-			$updated_addons = class_exists( 'BotBlockerAddons' ) ? BotBlockerAddons::scanAll() : array();
-			if ( isset( $updated_addons[ $slug ] ) && BotBlockerAddons::isCompatible( $updated_addons[ $slug ] ) ) {
-				$active   = BotBlockerAddons::getActive();
-				$active[] = $slug;
-				BotBlockerAddons::setActive( array_values( array_unique( $active ) ) );
-				if ( ! empty( $updated_addons[ $slug ]['core'] ) && file_exists( $updated_addons[ $slug ]['core'] ) ) {
-					include_once $updated_addons[ $slug ]['core'];
-				}
-				BotBlockerAddons::dispatchLifecycle( $slug, 'activate', $updated_addons[ $slug ], array( 'reason' => 'update' ) );
-				do_action( 'bbcs_addon_toggled', $slug, true );
-			} elseif ( isset( $updated_addons[ $slug ] ) && ! empty( $updated_addons[ $slug ]['requires_core'] ) ) {
-				$requires_core_after_update = $updated_addons[ $slug ]['requires_core'];
-			}
+		$new_addon = is_array( $installed ) && ! empty( $installed['addon'] ) ? $installed['addon'] : array();
+		if (
+			BotBlockerAddons::isActive( $slug )
+			&& ! empty( $new_addon['requires_core'] )
+			&& ! BotBlockerAddons::isCompatible( $new_addon )
+		) {
+			$requires_core_after_update = (string) $new_addon['requires_core'];
 		}
 
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
@@ -562,7 +687,7 @@ class BotBlockerAddonHooks {
 
 		if ( $requires_core_after_update !== '' ) {
 			/* translators: %s: required BotBlocker version */
-			BBCS_Toastify::flash( sprintf( __( 'Add-on was updated but not reactivated - it requires BotBlocker %s or higher. Please update the plugin first.', 'botblocker-security' ), $requires_core_after_update ), BBCS_Toastify::TYPE_WARNING, BBCS_Toastify::PAGE_ADDONS );
+			BBCS_Toastify::flash( sprintf( __( 'Add-on was updated but will be switched off - it requires BotBlocker %s or higher. Please update the plugin first.', 'botblocker-security' ), $requires_core_after_update ), BBCS_Toastify::TYPE_WARNING, BBCS_Toastify::PAGE_ADDONS );
 		} else {
 			BBCS_Toastify::flash( __( 'Add-on updated successfully.', 'botblocker-security' ), BBCS_Toastify::TYPE_SUCCESS, BBCS_Toastify::PAGE_ADDONS );
 		}
@@ -573,6 +698,23 @@ class BotBlockerAddonHooks {
 	public static function flushMarketCache(): void {
 		if ( class_exists( 'BotBlockerAddonsMarket' ) ) {
 			BotBlockerAddonsMarket::flushCache();
+		}
+	}
+
+	/**
+	 * Late admin_post hook: refetch the market feed after install/update/
+	 * delete so the admin-menu update bubble reflects the new state at once.
+	 */
+	public static function refreshUpdatesAfterAction(): void {
+		if ( ! class_exists( 'BotBlockerAddonsMarket' ) ) {
+			return;
+		}
+		BotBlockerAddonsMarket::flushCache();
+		try {
+			BotBlockerAddonsMarket::refreshAvailableUpdates( true );
+		} catch ( \Throwable $e ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- the failure must always be recorded
+			error_log( '[BBCS] [Addons] refreshUpdatesAfterAction threw: ' . $e->getMessage() );
 		}
 	}
 }
@@ -592,3 +734,10 @@ foreach ( array( 'bbcs_update_all_addons', 'bbcs_install_addon', 'bbcs_upload_ad
 	add_action( 'admin_post_' . $bbcs_market_action, array( 'BotBlockerAddonHooks', 'flushMarketCache' ), PHP_INT_MAX );
 }
 unset( $bbcs_market_action );
+
+// Registered after the flush loop: same PHP_INT_MAX priority, later insertion
+// order — the refresh must see the flushed cache, not the pre-action feed.
+foreach ( array( 'bbcs_update_all_addons', 'bbcs_install_addon', 'bbcs_upload_addon', 'bbcs_delete_addon', 'bbcs_update_addon' ) as $bbcs_refresh_action ) {
+	add_action( 'admin_post_' . $bbcs_refresh_action, array( 'BotBlockerAddonHooks', 'refreshUpdatesAfterAction' ), PHP_INT_MAX );
+}
+unset( $bbcs_refresh_action );

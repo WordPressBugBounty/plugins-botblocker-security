@@ -88,6 +88,9 @@
 
   /* ── layout dimensions (easy to tune without breaking pages) ── */
   --bbcs-plughead-h: 61px;
+  --bbcs-sticky-admin-offset: 0px;
+  --bbcs-sticky-below-plughead: calc(var(--bbcs-plughead-h) + var(--bbcs-sp-2h) + var(--bbcs-sticky-admin-offset));
+  --bbcs-scrollport-h: calc(100vh - var(--bbcs-sticky-admin-offset) - var(--bbcs-plughead-h));
   --bbcs-content-pad-x: clamp(16px, 2.2vw, 32px);
   --bbcs-content-pad-y: var(--bbcs-sp-5h);
   --bbcs-wrap-max: 1600px;
@@ -146,11 +149,20 @@
 
   --bbcs-focus-ring: 2px;
   --bbcs-focus-color: var(--bbcs-wp-blue);
+  --bbcs-z-plughead: 10;
   --bbcs-z-select: 20;
   --bbcs-z-tooltip: 50;
   --bbcs-z-dropdown: 50;
   --bbcs-z-modal: 100;
   --bbcs-z-palette: 200;
+}
+
+.admin-bar { --bbcs-sticky-admin-offset: var(--wp-admin--admin-bar--height, 32px); }
+@media screen and (max-width: 782px) {
+  .admin-bar { --bbcs-sticky-admin-offset: var(--wp-admin--admin-bar--height, 46px); }
+}
+@media screen and (max-width: 600px) {
+  .admin-bar { --bbcs-sticky-admin-offset: 0px; }
 }
 
 /* ── reset ── */

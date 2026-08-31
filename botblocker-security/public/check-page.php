@@ -40,9 +40,6 @@ require_once __DIR__ . '/class-botblocker-captcha-renderer.php';
 	</header>
 
 	<div class="content">
-	<noscript>
-		<h1><?php echo esc_html( $data['h1_title'] ); ?></h1>
-	</noscript>
 
 	<div class="lds-dual-ring"></div>
 	<br />
@@ -61,6 +58,12 @@ require_once __DIR__ . '/class-botblocker-captcha-renderer.php';
 		<span class="con-center"><?php echo esc_html( BotBlockerCaptchaRenderer::t( 'Connection ID:' ) ); ?> <?php echo esc_html( $BBCS->uid . ' ~ ' . $BBCS->cid ); ?></span>
 	</div>
 	</div>
+
+	<?php if ( ! empty( $BBCS->settings->bbcs_honeypot_enabled ) ) : ?>
+	<div style="position:absolute;left:-9999px;top:-9999px;opacity:0;height:0;overflow:hidden">
+		<input type="text" name="<?php echo esc_attr( 'f' . md5( 'honeypot' . $BBCS->settings->salt . time() ) ); ?>" value="" tabindex="-1" autocomplete="off" aria-hidden="true" data-bbcs-honeypot="1">
+	</div>
+	<?php endif; ?>
 
 	<footer class="footer">
 	<?php // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>

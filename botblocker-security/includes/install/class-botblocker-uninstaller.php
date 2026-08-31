@@ -22,18 +22,16 @@ class Botblocker_Uninstaller {
 		'bbcs_wizard_completed',
 		'bbcs_setup_wizard_completed',
 		'bbcs_setup_wizard_completed_at',
-		'bbcs_wizard_cache_type',
 		'bbcs_wizard_preset',
-		'bbcs_wizard_ux_mode',
-		'bbcs_wizard_captcha_mode',
-		'bbcs_wizard_init_mode',
 		'bbcs_contact_email_collected',
 		'bbcs_support_data',
+		'bbcs_first_activated_at',
 		'bbcs_2fa_rules_version',
 		'bbcs_activation_redirect',
 		'bbcs_activation_prevent_redirect',
 		'bbcs_initial_version',
 		'bbcs_active_addons',
+		'bbcs_addon_ledger',
 		'bbcs_asn_db_status',
 		'bbcs_llm_sync_status',
 		'bbcs_blocked_countries',
@@ -62,7 +60,7 @@ class Botblocker_Uninstaller {
 		'bbcs_llm_sync_self_heal_throttle',
 		'bbcs_rugov_sync_lock',
 		'bbcs_rugov_self_heal_throttle',
-		'bbcs_just_activated',
+		'bbcs_just_activated', // Temporarily unused: kept for future post-activation flows (no reader exists yet).
 		'bbcs_cron_fallback_last_check',
 		'bbcs_cron_fallback_lock',
 		'bbcs_salt_write_error',
@@ -74,6 +72,8 @@ class Botblocker_Uninstaller {
 		'bbcs_cloud_api_hits_exhausted_alert',
 		'bbcs_addon_update_failed_alert',
 		'bbcs_addon_incompatible_alert',
+		'bbcs_addon_failed_alert',
+		'bbcs_addon_updates_available',
 		'bbcs_ip_render_throttle',
 	);
 
@@ -103,6 +103,7 @@ class Botblocker_Uninstaller {
 		'bbcs_countries',
 		'bbcs_fingerprint',
 		'bbcs_sessions',
+		'bbcs_audit_log',
 	);
 
 	/**
@@ -287,7 +288,7 @@ class Botblocker_Uninstaller {
 		}
 
 		// 2a. Named transients
-		self::cleanupNamedTransients();
+		self::deleteListedTransients();
 
 		// 2b. Prefix-based transients
 		self::cleanupPrefixTransients();
@@ -296,7 +297,7 @@ class Botblocker_Uninstaller {
 		self::dropTables();
 
 		// 4. Clean up named options
-		self::cleanupOptions();
+		self::deleteListedOptions();
 
 		// 5. Clean up any remaining prefix-based options (deactivated addons, etc.)
 		self::cleanupPrefixOptions();
@@ -325,7 +326,7 @@ class Botblocker_Uninstaller {
 	/**
 	 * Delete all named plugin transients.
 	 */
-	private static function cleanupNamedTransients(): void {
+	public static function deleteListedTransients(): void {
 		foreach ( self::$named_transients as $key ) {
 			delete_transient( $key );
 		}
@@ -374,7 +375,7 @@ class Botblocker_Uninstaller {
 	/**
 	 * Delete all plugin options from the options table.
 	 */
-	private static function cleanupOptions(): void {
+	public static function deleteListedOptions(): void {
 		foreach ( self::$option_keys as $key ) {
 			delete_option( $key );
 		}

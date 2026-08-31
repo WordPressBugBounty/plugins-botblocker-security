@@ -121,7 +121,7 @@ class BotBlockerAjaxRules {
 				'priority' => $row['priority'],
 				'type'     => $row['type'],
 				'data'     => $row['data'],
-				'expires'  => bbcs_wp_date( 'Y-m-d H:i:s', (int) $row['expires'] ),
+				'expires'  => BotBlockerCompatibility::wpDate( 'Y-m-d H:i:s', (int) $row['expires'] ),
 				'disable'  => $row['disable'],
 				'rule'     => $row['rule'],
 				'comment'  => $row['comment'],
@@ -267,6 +267,8 @@ class BotBlockerAjaxRules {
 				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' rules rendered + cache cleared' );
 			}
 
+			BotBlockerAudit::ruleChanged( BotBlockerAuditEvents::RULE_LIST_RULE, BotBlockerAuditEvents::RULE_ACTION_UPDATED, array( 'id' => $id, 'type' => $data['type'] ) );
+
 			wp_send_json_success( __( 'Rule updated successfully.', 'botblocker-security' ) );
 		} else {
 			global $wpdb;
@@ -334,6 +336,8 @@ class BotBlockerAjaxRules {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' rules rendered + cache cleared' );
 			}
+
+			BotBlockerAudit::ruleChanged( BotBlockerAuditEvents::RULE_LIST_RULE, BotBlockerAuditEvents::RULE_ACTION_DELETED, array( 'id' => $id ) );
 
 			wp_send_json_success( __( 'Rule deleted successfully.', 'botblocker-security' ) );
 		} else {
@@ -503,6 +507,8 @@ class BotBlockerAjaxRules {
 				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' rules rendered + cache cleared' );
 			}
 
+			BotBlockerAudit::ruleChanged( BotBlockerAuditEvents::RULE_LIST_RULE, BotBlockerAuditEvents::RULE_ACTION_CREATED, array( 'id' => (int) $wpdb->insert_id, 'type' => $data['type'] ) );
+
 			wp_send_json_success( __( 'Rule created successfully.', 'botblocker-security' ) );
 		} else {
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
@@ -624,6 +630,8 @@ class BotBlockerAjaxRules {
 			BotBlockerFileRenderer::renderRules();
 			BotBlockerCache::clearFileCache();
 
+			BotBlockerAudit::ruleChanged( BotBlockerAuditEvents::RULE_LIST_RULE, BotBlockerAuditEvents::RULE_ACTION_IMPORTED, array( 'imported' => $imported, 'skipped' => $skipped ) );
+
 			wp_send_json_success(
 				array(
 					'imported' => $imported,
@@ -676,6 +684,8 @@ class BotBlockerAjaxRules {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' rules rendered + cache cleared' );
 			}
+
+			BotBlockerAudit::ruleChanged( BotBlockerAuditEvents::RULE_LIST_RULE, BotBlockerAuditEvents::RULE_ACTION_CLEARED );
 
 			wp_send_json_success( __( 'All rules have been cleared.', 'botblocker-security' ) );
 		} else {

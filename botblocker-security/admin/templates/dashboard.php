@@ -19,11 +19,13 @@ return static function ( Botblocker_Dashboard_View $view, Botblocker_Layout_View
 
 							<?php $view->hero(); ?>
 
-							<?php $view->kpi(); ?>
+							<div class="bbcs-kpi-row">
+								<?php $view->kpi(); ?>
+
+								<?php $view->activity(); ?>
+							</div>
 
 							<?php $view->quick_links(); ?>
-
-							<?php $view->activity(); ?>
 
 							<?php $view->health_status(); ?>
 

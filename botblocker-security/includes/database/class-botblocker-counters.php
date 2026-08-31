@@ -44,7 +44,7 @@ class BotBlockerCounters {
 
 	public static function processHit( $reason ): void {
 		$reason = is_numeric( $reason ) ? (int) $reason : null;
-		$code   = bbcs_codeList( $reason );
+		$code   = BotBlockerDataCodes::codeList( $reason );
 
 		if ( ! $code['count'] ) {
 			return;

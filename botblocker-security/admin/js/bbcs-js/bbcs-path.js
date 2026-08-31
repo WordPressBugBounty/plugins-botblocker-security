@@ -365,7 +365,7 @@
       
         $("#botblocker-paths").on("click", ".delete-path", function () {
             var id = $(this).data("id");
-            if (confirm(bbcsPathL10n.confirm_delete)) {
+            bbcsConfirm(bbcsPathL10n.confirm_delete, function () {
               $.ajax({
                 url: botblockerData.ajaxurl,
                 type: "POST",
@@ -384,7 +384,7 @@
                   }
                 },
               });
-            }
+            });
         });
       
         $("#bbcs_path_add").on("click", function() {

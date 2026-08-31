@@ -140,11 +140,54 @@ trait BotBlockerResponseTrait {
 	}
 
 	public function redirect_to_denied( $code = null, $message = null ): void {
+		if ( (int) $code === 7 ) {
+			if ( $this->settings->botblocker_log_fake == 1 ) {
+				BotBlockerStore::storeData( $message, $code );
+			}
+		} elseif ( $this->settings->botblocker_log_block == 1 ) {
+			BotBlockerStore::storeData( $message, $code );
+		}
+		BotBlockerCounters::processHit( $code );
+		if ( empty( $this->addon_traffic_decision_stop ) ) {
+			$this->emit_blocked_event( 'core_denied', $code, $message );
+		}
+		if ( BotBlockerInApp::rescue( $this, $code, $message ) ) {
+			return;
+		}
+		$this->show_denied_page( $message );
+	}
+
+	public function redirect_to_block( $code = null, $message = null, $ip_test = null ): void {
 		if ( $this->settings->botblocker_log_block == 1 ) {
 			BotBlockerStore::storeData( $message, $code );
 		}
 		BotBlockerCounters::processHit( $code );
-		$this->show_denied_page( $message );
+		if ( empty( $this->rate_limit_block_emitted ) && empty( $this->addon_traffic_decision_stop ) ) {
+			$this->emit_blocked_event( 'core_block', $code, $message );
+		}
+		$this->show_block_page( $ip_test );
+		if ( $this->settings->secure_mode == self::SECURE_MODE_FULL ) {
+			$this->process_die();
+		}
+	}
+
+	private function emit_blocked_event( string $source, $code, $message ): void {
+		$reason = is_string( $message ) ? $message : '';
+		$code_i = is_numeric( $code ) ? (int) $code : 0;
+
+		do_action(
+			'bbcs_botblocker_blocked_request',
+			array(
+				'reason' => $reason,
+				'code'   => $code_i,
+				'url'    => '',
+				'status' => 0,
+				'source' => $source,
+			),
+			$this,
+			'core',
+			array( 'slug' => 'core' )
+		);
 	}
 
 	public function show_denied_page( $message = null ): void {
@@ -158,17 +201,6 @@ trait BotBlockerResponseTrait {
 		if ( $guard !== null ) {
 			$this->end_output_guard( $guard );
 		}
-		if ( $this->settings->secure_mode == self::SECURE_MODE_FULL ) {
-			$this->process_die();
-		}
-	}
-
-	public function redirect_to_block( $code = null, $message = null, $ip_test = null ): void {
-		if ( $this->settings->botblocker_log_block == 1 ) {
-			BotBlockerStore::storeData( $message, $code );
-		}
-		BotBlockerCounters::processHit( $code );
-		$this->show_block_page( $ip_test );
 		if ( $this->settings->secure_mode == self::SECURE_MODE_FULL ) {
 			$this->process_die();
 		}

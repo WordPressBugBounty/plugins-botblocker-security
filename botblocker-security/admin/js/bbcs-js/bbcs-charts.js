@@ -29,15 +29,23 @@
             var chartType = isDonut ? 'doughnut' : 'pie';
             var labels = parseJSONAttr(node, 'data-bbcs-labels') || [];
             var values = parseJSONAttr(node, 'data-bbcs-values') || [];
+            var isEmpty = node.getAttribute('data-bbcs-empty') === '1';
+            if (isEmpty) {
+                labels = [bbcsNoDataText()];
+                values = [1];
+            }
             var canvas = createCanvas(node);
             var ctx = canvas.getContext('2d');
-            var colors = buildColors(labels.length);
+            var colors = isEmpty ? ['#e2e4e7'] : buildColors(labels.length);
             new Chart(ctx, {
                 type: chartType,
-                data: { labels: labels, datasets: [{ data: values, backgroundColor: colors, borderColor: '#ffffff', borderWidth: 2 }] },
+                data: { labels: labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 0 }] },
                 options: {
                     responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { display: false }, title: { display: false } },
+                    plugins: {
+                        legend: { display: false }, title: { display: false },
+                        tooltip: isEmpty ? bbcsEmptyTooltip() : {}
+                    },
                     cutout: isDonut ? '55%' : undefined,
                     animation: { animateRotate: true, duration: 600, easing: 'easeOutQuart' }
                 }
@@ -59,17 +67,25 @@
         function createDaily(node) {
             var labels = parseJSONAttr(node, 'data-bbcs-labels') || [];
             var values = parseJSONAttr(node, 'data-bbcs-values') || [];
+            var isEmpty = node.getAttribute('data-bbcs-empty') === '1';
             var canvas = createCanvas(node);
             var ctx = canvas.getContext('2d');
             var barGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            barGrad.addColorStop(0, 'rgba(34, 113, 177, 0.85)');
-            barGrad.addColorStop(1, 'rgba(34, 113, 177, 0.35)');
+            if (isEmpty) {
+                barGrad.addColorStop(0, 'rgba(200, 202, 206, 0.55)');
+                barGrad.addColorStop(1, 'rgba(200, 202, 206, 0.2)');
+            } else {
+                barGrad.addColorStop(0, 'rgba(34, 113, 177, 0.85)');
+                barGrad.addColorStop(1, 'rgba(34, 113, 177, 0.35)');
+            }
+            // With no hits, draw a soft day-shaped silhouette so the chart reads as "empty", not "broken".
+            var barValues = isEmpty ? bbcsPlaceholderCurve(values.length || labels.length) : values;
             new Chart(ctx, {
                 type: 'bar',
                 data: { labels: labels, datasets: [{
-                    data: values,
+                    data: barValues,
                     backgroundColor: barGrad,
-                    hoverBackgroundColor: 'rgba(34, 113, 177, 0.95)',
+                    hoverBackgroundColor: isEmpty ? 'rgba(200, 202, 206, 0.75)' : 'rgba(34, 113, 177, 0.95)',
                     borderRadius: 3,
                     borderSkipped: false
                 }] },
@@ -83,7 +99,8 @@
                             bodyFont: { size: 11 },
                             cornerRadius: 4,
                             padding: { x: 10, y: 6 },
-                            displayColors: false
+                            displayColors: false,
+                            callbacks: isEmpty ? { label: function () { return bbcsNoDataLines(); } } : {}
                         }
                     },
                     scales: {
@@ -94,7 +111,8 @@
                         },
                         y: {
                             beginAtZero: true,
-                            ticks: { font: { size: 10 }, color: '#c3c4c7', padding: 6, maxTicksLimit: 5 },
+                            max: isEmpty ? 5 : undefined,
+                            ticks: { display: !isEmpty, font: { size: 10 }, color: '#c3c4c7', padding: 6, maxTicksLimit: 5 },
                             grid: { color: 'rgba(220, 220, 222, 0.5)', drawTicks: false },
                             border: { display: false, dash: [3, 3] }
                         }
@@ -291,6 +309,40 @@
                     );
                 }
             });
+        }
+
+        // Deterministic low/peak/low silhouette (night quiet, midday busy) for empty charts.
+        function bbcsPlaceholderCurve(count) {
+            var shape = [1.2, 1.0, 0.8, 0.7, 0.8, 1.1, 1.6, 2.3, 3.0, 3.5, 3.8, 4.0,
+                         3.9, 4.1, 3.7, 3.3, 3.5, 3.1, 2.6, 2.4, 2.0, 1.8, 1.5, 1.3];
+            var out = [];
+            for (var i = 0; i < count; i++) {
+                out.push(shape[i % shape.length]);
+            }
+            return out;
+        }
+
+        function bbcsNoDataText() {
+            return (window.bbcsChartsL10n && window.bbcsChartsL10n.no_data) || 'No data yet';
+        }
+
+        function bbcsNoDataLines() {
+            var hint = (window.bbcsChartsL10n && window.bbcsChartsL10n.no_data_hint) || 'Shows up after the first hits';
+            return [bbcsNoDataText(), hint];
+        }
+
+        function bbcsEmptyTooltip() {
+            return {
+                backgroundColor: '#1d2327',
+                bodyFont: { size: 11 },
+                cornerRadius: 4,
+                padding: { x: 10, y: 6 },
+                displayColors: false,
+                callbacks: {
+                    title: function () { return ''; },
+                    label: function () { return bbcsNoDataLines(); }
+                }
+            };
         }
 
         function createCanvas(node) {

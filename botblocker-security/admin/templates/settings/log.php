@@ -45,7 +45,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                     ->withItems( static function () use ( $data ): void {
                         ToggleOption::make()->withName( 'botblocker_log_admin' )->withChecked( $data->is_checked( 'botblocker_log_admin' ) )->withLabel( __( 'Log Actions in WordPress Admin Panel', 'botblocker-security' ) )->withTooltip( __( 'Track admin panel activity for security auditing and multi-user accountability.', 'botblocker-security' ) )->render();
                         ToggleOption::make()->withName( 'botblocker_log_bbcs' )->withChecked( $data->is_checked( 'botblocker_log_bbcs' ) )->withLabel( __( 'Log BotBlocker Page Visits', 'botblocker-security' ) )->withTooltip( __( 'Record challenge page visits. Helps monitor bot traffic that reaches verification stage.', 'botblocker-security' ) )->render();
-                        ToggleOption::make()->withName( 'botblocker_log_wp' )->withChecked( $data->is_checked( 'botblocker_log_wp' ) )->withLabel( __( 'Log WordPress Actions', 'botblocker-security' ) )->withTooltip( __( 'Record WordPress events such as logins, password resets, and blocked access attempts.', 'botblocker-security' ) )->render();
+                        ToggleOption::make()->withName( 'botblocker_log_wp' )->withChecked( $data->is_checked( 'botblocker_log_wp' ) )->withLabel( __( 'Log WordPress Actions', 'botblocker-security' ) )->withTooltip( __( 'Record visitor hits to WordPress system URLs such as logins, password resets, and blocked access attempts.', 'botblocker-security' ) )->render();
                     } )
                     ->render();
 

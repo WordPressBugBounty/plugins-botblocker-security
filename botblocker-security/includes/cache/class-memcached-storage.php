@@ -11,6 +11,8 @@ class BBCS_MemcachedStorage extends BBCS_ObjectCacheStorage {
 	private static $instance = null;
 	/** @var \Memcached|null */
 	private $memcached;
+	/** @var bool */
+	private $selfJson = false;
 
 	private function __construct(
 		string $host = '127.0.0.1',
@@ -53,6 +55,10 @@ class BBCS_MemcachedStorage extends BBCS_ObjectCacheStorage {
 		return self::$instance;
 	}
 
+	public static function resetInstance(): void {
+		self::$instance = null;
+	}
+
 	public function connect(): bool {
 		if ( ! extension_loaded( 'memcached' ) ) {
 			$this->lastError = 'Memcached PHP extension is not installed.';
@@ -75,15 +81,49 @@ class BBCS_MemcachedStorage extends BBCS_ObjectCacheStorage {
 		$this->memcached->setOption( \Memcached::OPT_COMPRESSION, true );
 		$this->memcached->setOption( \Memcached::OPT_CONNECT_TIMEOUT, 1000 );
 		$this->memcached->setOption( \Memcached::OPT_RETRY_TIMEOUT, 30 );
+		// Non-PHP serializer: PHP-serialized object payloads (co-tenant on a
+		// shared memcached) must never materialize into live objects. Ext
+		// builds without JSON serializer support fall back to self-encoded
+		// JSON strings (PHP 7.4 Windows builds, HG-2).
+		$json_serializer = defined( 'Memcached::SERIALIZER_JSON' ) ? \Memcached::SERIALIZER_JSON : null;
+		if ( $json_serializer !== null ) {
+			try {
+				// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- unsupported serializer raises a warning on some ext builds; the return value is checked instead
+				$applied = @$this->memcached->setOption( \Memcached::OPT_SERIALIZER, $json_serializer );
+				if ( ! $applied || $this->memcached->getOption( \Memcached::OPT_SERIALIZER ) !== $json_serializer ) {
+					$json_serializer = null;
+				}
+			} catch ( \Exception $e ) {
+				$json_serializer = null;
+			}
+		}
+		$this->selfJson = $json_serializer === null;
+		if ( defined( 'Memcached::JSON_OBJECT_AS_ARRAY' ) && ! $this->selfJson ) {
+			try {
+				$this->memcached->setOption( \Memcached::OPT_JSON, \Memcached::JSON_OBJECT_AS_ARRAY );
+			} catch ( \Exception $e ) {
+				unset( $e );
+			}
+		}
 
 		return true;
+	}
+
+	public function getClientOptions(): array {
+		if ( ! $this->memcached instanceof \Memcached ) {
+			return array();
+		}
+		return array(
+			'compression'     => (int) $this->memcached->getOption( \Memcached::OPT_COMPRESSION ),
+			'connect_timeout' => (int) $this->memcached->getOption( \Memcached::OPT_CONNECT_TIMEOUT ),
+			'retry_timeout'   => (int) $this->memcached->getOption( \Memcached::OPT_RETRY_TIMEOUT ),
+		);
 	}
 
 	public function isAvailable(): bool {
 		if ( $this->isAvailableCache !== null ) {
 			return $this->isAvailableCache;
 		}
-
 		try {
 			$stats = $this->memcached->getStats();
 
@@ -136,7 +176,8 @@ class BBCS_MemcachedStorage extends BBCS_ObjectCacheStorage {
 			}
 
 			$prefixedKey = $this->getPayloadKey( $key );
-			$result      = $this->memcached->set( $prefixedKey, $data, $ttl );
+			$payload     = $this->selfJson ? (string) wp_json_encode( $data ) : $data;
+			$result      = $this->memcached->set( $prefixedKey, $payload, $ttl );
 
 			if ( ! $result ) {
 				$this->logDebug( 'Memcached set failed for key: ' . $prefixedKey );
@@ -166,7 +207,12 @@ class BBCS_MemcachedStorage extends BBCS_ObjectCacheStorage {
 				return null;
 			}
 
-			return is_array( $data ) ? $data : null;
+			if ( $this->selfJson && is_string( $data ) ) {
+				$data = json_decode( $data, true );
+			}
+
+			// Older ext versions decode JSON to stdClass despite OPT_JSON.
+			return is_array( $data ) ? $data : ( is_object( $data ) ? (array) $data : null );
 		} catch ( \Exception $e ) {
 			$this->lastError = $e->getMessage();
 			$this->logDebug( 'Memcached get exception for key: ' . $key . '. Error: ' . $e->getMessage() );

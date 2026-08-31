@@ -217,6 +217,8 @@ class BotBlockerAjaxLlm {
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' after clearFileCache' );
 		}
 
+		BotBlockerAudit::ruleChanged( BotBlockerAuditEvents::RULE_LIST_LLM, BotBlockerAuditEvents::RULE_ACTION_TOGGLED, array( 'provider' => $provider, 'disabled' => $new ) );
+
 		wp_send_json_success( array( 'disabled' => $new ) );
 	}
 
@@ -262,6 +264,8 @@ class BotBlockerAjaxLlm {
 				__( 'LLM sync failed: ', 'botblocker-security' ) . ( $status['last_error'] ?? '' )
 			);
 		}
+
+		BotBlockerAudit::ruleChanged( BotBlockerAuditEvents::RULE_LIST_LLM, BotBlockerAuditEvents::RULE_ACTION_SYNCED );
 
 		wp_send_json_success(
 			array(

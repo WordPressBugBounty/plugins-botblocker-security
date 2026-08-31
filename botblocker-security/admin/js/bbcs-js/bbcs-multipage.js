@@ -81,8 +81,8 @@ jQuery(function ($) {
       return;
     }
 
-    activateTab($page, tab);
     if (tab) history.replaceState(null, '', '#' + tabSlug(tab));
+    activateTab($page, tab);
     $clickedTab.closest('.bbcs-scroll').scrollTop(0);
   });
 
@@ -101,8 +101,8 @@ jQuery(function ($) {
       return;
     }
 
-    activateTab($page, tab);
     if (tab) history.replaceState(null, '', '#' + tabSlug(tab));
+    activateTab($page, tab);
   });
 
   /* ── 3. Toggles ── */
@@ -161,10 +161,10 @@ jQuery(function ($) {
     // ── Early Init disabled guard ──
     if (action === 'bbcs_toggle_early_phase_in_db' && setting === 'early_init_enable' && newVal === 1 && $t.is(':disabled')) {
       // Redirect to addons page if user confirms.
-      if (confirm(window.bbcsEarlyInitConfirm || 'Early Init requires active BotBlocker PRO and the Early Init add-on. Open Add-ons page?')) {
+      bbcsConfirm(window.bbcsEarlyInitConfirm || 'Early Init requires active BotBlocker PRO and the Early Init add-on. Open Add-ons page?', function () {
         var addonsUrl = $('#bbcs-main').data('addons-url') || '';
         if (addonsUrl) window.location.href = addonsUrl;
-      }
+      });
       return;
     }
 
@@ -287,7 +287,7 @@ jQuery(function ($) {
             var $other2 = $('.bbcs-toggle[data-action="bbcs_toggle_redis_and_memcached"][data-setting="' + otherSetting + '"]');
             setToggleState($other2, $other2.attr('data-value') === '1');
           }
-          if (resp.data && resp.data.message) alert(resp.data.message);
+          if (resp.data && resp.data.message) bbcsToast('error', resp.data.message);
         } else if (action === 'bbcs_toggle_early_phase_in_db' && setting !== 'disable' && resp.data && resp.data.final_state) {
           // Sync both toggles from the server's authoritative dedup'd state.
           var fs = resp.data.final_state;
@@ -346,12 +346,15 @@ jQuery(function ($) {
   });
   $doc.on('click', '.bbcs-select-opt', function (e) {
     e.stopPropagation();
-    var $wrap = $(this).closest('.bbcs-select');
-    var val = $(this).attr('data-value') || $(this).text();
+    var $opt = $(this);
+    // Disabled options are not selectable (e.g. reCaptcha v2 without configured keys).
+    if ($opt.hasClass('is-disabled') || $opt.attr('data-disabled') === '1') return;
+    var $wrap = $opt.closest('.bbcs-select');
+    var val = $opt.attr('data-value') || $opt.text();
     // Display the option's label, not the data-value.
-    $wrap.find('.bbcs-select-value').text($(this).text());
+    $wrap.find('.bbcs-select-value').text($opt.text());
     $wrap.find('.bbcs-select-opt').removeClass('is-sel');
-    $(this).addClass('is-sel');
+    $opt.addClass('is-sel');
     $wrap.find('.bbcs-select-menu').hide();
     // Update hidden input and fire change for dirty tracking.
     var $hidden = $wrap.closest('.bbcs-field').find('> input[type="hidden"]');

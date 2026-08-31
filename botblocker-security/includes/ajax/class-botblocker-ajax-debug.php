@@ -5,6 +5,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class BotBlockerAjaxDebug {
 
+	public static function resolveDebugLogPath(): string {
+		$debug_log_path = WP_CONTENT_DIR . '/debug.log';
+		if ( defined( 'WP_DEBUG_LOG' ) ) {
+			$wp_debug_log = WP_DEBUG_LOG;
+			if ( is_string( $wp_debug_log ) && $wp_debug_log !== '' && $wp_debug_log !== '1' && $wp_debug_log !== '0' ) {
+				$debug_log_path = $wp_debug_log;
+			}
+		}
+		return $debug_log_path;
+	}
+
 	public static function handleCreateSaltFile(): void {
 		$bbcs_action = 'debug_create_salt';
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
@@ -77,7 +88,7 @@ class BotBlockerAjaxDebug {
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' cap check passed' );
 		}
 
-		$debug_log_path = WP_CONTENT_DIR . '/debug.log';
+		$debug_log_path = self::resolveDebugLogPath();
 		$result         = false;
 
 		if ( file_exists( $debug_log_path ) ) {
@@ -131,7 +142,7 @@ class BotBlockerAjaxDebug {
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' cap check passed' );
 		}
 
-		$debug_log_path = WP_CONTENT_DIR . '/debug.log';
+		$debug_log_path = self::resolveDebugLogPath();
 
 		if ( file_exists( $debug_log_path ) ) {
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
@@ -228,10 +239,12 @@ class BotBlockerAjaxDebug {
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' streaming file: ' . $log_path );
 		}
 
-		header( 'Content-Type: text/plain; charset=utf-8' );
-		header( 'Content-Disposition: attachment; filename="wordpress_debug_' . gmdate( 'Ymd' ) . '.log"' );
-		header( 'Content-Length: ' . filesize( $log_path ) );
-		header( 'X-Robots-Tag: noindex' );
+		if ( ! headers_sent() ) {
+			header( 'Content-Type: text/plain; charset=utf-8' );
+			header( 'Content-Disposition: attachment; filename="wordpress_debug_' . gmdate( 'Ymd' ) . '.log"' );
+			header( 'Content-Length: ' . filesize( $log_path ) );
+			header( 'X-Robots-Tag: noindex' );
+		}
 
 		$sent = readfile( $log_path );    // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile
 		if ( $sent === false ) {

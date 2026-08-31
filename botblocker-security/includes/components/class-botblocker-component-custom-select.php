@@ -21,7 +21,7 @@ final class CustomSelect extends Base {
 	/** @var string Selected option value. */
 	private $value = '';
 
-	/** @var array<string, string> Options as value => label pairs. */
+	/** @var array<string, string|array{label: string, disabled?: bool}> Options as value => label pairs; an option may also be an array with a "disabled" flag. */
 	private $options = array();
 
 	/** @var string Field label text (already translated). */
@@ -47,7 +47,7 @@ final class CustomSelect extends Base {
 	}
 
 	/**
-	 * @param array<string, string> $options Value => Label map.
+	 * @param array<string, string|array{label: string, disabled?: bool}> $options Value => Label map. An option value may map to an array with "label" and optional "disabled" keys.
 	 */
 	public function withOptions( array $options ): self {
 		$this->options = $options;
@@ -74,6 +74,25 @@ final class CustomSelect extends Base {
 		return $this;
 	}
 
+	/**
+	 * Resolve an option entry to its label and disabled state.
+	 *
+	 * @param string|array $opt Option value from the options map.
+	 * @return array{label: string, disabled: bool}
+	 */
+	private static function option( $opt ): array {
+		if ( is_array( $opt ) ) {
+			return array(
+				'label'    => isset( $opt['label'] ) ? (string) $opt['label'] : '',
+				'disabled' => ! empty( $opt['disabled'] ),
+			);
+		}
+		return array(
+			'label'    => (string) $opt,
+			'disabled' => false,
+		);
+	}
+
 	public function render( bool $return = false ): string {
 		$html = '<div class="bbcs-field"' . $this->anchor_attr() . '>';
 
@@ -86,19 +105,25 @@ final class CustomSelect extends Base {
 			$html .= '</div>';
 		}
 
-		$html .= '<div class="bbcs-select">';
+		$selected_option = isset( $this->options[ $this->value ] ) ? self::option( $this->options[ $this->value ] ) : null;
+		$selected_label  = $selected_option === null ? $this->value : $selected_option['label'];
+
+		$html .= '<div class="bbcs-select' . ( $this->disabled ? ' is-disabled' : '' ) . '">';
 		$html .= '<div class="bbcs-select-trigger">';
 
-		$selected_label = $this->options[ $this->value ] ?? $this->value;
 		$html .= '<span class="bbcs-select-value">' . self::escape( $selected_label ) . '</span>';
 		$html .= '<span class="bbcs-select-caret">' . self::svg_icon( 'chevron', 'sm' ) . '</span>';
 		$html .= '</div>';
 
 		$html .= '<div class="bbcs-select-menu">';
-		foreach ( $this->options as $val => $label ) {
+		foreach ( $this->options as $val => $entry ) {
+			$opt            = self::option( $entry );
 			$selected_class = (string) $val === $this->value ? ' is-sel' : '';
-			$html .= '<div class="bbcs-select-opt' . $selected_class . '" data-value="' . self::escape( $val, 'attr' ) . '">'
-				. self::escape( $label )
+			$disabled_class = $opt['disabled'] ? ' is-disabled' : '';
+			$html .= '<div class="bbcs-select-opt' . $selected_class . $disabled_class . '" data-value="' . self::escape( $val, 'attr' ) . '"'
+				. ( $opt['disabled'] ? ' data-disabled="1"' : '' )
+				. '>'
+				. self::escape( $opt['label'] )
 				. '</div>';
 		}
 		$html .= '</div>';

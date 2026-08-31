@@ -58,7 +58,6 @@ final class BotBlockerHealthService {
 			array( 'key' => 'block_incorrect_lang_users', 'label' => __( 'Geo IP / Language mismatch filtering', 'botblocker-security' ), 'type' => 'neutral' ),
 			array( 'key' => 'autosave_admin_ip', 'label' => __( 'Auto-save administrator IPs', 'botblocker-security' ), 'type' => 'neutral' ),
 			array( 'key' => 'email_notifications', 'label' => __( 'Email notifications', 'botblocker-security' ), 'type' => 'neutral' ),
-			array( 'key' => 'pusher_notifications', 'label' => __( 'Pusher notifications', 'botblocker-security' ), 'type' => 'neutral' ),
 			array( 'key' => 'allow_self_ip_req', 'label' => __( 'Allow requests from server IP', 'botblocker-security' ), 'type' => 'negative' ),
 		);
 	}

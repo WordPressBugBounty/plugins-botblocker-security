@@ -156,7 +156,7 @@ trait BotBlockerCookieTrait {
 	}
 
 	private static function is_secure_connection(): bool {
-		if ( bbcs_is_using_https() ) {
+		if ( BotBlockerCompatibility::isUsingHttps() ) {
 			return true;
 		}
 		if ( is_ssl() ) {

@@ -9,6 +9,9 @@ add_action( 'wp_ajax_bbcs_backup_data_settings', array( 'BotBlockerAjaxBackup', 
 add_action( 'wp_ajax_bbcs_download_backup', array( 'BotBlockerAjaxBackup', 'handleDownload' ) );
 add_action( 'wp_ajax_bbcs_import_data_settings', array( 'BotBlockerAjaxBackup', 'handleImport' ) );
 
+// SECRET LINKS
+add_action( 'wp_ajax_bbcs_regenerate_secret_links', array( 'BotBlockerAjaxSecretLinks', 'handleRegenerateSecretLinks' ) );
+
 // ADDONS
 add_action( 'wp_ajax_bbcs_load_market', array( 'BotBlockerAjaxAddons', 'handleLoadMarket' ) );
 
@@ -47,6 +50,10 @@ add_action( 'wp_ajax_bbcs_get_botblocker_admin_hits', array( 'BotBlockerAjaxHits
 add_action( 'wp_ajax_bbcs_get_botblocker_other_hits', array( 'BotBlockerAjaxHits', 'handleGetOtherHits' ) );
 add_action( 'wp_ajax_bbcs_get_botblocker_all_hits', array( 'BotBlockerAjaxHits', 'handleGetAllHits' ) );
 add_action( 'wp_ajax_bbcs_hit_to_rule', array( 'BotBlockerAjaxHits', 'handleHitToRule' ) );
+
+// AUDIT LOG
+add_action( 'wp_ajax_bbcs_get_audit_log', array( 'BotBlockerAjaxAudit', 'handleGetAuditLog' ) );
+add_action( 'wp_ajax_bbcs_export_audit_log', array( 'BotBlockerAjaxAudit', 'handleExportAuditLog' ) );
 
 // RULES
 add_action( 'wp_ajax_bbcs_get_botblocker_rules', array( 'BotBlockerAjaxRules', 'handleGetRules' ) );

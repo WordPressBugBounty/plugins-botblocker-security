@@ -8,6 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once __DIR__ . '/class-header-viewmodel.php';
 require_once __DIR__ . '/class-sidebar-viewmodel.php';
 require_once BOTBLOCKER_DIR . 'includes/dto/class-dashboard-urls.php';
+require_once BOTBLOCKER_DIR . 'includes/database/class-botblocker-asn-db.php';
 final class Botblocker_RulesViewModel {
 	/** @var Botblocker_HeaderViewModel */
 	public $header;
@@ -35,6 +36,13 @@ final class Botblocker_RulesViewModel {
 	public $mu_geo_url;
 	/** @var string */
 	public $early_geo_url;
+
+	/** @var int */
+	public $asn_db_count;
+	/** @var bool */
+	public $asn_db_present;
+	/** @var int */
+	public $asn_db_updated_at;
 
 	public function __construct() {
 		$BBCSA = Botblocker_Admin::getInstance();
@@ -89,6 +97,11 @@ final class Botblocker_RulesViewModel {
 		$this->early_geo_url = $BBCSA->pages_addons . '#bbcs-early-init';
 
 		$this->table_counts = $this->computeTableCounts();
+
+		$asn_db_status = BotBlockerAsnDb::getStatus();
+		$this->asn_db_count      = (int) ( $asn_db_status['node_count'] ?? 0 );
+		$this->asn_db_present    = (bool) BotBlockerAsnDb::isPresent();
+		$this->asn_db_updated_at = (int) ( $asn_db_status['downloaded_at'] ?? 0 );
 	}
 
 	/**

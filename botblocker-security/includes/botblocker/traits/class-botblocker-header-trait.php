@@ -50,8 +50,8 @@ trait BotBlockerHeaderTrait {
 			return false;
 		}
 
-		if ( function_exists( 'bbcs_send_security_headers' ) ) {
-			bbcs_send_security_headers( $headers );
+		if ( class_exists( 'BotBlockerBootstrap' ) ) {
+			BotBlockerBootstrap::sendSecurityHeaders( $headers );
 		}
 
 		return true;

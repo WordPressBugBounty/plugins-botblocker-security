@@ -206,12 +206,7 @@ final class Botblocker_IntegrationsViewModel {
 		}
 
 		if ( ! empty( $secret ) ) {
-			global $bbcs_google_auth;
-			if ( isset( $bbcs_google_auth ) ) {
-				$this->qr_url = $bbcs_google_auth->getQRCodeUrl( $user->user_email, $secret );
-			} else {
-				$this->qr_url = '';
-			}
+			$this->qr_url = BotBlockerTwoFactorAuth::instance()->getQRCodeUrl( $user->user_email, $secret );
 		} else {
 			$this->qr_url = '';
 		}
