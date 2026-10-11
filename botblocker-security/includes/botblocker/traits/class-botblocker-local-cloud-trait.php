@@ -49,28 +49,19 @@ trait BotBlockerLocalCloudTrait {
 
 			$this->cloud_error = BOTBLOCKER_EMPTY;
 
-			$cloud = BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_URL );
+			$cloud = BotBlockerBackend::sendToCloud( $data );
 			if ( $cloud === false || isset( $cloud['error'] ) ) {
 				if ( $cloud === false ) {
-					$this->cloud_error = 'BOTBLOCKER_API_URL connection failed.';
+					$this->cloud_error = 'Cloud API connection failed.';
 				} elseif ( isset( $cloud['error'] ) ) {
-					$this->cloud_error = 'BOTBLOCKER_API_URL error: ' . $cloud['error'];
+					$this->cloud_error = 'Cloud API error: ' . $cloud['error'];
 				}
-				$cloud = BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_GS_URL );
-
-				if ( $cloud === false || isset( $cloud['error'] ) ) {
-					if ( $cloud === false ) {
-						$this->cloud_error = 'BOTBLOCKER_API_GS_URL connection failed.';
-					} elseif ( isset( $cloud['error'] ) ) {
-						$this->cloud_error = 'BOTBLOCKER_API_GS_URL error: ' . $cloud['error'];
+				if ( $this->settings->unresponsive == 0 ) {
+					$payload = BotBlockerStore::localCheckResult( BBCS_LOCAL_RESULT_ERROR, $this->cloud_error, '' );
+					if ( $this->settings->bbcs_ddos_resilience == 1 ) {
+						$payload = $this->sign_response_payload( (array) $payload );
 					}
-					if ( $this->settings->unresponsive == 0 ) {
-						$payload = BotBlockerStore::localCheckResult( BBCS_LOCAL_RESULT_ERROR, $this->cloud_error, '' );
-						if ( $this->settings->bbcs_ddos_resilience == 1 ) {
-							$payload = $this->sign_response_payload( (array) $payload );
-						}
-						wp_send_json( $payload );
-					}
+					wp_send_json( $payload );
 				}
 			}
 

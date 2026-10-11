@@ -158,6 +158,9 @@ class BotBlockerSidebarShortcodes {
 	}
 
 	public static function pluginsThemesView(): string {
+		if ( ! current_user_can( BotBlockerMultisite::canManage() ) ) {
+			return esc_html__( 'You do not have permission to view this information.', 'botblocker-security' );
+		}
 
 		if ( ! function_exists( 'get_plugins' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';

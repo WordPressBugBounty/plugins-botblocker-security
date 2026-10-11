@@ -28,6 +28,9 @@ return static function ( Botblocker_SetupGuideViewModel $data ): void {
 		<div class="bbcs-feature"><span class="bbcs-status-ic--inline"><svg class="bbcs-ico bbcs-ico--sm bbcs-ico--thick"><use href="#bbcs-i-check"></use></svg></span><?php esc_html_e( 'All official BotBlocker add-ons', 'botblocker-security' ); ?></div>
 		<div class="bbcs-feature"><span class="bbcs-status-ic--inline"><svg class="bbcs-ico bbcs-ico--sm bbcs-ico--thick"><use href="#bbcs-i-check"></use></svg></span><?php esc_html_e( 'And more', 'botblocker-security' ); ?></div>
 	</div>
+	<div class="bbcs-mb-3">
+		<a class="bbcs-link bbcs-fs-sm" href="<?php echo esc_url( BotBlockerDocs::page( 'cloud-api' ) ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'See all PRO features', 'botblocker-security' ); ?> &#8599;</a>
+	</div>
 	<?php if ( ! $data->has_cloud_api ) : ?>
 		<div class="bbcs-row bbcs-g-2">
 			<a href="<?php echo esc_url( $data->cloud_api_url ); ?>" class="bbcs-btn bbcs-btn--pri bbcs-btn--sm" target="_blank" rel="noopener noreferrer">

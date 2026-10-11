@@ -10,7 +10,6 @@ trait BotBlockerAjaxIpRulesTrait {
 	abstract protected static function getIpVersionLabel(): string;
 	abstract protected static function encodeIpForStorage( string $ip ): string;
 	abstract protected static function getOverlapPlaceholder(): string;
-	abstract protected static function getFileRenderMethod(): string;
 	abstract protected static function decodeImportedIpField( $value );
 
 	public static function handleGetRules(): void {
@@ -704,6 +703,13 @@ trait BotBlockerAjaxIpRulesTrait {
 			wp_send_json_error( sprintf( __( 'IP range overlaps with an existing rule: %s', 'botblocker-security' ), $overlap ) );
 		}
 
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$exists = (int) $wpdb->get_var( $wpdb->prepare( "SELECT id FROM `{$table}` WHERE id = %d", $id ) );
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		if ( $exists <= 0 ) {
+			wp_send_json_error( __( 'Rule not found.', 'botblocker-security' ) );
+		}
+
 		// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
 	    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$result = $wpdb->update( $table, $data, array( 'id' => $id ) );
@@ -985,7 +991,7 @@ trait BotBlockerAjaxIpRulesTrait {
 		if ( $result !== false ) {
 			if ( ! empty( $cleared_ips ) ) {
 				$mask_parts = array( 0, 0 );
-				if ( class_exists( 'BotBlocker' ) && ! empty( BotBlocker::getInstance()->settings ) ) {
+				if ( class_exists( 'BotBlocker' ) ) {
 					$mask_parts = BotBlockerIp::parseRateSubnetMask( BotBlocker::getInstance()->settings->bbcs_rate_subnet_mask ?? '' );
 				}
 
@@ -1208,7 +1214,7 @@ trait BotBlockerAjaxIpRulesTrait {
 		static::importList( BBCS_RULE_BLOCK );
 	}
 
-	private static function importList( string $rule_type ): void {
+	protected static function importList( string $rule_type ): void {
 		$ip_label = strtolower( static::getIpVersionLabel() );
 
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {

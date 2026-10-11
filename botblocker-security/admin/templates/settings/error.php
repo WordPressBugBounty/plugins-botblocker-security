@@ -1,6 +1,8 @@
 <?php
 
 declare(strict_types=1);
+
+use BotBlocker\Component\Base;
 if (!defined('ABSPATH')) exit;
 
 use BotBlocker\Component\InfoColumn;
@@ -18,14 +20,10 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
     <div role="tabpanel" class="bbcs-tabpanel bbcs-protect-layout" data-tabpanel="error"<?php echo $isActive ? '' : ' hidden' ?>>
         <?php
         InfoColumn::make()
+        	->withDocPage( BotBlockerDocs::page( 'blocks-and-responses' ) )
             ->withIconImage( BOTBLOCKER_URL . 'public/icons/error-access.svg', __( 'Error and Access Settings', 'botblocker-security' ) )
             ->withDescription( __( 'Configure HTTP response codes for blocked visitors, ban durations, and search engine directives.', 'botblocker-security' ) )
-            ->withDescription( __( 'Repeated violations result in progressively longer bans. X-Robots-Tag directives prevent SEO penalties on blocked pages.', 'botblocker-security' ) )
-            ->withDocLink( 'https://en.wikipedia.org/wiki/HTTP', __( 'HTTP', 'botblocker-security' ) )
-            ->withDocLink( $data->docs_url . '/what-is-http-understanding-protocol-versions-and-blocking-http-1-0-in-botblocker/', __( 'Old HTTP versions', 'botblocker-security' ) )
-            ->withDocLink( 'https://en.wikipedia.org/wiki/List_of_HTTP_status_codes', __( 'HTTP Codes', 'botblocker-security' ) )
-            ->withDocLink( $data->docs_url . '/what-is-a-proxy-types-of-proxies-and-how-botblocker-detects-them/', __( 'HTTP proxy', 'botblocker-security' ) )
-            ->withDocLink( 'https://en.wikipedia.org/wiki/List_of_HTTP_header_fields/', __( 'Headers', 'botblocker-security' ) )
+            ->withDescription( __( 'Repeated violations result in progressively longer bans. X-Robots-Tag directives tell search engines how to index and cache your pages.', 'botblocker-security' ) )
             ->render();
         ?>
         <div>
@@ -41,6 +39,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                                 ->withOptions( $data->error_headers )
                                 ->withLabel( __( 'Test Response Code:', 'botblocker-security' ) )
                                 ->withTooltip( __( 'HTTP response code returned for verification test requests.', 'botblocker-security' ) )
+                                ->withDocLink( BotBlockerDocs::url( 'header_test_code' ) )
                                 ->render();
 
                             CustomSelect::make()
@@ -49,6 +48,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                                 ->withOptions( $data->error_headers )
                                 ->withLabel( __( 'Block Response Code:', 'botblocker-security' ) )
                                 ->withTooltip( __( 'HTTP response code returned for blocked requests.', 'botblocker-security' ) )
+                                ->withDocLink( BotBlockerDocs::url( 'header_error_code' ) )
                                 ->render();
                         } )
                         ->render();
@@ -63,6 +63,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                                 ->withTooltip( __( 'How long to block a visitor before allowing a retry.', 'botblocker-security' ) )
                                 ->withSuffix( __( 'sec', 'botblocker-security' ) )
                                 ->withEditable()
+                                ->withDocLink( BotBlockerDocs::url( 'time_ban' ) )
                                 ->render();
                             TextInput::make()
                                 ->withName( 'time_ban_2' )
@@ -72,6 +73,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                                 ->withTooltip( __( 'Longer ban applied after repeated failures.', 'botblocker-security' ) )
                                 ->withSuffix( __( 'sec', 'botblocker-security' ) )
                                 ->withEditable()
+                                ->withDocLink( BotBlockerDocs::url( 'time_ban_2' ) )
                                 ->render();
                         } )
                         ->render();
@@ -93,10 +95,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                             </button>
                             <input type="checkbox" name="x_robots_directives[]" value="<?php echo esc_attr($d); ?>" <?php checked($data->get_selected_directive($d)); ?> style="position:absolute;opacity:0;pointer-events:none">
                             <span class="bbcs-option-label"><?php echo esc_html($disp); ?></span>
-                            <span class="bbcs-help">
-                                <span class="bbcs-help-q">?</span>
-                                <span class="bbcs-help-tip"><?php echo esc_attr(sprintf(/* translators: %s: X-Robots-Tag directive name (e.g., noindex, nofollow) */ __( 'Enable %s directive in X-Robots-Tag headers', 'botblocker-security' ), $disp)); ?></span>
-                            </span>
+                            <?php echo Base::help( sprintf(/* translators: %s: X-Robots-Tag directive name (e.g., noindex, nofollow) */ __( 'Enable %s directive in X-Robots-Tag headers', 'botblocker-security' ), $disp), BotBlockerDocs::url( 'x_robots_directives' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
                         </div>
                         <?php
                     }
@@ -105,7 +104,17 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                     <?php
                 } )
                 ->render();
-            ?>
+
+            if ( $data->get_selected_directive( 'noindex' ) || $data->get_selected_directive( 'none' ) || $data->get_selected_directive( 'nofollow' ) ) : ?>
+                <div class="bbcs-card bbcs-card-pad bbcs-amber-card">
+                    <div class="bbcs-row bbcs-g-2h">
+                        <svg class="bbcs-ico bbcs-ico--md bbcs-tx-amber">
+                            <use href="#bbcs-i-warning"></use>
+                        </svg>
+                        <span class="bbcs-fs-xs bbcs-tx-amber"><?php esc_html_e( 'noindex, none or nofollow is on. Search engines get this header on every page, so they can remove your whole site from search results.', 'botblocker-security' ); ?></span>
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 <?php };

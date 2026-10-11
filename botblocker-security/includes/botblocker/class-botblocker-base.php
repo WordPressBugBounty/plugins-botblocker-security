@@ -26,7 +26,10 @@ abstract class BotBlockerBase {
 	public const SECRET_LINK_OFF    = 'off';
 	public const SECRET_LINK_ON     = 'on';
 
-	protected static ?self $instance = null;
+	// Server-side limit for the disable-link session cookie (browsers may restore session cookies).
+	public const SECRET_COOKIE_TTL_SECONDS = 7200;
+
+	protected static $instance = null;
 	public $time;
 	public $isProxy     = BOTBLOCKER_EMPTY;
 	public $isAdmin     = false;
@@ -51,7 +54,7 @@ abstract class BotBlockerBase {
 	public $date;
 	public $cid;
 	public $prefly;
-	public bool $_dst_applied = false;
+	public $_dst_applied = false;
 
 	// Visitor properties
 	public $host;
@@ -96,7 +99,7 @@ abstract class BotBlockerBase {
 	public $cookie_visitor_data;
 	public $cookie_timestamp;
 	public $cookie_kind           = 'none';
-	public bool $is_asset_request = false;
+	public $is_asset_request = false;
 
 	// Verification state (written by resolve_cookie_identity).
 	// null = not yet computed, otherwise VERIFY_INVALID|VERIFY_VALID|VERIFY_EXPIRED.
@@ -204,6 +207,29 @@ abstract class BotBlockerBase {
 	 * @var BotBlockerSettings
 	 */
 	public $settings;
+
+	/**
+	 * HTTP-emission I/O seams shared by every response/cookie trait. Real
+	 * runtime emits only when no output has been sent yet (headers_sent());
+	 * test harnesses override the trio to capture the lines instead of sending
+	 * them (WP-PHPUnit CLI always has headers_sent()). Runtime behavior is
+	 * identical — the seams just name the checks the callers already perform.
+	 */
+	protected function header_can_send(): bool {
+		return ! headers_sent();
+	}
+
+	protected function emit_header( string $header_line, bool $replace = true ): void {
+		if ( $this->header_can_send() ) {
+			header( $header_line, $replace );
+		}
+	}
+
+	protected function emit_cookie( string $name, string $value, array $options ): void {
+		if ( $this->header_can_send() ) {
+			setcookie( $name, $value, $options );
+		}
+	}
 
 	public function is_verified(): bool {
 		return $this->verification_state === self::VERIFY_VALID;

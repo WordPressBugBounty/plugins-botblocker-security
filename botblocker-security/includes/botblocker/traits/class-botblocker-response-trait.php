@@ -64,7 +64,7 @@ trait BotBlockerResponseTrait {
 	/**
 	 * Define WP no-cache constants to prevent caching plugins from storing this response.
 	 */
-	private function define_no_cache_constants(): void {
+	protected function define_no_cache_constants(): void {
         // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
 		if ( ! defined( 'DONOTCACHEPAGE' ) ) {
 			define( 'DONOTCACHEPAGE', true );
@@ -120,6 +120,44 @@ trait BotBlockerResponseTrait {
 		add_filter( 'do_rocket_generate_caching_files', '__return_false', PHP_INT_MAX );
 	}
 
+	/**
+	 * Register the BotBlocker identity cookie with WP Super Cache so caching is
+	 * keyed per visitor instead of served cookie-blind from the anonymous
+	 * supercache.
+	 *
+	 * WPSC decides cache reads/writes from its cookie string (values of the
+	 * cookies it knows: WP auth + rejected + the ones plugins register through
+	 * the `wpsc_add_cookie` action). The BotBlocker cookie is a plain custom
+	 * cookie WPSC does not know, so a VERIFIED visitor's real page would be
+	 * written to the shared anonymous supercache file and later replayed to
+	 * anonymous visitors — silently bypassing the challenge wall.
+	 * DONOTCACHEPAGE only protects BotBlocker's own wall pages (check/block/
+	 * denied); the real page rendered after verification has no such constant.
+	 *
+	 * Registering the identity cookie with WPSC makes the cookie string
+	 * non-empty for holders: their real pages land in per-cookie legacy cache,
+	 * never in the anonymous supercache, and anonymous visitors (no cookie)
+	 * always fall through to the live challenge.
+	 *
+	 * Called from initialize() on every request (the wall can let a request
+	 * through on the same boot, and the registration must already be in place
+	 * for WPSC to key the real page correctly). The WPSC handler itself is
+	 * idempotent (its config list is checked before appending), so a per-boot
+	 * guard is unnecessary — no process-global constant is set.
+	 *
+	 * @since 1.7.5
+	 */
+	public function register_wpsc_cookie_exception(): void {
+		if ( ! has_action( 'wpsc_add_cookie' ) ) {
+			return;
+		}
+		$main = (string) ( $this->settings->cookie ?? '' );
+		if ( $main !== '' ) {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- third-party WPSC hook
+			do_action( 'wpsc_add_cookie', $main );
+		}
+	}
+
 	public function perform_check(): void {
 		$guard = null;
 		if ( (int) $this->settings->secure_mode === self::SECURE_MODE_FULL ) {
@@ -154,6 +192,11 @@ trait BotBlockerResponseTrait {
 		if ( BotBlockerInApp::rescue( $this, $code, $message ) ) {
 			return;
 		}
+		$format = $this->api_response_format();
+		if ( 'html' !== $format ) {
+			$this->emit_api_shaped_response( $format, $this->denied_status_line(), 'bbcs_access_denied', is_string( $message ) ? $message : null );
+			return;
+		}
 		$this->show_denied_page( $message );
 	}
 
@@ -164,6 +207,11 @@ trait BotBlockerResponseTrait {
 		BotBlockerCounters::processHit( $code );
 		if ( empty( $this->rate_limit_block_emitted ) && empty( $this->addon_traffic_decision_stop ) ) {
 			$this->emit_blocked_event( 'core_block', $code, $message );
+		}
+		$format = $this->api_response_format();
+		if ( 'html' !== $format ) {
+			$this->emit_api_shaped_response( $format, $this->denied_status_line(), 'bbcs_access_denied', is_string( $message ) ? $message : null );
+			return;
 		}
 		$this->show_block_page( $ip_test );
 		if ( $this->settings->secure_mode == self::SECURE_MODE_FULL ) {
@@ -359,9 +407,83 @@ trait BotBlockerResponseTrait {
 		}
 	}
 
+	/**
+	 * Response format for the current request URI ('html' when the resolver
+	 * class is unavailable — fail-safe to the legacy HTML behavior).
+	 */
+	private function api_response_format(): string {
+		if ( ! class_exists( 'BotBlockerCheck' ) ) {
+			return 'html';
+		}
+		return BotBlockerCheck::responseFormatForUri( (string) ( $this->uri ?? '' ) );
+	}
+
+	/**
+	 * The status line show_denied_page()/show_block_page() would have sent —
+	 * the same error_headers[header_error_code] mapping as set_denied_headers().
+	 */
+	private function denied_status_line(): string {
+		return isset( $this->settings->header_error_code ) && isset( $this->error_headers[ $this->settings->header_error_code ] )
+			? (string) $this->error_headers[ $this->settings->header_error_code ]
+			: '403 Forbidden';
+	}
+
+	/**
+	 * Format-correct refusal for API-shaped requests (wp-json/admin-ajax →
+	 * JSON, xmlrpc → XML fault). API clients cannot run the JS challenge, so
+	 * the HTML wall is a dead end for them — this dead end must at least be
+	 * parseable and carry an honest status. Plain English only (HG-6: barrier
+	 * responses are never translated); the raw reason string is included only
+	 * under BBCS_BLOCK_REASON_VIEW.
+	 */
+	private function emit_api_shaped_response( string $format, string $status_line, string $code_key, ?string $reason = null ): void {
+		$this->define_no_cache_constants();
+		if ( $this->header_can_send() ) {
+			$this->send_no_cache_headers();
+			$this->emit_header( 'X-Robots-Tag: noindex' );
+			$this->emit_header( 'Content-Type: ' . ( $format === 'json' ? 'application/json; charset=UTF-8' : 'text/xml; charset=UTF-8' ) );
+		}
+		$this->send_status_header( $status_line );
+
+		$message = 'Blocked by BotBlocker security';
+		if ( BBCS_BLOCK_REASON_VIEW && is_string( $reason ) && $reason !== '' ) {
+			$message = $reason;
+		}
+
+		if ( $format === 'json' ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_json_encode output
+			echo wp_json_encode(
+				array(
+					'code'    => $code_key,
+					'message' => $message,
+				)
+			);
+		} else {
+			$fault = htmlspecialchars( $message, ENT_XML1 | ENT_COMPAT, 'UTF-8' );
+			// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- static fault envelope, $fault is XML-escaped above
+			echo '<?xml version="1.0" encoding="UTF-8"?><methodResponse><fault><value><struct>'
+				. '<member><name>faultCode</name><value><int>403</int></value></member>'
+				. '<member><name>faultString</name><value><string>' . $fault . '</string></value></member>'
+				. '</struct></value></fault></methodResponse>';
+			// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+		// A non-empty (whitespace) message keeps the native die() termination
+		// while skipping the hive diagnostic branch — the API payload must
+		// never carry the hive dump; a trailing space is valid JSON/XML.
+		$this->process_die( ' ' );
+	}
+
 	public function redirect_to_dark( string $result ): void {
 		$this->suspect_status   = 2;
 		$this->result_of_action = $result;
+		$format                 = $this->api_response_format();
+		if ( 'html' !== $format ) {
+			// API clients cannot run the JS challenge — emit the format-correct
+			// refusal in BOTH modes: the deferred template_redirect render is
+			// equally unreachable for them.
+			$this->emit_api_shaped_response( $format, '403 Forbidden', 'bbcs_challenge_required' );
+			return;
+		}
 		$this->perform_check();
 		if ( $this->settings->secure_mode == self::SECURE_MODE_FULL ) {
 			$this->process_die();

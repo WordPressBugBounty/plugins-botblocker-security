@@ -46,12 +46,10 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
     <div role="tabpanel" class="bbcs-tabpanel bbcs-protect-layout" data-tabpanel="cookie"<?php echo $isActive ? '' : ' hidden' ?>>
         <?php
         InfoColumn::make()
+        	->withDocPage( BotBlockerDocs::page( 'cookies-sessions' ) )
             ->withIconImage( BOTBLOCKER_URL . 'public/icons/cookie.svg', __( 'Cookie Settings', 'botblocker-security' ) )
             ->withDescription( __( 'Control BotBlocker verification cookies: name, lifetime, salt, and security attributes.', 'botblocker-security' ) )
             ->withDescription( __( 'SameSite policy controls cross-site cookie behavior to protect against CSRF attacks.', 'botblocker-security' ) )
-            ->withDocLink( $data->docs_url . '/what-data-does-botblocker-collect-and-how-is-it-stored-and-deleted/', __( 'What Data Does BotBlocker Collect', 'botblocker-security' ) )
-            ->withDocLink( 'https://en.wikipedia.org/wiki/HTTP_cookie', __( 'Cookies', 'botblocker-security' ) )
-            ->withDocLink( 'https://en.wikipedia.org/wiki/Salt_(cryptography)', __( 'Salt', 'botblocker-security' ) )
             ->render();
         ?>
         <div>
@@ -66,6 +64,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                                 ->withValue( (string) $data->get( 'cookie', 'BotBlocker' ) )
                                 ->withLabel( __( 'Cookie Name', 'botblocker-security' ) )
                                 ->withTooltip( __( 'Cookie name used by BotBlocker. Changing it resets all existing cookies.', 'botblocker-security' ) )
+                                ->withDocLink( BotBlockerDocs::url( 'cookie' ) )
                                 ->render();
 
                             CustomSelect::make()
@@ -74,6 +73,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                                 ->withOptions( $samesite_opts )
                                 ->withLabel( __( 'Cookie SameSite Policy', 'botblocker-security' ) )
                                 ->withTooltip( __( 'Set SameSite attribute (Lax, Strict, None).', 'botblocker-security' ) )
+                                ->withDocLink( BotBlockerDocs::url( 'samesite' ) )
                                 ->render();
                         } )
                         ->render();
@@ -86,6 +86,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                                 ->withOptions( $data->cookie_lifetimes )
                                 ->withLabel( __( 'Cookie Lifetime', 'botblocker-security' ) )
                                 ->withTooltip( __( 'How long the verification cookie remains valid.', 'botblocker-security' ) )
+                                ->withDocLink( BotBlockerDocs::url( 'cookie_lifetime' ) )
                                 ->render();
 
                             CustomSelect::make()
@@ -94,6 +95,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                                 ->withOptions( $session_opts )
                                 ->withLabel( __( 'Session Token Verification', 'botblocker-security' ) )
                                 ->withTooltip( __( 'Replaces IP/host/UA-bound cookie hash with a session token. Eliminates Captcha loops for VPN/proxy users. Disable only if experiencing issues.', 'botblocker-security' ) )
+                                ->withDocLink( BotBlockerDocs::url( 'session_token_enabled' ) )
                                 ->render();
                         } )
                         ->render();
@@ -104,13 +106,14 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                         ->withLabel( __( 'Salt', 'botblocker-security' ) )
                         ->withTooltip( __( 'Random string that makes cookie values unpredictable. Generated automatically.', 'botblocker-security' ) )
                         ->withReadonly()
+                        ->withDocLink( BotBlockerDocs::url( 'salt' ) )
                         ->render();
                 } )
                 ->render();
 
             SettingsGroup::make()
                 ->withTitle( __( 'Cache Compatibility', 'botblocker-security' ) )
-                ->withItems( static function () use ( $data, $timeout_opts, $cloud_timeout, $vary_opts, $vary_cookie, $cors_opts, $cors_strict ): void {
+                ->withItems( static function () use ( $timeout_opts, $cloud_timeout, $vary_opts, $vary_cookie, $cors_opts, $cors_strict ): void {
                     FieldPair::make()
                         ->withItems( static function () use ( $timeout_opts, $cloud_timeout, $vary_opts, $vary_cookie ): void {
                             CustomSelect::make()
@@ -119,6 +122,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                                 ->withOptions( $timeout_opts )
                                 ->withLabel( __( 'Cloud API Timeout', 'botblocker-security' ) )
                                 ->withTooltip( __( 'Timeout in seconds for cloud API requests. Increase if your server has slow outbound connections.', 'botblocker-security' ) )
+                                ->withDocLink( BotBlockerDocs::url( 'cloud_api_timeout' ) )
                                 ->render();
 
                             CustomSelect::make()
@@ -127,6 +131,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                                 ->withOptions( $vary_opts )
                                 ->withLabel( __( 'Send Vary: Cookie Header', 'botblocker-security' ) )
                                 ->withTooltip( __( 'Add Vary: Cookie header for CDN compatibility. May reduce cache hit ratio.', 'botblocker-security' ) )
+                                ->withDocLink( BotBlockerDocs::url( 'vary_cookie' ) )
                                 ->render();
                         } )
                         ->render();
@@ -137,6 +142,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                         ->withOptions( $cors_opts )
                         ->withLabel( __( 'Strict CORS Headers', 'botblocker-security' ) )
                         ->withTooltip( __( 'Use explicit CORS headers (Content-Type, X-Requested-With) instead of wildcard (*). Fixes Fetch-spec violation when Access-Control-Allow-Credentials is active. Enable if CAPTCHA verification breaks in browsers.', 'botblocker-security' ) )
+                        ->withDocLink( BotBlockerDocs::url( 'bbcs_cors_strict_headers' ) )
                         ->render();
                 } )
                 ->render();

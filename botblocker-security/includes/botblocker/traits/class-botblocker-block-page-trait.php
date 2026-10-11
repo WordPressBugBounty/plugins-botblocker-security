@@ -8,6 +8,12 @@ trait BotBlockerBlockPageTrait {
 
 	public function render_block_page() {
 		if ( $this->should_show_block_page === true ) {
+			// FRONTEND block carries the admin's Block Response Code
+			// (header_error_code). WP::handle_404 reset the status to 200 after
+			// the code was queued at plugins_loaded; re-assert the configured
+			// code here so the response is correct on every SAPI (under FastCGI
+			// a stale `Status:` header would otherwise pin the status).
+			$this->set_denied_headers();
 			require_once BOTBLOCKER_DIR . 'public/class-botblocker-captcha-renderer.php';
 			$title_string              = $this->ip . ' ' . gmdate( 'd.m.Y H:i:s', $this->time );
 			$this->template_data_block = array(

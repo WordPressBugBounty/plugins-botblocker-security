@@ -7,6 +7,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once BOTBLOCKER_DIR . 'includes/dto/class-alert-item-data.php';
 require_once BOTBLOCKER_DIR . 'includes/dto/class-language-option-data.php';
+require_once BOTBLOCKER_DIR . 'includes/dto/class-pro-status-option-data.php';
+require_once BOTBLOCKER_DIR . 'includes/viewmodels/class-pro-status-viewmodel.php';
 
 final class Botblocker_HeaderViewModel {
 
@@ -26,7 +28,9 @@ final class Botblocker_HeaderViewModel {
 					$a['type'] ?? '',
 					$a['icon'] ?? '',
 					$a['link'] ?? '',
-					$a['link_text'] ?? ''
+					$a['link_text'] ?? '',
+					$a['extra_link'] ?? '',
+					$a['extra_link_text'] ?? ''
 				);
 			},
 			$alerts
@@ -69,6 +73,14 @@ final class Botblocker_HeaderViewModel {
 	public $wizard_completed;
 	/** @var bool */
 	public $has_pro;
+	/** @var int|false Remaining API requests (false when not cached). */
+	public $remaining_hits;
+	/** @var int|false Remaining subscription days (false when not cached). */
+	public $remaining_days;
+	/** @var bool True when PRO counters are missing and the header should fetch them. */
+	public $should_fetch;
+	/** @var string 'ok'|'warn'|'critical' */
+	public $alert_level;
 	/** @var Botblocker_AlertItemData[] */
 	public $alerts;
 	/** @var int */
@@ -105,6 +117,10 @@ final class Botblocker_HeaderViewModel {
 		$this->wizard_url       = BotBlockerMultisite::getSiteAdminPageUrl( 'bbcs_setup_wizard' );
 		$this->wizard_completed = (bool) BotBlockerMultisite::getOption( 'bbcs_setup_wizard_completed', false );
 		$this->has_pro          = BotBlockerPro::isActive();
+		$this->remaining_hits   = BotBlockerPro::getRemainingHits();
+		$this->remaining_days   = BotBlockerPro::getRemainingDays();
+		$this->should_fetch     = $this->has_pro && ( $this->remaining_hits === false || $this->remaining_days === false );
+		$this->alert_level      = Botblocker_ProStatusViewModel::calcAlertLevel( $this->has_pro, $this->remaining_hits, $this->remaining_days );
 		$this->alerts           = self::mapAlerts( $alerts );
 		$this->alerts_count     = count( $alerts );
 

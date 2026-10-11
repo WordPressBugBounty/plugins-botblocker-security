@@ -17,6 +17,8 @@ BotBlockerVerifyEndpoint::register();
 require_once BOTBLOCKER_DIR . 'includes/class-botblocker-connectors.php';
 BotBlockerConnectors::register();
 
+require_once BOTBLOCKER_DIR . 'includes/inc-botblocker-wp-abilities.php';
+
 require_once BOTBLOCKER_DIR . 'includes/hook/class-botblocker-login-brutforce.php';
 require_once BOTBLOCKER_DIR . 'includes/hook/botblocker-hook-login-brutforce.php';
 
@@ -26,6 +28,7 @@ require_once BOTBLOCKER_DIR . 'includes/cache/class-bbcs-object-cache-storage.ph
 require_once BOTBLOCKER_DIR . 'includes/rules/class-botblocker-rkn.php';
 require_once BOTBLOCKER_DIR . 'includes/rules/class-botblocker-rugov.php';
 require_once BOTBLOCKER_DIR . 'includes/utilites/util-botblocker-request.php';
+require_once BOTBLOCKER_DIR . 'includes/utilites/class-botblocker-backend.php';
 require_once BOTBLOCKER_DIR . 'includes/utilites/util-botblocker-wp.php';
 require_once BOTBLOCKER_DIR . 'includes/ip/class-botblocker-ip.php';
 require_once BOTBLOCKER_DIR . 'includes/botblocker/class-botblocker-ban-target-resolver.php';

@@ -5,11 +5,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use BotBlocker\Component\Base;
+
 return static function ( Botblocker_DashboardViewModel $data ): void {
 
 	$link = static function ( string $url, string $label, string $desc, string $type ): string {
 		return '<div class="bbcs-col bbcs-g-0h">'
-			. '<div class="bbcs-fw-semibold bbcs-fs-sm">' . esc_html( $label ) . '</div>'
+			. '<div class="bbcs-fw-semibold bbcs-fs-sm">' . esc_html( $label ) . Base::help( '', BotBlockerDocs::url( 'action_' . $type ) ) . '</div>'
 			. '<div class="bbcs-row bbcs-g-1h">'
 			. '<input type="text" class="bbcs-input bbcs-input--mono bbcs-fill" value="' . esc_url( $url ) . '" readonly onclick="this.select()" data-url-type="' . esc_attr( $type ) . '" />'
 			. '<button type="button" class="bbcs-btn bbcs-btn--ghost bbcs-btn--icon bbcs-btn--sm bbcs-copy-btn" onclick="copyToClipboard(this)" title="' . esc_attr__( 'Copy to clipboard', 'botblocker-security' ) . '">'
@@ -27,6 +29,7 @@ return static function ( Botblocker_DashboardViewModel $data ): void {
 				<div class="bbcs-modal-title">
 					<svg class="bbcs-ico bbcs-ico--sm" style="margin-right:var(--bbcs-sp-1);"><use href="#bbcs-i-key"></use></svg>
 					<?php esc_html_e( 'Security action links', 'botblocker-security' ); ?>
+					<?php echo Base::help( '', BotBlockerDocs::page( 'recovery-secrets', 'security-action-links' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 				</div>
 				<button type="button" class="bbcs-modal-close" data-modal-close>
 					<svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-x"></use></svg>
@@ -67,6 +70,16 @@ return static function ( Botblocker_DashboardViewModel $data ): void {
 			e.preventDefault();
 			overlay.style.display = 'flex';
 		});
+
+		// Bell alert "Recovery Link Used" links here: open the modal and focus Regenerate.
+		function openFromHash() {
+			if (window.location.hash !== '#secret-links') return;
+			overlay.style.display = 'flex';
+			var regenerate = document.getElementById('bbcs-regenerate-secret-links');
+			if (regenerate) regenerate.focus();
+		}
+		openFromHash();
+		window.addEventListener('hashchange', openFromHash);
 
 		// Close on data-modal-close click
 		overlay.addEventListener('click', function(e) {

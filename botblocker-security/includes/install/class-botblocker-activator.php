@@ -108,6 +108,12 @@ class Botblocker_Activator {
 			BotBlockerInstall::installMuPlugin();
 		}
 
+		// The cron class is loaded by the admin helpers only; a front-end
+		// wp_initialize_site (REST / wpmu_create_blog) reaches activateSite()
+		// without it — load it here so a real network never fatals.
+		if ( ! class_exists( 'BotBlockerCron' ) ) {
+			require_once BOTBLOCKER_DIR . 'includes/cron/class-botblocker-cron.php';
+		}
 		BotBlockerCron::registerTasks();
 
 		if ( class_exists( 'BotBlockerAsnDb' ) ) {
@@ -118,8 +124,8 @@ class Botblocker_Activator {
 			BotBlockerLlmSync::scheduleSync( 'activation' );
 		}
 
-		if ( class_exists( 'BotBlockerCloudApiHooks' ) ) {
-			BotBlockerCloudApiHooks::registerRewriteRules();
+		if ( class_exists( 'BotBlockerCloudBb' ) ) {
+			BotBlockerCloudBb::registerRewriteRules();
 		}
 
 		if ( class_exists( 'BotBlockerTwoFactorAuth' ) ) {

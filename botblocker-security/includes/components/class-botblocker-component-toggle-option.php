@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace BotBlocker\Component;
 
+use BotBlockerPro;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -21,12 +23,6 @@ final class ToggleOption extends Base {
 
 	/** @var string Amber toggle color (for Ultimate features). */
 	const COLOR_AMBER = 'bbcs-toggle--amber';
-
-	/** PRO badge - violet pill, pro option styling, violet toggle. */
-	const BADGE_PRO = 'pro';
-
-	/** Ultimate badge - amber pill, pro option styling. */
-	const BADGE_ULTIMATE = 'ultimate';
 
 	/** Warning badge (e.g. Extension Missing) - amber pill, generic. */
 	const BADGE_WARNING = 'warning';
@@ -81,16 +77,37 @@ final class ToggleOption extends Base {
 		return $this;
 	}
 
+	public function withDocLink( string $url ): self {
+		$this->doc_url = $url;
+		return $this;
+	}
+
 	/**
 	 * Add a badge next to the label (e.g. 'PRO', 'Extension Missing').
 	 * Can be called multiple times to stack badges.
 	 *
 	 * @param string $text Badge text (already translated). Empty string = no badge.
-	 * @param string $type One of the BADGE_* constants (BADGE_PRO, BADGE_ULTIMATE, BADGE_WARNING, BADGE_ADDON).
+	 * @param string $type BotBlockerPro::TIER_PRO, BotBlockerPro::TIER_ULTIMATE, BADGE_WARNING or BADGE_ADDON.
 	 */
 	public function withBadge( string $text, string $type = self::BADGE_WARNING ): self {
 		if ( $text !== '' ) {
 			$this->badges[] = array( 'text' => $text, 'type' => $type );
+		}
+		return $this;
+	}
+
+	// Call after withName().
+	public function withProGate(): self {
+		$tier = BotBlockerPro::PRO_FEATURE_TIERS[ $this->field_name ] ?? '';
+		if ( $tier === BotBlockerPro::TIER_ULTIMATE ) {
+			$this->withBadge( 'Ultimate', BotBlockerPro::TIER_ULTIMATE );
+		}
+		if ( $tier === BotBlockerPro::TIER_PRO ) {
+			$this->withBadge( 'PRO', BotBlockerPro::TIER_PRO );
+		}
+
+		if ( ! BotBlockerPro::allowsFeature( $this->field_name ) ) {
+			$this->withDisabled();
 		}
 		return $this;
 	}
@@ -122,10 +139,11 @@ final class ToggleOption extends Base {
 	}
 
 	public function render( bool $return = false ): string {
+		$is_checked = $this->checked && ! $this->disabled;
 		$option_class = 'bbcs-option bbcs-hoverbg';
 		$has_pro_badge = false;
 		foreach ( $this->badges as $b ) {
-			if ( $b['type'] === self::BADGE_PRO || $b['type'] === self::BADGE_ULTIMATE ) {
+			if ( $b['type'] === BotBlockerPro::TIER_PRO || $b['type'] === BotBlockerPro::TIER_ULTIMATE ) {
 				$has_pro_badge = true;
 				break;
 			}
@@ -135,7 +153,7 @@ final class ToggleOption extends Base {
 		}
 
 		$toggle_class = 'bbcs-toggle';
-		if ( $this->checked ) {
+		if ( $is_checked ) {
 			$toggle_class .= ' is-on';
 		}
 		if ( $this->color_cls !== '' ) {
@@ -148,14 +166,14 @@ final class ToggleOption extends Base {
 
 		// Build toggle button attributes.
 		$btn_attrs = ' class="' . $toggle_class . '" role="switch"'
-			. ' aria-checked="' . ( $this->checked ? 'true' : 'false' ) . '"';
+			. ' aria-checked="' . ( $is_checked ? 'true' : 'false' ) . '"';
 
 		if ( $this->ajax_action !== '' ) {
 			// AJAX toggle – send to server on click (handled by bbcs-multipage.js).
 			$btn_attrs .= ' data-bbcs-toggle="1"'
 				. ' data-action="' . self::escape( $this->ajax_action, 'attr' ) . '"'
 				. ' data-setting="' . self::escape( $this->ajax_setting, 'attr' ) . '"'
-				. ' data-value="' . ( $this->checked ? '1' : '0' ) . '"';
+				. ' data-value="' . ( $is_checked ? '1' : '0' ) . '"';
 			if ( $this->disabled ) {
 				$btn_attrs .= ' disabled';
 			}
@@ -176,7 +194,7 @@ final class ToggleOption extends Base {
 		// Hidden input only for form-based toggles; AJAX toggles persist via the API response.
 		if ( $this->ajax_action === '' ) {
 			$html .= '<input type="hidden" name="' . self::escape( $this->field_name, 'attr' )
-				. '" value="' . ( $this->checked ? '1' : '0' ) . '"'
+				. '" value="' . ( $is_checked ? '1' : '0' ) . '"'
 				. ( $this->disabled ? ' disabled' : '' )
 				. '>';
 		}
@@ -185,10 +203,10 @@ final class ToggleOption extends Base {
 
 		foreach ( $this->badges as $b ) {
 			switch ( $b['type'] ) {
-				case self::BADGE_PRO:
+				case BotBlockerPro::TIER_PRO:
 					$pill_class = 'bbcs-pill--violet';
 					break;
-				case self::BADGE_ULTIMATE:
+				case BotBlockerPro::TIER_ULTIMATE:
 					$pill_class = 'bbcs-pill--amber';
 					break;
 				case self::BADGE_WARNING:
@@ -202,12 +220,7 @@ final class ToggleOption extends Base {
 			$html .= ' <span class="bbcs-pill ' . $pill_class . ' bbcs-pill--pro">' . self::escape( $b['text'] ) . '</span>';
 		}
 
-		if ( $this->tooltip !== '' ) {
-			$html .= '<span class="bbcs-help">';
-			$html .= '<span class="bbcs-help-q">?</span>';
-			$html .= '<span class="bbcs-help-tip">' . self::escape( $this->tooltip ) . '</span>';
-			$html .= '</span>';
-		}
+		$html .= self::help( $this->tooltip, $this->doc_url );
 
 		$html .= '</div>';
 

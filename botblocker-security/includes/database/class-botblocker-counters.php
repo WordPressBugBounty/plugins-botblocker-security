@@ -90,6 +90,12 @@ class BotBlockerCounters {
 
 		$se_sql     = $pse > 0 ? ", search_engine_visits = search_engine_visits + {$pse}" : '';
 
+		// Read the PREVIOUS last_update before the UPDATE overwrites it with
+		// "now"; otherwise the day-rollover comparison below is always false.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$prev_last_update = $wpdb->get_var( "SELECT last_update FROM `{$wpdb->bbcs_counters}` WHERE id = 1" );
+		$is_new_day       = $prev_last_update && \DateTime::createFromFormat( 'Y-m-d H:i:s', $prev_last_update, $timezone ) < $today_start_dt;
+
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$result = $wpdb->query(
 			"UPDATE `{$wpdb->bbcs_counters}` SET
@@ -108,9 +114,6 @@ class BotBlockerCounters {
 			$wpdb->query( "UPDATE `{$wpdb->bbcs_counters}` SET today_hits = {$ph}, today_blocked = {$pb}, total_hits = {$ph}, total_blocked = {$pb}{$se_sql}, last_update = '{$now_local}' WHERE id = 1" );
 		}
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$last_update_time = $wpdb->get_var( "SELECT last_update FROM `{$wpdb->bbcs_counters}` WHERE id = 1" );
-		$is_new_day       = $last_update_time && \DateTime::createFromFormat( 'Y-m-d H:i:s', $last_update_time, $timezone ) < $today_start_dt;
 		if ( $is_new_day ) {
 			delete_transient( 'bbcs_site_health' );
 			delete_transient( 'bbcs_site_health_list' );

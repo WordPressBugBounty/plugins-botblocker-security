@@ -8,6 +8,8 @@ trait BotBlockerPostTrait {
 
 	use BotBlockerHoneypotTrait;
 
+	private $captcha_provider_error = '';
+
 	public function processPostRequest() {
 		check_ajax_referer( 'botblocker_nonce', 'nonce' );
 
@@ -206,91 +208,6 @@ trait BotBlockerPostTrait {
 
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
-			error_log( '[BBCS DEBUG] [Post] STEP: before_recaptcha_siteverify' );
-		}
-
-		if ( $this->settings->bbcs_captcha_mode == 3 || $this->settings->bbcs_captcha_mode == 4 ) {
-			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
-				error_log( '[BBCS DEBUG] [Post] STEP: inside_recaptcha_branch' );
-			}
-
-			$g_recaptcha_response = isset( $_POST['g-recaptcha-response'] )
-				? sanitize_text_field( wp_unslash( $_POST['g-recaptcha-response'] ) )
-				: '';
-
-			$args = array(
-				'body'      => array(
-					'secret'   => $this->settings->recaptcha_secret2,
-					'response' => $g_recaptcha_response,
-					'remoteip' => isset( $post_ip ) ? sanitize_text_field( wp_unslash( $post_ip ) ) : '',
-				),
-				'timeout'   => 15,
-				'headers'   => array(
-					'User-Agent' => $this->useragent,
-					'Referer'    => '',
-				),
-				'sslverify' => true,
-			);
-
-			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
-				error_log( '[BBCS DEBUG] [Post] STEP: before_wp_remote_post' );
-			}
-			$resp = wp_remote_post( 'https://www.google.com/recaptcha/api/siteverify', $args );
-			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
-				error_log( '[BBCS DEBUG] [Post] STEP: after_wp_remote_post' );
-			}
-
-			if ( is_wp_error( $resp ) ) {
-				if ( defined( 'BBCS_CAPTCHA_DIAG' ) && BBCS_CAPTCHA_DIAG ) {
-					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-					error_log( 'BBCS reCAPTCHA siteverify WP_Error: ' . $resp->get_error_message() );
-				}
-				if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
-					error_log( '[BBCS DEBUG] [Post] STEP: recaptcha_wp_error_fallthrough' );
-				}
-				$this->settings->bbcs_captcha_mode = 1;
-				if ( $this->settings->time_ban < 1 ) {
-					$this->settings->time_ban = '1';
-				}
-			} else {
-				$re = json_decode( wp_remote_retrieve_body( $resp ), true );
-				if ( defined( 'BBCS_CAPTCHA_DIAG' ) && BBCS_CAPTCHA_DIAG ) {
-					// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_error_log
-					error_log( 'BBCS reCAPTCHA siteverify response: ' . wp_json_encode( $re ) );
-					error_log( 'BBCS reCAPTCHA g-recaptcha-response present: ' . ( empty( $g_recaptcha_response ) ? 'NO' : 'YES' ) );
-					error_log( 'BBCS reCAPTCHA secret last4: ' . substr( $this->settings->recaptcha_secret2, -4 ) );
-					// phpcs:enable WordPress.PHP.DevelopmentFunctions.error_log_error_log
-				}
-				if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
-					error_log( '[BBCS DEBUG] [Post] STEP: recaptcha_success_ok=' . ( isset( $re['success'] ) ? (int) $re['success'] : 'n/a' ) );
-				}
-				if ( isset( $re['success'] ) && (int) $re['success'] !== 1 ) {
-					if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-						// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
-						error_log( '[BBCS DEBUG] [Post] STEP: recaptcha_success_false_fallthrough' );
-					}
-					$this->settings->bbcs_captcha_mode = 1;
-					if ( $this->settings->time_ban < 1 ) {
-						$this->settings->time_ban = '1';
-					}
-				}
-			}
-			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
-				error_log( '[BBCS DEBUG] [Post] reCAPTCHA siteverify done. success=' . ( isset( $re['success'] ) ? (int) $re['success'] : 'n/a' ) . ' mode_after=' . $this->settings->bbcs_captcha_mode );
-			}
-		} elseif ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
-			error_log( '[BBCS DEBUG] [Post] STEP: recaptcha_branch_skipped_mode=' . $this->settings->bbcs_captcha_mode );
-		}
-
-		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 			error_log( '[BBCS DEBUG] [Post] STEP: before_challenge_token_check' );
 		}
 		$challenge_token_raw = isset( $_POST['challenge_token'] ) ? sanitize_text_field( wp_unslash( $_POST['challenge_token'] ) ) : '';
@@ -351,40 +268,36 @@ trait BotBlockerPostTrait {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 			error_log( '[BBCS DEBUG] [Post] STEP: challenge_token_passed' );
 		}
-			// If reCAPTCHA verification changed the mode (failed), reject
 			$token_mode = isset( $ct_result['m'] ) ? (int) $ct_result['m'] : -1;
-			if ( $token_mode >= 90 ) {
-				$addon_registered = class_exists( 'BotBlockerCaptchaRegistry' ) && BotBlockerCaptchaRegistry::has( $token_mode );
-				if ( ! $addon_registered ) {
-					// Provider deactivated/deleted between render and verify —
-					// degrade like a provider error; never grant access unverified.
-					$this->settings->bbcs_captcha_mode = 1;
-					if ( $this->settings->time_ban < 1 ) {
-						$this->settings->time_ban = '1';
-					}
-				} else {
-					$addon_verified = BotBlockerCaptchaRegistry::verify( $token_mode, $_POST, $this );
-					if ( null === $addon_verified ) {
-						// Provider error — mirror reCAPTCHA network-failure semantics (degrade, never hard-ban).
-						$this->settings->bbcs_captcha_mode = 1;
-						if ( $this->settings->time_ban < 1 ) {
-							$this->settings->time_ban = '1';
-						}
-					} elseif ( ! $addon_verified ) {
-						$this->process_wrong_click( defined( 'BBCS_CAPTCHA_DIAG' ) && BBCS_CAPTCHA_DIAG ? 'AV' : '' );
-					}
-				}
-			}
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [Post] STEP: token_mode=' . $token_mode . ' captcha_mode=' . $this->settings->bbcs_captcha_mode );
 			}
-			if ( ( in_array( $token_mode, array( 3, 4 ) ) || $token_mode >= 90 ) && (int) $this->settings->bbcs_captcha_mode !== $token_mode ) {
+			if ( ( in_array( $token_mode, array( 3, 4 ), true ) || $token_mode >= 90 ) && (int) $this->settings->bbcs_captcha_mode !== $token_mode ) {
 				if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 					error_log( '[BBCS DEBUG] [Post] STEP_DIE: wrong_click mode_mismatch' );
 				}
 				$this->process_wrong_click( defined( 'BBCS_CAPTCHA_DIAG' ) && BBCS_CAPTCHA_DIAG ? 'RM' : '' );
+			}
+			if ( in_array( $token_mode, array( 3, 4 ), true ) ) {
+				$verdict = $this->verify_recaptcha_v2( $post_ip );
+				if ( false === $verdict ) {
+					$this->process_wrong_click( defined( 'BBCS_CAPTCHA_DIAG' ) && BBCS_CAPTCHA_DIAG ? 'RV' : '' );
+				} elseif ( null === $verdict ) {
+					$this->send_captcha_fallback( $this->captcha_provider_error, $post_date );
+				}
+			} elseif ( $token_mode >= 90 ) {
+				if ( ! class_exists( 'BotBlockerCaptchaRegistry' ) || ! BotBlockerCaptchaRegistry::has( $token_mode ) ) {
+					// Provider deactivated/deleted between render and verify.
+					$this->send_captcha_fallback( 'CAPTCHA add-on mode ' . $token_mode . ' is not active', $post_date );
+				}
+				$addon_verified = BotBlockerCaptchaRegistry::verify( $token_mode, $_POST, $this );
+				if ( false === $addon_verified ) {
+					$this->process_wrong_click( defined( 'BBCS_CAPTCHA_DIAG' ) && BBCS_CAPTCHA_DIAG ? 'AV' : '' );
+				} elseif ( null === $addon_verified ) {
+					$this->send_captcha_fallback( 'CAPTCHA mode ' . $token_mode . ': ' . BotBlockerCaptchaRegistry::lastError(), $post_date );
+				}
 			}
 		} elseif ( (int) $this->settings->bbcs_captcha_mode === BOTBLOCKER_CAPTCHA_MODE_SILENT ) {
 			// Silent mode but challenge_token is missing (WAF/CDN stripped it, or cached page)
@@ -411,6 +324,12 @@ trait BotBlockerPostTrait {
 					error_log( '[BBCS DEBUG] [Post] STEP_DIE: wrong_click hash_mismatch' );
 				}
 				$this->process_wrong_click( defined( 'BBCS_CAPTCHA_DIAG' ) && BBCS_CAPTCHA_DIAG ? 'HM' : '' );
+			}
+			$verdict = $this->verify_recaptcha_v2( $post_ip );
+			if ( false === $verdict ) {
+				$this->process_wrong_click( defined( 'BBCS_CAPTCHA_DIAG' ) && BBCS_CAPTCHA_DIAG ? 'RV' : '' );
+			} elseif ( null === $verdict ) {
+				$this->send_captcha_fallback( $this->captcha_provider_error, $post_date );
 			}
 		} elseif ( $this->settings->bbcs_captcha_mode == 2 ) {
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
@@ -507,8 +426,8 @@ trait BotBlockerPostTrait {
 		}
 		if ( $this->settings->bbcs_ddos_resilience == 1 ) {
 			$payload = $this->sign_response_payload( array( 'cookie' => $hash ) );
-			if ( ! headers_sent() && ! empty( $this->uid ) ) {
-				header( 'X-BBCS-' . $this->uid . ': ' . $hash, false );
+			if ( $this->header_can_send() && ! empty( $this->uid ) ) {
+				$this->emit_header( 'X-BBCS-' . $this->uid . ': ' . $hash, false );
 			}
 			wp_send_json( $payload );
 		} else {
@@ -516,10 +435,107 @@ trait BotBlockerPostTrait {
 		}
 	}
 
+	// true = solved, false = wrong answer (ban), null = provider error (Button fallback).
+	private function verify_recaptcha_v2( string $post_ip ): ?bool {
+		$this->captcha_provider_error = '';
+
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- challenge-page CAPTCHA POST
+		$g_recaptcha_response = isset( $_POST['g-recaptcha-response'] )
+			? sanitize_text_field( wp_unslash( $_POST['g-recaptcha-response'] ) )
+			: '';
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+		$resp = wp_remote_post(
+			'https://www.google.com/recaptcha/api/siteverify',
+			array(
+				'body'      => array(
+					'secret'   => $this->settings->recaptcha_secret2,
+					'response' => $g_recaptcha_response,
+					'remoteip' => sanitize_text_field( wp_unslash( $post_ip ) ),
+				),
+				'timeout'   => 15,
+				'headers'   => array(
+					'User-Agent' => $this->useragent,
+					'Referer'    => '',
+				),
+				'sslverify' => true,
+			)
+		);
+
+		if ( is_wp_error( $resp ) ) {
+			$this->captcha_provider_error = 'reCAPTCHA: ' . $resp->get_error_message();
+			return null;
+		}
+		$code = (int) wp_remote_retrieve_response_code( $resp );
+		if ( 200 !== $code ) {
+			$this->captcha_provider_error = 'reCAPTCHA: HTTP ' . $code;
+			return null;
+		}
+		$re = json_decode( (string) wp_remote_retrieve_body( $resp ), true );
+		if ( defined( 'BBCS_CAPTCHA_DIAG' ) && BBCS_CAPTCHA_DIAG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( 'BBCS reCAPTCHA siteverify response: ' . wp_json_encode( $re ) );
+		}
+		if ( ! is_array( $re ) || ! array_key_exists( 'success', $re ) ) {
+			$this->captcha_provider_error = 'reCAPTCHA: malformed response';
+			return null;
+		}
+		if ( ! empty( $re['success'] ) ) {
+			return true;
+		}
+
+		$codes = isset( $re['error-codes'] ) && is_array( $re['error-codes'] ) ? $re['error-codes'] : array();
+		require_once BOTBLOCKER_DIR . 'includes/class-botblocker-captcha-registry.php';
+		if ( BotBlockerCaptchaRegistry::isProviderError( $codes ) ) {
+			$this->captcha_provider_error = 'reCAPTCHA: ' . implode( ',', $codes );
+			return null;
+		}
+		return false;
+	}
+
+	// The provider could not check the answer: log it and send a Button challenge instead of a ban.
+	private function send_captcha_fallback( string $reason, int $post_date ): void {
+		global $wpdb;
+
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+			error_log( '[BBCS DEBUG] [Post] EXIT: CAPTCHA provider error -> Button fallback. reason=' . $reason );
+		}
+
+		if ( $this->settings->botblocker_log_tests == 1 ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing -- challenge-page CAPTCHA POST
+			$cid    = isset( $_POST['cid'] ) ? sanitize_text_field( wp_unslash( $_POST['cid'] ) ) : '';
+			$result = sanitize_text_field( 'CAPTCHA provider error: ' . $reason );
+			// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+			// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->update( $wpdb->bbcs_hits, array( 'result' => $result ), array( 'cid' => $cid ), array( '%s' ), array( '%s' ) );
+			$wpdb->update( $wpdb->bbcs_hits_suspicious, array( 'result' => $result ), array( 'cid' => $cid ), array( '%s' ), array( '%s' ) );
+			// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		}
+
+		require_once BOTBLOCKER_DIR . 'public/class-botblocker-captcha-renderer.php';
+		// The Button posts the check page's date, so the new challenge must carry that date.
+		$saved_time = $this->time;
+		$this->time = $post_date;
+		try {
+			$renderer = new BotBlockerCaptchaRenderer( '', $this );
+			$fallback = $renderer->getFallbackData();
+		} finally {
+			$this->time = $saved_time;
+		}
+
+		$payload = array( 'fallback' => $fallback );
+		if ( $this->settings->bbcs_ddos_resilience == 1 ) {
+			$payload = $this->sign_response_payload( $payload );
+		}
+		$this->process_die( wp_json_encode( $payload ) );
+	}
+
 	/**
 	 * @param string $reason Diagnostic reason code:
 	 *   TD = token decrypt failed, TT = transient missing/expired,
-	 *   DM = date mismatch, HM = hash mismatch, RM = reCAPTCHA mode mismatch,
+	 *   DM = date mismatch, HM = hash mismatch, RM = token mode mismatch,
+	 *   RV = reCAPTCHA rejected the answer, AV = add-on provider rejected the answer,
 	 *   NM = no matching CAPTCHA mode (fallback)
 	 */
 	public function process_wrong_click( string $reason = '' ) {
@@ -611,7 +627,10 @@ trait BotBlockerPostTrait {
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->update(
 				$table_name,
-				array( 'expires' => $expires ),
+				array(
+					'rule'    => 'block',
+					'expires' => $expires,
+				),
 				array( 'search' => $ip )
 			);
 		} else {

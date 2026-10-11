@@ -1,6 +1,6 @@
 {
   "description": "Strings found in JS/JSON that need source-code fixes to be translatable via WordPress gettext.",
-  "pot_path": "D:\\_DEV\\BotBlocker\\plugin\\wp-content\\plugins\\botblocker-security\\languages\\botblocker-security.pot",
+  "pot_path": "botblocker-security.pot",
   "summary": {
     "php_unique": 3092,
     "js_total": 102,

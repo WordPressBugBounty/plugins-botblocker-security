@@ -36,9 +36,4 @@ final class Botblocker_Layout_View {
 		$renderer = require BOTBLOCKER_DIR . 'admin/templates/shared/command-palette.php';
 		$renderer();
 	}
-
-	private function render_template( string $file ): void {
-		$renderer = require BOTBLOCKER_DIR . 'admin/templates/' . $file;
-		$renderer( $this->data );
-	}
 }

@@ -19,11 +19,14 @@ class BotBlockerMuPhase {
 	use BotBlockerMuDB;
 	use BotBlockerMuUtils;
 
-	private string $ip         = '';
-	private string $ip_version = '';
-	private array $dirs        = array();
-	private string $protocol   = '';
-	private array $settings    = array();
+	// Must equal BotBlockerBase::SECRET_COOKIE_TTL_SECONDS (core is not loaded in this phase).
+	public const SECRET_COOKIE_TTL_SECONDS = 7200;
+
+	private $ip         = '';
+	private $ip_version = '';
+	private $dirs        = array();
+	private $protocol   = '';
+	private $settings    = array();
 
 	public function __construct() {}
 

@@ -35,7 +35,6 @@ final class Botblocker_IntegrationsViewModel {
 	/** @var Botblocker_DashboardUrls */
 	public $urls;
 	/** @var string */
-	public $docs_url;
 
 	/** @var array */
 	public $nav_groups;
@@ -67,6 +66,8 @@ final class Botblocker_IntegrationsViewModel {
 	public $has_redis_ext;
 	/** @var bool */
 	public $has_memcached_ext;
+	/** @var bool */
+	public $has_apcu_ext;
 
 	/** @var bool */
 	public $is_cloud_api_active;
@@ -80,8 +81,6 @@ final class Botblocker_IntegrationsViewModel {
 	public $connect_nonce;
 	/** @var string */
 	public $deactivate_nonce;
-	/** @var string */
-	public $fetch_key_nonce;
 
 	/** @var bool */
 	public $mu_active;
@@ -131,12 +130,12 @@ final class Botblocker_IntegrationsViewModel {
 		$this->urls->wizard    = $BBCSA->pages_wizard;
 		$this->urls->pricing   = 'https://botblocker.com/pricing/';
 
-		$this->docs_url          = BOTBLOCKER_DOCS_URL;
 		$this->integrations_url  = $BBCSA->pages_integrations;
 		$this->settings_url      = $BBCSA->pages_settings;
 
 		$this->has_redis_ext     = extension_loaded( 'redis' );
 		$this->has_memcached_ext = extension_loaded( 'memcached' );
+		$this->has_apcu_ext      = extension_loaded( 'apcu' );
 
 		$this->is_cloud_api_active = BotBlockerPro::isActive();
 		$this->cloud_api_key       = $this->is_cloud_api_active ? BotBlockerPro::getKey() : '';
@@ -144,7 +143,6 @@ final class Botblocker_IntegrationsViewModel {
 		$this->remaining_days      = BotBlockerPro::getRemainingDays();
 		$this->connect_nonce       = wp_create_nonce( 'bbcs_connect_cloud_api_action' );
 		$this->deactivate_nonce    = wp_create_nonce( 'bbcs_deactivate_cloud_api_action' );
-		$this->fetch_key_nonce     = wp_create_nonce( 'bbcs_fetch_cloud_api_key_action' );
 
 		// Vertical sidebar nav - single group with all integration tabs
 		$this->nav_groups = array(
@@ -162,6 +160,8 @@ final class Botblocker_IntegrationsViewModel {
 						->withIconImage( BOTBLOCKER_URL . 'public/icons/memcached.svg' ),
 					( new TabItem( 'redis',         '', false, '', '', __( 'Redis', 'botblocker-security' ),             'server' ) )
 						->withIconImage( BOTBLOCKER_URL . 'public/icons/redis.svg' ),
+					( new TabItem( 'apcu',          '', false, '', '', __( 'APCu', 'botblocker-security' ),              'memory' ) )
+						->withIconImage( BOTBLOCKER_URL . 'public/icons/apcu.svg' ),
 					( new TabItem( 'cloud',         '', false, '', '', __( 'BotBlocker Cloud', 'botblocker-security' ),  'sync' ) )
 						->withIconImage( BOTBLOCKER_URL . 'public/icons/cloud-api.svg' ),
 					( new TabItem( 'cache',         '', false, '', '', __( 'Cache', 'botblocker-security' ),            'rocket' ) )
@@ -176,18 +176,27 @@ final class Botblocker_IntegrationsViewModel {
 			),
 		);
 
+		if ( function_exists( 'wp_register_ability' ) ) {
+			$this->nav_groups[0]['items'][] = new TabItem( 'wp-abilities', '', false, '', '', __( 'WP Abilities API', 'botblocker-security' ), 'plug' );
+		}
+
 		$this->tabpanels = array(
 			'recaptcha-v2'  => BOTBLOCKER_DIR . 'admin/templates/integrations/recaptcha-v2.php',
 			'recaptcha-v3'  => BOTBLOCKER_DIR . 'admin/templates/integrations/recaptcha-v3.php',
 			'transients'    => BOTBLOCKER_DIR . 'admin/templates/integrations/transients.php',
 			'memcached'     => BOTBLOCKER_DIR . 'admin/templates/integrations/memcached.php',
 			'redis'         => BOTBLOCKER_DIR . 'admin/templates/integrations/redis.php',
+			'apcu'          => BOTBLOCKER_DIR . 'admin/templates/integrations/apcu.php',
 			'cloud'         => BOTBLOCKER_DIR . 'admin/templates/integrations/botblocker-api.php',
 			'cache'         => BOTBLOCKER_DIR . 'admin/templates/integrations/cache.php',
 			'bbcs-2fa'      => BOTBLOCKER_DIR . 'admin/templates/integrations/2fa.php',
 			'wp-connectors' => BOTBLOCKER_DIR . 'admin/templates/integrations/wp-connectors.php',
 			'mu'            => BOTBLOCKER_DIR . 'admin/templates/integrations/mu.php',
 		);
+
+		if ( function_exists( 'wp_register_ability' ) ) {
+			$this->tabpanels['wp-abilities'] = BOTBLOCKER_DIR . 'admin/templates/integrations/wp-abilities.php';
+		}
 
 		$this->active_tab_id = 'recaptcha-v2';
 

@@ -18,7 +18,6 @@ final class Botblocker_RulesViewModel {
 	/** @var Botblocker_DashboardUrls */
 	public $urls;
 	/** @var string */
-	public $docs_url;
 
 	/** @var array */
 	public $geo_countries;
@@ -62,7 +61,6 @@ final class Botblocker_RulesViewModel {
 		$this->urls->tools     = $BBCSA->pages_tools;
 		$this->urls->integrations = $BBCSA->pages_integrations;
 
-		$this->docs_url = BOTBLOCKER_DOCS_URL;
 
 		$geo_countries = BotBlockerMultisite::getOption( 'bbcs_blocked_countries', array() );
 		if ( is_string( $geo_countries ) ) {
@@ -92,7 +90,7 @@ final class Botblocker_RulesViewModel {
 		$this->has_pro           = class_exists( 'BotBlockerPro' ) && BotBlockerPro::isActive();
 		$this->early_geo_available = $this->has_pro
 			&& class_exists( 'BotBlockerGateway' )
-			&& BotBlockerGateway::isRegistered( 'early_init' );
+			&& ! empty( BotBlockerGateway::isEnabled( 'early_init' ) );
 		$this->mu_geo_url   = $BBCSA->pages_integrations . '#mu';
 		$this->early_geo_url = $BBCSA->pages_addons . '#bbcs-early-init';
 
@@ -105,7 +103,7 @@ final class Botblocker_RulesViewModel {
 	}
 
 	/**
-	 * @return array{name: string, active: int, disabled: int, attention: int}[]
+	 * @return array{name: string, label: string, active: int, disabled: int, attention: int}[]
 	 */
 	private function computeTableCounts(): array {
 		global $wpdb;

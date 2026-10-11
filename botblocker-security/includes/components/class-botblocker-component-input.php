@@ -89,6 +89,11 @@ final class Input extends Base {
 		return $this;
 	}
 
+	public function withDocLink( string $url ): self {
+		$this->doc_url = $url;
+		return $this;
+	}
+
 	public function withAfter( $after ): self {
 		$this->after = $after;
 		return $this;
@@ -127,7 +132,7 @@ final class Input extends Base {
 
 		$html  = '<div class="' . self::classes( $this->cssClasses( 'bbcs_text_input mb-2' ) ) . '">';
 		if ( $this->label !== '' ) {
-			$html .= '<div class="bbcs_label_input_box"><span class="bbcs-label-input-small">' . self::escape( $this->label ) . '</span>' . self::tooltip( $this->tooltip ) . '</div>';
+			$html .= '<div class="bbcs_label_input_box"><span class="bbcs-label-input-small">' . self::escape( $this->label ) . '</span>' . self::help( $this->tooltip, $this->doc_url ) . '</div>';
 		}
 		$html .= '<div class="bbcs_text_input_inner" style="position: relative;"><input' . self::attrs( $attrs ) . '>';
 		$html .= self::content( $this->after );

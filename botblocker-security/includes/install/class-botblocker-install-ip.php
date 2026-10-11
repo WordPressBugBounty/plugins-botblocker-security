@@ -94,11 +94,8 @@ class BotBlockerInstallIp {
 	}
 
 	public static function getServerIPv4() {
-		$urls = array(
-			BOTBLOCKER_API_URL . '/ip?v=4',
-			BOTBLOCKER_API_GS_URL . '/ip?v=4',
-		);
-		foreach ( $urls as $url ) {
+		foreach ( BotBlockerBackend::urls() as $base ) {
+			$url      = $base . '/ip?v=4';
 			$response = wp_remote_get(
 				$url,
 				array(
@@ -124,11 +121,8 @@ class BotBlockerInstallIp {
 	}
 
 	public static function getServerIPv6() {
-		$urls = array(
-			BOTBLOCKER_API_URL . '/ip?v=6',
-			BOTBLOCKER_API_GS_URL . '/ip?v=6',
-		);
-		foreach ( $urls as $url ) {
+		foreach ( BotBlockerBackend::urls() as $base ) {
+			$url      = $base . '/ip?v=6';
 			$response = wp_remote_get(
 				$url,
 				array(
@@ -171,7 +165,7 @@ class BotBlockerInstallIp {
 					"timeout 2 ip -4 addr show | grep inet | awk '{print $2}' | cut -d/ -f1",
 					"timeout 2 ifconfig | grep 'inet ' | awk '{print $2}'",
 				);
-			} elseif ( $os === 'Windows' ) {
+			} elseif ( stripos( $os, 'Windows' ) !== false ) {
 				$commands = array(
 					'ipconfig | findstr /R /C:"IPv4"',
 				);
@@ -183,7 +177,7 @@ class BotBlockerInstallIp {
 					"timeout 2 ip -6 addr show | grep inet6 | awk '{print $2}' | cut -d/ -f1",
 					"timeout 2 ifconfig | grep 'inet6 ' | awk '{print $2}'",
 				);
-			} elseif ( $os === 'Windows' ) {
+			} elseif ( stripos( $os, 'Windows' ) !== false ) {
 				$commands = array(
 					'ipconfig | findstr /R /C:"IPv6"',
 				);
@@ -199,6 +193,18 @@ class BotBlockerInstallIp {
 			$ipArray = explode( "\n", trim( $output ) );
 			foreach ( $ipArray as $ip ) {
 				$ip = trim( $ip );
+				// ipconfig/findstr output carries a label before the address
+				// ("IPv4 Address. . . : 192.168.1.5"); extract the token first.
+				if ( ! filter_var( $ip, FILTER_VALIDATE_IP ) ) {
+					if ( $version === 'ipv6' ) {
+						$pattern = '/[0-9a-fA-F]{0,4}(?::[0-9a-fA-F]{0,4}){2,7}/';
+					} else {
+						$pattern = '/\d{1,3}(?:\.\d{1,3}){3}/';
+					}
+					if ( preg_match( $pattern, $ip, $matches ) ) {
+						$ip = $matches[0];
+					}
+				}
 				if ( filter_var( $ip, FILTER_VALIDATE_IP, $version === 'ipv6' ? FILTER_FLAG_IPV6 : FILTER_FLAG_IPV4 ) ) {
 					return $ip;
 				}
@@ -235,13 +241,24 @@ class BotBlockerInstallIp {
 	}
 
 	public static function fetchAndStoreParentIPs(): void {
-		$ipAddresses = self::fetchParentIPsFromUrl( BOTBLOCKER_PARENT_IPS_URL );
-		if ( $ipAddresses === null ) {
-			$ipAddresses = self::fetchParentIPsFromUrl( BOTBLOCKER_PARENT_IPS_GS_URL );
+		$ipAddresses = null;
+		foreach ( BotBlockerBackend::urls() as $base ) {
+			$parts = wp_parse_url( $base );
+			if ( empty( $parts['scheme'] ) || empty( $parts['host'] ) ) {
+				continue;
+			}
+			$pool_url = $parts['scheme'] . '://' . $parts['host'];
+			if ( isset( $parts['port'] ) ) {
+				$pool_url .= ':' . $parts['port'];
+			}
+			$ipAddresses = self::fetchParentIPsFromUrl( $pool_url . '/pool' );
+			if ( $ipAddresses !== null ) {
+				break;
+			}
 		}
 
 		if ( ! is_array( $ipAddresses ) ) {
-			throw new \Exception( 'Failed to fetch parent IPs from both primary and reserve servers.' );
+			throw new \Exception( 'Failed to fetch parent IPs from any configured backend.' );
 		}
 
 		if ( count( $ipAddresses ) > 10000 ) {

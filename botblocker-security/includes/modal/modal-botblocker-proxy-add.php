@@ -2,6 +2,8 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
+
+use BotBlocker\Component\Base;
 ?><div class="modal fade" id="createProxyModal" tabindex="-1" aria-labelledby="createProxyModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -15,8 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-12">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-									<span class="bbcs-label-input"><?php esc_html_e( 'Network Mask', 'botblocker-security' ); ?></span>
-									<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Enter the network mask (e.g., 173.245.48.0/20)', 'botblocker-security' ); ?></span></span>
+									<span class="bbcs-label-input"><?php esc_html_e( 'Network Mask', 'botblocker-security' ); ?></span><?php echo Base::help( __( 'Enter the network mask (e.g., 173.245.48.0/20)', 'botblocker-security' ), BotBlockerDocs::url( 'proxy-network-mask' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<input type="text" class="bbcs_text_input_input" id="key" name="key" required placeholder="e.g., 173.245.48.0/20">
@@ -28,8 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-12">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-									<span class="bbcs-label-input"><?php esc_html_e( 'HTTP Header', 'botblocker-security' ); ?></span>
-									<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'HTTP header for forwarding the real IP', 'botblocker-security' ); ?></span></span>
+									<span class="bbcs-label-input"><?php esc_html_e( 'HTTP Header', 'botblocker-security' ); ?></span><?php echo Base::help( __( 'HTTP header for forwarding the real IP', 'botblocker-security' ), BotBlockerDocs::url( 'proxy-http-header' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<select class="bbcs_select_input_input" id="value" name="value" required>
@@ -51,8 +51,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-12">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-									<span class="bbcs-label-input"><?php esc_html_e( 'Comment', 'botblocker-security' ); ?></span>
-									<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Comment for this proxy (e.g., Cloudflare IPv4)', 'botblocker-security' ); ?></span></span>
+									<span class="bbcs-label-input"><?php esc_html_e( 'Comment', 'botblocker-security' ); ?></span><?php echo Base::help( __( 'Comment for this proxy (e.g., Cloudflare IPv4)', 'botblocker-security' ), BotBlockerDocs::url( 'proxy-comment' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<input type="text" class="bbcs_text_input_input" id="comment" name="comment" placeholder="e.g., Cloudflare IPv4">

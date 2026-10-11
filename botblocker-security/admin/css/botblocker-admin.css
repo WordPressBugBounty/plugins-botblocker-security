@@ -1773,7 +1773,7 @@ h2.card-title small {
   margin-right: 10px;
 }
 
-#bbcs-health_gauge {
+.bbcs-health-gauge-canvas {
   width: 100% !important;
   height: auto !important;
 }

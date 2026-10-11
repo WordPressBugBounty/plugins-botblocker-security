@@ -48,7 +48,7 @@ return static function ( Botblocker_SetupWizard_ViewModel $d ): void { ?>
 					<li><?php esc_html_e( 'Zero-day botnet updates', 'botblocker-security' ); ?></li>
 					<li><?php esc_html_e( 'WordPress acceleration', 'botblocker-security' ); ?></li>
 					<li><?php esc_html_e( 'All addons included', 'botblocker-security' ); ?></li>
-					<li><?php esc_html_e( '5M+ bot signatures', 'botblocker-security' ); ?></li>
+					<li><?php esc_html_e( 'Massive bot signature database', 'botblocker-security' ); ?></li>
 					<li><?php esc_html_e( 'Emergency support (24h)', 'botblocker-security' ); ?></li>
 				</ul>
 			</div>

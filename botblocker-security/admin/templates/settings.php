@@ -12,8 +12,8 @@ return static function ( Botblocker_Settings_View $view, Botblocker_Layout_View 
 
 	<?php $layout->header(); ?>
 
-	<div class="bbcs-content">
-			<div class="bbcs-wrap">
+	<div class="bbcs-content bbcs-content--settings">
+			<div class="bbcs-wrap bbcs-wrap--settings">
 
 				<section class="bbcs-page" data-page="settings">
 

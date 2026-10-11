@@ -17,7 +17,7 @@ final class Botblocker_Integrations_View {
 		$this->data = $data;
 	}
 
-	public function getData(): ?Botblocker_IntegrationsViewModel {
+	public function getData(): Botblocker_IntegrationsViewModel {
 		return $this->data;
 	}
 

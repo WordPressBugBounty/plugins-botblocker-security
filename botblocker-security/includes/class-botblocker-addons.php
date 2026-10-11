@@ -464,13 +464,12 @@ class BotBlockerAddons {
 	public static function safeRelativePath( $path ): string {
 		static $resolved = array();
 
-		if ( array_key_exists( $path, $resolved ) ) {
-			return $resolved[ $path ];
+		if ( ! is_string( $path ) || trim( $path ) === '' ) {
+			return '';
 		}
 
-		if ( ! is_string( $path ) || trim( $path ) === '' ) {
-			$resolved[ $path ] = '';
-			return '';
+		if ( array_key_exists( $path, $resolved ) ) {
+			return $resolved[ $path ];
 		}
 
 		$path = str_replace( '\\', '/', trim( $path ) );
@@ -853,70 +852,6 @@ class BotBlockerAddons {
 		return $storage;
 	}
 
-	public static function scanLegacy( string $base, string $slug ): array {
-		$root     = trailingslashit( $base ) . $slug . '.php';
-		$core     = trailingslashit( $base ) . 'inc' . DIRECTORY_SEPARATOR . $slug . '-core.php';
-		$settings = trailingslashit( $base ) . 'inc' . DIRECTORY_SEPARATOR . $slug . '-settings.php';
-		$iconSvg  = trailingslashit( $base ) . $slug . '.svg';
-		$iconPng  = trailingslashit( $base ) . $slug . '.png';
-		$readme   = trailingslashit( $base ) . 'readme.txt';
-		$iconPath = file_exists( $iconSvg ) ? $iconSvg : ( file_exists( $iconPng ) ? $iconPng : '' );
-		$iconUrl  = $iconPath ? self::rootUrl() . $slug . '/' . basename( $iconPath ) : '';
-		$valid    = file_exists( $root ) && file_exists( $core ) && file_exists( $settings ) && $iconPath && file_exists( $readme );
-		$headers  = array(
-			'Name'         => 'Plugin Name',
-			'Author'       => 'Author',
-			'Description'  => 'Description',
-			'Version'      => 'Version',
-			'RequiresCore' => 'Requires-Core',
-		);
-		$meta     = file_exists( $root ) ? get_file_data( $root, $headers ) : array(
-			'Name'         => '',
-			'Author'       => '',
-			'Description'  => '',
-			'Version'      => '',
-			'RequiresCore' => '',
-		);
-
-		return array(
-			'slug'              => $slug,
-			'base'              => trailingslashit( $base ),
-			'root'              => $root,
-			'core'              => $core,
-			'settings'          => $settings,
-			'icon'              => $iconUrl,
-			'valid'             => $valid,
-			'name'              => isset( $meta['Name'] ) ? $meta['Name'] : $slug,
-			'author'            => isset( $meta['Author'] ) ? $meta['Author'] : '',
-			'description'       => isset( $meta['Description'] ) ? $meta['Description'] : '',
-			'version'           => isset( $meta['Version'] ) ? $meta['Version'] : '',
-			'requires_core'     => isset( $meta['RequiresCore'] ) ? $meta['RequiresCore'] : '',
-			'requires_php'      => '',
-			'schema'            => '1.0',
-			'source_format'     => 'v1',
-			'has_settings'      => file_exists( $settings ),
-			'settings_option'   => '',
-			'settings_sanitize' => '',
-			'lifecycle'         => array(),
-			'features'          => array(),
-			'manifest'          => '',
-			'readme'            => file_exists( $readme ) ? $readme : '',
-			'gateway'           => array(),
-			'ui'                => array(
-				'palette' => array(
-					'icon'     => 'puzzle',
-					'title'    => isset( $meta['Name'] ) ? $meta['Name'] : $slug,
-					'priority' => 50,
-				),
-				'settings_sections' => array(),
-			),
-			'storage'           => array(
-				'cache_dirs'          => array(),
-				'cleanup_on_uninstall' => false,
-			),
-		);
-	}
-
 	/**
 	 * @var array<string,array>|null
 	 */
@@ -984,8 +919,10 @@ class BotBlockerAddons {
 			if ( ! is_dir( $base ) ) {
 				continue;
 			}
-			$manifest        = self::parseManifest( $base, $slug );
-			$addons[ $slug ] = ! empty( $manifest ) ? $manifest : self::scanLegacy( $base, $slug );
+			$manifest = self::parseManifest( $base, $slug );
+			if ( ! empty( $manifest ) ) {
+				$addons[ $slug ] = $manifest;
+			}
 		}
 		return $addons;
 	}
@@ -1078,12 +1015,7 @@ class BotBlockerAddons {
 			return $manifest['requires_core'] ?? '';
 		}
 
-		$root = $base . $slug . '.php';
-		if ( ! file_exists( $root ) ) {
-			return '';
-		}
-		$meta = get_file_data( $root, array( 'RequiresCore' => 'Requires-Core' ) );
-		return $meta['RequiresCore'] ?? '';
+		return '';
 	}
 
 	public static function includeLifecycleFile( array $addon ): void {
@@ -1385,6 +1317,35 @@ class BotBlockerAddons {
 				continue;
 			}
 
+			$slug = BotBlockerGateway::firstSlug( $gateway_type );
+			if ( $slug === '' ) {
+				continue;
+			}
+
+			if ( $gateway_type === 'mu_plugin' ) {
+				// The addon MU file follows the ACTIVE ADDON CHOICE, not the
+				// mu_enable flag: after a plugin deactivate/reactivate (or an
+				// early-init mutual exclusion that forced mu_enable=0) the saved
+				// choice must re-deploy its MU file. mu_enable keeps gating the
+				// CORE MU loader (kill switch C21), which installMuPlugin /
+				// uninstallMuPlugin manage independently.
+				if ( ! self::isActive( $slug ) ) {
+					continue;
+				}
+				// Mutual exclusion: a live early-init gateway keeps the MU
+				// gateway off (early_init ↔ mu_plugin is BY DESIGN).
+				if ( BotBlockerGateway::isEnabled( 'early_init' ) !== null ) {
+					continue;
+				}
+				$config = BotBlockerGateway::getConfig( $slug, 'mu_plugin' );
+				if ( empty( $config['auto_deploy'] ) ) {
+					continue;
+				}
+				BotBlockerGateway::restoreState( $gateway_type, $slug );
+				do_action( 'bbcs_gateway_mu_plugin_restored', $slug, $config );
+				continue;
+			}
+
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$enabled = (int) $wpdb->get_var(
 				$wpdb->prepare( "SELECT value FROM {$wpdb->bbcs_settings} WHERE `key` = %s", $db_key )
@@ -1394,16 +1355,11 @@ class BotBlockerAddons {
 				continue;
 			}
 
-			$slug = BotBlockerGateway::firstSlug( $gateway_type );
-			if ( $slug !== '' ) {
-				BotBlockerGateway::restoreState( $gateway_type, $slug );
-				if ( $gateway_type === 'mu_plugin' && self::isActive( $slug ) ) {
-					$config = BotBlockerGateway::getConfig( $slug, 'mu_plugin' );
-					if ( ! empty( $config['auto_deploy'] ) ) {
-						do_action( 'bbcs_gateway_mu_plugin_restored', $slug, $config );
-					}
-				}
+			if ( ! self::isActive( $slug ) ) {
+				continue;
 			}
+
+			BotBlockerGateway::restoreState( $gateway_type, $slug );
 		}
 	}
 
@@ -2018,8 +1974,10 @@ class BotBlockerAddons {
 				continue; // Not installed in uploads - activation is the client's choice.
 			}
 
-			$src_version  = self::addonVersion( $src . '/' . $entry . '.php' );
-			$dest_version = self::addonVersion( $dest . '/' . $entry . '.php' );
+			$src_manifest  = self::parseManifest( $src, $entry );
+			$dest_manifest = self::parseManifest( $dest, $entry );
+			$src_version   = $src_manifest['version'] ?? '';
+			$dest_version  = $dest_manifest['version'] ?? '';
 			if ( $src_version === '' || version_compare( $src_version, $dest_version, '<=' ) ) {
 				continue; // No upgrade - never downgrade market-installed addons.
 			}
@@ -2051,8 +2009,10 @@ class BotBlockerAddons {
 			return true; // Not a bundled add-on - market copies are managed by the update flow.
 		}
 
-		$src_version  = self::addonVersion( $src . '/' . $slug . '.php' );
-		$dest_version = self::addonVersion( $dest . '/' . $slug . '.php' );
+		$src_manifest  = self::parseManifest( $src, $slug );
+		$dest_manifest = self::parseManifest( $dest, $slug );
+		$src_version   = $src_manifest['version'] ?? '';
+		$dest_version  = $dest_manifest['version'] ?? '';
 		if ( $src_version === '' || version_compare( $src_version, $dest_version, '<=' ) ) {
 			return true;
 		}
@@ -2069,18 +2029,6 @@ class BotBlockerAddons {
 		self::setActive( $active );
 		// No lifecycle dispatch: the stale copy itself is what may fatal.
 		do_action( 'bbcs_addon_toggled', $slug, false );
-	}
-
-	private static function addonVersion( string $root_file ): string {
-		if ( ! file_exists( $root_file ) ) {
-			return '';
-		}
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Addon header peek before WP filesystem layer is initialized.
-		$contents = (string) file_get_contents( $root_file, false, null, 0, 4096 );
-		if ( preg_match( '/^Version:\s*([0-9][0-9a-z.\-]*)/mi', $contents, $m ) ) {
-			return trim( (string) $m[1] );
-		}
-		return '';
 	}
 
 	private static function ensureCopyFilesystem(): bool {

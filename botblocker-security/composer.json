@@ -8,7 +8,8 @@
         "paragonie/constant_time_encoding": "^2.6",
         "maxmind-db/reader": "^1.13",
         "botblocker/mobiledetect-3": "^3.74",
-        "globus-studio/phpqrcode": "^1.0"
+        "globus-studio/phpqrcode": "^1.0",
+        "freemius/wordpress-sdk": "2.13.4"
     },
     "config": {
         "vendor-dir": "vendor/2FA/v8",

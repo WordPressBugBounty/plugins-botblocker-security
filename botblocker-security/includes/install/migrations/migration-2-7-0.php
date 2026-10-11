@@ -21,6 +21,8 @@ function bbcs_migration_2_7_0() {
 	bbcs_migration_2_7_0_add_new_settings();
 
 	BotBlockerDb::generateAllFiles();
+
+	return true;
 }
 
 function bbcs_migration_2_7_0_add_new_settings() {

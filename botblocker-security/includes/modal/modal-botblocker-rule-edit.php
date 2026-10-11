@@ -2,6 +2,8 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
+
+use BotBlocker\Component\Base;
 ?><div class="modal fade" id="editRuleModal" tabindex="-1" aria-labelledby="editRuleModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -16,11 +18,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-6">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-									<span class="bbcs-label-input"><?php esc_html_e( 'Type', 'botblocker-security' ); ?></span>
-									<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Select rule type', 'botblocker-security' ); ?></span></span>
+									<span class="bbcs-label-input"><?php esc_html_e( 'Type', 'botblocker-security' ); ?></span><?php echo Base::help( __( 'Select rule type', 'botblocker-security' ), BotBlockerDocs::url( 'rules-type' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 								</div>
 								<div class="bbcs_text_input_inner">
-									<select class="bbcs_select_input_input" id="type" name="type" required>
+									<select class="bbcs_select_input_input" id="edit-rule-type" name="type" required>
 										<option value="useragent"><?php esc_html_e( 'User Agent', 'botblocker-security' ); ?></option>
 										<option value="ptr"><?php esc_html_e( 'PTR', 'botblocker-security' ); ?></option>
 										<option value="referer"><?php esc_html_e( 'Referer', 'botblocker-security' ); ?></option>
@@ -41,12 +42,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-6">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-									<span class="bbcs-label-input"><?php esc_html_e( 'Priority', 'botblocker-security' ); ?></span>
-									<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Rule priority (1-100)', 'botblocker-security' ); ?></span></span>
+									<span class="bbcs-label-input"><?php esc_html_e( 'Priority', 'botblocker-security' ); ?></span><?php echo Base::help( __( 'Rule priority (1-100)', 'botblocker-security' ), BotBlockerDocs::url( 'rules-priority' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 								</div>
 								<div class="bbcs_text_input_inner">
-									<input type="range" class="bbcs_text_input_input" id="priority" name="priority" min="1" max="100" required>
-									<output for="priority" id="priorityValue"></output>
+									<input type="range" class="bbcs_text_input_input" id="edit-rule-priority" name="priority" min="1" max="100" required>
+									<output for="edit-rule-priority" id="edit-rule-priority-value"></output>
 								</div>
 							</div>
 						</div>
@@ -55,22 +55,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-6">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-									<span class="bbcs-label-input"><?php esc_html_e( 'Data', 'botblocker-security' ); ?></span>
-									<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Value to match - format depends on selected type (e.g. user agent string, referer URL, language code, country code, URI path)', 'botblocker-security' ); ?></span></span>
+									<span class="bbcs-label-input"><?php esc_html_e( 'Data', 'botblocker-security' ); ?></span><?php echo Base::help( __( 'Value to match - format depends on selected type (e.g. user agent string, referer URL, language code, country code, URI path)', 'botblocker-security' ), BotBlockerDocs::url( 'rules-data' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 								</div>
 								<div class="bbcs_text_input_inner">
-									<textarea class="bbcs_text_input_input" id="data" name="data" rows="3"></textarea>
+									<textarea class="bbcs_text_input_input" id="edit-rule-data" name="data" rows="3"></textarea>
 								</div>
 							</div>
 						</div>
 						<div class="col-md-6">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-									<span class="bbcs-label-input"><?php esc_html_e( 'Comment', 'botblocker-security' ); ?></span>
-									<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Comment for this rule', 'botblocker-security' ); ?></span></span>
+									<span class="bbcs-label-input"><?php esc_html_e( 'Comment', 'botblocker-security' ); ?></span><?php echo Base::help( __( 'Comment for this rule', 'botblocker-security' ), BotBlockerDocs::url( 'rules-comment' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 								</div>
 								<div class="bbcs_text_input_inner">
-									<textarea class="bbcs_text_input_input" id="comment" name="comment" rows="3"></textarea>
+									<textarea class="bbcs_text_input_input" id="edit-rule-comment" name="comment" rows="3"></textarea>
 								</div>
 							</div>
 						</div>
@@ -79,11 +77,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-6">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-									<span class="bbcs-label-input"><?php esc_html_e( 'Rule', 'botblocker-security' ); ?></span>
-									<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Rule action', 'botblocker-security' ); ?></span></span>
+									<span class="bbcs-label-input"><?php esc_html_e( 'Rule', 'botblocker-security' ); ?></span><?php echo Base::help( __( 'Rule action', 'botblocker-security' ), BotBlockerDocs::url( 'rules-rule' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 								</div>
 								<div class="bbcs_text_input_inner">
-									<select class="bbcs_select_input_input" id="rule" name="rule" required>
+									<select class="bbcs_select_input_input" id="edit-rule-rule" name="rule" required>
 										<option value="allow"><?php esc_html_e( 'Allow', 'botblocker-security' ); ?></option>
 										<option value="gray"><?php esc_html_e( 'Gray', 'botblocker-security' ); ?></option>
 										<option value="dark"><?php esc_html_e( 'Dark', 'botblocker-security' ); ?></option>
@@ -96,11 +93,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-6">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-									<span class="bbcs-label-input"><?php esc_html_e( 'Expires', 'botblocker-security' ); ?></span>
-									<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Rule expiration date and time', 'botblocker-security' ); ?></span></span>
+									<span class="bbcs-label-input"><?php esc_html_e( 'Expires', 'botblocker-security' ); ?></span><?php echo Base::help( __( 'Rule expiration date and time', 'botblocker-security' ), BotBlockerDocs::url( 'rules-expires' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 								</div>
 								<div class="bbcs_text_input_inner">
-									<input type="datetime-local" class="bbcs_text_input_input" id="expires" name="expires" required>
+									<input type="datetime-local" class="bbcs_text_input_input" id="edit-rule-expires" name="expires" required>
 								</div>
 							</div>
 						</div>

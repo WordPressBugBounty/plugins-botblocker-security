@@ -86,10 +86,10 @@ return static function ( Botblocker_ToolsViewModel $data, bool $isActive ): void
 	<div role="tabpanel" class="bbcs-tabpanel bbcs-protect-layout" data-tabpanel="Maintenance"<?php echo $isActive ? '' : ' hidden' ?>>
 		<?php
 		InfoColumn::make()
+			->withDocPage( BotBlockerDocs::page( 'tools-maintenance' ) )
 			->withIconImage( BOTBLOCKER_URL . 'public/icons/database.svg', __( 'Maintenance', 'botblocker-security' ) )
 			->withDescription( __( 'Manage the plugin database, temporary files, logs, and service data to keep your site running efficiently.', 'botblocker-security' ) )
 			->withDescription( __( 'Clear outdated logs, remove temporary files, and optimize the database. Regular maintenance prevents storage-related issues.', 'botblocker-security' ) )
-			->withDocLink( $data->docs_url . '/tools/', __( 'Tools', 'botblocker-security' ) )
 			->render();
 		?>
 		<div>
@@ -102,6 +102,7 @@ return static function ( Botblocker_ToolsViewModel $data, bool $isActive ): void
 						->withIcon( 'reinstall' )
 						->withLabel( __( 'Reinstall Database', 'botblocker-security' ) )
 						->withTooltip( __( 'Reset all BotBlocker tables to default settings', 'botblocker-security' ) )
+						->withDocLink( BotBlockerDocs::page( 'tools-maintenance', 'reinstall-database' ) )
 						->withVariant( ActionButton::VARIANT_DANGER )
 						->render();
 					ActionButton::make()
@@ -109,12 +110,14 @@ return static function ( Botblocker_ToolsViewModel $data, bool $isActive ): void
 						->withIcon( 'fix' )
 						->withLabel( __( 'Repair and Optimize Database', 'botblocker-security' ) )
 						->withTooltip( __( 'Open WordPress database repair and optimization tool', 'botblocker-security' ) )
+						->withDocLink( BotBlockerDocs::page( 'tools-maintenance', 'repair-and-optimize-database' ) )
 						->render();
 					ActionButton::make()
 						->withId( 'bbcs-clear-hits-database' )
 						->withIcon( 'trash' )
 						->withLabel( __( 'Clear All Visitor Data', 'botblocker-security' ) )
 						->withTooltip( __( 'Delete all visitor records and statistics', 'botblocker-security' ) )
+						->withDocLink( BotBlockerDocs::page( 'tools-maintenance', 'clear-all-visitor-data' ) )
 						->withVariant( ActionButton::VARIANT_DANGER )
 						->render();
 					ActionButton::make()
@@ -122,6 +125,7 @@ return static function ( Botblocker_ToolsViewModel $data, bool $isActive ): void
 						->withIcon( 'broom' )
 						->withLabel( __( 'Clear transients', 'botblocker-security' ) )
 						->withTooltip( __( 'Clear expired transients from the database', 'botblocker-security' ) )
+						->withDocLink( BotBlockerDocs::page( 'tools-maintenance', 'clear-transients' ) )
 						->render();
 					ActionButton::make()
 						->withId( 'bbcs-update-asn-database' )
@@ -129,6 +133,7 @@ return static function ( Botblocker_ToolsViewModel $data, bool $isActive ): void
 						->withIcon( 'cloud-download' )
 						->withLabel( __( 'Update ASN database', 'botblocker-security' ) )
 						->withTooltip( __( 'Schedule an immediate background download of the latest ASN (autonomous system) database from BotBlocker servers.', 'botblocker-security' ) )
+						->withDocLink( BotBlockerDocs::page( 'tools-maintenance', 'update-asn-database' ) )
 						->render();
 					$info_kses = array(
 						'div'  => array( 'class' => array() ),
@@ -142,6 +147,7 @@ return static function ( Botblocker_ToolsViewModel $data, bool $isActive ): void
 						->withIcon( 'cloud-download' )
 						->withLabel( __( 'Update RU-Gov list', 'botblocker-security' ) )
 						->withTooltip( __( 'Schedule an immediate background download of the latest RU-Gov CIDR list from C24Be/AS_Network_List (VK excluded).', 'botblocker-security' ) )
+						->withDocLink( BotBlockerDocs::page( 'tools-maintenance', 'update-ru-gov-list' ) )
 						->withDisabled( ! $block_rkn_enabled )
 						->render();
 					echo wp_kses( '<div class="bbcs-settings-info">' . $rugov_info . '</div>', $info_kses );
@@ -150,6 +156,7 @@ return static function ( Botblocker_ToolsViewModel $data, bool $isActive ): void
 						->withIcon( 'link' )
 						->withLabel( __( 'Sync LLM providers', 'botblocker-security' ) )
 						->withTooltip( __( 'Immediately sync LLM provider list from BotBlocker cloud.', 'botblocker-security' ) )
+						->withDocLink( BotBlockerDocs::page( 'tools-maintenance', 'sync-llm-providers' ) )
 						->render();
 					echo wp_kses( '<div class="bbcs-settings-info">' . $llm_info . '</div>', $info_kses );
 				} )
@@ -165,18 +172,21 @@ return static function ( Botblocker_ToolsViewModel $data, bool $isActive ): void
 						->withIcon( 'trash' )
 						->withLabel( __( 'Clear visitor cookies', 'botblocker-security' ) )
 						->withTooltip( __( 'Resets all visitor cookies - visitors must re-verify', 'botblocker-security' ) )
+						->withDocLink( BotBlockerDocs::page( 'tools-maintenance', 'clear-visitor-cookies' ) )
 						->render();
 					ActionButton::make()
 						->withId( 'bbcs-flush-rewrite-rules' )
 						->withIcon( 'link' )
 						->withLabel( __( 'Reset URL rewrite rules', 'botblocker-security' ) )
 						->withTooltip( __( 'Helps resolve 404 errors after changing the permalink structure', 'botblocker-security' ) )
+						->withDocLink( BotBlockerDocs::page( 'tools-maintenance', 'reset-url-rewrite-rules' ) )
 						->render();
 					ActionButton::make()
 						->withId( 'bbcs-flush-object-cache' )
 						->withIcon( 'memory' )
 						->withLabel( __( 'Clear Object Cache', 'botblocker-security' ) )
 						->withTooltip( __( 'Resets the internal WordPress cache and external caching systems (Redis, Memcached)', 'botblocker-security' ) )
+						->withDocLink( BotBlockerDocs::page( 'tools-maintenance', 'clear-object-cache' ) )
 						->render();
 				} )
 				->render();

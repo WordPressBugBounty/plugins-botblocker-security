@@ -44,6 +44,11 @@ final class Botblocker_Dashboard_View {
 		$this->render_template( 'health-status.php' );
 	}
 
+	public function pro_status(): void {
+		$renderer = require BOTBLOCKER_DIR . 'admin/templates/dashboard/pro-status.php';
+		$renderer( new Botblocker_ProStatusViewModel() );
+	}
+
 	public function modals(): void {
 		$renderer = require BOTBLOCKER_DIR . 'admin/templates/dashboard/secret.php';
 		$renderer( $this->data );

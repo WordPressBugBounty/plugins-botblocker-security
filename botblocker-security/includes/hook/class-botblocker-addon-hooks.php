@@ -574,6 +574,11 @@ class BotBlockerAddonHooks {
 			wp_safe_redirect( esc_url_raw( $redir ) );
 			exit;
 		}
+		if ( ! BotBlockerPro::isActive() ) {
+			BBCS_Toastify::flash_addon_error( 'pro_required' );
+			wp_safe_redirect( $redir );
+			exit;
+		}
 		if ( ! BotBlockerAddonFiles::isAllowedAddonUrl( $url ) ) {
 			BBCS_Toastify::flash_addon_error( 'url_not_allowed' );
 			wp_safe_redirect( $redir );

@@ -7,6 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/** @phpstan-consistent-constructor */
 abstract class Base {
 	protected $class = '';
 	protected $id = '';
@@ -14,6 +15,7 @@ abstract class Base {
 	protected $attrs = array();
 	protected $data = array();
 	protected $content;
+	protected $doc_url = '';
 
 	public static function make() {
 		return new static();
@@ -179,6 +181,36 @@ abstract class Base {
 			. '<span class="bbcs-help-q">?</span>'
 			. '<span class="bbcs-help-tip">' . self::escape( $tooltip ) . '</span>'
 			. '</span>';
+	}
+
+	// One "?" per setting: tooltip text, plus a "Learn more" link when a doc URL is given.
+	public static function help( string $tooltip, string $doc_url = '' ): string {
+		if ( $doc_url === '' ) {
+			return self::tooltip( $tooltip );
+		}
+
+		// No text to show: the "?" is the link itself.
+		if ( $tooltip === '' ) {
+			$label = self::escape( __( 'Documentation', 'botblocker-security' ), 'attr' );
+
+			return '<a class="bbcs-help bbcs-help--link" href="' . self::escape( $doc_url, 'url' ) . '" target="_blank" rel="noopener noreferrer" aria-label="' . $label . '" title="' . $label . '">'
+				. '<span class="bbcs-help-q">?</span></a>';
+		}
+
+		return '<span class="bbcs-help">'
+			. '<span class="bbcs-help-q" role="button" tabindex="0" aria-label="' . self::escape( __( 'Help', 'botblocker-security' ), 'attr' ) . '">?</span>'
+			. '<span class="bbcs-help-tip bbcs-help-tip--link">' . self::escape( $tooltip )
+			. '<a class="bbcs-help-more" href="' . self::escape( $doc_url, 'url' ) . '" target="_blank" rel="noopener noreferrer">'
+			. self::escape( __( 'Learn more', 'botblocker-security' ) ) . ' &#8599;</a></span>'
+			. '</span>';
+	}
+
+	protected static function doc_link( string $url ): string {
+		if ( $url === '' ) {
+			return '';
+		}
+
+		return DocLink::make()->withUrl( $url )->render( true );
 	}
 
 	protected static function content( $content ): string {

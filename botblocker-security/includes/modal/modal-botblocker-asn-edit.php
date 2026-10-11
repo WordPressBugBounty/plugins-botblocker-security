@@ -2,6 +2,8 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+
+use BotBlocker\Component\Base;
 ?><div class="modal fade" id="editAsnModal" tabindex="-1" aria-labelledby="editAsnModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -16,8 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-6">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-									<span class="bbcs-label-input"><?php esc_html_e( 'Priority', 'botblocker-security' ); ?></span>
-								<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'ASN rule priority (1-100)', 'botblocker-security' ); ?></span></span>
+									<span class="bbcs-label-input"><?php esc_html_e( 'Priority', 'botblocker-security' ); ?></span><?php echo Base::help( __( 'ASN rule priority (1-100)', 'botblocker-security' ), BotBlockerDocs::url( 'asn-priority' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<input type="range" class="bbcs_text_input_input" id="editAsnPriority" name="priority" min="1" max="100" required>
@@ -28,8 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-6">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-									<span class="bbcs-label-input"><?php esc_html_e( 'Rule', 'botblocker-security' ); ?></span>
-								<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Action for this ASN', 'botblocker-security' ); ?></span></span>
+									<span class="bbcs-label-input"><?php esc_html_e( 'Rule', 'botblocker-security' ); ?></span><?php echo Base::help( __( 'Action for this ASN', 'botblocker-security' ), BotBlockerDocs::url( 'asn-rule' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<select class="bbcs_select_input_input" id="editAsnRule" name="rule" required>
@@ -46,8 +46,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-6">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-									<span class="bbcs-label-input"><?php esc_html_e( 'ASN Number', 'botblocker-security' ); ?></span>
-								<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Autonomous System Number', 'botblocker-security' ); ?></span></span>
+									<span class="bbcs-label-input"><?php esc_html_e( 'ASN Number', 'botblocker-security' ); ?></span><?php echo Base::help( __( 'Autonomous System Number', 'botblocker-security' ), BotBlockerDocs::url( 'asn-number' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<input type="text" inputmode="numeric" pattern="[0-9]{1,20}" maxlength="20" class="bbcs_text_input_input" id="editAsnNum" name="asnum" required>
@@ -57,8 +56,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-6">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-									<span class="bbcs-label-input"><?php esc_html_e( 'AS Name', 'botblocker-security' ); ?></span>
-								<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Autonomous System Name (optional)', 'botblocker-security' ); ?></span></span>
+									<span class="bbcs-label-input"><?php esc_html_e( 'AS Name', 'botblocker-security' ); ?></span><?php echo Base::help( __( 'Autonomous System Name (optional)', 'botblocker-security' ), BotBlockerDocs::url( 'asn-name' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<input type="text" class="bbcs_text_input_input" id="editAsnName" name="asname">
@@ -70,8 +68,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-12">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-									<span class="bbcs-label-input"><?php esc_html_e( 'Comment', 'botblocker-security' ); ?></span>
-								<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Optional comment for this ASN rule', 'botblocker-security' ); ?></span></span>
+									<span class="bbcs-label-input"><?php esc_html_e( 'Comment', 'botblocker-security' ); ?></span><?php echo Base::help( __( 'Optional comment for this ASN rule', 'botblocker-security' ), BotBlockerDocs::url( 'asn-comment' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<textarea class="bbcs_text_input_input" id="editAsnComment" name="comment" rows="2"></textarea>

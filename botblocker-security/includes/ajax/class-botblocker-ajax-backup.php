@@ -218,8 +218,10 @@ class BotBlockerAjaxBackup {
 
 		$sent = readfile( $zip_file );    // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile
 		if ( $sent === false ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-			error_log( '[BBCS] Backup download failed for: ' . $zip_file );
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+				error_log( '[BBCS] Backup download failed for: ' . $zip_file );
+			}
 		}
 
 		wp_delete_file( $zip_file );
@@ -252,22 +254,22 @@ class BotBlockerAjaxBackup {
 
 		$tables = self::getTables();
 
-		$uploads  = wp_upload_dir();
-		$temp_dir = trailingslashit( $uploads['basedir'] ) . 'botblocker_backups';
+		$temp_dir = trailingslashit( BotBlockerMultisite::getDataDir() ) . 'imports';
 
 		require_once ABSPATH . 'wp-admin/includes/file.php';
 
-		if ( WP_Filesystem() ) {
-			global $wp_filesystem;
-			if ( ! $wp_filesystem->is_dir( $temp_dir ) ) {
-				$wp_filesystem->mkdir( $temp_dir, defined( 'FS_CHMOD_DIR' ) ? FS_CHMOD_DIR : 0755 );
+		if ( ! wp_mkdir_p( $temp_dir ) ) {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' failed to create import dir' );
 			}
+			wp_send_json_error( array( 'message' => __( 'Failed to initialize filesystem.', 'botblocker-security' ) ) );
 		}
 
 		$zip_file = '';
 		if ( isset( $_FILES['zip_file'] ) && isset( $_FILES['zip_file']['tmp_name'] ) ) {
 			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- is_uploaded_file() validates authenticity below
-			$zip_file = wp_normalize_path( wp_unslash( $_FILES['zip_file']['tmp_name'] ) );
+			$zip_file = wp_normalize_path( (string) $_FILES['zip_file']['tmp_name'] );
 		}
 		if ( $zip_file === '' ) {
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
@@ -303,15 +305,15 @@ class BotBlockerAjaxBackup {
 
 		$allowed_files = array_keys( $tables );
 		for ( $i = 0; $i < $zip->numFiles; $i++ ) {
-			$entry = $zip->getNameIndex( $i );
+			$entry = (string) $zip->getNameIndex( $i );
 			$name  = basename( $entry );
-			if ( $name !== pathinfo( $name, PATHINFO_FILENAME ) . '.sql' || ! in_array( pathinfo( $name, PATHINFO_FILENAME ), $allowed_files, true ) ) {
+			if ( $entry !== $name || $name !== pathinfo( $name, PATHINFO_FILENAME ) . '.sql' || ! in_array( pathinfo( $name, PATHINFO_FILENAME ), $allowed_files, true ) ) {
 				if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
-					error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' unexpected file in ZIP: ' . $name );
+					error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' unexpected file in ZIP: ' . $entry );
 				}
 				$zip->close();
-				wp_send_json_error( array( 'message' => __( 'ZIP contains unexpected file:', 'botblocker-security' ) . ' ' . $name ) );
+				wp_send_json_error( array( 'message' => __( 'ZIP contains unexpected file:', 'botblocker-security' ) . ' ' . $entry ) );
 			}
 		}
 
@@ -322,25 +324,20 @@ class BotBlockerAjaxBackup {
 		$zip->extractTo( $temp_dir );
 		$zip->close();
 
-		self::processImportData( $temp_dir, $tables );
+		register_shutdown_function(
+			static function () use ( $temp_dir ): void {
+				self::removeImportDir( $temp_dir );
+			}
+		);
 
-		$dir_handle = opendir( $temp_dir );
-		if ( $dir_handle ) {
-			while ( ( $file = readdir( $dir_handle ) ) !== false ) {
-				if ( $file === '.' || $file === '..' ) {
-					continue; }
-				$full = $temp_dir . '/' . $file;
-				if ( is_file( $full ) ) {
-					wp_delete_file( $full ); }
-			}
-			closedir( $dir_handle );
+		try {
+			self::processImportData( $temp_dir, $tables );
+		} catch ( \Throwable $e ) {
+			self::removeImportDir( $temp_dir );
+			throw $e;
 		}
-		if ( WP_Filesystem() ) {
-			global $wp_filesystem;
-			if ( $wp_filesystem->is_dir( $temp_dir ) ) {
-				$wp_filesystem->rmdir( $temp_dir );
-			}
-		}
+
+		self::removeImportDir( $temp_dir );
 
 		BotBlockerFileRenderer::generateSettingsFile();
 		BotBlockerDb::generateAllFiles();
@@ -395,23 +392,71 @@ class BotBlockerAjaxBackup {
 				$valid_rows[] = $data;
 			}
 
+			if ( $table === 'settings' ) {
+				$valid_rows = BotBlockerPro::normalizeSettingRows( $valid_rows );
+			}
+
 			$all_data[ $table ] = $valid_rows;
 		}
+
+		$columns = array();
+		foreach ( $tables as $table => $table_name ) {
+			$table_columns = self::getTableColumns( $table_name );
+			if ( empty( $table_columns ) ) {
+				// translators: %s is the database table name.
+				wp_send_json_error( array( 'message' => sprintf( __( 'Failed to read table schema for %s.', 'botblocker-security' ), $table ) ) );
+			}
+			$columns[ $table ] = $table_columns;
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->query( 'START TRANSACTION' );
 
 		foreach ( $all_data as $table => $rows ) {
 			$table_name = $tables[ $table ];
 
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			$wpdb->query( "TRUNCATE TABLE `{$table_name}`" );
+			$wpdb->query( "DELETE FROM `{$table_name}`" );
 
 			foreach ( $rows as $data ) {
+				$data = array_intersect_key( $data, $columns[ $table ] );
+				if ( empty( $data ) ) {
+					continue;
+				}
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$result = $wpdb->insert( $table_name, $data );
 				if ( $result === false ) {
-					// translators: %s is the table name.
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					$wpdb->query( 'ROLLBACK' );
+					// translators: %s is the database table name.
 					wp_send_json_error( array( 'message' => sprintf( __( 'Failed to insert row into %s.', 'botblocker-security' ), $table ) ) );
 				}
 			}
 		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->query( 'COMMIT' );
+	}
+
+	private static function removeImportDir( string $dir ): void {
+		if ( ! is_dir( $dir ) ) {
+			return;
+		}
+		foreach ( glob( trailingslashit( $dir ) . '*' ) ?: array() as $file ) {
+			if ( is_file( $file ) ) {
+				wp_delete_file( $file );
+			}
+		}
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_rmdir
+		@rmdir( $dir );
+	}
+
+	private static function getTableColumns( string $table_name ): array {
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$columns = $wpdb->get_col( "SHOW COLUMNS FROM `{$table_name}`", 0 );
+
+		return is_array( $columns ) ? array_fill_keys( $columns, true ) : array();
 	}
 }

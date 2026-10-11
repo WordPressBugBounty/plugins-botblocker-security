@@ -6,16 +6,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class BotBlockerSeedData {
 
-	public static function insertInitialData( string $salt_bb = '' ): void {
+	public static function insertInitialData(): void {
 		self::insertDefaultRules();
 		self::insertDefaultSearchEngines();
 		self::insertDefaultAsn();
 		self::insertDefaultPaths();
-		// bbcs_insertExtendedPaths() is retained for test coverage only.
-		// Extended paths are designed to be activated manually by the admin
-		// or via the add-on system - not on initial install.
-		// self::insertExtendedPaths();
-		self::insertDefaultSettings( $salt_bb );
+		// Extended templates ship DISABLED (disable=1): visible in the admin
+		// path-rules UI for one-click enable, but nothing is exempt from the
+		// challenge wall out of the box (finding FF, 2026-09-04).
+		self::insertExtendedPaths();
+		self::insertDefaultSettings();
 		self::insertDefaultProxies();
 		self::insertDefaultCounters();
 		self::insertDefaultPageFilters();
@@ -1071,160 +1071,170 @@ class BotBlockerSeedData {
 		}
 	}
 
-	public static function insertExtendedPaths(): void {
-		global $wpdb;
-
-		$default_paths = array(
+	/**
+	 * The extended path templates, shipped DISABLED (disable=1). Single source
+	 * of truth for fresh installs (insertExtendedPaths) and the 2.12.0
+	 * migration — the admin sees them in the path-rules UI and enables what
+	 * the site needs (finding FF, 2026-09-04).
+	 *
+	 * @return array<int, array{priority: int, search: string, rule: string, comment: string, disable: int}>
+	 */
+	public static function extendedPathTemplates(): array {
+		return array(
 			array(
 				'priority' => 1,
 				'search'   => '/favicon.ico',
 				'rule'     => 'allow',
 				'comment'  => 'WordPress Favicon',
-				'disable'  => 0,
+				'disable'  => 1,
 			),
 			array(
 				'priority' => 1,
 				'search'   => '/wp-admin/load-scripts.php',
 				'rule'     => 'allow',
 				'comment'  => 'WordPress script loading',
-				'disable'  => 0,
+				'disable'  => 1,
 			),
 			array(
 				'priority' => 1,
 				'search'   => '/wp-admin/load-styles.php',
 				'rule'     => 'allow',
 				'comment'  => 'WordPress style loading',
-				'disable'  => 0,
+				'disable'  => 1,
 			),
 			array(
 				'priority' => 10,
 				'search'   => '/wp-admin/admin-post.php',
 				'rule'     => 'allow',
 				'comment'  => 'WordPress admin posts',
-				'disable'  => 0,
+				'disable'  => 1,
 			),
 			array(
 				'priority' => 1,
 				'search'   => '/wp-admin/async-upload.php',
 				'rule'     => 'allow',
 				'comment'  => 'WordPress async upload',
-				'disable'  => 0,
+				'disable'  => 1,
 			),
 			array(
 				'priority' => 1,
 				'search'   => '/wp-admin/update-core.php',
 				'rule'     => 'allow',
 				'comment'  => 'WordPress core updates',
-				'disable'  => 0,
+				'disable'  => 1,
 			),
 			array(
 				'priority' => 10,
 				'search'   => '/wp-admin/customize.php',
 				'rule'     => 'allow',
 				'comment'  => 'WordPress customizer',
-				'disable'  => 0,
+				'disable'  => 1,
 			),
 			array(
 				'priority' => 10,
 				'search'   => '/wp-admin/admin.php',
 				'rule'     => 'allow',
 				'comment'  => 'WordPress admin',
-				'disable'  => 0,
+				'disable'  => 1,
 			),
 			array(
 				'priority' => 10,
 				'search'   => '/wp-admin/options.php',
 				'rule'     => 'allow',
 				'comment'  => 'WordPress options',
-				'disable'  => 0,
+				'disable'  => 1,
 			),
 			array(
 				'priority' => 10,
 				'search'   => '/wp-admin/edit-comments.php',
 				'rule'     => 'allow',
 				'comment'  => 'WordPress comment editing',
-				'disable'  => 0,
+				'disable'  => 1,
 			),
 			array(
 				'priority' => 10,
 				'search'   => '/wp-admin/edit.php',
 				'rule'     => 'allow',
 				'comment'  => 'WordPress post/page editing',
-				'disable'  => 0,
+				'disable'  => 1,
 			),
 			array(
 				'priority' => 10,
 				'search'   => '/wp-admin/users.php',
 				'rule'     => 'allow',
 				'comment'  => 'WordPress user management',
-				'disable'  => 0,
+				'disable'  => 1,
 			),
 			array(
 				'priority' => 10,
 				'search'   => '/wp-admin/profile.php',
 				'rule'     => 'allow',
 				'comment'  => 'WordPress user profile',
-				'disable'  => 0,
+				'disable'  => 1,
 			),
 			array(
 				'priority' => 10,
 				'search'   => '/wp-admin/media-new.php',
 				'rule'     => 'allow',
 				'comment'  => 'WordPress media upload',
-				'disable'  => 0,
+				'disable'  => 1,
 			),
 			array(
 				'priority' => 10,
 				'search'   => '/wp-admin/upload.php',
 				'rule'     => 'allow',
 				'comment'  => 'WordPress media library',
-				'disable'  => 0,
+				'disable'  => 1,
 			),
 			array(
 				'priority' => 10,
 				'search'   => '/wp-admin/post-new.php',
 				'rule'     => 'allow',
 				'comment'  => 'WordPress new post/page',
-				'disable'  => 0,
+				'disable'  => 1,
 			),
 			array(
 				'priority' => 10,
 				'search'   => '/wp-admin/edit-tags.php',
 				'rule'     => 'allow',
 				'comment'  => 'WordPress taxonomy management',
-				'disable'  => 0,
+				'disable'  => 1,
 			),
 			array(
 				'priority' => 10,
 				'search'   => '/wp-comments-post.php',
 				'rule'     => 'allow',
 				'comment'  => 'WordPress comment posting',
-				'disable'  => 0,
+				'disable'  => 1,
 			),
 			array(
 				'priority' => 10,
 				'search'   => '/wp-includes/js/tinymce/',
 				'rule'     => 'allow',
 				'comment'  => 'WordPress TinyMCE editor',
-				'disable'  => 0,
+				'disable'  => 1,
 			),
 			array(
 				'priority' => 1,
 				'search'   => '/wp-json/',
 				'rule'     => 'allow',
 				'comment'  => 'WordPress REST API',
-				'disable'  => 0,
+				'disable'  => 1,
 			),
 			array(
 				'priority' => 1,
 				'search'   => '/xmlrpc.php',
 				'rule'     => 'allow',
 				'comment'  => 'WordPress XML-RPC',
-				'disable'  => 0,
+				'disable'  => 1,
 			),
 		);
+	}
 
-		foreach ( $default_paths as $path ) {
+	public static function insertExtendedPaths(): void {
+		global $wpdb;
+
+		foreach ( self::extendedPathTemplates() as $path ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->query(
 				$wpdb->prepare(
@@ -1239,28 +1249,28 @@ class BotBlockerSeedData {
 		}
 	}
 
-	public static function generateSecretLinks( string $salt_bb ): array {
-		$secret_param = md5( BOTBLOCKER_URL . time() );
+	public static function generateSecretLinks(): array {
+		$secret_param = bin2hex( random_bytes( 16 ) );
 		return array(
 			'secret_botblocker_get_param' => $secret_param,
-			'action_disable'              => BOTBLOCKER_PREFIX . md5( $secret_param . $salt_bb . 'disable' ) . '_disable',
-			'action_off'                  => BOTBLOCKER_PREFIX . md5( $secret_param . $salt_bb . 'off' ) . '_off',
-			'action_on'                   => BOTBLOCKER_PREFIX . md5( $secret_param . $salt_bb . 'on' ) . '_on',
+			'action_disable'              => BOTBLOCKER_PREFIX . md5( $secret_param . 'disable' ) . '_disable',
+			'action_off'                  => BOTBLOCKER_PREFIX . md5( $secret_param . 'off' ) . '_off',
+			'action_on'                   => BOTBLOCKER_PREFIX . md5( $secret_param . 'on' ) . '_on',
 		);
 	}
 
-	public static function insertDefaultSettings( string $salt_bb ): void {
+	public static function insertDefaultSettings(): void {
 		global $wpdb;
 
 		$cloud_api_email  = BotBlockerInstall::getCloudAPIEmail();
-		$cloud_api_pass   = md5( md5( $cloud_api_email ) . $salt_bb );
+		$cloud_api_pass   = md5( md5( $cloud_api_email ) . bin2hex( random_bytes( 16 ) ) );
 		$cloud_api_key    = BotBlockerPro::generateKey( BOTBLOCKER_SHORT_NAME, $cloud_api_email );
 		$cloud_api_secret = BotBlockerPro::generateKey( BOTBLOCKER_SHORT_NAME, $cloud_api_pass );
 
 		require_once BOTBLOCKER_DIR . 'includes/pro/class-botblocker-settings-presets.php';
 		$default_settings   = BotBlockerSettingsPresets::loadDefaultSettings();
 		$generated_settings = array(
-			'salt'                        => $salt_bb,
+			'salt'                        => bin2hex( random_bytes( 16 ) ),
 			'cloud_api_key'               => $cloud_api_key,
 			'cloud_api_secret'            => $cloud_api_secret,
 			'cloud_api_email'             => $cloud_api_email,
@@ -1268,7 +1278,7 @@ class BotBlockerSeedData {
 			'cloud_api_tier'              => '',
 			'cloud_fallback_block'        => 0,
 		);
-		$generated_settings = array_merge( $generated_settings, self::generateSecretLinks( $salt_bb ) );
+		$generated_settings = array_merge( $generated_settings, self::generateSecretLinks() );
 
 		$all_settings = array_merge( $default_settings, $generated_settings );
 

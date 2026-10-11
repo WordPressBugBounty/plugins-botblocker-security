@@ -82,6 +82,11 @@ final class TextInput extends Base {
 		return $this;
 	}
 
+	public function withDocLink( string $url ): self {
+		$this->doc_url = $url;
+		return $this;
+	}
+
 	public function withPlaceholder( string $placeholder ): self {
 		$this->placeholder = $placeholder;
 		return $this;
@@ -140,9 +145,7 @@ final class TextInput extends Base {
 		if ( $this->label !== '' ) {
 			$html .= '<div class="bbcs-field-label">';
 			$html .= '<span>' . self::escape( $this->label ) . '</span>';
-			if ( $this->tooltip !== '' ) {
-				$html .= self::tooltip( $this->tooltip );
-			}
+			$html .= self::help( $this->tooltip, $this->doc_url );
 			$html .= '</div>';
 		}
 

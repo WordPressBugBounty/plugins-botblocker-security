@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 return static function ( Botblocker_SetupWizard_ViewModel $d ): void { ?>
-	<div class="bbcs-wizstep" data-step="7">
+	<div class="bbcs-wizstep" data-step="8">
 		<div class="bbcs-wizsuccess">
 			<div class="bbcs-wizsuccess-ic"><svg class="bbcs-ico bbcs-ico--xl bbcs-ico--thick"><use href="#bbcs-i-check"></use></svg></div>
 			<h2 class="bbcs-wiztitle"><?php esc_html_e( 'Your site is protected!', 'botblocker-security' ); ?></h2>
@@ -19,7 +19,7 @@ return static function ( Botblocker_SetupWizard_ViewModel $d ): void { ?>
 					<div class="bbcs-wizsum-val bbcs-tx-blue" id="bbcs-wiz-final-preset"><?php esc_html_e( 'Strong', 'botblocker-security' ); ?></div>
 				</div>
 				<div class="bbcs-wizsum-item">
-					<div class="bbcs-wizsum-label"><?php esc_html_e( 'Captcha', 'botblocker-security' ); ?></div>
+					<div class="bbcs-wizsum-label"><?php esc_html_e( 'Primary verification', 'botblocker-security' ); ?></div>
 					<div class="bbcs-wizsum-val bbcs-tx-blue" id="bbcs-wiz-final-captcha"><?php esc_html_e( 'Silent Auto-Verify (No Captcha)', 'botblocker-security' ); ?></div>
 				</div>
 				<div class="bbcs-wizsum-item">
@@ -68,7 +68,7 @@ return static function ( Botblocker_SetupWizard_ViewModel $d ): void { ?>
 				<div class="bbcs-wizpro-feat"><?php esc_html_e( 'Early Init', 'botblocker-security' ); ?></div>
 				<div class="bbcs-wizpro-feat"><?php esc_html_e( 'Zero-day botnet updates', 'botblocker-security' ); ?></div>
 				<div class="bbcs-wizpro-feat"><?php esc_html_e( 'WordPress acceleration', 'botblocker-security' ); ?></div>
-				<div class="bbcs-wizpro-feat"><?php esc_html_e( '5M+ bot signatures', 'botblocker-security' ); ?></div>
+				<div class="bbcs-wizpro-feat"><?php esc_html_e( 'Massive bot signature database', 'botblocker-security' ); ?></div>
 				<div class="bbcs-wizpro-feat"><?php esc_html_e( 'Hide wp-login + addons', 'botblocker-security' ); ?></div>
 				<div class="bbcs-wizpro-feat"><?php esc_html_e( 'All premium addons', 'botblocker-security' ); ?></div>
 				<div class="bbcs-wizpro-feat"><?php esc_html_e( 'VPN and Tor blocking', 'botblocker-security' ); ?></div>
@@ -84,13 +84,13 @@ return static function ( Botblocker_SetupWizard_ViewModel $d ): void { ?>
 
 		<div class="bbcs-wizcta">
 			<a class="bbcs-btn bbcs-btn--pri bbcs-btn--lg" href="<?php echo esc_url( $d->dashboard_url ); ?>"><svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-home"></use></svg> <?php esc_html_e( 'Go to Dashboard', 'botblocker-security' ); ?></a>
-			<a class="bbcs-btn bbcs-btn--lg" href="<?php echo esc_url( $d->docs_url ); ?>" target="_blank"><svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-doc"></use></svg> <?php esc_html_e( 'Documentation', 'botblocker-security' ); ?></a>
+			<a class="bbcs-btn bbcs-btn--lg" href="<?php echo esc_url( BotBlockerDocs::page( 'README' ) ); ?>" target="_blank"><svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-doc"></use></svg> <?php esc_html_e( 'Documentation', 'botblocker-security' ); ?></a>
 		</div>
 
 		<p class="bbcs-wizfoot">
 			<svg class="bbcs-ico bbcs-ico--xs"><use href="#bbcs-i-support"></use></svg>
 			<?php esc_html_e( 'Need help? Visit our', 'botblocker-security' ); ?>
-			<a href="<?php echo esc_url( $d->docs_url ); ?>" target="_blank"><?php esc_html_e( 'support center', 'botblocker-security' ); ?></a>
+			<a href="<?php echo esc_url( BotBlockerDocs::page( 'README' ) ); ?>" target="_blank"><?php esc_html_e( 'support center', 'botblocker-security' ); ?></a>
 			<?php esc_html_e( 'or contact us at', 'botblocker-security' ); ?>
 			<a href="https://botblocker.top/contacts/" target="_blank">botblocker.top/contacts</a>
 		</p>

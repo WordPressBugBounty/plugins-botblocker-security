@@ -6,6 +6,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use BotBlocker\Component\Base;
+
 use BotBlocker\Component\InfoColumn;
 use BotBlocker\Component\SettingsGroup;
 use BotBlocker\Component\ToggleOption;
@@ -37,8 +39,10 @@ return static function ( Botblocker_SettingsViewModel $data, bool $isActive ): v
 	<div role="tabpanel" class="bbcs-tabpanel bbcs-protect-layout" data-tabpanel="in-app"<?php echo $isActive ? '' : ' hidden'; ?>>
 		<?php
 		InfoColumn::make()
+			->withDocPage( BotBlockerDocs::page( 'in-app-browsers' ) )
 			->withIconImage( BOTBLOCKER_URL . 'public/icons/chat.svg', __( 'In-App Browser Mode', 'botblocker-security' ) )
 			->withTitle( __( 'In-App Browser Mode', 'botblocker-security' ) )
+			->withTitleUrl( BotBlockerDocs::page( 'in-app-browsers' ) )
 			->withDescription( __( 'Rescues legitimate humans opening the site from Instagram, LinkedIn, Twitter or WhatsApp in-app browsers when their request would otherwise be denied as a fake bot.', 'botblocker-security' ) )
 			->withDescription( __( 'Disabled by default. When off, the plugin behaves exactly as before — no rescue, no extra checks.', 'botblocker-security' ) )
 			->withNote( __( 'Country (13), RKN (62), black UA (54), IPv6 (51), Cloudflare (55), proxy (56), PTR==IP (60), manual bans and rate limit are NEVER rescued.', 'botblocker-security' ), InfoColumn::NOTE_WARN )
@@ -55,6 +59,7 @@ return static function ( Botblocker_SettingsViewModel $data, bool $isActive ): v
 							->withChecked( $enabled )
 							->withLabel( __( 'Enable In-App Browser Mode', 'botblocker-security' ) )
 							->withTooltip( __( 'Rescues in-app browsers from the selected deny reasons. Disabled = current behavior unchanged.', 'botblocker-security' ) )
+							->withDocLink( BotBlockerDocs::url( 'bbcs_inapp_enabled' ) )
 							->render();
 					}
 				)
@@ -76,10 +81,7 @@ return static function ( Botblocker_SettingsViewModel $data, bool $isActive ): v
 								</button>
 								<input type="checkbox" name="bbcs_inapp_rescue_codes[]" value="<?php echo esc_attr( (string) $groups[ $slug ] ); ?>" <?php checked( $checked ); ?> style="position:absolute;opacity:0;pointer-events:none">
 								<span class="bbcs-option-label"><?php echo esc_html( $def['label'] ); ?></span>
-								<span class="bbcs-help">
-									<span class="bbcs-help-q">?</span>
-									<span class="bbcs-help-tip"><?php echo esc_html( $def['tooltip'] ); ?></span>
-								</span>
+								<?php echo Base::help( (string) $def['tooltip'], BotBlockerDocs::url( 'bbcs_inapp_rescue_codes' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 							</div>
 							<?php
 						}

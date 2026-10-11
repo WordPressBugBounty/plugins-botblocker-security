@@ -5,6 +5,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use BotBlocker\Component\Base;
+
 return static function ( Botblocker_IntegrationsViewModel $data, bool $isActive ): void {
 ?>
 	<div role="tabpanel" class="bbcs-tabpanel bbcs-protect-layout" data-tabpanel="bbcs-2fa"<?php echo $isActive ? '' : ' hidden' ?>>
@@ -12,15 +14,7 @@ return static function ( Botblocker_IntegrationsViewModel $data, bool $isActive 
 			<div class="bbcs-infocol-ic"><img src="<?php echo esc_url( BOTBLOCKER_URL . 'public/icons/qrcode.svg' ); ?>" alt="" class="bbcs-info-img" /></div>
 			<div class="bbcs-infocol-body">
 				<div class="bbcs-infocol-desc"><?php esc_html_e( 'Two-Factor Authentication (2FA) requires a time-based code from your authenticator app in addition to your password. This prevents unauthorized access even if your password is compromised. You can set which user roles require 2FA and generate backup codes for emergency access.', 'botblocker-security' ); ?></div>
-				<div class="bbcs-doclist">
-					<div class="bbcs-doclist-head"><span class="bbcs-help-q">?</span><?php esc_html_e( 'Documentation', 'botblocker-security' ); ?></div>
-					<a href="https://developer.wordpress.org/advanced-administration/security/mfa/" target="_blank" class="bbcs-link bbcs-fs-xs"><?php esc_html_e( 'WordPress 2FA Documentation', 'botblocker-security' ); ?></a>
-					<a href="https://www.authy.com/what-is-2fa/" target="_blank" class="bbcs-link bbcs-fs-xs"><?php esc_html_e( 'Understanding 2FA Security', 'botblocker-security' ); ?></a>
-					<a href="https://support.google.com/accounts/answer/1066447" target="_blank" rel="noopener noreferrer" class="bbcs-link bbcs-fs-xs"><?php esc_html_e( 'Google Authenticator Setup Guide', 'botblocker-security' ); ?></a>
-					<a href="https://apps.apple.com/ru/app/google-authenticator/id388497605" target="_blank" rel="noopener noreferrer" class="bbcs-link bbcs-fs-xs"><?php esc_html_e( 'Google Authenticator (App Store)', 'botblocker-security' ); ?></a>
-					<a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2" target="_blank" rel="noopener noreferrer" class="bbcs-link bbcs-fs-xs"><?php esc_html_e( 'Google Authenticator (Google Play)', 'botblocker-security' ); ?></a>
-					<a href="https://authy.com/guides/" target="_blank" rel="noopener noreferrer" class="bbcs-link bbcs-fs-xs"><?php esc_html_e( 'Authy Setup Guide', 'botblocker-security' ); ?></a>
-				</div>
+				<div class="bbcs-infocol-doc"><a class="bbcs-link bbcs-fs-sm" href="<?php echo esc_url( BotBlockerDocs::page( 'two-factor-authentication' ) ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Read the documentation', 'botblocker-security' ); ?> &#8599;</a></div>
 			</div>
 		</div>
 
@@ -31,13 +25,15 @@ return static function ( Botblocker_IntegrationsViewModel $data, bool $isActive 
 					<button class="bbcs-toggle<?php echo $data->is_checked( 'bbcs_2fa_enable', '1' ) ? ' is-on' : ''; ?>" role="switch" type="button" aria-checked="<?php echo $data->is_checked( 'bbcs_2fa_enable', '1' ) ? 'true' : 'false'; ?>" data-field="bbcs_2fa_enable"><span class="bbcs-toggle-knob"></span></button>
 					<input type="hidden" name="bbcs_2fa_enable" value="<?php echo $data->is_checked( 'bbcs_2fa_enable', '1' ) ? '1' : '0'; ?>">
 					<span class="bbcs-option-label"><?php esc_html_e( 'Enable Two-Factor Authentication', 'botblocker-security' ); ?></span>
-					<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_attr_e( 'Enable BotBlocker Two-Factor Authentication for enhanced security.', 'botblocker-security' ); ?></span></span>
+					
+					<?php echo Base::help( __( 'Enable BotBlocker Two-Factor Authentication for enhanced security.', 'botblocker-security' ), BotBlockerDocs::url( 'bbcs_2fa_enable' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 				</div>
 				<div class="bbcs-option bbcs-hoverbg">
 					<button class="bbcs-toggle<?php echo $data->is_checked( 'bbcs_2fa_xmlrpc_block', '1' ) ? ' is-on' : ''; ?>" role="switch" type="button" aria-checked="<?php echo $data->is_checked( 'bbcs_2fa_xmlrpc_block', '1' ) ? 'true' : 'false'; ?>" data-field="bbcs_2fa_xmlrpc_block"><span class="bbcs-toggle-knob"></span></button>
 					<input type="hidden" name="bbcs_2fa_xmlrpc_block" value="<?php echo $data->is_checked( 'bbcs_2fa_xmlrpc_block', '1' ) ? '1' : '0'; ?>">
 					<span class="bbcs-option-label"><?php esc_html_e( 'Block XML-RPC login for 2FA users', 'botblocker-security' ); ?></span>
-					<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_attr_e( 'XML-RPC has no 2FA step — when enabled, 2FA-required accounts cannot authenticate through XML-RPC.', 'botblocker-security' ); ?></span></span>
+					
+					<?php echo Base::help( __( 'XML-RPC has no 2FA step — when enabled, 2FA-required accounts cannot authenticate through XML-RPC.', 'botblocker-security' ), BotBlockerDocs::url( 'bbcs_2fa_xmlrpc_block' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 				</div>
 			</div>
 
@@ -147,7 +143,7 @@ return static function ( Botblocker_IntegrationsViewModel $data, bool $isActive 
 							<button class="bbcs-toggle<?php echo isset( $bbcs_2fa_roles[ $role_key ] ) && (string) $bbcs_2fa_roles[ $role_key ] === '1' ? ' is-on' : ''; ?>" role="switch" type="button" aria-checked="<?php echo isset( $bbcs_2fa_roles[ $role_key ] ) && (string) $bbcs_2fa_roles[ $role_key ] === '1' ? 'true' : 'false'; ?>" data-field="bbcs_2fa_roles_<?php echo esc_attr( $role_key ); ?>"><span class="bbcs-toggle-knob"></span></button>
 							<input type="hidden" name="bbcs_2fa_roles[<?php echo esc_attr( $role_key ); ?>]" value="<?php echo isset( $bbcs_2fa_roles[ $role_key ] ) && (string) $bbcs_2fa_roles[ $role_key ] === '1' ? '1' : '0'; ?>">
 							<span class="bbcs-option-label"><?php echo esc_html( $role_value['name'] ); ?></span>
-							<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php echo esc_attr( sprintf( /* translators: %s: WordPress role name (e.g., Administrator, Editor) */ __( 'Enable BotBlocker Two-Factor Authentication for %s', 'botblocker-security' ), $role_value['name'] ) ); ?></span></span>
+							<?php echo Base::help( sprintf( /* translators: %s: WordPress role name (e.g., Administrator, Editor) */ __( 'Enable BotBlocker Two-Factor Authentication for %s', 'botblocker-security' ), $role_value['name'] ), BotBlockerDocs::url( 'bbcs_2fa_roles' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 						</div>
 						<?php
 					}

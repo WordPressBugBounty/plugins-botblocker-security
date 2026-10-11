@@ -50,7 +50,7 @@ class BotBlockerAjaxEarlyPhase {
 
 		if ( $setting_key === 'early_init_enable' && $setting_value === 1 ) {
 			$cloud_api_active   = ( class_exists( 'BotBlockerPro' ) && BotBlockerPro::isActive() );
-			$early_addon_active = class_exists( 'BotBlockerGateway' ) && BotBlockerGateway::isRegistered( 'early_init' );
+			$early_addon_active = class_exists( 'BotBlockerAddons' ) && BotBlockerAddons::isActive( 'bbcs-early-init' );
 			if ( ! $early_addon_active || ! $cloud_api_active ) {
 				wp_send_json_error( array( 'message' => __( 'Early Init requires Cloud API and the Early Init addon to be enabled.', 'botblocker-security' ) ) );
 			}
@@ -62,10 +62,11 @@ class BotBlockerAjaxEarlyPhase {
 		try {
 			if ( $setting_key === 'mu_enable' ) {
 				if ( $setting_value ) {
-					BotBlockerInstall::setEarlyInitEnabled( false, array( 'reason' => 'mu_switch' ) );
 					BotBlockerInstall::installMuPlugin();
 					if ( ! file_exists( $mu_plugin_file ) ) {
 						$fs_error = __( 'Failed to install MU plugin. Check filesystem permissions.', 'botblocker-security' );
+					} else {
+						BotBlockerInstall::setEarlyInitEnabled( false, array( 'reason' => 'mu_switch' ) );
 					}
 				} else {
 					BotBlockerInstall::uninstallMuPlugin();
@@ -115,7 +116,7 @@ class BotBlockerAjaxEarlyPhase {
 				'mu_loader_exists' => ( $setting_key === 'mu_enable' && file_exists( $mu_plugin_file ) ),
 			) );
 		} catch ( \Throwable $e ) {
-			if ( $e instanceof \WPDieException ) {
+			if ( class_exists( 'WPDieException' ) && $e instanceof \WPDieException ) {
 				throw $e;
 			}
 			if ( $setting_key === 'early_init_enable' && class_exists( 'BotBlockerAddons' ) ) {

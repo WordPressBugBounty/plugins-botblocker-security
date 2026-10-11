@@ -127,10 +127,7 @@ class BotBlockerDeactivationFeedback {
 			'first_activated_at' => (int) BotBlockerMultisite::getOption( self::FIRST_ACTIVATED_OPTION, 0 ),
 		);
 
-		$cloud = BotBlockerWpRequest::send_to_cloud( $payload, BOTBLOCKER_API_URL, 'deactivation_feedback' );
-		if ( $cloud === false ) {
-			BotBlockerWpRequest::send_to_cloud( $payload, BOTBLOCKER_API_GS_URL, 'deactivation_feedback' );
-		}
+		BotBlockerBackend::sendToCloud( $payload, 'deactivation_feedback' );
 
 		wp_send_json_success( array( 'stored' => true ) );
 	}

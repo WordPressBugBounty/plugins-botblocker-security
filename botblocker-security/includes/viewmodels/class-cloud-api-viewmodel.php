@@ -31,7 +31,6 @@ final class Botblocker_CloudApiViewModel {
 	/** @var Botblocker_DashboardUrls */
 	public $urls;
 	/** @var string */
-	public $docs_url;
 	/** @var string */
 	public $pricing_url;
 	/** @var string */
@@ -40,8 +39,6 @@ final class Botblocker_CloudApiViewModel {
 	public $connect_nonce;
 	/** @var string */
 	public $deactivate_nonce;
-	/** @var string */
-	public $fetch_key_nonce;
 	/** @var string[] */
 	public $pro_features;
 	/** @var Botblocker_ProComparisonRowData[] */
@@ -68,13 +65,11 @@ final class Botblocker_CloudApiViewModel {
 		$this->urls->wizard    = $BBCSA->pages_wizard;
 		$this->urls->pricing   = 'https://botblocker.com/pricing/';
 
-		$this->docs_url    = BOTBLOCKER_DOCS_URL;
 		$this->pricing_url = 'https://botblocker.top/pricing/';
 		$this->addons_url  = BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' );
 
 		$this->connect_nonce    = '';
 		$this->deactivate_nonce = '';
-		$this->fetch_key_nonce  = '';
 
 		$this->pro_features = BotBlockerProFeatures::getProFeatures();
 

@@ -134,12 +134,9 @@ class BotBlockerSupport {
 			'message' => $question,
 		);
 
-		$cloud = BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_URL, 'helpdesk' );
-		if ( $cloud === false ) {
-			$cloud = BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_GS_URL, 'helpdesk' );
-		}
+		$cloud = BotBlockerBackend::sendToCloud( $data, 'helpdesk' );
 
-		if ( $cloud === false ) {
+		if ( $cloud === false || ( is_array( $cloud ) && isset( $cloud['error'] ) ) ) {
 			wp_send_json_error( array( 'message' => __( 'Sending failed. Please try again later.', 'botblocker-security' ) ) );
 		}
 

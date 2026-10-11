@@ -4,6 +4,7 @@
   var activeHelp = null;
   var GAP = 8;
   var PAD = 12;
+  var ARROW_INSET = 24;
 
   function nearestHelp(node) {
     return node && node.closest ? node.closest('.bbcs-help') : null;
@@ -51,7 +52,8 @@
       placeBelow = true;
     }
 
-    var left = helpRect.right - tipW;
+    var helpCenter = helpRect.left + helpRect.width / 2;
+    var left = helpCenter - tipW + ARROW_INSET;
     if (left < PAD) {
       left = PAD;
       tip.classList.add('bbcs-help-tip--left');
@@ -74,12 +76,12 @@
     tip.style.top = Math.round(top) + 'px';
     tip.style.left = Math.round(left) + 'px';
 
-    var arrowLeft = helpRect.left + helpRect.width / 2 - left;
-    if (arrowLeft < 16) {
-      arrowLeft = 16;
+    var arrowLeft = helpCenter - left;
+    if (arrowLeft < ARROW_INSET) {
+      arrowLeft = ARROW_INSET;
     }
-    if (arrowLeft > tipW - 16) {
-      arrowLeft = tipW - 16;
+    if (arrowLeft > tipW - ARROW_INSET) {
+      arrowLeft = tipW - ARROW_INSET;
     }
     tip.style.setProperty('--bbcs-tip-arrow-left', Math.round(arrowLeft) + 'px');
   }
@@ -93,11 +95,31 @@
   }
 
   function deactivateHelp(help) {
+    help.classList.remove('bbcs-help--pinned');
     resetTooltip(help);
     if (activeHelp === help) {
       activeHelp = null;
     }
   }
+
+  function closePinned() {
+    var pinned = document.querySelector('.bbcs-help--pinned');
+    if (pinned) {
+      deactivateHelp(pinned);
+    }
+  }
+
+  document.addEventListener('click', function (e) {
+    if (!nearestHelp(e.target)) {
+      closePinned();
+    }
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      closePinned();
+    }
+  });
 
   function bind(root) {
     root.addEventListener('mouseover', function (e) {
@@ -114,10 +136,31 @@
         return;
       }
       var to = e.relatedTarget;
-      if (to && help.contains(to)) {
+      if (help.classList.contains('bbcs-help--pinned') || (to && help.contains(to))) {
         return;
       }
       deactivateHelp(help);
+    }, true);
+
+    root.addEventListener('click', function (e) {
+      var help = nearestHelp(e.target);
+      if (!help || !e.target.closest('.bbcs-help-q') || !help.querySelector('.bbcs-help-tip')) {
+        return;
+      }
+      if (help.classList.contains('bbcs-help--pinned')) {
+        deactivateHelp(help);
+        return;
+      }
+      closePinned();
+      help.classList.add('bbcs-help--pinned');
+      activateHelp(help);
+    }, true);
+
+    root.addEventListener('keydown', function (e) {
+      if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('bbcs-help-q')) {
+        e.preventDefault();
+        e.target.click();
+      }
     }, true);
 
     root.addEventListener('focusin', function (e) {
@@ -147,12 +190,12 @@
     }, true);
   }
 
-  var settingsContent = document.querySelector('.bbcs-settings-content');
-  if (!settingsContent) {
+  var roots = document.querySelectorAll('.bbcs-settings-content');
+  if (!roots.length) {
     return;
   }
 
-  bind(settingsContent);
+  Array.prototype.forEach.call(roots, bind);
 
   var resizeTimer;
   window.addEventListener('resize', function () {

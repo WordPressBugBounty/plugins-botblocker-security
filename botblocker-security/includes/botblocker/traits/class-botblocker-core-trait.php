@@ -235,6 +235,12 @@ trait BotBlockerCoreTrait {
 		if ( $this->is_cli_request() ) {
 			return true;
 		}
+		if ( $this->is_robots_request() ) {
+			// robots.txt carries no auth surface; walling it only breaks
+			// crawlers (they cannot run the JS challenge). Availability wins,
+			// same rationale as wp-cron — WP serves do_robots or the file.
+			return true;
+		}
 		if ( $this->is_wordpress_maintenance_request() ) {
 			return true;
 		}
@@ -246,8 +252,21 @@ trait BotBlockerCoreTrait {
 		return false;
 	}
 
-	public function is_wordpress_maintenance_request(): bool {
+	/**
+	 * True for a top-level /robots.txt request (query string stripped,
+	 * case-insensitive). Checked in perform_prefly_checks() so the shield
+	 * never gates the crawler entry point.
+	 */
+	public function is_robots_request(): bool {
+		$uri = isset( $this->uri ) && $this->uri !== '' ? (string) $this->uri : '';
+		if ( $uri === '' && isset( $_SERVER['REQUEST_URI'] ) ) {
+			$uri = sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
+		}
+		$path = strtok( $uri, '?' );
+		return is_string( $path ) && strtolower( $path ) === '/robots.txt';
+	}
 
+	public function is_wordpress_maintenance_request(): bool {
 		$uri = isset( $this->uri ) ? (string) $this->uri : '';
 		if ( $uri === '' && isset( $_SERVER['REQUEST_URI'] ) ) {
 			$uri = sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
@@ -368,41 +387,45 @@ trait BotBlockerCoreTrait {
 	}
 
 	public function load_salt_settings(): void {
-		$salt_file = BotBlockerMultisite::getNetworkDataDir() . 'salt.php';
-		if ( ! file_exists( $salt_file ) ) {
-			BotBlockerInstall::createSaltFile( true );
+		$legacy_file = BotBlockerMultisite::getNetworkDataDir() . 'salt.php';
+		$fallback    = get_option( 'bbcs_salt_fallback' );
+		if ( ! file_exists( $legacy_file ) && ! is_array( $fallback ) ) {
+			return;
 		}
 
-		if ( file_exists( $salt_file ) ) {
-			$salt_data = BotBlockerDataFile::safeLoadWithRecovery( $salt_file );
-			if ( is_array( $salt_data ) ) {
-				foreach ( $salt_data as $key => $value ) {
-					if ( property_exists( $this->settings, $key ) ) {
-						$this->settings->$key = (string) $value;
-					}
-				}
+		$legacy = array();
+		if ( file_exists( $legacy_file ) ) {
+			$loaded = BotBlockerDataFile::safeLoad( $legacy_file );
+			if ( is_array( $loaded ) ) {
+				$legacy = $loaded;
 			}
 		}
-
-		if ( ! empty( $this->settings->salt_pz ) ) {
-			$this->settings->salt = $this->settings->salt_pz . $this->settings->salt;
+		if ( is_array( $fallback ) ) {
+			$legacy = array_merge( $legacy, $fallback );
 		}
 
-		if ( empty( $this->settings->salt ) ) {
-			$fallback = get_option( 'bbcs_salt_fallback' );
-			if ( is_array( $fallback ) && ! empty( $fallback['salt_bb'] ) ) {
-				foreach ( $fallback as $key => $value ) {
-					if ( property_exists( $this->settings, $key ) ) {
-						$this->settings->$key = (string) $value;
-					}
-				}
-				if ( empty( $this->settings->salt ) && ! empty( $this->settings->salt_bb ) ) {
-					$this->settings->salt = $this->settings->salt_bb;
-				}
-			} else {
-				$this->settings->salt = bin2hex( random_bytes( 16 ) );
-			}
-			BotBlockerInstall::createSaltFile( true );
+		$prefix = isset( $legacy['salt_pz'] ) ? (string) $legacy['salt_pz'] : '';
+		if ( $prefix !== '' && $prefix !== '0' && strpos( $this->settings->salt, $prefix ) !== 0 ) {
+			$this->settings->salt = $prefix . $this->settings->salt;
+		} elseif ( $this->settings->salt === '' && ! empty( $legacy['salt_bb'] ) ) {
+			$this->settings->salt = (string) $legacy['salt_bb'];
+		}
+		if ( $this->settings->salt === '' ) {
+			$this->settings->salt = bin2hex( random_bytes( 16 ) );
+		}
+
+		global $wpdb;
+		if ( isset( $wpdb->bbcs_settings ) && $wpdb->bbcs_settings !== '' ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time legacy salt migration.
+			$wpdb->update( $wpdb->bbcs_settings, array( 'value' => $this->settings->salt ), array( 'key' => 'salt' ), array( '%s' ), array( '%s' ) );
+			BotBlockerFileRenderer::generateSettingsFile();
+		}
+
+		delete_option( 'bbcs_salt_fallback' );
+		delete_transient( 'bbcs_salt_write_error' );
+		if ( file_exists( $legacy_file ) ) {
+			wp_delete_file( $legacy_file );
+			BotBlockerCompiledFile::invalidate( $legacy_file );
 		}
 	}
 
@@ -448,10 +471,7 @@ trait BotBlockerCoreTrait {
 			'ip'      => $ip,
 		);
 
-		$cloud = BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_URL );
-		if ( $cloud === false ) {
-			$cloud = BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_GS_URL );
-		}
+		$cloud = BotBlockerBackend::sendToCloud( $data );
 
 		if ( $cloud !== null && $cloud !== false ) {
 			BotBlockerCache::setCacheData( $cache_key, $cloud, $cache_ttl );

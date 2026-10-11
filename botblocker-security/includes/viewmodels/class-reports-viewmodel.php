@@ -28,7 +28,6 @@ final class Botblocker_ReportsViewModel {
 	/** @var Botblocker_DashboardUrls */
 	public $urls;
 	/** @var string */
-	public $docs_url;
 	/** @var DonutChart */
 	public $donut_hosts;
 	/** @var DonutChart */
@@ -105,7 +104,6 @@ final class Botblocker_ReportsViewModel {
 		$this->urls->tools     = $BBCSA->pages_tools;
 		$this->urls->integrations = $BBCSA->pages_integrations;
 
-		$this->docs_url = BOTBLOCKER_DOCS_URL;
 
 		$period_days = isset( $botblocker->settings->admin_report_period ) ? (int) $botblocker->settings->admin_report_period : 30;
 		BotBlockerStats::getStatistics( $period_days );

@@ -19,7 +19,6 @@ final class Botblocker_AboutViewModel {
 	/** @var Botblocker_DashboardUrls */
 	public $urls;
 	/** @var string */
-	public $docs_url;
 	/** @var string */
 	public $plugin_version;
 	/** @var string */
@@ -50,7 +49,6 @@ final class Botblocker_AboutViewModel {
 		$this->urls->integrations = $BBCSA->pages_integrations;
 		$this->urls->about     = $BBCSA->pages_about;
 
-		$this->docs_url = BOTBLOCKER_DOCS_URL;
 		$this->telegram_support_url = defined( 'BOTBLOCKER_TELEGRAM_SUPPORT' ) ? BOTBLOCKER_TELEGRAM_SUPPORT : '';
 		$this->support_forum_url    = defined( 'BOTBLOCKER_SUPPORT_FORUM' ) ? BOTBLOCKER_SUPPORT_FORUM : '';
 		$this->email_support_url    = defined( 'BOTBLOCKER_MAILTO_LINK' ) ? BOTBLOCKER_MAILTO_LINK : '';

@@ -118,7 +118,7 @@ final class Botblocker_DashboardViewModel {
 		$this->urls->about       = $bbcsa->pages_about;
 		$this->urls->wizard      = BotBlockerMultisite::getSiteAdminPageUrl( 'bbcs_setup_wizard' );
 		$this->urls->pricing     = 'https://botblocker.top/pricing/';
-		$this->urls->docs        = 'https://botblocker.top/docs/';
+		$this->urls->docs        = BotBlockerDocs::page( 'README' );
 		$this->secret              = new Botblocker_SecretLinks();
 		$this->secret->disable_url = BotBlockerMailer::getDisableUrl();
 		$this->secret->off_url     = BotBlockerMailer::getOffUrl();

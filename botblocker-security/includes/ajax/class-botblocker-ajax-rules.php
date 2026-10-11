@@ -223,7 +223,7 @@ class BotBlockerAjaxRules {
 		global $wpdb;
 
 		$id = isset( $_POST['id'] ) ? absint( wp_unslash( $_POST['id'] ) ) : null;
-		if ( $id === null ) {
+		if ( $id === null || $id <= 0 ) {
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' id is null' );
@@ -250,6 +250,12 @@ class BotBlockerAjaxRules {
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' id=' . $id . ' type=' . $data['type'] );
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$exists = (int) $wpdb->get_var( $wpdb->prepare( "SELECT id FROM `{$wpdb->bbcs_rules}` WHERE id = %d", $id ) );
+		if ( $exists <= 0 ) {
+			wp_send_json_error( __( 'Rule not found.', 'botblocker-security' ) );
 		}
 
 		// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
@@ -308,7 +314,7 @@ class BotBlockerAjaxRules {
 		global $wpdb;
 
 		$id = isset( $_POST['id'] ) ? absint( wp_unslash( $_POST['id'] ) ) : null;
-		if ( $id === null ) {
+		if ( $id === null || $id <= 0 ) {
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' id is null' );
@@ -329,7 +335,7 @@ class BotBlockerAjaxRules {
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' delete result=' . ( $result === false ? 'false' : (string) $result ) );
 		}
 
-		if ( $result !== false ) {
+		if ( $result !== false && $result > 0 ) {
 			BotBlockerFileRenderer::renderRules();
 			BotBlockerCache::clearFileCache();
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {

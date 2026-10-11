@@ -84,9 +84,13 @@ trait BotBlocker_SetupWizardAjaxTrait {
 		);
 
 		if ( $exclude_current_ip && $current_ip !== '' ) {
-			BotBlockerInstallIp::addAdminIPs( $current_ip );
-			BotBlockerFileRenderer::renderIps();
-			BotBlockerCache::clearFileCache();
+			try {
+				BotBlockerInstallIp::addAdminIPs( $current_ip );
+				BotBlockerFileRenderer::renderIps();
+				BotBlockerCache::clearFileCache();
+			} catch ( \Throwable $e ) {
+				wp_send_json_error( array( 'message' => __( 'Invalid IP address.', 'botblocker-security' ) ) );
+			}
 		}
 
 		if ( class_exists( 'BotBlockerFileRenderer' ) ) {
@@ -112,6 +116,59 @@ trait BotBlocker_SetupWizardAjaxTrait {
 		wp_send_json_success( array( 'ux_mode' => $ux_mode ) );
 	}
 
+	public function ajax_save_recaptcha(): void {
+		check_ajax_referer( 'bbcs-wizard-admin-nonce', 'nonce' );
+
+		if ( ! current_user_can( BotBlockerMultisite::canManage() ) ) {
+			wp_send_json_error( __( 'No permission.', 'botblocker-security' ) );
+		}
+
+		$provider = isset( $_POST['provider'] ) ? sanitize_text_field( wp_unslash( $_POST['provider'] ) ) : 'none';
+		if ( ! in_array( $provider, array( 'none', 'v2', 'v3' ), true ) ) {
+			wp_send_json_error( __( 'Invalid Google reCAPTCHA provider.', 'botblocker-security' ) );
+		}
+
+		$values = array(
+			'recaptcha_key2'          => isset( $_POST['recaptcha_key2'] ) ? sanitize_text_field( wp_unslash( $_POST['recaptcha_key2'] ) ) : '',
+			'recaptcha_secret2'       => isset( $_POST['recaptcha_secret2'] ) ? sanitize_text_field( wp_unslash( $_POST['recaptcha_secret2'] ) ) : '',
+			'recaptcha_key3'          => isset( $_POST['recaptcha_key3'] ) ? sanitize_text_field( wp_unslash( $_POST['recaptcha_key3'] ) ) : '',
+			'recaptcha_secret3'       => isset( $_POST['recaptcha_secret3'] ) ? sanitize_text_field( wp_unslash( $_POST['recaptcha_secret3'] ) ) : '',
+			'recaptcha_tresshold'     => isset( $_POST['recaptcha_tresshold'] ) ? (string) max( 0.1, min( 1.0, round( (float) sanitize_text_field( wp_unslash( $_POST['recaptcha_tresshold'] ) ), 1 ) ) ) : '0.5',
+			'recaptcha_v3_ipv6_block' => $provider === 'v3' && ! empty( $_POST['recaptcha_v3_ipv6_block'] ) ? '1' : '0',
+		);
+
+		if ( $provider === 'v2' && ( $values['recaptcha_key2'] === '' || $values['recaptcha_secret2'] === '' ) ) {
+			wp_send_json_error( __( 'Enter both Google reCAPTCHA v2 keys or choose Skip Google reCAPTCHA.', 'botblocker-security' ) );
+		}
+
+		$enable_v3 = $provider === 'v3' && ! empty( $_POST['recaptcha_check'] );
+		if ( $enable_v3 && ( $values['recaptcha_key3'] === '' || $values['recaptcha_secret3'] === '' ) ) {
+			wp_send_json_error( __( 'Enter both Google reCAPTCHA v3 keys before enabling protection.', 'botblocker-security' ) );
+		}
+		$values['recaptcha_check'] = $enable_v3 ? '1' : '0';
+
+		global $wpdb;
+		foreach ( $values as $key => $value ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->replace(
+				$wpdb->bbcs_settings,
+				array(
+					'key'   => $key,
+					'value' => $value,
+				),
+				array( '%s', '%s' )
+			);
+		}
+
+		if ( class_exists( 'BotBlockerFileRenderer' ) ) {
+			BotBlockerFileRenderer::generateSettingsFile();
+		}
+		BotBlockerCache::flush();
+		BotBlockerCache::resetHealthTransients();
+
+		wp_send_json_success( array( 'provider' => $provider, 'recaptcha_check' => $values['recaptcha_check'] ) );
+	}
+
 	public function ajax_save_captcha(): void {
 		check_ajax_referer( 'bbcs-wizard-admin-nonce', 'nonce' );
 
@@ -121,9 +178,20 @@ trait BotBlocker_SetupWizardAjaxTrait {
 
 		$captcha_mode = isset( $_POST['captcha_mode'] ) ? intval( $_POST['captcha_mode'] ) : 2;
 
-		// Valid CAPTCHA modes: 0-8 (based on botblocker-set-captcha.php)
-		if ( ! in_array( $captcha_mode, array( 0, 1, 2, 3, 4, 5, 6, 7, 8 ) ) ) {
+		// Core CAPTCHA modes 0-8 (botblocker-set-captcha.php) plus registered
+		// addon providers (mode 90+) whose keys are configured.  A wizard never
+		// proposes an unusable mode; the guard is defense-in-depth for a raced
+		// save after addon deactivation or stale browser progress.
+		$core_captcha_modes = array( 0, 1, 2, 3, 4, 5, 6, 7, 8 );
+		$is_addon_mode      = ! in_array( $captcha_mode, $core_captcha_modes, true );
+		if ( $is_addon_mode && $captcha_mode < 90 ) {
 			wp_send_json_error( __( 'Invalid Captcha mode.', 'botblocker-security' ) );
+		}
+		if ( $is_addon_mode && ( ! class_exists( 'BotBlockerCaptchaRegistry' ) || ! BotBlockerCaptchaRegistry::has( $captcha_mode ) ) ) {
+			wp_send_json_error( __( 'The selected CAPTCHA provider addon is not active.', 'botblocker-security' ) );
+		}
+		if ( $is_addon_mode && class_exists( 'BotBlockerCaptchaRegistry' ) && ! BotBlockerCaptchaRegistry::hasKeys( $captcha_mode ) ) {
+			wp_send_json_error( __( 'CAPTCHA provider keys are not configured.', 'botblocker-security' ) );
 		}
 
 		// reCAPTCHA v2 modes require configured Site/Secret keys.
@@ -336,57 +404,6 @@ trait BotBlocker_SetupWizardAjaxTrait {
 		}
 
 		wp_send_json_success( array( 'cache_type' => $cache_type ) );
-	}
-
-	public function ajax_save_notifications(): void {
-		check_ajax_referer( 'bbcs-wizard-admin-nonce', 'nonce' );
-
-		if ( ! current_user_can( BotBlockerMultisite::canManage() ) ) {
-			wp_send_json_error( __( 'No permission.', 'botblocker-security' ) );
-		}
-
-		$notify_daily       = ! empty( $_POST['notify_daily'] );
-		$notify_brute_force = ! empty( $_POST['notify_brute_force'] );
-		$notify_weekly      = ! empty( $_POST['notify_weekly'] );
-
-		global $wpdb;
-
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom table, write-through to settings.
-		$wpdb->replace(
-			$wpdb->bbcs_settings,
-			array(
-				'key'   => 'email_notifications',
-				'value' => $notify_daily ? '1' : '0',
-			),
-			array( '%s', '%s' )
-		);
-
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom table, write-through to settings.
-		$wpdb->replace(
-			$wpdb->bbcs_settings,
-			array(
-				'key'   => 'critical_load_notifications',
-				'value' => $notify_brute_force ? '1' : '0',
-			),
-			array( '%s', '%s' )
-		);
-
-		$frequency = $notify_weekly ? 'weekly' : 'disabled';
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom table, write-through to settings.
-		$wpdb->replace(
-			$wpdb->bbcs_settings,
-			array(
-				'key'   => 'regular_notifications_frequency',
-				'value' => $frequency,
-			),
-			array( '%s', '%s' )
-		);
-
-		if ( class_exists( 'BotBlockerFileRenderer' ) ) {
-			BotBlockerFileRenderer::generateSettingsFile();
-		}
-
-		wp_send_json_success();
 	}
 
 	public function ajax_complete_wizard(): void {

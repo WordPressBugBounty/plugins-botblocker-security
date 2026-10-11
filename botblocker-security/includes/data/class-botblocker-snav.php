@@ -82,7 +82,6 @@ class BotBlockerSnav {
 									array( __( 'User-Agent Anomalies', 'botblocker-security' ), 'block_simplebot_ua' ),
 									array( __( 'Empty Accept-Language', 'botblocker-security' ), 'block_empty_lang' ),
 									array( __( 'Allow Empty Accept-Language in Verification', 'botblocker-security' ), 'bbcs_allow_empty_accept_lang' ),
-									array( __( 'No JavaScript Support', 'botblocker-security' ), 'block_nojs_users' ),
 									array( __( 'Fake Referer', 'botblocker-security' ), 'block_fake_ref' ),
 								),
 							),
@@ -253,7 +252,7 @@ class BotBlockerSnav {
 							array(
 								't' => __( 'Header Settings', 'botblocker-security' ),
 								's' => array(
-									array( __( 'Add noarchive to Blocked Pages', 'botblocker-security' ), 'noarchive' ),
+									array( __( 'Add noarchive to All Pages', 'botblocker-security' ), 'noarchive' ),
 									array( __( 'Add noindex to UTM Pages', 'botblocker-security' ), 'utm_noindex' ),
 								),
 							),
@@ -562,26 +561,6 @@ class BotBlockerSnav {
 							),
 						),
 					),
-					array(
-						't'   => __( 'Notifications', 'botblocker-security' ),
-						'tab' => 'notifications',
-						'go'  => 'settings',
-						'sg'  => array(
-							array(
-								't' => __( 'Notification Types', 'botblocker-security' ),
-								's' => array(
-									array( __( 'Email', 'botblocker-security' ), 'email_notifications' ),
-								),
-							),
-							array(
-								't' => __( 'Notification Settings', 'botblocker-security' ),
-								's' => array(
-									array( __( 'Notify on Critical Server Load', 'botblocker-security' ), 'critical_load_notifications' ),
-									array( __( 'Regular Report Frequency', 'botblocker-security' ), 'regular_notifications_frequency' ),
-								),
-							),
-						),
-					),
 				),
 			),
 
@@ -665,20 +644,6 @@ class BotBlockerSnav {
 								't' => __( 'Cache Compatibility', 'botblocker-security' ),
 								's' => array(
 									array( __( 'Cache Compatibility Guide', 'botblocker-security' ), 'cache_compat_guide' ),
-								),
-							),
-						),
-					),
-					array(
-						't'   => __( 'BotBlocker Cloud', 'botblocker-security' ),
-						'tab' => 'cloud',
-						'go'  => 'integrations',
-						'sg'  => array(
-							array(
-								't' => __( 'BotBlocker API Integration', 'botblocker-security' ),
-								's' => array(
-									array( __( 'BotBlocker API URL', 'botblocker-security' ), 'bbcs_api_url' ),
-									array( __( 'Additional API URL', 'botblocker-security' ), 'bbcs_api_gs_url' ),
 								),
 							),
 						),
@@ -892,7 +857,6 @@ class BotBlockerSnav {
 			'cron'                => $dir . 'cron.php',
 			'tls_fingerprint'     => $dir . 'tls-fingerprint.php',
 			'settings-ui'         => $dir . 'ui.php',
-			'notifications'       => $dir . 'notifications.php',
 		);
 	}
 

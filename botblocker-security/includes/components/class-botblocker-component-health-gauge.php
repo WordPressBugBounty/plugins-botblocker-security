@@ -36,8 +36,9 @@ final class HealthGauge extends Base {
 	public function render( bool $return = false ): string {
 		$display_value = self::escape( number_format( $this->value, $this->decimals ) );
 		$label         = self::escape( $this->label );
+		$canvas_id     = $this->id !== '' ? $this->id : 'bbcs-health_gauge';
 
-		return self::output( '<canvas id="bbcs-health_gauge"'
+		return self::output( '<canvas id="' . self::escape( $canvas_id, 'attr' ) . '" class="bbcs-health-gauge-canvas"'
 			. ' data-health-value="' . $display_value . '"'
 			. ' data-bbcs-label="' . $label . '"'
 			. ' style="width: 100%; height: auto; padding-left: 10px; padding-right: 10px;"></canvas>', $return );

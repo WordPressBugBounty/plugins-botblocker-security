@@ -24,9 +24,6 @@ class BotBlockerRkn {
 			}
 
 			$data = BotBlockerDataFile::safeLoad( $file );
-			if ( ! is_array( $data ) ) {
-				continue;
-			}
 
 			if ( isset( $data['bbcs_rugov'] ) && is_array( $data['bbcs_rugov'] ) ) {
 				return $data['bbcs_rugov'];
@@ -42,7 +39,7 @@ class BotBlockerRkn {
 			if ( $network === '' ) {
 				continue;
 			}
-			if ( BotBlockerIp::netMatch( $network, $ip ) === true ) {
+			if ( BotBlockerIp::matches( $network, $ip ) === true ) {
 				return true;
 			}
 		}

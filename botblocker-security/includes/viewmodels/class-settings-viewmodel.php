@@ -90,7 +90,6 @@ final class Botblocker_SettingsViewModel {
 	/** @var string */
 	public $current_ja4;
 	/** @var string */
-	public $docs_url;
 
 	/** @var Botblocker_CronTaskData[] */
 	public $cron_tasks;
@@ -219,8 +218,6 @@ final class Botblocker_SettingsViewModel {
 						->withIconImage( BOTBLOCKER_URL . 'public/icons/advanced-protection.svg' ),
 					( new TabItem( 'settings-ui', '', false, '', '', __( 'UI Settings', 'botblocker-security' ), 'eye' ) )
 						->withIconImage( BOTBLOCKER_URL . 'public/icons/ui.svg' ),
-					( new TabItem( 'notifications', '', false, '', '', __( 'Notifications', 'botblocker-security' ), 'bell' ) )
-						->withIconImage( BOTBLOCKER_URL . 'public/icons/notification.svg' ),
 				),
 			),
 		);
@@ -255,7 +252,6 @@ final class Botblocker_SettingsViewModel {
 			$this->current_ja4 = sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_TLS_JA4'] ) );
 		}
 
-		$this->docs_url = BOTBLOCKER_DOCS_URL;
 
 		$this->buildCronTaskData();
 	}

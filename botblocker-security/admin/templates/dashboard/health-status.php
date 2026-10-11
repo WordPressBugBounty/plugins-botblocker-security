@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 return static function ( Botblocker_DashboardViewModel $data ): void {
 	?>
-<div class="bbcs-card bbcs-card-pad">
+<div class="bbcs-card bbcs-card-pad bbcs-mb-3h">
 	<div class="bbcs-section-head">
 		<div class="bbcs-section-title"><?php esc_html_e( 'Protection status', 'botblocker-security' ); ?></div>
 		<a class="bbcs-link" href="<?php echo esc_url( $data->urls->setup ); ?>">

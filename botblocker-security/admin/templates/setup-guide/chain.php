@@ -13,6 +13,9 @@ return static function ( Botblocker_SetupGuideViewModel $data ): void {
 		->block(
 			static function () use ( $data, $chain_body ): void {
 				$chain_body( $data );
+				?>
+				<div class="bbcs-mt-3"><a class="bbcs-link bbcs-fs-sm" href="<?php echo esc_url( BotBlockerDocs::page( 'wordpress-lifecycle' ) ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'How the request chain works', 'botblocker-security' ); ?> &#8599;</a></div>
+				<?php
 			}
 		);
 	// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML

@@ -30,9 +30,8 @@ return static function ( Botblocker_SetupWizard_ViewModel $d ): void { ?>
 		<div id="bbcs-wiz-test-warn" hidden>
 			<div class="bbcs-card bbcs-card-pad bbcs-mb-4h bbcs-amber-card">
 				<div class="bbcs-row bbcs-g-2h bbcs-mb-3"><svg class="bbcs-ico bbcs-ico--md bbcs-tx-amber"><use href="#bbcs-i-warning"></use></svg><b><?php esc_html_e( 'Minor compatibility issues detected', 'botblocker-security' ); ?></b></div>
-				<div class="bbcs-dim bbcs-fs-xs bbcs-mb-3h"><?php esc_html_e( 'Can be fixed automatically. The site will remain functional.', 'botblocker-security' ); ?></div>
+				<div class="bbcs-dim bbcs-fs-xs bbcs-mb-3h"><?php esc_html_e( 'Review the failed test and adjust the related settings. The site will remain functional.', 'botblocker-security' ); ?></div>
 				<div class="bbcs-row bbcs-g-2h">
-					<button class="bbcs-btn bbcs-btn--pri" id="bbcs-wiz-fix-auto"><svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-sparkle"></use></svg> <?php esc_html_e( 'Auto-fix', 'botblocker-security' ); ?></button>
 					<button class="bbcs-btn" id="bbcs-wiz-fix-manual"><svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-gear"></use></svg> <?php esc_html_e( 'Manually', 'botblocker-security' ); ?></button>
 				</div>
 			</div>

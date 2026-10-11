@@ -59,6 +59,11 @@ final class Select extends Base {
 		return $this;
 	}
 
+	public function withDocLink( string $url ): self {
+		$this->doc_url = $url;
+		return $this;
+	}
+
 	public function withAfter( $after ): self {
 		$this->after = $after;
 		return $this;
@@ -94,7 +99,7 @@ final class Select extends Base {
 		$attrs['class'] = self::classes( array( 'bbcs_text_input_input', $this->input_class ) );
 
 		$html  = '<div class="' . self::classes( $this->cssClasses( 'bbcs_text_input' ) ) . '">';
-		$html .= '<div class="bbcs_label_input_box"><span class="bbcs-label-input">' . self::escape( $this->label ) . '</span>' . self::tooltip( $this->tooltip ) . '</div>';
+		$html .= '<div class="bbcs_label_input_box"><span class="bbcs-label-input">' . self::escape( $this->label ) . '</span>' . self::help( $this->tooltip, $this->doc_url ) . '</div>';
 		$html .= '<div class="bbcs_text_input_inner"><select' . self::attrs( $attrs ) . '>';
 		foreach ( $this->options as $option_value => $option_label ) {
 			$html .= '<option value="' . self::escape( $option_value, 'attr' ) . '"' . selected( $this->value, (string) $option_value, false ) . '>' . self::escape( $option_label ) . '</option>';

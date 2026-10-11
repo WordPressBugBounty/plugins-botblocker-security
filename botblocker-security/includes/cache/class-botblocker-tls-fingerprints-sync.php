@@ -105,11 +105,7 @@ class BotBlockerTlsFingerprintsSync {
 		if ( '' !== $stored_hash ) {
 			$request['hash'] = $stored_hash;
 		}
-		$result = BotBlockerWpRequest::send_to_cloud( $request, BOTBLOCKER_API_URL, 'tls_fingerprints_sync' );
-
-		if ( false === $result ) {
-			$result = BotBlockerWpRequest::send_to_cloud( $request, BOTBLOCKER_API_GS_URL, 'tls_fingerprints_sync' );
-		}
+		$result = BotBlockerBackend::sendToCloud( $request, 'tls_fingerprints_sync' );
 
 		if ( ! is_array( $result ) ) {
 			return false;
@@ -184,6 +180,14 @@ class BotBlockerTlsFingerprintsSync {
 		$wpdb->query( 'START TRANSACTION' );
 		$ok = true;
 
+		// Preserve locally disabled fingerprints: the sync wipes and re-inserts
+		// the cloud payload, which would otherwise reset an admin's disable.
+		$locally_disabled = array();
+		$disabled_rows    = $wpdb->get_results( "SELECT fingerprint FROM `{$wpdb->bbcs_tls_fingerprints}` WHERE disabled = 1", ARRAY_A );
+		foreach ( (array) $disabled_rows as $disabled_row ) {
+			$locally_disabled[ (string) $disabled_row['fingerprint'] ] = true;
+		}
+
 		$wpdb->query( "DELETE FROM `{$wpdb->bbcs_tls_fingerprints}`" );
 		if ( $wpdb->last_error ) {
 			$ok = false;
@@ -205,7 +209,7 @@ class BotBlockerTlsFingerprintsSync {
 						isset( $fp['category'] ) ? sanitize_text_field( $fp['category'] ) : 'unknown',
 						isset( $fp['ua_family'] ) ? sanitize_text_field( $fp['ua_family'] ) : '',
 						isset( $fp['description'] ) ? sanitize_text_field( $fp['description'] ) : '',
-						isset( $fp['disabled'] ) ? absint( $fp['disabled'] ) : 0
+						( isset( $locally_disabled[ $fingerprint ] ) ? 1 : ( isset( $fp['disabled'] ) ? absint( $fp['disabled'] ) : 0 ) )
 					)
 				);
 				if ( false === $result ) {

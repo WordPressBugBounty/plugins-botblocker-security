@@ -3,18 +3,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use BotBlocker\Component\Base;
+
 use BotBlocker\Component\Botblocker_StatusToggles;
 
 return static function ( Botblocker_StatusToggles $toggles ): void {
 	$t = $toggles;
 
-	$statline = static function ( string $label, int $checked, bool $disabled = false, string $tooltip = '', string $color_class = '', string $action = '', string $setting = '', bool $pro_badge = false, string $warning_badge = '', string $settings_link = '', bool $addon_badge = false ): string {
+	$statline = static function ( string $label, int $checked, bool $disabled = false, string $tooltip = '', string $color_class = '', string $action = '', string $setting = '', bool $pro_badge = false, string $warning_badge = '', string $settings_link = '', bool $addon_badge = false, bool $soft_disabled = false ): string {
 		$on         = $checked ? ' is-on' : '';
 		$color_cls  = $color_class !== '' ? ' ' . $color_class : '';
 		$dis        = $disabled ? ' disabled' : '';
+		$soft       = $soft_disabled ? ' aria-disabled="true"' : '';
+		$lock_cls   = $soft_disabled ? ' bbcs-toggle--locked' : '';
 		$aria       = $checked ? 'true' : 'false';
 		$data_attrs = $action !== '' ? ' data-bbcs-toggle="1" data-action="' . esc_attr( $action ) . '" data-setting="' . esc_attr( $setting ) . '" data-value="' . (int) $checked . '"' : '';
-		$tip_html   = $tooltip !== '' ? '<span class="bbcs-help" style="display:inline-flex"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip">' . esc_html( $tooltip ) . '</span></span>' : '';
+		$tip_html   = $tooltip !== '' ? Base::help( $tooltip, BotBlockerDocs::url( $setting ) ) : '';
 		$badge_html = $pro_badge ? ' <span class="bbcs-pill bbcs-pill--violet bbcs-pill--pro">' . esc_html__( 'PRO', 'botblocker-security' ) . '</span>' : '';
 		$addon_html = $addon_badge ? ' <span class="bbcs-pill bbcs-pill--addon bbcs-pill--pro">' . esc_html__( 'Add-on', 'botblocker-security' ) . '</span>' : '';
 		$warn_html  = $warning_badge !== '' ? ' <span class="bbcs-pill bbcs-pill--amber bbcs-pill--pro">' . esc_html( $warning_badge ) . '</span>' : '';
@@ -27,7 +31,7 @@ return static function ( Botblocker_StatusToggles $toggles ): void {
 		}
 
 		return '<div class="bbcs-statline">'
-			. '<button class="bbcs-toggle' . $color_cls . $on . '" role="switch" aria-checked="' . $aria . '"' . $dis . $data_attrs . '><span class="bbcs-toggle-knob"></span></button>'
+			. '<button type="button" class="bbcs-toggle' . $color_cls . $on . $lock_cls . '" role="switch" aria-checked="' . $aria . '"' . $dis . $soft . $data_attrs . '><span class="bbcs-toggle-knob"></span></button>'
 			. '<span class="bbcs-statline-label">' . esc_html( $label ) . '</span>'
 			. $badge_html
 			. $addon_html
@@ -39,7 +43,7 @@ return static function ( Botblocker_StatusToggles $toggles ): void {
 	?>
 	<div class="bbcs-col">
 		<?php // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
-		<?php echo $statline( __( 'Early Init', 'botblocker-security' ), (int) $t->early_init_checked, (bool) $t->early_init_disabled, __( 'Loads black/white IP lists via wp-config before WordPress core starts', 'botblocker-security' ), 'bbcs-toggle--amber', 'bbcs_toggle_early_phase_in_db', 'early_init_enable', true, '', '', (bool) $t->early_init_disabled ); ?>
+		<?php echo $statline( __( 'Early Init', 'botblocker-security' ), (int) $t->early_init_checked, false, __( 'Loads black/white IP lists via wp-config before WordPress core starts', 'botblocker-security' ), 'bbcs-toggle--amber', 'bbcs_toggle_early_phase_in_db', 'early_init_enable', true, '', '', (bool) $t->early_init_disabled, (bool) $t->early_init_disabled ); ?>
 		<?php echo $statline( __( 'MU-plugin', 'botblocker-security' ), (int) $t->mu_checked, false, __( 'MU mode loads black/white IP lists before regular plugins and WordPress core', 'botblocker-security' ), '', 'bbcs_toggle_early_phase_in_db', 'mu_enable' ); ?>
 		<?php echo $statline( __( 'Redis', 'botblocker-security' ), (int) $t->redis_checked, (bool) $t->redis_disabled, __( 'Speeds up visitor processing via Redis', 'botblocker-security' ), '', 'bbcs_toggle_redis_and_memcached', 'redis_enable', false, $t->redis_disabled ? __( 'Extension Missing', 'botblocker-security' ) : ( $t->redis_outage ? __( 'Unavailable (retrying)', 'botblocker-security' ) : '' ), class_exists( 'BotBlockerSnav' ) ? BotBlockerSnav::getSettingLink( 'redis_enable' ) : '' ); ?>
 		<?php echo $statline( __( 'Memcached', 'botblocker-security' ), (int) $t->memcached_checked, (bool) $t->memcached_disabled, __( 'Speeds up visitor processing via Memcached', 'botblocker-security' ), '', 'bbcs_toggle_redis_and_memcached', 'memcached_enable', false, $t->memcached_disabled ? __( 'Extension Missing', 'botblocker-security' ) : ( $t->memcached_outage ? __( 'Unavailable (retrying)', 'botblocker-security' ) : '' ), class_exists( 'BotBlockerSnav' ) ? BotBlockerSnav::getSettingLink( 'memcached_enable' ) : '' ); ?>

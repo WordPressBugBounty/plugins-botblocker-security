@@ -19,9 +19,6 @@ class BotBlockerSettings
 	public $autosave_admin_ip		= 0;
 	public $skip_logged_in_users	= 0;
 
-	public $bbcs_api_gs_url = '';
-	public $bbcs_api_url    = '';
-
 	public $bbcs_allow_empty_accept_lang = 0;
 	public $bbcs_captcha_img_inline = 1;
 	public $bbcs_captcha_img_pack   = 1;
@@ -30,6 +27,16 @@ class BotBlockerSettings
 	public $bbcs_honeypot_enabled   = 0;
 	public $bbcs_cors_strict_headers    = 0;
 	public $bbcs_wp_connectors_enabled   = 0;
+	public $bbcs_wp_abilities_enabled    = 0;
+	public $bbcs_ability_get_firewall_status = 0;
+	public $bbcs_ability_check_ip        = 0;
+	public $bbcs_ability_get_ip_rules    = 0;
+	public $bbcs_ability_get_traffic_summary = 0;
+	public $bbcs_ability_run_diagnostics = 0;
+	public $bbcs_ability_block_ip        = 0;
+	public $bbcs_ability_unblock_ip      = 0;
+	public $bbcs_ability_run_malware_scan = 0;
+	public $bbcs_ability_get_scan_results = 0;
 	public $bbcs_ddos_resilience    = 0;
 
 	public $block_adblocker_users      = 1;
@@ -43,7 +50,6 @@ class BotBlockerSettings
 	public $block_incorrect_lang_users = 0;
 	public $block_ipv6_users           = 0;
 	public $block_ip_ptr_match         = 0;
-	public $block_nojs_users           = 1;
 	public $block_override             = 0;
 	public $block_proxy_users          = 1;
 	public $block_rkn                  = 0;
@@ -144,6 +150,9 @@ class BotBlockerSettings
 	public $redis_prefix   = BOTBLOCKER_PREFIX;
 	public $redis_database = 0;
 
+	public $apcu_enable = 0;
+	public $apcu_prefix = BOTBLOCKER_PREFIX;
+
 	public $mu_enable = 0;
 	public $mu_geo_enable = 0;
 
@@ -153,10 +162,6 @@ class BotBlockerSettings
 	public $x_robots_directives = array();
 
 	public $salt     = '';
-	public $salt_pz  = '';
-	public $salt_ps  = '';
-	public $salt_bb  = '';
-	public $host_key = '';
 
 	public $samesite                    = 'Lax';
 	public $secret_botblocker_get_param = '';
@@ -171,10 +176,6 @@ class BotBlockerSettings
 	public $cloud_fallback_block	= 0;
 	public $utm_noindex             = 0;
 	public $utm_referrer            = 1;
-
-	public $email_notifications             = 0;
-	public $critical_load_notifications     = 0;
-	public $regular_notifications_frequency = 'disabled';
 
 	public $bbcs_2fa_enable = 0;
 	public $bbcs_2fa_roles = array();

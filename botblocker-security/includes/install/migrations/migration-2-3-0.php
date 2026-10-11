@@ -26,7 +26,7 @@ function bbcs_migration_2_3_0() {
     $alter_parts[] = "ADD KEY `ipv4range_disabled_index` (`disable`, `ip1`, `ip2`)";
     $alter_parts[] = "ADD UNIQUE KEY `search` (`search`(191))";
 
-    $wpdb->query(
+    $ipv4_alter = $wpdb->query(
         "ALTER TABLE `{$wpdb->bbcs_ipv4rules}`
             " . implode( ',
             ', $alter_parts )
@@ -193,4 +193,14 @@ function bbcs_migration_2_3_0() {
 	BotBlockerDb::generateAllFiles();
 
     // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, PluginCheck.Security.DirectDB.UnescapedDBParameter
+
+	if ( false === $ipv4_alter || ! empty( $wpdb->last_error ) ) {
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( '[BBCS DEBUG] [Migration] migration 2.3.0 FAILED: ' . $wpdb->last_error );
+		}
+		return false;
+	}
+
+	return true;
 }

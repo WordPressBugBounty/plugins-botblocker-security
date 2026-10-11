@@ -192,7 +192,7 @@
     /* ── Restore simple mode from localStorage, but honour URL hash ── */
     if (hasModeToggle) {
       var initHash = (window.location.hash || '').replace(/^#/, '').toLowerCase();
-      var initTabHash = initHash.split('&')[0];
+      var initTabHash = initHash.split('&')[0].replace(/_/g, '-');
 
       // Check if the URL hash targets an advanced tab - if so, force simple mode OFF
       var $hashTarget = initTabHash ? $items.filter(function () {
@@ -331,13 +331,9 @@
       if (window.innerWidth <= 1024) {
         $nav.removeClass('is-open');
         $toggle.removeClass('is-open').attr('aria-expanded', 'false');
-        var $content = $page.find('.bbcs-settings-content');
-        if ($content.length) {
-          $('html, body').animate({ scrollTop: $content.offset().top - 20 }, 200);
-        }
       }
 
-      scrollActiveIntoView();
+      scrollActiveToTop();
     });
 
     /* ══════════════════════════════════════════
@@ -365,10 +361,20 @@
        Search filter
        ══════════════════════════════════════════ */
 
-    function scrollActiveIntoView() {
+    function scrollActiveToTop() {
       var $active = $items.filter('.is-active');
-      if ($active.length) {
-        $active[0].scrollIntoView({ block: 'start', behavior: 'smooth' });
+      var groups = $nav[0].querySelector('.bbcs-snav-groups');
+      if (!$active.length || !groups) return;
+
+      var groupsRect = groups.getBoundingClientRect();
+      var activeRect = $active[0].getBoundingClientRect();
+      var targetTop = groups.scrollTop + activeRect.top - groupsRect.top;
+      var smooth = !window.matchMedia || !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (groups.scrollTo) {
+        groups.scrollTo({ top: Math.max(0, targetTop), behavior: smooth ? 'smooth' : 'auto' });
+      } else {
+        groups.scrollTop = Math.max(0, targetTop);
       }
     }
 
@@ -498,7 +504,7 @@
     function activateInitialTab() {
       var $target;
       if (hash) {
-        var tabHash = hash.split('&')[0];
+        var tabHash = hash.split('&')[0].replace(/_/g, '-');
         $target = $items.filter(function () {
           var id = ($(this).data('snav-tab') || '').replace(/_/g, '-').toLowerCase();
           return id === tabHash;
@@ -534,7 +540,7 @@
     $(window).on('hashchange', function () {
       var hash = (window.location.hash || '').replace(/^#/, '').toLowerCase();
       if (!hash) return;
-      var tabHash = hash.split('&')[0];
+      var tabHash = hash.split('&')[0].replace(/_/g, '-');
       var $target = $items.filter(function () {
         var id = ($(this).data('snav-tab') || '').replace(/_/g, '-').toLowerCase();
         return id === tabHash;

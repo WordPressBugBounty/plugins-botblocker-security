@@ -50,6 +50,7 @@ class BotBlockerHealthShortcodes {
 		}
 
 		return HealthGauge::make()
+			->withId( (string) $atts['id'] )
 			->withValue( $atts['value'] )
 			->withMax( $atts['max'] )
 			->withLabel( $atts['label'] )
@@ -75,7 +76,6 @@ class BotBlockerHealthShortcodes {
 			'bbcs_captcha_mode'  => __( 'Captcha mode enabled', 'botblocker-security' ),
 			'block_empty_ua'     => __( 'Blocking empty User-Agent', 'botblocker-security' ),
 			'block_empty_lang'   => __( 'Blocking empty language', 'botblocker-security' ),
-			'block_nojs_users'   => __( 'Blocking users without JavaScript', 'botblocker-security' ),
 			'block_simplebot_ua' => __( 'Blocking simple bot User-Agents', 'botblocker-security' ),
 			'block_fake_ref'     => __( 'Blocking fake referrers', 'botblocker-security' ),
 			'block_proxy_users'  => __( 'Blocking proxy users', 'botblocker-security' ),

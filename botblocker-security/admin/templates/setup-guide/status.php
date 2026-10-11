@@ -12,6 +12,7 @@ return static function (Botblocker_SetupGuideViewModel $data, string $mode): voi
 			<div>
 				<div class="bbcs-pagehead-title"><?php esc_html_e('System Status', 'botblocker-security'); ?></div>
 				<div class="bbcs-pagehead-sub"><?php esc_html_e('Full protection checklist, PRO and request processing chain', 'botblocker-security'); ?></div>
+				<a class="bbcs-link bbcs-pagehead-doc" href="<?php echo esc_url( BotBlockerDocs::page( 'dashboard', 'a-checklist-of-the-main-protections' ) ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Read the documentation', 'botblocker-security' ); ?> &#8599;</a>
 			</div>
 			<div class="bbcs-pagehead-actions">
 				<button class="bbcs-btn bbcs-btn--pri" type="button" id="bbcsOpenOneClickSetup">
@@ -38,13 +39,14 @@ return static function (Botblocker_SetupGuideViewModel $data, string $mode): voi
 				<div class="bbcs-status-main">
 					<div class="bbcs-gauge <?php echo esc_attr( Botblocker_HealthScoreHelper::getColorClass( $data->health_score ) ); ?>" style="background: conic-gradient(var(--bbcs-gauge-color) 0 <?php echo (int) $data->health_score; ?>%, var(--bbcs-s3) <?php echo (int) $data->health_score; ?>% 100%);">
 						<div class="bbcs-gauge-inner">
-							<span class="bbcs-gauge-n"><?php echo esc_html($data->health_score); ?>%</span>
+							<span class="bbcs-gauge-n"><?php echo esc_html( (string) $data->health_score ); ?>%</span>
 							<span class="bbcs-gauge-lbl"><?php echo esc_html($data->health_label); ?></span>
 						</div>
 					</div>
 					<div class="bbcs-fill">
 						<div class="bbcs-section-title bbcs-fs-xl"><?php esc_html_e('System security status', 'botblocker-security'); ?></div>
 						<div class="bbcs-muted bbcs-mt-2 bbcs-fs-sm bbcs-max-desc"><?php esc_html_e('Complete protection checklist. Review each item below to ensure full coverage.', 'botblocker-security'); ?></div>
+						<a class="bbcs-link bbcs-fs-sm bbcs-mt-2" href="<?php echo esc_url( BotBlockerDocs::page( 'dashboard', 'what-the-protection-score-means' ) ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'How the score is calculated', 'botblocker-security' ); ?> &#8599;</a>
 					</div>
 				</div>
 				<div class="bbcs-status-stats">

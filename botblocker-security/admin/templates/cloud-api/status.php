@@ -5,6 +5,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use BotBlocker\Component\Base;
+
 return static function ( Botblocker_CloudApiViewModel $data ): void {
 
 	?>
@@ -14,7 +16,7 @@ return static function ( Botblocker_CloudApiViewModel $data ): void {
 				<span class="bbcs-tile bbcs-tile--sm bbcs-acc-amber"><svg class="bbcs-ico"><use href="#bbcs-i-crown"></use></svg></span>
 				<div>
 					<div class="bbcs-section-title bbcs-fs-xl"><?php esc_html_e( 'PRO Status', 'botblocker-security' ); ?></div>
-					<div class="bbcs-pill bbcs-pill--green bbcs-mt-xs"><?php echo $data->is_cloud_api_active ? esc_html__( 'Active', 'botblocker-security' ) : esc_html__( 'Inactive', 'botblocker-security' ); ?></div>
+					<div class="bbcs-pill <?php echo $data->is_cloud_api_active ? 'bbcs-pill--green' : 'bbcs-pill--amber'; ?> bbcs-mt-xs"><?php echo $data->is_cloud_api_active ? esc_html__( 'Active', 'botblocker-security' ) : esc_html__( 'Inactive', 'botblocker-security' ); ?></div>
 				</div>
 			</div>
 
@@ -23,7 +25,7 @@ return static function ( Botblocker_CloudApiViewModel $data ): void {
 
 			<form onsubmit="return false;">
 			<div class="bbcs-field">
-				<div class="bbcs-field-label"><?php esc_html_e( 'License key', 'botblocker-security' ); ?></div>
+				<div class="bbcs-field-label"><?php esc_html_e( 'License key', 'botblocker-security' ); ?><?php echo Base::help( '', BotBlockerDocs::url( 'cloud_api_key' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?></div>
 				<div class="bbcs-row bbcs-g-2h">
 					<input type="text" class="bbcs-input bbcs-input--mono" id="bbcs_cloud_api_key" name="bbcs_cloud_api_key" value="<?php echo esc_attr( $data->cloud_api_key ); ?>" placeholder="<?php esc_attr_e( 'Enter license key', 'botblocker-security' ); ?>" style="flex:1;min-width:0;">
 					<button type="submit" id="bbcs_toggle_cloud_api_btn" class="bbcs-btn <?php echo $data->is_cloud_api_active ? 'bbcs-btn--danger' : 'bbcs-btn--pri'; ?>" data-is-active="<?php echo $data->is_cloud_api_active ? '1' : '0'; ?>" style="padding-block:var(--bbcs-sp-2h);">
@@ -34,42 +36,30 @@ return static function ( Botblocker_CloudApiViewModel $data ): void {
 			</div>
 			</form>
 			<div id="cloud-status" class="active">
+			<?php
+			$bbcs_fetching = $data->is_cloud_api_active && $data->should_fetch;
+			$bbcs_hits_txt = $data->remaining_hits === false ? ( $bbcs_fetching ? number_format_i18n( 123456 ) : '–' ) : number_format_i18n( (int) $data->remaining_hits );
+			$bbcs_days_txt = $data->remaining_days === false ? ( $bbcs_fetching ? '30' : '–' ) : (string) (int) $data->remaining_days;
+			?>
 			<div class="bbcs-grid bbcs-grid--2 bbcs-mt-1 bbcs-mb-4">
 				<div class="bbcs-inner bbcs-statbox">
-					<div class="bbcs-stat bbcs-stat--sm" id="bbcs_stat_hits"><?php echo esc_html( number_format_i18n( (int) $data->remaining_hits ) ); ?></div>
+					<div class="bbcs-stat bbcs-stat--sm<?php echo $bbcs_fetching && $data->remaining_hits === false ? ' is-loading is-empty' : ''; ?>" id="bbcs_stat_hits"<?php echo $data->is_cloud_api_active ? ' data-bbcs-remaining="hits"' : ''; ?>><?php echo esc_html( $bbcs_hits_txt ); ?></div>
 					<div class="bbcs-statbox-lbl"><?php esc_html_e( 'requests remaining', 'botblocker-security' ); ?></div>
 				</div>
 				<div class="bbcs-inner bbcs-statbox">
-					<div class="bbcs-stat bbcs-stat--sm" id="bbcs_stat_days"><?php echo esc_html( (int) $data->remaining_days ); ?></div>
+					<div class="bbcs-stat bbcs-stat--sm<?php echo $bbcs_fetching && $data->remaining_days === false ? ' is-loading is-empty' : ''; ?>" id="bbcs_stat_days"<?php echo $data->is_cloud_api_active ? ' data-bbcs-remaining="days"' : ''; ?>><?php echo esc_html( $bbcs_days_txt ); ?></div>
 					<div class="bbcs-statbox-lbl"><?php esc_html_e( 'days remaining', 'botblocker-security' ); ?></div>
 				</div>
 			</div>
-			<input type="hidden" id="bbcs_remaining_hits" value="<?php echo esc_attr( (int) $data->remaining_hits ); ?>" data-should-fetch="<?php echo $data->is_cloud_api_active && $data->should_fetch ? 'true' : 'false'; ?>">
-			<input type="hidden" id="bbcs_remaining_days" value="<?php echo esc_attr( (int) $data->remaining_days ); ?>">
 			</div>
+			<?php if ( $data->is_cloud_api_active ) : ?>
 			<div class="bbcs-row bbcs-g-2">
-				<?php if ( $data->is_cloud_api_active ) : ?>
 				<button type="button" id="bbcs_refresh_cloud_api" class="bbcs-btn bbcs-btn--pri"><svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-refresh"></use></svg><?php esc_html_e( 'Refresh status', 'botblocker-security' ); ?></button>
-				<?php endif; ?>
-				<button type="button" id="bbcs_fetch_cloud_api_key_btn" class="bbcs-btn"><svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-key"></use></svg><?php esc_html_e( 'Fetch key from cloud', 'botblocker-security' ); ?></button>
 			</div>
-
-			<div class="bbcs-mt-auto">
-				<div class="bbcs-divider bbcs-mb-3"></div>
-
-				<div class="bbcs-row bbcs-g-1h bbcs-flex-wrap">
-					<i class="fa-regular fa-circle-question bbcs-dim"></i>
-					<a class="bbcs-info-footer-a bbcs-link bbcs-fs-xs bbcs-dim" href="<?php echo esc_url( $data->docs_url ); ?>/botblocker-api/" target="_blank"><?php esc_html_e( 'About BotBlocker API', 'botblocker-security' ); ?></a>
-					<a class="bbcs-info-footer-a bbcs-link bbcs-fs-xs bbcs-dim" href="<?php echo esc_url( $data->docs_url ); ?>/cloud-based-visitor-verification-in-botblocker-pro/" target="_blank"><?php esc_html_e( 'Cloud based verification', 'botblocker-security' ); ?></a>
-					<a class="bbcs-info-footer-a bbcs-link bbcs-fs-xs bbcs-dim" href="<?php echo esc_url( $data->docs_url ); ?>/botblocker-free-vs-pro-which-version-to-choose/" target="_blank"><?php esc_html_e( 'Free vs PRO', 'botblocker-security' ); ?></a>
-					<a class="bbcs-info-footer-a bbcs-link bbcs-fs-xs bbcs-dim" href="<?php echo esc_url( $data->docs_url ); ?>/complete-list-of-botblocker-features/" target="_blank"><?php esc_html_e( 'BotBlocker Features', 'botblocker-security' ); ?></a>
-					<a class="bbcs-info-footer-a bbcs-link bbcs-fs-xs bbcs-dim" href="<?php echo esc_url( $data->docs_url ); ?>/how-botblocker-pros-cloud-verification-defeats-bots/" target="_blank"><?php esc_html_e( 'BotBlocker PRO', 'botblocker-security' ); ?></a>
-				</div>
-			</div>
+			<?php endif; ?>
 
 			<?php wp_nonce_field( 'bbcs_connect_cloud_api_action', 'bbcs_connect_cloud_api_nonce' ); ?>
 			<?php wp_nonce_field( 'bbcs_deactivate_cloud_api_action', 'bbcs_deactivate_cloud_api_nonce' ); ?>
-			<?php wp_nonce_field( 'bbcs_fetch_cloud_api_key_action', 'bbcs_fetch_cloud_api_key_nonce' ); ?>
 		</div>
 
 		<?php if ( ! $data->is_cloud_api_active ) : ?>
@@ -124,7 +114,7 @@ return static function ( Botblocker_CloudApiViewModel $data ): void {
 		</table>
 		<div class="bbcs-row bbcs-g-2 bbcs-mt-3">
 			<a class="bbcs-btn bbcs-btn--pri" href="<?php echo esc_url( $data->pricing_url ); ?>" target="_blank"><?php esc_html_e( 'See pricing', 'botblocker-security' ); ?></a>
-			<a class="bbcs-btn" href="<?php echo esc_url( $data->docs_url ); ?>/botblocker-free-vs-pro-which-version-to-choose/" target="_blank"><?php esc_html_e( 'Read full comparison', 'botblocker-security' ); ?></a>
+			<a class="bbcs-btn" href="<?php echo esc_url( BotBlockerDocs::page( 'licensing' ) ); ?>" target="_blank"><?php esc_html_e( 'Read full comparison', 'botblocker-security' ); ?></a>
 		</div>
 	</div>
 	<?php endif; ?>

@@ -5,9 +5,10 @@
 
 	var state = {
 		currentStep: 0,
-		totalSteps: 8,
+		totalSteps: 9,
 		selectedPreset: 'strong',
 		selectedCaptchaMode: 8,
+		selectedRecaptchaProvider: bbcsSetWizVars.recaptcha_provider || 'none',
 		selectedInitMode: 'regular',
 		selectedCache: 'none'
 	};
@@ -23,10 +24,17 @@
 	var captchaNames = {
 		1: 'Color Buttons',
 		2: 'BotBlocker Image Captcha',
+		3: 'Google reCAPTCHA v2 with Button',
+		4: 'Google reCAPTCHA v2',
 		5: 'Dynamic Shape Captcha',
 		6: 'Dynamic Digit Captcha',
 		7: 'Hold Button Captcha',
 		8: 'Silent Auto-Verify (No Captcha)'
+	};
+	var recaptchaNames = {
+		none: 'Not connected',
+		v2: 'Google reCAPTCHA v2',
+		v3: 'Google reCAPTCHA v3 (additional layer)'
 	};
 	var initNames = {
 		regular: 'Regular plugin',
@@ -47,6 +55,7 @@
 			currentStep: state.currentStep,
 			selectedPreset: state.selectedPreset,
 			selectedCaptchaMode: state.selectedCaptchaMode,
+			selectedRecaptchaProvider: state.selectedRecaptchaProvider,
 			selectedInitMode: state.selectedInitMode,
 			selectedCache: state.selectedCache
 		}));
@@ -60,6 +69,7 @@
 			state.currentStep = typeof saved.currentStep === 'number' ? saved.currentStep : 0;
 			state.selectedPreset = saved.selectedPreset || 'strong';
 			state.selectedCaptchaMode = typeof saved.selectedCaptchaMode === 'number' ? saved.selectedCaptchaMode : 8;
+			state.selectedRecaptchaProvider = saved.selectedRecaptchaProvider || bbcsSetWizVars.recaptcha_provider || 'none';
 			state.selectedInitMode = saved.selectedInitMode || 'regular';
 			state.selectedCache = saved.selectedCache || 'none';
 		} catch (e) { /* ignore */ }
@@ -94,7 +104,7 @@
 		saveProgress();
 
 		// Step-specific async checks when the step becomes visible
-		if (step === 6) {
+		if (step === 7) {
 			checkCacheAvailability();
 		}
 	}
@@ -115,9 +125,9 @@
 			btn.innerHTML = orig;
 			if (r.success) {
 				state.selectedPreset = state.selectedPreset;
+				state.currentStep = 2;
 				saveProgress();
-				showStep(2);
-				runCompatibilityTests();
+				window.location.reload();
 			} else {
 				bbcsToast('error', (bbcsSetWizVars.i18n && bbcsSetWizVars.i18n.error_prefix || 'Error: ') + (r.data || 'Unknown error'));
 			}
@@ -161,21 +171,6 @@
 			var okBlock = $('#bbcs-wiz-test-ok');
 			if (hasWarnings && warnBlock) warnBlock.hidden = false;
 			if (!hasWarnings && okBlock) okBlock.hidden = false;
-		});
-	}
-
-	// TODO: Add notification toggle UI ([data-key="notify-daily"], etc.) - currently reads non-existent DOM, always sends 0
-	function saveNotifications() {
-		var dailyEl   = $('.bbcs-wizcheck[data-key="notify-daily"]');
-		var bfEl      = $('.bbcs-wizcheck[data-key="notify-brute-force"]');
-		var weeklyEl  = $('.bbcs-wizcheck[data-key="notify-weekly"]');
-
-		ajax({
-			action: 'bbcs_wizard_save_notifications',
-			nonce: bbcsSetWizVars.nonce,
-			notify_daily: dailyEl && dailyEl.classList.contains('is-on') ? 1 : 0,
-			notify_brute_force: bfEl && bfEl.classList.contains('is-on') ? 1 : 0,
-			notify_weekly: weeklyEl && weeklyEl.classList.contains('is-on') ? 1 : 0
 		});
 	}
 
@@ -224,8 +219,37 @@
 		});
 	}
 
-	function saveCaptchaAndAdvance() {
+	function saveRecaptchaAndAdvance() {
 		var btn = $('#bbcs-wiz-next4');
+		if (!btn) return;
+		var orig = btn.innerHTML;
+		btn.disabled = true;
+		btn.innerHTML = '<svg class="bbcs-ico bbcs-ico--sm bbcs-ico--spinner"><use href="#bbcs-i-refresh"></use></svg> ' + (bbcsSetWizVars.i18n.saving || 'Saving...');
+
+		ajax({
+			action: 'bbcs_wizard_save_recaptcha',
+			nonce: bbcsSetWizVars.nonce,
+			provider: state.selectedRecaptchaProvider,
+			recaptcha_key2: $('#bbcs-wiz-recaptcha-key2') ? $('#bbcs-wiz-recaptcha-key2').value.trim() : '',
+			recaptcha_secret2: $('#bbcs-wiz-recaptcha-secret2') ? $('#bbcs-wiz-recaptcha-secret2').value.trim() : '',
+			recaptcha_key3: $('#bbcs-wiz-recaptcha-key3') ? $('#bbcs-wiz-recaptcha-key3').value.trim() : '',
+			recaptcha_secret3: $('#bbcs-wiz-recaptcha-secret3') ? $('#bbcs-wiz-recaptcha-secret3').value.trim() : '',
+			recaptcha_tresshold: $('#bbcs-wiz-recaptcha-threshold') ? $('#bbcs-wiz-recaptcha-threshold').value : '0.5',
+			recaptcha_check: $('.bbcs-toggle[data-recaptcha-toggle="enable"]') && $('.bbcs-toggle[data-recaptcha-toggle="enable"]').classList.contains('is-on') ? 1 : 0,
+			recaptcha_v3_ipv6_block: $('.bbcs-toggle[data-recaptcha-toggle="ipv6"]') && $('.bbcs-toggle[data-recaptcha-toggle="ipv6"]').classList.contains('is-on') ? 1 : 0
+		}).then(function (r) {
+			btn.disabled = false;
+			btn.innerHTML = orig;
+			if (r.success) {
+				showStep(5);
+			} else {
+				bbcsToast('error', (bbcsSetWizVars.i18n && bbcsSetWizVars.i18n.error_prefix || 'Error: ') + (r.data || 'Unknown error'));
+			}
+		}).catch(function () { btn.disabled = false; btn.innerHTML = orig; });
+	}
+
+	function saveCaptchaAndAdvance() {
+		var btn = $('#bbcs-wiz-next5');
 		if (!btn) return;
 		var orig = btn.innerHTML;
 		btn.disabled = true;
@@ -239,8 +263,7 @@
 			btn.disabled = false;
 			btn.innerHTML = orig;
 			if (r.success) {
-				saveNotifications();
-				showStep(5);
+				showStep(6);
 			} else {
 				bbcsToast('error', (bbcsSetWizVars.i18n && bbcsSetWizVars.i18n.error_prefix || 'Error: ') + (r.data || 'Unknown error'));
 			}
@@ -248,7 +271,7 @@
 	}
 
 	function saveInitAndAdvance() {
-		var btn = $('#bbcs-wiz-next5');
+		var btn = $('#bbcs-wiz-next6');
 		if (!btn) return;
 		var orig = btn.innerHTML;
 		btn.disabled = true;
@@ -262,7 +285,7 @@
 			btn.disabled = false;
 			btn.innerHTML = orig;
 			if (r.success) {
-				showStep(6);
+				showStep(7);
 			} else {
 				bbcsToast('error', (bbcsSetWizVars.i18n && bbcsSetWizVars.i18n.error_prefix || 'Error: ') + (r.data || 'Unknown error'));
 			}
@@ -308,7 +331,7 @@
 	}
 
 	function saveCacheAndAdvance() {
-		var btn = $('#bbcs-wiz-next6');
+		var btn = $('#bbcs-wiz-next7');
 		if (!btn) return;
 		var orig = btn.innerHTML;
 		btn.disabled = true;
@@ -323,7 +346,7 @@
 			btn.innerHTML = orig;
 			if (r.success) {
 				completeWizard();
-				showStep(7);
+				showStep(8);
 			} else {
 				bbcsToast('error', (bbcsSetWizVars.i18n && bbcsSetWizVars.i18n.error_prefix || 'Error: ') + (r.data || 'Unknown error'));
 			}
@@ -345,6 +368,8 @@
 				if (presetEl) presetEl.textContent = presetNames[state.selectedPreset] || 'Strong';
 				var captchaEl = $('#bbcs-wiz-final-captcha');
 				if (captchaEl) captchaEl.textContent = captchaNames[state.selectedCaptchaMode] || 'Silent Auto-Verify (No Captcha)';
+				var recaptchaEl = $('#bbcs-wiz-final-recaptcha');
+				if (recaptchaEl) recaptchaEl.textContent = recaptchaNames[state.selectedRecaptchaProvider] || 'Not connected';
 				var initEl = $('#bbcs-wiz-final-init');
 				if (initEl) initEl.textContent = initNames[state.selectedInitMode] || 'Regular plugin';
 				var scoreEl = $('#bbcs-wiz-final-score');
@@ -374,14 +399,18 @@
 				return;
 			}
 			if (state.currentStep === 4 && step >= 5) {
-				saveCaptchaAndAdvance();
+				saveRecaptchaAndAdvance();
 				return;
 			}
 			if (state.currentStep === 5 && step >= 6) {
-				saveInitAndAdvance();
+				saveCaptchaAndAdvance();
 				return;
 			}
 			if (state.currentStep === 6 && step >= 7) {
+				saveInitAndAdvance();
+				return;
+			}
+			if (state.currentStep === 7 && step >= 8) {
 				saveCacheAndAdvance();
 				return;
 			}
@@ -423,6 +452,31 @@
 		});
 	}
 
+	function updateCaptchaSelection(mode) {
+		var modeValue = String(mode);
+		$$('.bbcs-wizcaptcha-option, .bbcs-wizcard[data-captcha]').forEach(function (option) {
+			option.classList.toggle('is-sel', option.getAttribute('data-captcha') === modeValue);
+		});
+		$$('.bbcs-wizcaptcha-radio').forEach(function (radio) {
+			radio.checked = radio.value === modeValue;
+		});
+		$$('[data-captcha-detail]').forEach(function (detail) {
+			var active = detail.getAttribute('data-captcha-detail') === modeValue;
+			detail.hidden = !active;
+			detail.classList.toggle('is-active', active);
+			var video = $('video', detail);
+			if (!video) return;
+			if (active && typeof video.play === 'function') {
+				try {
+					var playPromise = video.play();
+					if (playPromise && typeof playPromise.catch === 'function') playPromise.catch(function () {});
+				} catch (e) {}
+			} else if (typeof video.pause === 'function') {
+				video.pause();
+			}
+		});
+	}
+
 	function bindEvents() {
 		$('#bbcs-wiz-start') && $('#bbcs-wiz-start').addEventListener('click', function () { goToStep(1); });
 		$('#bbcs-wiz-skip') && $('#bbcs-wiz-skip').addEventListener('click', function () {
@@ -444,14 +498,49 @@
 
 		$('#bbcs-wiz-apply-preset') && $('#bbcs-wiz-apply-preset').addEventListener('click', applyPreset);
 
-		$$('.bbcs-wizcard[data-captcha]').forEach(function (card) {
-			card.addEventListener('click', function () {
-				$$('.bbcs-wizcard[data-captcha]').forEach(function (c) { c.classList.remove('is-sel'); });
-				card.classList.add('is-sel');
-				state.selectedCaptchaMode = parseInt(card.getAttribute('data-captcha'), 10);
+		$$('.bbcs-wizcaptcha-radio').forEach(function (radio) {
+			radio.addEventListener('change', function () {
+				state.selectedCaptchaMode = parseInt(radio.value, 10);
+				updateCaptchaSelection(state.selectedCaptchaMode);
 				saveProgress();
 			});
 		});
+
+		$$('.bbcs-wizcard[data-captcha]').forEach(function (card) {
+			card.addEventListener('click', function () {
+				state.selectedCaptchaMode = parseInt(card.getAttribute('data-captcha'), 10);
+				updateCaptchaSelection(state.selectedCaptchaMode);
+				saveProgress();
+			});
+		});
+
+		$$('.bbcs-wizcard[data-recaptcha-provider]').forEach(function (card) {
+			card.addEventListener('click', function () {
+				$$('.bbcs-wizcard[data-recaptcha-provider]').forEach(function (c) { c.classList.remove('is-sel'); });
+				card.classList.add('is-sel');
+				state.selectedRecaptchaProvider = card.getAttribute('data-recaptcha-provider');
+				$$('[data-recaptcha-fields]').forEach(function (fields) {
+					fields.hidden = fields.getAttribute('data-recaptcha-fields') !== state.selectedRecaptchaProvider;
+				});
+				saveProgress();
+			});
+		});
+
+		$$('[data-recaptcha-toggle]').forEach(function (toggle) {
+			toggle.addEventListener('click', function () {
+				var on = !toggle.classList.contains('is-on');
+				toggle.classList.toggle('is-on', on);
+				toggle.setAttribute('aria-checked', on ? 'true' : 'false');
+			});
+		});
+
+		var recaptchaThreshold = $('#bbcs-wiz-recaptcha-threshold');
+		if (recaptchaThreshold) {
+			recaptchaThreshold.addEventListener('input', function () {
+				var value = $('#bbcs-wiz-recaptcha-threshold-value');
+				if (value) value.textContent = recaptchaThreshold.value;
+			});
+		}
 
 		$$('.bbcs-wizcard[data-init]').forEach(function (card) {
 			card.addEventListener('click', function (e) {
@@ -480,28 +569,23 @@
 			});
 		});
 
-		// Back buttons for steps 1-6
-		for (var i = 1; i <= 6; i++) {
+		// Back buttons for steps 1-7
+		for (var i = 1; i <= 7; i++) {
 			(function (step) {
 				var btn = $('#bbcs-wiz-back' + step);
 				if (btn) btn.addEventListener('click', function () { goBack(step - 1); });
 			})(i);
 		}
 
-		// Next/Continue buttons for steps 2-5 (step 6 has its own handler that saves first)
-		for (var j = 2; j <= 5; j++) {
+		// Next/Continue buttons for steps 2-6 (step 7 has its own handler that saves first)
+		for (var j = 2; j <= 6; j++) {
 			(function (step) {
 				var btn = $('#bbcs-wiz-next' + step);
 				if (btn) btn.addEventListener('click', function () { goToStep(step + 1); });
 			})(j);
 		}
 
-		$('#bbcs-wiz-next6') && $('#bbcs-wiz-next6').addEventListener('click', saveCacheAndAdvance);
-
-		$('#bbcs-wiz-fix-auto') && $('#bbcs-wiz-fix-auto').addEventListener('click', function () {
-			bbcsToast('success', bbcsSetWizVars.i18n && bbcsSetWizVars.i18n.auto_fix_stub || 'Auto-fix applied. Moving on.');
-			goToStep(3);
-		});
+		$('#bbcs-wiz-next7') && $('#bbcs-wiz-next7').addEventListener('click', saveCacheAndAdvance);
 
 		$('#bbcs-wiz-fix-manual') && $('#bbcs-wiz-fix-manual').addEventListener('click', function () { goToStep(3); });
 
@@ -517,10 +601,17 @@
 		}
 
 		var captchaCard = $('.bbcs-wizcard[data-captcha="' + state.selectedCaptchaMode + '"]');
-		if (captchaCard) {
-			$$('.bbcs-wizcard[data-captcha]').forEach(function (c) { c.classList.remove('is-sel'); });
-			captchaCard.classList.add('is-sel');
+		updateCaptchaSelection(state.selectedCaptchaMode);
+		if (captchaCard) captchaCard.classList.add('is-sel');
+
+		var recaptchaCard = $('.bbcs-wizcard[data-recaptcha-provider="' + state.selectedRecaptchaProvider + '"]');
+		if (recaptchaCard) {
+			$$('.bbcs-wizcard[data-recaptcha-provider]').forEach(function (c) { c.classList.remove('is-sel'); });
+			recaptchaCard.classList.add('is-sel');
 		}
+		$$('[data-recaptcha-fields]').forEach(function (fields) {
+			fields.hidden = fields.getAttribute('data-recaptcha-fields') !== state.selectedRecaptchaProvider;
+		});
 
 		var initCard = $('.bbcs-wizcard[data-init="' + state.selectedInitMode + '"]');
 		if (initCard) {
@@ -537,6 +628,13 @@
 
 	function init() {
 		restoreProgress();
+		// Populate captcha names from the rendered option list so that the
+		// finish summary shows the correct label for addon modes (90+).
+		$$('.bbcs-wizcaptcha-option').forEach(function (option) {
+			var id = parseInt(option.getAttribute('data-captcha'), 10);
+			var titleEl = option.querySelector('.bbcs-wizcaptcha-option-title');
+			if (id && titleEl) captchaNames[id] = titleEl.textContent.trim();
+		});
 		restoreUIState();
 		bindEvents();
 		initEmail();
@@ -551,9 +649,7 @@
 
 		if (state.currentStep === 2) {
 			runCompatibilityTests();
-		} else if (state.currentStep === 6) {
-			checkCacheAvailability();
-		} else if (state.currentStep === 7) {
+		} else if (state.currentStep === 8) {
 			completeWizard();
 		}
 	}

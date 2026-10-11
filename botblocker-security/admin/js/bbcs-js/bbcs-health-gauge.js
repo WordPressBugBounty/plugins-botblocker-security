@@ -1,14 +1,5 @@
 // Health Gauge Chart
 jQuery(document).ready(function($){
-    const health_gauge = $('#bbcs-health_gauge');
-
-    if (health_gauge.length === 0) return;
-
-    const usedPercent = +health_gauge.data('health-value');   // Change this value
-    const usedStatusTxt = health_gauge.data('bbcs-label');    // Change this value
-    const freePercent = 100 - usedPercent;
-    const backgroundColor = getColorByPercent(usedPercent);
-
     function getColorByPercent(percent) {
         if (percent < 40) return '#dc3545';
         else if (percent < 50) return '#ff5100ff';
@@ -18,57 +9,70 @@ jQuery(document).ready(function($){
         else return '#28a745';
     }
 
-    const healthCenterText = {
-        id: 'healthCenterText',
-        afterDatasetsDraw: function(chart) {
-            const ctx = chart.ctx;
-            const centerX = chart.width / 2;
-            const centerY = chart.height / 2;
-            
-            ctx.save();
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            
-            const percent = chart.data.datasets[0].data[0];
-            const color = getColorByPercent(percent);
+    function createHealthGauge(canvas, usedPercent, usedStatusTxt) {
+        var freePercent = 100 - usedPercent;
+        var backgroundColor = getColorByPercent(usedPercent);
 
-            ctx.font = 'bold 22px Arial';
-            ctx.fillStyle = color;
-            ctx.fillText(percent.toFixed(0) + '%', centerX, centerY + 26);
-            
-            ctx.font = '16px Arial';
-            ctx.fillStyle = color;
-            ctx.fillText(usedStatusTxt, centerX, centerY + 54);
-            
-            ctx.restore();
-        }
-    };
+        var healthCenterText = {
+            id: 'healthCenterText',
+            afterDatasetsDraw: function(chart) {
+                var ctx = chart.ctx;
+                var centerX = chart.width / 2;
+                var centerY = chart.height / 2;
 
-    new Chart(health_gauge, {
-        type: 'doughnut',
-        data: {
-            // labels: [usedPercent, freePercent],
-            datasets: [{
-                data: [usedPercent, freePercent],
-                backgroundColor: [backgroundColor, '#e6e6e6'],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: false,
-            maintainAspectRatio: false,
-            rotation: -90,
-            circumference: 180,
-            cutout: '70%',
-            plugins: {
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    enabled: false
-                }
+                ctx.save();
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                var percent = chart.data.datasets[0].data[0];
+                var color = getColorByPercent(percent);
+
+                ctx.font = 'bold 22px Arial';
+                ctx.fillStyle = color;
+                ctx.fillText(percent.toFixed(0) + '%', centerX, centerY + 26);
+
+                ctx.font = '16px Arial';
+                ctx.fillStyle = color;
+                ctx.fillText(usedStatusTxt, centerX, centerY + 54);
+
+                ctx.restore();
             }
-        },
-        plugins: [healthCenterText]
+        };
+
+        new Chart(canvas, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [usedPercent, freePercent],
+                    backgroundColor: [backgroundColor, '#e6e6e6'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: false,
+                maintainAspectRatio: false,
+                rotation: -90,
+                circumference: 180,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        enabled: false
+                    }
+                }
+            },
+            plugins: [healthCenterText]
+        });
+    }
+
+    $('.bbcs-health-gauge-canvas').each(function() {
+        var canvas = this;
+        var $canvas = $(canvas);
+        var usedPercent = +$canvas.data('health-value');
+        var usedStatusTxt = $canvas.data('bbcs-label');
+
+        createHealthGauge(canvas, usedPercent, usedStatusTxt);
     });
 });

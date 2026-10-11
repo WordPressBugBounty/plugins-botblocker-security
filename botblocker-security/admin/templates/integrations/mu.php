@@ -15,10 +15,10 @@ return static function (Botblocker_IntegrationsViewModel $data, bool $isActive):
 	<div role="tabpanel" class="bbcs-tabpanel bbcs-protect-layout" data-tabpanel="mu"<?php echo $isActive ? '' : ' hidden' ?>>
 		<?php
 		InfoColumn::make()
+			->withDocPage( BotBlockerDocs::page( 'wordpress-lifecycle' ) )
 			->withIconImage( BOTBLOCKER_URL . 'public/icons/tools.svg', __( 'MU-plugin', 'botblocker-security' ) )
 			->withDescription( __( 'MU-plugin mode loads BotBlocker IP protection before regular plugins and WordPress core initialise.', 'botblocker-security' ) )
 			->withDescription( __( 'A small loader file is installed into wp-content/mu-plugins and pulls the main plugin code on every request.', 'botblocker-security' ) )
-			->withDocLink( 'https://developer.wordpress.org/advanced-administration/plugins/mu-plugins/', __( 'Must-Use Plugins (WordPress.org)', 'botblocker-security' ) )
 			->render();
 		?>
 		<div>
@@ -32,6 +32,7 @@ return static function (Botblocker_IntegrationsViewModel $data, bool $isActive):
 						->withLabel( __( 'Enable MU-plugin', 'botblocker-security' ) )
 						->withTooltip( __( 'Loads black/white IP lists before regular plugins and WordPress core', 'botblocker-security' ) )
 						->withAjax( 'bbcs_toggle_early_phase_in_db', 'mu_enable' )
+						->withDocLink( BotBlockerDocs::url( 'mu_enable' ) )
 						->render();
 					?>
 				</div>
@@ -49,6 +50,7 @@ return static function (Botblocker_IntegrationsViewModel $data, bool $isActive):
 						->withLabel( __( 'Country blocking in the MU layer', 'botblocker-security' ) )
 						->withTooltip( __( 'Rejects visitors from the blocked-country list before plugins load. Off by default - any lookup uncertainty passes traffic to the main plugin.', 'botblocker-security' ) )
 						->withAjax( 'bbcs_toggle_early_phase_in_db', 'mu_geo_enable' )
+						->withDocLink( BotBlockerDocs::url( 'mu_geo_enable' ) )
 						->render();
 					?>
 				</div>

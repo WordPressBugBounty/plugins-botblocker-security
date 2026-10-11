@@ -38,18 +38,11 @@ final class BBCS_Toastify
 	);
 
 	/** @var array<int, array{message:string, type:string, duration?:int}> Toast queue for the current request (non-persistent). */
-	private static array $queue = array();
+	private static $queue = array();
 
 	/** @var bool Whether assets have been enqueued. */
-	private static bool $assets_enqueued = false;
+	private static $assets_enqueued = false;
 
-	/** @var array<string, string> Map internal type codes to Toastify CSS class names. */
-	private const TYPE_CSS_MAP = array(
-		self::TYPE_SUCCESS => 'toast-success',
-		self::TYPE_ERROR   => 'toast-error',
-		self::TYPE_WARNING => 'toast-warning',
-		self::TYPE_INFO    => 'toast-info',
-	);
 
 	private const DEFAULT_DURATION = 6000;
 
@@ -264,7 +257,7 @@ final class BBCS_Toastify
 			'package_root'         => __( 'The package must contain exactly one root folder.', 'botblocker-security' ),
 			'package_slug'         => __( 'The package root folder must be a valid slug.', 'botblocker-security' ),
 			'package_invalid'      => __( 'The package does not match the BotBlocker add-on contract.', 'botblocker-security' ),
-			'requires_core_missing' => __( 'The package must declare Requires-Core.', 'botblocker-security' ),
+			'manifest_missing'     => __( 'Add-on package must include bbcs-addon.json.', 'botblocker-security' ),
 			'slug_mismatch'        => __( 'The package slug does not match the requested add-on.', 'botblocker-security' ),
 			'requires_php'         => __( 'This add-on requires a newer PHP version.', 'botblocker-security' ),
 			'redeploy_failed'      => __( 'Activation refused: the add-on runtime copy is outdated and could not be refreshed automatically. Check uploads write permissions and try again.', 'botblocker-security' ),

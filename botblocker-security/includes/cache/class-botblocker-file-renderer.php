@@ -14,7 +14,7 @@ class BotBlockerFileRenderer {
 
 		$dir = dirname( $filePath );
 		if ( ! is_dir( $dir ) || ! wp_is_writable( $dir ) ) {
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 				error_log( '[BotBlocker] Directory not writable: ' . $dir );
 			}
@@ -26,7 +26,7 @@ class BotBlockerFileRenderer {
 		if ( $bytes === false ) {
 			// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
 			@unlink( $tmpFile );
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 				error_log( '[BotBlocker] Failed to write config: ' . basename( $filePath ) );
 			}
@@ -48,7 +48,7 @@ class BotBlockerFileRenderer {
 		}
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
 		@unlink( $tmpFile );
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 			error_log( '[BotBlocker] Failed to save config: ' . basename( $filePath ) );
 		}
@@ -306,7 +306,7 @@ class BotBlockerFileRenderer {
 				continue;
 			}
 			$ranges = preg_split( '/\s+/', trim( (string) $item['verified_ip_ranges'] ), -1, PREG_SPLIT_NO_EMPTY );
-			$ranges = array_filter( (array) $ranges, 'strlen' );
+			$ranges = array_filter( (array) $ranges, static function ( $v ) { return '' !== $v; } );
 
 			$llm_data .= "        '" . addslashes( $provider ) . "' => [ 'search' => '" . addslashes( $search ) . "', 'ranges' => [";
 			$llm_data .= implode(
@@ -843,8 +843,6 @@ class BotBlockerFileRenderer {
 				} else {
 					$settings[ $key ] = (int) $value;
 				}
-			} elseif ( $value === 'true' || $value === 'false' ) {
-				$settings[ $key ] = $value === 'true';
 			} else {
 				$settings[ $key ] = $value;
 			}

@@ -73,8 +73,8 @@ final class DonutChart extends Base {
 			}
 		}
 
-		$labels = wp_json_encode( array_values( $this->labels ) );
-		$values = wp_json_encode( array_values( $this->values ) );
+		$labels = self::escape( (string) wp_json_encode( array_values( $this->labels ) ), 'attr' );
+		$values = self::escape( (string) wp_json_encode( array_values( $this->values ) ), 'attr' );
 		$title  = self::escape( $this->title );
 		$type   = self::escape( $this->type, 'attr' );
 		$width  = self::escape( $this->width, 'attr' );

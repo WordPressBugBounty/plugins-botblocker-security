@@ -239,6 +239,12 @@ class BotBlockerAjaxWhiteBots {
 			'comment'  => isset( $_POST['comment'] ) ? sanitize_textarea_field( wp_unslash( $_POST['comment'] ) ) : '',
 		);
 	    /* phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotValidated */
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$exists = (int) $wpdb->get_var( $wpdb->prepare( "SELECT id FROM `{$wpdb->bbcs_se}` WHERE id = %d", $id ) );
+		if ( $exists <= 0 ) {
+			wp_send_json_error( __( 'White bot not found.', 'botblocker-security' ) );
+		}
+
 		// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
 	    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$result = $wpdb->update( $wpdb->bbcs_se, $data, array( 'id' => $id ) );

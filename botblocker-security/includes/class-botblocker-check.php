@@ -7,6 +7,32 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class BotBlockerCheck {
 
+	/**
+	 * Response format for a request URI, by path shape (query stripped,
+	 * case-insensitive). API-shaped requests (REST, admin-ajax, XML-RPC)
+	 * cannot render the JS challenge — their wall responses must be emitted
+	 * in a format the client can parse. Everything else stays HTML.
+	 *
+	 * @return string 'json' | 'xml' | 'html'
+	 */
+	public static function responseFormatForUri( string $uri ): string {
+		$path = strtok( $uri, '?' );
+		$path = is_string( $path ) ? strtolower( trim( $path ) ) : '';
+		if ( $path === '' ) {
+			return 'html';
+		}
+		if ( $path === '/wp-json' || strpos( $path, '/wp-json/' ) === 0 ) {
+			return 'json';
+		}
+		if ( $path === '/wp-admin/admin-ajax.php' ) {
+			return 'json';
+		}
+		if ( strpos( $path, 'xmlrpc.php' ) !== false ) {
+			return 'xml';
+		}
+		return 'html';
+	}
+
 	public static function isNotEmptyUA( string $useragent ): bool {
 		$useragent = trim( $useragent );
 		if ( $useragent === '' || $useragent === BOTBLOCKER_EMPTY || empty( $useragent ) ) {

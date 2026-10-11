@@ -4,12 +4,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! defined( 'ABSPATH' ) || ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
-	http_response_code( 404 );
-	echo '404 Not Found';
-	exit;
-}
-
 class Botblocker_Uninstaller {
 
 	/**
@@ -17,7 +11,7 @@ class Botblocker_Uninstaller {
 	 *
 	 * @var string[]
 	 */
-	public static array $option_keys = array(
+	public static $option_keys = array(
 		'bbcs_db_version',
 		'bbcs_wizard_completed',
 		'bbcs_setup_wizard_completed',
@@ -52,7 +46,7 @@ class Botblocker_Uninstaller {
 	 *
 	 * @var string[]
 	 */
-	public static array $named_transients = array(
+	public static $named_transients = array(
 		'bbcs_asn_db_lock',
 		'bbcs_asn_db_failed_alert',
 		'bbcs_asn_db_self_heal_throttle',
@@ -82,7 +76,7 @@ class Botblocker_Uninstaller {
 	 *
 	 * @var string[]
 	 */
-	public static array $table_properties = array(
+	public static $table_properties = array(
 		'bbcs_hits',
 		'bbcs_hits_suspicious',
 		'bbcs_hits_cloud',
@@ -111,7 +105,7 @@ class Botblocker_Uninstaller {
 	 *
 	 * @var string[]
 	 */
-	public static array $network_option_keys = array(
+	public static $network_option_keys = array(
 		'bbcs_network_license_key',
 		'bbcs_network_cloud_api_key',
 		'bbcs_sites_map_dirty',
@@ -124,7 +118,7 @@ class Botblocker_Uninstaller {
 	 *
 	 * @var string[]
 	 */
-	public static array $network_named_transients = array(
+	public static $network_named_transients = array(
 		'bbcs_sites_map_regen_lock',
 		'bbcs_wpconfig_writing',
 	);

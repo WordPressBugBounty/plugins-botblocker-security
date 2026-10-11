@@ -2,7 +2,9 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
-?><div class="modal fade" id="AddRuleModal" tabindex="-1" aria-labelledby="createRuleModalLabel" aria-hidden="true">
+
+use BotBlocker\Component\Base;
+?><div class="modal fade" id="AddRuleModal" tabindex="-1" aria-labelledby="AddRuleModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -15,8 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-6">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-								<span class="bbcs-label-input"><?php esc_html_e( 'Type', 'botblocker-security' ); ?></span>
-								<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Select rule type', 'botblocker-security' ); ?></span></span>
+								<span class="bbcs-label-input"><?php esc_html_e( 'Type', 'botblocker-security' ); ?></span><?php echo Base::help( __( 'Select rule type', 'botblocker-security' ), BotBlockerDocs::url( 'rules-type' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<select class="bbcs_select_input_input" id="type" name="type" required>
@@ -35,8 +36,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-6">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-								<span class="bbcs-label-input"><?php esc_html_e( 'Priority', 'botblocker-security' ); ?></span>
-								<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Rule priority (1-100)', 'botblocker-security' ); ?></span></span>
+								<span class="bbcs-label-input"><?php esc_html_e( 'Priority', 'botblocker-security' ); ?></span><?php echo Base::help( __( 'Rule priority (1-100)', 'botblocker-security' ), BotBlockerDocs::url( 'rules-priority' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<input type="range" class="bbcs_text_input_input" id="priority" name="priority" min="1" max="100" required>
@@ -49,8 +49,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-6">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-								<span class="bbcs-label-input"><?php esc_html_e( 'Data', 'botblocker-security' ); ?></span>
-								<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Rule data', 'botblocker-security' ); ?></span></span>
+								<span class="bbcs-label-input"><?php esc_html_e( 'Data', 'botblocker-security' ); ?></span><?php echo Base::help( __( 'Rule data', 'botblocker-security' ), BotBlockerDocs::url( 'rules-data' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<input type="text" name="ip" id="this_ip" hidden>
@@ -61,8 +60,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-6">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-								<span class="bbcs-label-input"><?php esc_html_e( 'Comment', 'botblocker-security' ); ?></span>
-								<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Comment for this rule', 'botblocker-security' ); ?></span></span>
+								<span class="bbcs-label-input"><?php esc_html_e( 'Comment', 'botblocker-security' ); ?></span><?php echo Base::help( __( 'Comment for this rule', 'botblocker-security' ), BotBlockerDocs::url( 'rules-comment' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<textarea class="bbcs_text_input_input" id="comment" name="comment" rows="3"></textarea>
@@ -74,8 +72,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-6">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-								<span class="bbcs-label-input"><?php esc_html_e( 'Rule', 'botblocker-security' ); ?></span>
-								<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Rule action', 'botblocker-security' ); ?></span></span>
+								<span class="bbcs-label-input"><?php esc_html_e( 'Rule', 'botblocker-security' ); ?></span><?php echo Base::help( __( 'Rule action', 'botblocker-security' ), BotBlockerDocs::url( 'rules-rule' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<select class="bbcs_select_input_input" id="rule" name="rule" required>
@@ -91,8 +88,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-6">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-								<span class="bbcs-label-input"><?php esc_html_e( 'Expires', 'botblocker-security' ); ?></span>
-								<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Rule expiration date and time', 'botblocker-security' ); ?></span></span>
+								<span class="bbcs-label-input"><?php esc_html_e( 'Expires', 'botblocker-security' ); ?></span><?php echo Base::help( __( 'Rule expiration date and time', 'botblocker-security' ), BotBlockerDocs::url( 'rules-expires' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<input type="datetime-local" class="bbcs_text_input_input" id="expires" name="expires" required>

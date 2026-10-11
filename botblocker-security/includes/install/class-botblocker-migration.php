@@ -54,6 +54,10 @@ class BotBlockerMigration {
 				'file'     => 'migration-2-11-0.php',
 				'callback' => 'bbcs_migration_2_11_0',
 			),
+			'2.12.0' => array(
+				'file'     => 'migration-2-12-0.php',
+				'callback' => 'bbcs_migration_2_12_0',
+			),
 			)
 		);
 	}
@@ -108,25 +112,30 @@ class BotBlockerMigration {
 
 		$migrations  = self::getRegistry();
 		$is_existing = ( $installed !== '0' || BotBlockerInstall::tablesExist() );
+		$failed      = false;
 
 		if ( $is_existing ) {
 			$applied = $installed;
-			$failed  = false;
 			foreach ( $migrations as $version => $entry ) {
 				if ( version_compare( $installed, $version, '<' ) ) {
-					if ( self::loadMigration( $entry ) ) {
-						$result = self::runMigration( $entry['callback'] );
-						if ( $result ) {
-							$applied = $version;
-						} else {
-							$failed = true;
-							if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-								// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-								error_log( '[BBCS DEBUG] [Migration] migration ' . $version . ' failed' );
-							}
-							break;
+					if ( ! self::loadMigration( $entry ) ) {
+						$failed = true;
+						if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+							// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+							error_log( '[BBCS DEBUG] [Migration] migration ' . $version . ' file not loadable' );
 						}
+						break;
 					}
+					$result = self::runMigration( $entry['callback'] );
+					if ( ! $result ) {
+						$failed = true;
+						if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+							// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+							error_log( '[BBCS DEBUG] [Migration] migration ' . $version . ' failed' );
+						}
+						break;
+					}
+					$applied = $version;
 				}
 			}
 			update_option( 'bbcs_db_version', $applied, true );
@@ -155,7 +164,7 @@ class BotBlockerMigration {
 	public static function runMigration( $callback ): bool {
 		try {
 			$result = call_user_func( $callback );
-			return $result !== false;
+			return (bool) $result;
 		} catch ( \Throwable $e ) {
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 				// REVIEWER NOTE: Conditional debug logging; gated behind BBCS_DEBUG and disabled in production.

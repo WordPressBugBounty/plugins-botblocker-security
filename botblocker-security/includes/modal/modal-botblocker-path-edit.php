@@ -2,6 +2,8 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
+
+use BotBlocker\Component\Base;
 ?><div class="modal fade" id="editPathModal" tabindex="-1" aria-labelledby="editPathModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -16,8 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-6">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-								<span class="bbcs-label-input"><?php esc_html_e( 'Priority', 'botblocker-security' ); ?></span>
-								<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Path rule priority (1-100)', 'botblocker-security' ); ?></span></span>
+								<span class="bbcs-label-input"><?php esc_html_e( 'Priority', 'botblocker-security' ); ?></span><?php echo Base::help( __( 'Path rule priority (1-100)', 'botblocker-security' ), BotBlockerDocs::url( 'paths-priority' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<input type="range" class="bbcs_text_input_input" id="priority" name="priority" min="1" max="100" required>
@@ -28,8 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-6">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-								<span class="bbcs-label-input"><?php esc_html_e( 'Rule', 'botblocker-security' ); ?></span>
-								<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Action for this path', 'botblocker-security' ); ?></span></span>
+								<span class="bbcs-label-input"><?php esc_html_e( 'Rule', 'botblocker-security' ); ?></span><?php echo Base::help( __( 'Action for this path', 'botblocker-security' ), BotBlockerDocs::url( 'paths-rule' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<select class="bbcs_select_input_input" id="rule" name="rule" required>
@@ -47,8 +47,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-6">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-								<span class="bbcs-label-input"><?php esc_html_e( 'Path (URL)', 'botblocker-security' ); ?></span>
-								<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Path substring or pattern to match', 'botblocker-security' ); ?></span></span>
+								<span class="bbcs-label-input"><?php esc_html_e( 'Path (URL)', 'botblocker-security' ); ?></span><?php echo Base::help( __( 'Path substring or pattern to match', 'botblocker-security' ), BotBlockerDocs::url( 'paths-url' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<textarea class="bbcs_text_input_input" id="search" name="search" rows="3" required></textarea>
@@ -58,8 +57,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-6">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-								<span class="bbcs-label-input"><?php esc_html_e( 'Comment', 'botblocker-security' ); ?></span>
-								<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Comment for this path rule', 'botblocker-security' ); ?></span></span>
+								<span class="bbcs-label-input"><?php esc_html_e( 'Comment', 'botblocker-security' ); ?></span><?php echo Base::help( __( 'Comment for this path rule', 'botblocker-security' ), BotBlockerDocs::url( 'paths-comment' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<textarea class="bbcs_text_input_input" id="comment" name="comment" rows="3"></textarea>

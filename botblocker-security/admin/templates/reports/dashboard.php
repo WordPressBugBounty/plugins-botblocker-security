@@ -7,6 +7,9 @@ if (! defined('ABSPATH')) {
 }
 
 return static function (Botblocker_ReportsViewModel $data): void {
+?>
+	<div class="bbcs-tabdoc"><a class="bbcs-link bbcs-fs-sm" href="<?php echo esc_url( BotBlockerDocs::page( 'log-and-reports', 'the-dashboard-gives-the-big-picture' ) ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'About this dashboard', 'botblocker-security' ); ?> &#8599;</a></div>
+<?php
 	( require BOTBLOCKER_DIR . 'admin/templates/shared/kpi-primary-grid.php' )( $data );
 ?>
 	<div class="bbcs-grid bbcs-grid--4 bbcs-mb-5h">

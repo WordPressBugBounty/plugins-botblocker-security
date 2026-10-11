@@ -159,9 +159,9 @@ jQuery(function ($) {
     var newVal  = getRailToggleValue($t) ? 0 : 1;  // flip
 
     // ── Early Init disabled guard ──
-    if (action === 'bbcs_toggle_early_phase_in_db' && setting === 'early_init_enable' && newVal === 1 && $t.is(':disabled')) {
+    if (action === 'bbcs_toggle_early_phase_in_db' && setting === 'early_init_enable' && newVal === 1 && ($t.is(':disabled') || $t.attr('aria-disabled') === 'true')) {
       // Redirect to addons page if user confirms.
-      bbcsConfirm(window.bbcsEarlyInitConfirm || 'Early Init requires active BotBlocker PRO and the Early Init add-on. Open Add-ons page?', function () {
+      bbcsConfirm(window.bbcsEarlyInitRequire || 'Early Init requires active BotBlocker PRO and the Early Init add-on. Open Add-ons page?', function () {
         var addonsUrl = $('#bbcs-main').data('addons-url') || '';
         if (addonsUrl) window.location.href = addonsUrl;
       });

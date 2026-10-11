@@ -98,7 +98,7 @@ class BBCS_MemcachedStorage extends BBCS_ObjectCacheStorage {
 			}
 		}
 		$this->selfJson = $json_serializer === null;
-		if ( defined( 'Memcached::JSON_OBJECT_AS_ARRAY' ) && ! $this->selfJson ) {
+		if ( defined( 'Memcached::JSON_OBJECT_AS_ARRAY' ) && defined( 'Memcached::OPT_JSON' ) && ! $this->selfJson ) {
 			try {
 				$this->memcached->setOption( \Memcached::OPT_JSON, \Memcached::JSON_OBJECT_AS_ARRAY );
 			} catch ( \Exception $e ) {

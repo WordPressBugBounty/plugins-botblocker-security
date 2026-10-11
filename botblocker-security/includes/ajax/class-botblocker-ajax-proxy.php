@@ -246,6 +246,12 @@ class BotBlockerAjaxProxy {
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' updating proxy id=' . $id . ' key=' . $data['key'] );
 		}
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$exists = (int) $wpdb->get_var( $wpdb->prepare( "SELECT id FROM `{$wpdb->bbcs_proxy}` WHERE id = %d", $id ) );
+		if ( $exists <= 0 ) {
+			wp_send_json_error( __( 'Proxy not found.', 'botblocker-security' ) );
+		}
+
 		// REVIEWER NOTE: custom table operations require direct database queries.
 	    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$result = $wpdb->update( $wpdb->bbcs_proxy, $data, array( 'id' => $id ) );

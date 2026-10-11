@@ -46,8 +46,9 @@ class BotBlockerAudit {
 		);
 
 		foreach ( $sensors as $sensor_class ) {
-			if ( is_string( $sensor_class ) && class_exists( $sensor_class ) && method_exists( $sensor_class, 'register' ) ) {
-				call_user_func( array( $sensor_class, 'register' ) );
+			$bbcs_callback = array( $sensor_class, 'register' );
+			if ( is_string( $sensor_class ) && is_callable( $bbcs_callback ) ) {
+				call_user_func( $bbcs_callback );
 			}
 		}
 

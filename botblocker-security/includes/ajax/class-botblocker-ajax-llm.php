@@ -187,6 +187,14 @@ class BotBlockerAjaxLlm {
 		}
 
 	    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$exists = (int) $wpdb->get_var(
+			$wpdb->prepare( "SELECT COUNT(*) FROM `{$wpdb->bbcs_llm_trusted}` WHERE provider = %s", $provider )
+		);
+		if ( $exists <= 0 ) {
+			wp_send_json_error( __( 'Provider not found.', 'botblocker-security' ) );
+		}
+
+	    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$current = (int) $wpdb->get_var(
 			$wpdb->prepare( "SELECT MAX(disabled) FROM `{$wpdb->bbcs_llm_trusted}` WHERE provider = %s", $provider )
 		);

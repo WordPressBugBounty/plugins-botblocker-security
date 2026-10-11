@@ -3,95 +3,28 @@
 
     // Cloud API status
     $(document).ready(function () {
-        let isAutoUpdated = false;
-        let fetching = false;
-        function refreshCloudAPI(isAutomaticRefresh) {
-            if (fetching) return;
-            if (isAutomaticRefresh && isAutoUpdated) return;
-            
-            fetching = true;
-            $('#bbcs_refresh_cloud_api').prop('disabled', true);
-            $.ajax({
-                url: botblockerData.ajaxurl,
-                type: 'POST',
-                data: {
-                    action: 'bbcs_refresh_cloud_api',
-                    nonce: botblockerData.nonce,
-                },
-                success: function (response) {
-                    if (response.success) {
-                        var hits = response.data.remaining_hits;
-                        var days = response.data.remaining_days;
-                        $('#bbcs_remaining_hits').val(hits);
-                        $('#bbcs_remaining_days').val(days);
-                        $('#bbcs_stat_hits').text(Number(hits).toLocaleString());
-                        $('#bbcs_stat_days').text(days);
-                        if (!isAutomaticRefresh) {
-                            bbcsToast('success', bbcsCloudApiL10n.refreshed);
-                        }
+        $('#bbcs_refresh_cloud_api').on('click', function () {
+            var $btn = $(this);
+            if ($btn.prop('disabled')) return;
+            $btn.prop('disabled', true).addClass('is-busy');
+            window.bbcsProRemaining.refresh()
+                .done(function (response) {
+                    if (response && response.success) {
+                        bbcsToast('success', bbcsCloudApiL10n.refreshed);
                     } else {
-                        if (!isAutomaticRefresh) {
-                            bbcsToast('error', response.data.error || bbcsCloudApiL10n.failed_refresh);
-                        }
+                        bbcsToast('error', (response && response.data && response.data.error) || bbcsCloudApiL10n.failed_refresh);
                     }
-                },
-                error: function (xhr, status, error) {
-                    if (!isAutomaticRefresh) {
-                        bbcsToast('error', bbcsCloudApiL10n.ajax_error + error);
-                    }
-                },
-                complete: function () {
-                    fetching = false;
-                    $('#bbcs_refresh_cloud_api').prop('disabled', false);
-                    if (isAutomaticRefresh) {
-                        isAutoUpdated = true;
-                    }
-                }
-            });
-        }
-
-        $('#bbcs_refresh_cloud_api').on('click', function() {
-            refreshCloudAPI(false);
+                })
+                .fail(function (xhr, status, error) {
+                    bbcsToast('error', bbcsCloudApiL10n.ajax_error + error);
+                })
+                .always(function () {
+                    $btn.prop('disabled', false).removeClass('is-busy');
+                });
         });
-
-        if ($('#bbcs_remaining_hits').attr('data-should-fetch') === "true") {
-            function isCloudStatusTabActive() {
-                return $('#cloud-status').hasClass('active');
-            }
-
-            if (isCloudStatusTabActive()) {
-                refreshCloudAPI(true);
-            }
-
-            $('a.nav-link[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
-                if (!isAutoUpdated && e.target.getAttribute('href') === '#cloud-status') {
-                    refreshCloudAPI(true);
-                }
-            });
-        }
     });
  
     jQuery(document).ready(function ($) {
-        $('#bbcs_fetch_cloud_api_key_btn').on('click', function (e) {
-            e.preventDefault();
-            var nonce = $('[name="bbcs_fetch_cloud_api_key_nonce"]').val();
-            var $btn = $(this);
-            $btn.prop('disabled', true);
-            $.post(ajaxurl, {
-                action: 'bbcs_fetch_cloud_api_key',
-                nonce: nonce
-            }, function (response) {
-                if (response.success) {
-                    location.reload();
-                    return;
-                }
-                bbcsToast('error', response.data.message);
-                $btn.prop('disabled', false);
-            }).fail(function() {
-                $btn.prop('disabled', false);
-            });
-        });
-
         $('#bbcs_toggle_cloud_api_btn').on('click', function (e) {
             e.preventDefault();
             var $btn = $(this);

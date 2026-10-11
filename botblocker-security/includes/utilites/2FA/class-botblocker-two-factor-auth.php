@@ -545,7 +545,7 @@ class BotBlockerTwoFactorAuth {
 	 * pending: the 2FA setup verifier and the reset/revoke handlers.
 	 */
 	private static function isAllowed2faAjaxAction( string $action ): bool {
-		return in_array( $action, array( 'bbcs_2fa_setup', 'bbcs_revoke_2fa_devices' ), true );
+		return in_array( $action, array( 'bbcs_2fa_setup', 'bbcs_revoke_2fa_devices', 'bbcs_reset_2fa' ), true );
 	}
 
 	/**

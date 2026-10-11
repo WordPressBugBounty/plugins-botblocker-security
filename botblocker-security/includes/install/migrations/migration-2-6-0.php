@@ -97,4 +97,6 @@ function bbcs_migration_2_6_0() {
 	BotBlockerDb::generateAllFiles();
 
     // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+	return true;
 }

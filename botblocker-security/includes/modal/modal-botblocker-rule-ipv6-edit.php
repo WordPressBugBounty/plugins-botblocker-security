@@ -2,6 +2,8 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
+
+use BotBlocker\Component\Base;
 ?><div class="modal fade" id="editIPv6Modal" tabindex="-1" aria-labelledby="editIPv6ModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -16,8 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-6">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-									<span class="bbcs-label-input"><?php esc_html_e( 'Priority', 'botblocker-security' ); ?></span>
-									<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Priority (1-100)', 'botblocker-security' ); ?></span></span>
+									<span class="bbcs-label-input"><?php esc_html_e( 'Priority', 'botblocker-security' ); ?></span><?php echo Base::help( __( 'Priority (1-100)', 'botblocker-security' ), BotBlockerDocs::url( 'ipv6-priority' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<input type="number" class="bbcs_text_input_input" id="priority" name="priority" min="1" max="100" required>
@@ -27,8 +28,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-6">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-									<span class="bbcs-label-input"><?php esc_html_e( 'IP Address', 'botblocker-security' ); ?></span>
-									<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'IPv6 address or subnet (CIDR)', 'botblocker-security' ); ?></span></span>
+									<span class="bbcs-label-input"><?php esc_html_e( 'IP Address', 'botblocker-security' ); ?></span><?php echo Base::help( __( 'IPv6 address or subnet (CIDR)', 'botblocker-security' ), BotBlockerDocs::url( 'ipv6-ip-address' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<input type="text" class="bbcs_text_input_input" id="ip" name="ip" required>
@@ -40,8 +40,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-6">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-									<span class="bbcs-label-input"><?php esc_html_e( 'Rule', 'botblocker-security' ); ?></span>
-									<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Allow or block this IP/subnet', 'botblocker-security' ); ?></span></span>
+									<span class="bbcs-label-input"><?php esc_html_e( 'Rule', 'botblocker-security' ); ?></span><?php echo Base::help( __( 'Allow or block this IP/subnet', 'botblocker-security' ), BotBlockerDocs::url( 'ipv6-rule' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<select class="bbcs_select_input_input" id="rule" name="rule" required>
@@ -54,8 +53,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-6">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-									<span class="bbcs-label-input"><?php esc_html_e( 'Expires', 'botblocker-security' ); ?></span>
-									<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Expiration date/time for this rule', 'botblocker-security' ); ?></span></span>
+									<span class="bbcs-label-input"><?php esc_html_e( 'Expires', 'botblocker-security' ); ?></span><?php echo Base::help( __( 'Expiration date/time for this rule', 'botblocker-security' ), BotBlockerDocs::url( 'ipv6-expires' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<input type="datetime-local" class="bbcs_text_input_input" id="expires" name="expires" required>
@@ -67,8 +65,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="col-md-12">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
-									<span class="bbcs-label-input"><?php esc_html_e( 'Comment', 'botblocker-security' ); ?></span>
-									<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php esc_html_e( 'Optional comment for this rule', 'botblocker-security' ); ?></span></span>
+									<span class="bbcs-label-input"><?php esc_html_e( 'Comment', 'botblocker-security' ); ?></span><?php echo Base::help( __( 'Optional comment for this rule', 'botblocker-security' ), BotBlockerDocs::url( 'ipv6-comment' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 								</div>
 								<div class="bbcs_text_input_inner">
 									<textarea class="bbcs_text_input_input" id="comment" name="comment" rows="3"></textarea>

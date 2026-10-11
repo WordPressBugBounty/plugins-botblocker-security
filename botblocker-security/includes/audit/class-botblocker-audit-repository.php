@@ -40,6 +40,14 @@ class BotBlockerAuditRepository {
 		return (int) $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->bbcs_audit_log}`" );
 	}
 
+	/** Hard cap an audit column to its schema width; MySQL strict mode rejects overlong rows outright. */
+	private static function truncate( string $value, int $max ): string {
+		if ( strlen( $value ) <= $max ) {
+			return $value;
+		}
+		return function_exists( 'mb_substr' ) ? mb_substr( $value, 0, $max ) : substr( $value, 0, $max );
+	}
+
 	/**
 	 * @param array<string, mixed> $row
 	 */
@@ -51,17 +59,17 @@ class BotBlockerAuditRepository {
 		}
 
 		$data = array(
-			'event_key'      => isset( $row['event_key'] ) ? (string) $row['event_key'] : '',
+			'event_key'      => self::truncate( isset( $row['event_key'] ) ? (string) $row['event_key'] : '', 191 ),
 			'severity'       => BotBlockerAuditLogger::normalizeSeverity( isset( $row['severity'] ) ? $row['severity'] : BotBlockerAuditLogger::SEVERITY_INFO ),
 			'actor_user_id'  => isset( $row['actor_user_id'] ) ? (int) $row['actor_user_id'] : BotBlockerAuditContext::ACTOR_UNIDENTIFIED,
-			'actor_username' => isset( $row['actor_username'] ) ? (string) $row['actor_username'] : '',
-			'actor_role'     => isset( $row['actor_role'] ) ? (string) $row['actor_role'] : '',
-			'object_type'    => isset( $row['object_type'] ) ? (string) $row['object_type'] : '',
+			'actor_username' => self::truncate( isset( $row['actor_username'] ) ? (string) $row['actor_username'] : '', 60 ),
+			'actor_role'     => self::truncate( isset( $row['actor_role'] ) ? (string) $row['actor_role'] : '', 60 ),
+			'object_type'    => self::truncate( isset( $row['object_type'] ) ? (string) $row['object_type'] : '', 60 ),
 			'object_id'      => isset( $row['object_id'] ) ? (int) $row['object_id'] : 0,
-			'ip'             => isset( $row['ip'] ) ? (string) $row['ip'] : '',
-			'context'        => isset( $row['context'] ) ? (string) $row['context'] : '',
-			'request_path'   => isset( $row['request_path'] ) ? (string) $row['request_path'] : '',
-			'user_agent'     => isset( $row['user_agent'] ) ? (string) $row['user_agent'] : '',
+			'ip'             => self::truncate( isset( $row['ip'] ) ? (string) $row['ip'] : '', 45 ),
+			'context'        => self::truncate( isset( $row['context'] ) ? (string) $row['context'] : '', 20 ),
+			'request_path'   => self::truncate( isset( $row['request_path'] ) ? (string) $row['request_path'] : '', 500 ),
+			'user_agent'     => self::truncate( isset( $row['user_agent'] ) ? (string) $row['user_agent'] : '', 255 ),
 			'data'           => isset( $row['data'] ) ? (string) $row['data'] : '',
 			'created_at'     => isset( $row['created_at'] ) ? (int) $row['created_at'] : time(),
 		);

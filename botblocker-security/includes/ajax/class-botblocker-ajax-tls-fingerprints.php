@@ -139,7 +139,14 @@ class BotBlockerAjaxTlsFingerprints {
 
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
-		$wpdb->query( "TRUNCATE TABLE `{$wpdb->bbcs_tls_fingerprints}`" );
+		$truncated = $wpdb->query( "TRUNCATE TABLE `{$wpdb->bbcs_tls_fingerprints}`" );
+		if ( false === $truncated ) {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' TRUNCATE FAILED: ' . $wpdb->last_error );
+			}
+			wp_send_json_error( __( 'Failed to clear TLS fingerprints.', 'botblocker-security' ) );
+		}
 
 		BotBlockerFileRenderer::renderTlsFingerprints();
 		BotBlockerCache::clearFileCache();

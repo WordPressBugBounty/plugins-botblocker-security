@@ -7,29 +7,29 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 trait BotBlockerAdminSettingsTrait {
 
-	public string $empty = '';
-	public string $botblockerUrl = '';
-	public string $version = '';
-	public string $custom_avatar = '';
-	public string $dirs_public = '';
-	public string $dirs_languages = '';
-	public string $dirs_includes = '';
-	public string $dirs_admin = '';
-	public string $dirs_data = '';
-	public string $dirs_vendor = '';
-	public string $pages_dashboard = '';
-	public string $pages_settings = '';
-	public string $pages_integrations = '';
-	public string $pages_reports = '';
-	public string $pages_rules = '';
-	public string $pages_tools = '';
-	public string $pages_cloud_api = '';
-	public string $pages_setup = '';
-	public string $pages_about = '';
-	public string $pages_addons = '';
-	public string $pages_wizard = '';
-	public string $files_IPv4 = '';
-	public string $files_IPv6 = '';
+	public $empty = '';
+	public $botblockerUrl = '';
+	public $version = '';
+	public $custom_avatar = '';
+	public $dirs_public = '';
+	public $dirs_languages = '';
+	public $dirs_includes = '';
+	public $dirs_admin = '';
+	public $dirs_data = '';
+	public $dirs_vendor = '';
+	public $pages_dashboard = '';
+	public $pages_settings = '';
+	public $pages_integrations = '';
+	public $pages_reports = '';
+	public $pages_rules = '';
+	public $pages_tools = '';
+	public $pages_cloud_api = '';
+	public $pages_setup = '';
+	public $pages_about = '';
+	public $pages_addons = '';
+	public $pages_wizard = '';
+	public $files_IPv4 = '';
+	public $files_IPv6 = '';
 
 	private function load_settings(): void {
 		$this->load_core_settings();

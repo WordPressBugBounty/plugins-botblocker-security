@@ -66,12 +66,9 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
 	<div role="tabpanel" class="bbcs-tabpanel bbcs-protect-layout" data-tabpanel="captcha"<?php echo $isActive ? '' : ' hidden' ?>>
 		<?php
 		$info = InfoColumn::make()
+			->withDocPage( BotBlockerDocs::page( 'captcha' ) )
 			->withIconImage( BOTBLOCKER_URL . 'public/icons/captcha.svg', __( 'BotBlocker Captcha', 'botblocker-security' ) )
-			->withDescription( __( 'Choose from button, color, image, shape, digit, or reCaptcha verification methods.', 'botblocker-security' ) )
-			->withDocLink( $data->docs_url . '/all-Captcha-types-in-botblocker-maximum-flexibility-and-reliable-protection/', __( 'BotBlocker Captcha', 'botblocker-security' ) )
-			->withDocLink( $data->docs_url . '/reCaptcha-v2-in-botblocker-an-additional-user-verification-method-and-how-to-set-up-keys/', __( 'reCaptcha v2', 'botblocker-security' ) )
-			->withDocLink( $data->docs_url . '/reCaptcha-v3-in-botblocker-user-verification-and-key-setup-guide/', __( 'reCaptcha v3', 'botblocker-security' ) )
-			->withDocLink( 'https://en.wikipedia.org/wiki/Captcha', __( 'Captcha', 'botblocker-security' ) );
+			->withDescription( __( 'Choose from button, color, image, shape, digit, or reCaptcha verification methods.', 'botblocker-security' ) );
 
 		$gd_modes = array( BOTBLOCKER_CAPTCHA_MODE_COLOR_BUTTONS, BOTBLOCKER_CAPTCHA_MODE_IMAGE );
 		if ( ! $data->has_gd && in_array( (int) $cm, $gd_modes, true ) ) {
@@ -120,6 +117,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
 								->withOptions( $mode_options )
 								->withLabel( __( 'Captcha Mode:', 'botblocker-security' ) )
 								->withTooltip( __( 'Select Captcha type for visitor verification.', 'botblocker-security' ) )
+								->withDocLink( BotBlockerDocs::url( 'bbcs_captcha_mode' ) )
 								->render();
 
 							CustomSelect::make()
@@ -128,6 +126,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
 								->withOptions( $inline_options )
 								->withLabel( __( 'Image Delivery Mode:', 'botblocker-security' ) )
 								->withTooltip( __( 'Inline: embed images in page (recommended). Separate: load via AJAX (legacy).', 'botblocker-security' ) )
+								->withDocLink( BotBlockerDocs::url( 'bbcs_captcha_img_inline' ) )
 								->render();
 						} )
 						->render();
@@ -140,6 +139,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
 								->withOptions( $pack_options )
 								->withLabel( __( 'Image Captcha Pack:', 'botblocker-security' ) )
 								->withTooltip( __( 'Select image theme for Captcha.', 'botblocker-security' ) )
+								->withDocLink( BotBlockerDocs::url( 'bbcs_captcha_img_pack' ) )
 								->render();
 
 							TextInput::make()
@@ -149,6 +149,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
 								->withLabel( __( 'Captcha Timeout (seconds):', 'botblocker-security' ) )
 								->withTooltip( __( 'Time allowed to complete Captcha verification.', 'botblocker-security' ) )
 								->withEditable()
+								->withDocLink( BotBlockerDocs::url( 'bbcs_captcha_wait' ) )
 								->render();
 						} )
 						->render();
@@ -171,6 +172,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
 							->withChecked( $data->is_checked( 'bbcs_honeypot_enabled' ) )
 							->withLabel( __( 'Honeypot Field on Challenge Page', 'botblocker-security' ) )
 							->withTooltip( __( 'Adds a hidden anti-bot trap field and a submit-timing check to the verification page. Disabled by default.', 'botblocker-security' ) )
+							->withDocLink( BotBlockerDocs::url( 'bbcs_honeypot_enabled' ) )
 							->render();
 						?>
 					</div>

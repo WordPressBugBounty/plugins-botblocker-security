@@ -24,11 +24,10 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
         <div>
             <?php
             InfoColumn::make()
+            	->withDocPage( BotBlockerDocs::page( 'rate-limiting' ) )
                 ->withIconImage( BOTBLOCKER_URL . 'public/icons/rate-limiting.svg', __( 'Rate Limiting', 'botblocker-security' ) )
                 ->withDescription( __( 'Control request velocity per IP with configurable thresholds, sliding windows, and subnet aggregation.', 'botblocker-security' ) )
                 ->withDescription( __( 'Rate limiting protects against brute force, DDoS, and distributed proxy attacks by dynamically adjusting thresholds based on subnet pressure.', 'botblocker-security' ) )
-                ->withDocLink( 'https://en.wikipedia.org/wiki/Rate_limiting', __( 'Rate limiting', 'botblocker-security' ) )
-                ->withDocLink( 'https://en.wikipedia.org/wiki/Subnet', __( 'Subnet', 'botblocker-security' ) )
                 ->render();
 
             $bbcs_has_pro = class_exists( 'BotBlockerPro' ) && BotBlockerPro::isActive();
@@ -63,10 +62,10 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
             SettingsGroup::make()
                 ->withTitle( __( 'Rate Limiting', 'botblocker-security' ) )
                 ->withItems( static function () use ( $data, $captcha_rpm, $block_rpm, $block_dur, $window ): void {
-                    ToggleOption::make()->withName( 'bbcs_rate_check_enabled' )->withChecked( $data->is_checked( 'bbcs_rate_check_enabled' ) )->withLabel( __( 'Enable Rate Limiting', 'botblocker-security' ) )->withTooltip( __( 'Track request velocity per IP and issue Captcha or block when thresholds are exceeded.', 'botblocker-security' ) )->render();
+                    ToggleOption::make()->withName( 'bbcs_rate_check_enabled' )->withChecked( $data->is_checked( 'bbcs_rate_check_enabled' ) )->withLabel( __( 'Enable Rate Limiting', 'botblocker-security' ) )->withTooltip( __( 'Track request velocity per IP and issue Captcha or block when thresholds are exceeded.', 'botblocker-security' ) )->withDocLink( BotBlockerDocs::url( 'bbcs_rate_check_enabled' ) )->render();
 
                     FieldPair::make()
-                        ->withItems( static function () use ( $data, $captcha_rpm, $block_rpm ): void {
+                        ->withItems( static function () use ( $captcha_rpm, $block_rpm ): void {
                             TextInput::make()
                                 ->withName( 'bbcs_rate_captcha_rpm' )
                                 ->withValue( $captcha_rpm )
@@ -75,6 +74,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                                 ->withTooltip( __( 'Average requests per minute over the sliding window that trigger a Captcha challenge. Total hits in window / window minutes. Default: 30.', 'botblocker-security' ) )
                                 ->withSuffix( __( 'rpm', 'botblocker-security' ) )
                                 ->withEditable()
+                                ->withDocLink( BotBlockerDocs::url( 'bbcs_rate_captcha_rpm' ) )
                                 ->render();
                             TextInput::make()
                                 ->withName( 'bbcs_rate_block_rpm' )
@@ -84,12 +84,13 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                                 ->withTooltip( __( 'Average requests per minute over the sliding window that trigger an immediate block. Total hits in window / window minutes. Default: 50.', 'botblocker-security' ) )
                                 ->withSuffix( __( 'rpm', 'botblocker-security' ) )
                                 ->withEditable()
+                                ->withDocLink( BotBlockerDocs::url( 'bbcs_rate_block_rpm' ) )
                                 ->render();
                         } )
                         ->render();
 
                     FieldPair::make()
-                        ->withItems( static function () use ( $data, $block_dur, $window ): void {
+                        ->withItems( static function () use ( $block_dur, $window ): void {
                             TextInput::make()
                                 ->withName( 'bbcs_rate_block_duration' )
                                 ->withValue( $block_dur )
@@ -98,6 +99,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                                 ->withTooltip( __( 'How long the IP stays blocked after exceeding the rate limit. Default: 600 (10 minutes).', 'botblocker-security' ) )
                                 ->withSuffix( __( 'sec', 'botblocker-security' ) )
                                 ->withEditable()
+                                ->withDocLink( BotBlockerDocs::url( 'bbcs_rate_block_duration' ) )
                                 ->render();
                             TextInput::make()
                                 ->withName( 'bbcs_rate_window_minutes' )
@@ -107,6 +109,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                                 ->withTooltip( __( 'Sliding window size in minutes. RPM = total hits in window / window minutes. Default: 5.', 'botblocker-security' ) )
                                 ->withSuffix( __( 'min', 'botblocker-security' ) )
                                 ->withEditable()
+                                ->withDocLink( BotBlockerDocs::url( 'bbcs_rate_window_minutes' ) )
                                 ->render();
                         } )
                         ->render();
@@ -115,11 +118,11 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
 
             SettingsGroup::make()
                 ->withTitle( __( 'Subnet Aggregation', 'botblocker-security' ) )
-                ->withItems( static function () use ( $data, $subnet_mult, $floor_percent, $floor_val, $subnet_mask ): void {
-                    ToggleOption::make()->withName( 'bbcs_rate_subnet_enabled' )->withChecked( $data->is_checked( 'bbcs_rate_subnet_enabled' ) )->withLabel( __( 'Subnet Aggregation', 'botblocker-security' ) )->withTooltip( __( 'Aggregate RPM across the subnet. High subnet pressure dynamically lowers per-IP thresholds to catch distributed proxy attacks.', 'botblocker-security' ) )->render();
+                ->withItems( static function () use ( $data, $subnet_mult, $floor_percent, $subnet_mask ): void {
+                    ToggleOption::make()->withName( 'bbcs_rate_subnet_enabled' )->withChecked( $data->is_checked( 'bbcs_rate_subnet_enabled' ) )->withLabel( __( 'Subnet Aggregation', 'botblocker-security' ) )->withTooltip( __( 'Aggregate RPM across the subnet. High subnet pressure dynamically lowers per-IP thresholds to catch distributed proxy attacks.', 'botblocker-security' ) )->withDocLink( BotBlockerDocs::url( 'bbcs_rate_subnet_enabled' ) )->render();
 
                     FieldPair::make()
-                        ->withItems( static function () use ( $data, $subnet_mult, $floor_val, $floor_percent ): void {
+                        ->withItems( static function () use ( $subnet_mult, $floor_percent ): void {
                             TextInput::make()
                                 ->withName( 'bbcs_rate_subnet_multiplier' )
                                 ->withValue( $subnet_mult )
@@ -127,6 +130,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                                 ->withLabel( __( 'Subnet Multiplier', 'botblocker-security' ) )
                                 ->withTooltip( __( 'Multiplier applied to block RPM for subnet threshold. Higher = more tolerant. Default: 3.', 'botblocker-security' ) )
                                 ->withEditable()
+                                ->withDocLink( BotBlockerDocs::url( 'bbcs_rate_subnet_multiplier' ) )
                                 ->render();
                             TextInput::make()
                                 ->withName( 'bbcs_rate_floor_percent' )
@@ -136,6 +140,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                                 ->withLabel( __( 'Floor %', 'botblocker-security' ) )
                                 ->withTooltip( __( 'Minimum threshold as a percentage of block RPM, preventing thresholds from dropping to zero under high subnet pressure. Default: 10%.', 'botblocker-security' ) )
                                 ->withEditable()
+                                ->withDocLink( BotBlockerDocs::url( 'bbcs_rate_floor_percent' ) )
                                 ->render();
                         } )
                         ->render();
@@ -146,6 +151,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                         ->withOptions( $data->rate_subnet_mask_options )
                         ->withLabel( __( 'Subnet Mask', 'botblocker-security' ) )
                         ->withTooltip( __( 'CIDR mask pair for subnet aggregation (v4_v6). Tighter masks target attackers more precisely. Default: 24-64.', 'botblocker-security' ) )
+                        ->withDocLink( BotBlockerDocs::url( 'bbcs_rate_subnet_mask' ) )
                         ->render();
                 } )
                 ->render();

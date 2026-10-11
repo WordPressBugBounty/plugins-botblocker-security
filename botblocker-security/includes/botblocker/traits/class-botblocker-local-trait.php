@@ -110,8 +110,9 @@ trait BotBlockerLocalTrait {
 		}
 
 		$force_cloud = ( $this->settings->force_cloud_validation == 1 && BotBlockerPro::isUltimate() );
+		$use_cloud   = $this->settings->check == 1 && BotBlockerPro::allowsFeature( 'check' );
 
-		if ( $this->settings->check == 1 && $force_cloud ) {
+		if ( $use_cloud && $force_cloud ) {
 			$this->processCloudCheck();
 		}
 
@@ -146,7 +147,7 @@ trait BotBlockerLocalTrait {
 			error_log( '[BBCS DEBUG] [Local] after processReCaptchaV3. post_recaptcha_score=' . $this->post_recaptcha_score );
 		}
 
-		if ( $this->settings->check == 1 && ! $force_cloud ) {
+		if ( $use_cloud && ! $force_cloud ) {
 			$this->processCloudCheck();
 		}
 
@@ -170,8 +171,8 @@ trait BotBlockerLocalTrait {
 		}
 		if ( $this->settings->bbcs_ddos_resilience == 1 ) {
 			$payload = $this->sign_response_payload( (array) $payload );
-			if ( ! headers_sent() && ! empty( $this->uid ) ) {
-				header( 'X-BBCS-' . $this->uid . ': ' . $this->post_hash_cookie, false );
+			if ( $this->header_can_send() && ! empty( $this->uid ) ) {
+				$this->emit_header( 'X-BBCS-' . $this->uid . ': ' . $this->post_hash_cookie, false );
 			}
 		}
 		wp_send_json( $payload );

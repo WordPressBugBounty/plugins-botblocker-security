@@ -107,7 +107,7 @@ trait BotBlockerAddonDecisionTrait {
 
 		if ( $decision['action'] === BBCS_ADDON_ACTION_REDIRECT ) {
 			$url = $decision['url'];
-			if ( $url === '' || ( PHP_VERSION_ID < 80000 ? apply_filters( 'bbcs_redirect_check_headers_sent', headers_sent() ) : headers_sent() ) ) {
+			if ( $url === '' || ( PHP_VERSION_ID < 80000 ? apply_filters( 'bbcs_redirect_check_headers_sent', ! $this->header_can_send() ) : ! $this->header_can_send() ) ) {
 				$this->addon_traffic_decision_stop = false;
 				return false;
 			}

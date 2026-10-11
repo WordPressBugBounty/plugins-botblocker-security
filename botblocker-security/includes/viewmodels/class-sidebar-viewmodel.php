@@ -75,7 +75,7 @@ final class Botblocker_SidebarViewModel {
 		$this->tools_url        = $bbcsa->pages_tools;
 		$this->cloud_api_active = BotBlockerPro::isActive();
 
-		$early_addon = class_exists( 'BotBlockerGateway' ) && BotBlockerGateway::isRegistered( 'early_init' );
+		$early_addon = class_exists( 'BotBlockerGateway' ) && ! empty( BotBlockerGateway::isEnabled( 'early_init' ) );
 
 		$this->early_addon_active = $early_addon;
 		$this->early_available    = $this->cloud_api_active && $early_addon;
@@ -147,7 +147,10 @@ final class Botblocker_SidebarViewModel {
 	}
 
 	private function apply_early_init_disabled_message(): void {
-		if ( ! $this->cloud_api_active && ! $this->early_addon_active ) {
+		// The message is about the add-on selection (option), not the gateway
+		// feature state: a selected add-on without PRO blames the license.
+		$addon_selected = class_exists( 'BotBlockerAddons' ) && BotBlockerAddons::isActive( 'bbcs-early-init' );
+		if ( ! $this->cloud_api_active && ! $addon_selected ) {
 			$this->early_init_disabled_message = esc_html__( 'Requires BotBlocker PRO and the Early Init add-on.', 'botblocker-security' );
 		} elseif ( ! $this->cloud_api_active ) {
 			$this->early_init_disabled_message = esc_html__( 'Requires active BotBlocker PRO', 'botblocker-security' );

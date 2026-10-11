@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require_once __DIR__ . '/class-botblocker-component-base.php';
+require_once __DIR__ . '/class-botblocker-component-doc-link.php';
 require_once __DIR__ . '/class-botblocker-tab-item.php';
 require_once __DIR__ . '/class-botblocker-component-input.php';
 require_once __DIR__ . '/class-botblocker-component-checkbox.php';

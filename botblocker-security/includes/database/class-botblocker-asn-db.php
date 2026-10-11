@@ -119,19 +119,23 @@ class BotBlockerAsnDb {
 	public static function scheduleDownload( string $reason = '', int $delay_seconds = 60 ): bool {
 		$delay = max( 10, $delay_seconds );
 		$when  = time() + $delay;
-		if ( wp_next_scheduled( 'bbcs_asn_db_download_event', array( $reason ) ) !== false ) {
-			return false;
+		// Dedupe across every reason: wp_next_scheduled() keys on hook+args, so a
+		// different reason would otherwise queue a second concurrent download.
+		$crons = _get_cron_array();
+		if ( is_array( $crons ) ) {
+			foreach ( $crons as $events ) {
+				if ( is_array( $events ) && isset( $events['bbcs_asn_db_download_event'] ) ) {
+					return false;
+				}
+			}
 		}
 		return (bool) wp_schedule_single_event( $when, 'bbcs_asn_db_download_event', array( $reason ) );
 	}
 
 	public static function endpointUrls(): array {
 		$urls = array();
-		if ( defined( 'BOTBLOCKER_API_URL' ) ) {
-			$urls[] = untrailingslashit( BOTBLOCKER_API_URL ) . '/botblocker?fetch_asn_database=1';
-		}
-		if ( defined( 'BOTBLOCKER_API_GS_URL' ) ) {
-			$urls[] = untrailingslashit( BOTBLOCKER_API_GS_URL ) . '/botblocker?fetch_asn_database=1';
+		foreach ( BotBlockerBackend::urls() as $base ) {
+			$urls[] = $base . '/botblocker?fetch_asn_database=1';
 		}
 		return $urls;
 	}
@@ -393,28 +397,12 @@ class BotBlockerAsnDb {
 		}
 	}
 
-	public static function isDownloadScheduled(): bool {
-		$crons = _get_cron_array();
-		if ( ! is_array( $crons ) ) {
-			return false;
-		}
-		foreach ( $crons as $events ) {
-			if ( is_array( $events ) && isset( $events['bbcs_asn_db_download_event'] ) ) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public static function selfHeal(): void {
 		if ( class_exists( 'BotBlockerCron' ) && ! wp_next_scheduled( 'bbcs_asn_db_freshness_task' ) ) {
 			BotBlockerCron::registerTasks();
 		}
 
 		if ( self::isPresent() ) {
-			return;
-		}
-		if ( self::isDownloadScheduled() ) {
 			return;
 		}
 		self::scheduleDownload( 'runtime-missing', 60 );

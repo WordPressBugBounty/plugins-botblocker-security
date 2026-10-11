@@ -17,7 +17,8 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
 	$disabled_toggle = ToggleOption::make()
 		->withName( 'wp_cron_enabled' )
 		->withChecked( $data->wp_cron_enabled )
-		->withLabel( __( 'WP-Cron enabled', 'botblocker-security' ) );
+		->withLabel( __( 'WP-Cron enabled', 'botblocker-security' ) )
+		->withDocLink( BotBlockerDocs::url( 'wp_cron_enabled' ) );
 
 	// Filter to only scheduled tasks (matches old getTasksList behaviour)
 	$scheduled_tasks = array_values(
@@ -61,14 +62,10 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
 
 		<?php
 		InfoColumn::make()
+			->withDocPage( BotBlockerDocs::page( 'hosting-and-compatibility', 'cron-settings' ) )
 			->withIconImage( BOTBLOCKER_URL . 'public/icons/cron.svg', __( 'Cron Jobs', 'botblocker-security' ) )
 			->withDescription( __( 'BotBlocker uses cron jobs for log cleanup and data processing.', 'botblocker-security' ) )
 			->withDescription( __( 'If WP-Cron is unreliable, set up a system cron job using the commands below.', 'botblocker-security' ) )
-			->withDocLink( 'https://developer.wordpress.org/plugins/cron/', __( 'WP-Cron', 'botblocker-security' ) )
-			->withDocLink( 'https://en.wikipedia.org/wiki/Cron', __( 'Cron', 'botblocker-security' ) )
-			->withDocLink( 'https://docs.cpanel.net/cpanel/advanced/cron-jobs/', __( 'cPanel Cron Jobs', 'botblocker-security' ) )
-			->withDocLink( 'https://docs.plesk.com/en-US/obsidian/administrator-guide/server-administration/scheduling-tasks.64993/', __( 'Plesk Cron', 'botblocker-security' ) )
-			->withDocLink( 'https://www.ispmanager.com/docs/ispmanager/scheduler-cron', __( 'ISPmanager scheduler', 'botblocker-security' ) )
 			->render();
 		?>
 
@@ -93,7 +90,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
 					<div class="bbcs-field-label">
 						<span><?php esc_html_e( 'cURL command (for system cron)', 'botblocker-security' ); ?></span>
 						<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
-						<?php echo Base::tooltip( __( 'Copy this command to your server crontab.', 'botblocker-security' ) ); ?>
+						<?php echo Base::help( __( 'Copy this command to your server crontab.', 'botblocker-security' ), BotBlockerDocs::url( 'cron_curl' ) ); ?>
 					</div>
 					<div class="bbcs-field-box">
 						<span class="bbcs-field-val bbcs-mono bbcs-fs-xs"><?php echo esc_html( $data->curl_cmd ); ?></span>
@@ -104,7 +101,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
 					<div class="bbcs-field-label">
 						<span><?php esc_html_e( 'Wget command (for system cron)', 'botblocker-security' ); ?></span>
 						<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
-						<?php echo Base::tooltip( __( 'Copy this command to your server crontab.', 'botblocker-security' ) ); ?>
+						<?php echo Base::help( __( 'Copy this command to your server crontab.', 'botblocker-security' ), BotBlockerDocs::url( 'cron_wget' ) ); ?>
 					</div>
 					<div class="bbcs-field-box">
 						<span class="bbcs-field-val bbcs-mono bbcs-fs-xs"><?php echo esc_html( $data->wget_cmd ); ?></span>
@@ -120,14 +117,14 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
 						?>
 						<div class="bbcs-togglerow" data-anchor="cron-task-recovery-auto">
 							<div class="bbcs-fill">
-								<div class="bbcs-togglerow-label"><?php esc_html_e( 'Automatic task recovery', 'botblocker-security' ); ?></div>
+								<div class="bbcs-togglerow-label"><?php esc_html_e( 'Automatic task recovery', 'botblocker-security' ); ?><?php echo Base::help( '', BotBlockerDocs::url( 'cron-task-recovery-auto' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?></div>
 								<div class="bbcs-togglerow-desc"><?php esc_html_e( 'If a scheduled task is missed (WP Cron unstable), BotBlocker will detect and reschedule it on the next check.', 'botblocker-security' ); ?></div>
 							</div>
 							<span class="bbcs-pill bbcs-pill--green bbcs-pill--dot"><?php esc_html_e( 'Active', 'botblocker-security' ); ?></span>
 						</div>
 						<div class="bbcs-togglerow bbcs-mt-1h" data-anchor="cron-task-recovery-fallback">
 							<div class="bbcs-fill">
-								<div class="bbcs-togglerow-label"><?php esc_html_e( 'Fallback check every 15 minutes', 'botblocker-security' ); ?></div>
+								<div class="bbcs-togglerow-label"><?php esc_html_e( 'Fallback check every 15 minutes', 'botblocker-security' ); ?><?php echo Base::help( '', BotBlockerDocs::url( 'cron-task-recovery-fallback' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?></div>
 								<div class="bbcs-togglerow-desc"><?php esc_html_e( 'Checks for missed tasks every 15 minutes via the WordPress', 'botblocker-security' ); ?> <code class="bbcs-mono">init</code> <?php esc_html_e( 'hook. Independent of WP Cron.', 'botblocker-security' ); ?></div>
 							</div>
 							<span class="bbcs-pill bbcs-pill--green bbcs-pill--dot"><?php esc_html_e( 'Active', 'botblocker-security' ); ?></span>
@@ -141,7 +138,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
 		// ── Task List ────────────────────────────────────────────────
 		SettingsGroup::make()
 			->withTitle( __( 'Task List', 'botblocker-security' ) )
-			->withItems( static function () use ( $data, $scheduled_tasks, $summary_text ): void {
+			->withItems( static function () use ( $scheduled_tasks, $summary_text ): void {
 				?>
 				<div class="bbcs-row bbcs-g-2 bbcs-mb-3h bbcs-ai-center" data-anchor="task-list">
 					<div class="bbcs-fill bbcs-fs-xs bbcs-dim bbcs-mono"><?php echo esc_html( $summary_text ); ?></div>
@@ -187,7 +184,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
 								<?php endif; ?>
 							</td>
 							<td data-label="<?php esc_attr_e( 'Progress', 'botblocker-security' ); ?>">
-								<div class="bbcs-cron-progress" title="<?php echo esc_attr( round( $task->progress ) ); ?>%" data-interval="<?php echo esc_attr( (string) $task->interval ); ?>">
+								<div class="bbcs-cron-progress" title="<?php echo esc_attr( (string) round( $task->progress ) ); ?>%" data-interval="<?php echo esc_attr( (string) $task->interval ); ?>">
 									<div class="bbcs-cron-progress-bar bbcs-cron-progress-bar--animated" style="width: <?php echo esc_attr( (string) $task->progress ); ?>%;"></div>
 									<span class="bbcs-cron-progress-s" data-seconds="<?php echo esc_attr( (string) $task->time_remaining ); ?>"><?php echo esc_html( BotBlockerDataTime::formatTimeRemaining( $task->time_remaining ) ); ?></span>
 								</div>

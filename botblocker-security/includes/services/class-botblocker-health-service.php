@@ -21,7 +21,6 @@ final class BotBlockerHealthService {
 			array( 'key' => 'block_empty_ua', 'label' => __( 'Blocking empty User-Agent', 'botblocker-security' ), 'type' => 'core' ),
 			array( 'key' => 'block_simplebot_ua', 'label' => __( 'Blocking simple bot User-Agents', 'botblocker-security' ), 'type' => 'core' ),
 			array( 'key' => 'block_empty_lang', 'label' => __( 'Blocking empty language', 'botblocker-security' ), 'type' => 'core' ),
-			array( 'key' => 'block_nojs_users', 'label' => __( 'Blocking users without JavaScript', 'botblocker-security' ), 'type' => 'core' ),
 			array( 'key' => 'block_fake_ref', 'label' => __( 'Blocking fake referrers', 'botblocker-security' ), 'type' => 'core' ),
 			array( 'key' => 'block_ip_ptr_match', 'label' => __( 'Blocking PTR/DNS anomalies', 'botblocker-security' ), 'type' => 'core' ),
 			array( 'key' => 'block_proxy_users', 'label' => __( 'Blocking classic proxies', 'botblocker-security' ), 'type' => 'core' ),
@@ -49,7 +48,7 @@ final class BotBlockerHealthService {
 			array( 'key' => 'block_web_engine_options', 'label' => __( 'Engine parameter checks', 'botblocker-security' ), 'type' => 'cloud_extended' ),
 			array( 'key' => 'block_device_options', 'label' => __( 'Device API verification', 'botblocker-security' ), 'type' => 'cloud_extended' ),
 			array( 'key' => 'utm_referrer', 'label' => __( 'UTM referrer processing', 'botblocker-security' ), 'type' => 'neutral' ),
-			array( 'key' => 'noarchive', 'label' => __( 'X-Robots-Tag: noarchive for blocked pages', 'botblocker-security' ), 'type' => 'neutral' ),
+			array( 'key' => 'noarchive', 'label' => __( 'X-Robots-Tag: noarchive for all pages', 'botblocker-security' ), 'type' => 'neutral' ),
 			array( 'key' => 'utm_noindex', 'label' => __( 'X-Robots-Tag: noindex on UTM pages', 'botblocker-security' ), 'type' => 'neutral' ),
 			array( 'key' => 'get_browser_type', 'label' => __( 'Collect browser type', 'botblocker-security' ), 'type' => 'neutral' ),
 			array( 'key' => 'get_os_type', 'label' => __( 'Collect OS type', 'botblocker-security' ), 'type' => 'neutral' ),
@@ -57,7 +56,6 @@ final class BotBlockerHealthService {
 			array( 'key' => 'daylight_saving_time', 'label' => __( 'Daylight saving time adjustment', 'botblocker-security' ), 'type' => 'neutral' ),
 			array( 'key' => 'block_incorrect_lang_users', 'label' => __( 'Geo IP / Language mismatch filtering', 'botblocker-security' ), 'type' => 'neutral' ),
 			array( 'key' => 'autosave_admin_ip', 'label' => __( 'Auto-save administrator IPs', 'botblocker-security' ), 'type' => 'neutral' ),
-			array( 'key' => 'email_notifications', 'label' => __( 'Email notifications', 'botblocker-security' ), 'type' => 'neutral' ),
 			array( 'key' => 'allow_self_ip_req', 'label' => __( 'Allow requests from server IP', 'botblocker-security' ), 'type' => 'negative' ),
 		);
 	}
@@ -72,6 +70,9 @@ final class BotBlockerHealthService {
 	 * @return bool
 	 */
 	public static function isEnabled( string $key, $settings, bool $recaptchaReady = false ): bool {
+		if ( ! BotBlockerPro::allowsFeature( $key ) ) {
+			return false;
+		}
 		$value = isset( $settings->$key ) ? $settings->$key : null;
 		switch ( $key ) {
 			case 'bbcs_captcha_mode':
@@ -96,7 +97,7 @@ final class BotBlockerHealthService {
 
 	/**
 	 * Calculate the health score using the original formula.
-	 * 11 core items → 75 pts, check (special) → 12.5 pts, 7 cloud items → 12.5 pts.
+	 * 10 core items → 75 pts, check (special) → 12.5 pts, 7 cloud items → 12.5 pts.
 	 *
 	 * @param object $settings Settings object.
 	 * @param bool   $recaptchaReady Whether reCAPTCHA keys are configured.
@@ -105,15 +106,13 @@ final class BotBlockerHealthService {
 	public static function calculateHealthScore( $settings, bool $recaptchaReady ): int {
 		$health = 0;
 
-		// 11 core items: 75 pts total
+		// 10 core items: 75 pts total
 		$core_items = array(
 			'bbcs_captcha_mode' => function ( $v ) {
 				return $v != -1; },
 			'block_empty_ua'    => function ( $v ) {
 				return $v == 1; },
 			'block_empty_lang'  => function ( $v ) {
-				return $v == 1; },
-			'block_nojs_users'  => function ( $v ) {
 				return $v == 1; },
 			'block_simplebot_ua' => function ( $v ) {
 				return $v == 1; },
@@ -123,7 +122,7 @@ final class BotBlockerHealthService {
 				return $v == 1; },
 			'block_http10_users' => function ( $v ) {
 				return $v == 1; },
-			'recaptcha_check'   => function ( $v ) use ( $settings, $recaptchaReady ) {
+			'recaptcha_check'   => function ( $v ) use ( $recaptchaReady ) {
 				return $v == 1 && $recaptchaReady;
 			},
 			'time_ban'          => function ( $v ) {
@@ -143,7 +142,7 @@ final class BotBlockerHealthService {
 		}
 
 		// Special: check gets 12.5 pts on its own
-		if ( isset( $settings->check ) && $settings->check == 1 ) {
+		if ( isset( $settings->check ) && $settings->check == 1 && BotBlockerPro::allowsFeature( 'check' ) ) {
 			$health += 12.5;
 		}
 
@@ -170,7 +169,7 @@ final class BotBlockerHealthService {
 
 		foreach ( $cloud_items as $key => $isEnabled ) {
 			$value = isset( $settings->$key ) ? $settings->$key : null;
-			if ( $isEnabled( $value ) ) {
+			if ( $isEnabled( $value ) && BotBlockerPro::allowsFeature( $key ) ) {
 				$health += $weight_per_cloud;
 			}
 		}

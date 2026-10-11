@@ -20,8 +20,6 @@ class BotBlockerSettingsPresets {
 			'allow_self_call_header',
 			'autosave_admin_ip',
 			'skip_logged_in_users',
-			'bbcs_api_gs_url',
-			'bbcs_api_url',
 			'bbcs_captcha_img_inline',
 			'bbcs_captcha_img_pack',
 			'bbcs_captcha_mode',
@@ -40,7 +38,6 @@ class BotBlockerSettingsPresets {
 			'block_rkn',
 			'block_ip_ptr_match',
 			'block_ipv6_users',
-			'block_nojs_users',
 			'block_override',
 			'block_proxy_users',
 			'block_simple_antidetect',
@@ -73,12 +70,10 @@ class BotBlockerSettingsPresets {
 			'check_get_ref',
 			'cookie',
 			'cookie_lifetime',
-			'critical_load_notifications',
 			'daylight_saving_time',
 			'disable',
 			'early_init_enable',
 			'early_geo_enable',
-			'email_notifications',
 			'get_browser_type',
 			'get_device_type',
 			'get_os_type',
@@ -131,7 +126,8 @@ class BotBlockerSettingsPresets {
 			'redis_password',
 			'redis_port',
 			'redis_prefix',
-			'regular_notifications_frequency',
+			'apcu_enable',
+			'apcu_prefix',
 			'secure_mode',
 			'samesite',
 			'secret_botblocker_get_param',
@@ -148,6 +144,16 @@ class BotBlockerSettingsPresets {
 			'vary_cookie',
 			'bbcs_cors_strict_headers',
 			'bbcs_wp_connectors_enabled',
+			'bbcs_wp_abilities_enabled',
+			'bbcs_ability_get_firewall_status',
+			'bbcs_ability_check_ip',
+			'bbcs_ability_get_ip_rules',
+			'bbcs_ability_get_traffic_summary',
+			'bbcs_ability_run_diagnostics',
+			'bbcs_ability_block_ip',
+			'bbcs_ability_unblock_ip',
+			'bbcs_ability_run_malware_scan',
+			'bbcs_ability_get_scan_results',
 			'whitelist_whatsapp_preview',
 			'x_robots_directives',
 
@@ -166,7 +172,7 @@ class BotBlockerSettingsPresets {
 	}
 
 	public static function loadDefaultSettings(): array {
-		return array(
+		$defaults = array(
 			'secure_mode'                          => 2,
 			'disable'                              => 0,
 			'bbcs_captcha_img_inline'              => 1,
@@ -174,16 +180,13 @@ class BotBlockerSettingsPresets {
 			'bbcs_captcha_mode'                    => BOTBLOCKER_CAPTCHA_MODE_DEFAULT,
 			'bbcs_captcha_wait'                    => 30,
 			'bbcs_ddos_resilience'                 => 0,
-			'cloud_api_type'                       => 'cloud_basic',
+			'cloud_api_type'                       => BotBlockerPro::TYPE_BASIC,
 			'cloud_api_tier'                       => '',
 
 			'block_empty_ua'                       => 1,
 			'block_empty_lang'                     => 1,
 			'bbcs_allow_empty_accept_lang'         => 0,
-			'block_nojs_users'                     => 1,
 			'block_proxy_users'                    => 1,
-			'block_vpn_users'                      => 1,
-			'block_tor_users'                      => 1,
 			'block_ipv6_users'                     => 0,
 			'block_adblocker_users'                => 1,
 			'block_http10_users'                   => 1,
@@ -211,7 +214,7 @@ class BotBlockerSettingsPresets {
 			'admin_gmt_offset'                     => 0,
 
 			'check'                                => 0,
-			'unresponsive'                         => 1,
+			'unresponsive'                         => 0,
 			'cloud_fallback_block'                 => 0,
 			'cookie'                               => BOTBLOCKER_SHORT_NAME,
 			'hits_per_user'                        => 500,
@@ -259,9 +262,6 @@ class BotBlockerSettingsPresets {
 			'memcached_port'                       => 11211,
 			'memcached_prefix'                     => BOTBLOCKER_PREFIX,
 
-			'bbcs_api_url'                         => BOTBLOCKER_API_URL,
-			'bbcs_api_gs_url'                      => BOTBLOCKER_API_GS_URL,
-
 			'redis_database'                       => 0,
 			'redis_host'                           => '127.0.0.1',
 			'redis_port'                           => 6379,
@@ -269,6 +269,9 @@ class BotBlockerSettingsPresets {
 			'redis_password'                       => '',
 			'redis_enable'                         => 0,
 			'transients_enable'                    => 1,
+
+			'apcu_enable'                          => 0,
+			'apcu_prefix'                          => BOTBLOCKER_PREFIX,
 
 			'mu_enable'                            => (int) BOTBLOCKER_INTEGRATE_MU_PLUGINS,
 			'early_init_enable'                    => 0,
@@ -288,15 +291,21 @@ class BotBlockerSettingsPresets {
 			'cloud_api_timeout'                    => 5,
 			'vary_cookie'                          => 0,
 			'bbcs_cors_strict_headers'             => 0,
+			'bbcs_wp_abilities_enabled'            => 0,
+			'bbcs_ability_get_firewall_status'     => 0,
+			'bbcs_ability_check_ip'                => 0,
+			'bbcs_ability_get_ip_rules'            => 0,
+			'bbcs_ability_get_traffic_summary'     => 0,
+			'bbcs_ability_run_diagnostics'         => 0,
+			'bbcs_ability_block_ip'                => 0,
+			'bbcs_ability_unblock_ip'              => 0,
+			'bbcs_ability_run_malware_scan'        => 0,
+			'bbcs_ability_get_scan_results'        => 0,
 
 			'payment_bypass_enable'                => 0,
 			'payment_bypass_log'                   => 1,
 			'payment_strict_method'                => 0,
 			'payment_keep_ip_rules'                => 0,
-
-			'email_notifications'                  => 0,
-			'critical_load_notifications'          => 0,
-			'regular_notifications_frequency'      => 'disabled',
 
 			'login_brutforce_enabled'              => 1,
 			'login_brutforce_attempts'             => 5,
@@ -322,17 +331,17 @@ class BotBlockerSettingsPresets {
 			'bbcs_rate_subnet_mask'                => '24-64',
 			'bbcs_rate_block_duration'             => 600,
 		);
+		return BotBlockerPro::withoutProFeatures( $defaults );
 	}
 
 	public static function loadLightSecurity(): array {
-		return array(
+		$settings = array(
 			'secure_mode'                          => 2,
 			'disable'                              => 0,
 
 			'block_empty_ua'                       => 1,
 			'block_empty_lang'                     => 1,
 			'bbcs_allow_empty_accept_lang'         => 0,
-			'block_nojs_users'                     => 1,
 			'block_proxy_users'                    => 1,
 			'block_ipv6_users'                     => 0,
 			'block_adblocker_users'                => 0,
@@ -413,17 +422,17 @@ class BotBlockerSettingsPresets {
 			'block_web_engine_options'             => 0,
 			'block_device_options'                 => 0,
 		);
+		return BotBlockerPro::withoutProFeatures( $settings );
 	}
 
 	public static function loadStrongSecurity(): array {
-		return array(
+		$settings = array(
 			'secure_mode'                          => 2,
 			'disable'                              => 0,
 
 			'block_empty_ua'                       => 1,
 			'block_empty_lang'                     => 1,
 			'bbcs_allow_empty_accept_lang'         => 0,
-			'block_nojs_users'                     => 1,
 			'block_proxy_users'                    => 1,
 			'block_ipv6_users'                     => 0,
 			'block_adblocker_users'                => 1,
@@ -504,6 +513,7 @@ class BotBlockerSettingsPresets {
 			'block_web_engine_options'             => 0,
 			'block_device_options'                 => 0,
 		);
+		return BotBlockerPro::withoutProFeatures( $settings );
 	}
 
 	public static function loadFullSecurity(): array {
@@ -514,7 +524,6 @@ class BotBlockerSettingsPresets {
 			'block_empty_ua'                       => 1,
 			'block_empty_lang'                     => 1,
 			'bbcs_allow_empty_accept_lang'         => 0,
-			'block_nojs_users'                     => 1,
 			'block_proxy_users'                    => 1,
 			'block_ipv6_users'                     => 0,
 			'block_adblocker_users'                => 1,

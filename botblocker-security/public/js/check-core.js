@@ -226,30 +226,45 @@ if (_host !== window.atob(bbcsJsData.hostBase64) &&
 
 document.getElementById("content").innerHTML = bbcsJsData.loadingText;
 
+var BBCS_RECAPTCHA_TIMEOUT_MS = 5000;
+
 function handleWorkerSignal() {
     return new Promise(function(resolve) {
+        var settled = false;
+        var timer = null;
+
+        function finish(token) {
+            if (settled) {
+                return;
+            }
+            settled = true;
+            clearTimeout(timer);
+            window.rct = token;
+            resolve('HWS');
+        }
+
         if (bbcsJsData.recaptchaEnabled) {
+            timer = setTimeout(function() {
+                bbcsDebugError('reCAPTCHA timed out');
+                finish('');
+            }, BBCS_RECAPTCHA_TIMEOUT_MS);
             try {
                 grecaptcha.ready(function() {
                     grecaptcha.execute(bbcsJsData.recaptchaKey3, {
                         action: bbcsJsData.country
                     }).then(function(token) {
-                        window.rct = token;
-                        resolve('HWS');
+                        finish(token);
                     }).catch(function(e) {
                         bbcsDebugError('reCAPTCHA execute failed:', e);
-                        window.rct = '';
-                        resolve('HWS');
+                        finish('');
                     });
                 });
             } catch (e) {
                 bbcsDebugError('reCAPTCHA unavailable:', e);
-                window.rct = '';
-                resolve('HWS');
+                finish('');
             }
         } else {
-            window.rct = '';
-            resolve('HWS');
+            finish('');
         }
     });
 }
@@ -382,7 +397,12 @@ window[bbcsJsData.checkFunctionName] = function(s, d, x, ajaxEndpoint) {
     formData.append('suspect_reason', bbcsJsData.reasonForAction);
     formData.append('check_result', bbcsJsData.resultOfAction);
 
-    if (typeof bbcsCaptchaData !== 'undefined' && bbcsCaptchaData.challengeToken) {
+    // The captcha challenge token is ONE-TIME (server deletes its transient on
+    // verify). Attach it ONLY to an actual captcha answer submission (x = answer
+    // hash). The automatic fingerprint verify on page load passes x = '' and
+    // must NOT consume the token, or the real click later reads it as already
+    // used and the visitor is banned on slow servers (finding W10).
+    if (x && typeof bbcsCaptchaData !== 'undefined' && bbcsCaptchaData.challengeToken) {
         formData.append('challenge_token', bbcsCaptchaData.challengeToken);
     }
 
@@ -397,7 +417,10 @@ window[bbcsJsData.checkFunctionName] = function(s, d, x, ajaxEndpoint) {
 
     var xhr = new XMLHttpRequest();
     xhr.open('POST', ajaxEndpoint, true);
-    xhr.timeout = bbcsDdosRetryCount > 0 ? 10000 : 5000;
+    // 5s was too tight for a slow host: the response arrived after the XHR
+    // timeout, the client retried via the verify endpoint, and the replayed
+    // one-time token banned a visitor who had actually passed (finding W10).
+    xhr.timeout = bbcsDdosRetryCount > 0 ? 30000 : 20000;
 
     xhr.onload = function() {
         if (xhr.status == 200) {
@@ -416,6 +439,14 @@ window[bbcsJsData.checkFunctionName] = function(s, d, x, ajaxEndpoint) {
                         } else {
                             delete obj.bbcs_sig;
                         }
+                    }
+
+                    // Captcha provider failed: the server sent a Button challenge to show instead.
+                    if (obj.fallback && typeof obj.fallback === 'object' && bbcsSigValid && typeof bbcsCaptchaData !== 'undefined') {
+                        bbcsDebugLog('Captcha provider error, showing Button fallback');
+                        bbcsCaptchaData.mode = obj.fallback.mode;
+                        bbcsCaptchaData.params = obj.fallback.params;
+                        bbcsCaptchaData.challengeToken = obj.fallback.challengeToken;
                     }
 
                     if (bbcsJsData.ddosResilience && bbcsSigValid && typeof obj.cookie !== 'string') {

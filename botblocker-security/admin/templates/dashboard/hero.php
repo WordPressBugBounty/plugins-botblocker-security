@@ -2,6 +2,9 @@
 if ( ! defined( "ABSPATH" ) ) {
 	exit;
 }
+
+use BotBlocker\Component\Base;
+
 return static function ( Botblocker_DashboardViewModel $data ): void {
 	?>
 <div class="bbcs-card bbcs-hero">
@@ -10,11 +13,12 @@ return static function ( Botblocker_DashboardViewModel $data ): void {
 			<svg class="bbcs-ico"><use href="#bbcs-i-<?php echo $data->is_active ? "shieldCheck" : "shield"; ?>"></use></svg>
 		</span>
 		<div class="bbcs-fill">
-			<div class="bbcs-hero-title"><?php echo esc_html( $data->hero_status_text ); ?></div>
+			<div class="bbcs-hero-title"><?php echo esc_html( $data->hero_status_text ); ?><?php echo Base::help( '', BotBlockerDocs::page( 'dashboard' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?></div>
 			<div class="bbcs-hero-sub"><?php echo wp_kses_post( $data->hero_subtitle ); ?></div>
 		</div>
 		<div class="bbcs-hero-toggle">
 			<span class="bbcs-fw-bold"><?php echo $data->is_active ? esc_html__( "Enabled", "botblocker-security" ) : esc_html__( "Disabled", "botblocker-security" ); ?></span>
+			<?php echo Base::help( '', BotBlockerDocs::url( 'disable' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 			<button class="bbcs-toggle <?php echo $data->is_active ? "is-on" : ""; ?>" role="switch" aria-checked="<?php echo $data->is_active ? "true" : "false"; ?>" id="bbcs-hero-toggle" data-bbcs-toggle="1" data-action="bbcs_toggle_early_phase_in_db" data-setting="disable" data-value="<?php echo $data->is_active ? "1" : "0"; ?>">
 				<span class="bbcs-toggle-knob"></span>
 			</button>

@@ -23,10 +23,10 @@ class BotBlockerSettingsHooks {
 		if ( isset( $_POST['redis_enable'] ) && $_POST['redis_enable'] !== '0' ) {
 			$probe = BotBlockerCache::testRedisConnection(
 				isset( $_POST['redis_host'] ) ? sanitize_text_field( wp_unslash( $_POST['redis_host'] ) ) : null,
-				isset( $_POST['redis_port'] ) ? (int) wp_unslash( $_POST['redis_port'] ) : null,
+				isset( $_POST['redis_port'] ) ? (int) $_POST['redis_port'] : null,
 				isset( $_POST['redis_password'] ) ? sanitize_text_field( wp_unslash( $_POST['redis_password'] ) ) : null,
 				isset( $_POST['redis_prefix'] ) ? sanitize_text_field( wp_unslash( $_POST['redis_prefix'] ) ) : null,
-				isset( $_POST['redis_database'] ) ? (int) wp_unslash( $_POST['redis_database'] ) : null
+				isset( $_POST['redis_database'] ) ? (int) $_POST['redis_database'] : null
 			);
 			if ( ! $probe['ok'] ) {
 				$_POST['redis_enable'] = '0';
@@ -36,10 +36,11 @@ class BotBlockerSettingsHooks {
 					BBCS_Toastify::PAGE_INTEGRATIONS
 				);
 			}
-		} elseif ( isset( $_POST['memcached_enable'] ) && $_POST['memcached_enable'] !== '0' ) {
+		}
+		if ( isset( $_POST['memcached_enable'] ) && $_POST['memcached_enable'] !== '0' ) {
 			$probe = BotBlockerCache::testMemcachedConnection(
 				isset( $_POST['memcached_host'] ) ? sanitize_text_field( wp_unslash( $_POST['memcached_host'] ) ) : null,
-				isset( $_POST['memcached_port'] ) ? (int) wp_unslash( $_POST['memcached_port'] ) : null,
+				isset( $_POST['memcached_port'] ) ? (int) $_POST['memcached_port'] : null,
 				isset( $_POST['memcached_prefix'] ) ? sanitize_text_field( wp_unslash( $_POST['memcached_prefix'] ) ) : null
 			);
 			if ( ! $probe['ok'] ) {
@@ -51,16 +52,40 @@ class BotBlockerSettingsHooks {
 				);
 			}
 		}
+		if ( isset( $_POST['apcu_enable'] ) && $_POST['apcu_enable'] !== '0' ) {
+			$probe = BotBlockerCache::testApcuConnection(
+				isset( $_POST['apcu_prefix'] ) ? sanitize_text_field( wp_unslash( $_POST['apcu_prefix'] ) ) : null
+			);
+			if ( ! $probe['ok'] ) {
+				$_POST['apcu_enable'] = '0';
+				BBCS_Toastify::flash(
+					esc_html__( 'APCu backend is not reachable — the integration was left disabled.', 'botblocker-security' ),
+					BBCS_Toastify::TYPE_WARNING,
+					BBCS_Toastify::PAGE_INTEGRATIONS
+				);
+			}
+		}
 
 		$checkbox_fields = array(
 			'recaptcha_check',
 			'recaptcha_v3_ipv6_block',
 			'memcached_enable',
 			'redis_enable',
+			'apcu_enable',
 			'transients_enable',
 			'bbcs_2fa_enable',
 			'bbcs_2fa_xmlrpc_block',
 			'bbcs_wp_connectors_enabled',
+			'bbcs_wp_abilities_enabled',
+			'bbcs_ability_get_firewall_status',
+			'bbcs_ability_check_ip',
+			'bbcs_ability_get_ip_rules',
+			'bbcs_ability_get_traffic_summary',
+			'bbcs_ability_run_diagnostics',
+			'bbcs_ability_block_ip',
+			'bbcs_ability_unblock_ip',
+			'bbcs_ability_run_malware_scan',
+			'bbcs_ability_get_scan_results',
 		);
 
 		foreach ( $checkbox_fields as $field ) {
@@ -183,7 +208,6 @@ class BotBlockerSettingsHooks {
 		$checkbox_fields = array(
 			'block_empty_ua',
 			'block_empty_lang',
-			'block_nojs_users',
 			'block_proxy_users',
 			'block_vpn_users',
 			'block_tor_users',
@@ -235,8 +259,6 @@ class BotBlockerSettingsHooks {
 			'skip_logged_in_users',
 			'daylight_saving_time',
 			'audit_log_enable',
-			'email_notifications',
-			'critical_load_notifications',
 			'login_brutforce_enabled',
 			'payment_bypass_enable',
 			'payment_bypass_log',
@@ -260,10 +282,8 @@ class BotBlockerSettingsHooks {
 
 		foreach ( $checkbox_fields as $field ) {
 			$value = ( isset( $_POST[ $field ] ) && $_POST[ $field ] !== '0' ) ? '1' : '0';
-			if ( in_array( $field, array( 'hosting_block', 'block_vpn_users', 'block_tor_users' ), true ) && $value === '1' ) {
-				if ( ! ( class_exists( 'BotBlockerPro' ) && BotBlockerPro::isActive() ) ) {
-					$value = '0';
-				}
+			if ( $value === '1' && ! BotBlockerPro::allowsFeature( $field ) ) {
+				$value = '0';
 			}
 			// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
 	        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -429,29 +449,34 @@ class BotBlockerSettingsHooks {
 			self::enforceAddonCaptchaMode( $captcha_mode );
 		}
 
-		$post_audit_roles_raw = filter_input(
-			INPUT_POST,
-			'audit_log_roles',
-			FILTER_DEFAULT,
-			FILTER_REQUIRE_ARRAY
-		);
-		$post_audit_roles_raw = is_array( $post_audit_roles_raw ) ? $post_audit_roles_raw : array();
-		$post_audit_roles     = array_map( 'sanitize_text_field', $post_audit_roles_raw );
-		$audit_log_roles      = array();
-		foreach ( wp_roles()->roles as $role_key => $role ) {
-			$audit_log_roles[ $role_key ] = ! empty( $post_audit_roles[ $role_key ] ) ? '1' : '0';
-		}
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->replace(
-			$wpdb->bbcs_settings,
-			array(
-				'key'   => 'audit_log_roles',
-				'value' => wp_json_encode( $audit_log_roles ),
-			),
-			array( '%s', '%s' )
-		);
-		if ( class_exists( 'BotBlockerAuditContext' ) ) {
-			BotBlockerAuditContext::flushRoleMapCache();
+		// A form that does not carry the audit role field must not touch the map: an
+		// absent field used to rewrite every role to '0' and silently disable auditing.
+		if ( isset( $_POST['audit_log_roles'] ) ) {
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- each array item is sanitized below
+			$post_audit_roles_raw = wp_unslash( $_POST['audit_log_roles'] );
+			$post_audit_roles_raw = is_array( $post_audit_roles_raw ) ? $post_audit_roles_raw : array();
+			$post_audit_roles     = array();
+			foreach ( $post_audit_roles_raw as $role_key => $flag ) {
+				if ( is_scalar( $flag ) ) {
+					$post_audit_roles[ (string) $role_key ] = sanitize_text_field( (string) $flag );
+				}
+			}
+			$audit_log_roles = array();
+			foreach ( wp_roles()->roles as $role_key => $role ) {
+				$audit_log_roles[ $role_key ] = ! empty( $post_audit_roles[ $role_key ] ) ? '1' : '0';
+			}
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->replace(
+				$wpdb->bbcs_settings,
+				array(
+					'key'   => 'audit_log_roles',
+					'value' => wp_json_encode( $audit_log_roles ),
+				),
+				array( '%s', '%s' )
+			);
+			if ( class_exists( 'BotBlockerAuditContext' ) ) {
+				BotBlockerAuditContext::flushRoleMapCache();
+			}
 		}
 
 		BotBlockerFileRenderer::generateSettingsFile();

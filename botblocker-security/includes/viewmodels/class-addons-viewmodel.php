@@ -26,11 +26,10 @@ final class Botblocker_AddonsViewModel {
 	/** @var Botblocker_DashboardUrls */
 	public $urls;
 	/** @var string */
-	public $docs_url;
 
 	/** @var array<string,Botblocker_AddonInstalledItemData> */
 	public $addons;
-	/** @var array<string,bool> */
+	/** @var array<int,string>|array<string,bool> */
 	public $active;
 	/** @var Botblocker_AddonMarketItemData[] */
 	public $market;
@@ -88,7 +87,6 @@ final class Botblocker_AddonsViewModel {
 		$this->urls->tools     = $BBCSA->pages_tools;
 		$this->urls->integrations = $BBCSA->pages_integrations;
 
-		$this->docs_url = BOTBLOCKER_DOCS_URL;
 
 		$this->addons_local_mode = BotBlockerAddons::isLocalMode();
 

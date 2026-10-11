@@ -2,7 +2,7 @@
 
 ## Supported Versions
 We provide security fixes for the latest minor release only:
-- 1.6.x (current)
+- 1.7.x (current)
 
 Please update to the latest version before reporting an issue.
 

@@ -12,6 +12,7 @@ return static function (Botblocker_SettingsViewModel $data): void {
 		<div>
 			<div class="bbcs-pagehead-title"><?php esc_html_e('Protection Settings', 'botblocker-security'); ?></div>
 			<div class="bbcs-pagehead-sub"><?php esc_html_e('What and how BotBlocker blocks', 'botblocker-security'); ?></div>
+			<a class="bbcs-link bbcs-pagehead-doc" href="<?php echo esc_url( BotBlockerDocs::page( 'protection' ) ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Read the documentation', 'botblocker-security' ); ?> &#8599;</a>
 		</div>
 		<div class="bbcs-pagehead-actions">
 			<a class="bbcs-btn bbcs-btn--pri" href="#" id="bbcsOpenOneClickSetup">

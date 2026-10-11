@@ -18,11 +18,11 @@ class BotBlocker_SetupWizard {
 		add_action( 'wp_ajax_bbcs_wizard_save_preset', array( $this, 'ajax_save_preset' ) );
 		add_action( 'wp_ajax_bbcs_wizard_compatibility_test', array( $this, 'ajax_compatibility_test' ) );
 		add_action( 'wp_ajax_bbcs_wizard_save_exclusions', array( $this, 'ajax_save_exclusions' ) );
+		add_action( 'wp_ajax_bbcs_wizard_save_recaptcha', array( $this, 'ajax_save_recaptcha' ) );
 		add_action( 'wp_ajax_bbcs_wizard_save_captcha', array( $this, 'ajax_save_captcha' ) );
 		add_action( 'wp_ajax_bbcs_wizard_save_init_mode', array( $this, 'ajax_save_init_mode' ) );
 		add_action( 'wp_ajax_bbcs_wizard_check_cache', array( $this, 'ajax_check_cache' ) );
 		add_action( 'wp_ajax_bbcs_wizard_save_cache', array( $this, 'ajax_save_cache' ) );
-		add_action( 'wp_ajax_bbcs_wizard_save_notifications', array( $this, 'ajax_save_notifications' ) );
 		add_action( 'wp_ajax_bbcs_wizard_complete', array( $this, 'ajax_complete_wizard' ) );
 		add_action( 'wp_ajax_bbcs_wizard_test_attack', array( $this, 'ajax_test_attack' ) );
 		add_action( 'wp_ajax_bbcs_wizard_save_ux', array( $this, 'ajax_save_ux' ) );
@@ -204,9 +204,9 @@ class BotBlocker_SetupWizard {
 						'reports_url'        => $reports_url,
 						'current_ip'         => $current_ip,
 						'site_url'           => home_url( '/' ),
+						'recaptcha_provider' => $vm ? $vm->recaptcha_provider : 'none',
 						'i18n'               => array(
 							'confirm_apply_defaults' => __( 'Are you sure? We will apply the default settings (Balanced).', 'botblocker-security' ),
-							'auto_fix_stub'          => __( 'Automatic fix applied (stub). Moving on.', 'botblocker-security' ),
 							'error_prefix'           => __( 'Error: ', 'botblocker-security' ),
 							'unknown_error'          => __( 'Unknown error', 'botblocker-security' ),
 							'ajax_error'             => __( 'AJAX error', 'botblocker-security' ),
@@ -264,7 +264,8 @@ class BotBlocker_SetupWizard {
 								<span class="bbcs-wizdot" data-dot="4">5</span><span class="bbcs-wizline" data-line="4"></span>
 								<span class="bbcs-wizdot" data-dot="5">6</span><span class="bbcs-wizline" data-line="5"></span>
 								<span class="bbcs-wizdot" data-dot="6">7</span><span class="bbcs-wizline" data-line="6"></span>
-								<span class="bbcs-wizdot" data-dot="7">8</span>
+								<span class="bbcs-wizdot" data-dot="7">8</span><span class="bbcs-wizline" data-line="7"></span>
+								<span class="bbcs-wizdot" data-dot="8">9</span>
 							</div>
 
 							<?php
@@ -273,6 +274,7 @@ class BotBlocker_SetupWizard {
 							<?php $view->presets(); ?>
 							<?php $view->compatibility(); ?>
 							<?php $view->exclusions(); ?>
+							<?php $view->recaptcha(); ?>
 							<?php $view->captcha(); ?>
 							<?php $view->init_mode(); ?>
 							<?php $view->cache(); ?>

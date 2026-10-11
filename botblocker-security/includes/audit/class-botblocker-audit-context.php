@@ -44,11 +44,35 @@ class BotBlockerAuditContext {
 	}
 
 	public static function isActorRoleEnabled( int $user_id ): bool {
-		return self::isRoleEnabled( self::getRoleForUser( $user_id ) );
+		return self::isActorEnabledForUser( $user_id );
 	}
 
 	public static function isTargetRoleEnabled( int $user_id ): bool {
-		return self::isActorRoleEnabled( $user_id );
+		return self::isActorEnabledForUser( $user_id );
+	}
+
+	public static function isActorEnabled(): bool {
+		return self::isActorEnabledForUser( self::getActorUserId() );
+	}
+
+	/**
+	 * A user is audited when ANY of their roles is enabled: a disabled secondary
+	 * role must not hide the actions of an enabled privileged role.
+	 */
+	public static function isActorEnabledForUser( int $user_id ): bool {
+		if ( $user_id <= 0 ) {
+			return true;
+		}
+		$user = get_userdata( $user_id );
+		if ( ! $user instanceof WP_User || empty( $user->roles ) ) {
+			return true;
+		}
+		foreach ( (array) $user->roles as $role ) {
+			if ( self::isRoleEnabled( (string) $role ) ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static function getRoleForUser( int $user_id ): string {

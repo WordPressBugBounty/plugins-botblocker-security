@@ -21,7 +21,7 @@ class BotBlockerCache {
 	}
 
 	/**
-	 * @return BBCS_RedisStorage|BBCS_MemcachedStorage|null
+	 * @return BBCS_RedisStorage|BBCS_MemcachedStorage|BBCS_ApcuStorage|null
 	 */
 	public static function connect() {
 		global $wpdb;
@@ -97,6 +97,38 @@ class BotBlockerCache {
 			}
 		}
 
+		if ( isset( $BBCS->settings->apcu_enable ) && $BBCS->settings->apcu_enable === 1 ) {
+			if ( get_transient( 'bbcs_apcu_unavailable' ) ) {
+				// Fast-fail during a transient outage; retried after the TTL.
+				$BBCS->settings->apcu_enable = 0;
+			} else {
+				try {
+					require_once BOTBLOCKER_DIR . 'includes/cache/class-apcu-storage.php';
+
+					$apcu = BBCS_ApcuStorage::getInstance(
+						$BBCS->settings->apcu_prefix ?? BOTBLOCKER_PREFIX
+					);
+
+					if ( $apcu && $apcu->isAvailable() ) {
+						delete_transient( 'bbcs_apcu_unavailable' );
+						return $apcu;
+					}
+				} catch ( \Exception $e ) {
+					self::logDebug( 'APCu exception: ' . $e->getMessage() );
+				}
+
+				// CLI runs with APCu disabled by default (apcu.enable_cli=0),
+				// so a CLI miss is SAPI-normal, not a web-pool outage.
+				if ( PHP_SAPI !== 'cli' && PHP_SAPI !== 'phpdbg' ) {
+					$BBCS->settings->apcu_enable = 0;
+					set_transient( 'bbcs_apcu_unavailable', 1, 60 );
+					self::logDebug( 'APCu connection failed — transient outage, retry in 60s' );
+				} else {
+					self::logDebug( 'APCu unavailable under CLI — no outage recorded' );
+				}
+			}
+		}
+
 		return null;
 	}
 
@@ -150,6 +182,28 @@ class BotBlockerCache {
 		}
 	}
 
+	public static function isApcuAvailable(): bool {
+		try {
+			require_once BOTBLOCKER_DIR . 'includes/cache/class-apcu-storage.php';
+			$BBCS = BotBlocker::getInstance();
+
+			$apcu = BBCS_ApcuStorage::getInstance(
+				$BBCS->settings->apcu_prefix ?? BOTBLOCKER_PREFIX
+			);
+
+			$available = $apcu && $apcu->isAvailable();
+
+			if ( ! $available ) {
+				self::logDebug( 'APCu availability check failed: ' . $apcu->getLastError() );
+			}
+
+			return $available;
+		} catch ( \Exception $e ) {
+			self::logDebug( 'APCu availability check exception: ' . $e->getMessage() );
+			return false;
+		}
+	}
+
 	/**
 	 * Explicit connection probe for the Redis backend. Bypasses the retry
 	 * throttle so an admin action always gets a fresh answer. Reads the
@@ -160,7 +214,7 @@ class BotBlockerCache {
 	 * @param string|null $password
 	 * @param string|null $prefix
 	 * @param string|int|null $database
-	 * @return array{ok:bool,error:string}
+	 * @return array{ok:bool,error?:string}
 	 */
 	public static function testRedisConnection( $host = null, $port = null, $password = null, $prefix = null, $database = null ): array {
 		$BBCS = BotBlocker::getInstance();
@@ -195,9 +249,9 @@ class BotBlockerCache {
 	 * settings when no explicit parameter is supplied.
 	 *
 	 * @param string|null $host
-	 * @param string|int|null $port
+	 * @param int|null $port
 	 * @param string|null $prefix
-	 * @return array{ok:bool,error:string}
+	 * @return array{ok:bool,error?:string}
 	 */
 	public static function testMemcachedConnection( $host = null, $port = null, $prefix = null ): array {
 		$BBCS = BotBlocker::getInstance();
@@ -215,6 +269,40 @@ class BotBlockerCache {
 
 			if ( ! $storage->isAvailable() ) {
 				return array( 'ok' => false, 'error' => (string) $storage->getLastError() );
+			}
+
+			return array( 'ok' => true );
+		} catch ( \Exception $e ) {
+			return array( 'ok' => false, 'error' => (string) $e->getMessage() );
+		}
+	}
+
+	/**
+	 * Explicit connection probe for the APCu backend. Reads the current
+	 * settings when no explicit parameter is supplied.
+	 *
+	 * @param string|null $prefix
+	 * @return array{ok:bool,error?:string}
+	 */
+	public static function testApcuConnection( $prefix = null ): array {
+		$BBCS = BotBlocker::getInstance();
+
+		$prefix = ( $prefix === null || $prefix === '' )
+			? ( isset( $BBCS->settings->apcu_prefix ) && $BBCS->settings->apcu_prefix !== '' ? (string) $BBCS->settings->apcu_prefix : BOTBLOCKER_PREFIX )
+			: (string) $prefix;
+
+		if ( ! function_exists( 'apcu_enabled' ) || ! apcu_enabled() ) {
+			return array( 'ok' => false, 'error' => 'APCu extension not installed or disabled' );
+		}
+
+		try {
+			require_once BOTBLOCKER_DIR . 'includes/cache/class-apcu-storage.php';
+
+			BBCS_ApcuStorage::resetInstance();
+			$storage = BBCS_ApcuStorage::getInstance( $prefix );
+
+			if ( ! $storage->isAvailable() ) {
+				return array( 'ok' => false, 'error' => 'APCu is available but store/fetch test failed' );
 			}
 
 			return array( 'ok' => true );
@@ -271,6 +359,29 @@ class BotBlockerCache {
 			self::logDebug( 'Memcached cache generation rotation exception: ' . $e->getMessage() );
 		}
 
+		if ( isset( $BBCS->settings->apcu_enable ) && $BBCS->settings->apcu_enable === 1 ) {
+			try {
+				require_once BOTBLOCKER_DIR . 'includes/cache/class-apcu-storage.php';
+
+				$apcu = BBCS_ApcuStorage::getInstance(
+					$BBCS->settings->apcu_prefix ?? BOTBLOCKER_PREFIX
+				);
+
+				if ( $apcu && $apcu->isAvailable() ) {
+					$apcu->flush();
+					$flushed = true;
+
+					self::logDebug( 'APCu cache flushed successfully' );
+				} else {
+					self::logDebug( 'APCu flush skipped: not available' );
+				}
+			} catch ( \Exception $e ) {
+				self::logDebug( 'APCu flush exception: ' . $e->getMessage() );
+			}
+		} else {
+			self::logDebug( 'APCu flush skipped: backend disabled' );
+		}
+
 		return $flushed;
 	}
 
@@ -287,6 +398,12 @@ class BotBlockerCache {
 		if ( isset( $BBCS->settings->memcached_enable ) && $BBCS->settings->memcached_enable == 1 ) {
 			$prefix = $BBCS->settings->memcached_prefix . BotBlockerMultisite::getCurrentSiteClear() . $sub . $ip_hash; //BBCS-MULTISITE
 			self::logDebug( 'Using Memcached prefix: ' . $prefix );
+			return $prefix;
+		}
+
+		if ( isset( $BBCS->settings->apcu_enable ) && $BBCS->settings->apcu_enable == 1 ) {
+			$prefix = $BBCS->settings->apcu_prefix . BotBlockerMultisite::getCurrentSiteClear() . $sub . $ip_hash; //BBCS-MULTISITE
+			self::logDebug( 'Using APCu prefix: ' . $prefix );
 			return $prefix;
 		}
 
@@ -532,6 +649,7 @@ class BotBlockerCache {
 		try {
 				$transient_keys = array(
 					'bbcs_get_statistics',
+					'bbcs_get_statistics_period',
 					'bbcs_display_daily_hits_chart',
 					'bbcs_display_hits_and_uniques_chart',
 					'bbcs_display_visitors_jsvectormap',
@@ -540,8 +658,6 @@ class BotBlockerCache {
 					'bbcs_top_devices',
 					'bbcs_top_browsers',
 					'bbcs_latest_hits_shortcode',
-					'bbcs_remaining_hits',
-					'bbcs_remaining_days',
 					'bbcs_site_health_list',
 					'bbcs_health_full_html_',
 					'bbcs_site_health',

@@ -20,10 +20,10 @@ return static function ( Botblocker_SettingsViewModel $data, bool $isActive ): v
 	<div role="tabpanel" class="bbcs-tabpanel bbcs-protect-layout" data-tabpanel="brute-force"<?php echo $isActive ? '' : ' hidden' ?>>
 		<?php
 		InfoColumn::make()
+			->withDocPage( BotBlockerDocs::page( 'login-security' ) )
 			->withIconImage( BOTBLOCKER_URL . 'public/icons/security.svg', __( 'Login Brute-Force Protection', 'botblocker-security' ) )
 			->withDescription( __( 'Prevent password guessing attacks with temporary IP lockouts after failed login attempts.', 'botblocker-security' ) )
 			->withDescription( __( 'Adjust attempt limits and block times to balance security and usability.', 'botblocker-security' ) )
-			->withDocLink( 'https://en.wikipedia.org/wiki/Brute-force_attack', __( 'Brute-force attack', 'botblocker-security' ) )
 			->render();
 		?>
 		<div>
@@ -31,7 +31,7 @@ return static function ( Botblocker_SettingsViewModel $data, bool $isActive ): v
 			SettingsGroup::make()
 				->withTitle( __( 'Login Brute-Force Protection', 'botblocker-security' ) )
 				->withItems( static function () use ( $data, $attempts, $period, $primary, $secondary ): void {
-					ToggleOption::make()->withName( 'login_brutforce_enabled' )->withChecked( $data->is_checked( 'login_brutforce_enabled' ) )->withLabel( __( 'Enable Login Brute-Force Protection', 'botblocker-security' ) )->withTooltip( __( 'Activate brute-force login protection.', 'botblocker-security' ) )->render();
+					ToggleOption::make()->withName( 'login_brutforce_enabled' )->withChecked( $data->is_checked( 'login_brutforce_enabled' ) )->withLabel( __( 'Enable Login Brute-Force Protection', 'botblocker-security' ) )->withTooltip( __( 'Activate brute-force login protection.', 'botblocker-security' ) )->withDocLink( BotBlockerDocs::url( 'login_brutforce_enabled' ) )->render();
 
 					FieldPair::make()
 						->withItems( static function () use ( $attempts, $period ): void {
@@ -43,6 +43,7 @@ return static function ( Botblocker_SettingsViewModel $data, bool $isActive ): v
 								->withTooltip( __( 'Failed attempts allowed before blocking the IP.', 'botblocker-security' ) )
 								->withMin( '1' )
 								->withEditable()
+								->withDocLink( BotBlockerDocs::url( 'login_brutforce_attempts' ) )
 								->render();
 							TextInput::make()
 								->withName( 'login_brutforce_period' )
@@ -52,6 +53,7 @@ return static function ( Botblocker_SettingsViewModel $data, bool $isActive ): v
 								->withTooltip( __( 'Time period for counting failed login attempts.', 'botblocker-security' ) )
 								->withMin( '1' )
 								->withEditable()
+								->withDocLink( BotBlockerDocs::url( 'login_brutforce_period' ) )
 								->render();
 						} )
 						->render();
@@ -66,6 +68,7 @@ return static function ( Botblocker_SettingsViewModel $data, bool $isActive ): v
 								->withTooltip( __( 'Block duration for first-time offenders.', 'botblocker-security' ) )
 								->withMin( '1' )
 								->withEditable()
+								->withDocLink( BotBlockerDocs::url( 'login_brutforce_primary_block_time' ) )
 								->render();
 							TextInput::make()
 								->withName( 'login_brutforce_secondary_block_time' )
@@ -75,6 +78,7 @@ return static function ( Botblocker_SettingsViewModel $data, bool $isActive ): v
 								->withTooltip( __( 'Block duration for repeat offenders.', 'botblocker-security' ) )
 								->withMin( '1' )
 								->withEditable()
+								->withDocLink( BotBlockerDocs::url( 'login_brutforce_secondary_block_time' ) )
 								->render();
 						} )
 						->render();

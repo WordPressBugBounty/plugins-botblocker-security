@@ -107,7 +107,7 @@ trait BotBlockerVisitorTrait {
 	}
 
 	public function check_admin_status(): void {
-		$allowed_roles = array( 'administrator', 'editor', 'moderator' );
+		$allowed_roles = array( 'administrator', 'editor', 'moderator', 'shop_manager' );
 		$user          = wp_get_current_user();
 		if ( is_user_logged_in() && ! empty( array_intersect( $allowed_roles, $user->roles ) ) ) {
 			$this->isAdmin = true;
@@ -881,21 +881,33 @@ trait BotBlockerVisitorTrait {
 		return false;
 	}
 
-	public function perform_simple_bot_checks(): void {
+	/**
+	 * Gate a visitor against the cheap bot-profile checks (empty UA/lang,
+	 * IPv6-only block, HTTP/1.0, PTR==IP, Cloudflare/classic proxy, black UA).
+	 * Returns true when a deny was routed (redirect_to_denied already fired).
+	 * Note: in FULL mode redirect_to_denied dies before the return is reached;
+	 * the bool is consumed by FRONTEND (soft denied page) and unit harnesses.
+	 */
+	public function perform_simple_bot_checks(): bool {
 		if ( $this->settings->block_empty_ua && BotBlockerCheck::isNotEmptyUA( $this->useragent ) === false ) {
 			$this->redirect_to_denied( 50, 'Empty UA' );
+			return true;
 		}
 		if ( $this->settings->block_ipv6_users && $this->ip_version == 6 ) {
 			$this->redirect_to_denied( 51, 'IPv6 connect' );
+			return true;
 		}
 		if ( $this->settings->block_empty_lang && BotBlockerCheck::isEmptyLanguage( $this->accept_lang, $this->lang ) === false ) {
 			$this->redirect_to_denied( 52, 'Empty language' );
+			return true;
 		}
 		if ( $this->settings->block_http10_users && $this->protocol == 'HTTP/1.0' ) {
 			$this->redirect_to_denied( 53, 'Http/1.0' );
+			return true;
 		}
 		if ( $this->settings->block_ip_ptr_match && $this->ptr === $this->ip ) {
 			$this->redirect_to_denied( 60, 'IP equals PTR record' );
+			return true;
 		}
 		if (
 			$this->settings->block_cf_users &&
@@ -903,13 +915,17 @@ trait BotBlockerVisitorTrait {
 			$this->is_proxy_det === 'HTTP_CF_CONNECTING_IP'
 		) {
 			$this->redirect_to_denied( 55, 'Cloudflare' );
+			return true;
 		}
 		if ( $this->settings->block_proxy_users && $this->isProxy === 'DETECTED' && $this->is_proxy_det === 'CLASSIC' ) {
 			$this->redirect_to_denied( 56, 'Classic proxy' );
+			return true;
 		}
 		if ( $this->settings->block_simplebot_ua && $this->check_bot_by_useragent( $this->useragent ) !== false ) {
 			$this->redirect_to_denied( 54, 'Black UA' );
+			return true;
 		}
+		return false;
 	}
 
 	public function read_host(): void {

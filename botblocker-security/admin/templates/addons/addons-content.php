@@ -57,7 +57,7 @@ return static function (Botblocker_Addons_View $view, Botblocker_AddonsViewModel
 					<input type="hidden" name="bbcs_anchor" value="">
 
 					<div class="bbcs-pagehead">
-						<div><div class="bbcs-pagehead-title"><?php echo esc_html( $addon->name ); ?></div><div class="bbcs-pagehead-sub"><?php esc_html_e( 'Add-on settings', 'botblocker-security' ); ?></div></div>
+						<div><div class="bbcs-pagehead-title"><?php echo esc_html( $addon->name ); ?></div><div class="bbcs-pagehead-sub"><?php esc_html_e( 'Add-on settings', 'botblocker-security' ); ?></div><a class="bbcs-link bbcs-pagehead-doc" href="<?php echo esc_url( BotBlockerDocs::page( 'addon-' . preg_replace( '/^bbcs-/', '', (string) $slug ) ) ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Read the documentation', 'botblocker-security' ); ?> &#8599;</a></div>
 						<div class="bbcs-pagehead-actions">
 							<button class="bbcs-btn" type="button" data-bbcs-back-to-marketplace>
 								<svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-arrowL"></use></svg>

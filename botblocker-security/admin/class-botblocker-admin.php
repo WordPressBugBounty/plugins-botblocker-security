@@ -16,7 +16,7 @@ class Botblocker_Admin {
 
 	use BotBlockerAdminSettingsTrait;
 
-	private static ?self $instance = null;
+	private static $instance = null;
 
 	public static function getInstance(): self {
 		if ( self::$instance === null ) {
@@ -239,9 +239,15 @@ class Botblocker_Admin {
 				'proActive' => ( class_exists( 'BotBlockerPro' ) && BotBlockerPro::isActive() ),
 			)
 		);
+		wp_enqueue_script( BOTBLOCKER_SHORT_NAME . '-pro-remaining-js', plugin_dir_url( __FILE__ ) . 'js/bbcs-js/bbcs-pro-remaining.js', array( 'jquery', BOTBLOCKER_SHORT_NAME . '-multipage-js' ), BOTBLOCKER_VERSION, true );
 		wp_add_inline_script(
 			BOTBLOCKER_SHORT_NAME . '-multipage-js',
 			'var bbcsEarlyInitConfirm = ' . wp_json_encode( __( 'Disabling Early Init mode may reduce protection against advanced bots. Are you sure you want to proceed?', 'botblocker-security' ) ) . ';',
+			'before'
+		);
+		wp_add_inline_script(
+			BOTBLOCKER_SHORT_NAME . '-multipage-js',
+			'var bbcsEarlyInitRequire = ' . wp_json_encode( __( 'Early Init requires active BotBlocker PRO and the Early Init add-on. Open Add-ons page?', 'botblocker-security' ) ) . ';',
 			'before'
 		);
 		wp_localize_script( BOTBLOCKER_SHORT_NAME . '-multipage-js', 'bbcsMultipageL10n', array(
@@ -529,7 +535,7 @@ class Botblocker_Admin {
 				'connection_error' => __( 'Connection error. Please try again.', 'botblocker-security' ),
 			) );
 			// Cloud API (BotBlocker API tab) controls live on this page too.
-			wp_enqueue_script( BOTBLOCKER_SHORT_NAME . '-cloud-api-js', plugin_dir_url( __FILE__ ) . 'js/bbcs-js/bbcs-cloud-api.js', array( 'jquery', BOTBLOCKER_SHORT_NAME . '-toast-js' ), BOTBLOCKER_VERSION, true );
+			wp_enqueue_script( BOTBLOCKER_SHORT_NAME . '-cloud-api-js', plugin_dir_url( __FILE__ ) . 'js/bbcs-js/bbcs-cloud-api.js', array( 'jquery', BOTBLOCKER_SHORT_NAME . '-toast-js', BOTBLOCKER_SHORT_NAME . '-pro-remaining-js' ), BOTBLOCKER_VERSION, true );
 			wp_localize_script( BOTBLOCKER_SHORT_NAME . '-cloud-api-js', 'botblockerData', array(
 				'adminUrl' => is_network_admin() ? network_admin_url( '' ) : admin_url( '' ),
 				'ajaxurl'  => admin_url( 'admin-ajax.php' ),
@@ -604,7 +610,7 @@ class Botblocker_Admin {
 
 		// Cloud API page.
 		if ( $this->is_screen( $screen->id, 'botblocker_page_bbcs_cloud_api' ) ) {
-			wp_enqueue_script( BOTBLOCKER_SHORT_NAME . '-cloud-api-js', plugin_dir_url( __FILE__ ) . 'js/bbcs-js/bbcs-cloud-api.js', array( 'jquery', BOTBLOCKER_SHORT_NAME . '-toast-js' ), BOTBLOCKER_VERSION, true );
+			wp_enqueue_script( BOTBLOCKER_SHORT_NAME . '-cloud-api-js', plugin_dir_url( __FILE__ ) . 'js/bbcs-js/bbcs-cloud-api.js', array( 'jquery', BOTBLOCKER_SHORT_NAME . '-toast-js', BOTBLOCKER_SHORT_NAME . '-pro-remaining-js' ), BOTBLOCKER_VERSION, true );
 			wp_localize_script( BOTBLOCKER_SHORT_NAME . '-cloud-api-js', 'bbcsCloudApiL10n', array(
 				'refreshed'      => __( 'BotBlocker PRO information refreshed successfully!', 'botblocker-security' ),
 				'failed_refresh' => __( 'Failed to refresh BotBlocker PRO information.', 'botblocker-security' ),
@@ -644,8 +650,8 @@ class Botblocker_Admin {
 				'package_root'       => __( 'The package must contain exactly one root folder.', 'botblocker-security' ),
 				'package_slug'       => __( 'The package root folder must be a valid slug.', 'botblocker-security' ),
 				'package_invalid'    => __( 'The package does not match the BotBlocker add-on contract.', 'botblocker-security' ),
+				'manifest_missing'   => __( 'Add-on package must include bbcs-addon.json.', 'botblocker-security' ),
 				'pro_required'       => __( 'Official BotBlocker add-ons require BotBlocker PRO. Custom ZIP add-ons can still be uploaded.', 'botblocker-security' ),
-				'requires_core_missing' => __( 'The package must declare Requires-Core.', 'botblocker-security' ),
 				'slug_mismatch'      => __( 'The package slug does not match the requested add-on.', 'botblocker-security' ),
 				'requires_php'       => __( 'This add-on requires a newer PHP version.', 'botblocker-security' ),
 				'file_mods_disabled' => __( 'File modifications are disabled for this WordPress installation.', 'botblocker-security' ),
@@ -803,7 +809,7 @@ class Botblocker_Admin {
 		);
 
 		add_submenu_page(
-			null,
+			'',
 			__( 'Setup Wizard', 'botblocker-security' ),
 			__( 'Setup Wizard', 'botblocker-security' ),
 			$cap,
@@ -818,6 +824,8 @@ class Botblocker_Admin {
 		global $BBCS;
 		$BBCS = BotBlocker::getInstance();
 		require_once BOTBLOCKER_DIR . 'includes/viewmodels/class-dashboard-viewmodel.php';
+		require_once BOTBLOCKER_DIR . 'includes/dto/class-pro-status-option-data.php';
+		require_once BOTBLOCKER_DIR . 'includes/viewmodels/class-pro-status-viewmodel.php';
 		require_once BOTBLOCKER_DIR . 'includes/components/component-loader.php';
 		require_once BOTBLOCKER_DIR . 'admin/views/class-dashboard-view.php';
 		require_once BOTBLOCKER_DIR . 'admin/views/class-layout-view.php';
@@ -927,7 +935,6 @@ class Botblocker_Admin {
 		$vm     = new Botblocker_CloudApiViewModel();
 		$vm->connect_nonce    = wp_create_nonce( 'bbcs_connect_cloud_api_action' );
 		$vm->deactivate_nonce = wp_create_nonce( 'bbcs_deactivate_cloud_api_action' );
-		$vm->fetch_key_nonce  = wp_create_nonce( 'bbcs_fetch_cloud_api_key_action' );
 		$view   = new Botblocker_CloudApi_View( $vm );
 		$layout = new Botblocker_Layout_View( $vm );
 

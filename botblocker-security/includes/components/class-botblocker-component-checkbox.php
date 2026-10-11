@@ -53,6 +53,11 @@ final class Checkbox extends Base {
 		return $this;
 	}
 
+	public function withDocLink( string $url ): self {
+		$this->doc_url = $url;
+		return $this;
+	}
+
 	public function withAfter( $after ): self {
 		$this->after = $after;
 		return $this;
@@ -86,7 +91,7 @@ final class Checkbox extends Base {
 		$html  = '<div class="' . self::classes( $this->cssClasses( 'bbcs_checkbox_input' ) ) . '">';
 		$html .= '<div class="bbcs_label_checkbox_box"><input' . self::attrs( $attrs ) . '>';
 		$html .= '<span class="bbcs_label_input_checkbox">' . self::escape( $this->label ) . '</span></div>';
-		$html .= self::tooltip( $this->tooltip );
+		$html .= self::help( $this->tooltip, $this->doc_url );
 		$html .= self::content( $this->after );
 		$html .= '</div>';
 

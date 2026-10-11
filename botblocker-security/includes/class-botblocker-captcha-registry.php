@@ -6,7 +6,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class BotBlockerCaptchaRegistry {
 
+	// siteverify error-codes caused by the site or the provider, never by the visitor's answer.
+	// Sources: https://developers.google.com/recaptcha/docs/verify#error_code_reference (missing-input-secret, invalid-input-secret)
+	// https://developers.cloudflare.com/turnstile/get-started/server-side-validation/ (missing-input-secret, invalid-input-secret, internal-error)
+	// https://docs.hcaptcha.com/ (siteverify error codes table: missing-input-secret, invalid-input-secret, sitekey-secret-mismatch, not-using-dummy-passcode)
+	const PROVIDER_ERROR_CODES = array( 'missing-input-secret', 'invalid-input-secret', 'sitekey-secret-mismatch', 'not-using-dummy-passcode', 'internal-error' );
+
 	private static $modes = array();
+
+	private static $last_error = '';
+
+	public static function isProviderError( array $error_codes ): bool {
+		return array() !== array_intersect( array_map( 'strval', $error_codes ), self::PROVIDER_ERROR_CODES );
+	}
+
+	public static function lastError(): string {
+		return self::$last_error;
+	}
 
 	public static function reset(): void {
 		self::$modes = array();
@@ -170,6 +186,7 @@ class BotBlockerCaptchaRegistry {
 	}
 
 	public static function verify( int $id, array $post_data, $bbcs ): ?bool {
+		self::$last_error = '';
 		if ( ! isset( self::$modes[ $id ] ) ) {
 			return false;
 		}
@@ -182,6 +199,7 @@ class BotBlockerCaptchaRegistry {
 		try {
 			return (bool) call_user_func( $verify_callback, $post_data, $bbcs );
 		} catch ( \Throwable $e ) {
+			self::$last_error = $e->getMessage();
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [CaptchaRegistry] verify callback threw for mode=' . $id . ': ' . $e->getMessage() );

@@ -38,11 +38,25 @@ final class SettingsGroup extends Base {
 		return $this;
 	}
 
+	public function withDocLink( string $url ): self {
+		$this->doc_url = $url;
+		return $this;
+	}
+
 	public function render( bool $return = false ): string {
 		$html = '<div class="bbcs-setgroup">';
 
 		if ( $this->title !== '' ) {
-			$html .= '<div class="bbcs-setgroup-head">' . self::escape( $this->title ) . '</div>';
+			$html .= '<div class="bbcs-setgroup-head">';
+			if ( $this->doc_url !== '' ) {
+				$html .= '<span class="bbcs-setgroup-head-title">' . self::escape( $this->title ) . '</span>';
+				$html .= '<a class="bbcs-setgroup-head-link" href="' . self::escape( $this->doc_url, 'url' ) . '" target="_blank" rel="noopener noreferrer"'
+					. ' aria-label="' . self::escape( __( 'Documentation', 'botblocker-security' ), 'attr' ) . '"'
+					. ' title="' . self::escape( __( 'Documentation', 'botblocker-security' ), 'attr' ) . '">' . self::svg_icon( 'doc' ) . '</a>';
+			} else {
+				$html .= self::escape( $this->title );
+			}
+			$html .= '</div>';
 		}
 
 		if ( is_callable( $this->items ) ) {

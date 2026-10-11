@@ -84,13 +84,13 @@ return static function (Botblocker_AboutViewModel $data) use ( $bbcs_docs ): voi
 			</a>
 			<div class="bbcs-mt-auto">
 				<div class="bbcs-divider bbcs-row bbcs-row--wrap bbcs-g-4">
-					<a class="bbcs-link bbcs-tx-violet bbcs-fs-xs" href="<?php echo esc_url($data->docs_url); ?>/privacy-policy/"><svg class="bbcs-ico bbcs-ico--sm">
+					<a class="bbcs-link bbcs-tx-violet bbcs-fs-xs" href="<?php echo esc_url( 'https://botblocker.top/privacy-policy/' ); ?>"><svg class="bbcs-ico bbcs-ico--sm">
 							<use href="#bbcs-i-doc"></use>
 						</svg><?php esc_html_e('Privacy policy', 'botblocker-security'); ?></a>
-					<a class="bbcs-link bbcs-tx-violet bbcs-fs-xs" href="<?php echo esc_url($data->docs_url); ?>/terms-of-service/"><svg class="bbcs-ico bbcs-ico--sm">
+					<a class="bbcs-link bbcs-tx-violet bbcs-fs-xs" href="<?php echo esc_url( 'https://botblocker.top/terms-of-service/' ); ?>"><svg class="bbcs-ico bbcs-ico--sm">
 							<use href="#bbcs-i-doc"></use>
 						</svg><?php esc_html_e('Terms of service', 'botblocker-security'); ?></a>
-					<a class="bbcs-link bbcs-tx-violet bbcs-fs-xs" href="<?php echo esc_url($data->docs_url); ?>/refund_returns/"><svg class="bbcs-ico bbcs-ico--sm">
+					<a class="bbcs-link bbcs-tx-violet bbcs-fs-xs" href="<?php echo esc_url( 'https://botblocker.top/refund_returns/' ); ?>"><svg class="bbcs-ico bbcs-ico--sm">
 							<use href="#bbcs-i-doc"></use>
 						</svg><?php esc_html_e('Refund policy', 'botblocker-security'); ?></a>
 				</div>
@@ -118,34 +118,51 @@ return static function (Botblocker_AboutViewModel $data) use ( $bbcs_docs ): voi
 	<div class="bbcs-card bbcs-card-pad bbcs-mb-5h">
 		<div class="bbcs-section-title bbcs-fs-md bbcs-mb-3h"><?php esc_html_e('Documentation', 'botblocker-security'); ?></div>
 		<div class="bbcs-grid bbcs-grid--3">
-			<a class="bbcs-inner bbcs-doclink" href="<?php echo esc_url($data->docs_url); ?>/"><span class="bbcs-doclink-ic"><svg class="bbcs-ico bbcs-ico--md">
+			<a class="bbcs-inner bbcs-doclink" href="<?php echo esc_url( BotBlockerDocs::page( 'README' ) ); ?>"><span class="bbcs-doclink-ic"><svg class="bbcs-ico bbcs-ico--md">
 						<use href="#bbcs-i-doc"></use>
 					</svg></span><span class="bbcs-doclink-label"><?php esc_html_e('User guide', 'botblocker-security'); ?></span><span class="bbcs-dim bbcs-doclink-arr"><svg class="bbcs-ico bbcs-ico--sm">
 						<use href="#bbcs-i-external"></use>
 					</svg></span></a>
-			<a class="bbcs-inner bbcs-doclink" href="<?php echo esc_url($data->docs_url); ?>/api/"><span class="bbcs-doclink-ic"><svg class="bbcs-ico bbcs-ico--md">
+			<a class="bbcs-inner bbcs-doclink" href="<?php echo esc_url( BotBlockerDocs::page( 'quick-start' ) ); ?>" target="_blank"><span class="bbcs-doclink-ic"><svg class="bbcs-ico bbcs-ico--md">
+						<use href="#bbcs-i-bolt"></use>
+					</svg></span><span class="bbcs-doclink-label"><?php esc_html_e('Get started', 'botblocker-security'); ?></span><span class="bbcs-dim bbcs-doclink-arr"><svg class="bbcs-ico bbcs-ico--sm">
+						<use href="#bbcs-i-external"></use>
+					</svg></span></a>
+			<a class="bbcs-inner bbcs-doclink" href="<?php echo esc_url( BotBlockerDocs::page( 'configuration' ) ); ?>" target="_blank"><span class="bbcs-doclink-ic"><svg class="bbcs-ico bbcs-ico--md">
+						<use href="#bbcs-i-search"></use>
+					</svg></span><span class="bbcs-doclink-label"><?php esc_html_e('Find help for a problem', 'botblocker-security'); ?></span><span class="bbcs-dim bbcs-doclink-arr"><svg class="bbcs-ico bbcs-ico--sm">
+						<use href="#bbcs-i-external"></use>
+					</svg></span></a>
+			<a class="bbcs-inner bbcs-doclink" href="<?php echo esc_url( BotBlockerDocs::page( 'troubleshooting' ) ); ?>" target="_blank"><span class="bbcs-doclink-ic"><svg class="bbcs-ico bbcs-ico--md">
+						<use href="#bbcs-i-about"></use>
+					</svg></span><span class="bbcs-doclink-label"><?php esc_html_e('Troubleshooting', 'botblocker-security'); ?></span><span class="bbcs-dim bbcs-doclink-arr"><svg class="bbcs-ico bbcs-ico--sm">
+						<use href="#bbcs-i-external"></use>
+					</svg></span></a>
+			<a class="bbcs-inner bbcs-doclink" href="<?php echo esc_url( BotBlockerDocs::page( 'glossary' ) ); ?>" target="_blank"><span class="bbcs-doclink-ic"><svg class="bbcs-ico bbcs-ico--md">
+						<use href="#bbcs-i-doc"></use>
+					</svg></span><span class="bbcs-doclink-label"><?php esc_html_e('Glossary', 'botblocker-security'); ?></span><span class="bbcs-dim bbcs-doclink-arr"><svg class="bbcs-ico bbcs-ico--sm">
+						<use href="#bbcs-i-external"></use>
+					</svg></span></a>
+			<a class="bbcs-inner bbcs-doclink" href="<?php echo esc_url( BotBlockerDocs::page( 'privacy-external-services' ) ); ?>" target="_blank"><span class="bbcs-doclink-ic"><svg class="bbcs-ico bbcs-ico--md">
+						<use href="#bbcs-i-globe"></use>
+					</svg></span><span class="bbcs-doclink-label"><?php esc_html_e('External services', 'botblocker-security'); ?></span><span class="bbcs-dim bbcs-doclink-arr"><svg class="bbcs-ico bbcs-ico--sm">
+						<use href="#bbcs-i-external"></use>
+					</svg></span></a>
+			<?php if ( is_multisite() ) : ?>
+			<a class="bbcs-inner bbcs-doclink" href="<?php echo esc_url( BotBlockerDocs::page( 'multisite' ) ); ?>" target="_blank"><span class="bbcs-doclink-ic"><svg class="bbcs-ico bbcs-ico--md">
+						<use href="#bbcs-i-system"></use>
+					</svg></span><span class="bbcs-doclink-label"><?php esc_html_e('Multisite', 'botblocker-security'); ?></span><span class="bbcs-dim bbcs-doclink-arr"><svg class="bbcs-ico bbcs-ico--sm">
+						<use href="#bbcs-i-external"></use>
+					</svg></span></a>
+			<?php endif; ?>
+			<a class="bbcs-inner bbcs-doclink" href="<?php echo esc_url( BotBlockerDocs::page( 'wp-abilities' ) ); ?>" target="_blank"><span class="bbcs-doclink-ic"><svg class="bbcs-ico bbcs-ico--md">
 						<use href="#bbcs-i-code"></use>
 					</svg></span><span class="bbcs-doclink-label"><?php esc_html_e('API & Developers', 'botblocker-security'); ?></span><span class="bbcs-dim bbcs-doclink-arr"><svg class="bbcs-ico bbcs-ico--sm">
 						<use href="#bbcs-i-external"></use>
 					</svg></span></a>
-			<a class="bbcs-inner bbcs-doclink" href="<?php echo esc_url($data->docs_url); ?>/faq/"><span class="bbcs-doclink-ic"><svg class="bbcs-ico bbcs-ico--md">
-						<use href="#bbcs-i-about"></use>
-					</svg></span><span class="bbcs-doclink-label"><?php esc_html_e('FAQ', 'botblocker-security'); ?></span><span class="bbcs-dim bbcs-doclink-arr"><svg class="bbcs-ico bbcs-ico--sm">
-						<use href="#bbcs-i-external"></use>
-					</svg></span></a>
-			<a class="bbcs-inner bbcs-doclink" href="<?php echo esc_url($data->docs_url); ?>/video-tutorials/"><span class="bbcs-doclink-ic"><svg class="bbcs-ico bbcs-ico--md">
-						<use href="#bbcs-i-system"></use>
-					</svg></span><span class="bbcs-doclink-label"><?php esc_html_e('Video tutorials', 'botblocker-security'); ?></span><span class="bbcs-dim bbcs-doclink-arr"><svg class="bbcs-ico bbcs-ico--sm">
-						<use href="#bbcs-i-external"></use>
-					</svg></span></a>
-			<a class="bbcs-inner bbcs-doclink" href="https://botblocker.com/blog/"><span class="bbcs-doclink-ic"><svg class="bbcs-ico bbcs-ico--md">
+			<a class="bbcs-inner bbcs-doclink" href="<?php echo esc_url( BOTBLOCKER_NEWS_URL ); ?>" target="_blank"><span class="bbcs-doclink-ic"><svg class="bbcs-ico bbcs-ico--md">
 						<use href="#bbcs-i-shield"></use>
 					</svg></span><span class="bbcs-doclink-label"><?php esc_html_e('Security blog', 'botblocker-security'); ?></span><span class="bbcs-dim bbcs-doclink-arr"><svg class="bbcs-ico bbcs-ico--sm">
-						<use href="#bbcs-i-external"></use>
-					</svg></span></a>
-			<a class="bbcs-inner bbcs-doclink" href="<?php echo esc_url($data->docs_url); ?>/changelog/"><span class="bbcs-doclink-ic"><svg class="bbcs-ico bbcs-ico--md">
-						<use href="#bbcs-i-changelog"></use>
-					</svg></span><span class="bbcs-doclink-label"><?php esc_html_e('Changelog', 'botblocker-security'); ?></span><span class="bbcs-dim bbcs-doclink-arr"><svg class="bbcs-ico bbcs-ico--sm">
 						<use href="#bbcs-i-external"></use>
 					</svg></span></a>
 		</div>

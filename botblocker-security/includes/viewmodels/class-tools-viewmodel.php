@@ -22,7 +22,6 @@ final class Botblocker_ToolsViewModel {
 	/** @var Botblocker_DashboardUrls */
 	public $urls;
 	/** @var string */
-	public $docs_url;
 
 	/** @var array */
 	public $asn_status;
@@ -67,7 +66,6 @@ final class Botblocker_ToolsViewModel {
 		$this->urls->wizard    = $BBCSA->pages_wizard;
 		$this->urls->pricing   = 'https://botblocker.com/pricing/';
 
-		$this->docs_url  = BOTBLOCKER_DOCS_URL;
 		$this->tools_url = BotBlockerMultisite::getAdminPageUrl( 'bbcs_tools' );
 
 		$this->asn_status  = class_exists( 'BotBlockerAsnDb' ) ? BotBlockerAsnDb::getStatus() : array();
@@ -103,7 +101,11 @@ final class Botblocker_ToolsViewModel {
 		);
 
 		$addon_tabs = array();
-		if ( class_exists( 'BotBlockerAddons' ) ) {
+		// Same lock gate as the Addons viewmodel: when add-ons are locked
+		// (no cloud API, not local mode) no addon settings tabs are exposed.
+		$has_cloud_api = class_exists( 'BotBlockerPro' ) && BotBlockerPro::isActive();
+		$addons_locked = ! $has_cloud_api && ! BotBlockerMultisite::isAddonsLocalMode();
+		if ( ! $addons_locked && class_exists( 'BotBlockerAddons' ) ) {
 			$bbcs_addons = BotBlockerAddons::scanAll();
 			$bbcs_active = BotBlockerAddons::getActive();
 

@@ -121,14 +121,19 @@ class BotBlockerAuditLogger {
 
 		if ( isset( $payload['actor_role'] ) ) {
 			$actor_role = (string) $payload['actor_role'];
-		} elseif ( isset( $payload['actor_user_id'] ) ) {
-			$actor_role = BotBlockerAuditContext::getRoleForUser( $actor_user_id );
+			if ( ! BotBlockerAuditContext::isRoleEnabled( $actor_role ) ) {
+				return false;
+			}
 		} else {
-			$actor_role = BotBlockerAuditContext::getActorRole();
-		}
+			$actor_role = isset( $payload['actor_user_id'] )
+				? BotBlockerAuditContext::getRoleForUser( $actor_user_id )
+				: BotBlockerAuditContext::getActorRole();
 
-		if ( ! BotBlockerAuditContext::isRoleEnabled( $actor_role ) ) {
-			return false;
+			// Any enabled role keeps the actor auditable: a disabled secondary role
+			// must not hide the actions of an enabled privileged role.
+			if ( ! BotBlockerAuditContext::isActorEnabledForUser( $actor_user_id ) ) {
+				return false;
+			}
 		}
 
 		$dedup = self::buildDedupKey( $event_key, $payload, $actor_user_id );
@@ -193,7 +198,7 @@ class BotBlockerAuditLogger {
 		try {
 			return BotBlockerAuditRepository::insert( $row );
 		} catch ( \Throwable $e ) {
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 				error_log( 'BotBlocker audit: could not record ' . $event_key . ' - ' . $e->getMessage() );
 			}

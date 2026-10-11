@@ -33,9 +33,16 @@ class BotBlockerCaptchaRenderer {
 	private $botblocker_check_function_name;
 	private $challengeToken = '';
 
-	public function __construct( string $botblocker_check_function_name ) {
-		$this->BBCS                           = BotBlocker::getInstance();
+	public function __construct( string $botblocker_check_function_name, $bbcs = null ) {
+		$this->BBCS                           = null !== $bbcs ? $bbcs : BotBlocker::getInstance();
 		$this->botblocker_check_function_name = $botblocker_check_function_name;
+	}
+
+	// Simple Button challenge for a provider outage (sent in the verify response).
+	public function getFallbackData(): array {
+		$data                   = $this->getSimpleButtonData();
+		$data['challengeToken'] = $this->challengeToken;
+		return $data;
 	}
 
 	public static function t( string $text ): string {
@@ -69,6 +76,16 @@ class BotBlockerCaptchaRenderer {
 		}
 		$transient_key = 'bbcs_ct_' . $data['n'];
 		if ( ! get_transient( $transient_key ) ) {
+			// Already consumed. A matching answer hash + date means the visitor
+			// SOLVED it: this is the client's timeout fallback replaying the same
+			// payload (check-core.js retries admin-ajax -> /bbcs-verify/ after
+			// its 5s XHR timeout), not a wrong click. Re-grant instead of banning
+			// a verified visitor on a slow host. A mismatching hash still fails
+			// (never a free pass) — the ban path is preserved.
+			if ( (string) $data['t'] === (string) $submittedDate
+				&& hash_equals( hash( 'sha256', $salt . $data['n'] . $data['a'] . $data['t'] . $data['i'] ), $submittedHash ) ) {
+				return $data;
+			}
 			return false;
 		}
 		delete_transient( $transient_key );
@@ -125,6 +142,18 @@ class BotBlockerCaptchaRenderer {
 		}
 		$transient_key = 'bbcs_ct_' . $data['n'];
 		if ( ! get_transient( $transient_key ) ) {
+			// Consumed token replayed with the CORRECT answer hash + date = the
+			// visitor solved it and the client retried after its XHR timeout
+			// (finding W10). Grant; do not report a wrong click. A mismatching
+			// hash stays 'TT' (ban path preserved).
+			if ( (string) $data['t'] === (string) $submittedDate
+				&& hash_equals( hash( 'sha256', $salt . $data['n'] . $data['a'] . $data['t'] . $data['i'] ), $submittedHash ) ) {
+				return array(
+					'ok'     => true,
+					'data'   => $data,
+					'reason' => '',
+				);
+			}
 			return array(
 				'ok'     => false,
 				'data'   => null,
@@ -338,20 +367,4 @@ class BotBlockerCaptchaRenderer {
 		}
 	}
 
-	public function render(): string {
-		$data = $this->getCaptchaData();
-		$mode = (int) ( $data['mode'] ?? 0 );
-		$fn   = $this->botblocker_check_function_name;
-		$dir  = $this->BBCS->dirs['public'];
-
-		require_once dirname( __DIR__ ) . '/includes/botblocker/class-botblocker-security-page-assets.php';
-
-		$js  = 'window.bbcsJsData = ' . BotBlockerSecurityPageAssets::json( array( 'checkFunctionName' => $fn ) ) . ";\n";
-		$js .= 'var bbcsCaptchaData = ' . BotBlockerSecurityPageAssets::json( $data ) . ";\n";
-		$js .= BotBlockerSecurityPageAssets::read( $dir, 'captcha-js/captcha.js' ) . "\n";
-		$js .= BotBlockerSecurityPageAssets::read( $dir, 'captcha-js/mode' . $mode . '.js' ) . "\n";
-		$js .= "renderCaptcha();\n";
-
-		return $js;
-	}
 }

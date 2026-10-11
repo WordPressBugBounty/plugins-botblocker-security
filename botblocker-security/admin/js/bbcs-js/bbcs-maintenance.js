@@ -329,8 +329,7 @@
                 method: 'POST',
                 data: {
                     action: 'bbcs_create_salt_file',
-                    nonce: botblockerData.nonce,
-                    bbcs_start_files: true
+                    nonce: botblockerData.nonce
                 },
                 success: function (response) {
                     if (response.success) {

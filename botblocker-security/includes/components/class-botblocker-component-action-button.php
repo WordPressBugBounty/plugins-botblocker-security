@@ -73,6 +73,11 @@ final class ActionButton extends Base {
 		return $this;
 	}
 
+	public function withDocLink( string $url ): self {
+		$this->doc_url = $url;
+		return $this;
+	}
+
 	/**
 	 * @param string $variant Use ACTION_BUTTON_VARIANT_DEFAULT or ACTION_BUTTON_VARIANT_DANGER.
 	 */
@@ -108,12 +113,7 @@ final class ActionButton extends Base {
 		$html .= self::escape( $this->label );
 		$html .= '</button>';
 
-		if ( $this->tooltip !== '' ) {
-			$html .= '<span class="bbcs-help">';
-			$html .= '<span class="bbcs-help-q">?</span>';
-			$html .= '<span class="bbcs-help-tip">' . self::escape( $this->tooltip ) . '</span>';
-			$html .= '</span>';
-		}
+		$html .= self::help( $this->tooltip, $this->doc_url );
 
 		$html .= '</div>';
 

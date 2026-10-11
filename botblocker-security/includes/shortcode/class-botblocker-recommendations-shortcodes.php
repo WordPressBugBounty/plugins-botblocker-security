@@ -69,15 +69,6 @@ class BotBlockerRecommendationsShortcodes {
 			);
 		}
 
-		if ( ! isset( $BBCS->settings->block_nojs_users ) || $BBCS->settings->block_nojs_users != 1 ) {
-			$recommendations[] = array(
-				'icon'     => 'fa-code',
-				'text'     => __( 'Enable JavaScript verification', 'botblocker-security' ),
-				'url'      => $BBCSA->pages_settings . '#simple_bots',
-				'priority' => 'medium',
-			);
-		}
-
 		if ( ! isset( $BBCS->settings->ptr_cache_in_db ) || $BBCS->settings->ptr_cache_in_db != 1 ) {
 			$recommendations[] = array(
 				'icon'     => 'fa-database',

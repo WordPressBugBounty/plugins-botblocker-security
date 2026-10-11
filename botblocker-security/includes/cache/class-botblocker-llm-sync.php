@@ -249,10 +249,7 @@ class BotBlockerLlmSync {
 			$request['hash'] = $stored_hash;
 		}
 
-		$result = BotBlockerWpRequest::send_to_cloud( $request, BOTBLOCKER_API_URL, 'llm_providers_sync' );
-		if ( false === $result ) {
-			$result = BotBlockerWpRequest::send_to_cloud( $request, BOTBLOCKER_API_GS_URL, 'llm_providers_sync' );
-		}
+		$result = BotBlockerBackend::sendToCloud( $request, 'llm_providers_sync' );
 
 		if ( ! is_array( $result ) ) {
 			return false;
@@ -269,7 +266,7 @@ class BotBlockerLlmSync {
 				continue;
 			}
 
-			$provider = sanitize_key( $p['provider'] );
+			$provider = sanitize_key( $p['provider'] ?? '' );
 			if ( '' === $provider ) {
 				continue;
 			}

@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 return static function ( Botblocker_SetupWizard_ViewModel $d ): void { ?>
-	<div class="bbcs-wizstep" data-step="6">
+	<div class="bbcs-wizstep" data-step="7">
 		<h2 class="bbcs-wiztitle"><?php esc_html_e( 'Performance optimization', 'botblocker-security' ); ?></h2>
 		<p class="bbcs-wizsub"><?php esc_html_e( 'Caching for faster security checks', 'botblocker-security' ); ?></p>
 
@@ -50,8 +50,8 @@ return static function ( Botblocker_SetupWizard_ViewModel $d ): void { ?>
 		</div>
 
 		<div class="bbcs-wizcta">
-			<button class="bbcs-btn bbcs-btn--lg" id="bbcs-wiz-back6"><svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-arrowL"></use></svg> <?php esc_html_e( 'Back', 'botblocker-security' ); ?></button>
-			<button class="bbcs-btn bbcs-btn--pri bbcs-btn--lg" id="bbcs-wiz-next6"><?php esc_html_e( 'Continue', 'botblocker-security' ); ?> <svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-arrowR"></use></svg></button>
+			<button class="bbcs-btn bbcs-btn--lg" id="bbcs-wiz-back7"><svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-arrowL"></use></svg> <?php esc_html_e( 'Back', 'botblocker-security' ); ?></button>
+			<button class="bbcs-btn bbcs-btn--pri bbcs-btn--lg" id="bbcs-wiz-next7"><?php esc_html_e( 'Continue', 'botblocker-security' ); ?> <svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-arrowR"></use></svg></button>
 		</div>
 	</div>
 <?php };

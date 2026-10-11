@@ -20,26 +20,26 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
     <div role="tabpanel" class="bbcs-tabpanel bbcs-protect-layout" data-tabpanel="general"<?php echo $isActive ? '' : ' hidden' ?>>
         <?php
         InfoColumn::make()
+        	->withDocPage( BotBlockerDocs::page( 'coverage', 'general' ) )
             ->withIconImage( BOTBLOCKER_URL . 'public/icons/general.svg', __( 'General', 'botblocker-security' ) )
             ->withDescription( __( 'Control how BotBlocker verifies visitors, applies security rules, and manages hit limits.', 'botblocker-security' ) )
             ->withDescription( __( 'PTR cache improves DNS lookup speed. Auto-save admin IPs prevents accidental lockout.', 'botblocker-security' ) )
-            ->withDocLink( 'https://en.wikipedia.org/wiki/HTTP_cookie', __( 'Cookies', 'botblocker-security' ) )
-            ->withDocLink( $data->docs_url . '/ptr-record-checks-detecting-fake-bots-with-reverse-dns-in-botblocker/', __( 'PTR', 'botblocker-security' ) )
             ->render();
         ?>
         <div>
             <?php
             SettingsGroup::make()
                 ->withTitle( __( 'General', 'botblocker-security' ) )
-                ->withItems( static function () use ( $data, $sm, $hits ): void {
+                ->withItems( static function () use ( $sm, $hits ): void {
                     FieldPair::make()
-                        ->withItems( static function () use ( $data, $sm, $hits ): void {
+                        ->withItems( static function () use ( $sm, $hits ): void {
                             CustomSelect::make()
                                 ->withName( 'secure_mode' )
                                 ->withValue( $sm )
                                 ->withOptions( array( '2' => __( 'Full Mode (Check all requests)', 'botblocker-security' ), '1' => __( 'Frontend Mode (Check frontend only)', 'botblocker-security' ) ) )
                                 ->withLabel( __( 'Security Check Mode', 'botblocker-security' ) )
                                 ->withTooltip( __( 'Full Mode: Inspect all requests (frontend, admin, API, AJAX, cron). Frontend Mode: Inspect public-facing requests only.', 'botblocker-security' ) )
+                                ->withDocLink( BotBlockerDocs::url( 'secure_mode' ) )
                                 ->render();
 
                             TextInput::make()
@@ -53,6 +53,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                                 ->withStep( '1' )
                                 ->withEditable()
                                 ->withSuffix( __( 'hits', 'botblocker-security' ) )
+                                ->withDocLink( BotBlockerDocs::url( 'hits_per_user' ) )
                                 ->render();
                         } )
                         ->render();
@@ -71,6 +72,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                                 ->withChecked( (bool) $t->ptr_cache_checked )
                                 ->withLabel( __( 'PTR cache', 'botblocker-security' ) )
                                 ->withTooltip( __( 'Caches PTR lookups to speed up repeat visitor checks. TTL is set by the PTR Cache Lifetime option.', 'botblocker-security' ) )
+                                ->withDocLink( BotBlockerDocs::url( 'ptr_cache_in_db' ) )
                                 ->render();
 
                             CustomSelect::make()
@@ -79,6 +81,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                                 ->withOptions( $data->ptr_lifetimes )
                                 ->withLabel( __( 'PTR Cache Lifetime', 'botblocker-security' ) )
                                 ->withTooltip( __( 'How long to cache DNS lookup results.', 'botblocker-security' ) )
+                                ->withDocLink( BotBlockerDocs::url( 'ptrcache_time' ) )
                                 ->render();
                         } )
                         ->render();
@@ -91,6 +94,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                                 ->withOptions( $data->subnet_mask_options )
                                 ->withLabel( __( 'PTR Rule Subnet Mask', 'botblocker-security' ) )
                                 ->withTooltip( __( 'Subnet size for verified bot allow-rules (IPv4/IPv6). Smaller = more secure, larger = fewer DNS lookups.', 'botblocker-security' ) )
+                                ->withDocLink( BotBlockerDocs::url( 'ptrcache_subnet' ) )
                                 ->render();
 
                             CustomSelect::make()
@@ -99,6 +103,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                                 ->withOptions( $data->ptrcache_rule_ttl_options )
                                 ->withLabel( __( 'PTR Rule Lifetime', 'botblocker-security' ) )
                                 ->withTooltip( __( 'How long to keep allow-rules for verified bots before they expire.', 'botblocker-security' ) )
+                                ->withDocLink( BotBlockerDocs::url( 'ptrcache_rule_ttl' ) )
                                 ->render();
                         } )
                         ->render();
@@ -110,8 +115,8 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                 ->withItems( static function () use ( $data ): void {
                     FieldPair::make()
                         ->withItems( static function () use ( $data ): void {
-                            ToggleOption::make()->withName( 'autosave_admin_ip' )->withChecked( $data->is_checked( 'autosave_admin_ip' ) )->withLabel( __( 'Auto-save administrator IPs', 'botblocker-security' ) )->withTooltip( __( 'Automatically save admin IPs to prevent lockout when changing settings.', 'botblocker-security' ) )->render();
-                            ToggleOption::make()->withName( 'skip_logged_in_users' )->withChecked( $data->is_checked( 'skip_logged_in_users' ) )->withLabel( __( 'Skip checks for all logged-in users', 'botblocker-security' ) )->withTooltip( __( 'When enabled, all authenticated WordPress users (including subscribers, authors, contributors) bypass BotBlocker checks. By default, only administrators, editors and moderators are bypassed.', 'botblocker-security' ) )->render();
+                            ToggleOption::make()->withName( 'autosave_admin_ip' )->withChecked( $data->is_checked( 'autosave_admin_ip' ) )->withLabel( __( 'Auto-save administrator IPs', 'botblocker-security' ) )->withTooltip( __( 'Automatically save admin IPs to prevent lockout when changing settings.', 'botblocker-security' ) )->withDocLink( BotBlockerDocs::url( 'autosave_admin_ip' ) )->render();
+                            ToggleOption::make()->withName( 'skip_logged_in_users' )->withChecked( $data->is_checked( 'skip_logged_in_users' ) )->withLabel( __( 'Skip checks for all logged-in users', 'botblocker-security' ) )->withTooltip( __( 'When enabled, all authenticated WordPress users (including subscribers, authors, contributors) bypass BotBlocker checks. By default, only administrators, editors and moderators are bypassed.', 'botblocker-security' ) )->withDocLink( BotBlockerDocs::url( 'skip_logged_in_users' ) )->render();
                         } )
                         ->render();
                 } )

@@ -54,11 +54,13 @@ trait BotBlockerCookieTrait {
 		);
 	}
 
+	// Value is "<issued>.<hmac>", keyed by the disable token, so nobody without the link can forge it.
 	public function set_secret_cookie(): void {
+		$issued = (string) $this->time;
 		$this->set_cookie(
 			$this->settings->secret_botblocker_get_param,
-			1,
-			$this->time + 2592000, // 1 month
+			$issued . '.' . hash_hmac( 'sha256', $issued, (string) $this->action_disable ),
+			0, // browser session
 			true,
 			$this->settings->samesite
 		);
@@ -101,7 +103,7 @@ trait BotBlockerCookieTrait {
 
 		$samesite = self::effective_samesite( $samesite );
 
-		if ( headers_sent() ) {
+		if ( ! $this->header_can_send() ) {
 			return;
 		}
 
@@ -135,7 +137,7 @@ trait BotBlockerCookieTrait {
 
 		$secure = ( $samesite === 'None' ) ? true : self::is_secure_connection();
 
-		setcookie(
+		$this->emit_cookie(
 			$name,
 			(string) $value,
 			array(
@@ -147,10 +149,10 @@ trait BotBlockerCookieTrait {
 				'samesite' => $samesite,
 			)
 		);
-		if ( ! headers_sent() && $this->settings->bbcs_ddos_resilience == 1 ) {
+		if ( $this->header_can_send() && $this->settings->bbcs_ddos_resilience == 1 ) {
 			$str_value = (string) $value;
 			if ( strpos( $str_value, '.' ) === false ) {
-				header( 'X-BBCS-' . $name . ': ' . $str_value, false );
+				$this->emit_header( 'X-BBCS-' . $name . ': ' . $str_value, false );
 			}
 		}
 	}

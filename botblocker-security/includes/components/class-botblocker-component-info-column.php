@@ -48,8 +48,12 @@ final class InfoColumn extends Base {
 	/** @var string Title heading text (already translated). */
 	private $title = '';
 
+	private $title_url = '';
+
 	/** @var array<array{url: string, label: string}> Documentation links. */
 	private $doc_links = array();
+
+	private $doc_page = '';
 
 	/**
 	 * @var array<array{content: string|callable, type: string}> Notes displayed as bbcs-infocol-note blocks.
@@ -141,6 +145,17 @@ final class InfoColumn extends Base {
 		return $this;
 	}
 
+	public function withTitleUrl( string $url ): self {
+		$this->title_url = $url;
+		return $this;
+	}
+
+	// One "Read the documentation" link for the whole tab.
+	public function withDocPage( string $url ): self {
+		$this->doc_page = $url;
+		return $this;
+	}
+
 	/**
 	 * Append a documentation link.
 	 *
@@ -208,7 +223,11 @@ final class InfoColumn extends Base {
 		$html .= '<div class="bbcs-infocol-body">';
 
 		if ( $this->title !== '' ) {
-			$html .= '<div class="bbcs-infocol-title">' . self::escape( $this->title ) . '</div>';
+			if ( $this->title_url !== '' ) {
+				$html .= '<div class="bbcs-infocol-title"><a class="bbcs-infocol-title-link" href="' . self::escape( $this->title_url, 'url' ) . '" target="_blank" rel="noopener noreferrer">' . self::escape( $this->title ) . '</a></div>';
+			} else {
+				$html .= '<div class="bbcs-infocol-title">' . self::escape( $this->title ) . '</div>';
+			}
 		}
 
 		foreach ( $this->descriptions as $desc ) {
@@ -226,6 +245,11 @@ final class InfoColumn extends Base {
 
 		if ( $this->version !== '' ) {
 			$html .= '<div class="bbcs-infocol-version">' . esc_html( __( 'Version', 'botblocker-security' ) . ' ' . $this->version ) . '</div>';
+		}
+
+		if ( $this->doc_page !== '' ) {
+			$html .= '<div class="bbcs-infocol-doc"><a class="bbcs-link bbcs-fs-sm" href="' . self::escape( $this->doc_page, 'url' ) . '" target="_blank" rel="noopener noreferrer">'
+				. self::escape( __( 'Read the documentation', 'botblocker-security' ) ) . ' &#8599;</a></div>';
 		}
 
 		if ( ! empty( $this->doc_links ) ) {

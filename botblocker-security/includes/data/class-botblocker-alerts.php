@@ -19,6 +19,7 @@ class BotBlockerAlerts {
 	const TRANSIENT_ADDON_UPDATE_FAILED = 'bbcs_addon_update_failed_alert';
 	const TRANSIENT_ADDON_INCOMPATIBLE  = 'bbcs_addon_incompatible_alert';
 	const TRANSIENT_ADDON_FAILED        = 'bbcs_addon_failed_alert';
+	const TRANSIENT_SECRET_LINK_USED    = 'bbcs_secret_link_used_alert';
 
 	/**
 	 * Default destination per alert type: admin page slug + tab anchor + label.
@@ -45,7 +46,6 @@ class BotBlockerAlerts {
 		'2fa_not_setup'            => array( 'bbcs_integrations', '#bbcs-2fa', 'Go to Integrations' ),
 		'cache_compatibility'      => array( 'bbcs_integrations', '#cache', 'Go to Integrations' ),
 		'malware_findings'         => array( 'bbcs_addons', '#bbcs-malware', 'Go to Add-ons' ),
-		'ts_findings'              => array( 'bbcs_addons', '#bbcs-truth-source', 'Go to Add-ons' ),
 		'redis_available'          => array( 'bbcs_integrations', '#redis', 'Go to Integrations' ),
 		'memcached_available'      => array( 'bbcs_integrations', '#memcached', 'Go to Integrations' ),
 		'setup_wizard_not_completed' => array( 'bbcs_setup_wizard', '', 'Go to Setup Wizard' ),
@@ -398,6 +398,11 @@ class BotBlockerAlerts {
 			$alerts[] = $addon_updates_alert;
 		}
 
+		$secret_link_alert = self::secretLinkUsedAlert();
+		if ( ! empty( $secret_link_alert ) ) {
+			$alerts[] = $secret_link_alert;
+		}
+
 		$asn_db_failed_alert = get_transient( 'bbcs_asn_db_failed_alert' );
 		if ( ! empty( $asn_db_failed_alert ) ) {
 			$alerts[] = $asn_db_failed_alert;
@@ -480,9 +485,44 @@ class BotBlockerAlerts {
 	 */
 	public static function t( string $text ): string {
 		if ( did_action( 'init' ) ) {
+			// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText -- init-gated passthrough for literal alert strings
 			return __( $text, 'botblocker-security' );
 		}
 		return $text;
+	}
+
+	// Stores only the time: text is built at render time, because the link request runs before the textdomain loads.
+	public static function setSecretLinkUsed( int $time ): void {
+		set_transient( self::TRANSIENT_SECRET_LINK_USED, $time, 0 );
+	}
+
+	public static function clearSecretLinkUsed(): void {
+		delete_transient( self::TRANSIENT_SECRET_LINK_USED );
+	}
+
+	// Stays until the links are regenerated: a used link can be in browser history, emails, or server logs.
+	private static function secretLinkUsedAlert(): array {
+		$used_at = get_transient( self::TRANSIENT_SECRET_LINK_USED );
+		if ( ! is_numeric( $used_at ) || ! method_exists( 'BotBlockerMultisite', 'getAdminPageUrl' ) ) {
+			return array();
+		}
+		$alert = array(
+			'type'      => 'secret_link_used',
+			'icon'      => 'fas fa-key bg-danger text-light',
+			'title'     => __( 'Recovery Link Used', 'botblocker-security' ),
+			'message'   => sprintf(
+				/* translators: %s: date and time when a recovery link was last used. */
+				__( 'A recovery link was used on %s. Regenerate the links, so that nobody else can use them.', 'botblocker-security' ),
+				wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), (int) $used_at )
+			),
+			'link'      => BotBlockerMultisite::getAdminPageUrl( 'bbcs_dashboard' ) . '#secret-links',
+			'link_text' => __( 'Regenerate links', 'botblocker-security' ),
+		);
+		if ( class_exists( 'BotBlockerAudit' ) && BotBlockerAudit::isEnabled() ) {
+			$alert['extra_link']      = BotBlockerMultisite::getAdminPageUrl( 'bbcs_reports' ) . '#audit-log';
+			$alert['extra_link_text'] = __( 'View audit log', 'botblocker-security' );
+		}
+		return $alert;
 	}
 
 	public static function setCustom( string $key, array $alert, int $ttl = DAY_IN_SECONDS ): bool {
@@ -642,9 +682,9 @@ class BotBlockerAlerts {
 			}
 			$systems['wp_super_cache']['state'] = $is_mod_rewrite ? 'needs_config' : 'installed';
 			if ( $is_mod_rewrite ) {
-				$systems['wp_super_cache']['warning'] = __( 'WP Super Cache (Expert/mod_rewrite mode) serves cached pages via .htaccess, bypassing PHP. Add a cookie-based exception. See CACHE-COMPATIBILITY.md.', 'botblocker-security' );
+				$systems['wp_super_cache']['warning'] = __( 'WP Super Cache (Expert/mod_rewrite mode) serves cached pages via .htaccess, bypassing PHP. Switch to the PHP caching mode so the BotBlocker cookie registration applies. See CACHE-COMPATIBILITY.md.', 'botblocker-security' );
 			} else {
-				$systems['wp_super_cache']['note'] = __( 'PHP caching mode - respects DONOTCACHEPAGE automatically.', 'botblocker-security' );
+				$systems['wp_super_cache']['note'] = __( 'PHP caching mode - BotBlocker registers its cookie with WP Super Cache (wpsc_add_cookie), so verified pages are keyed per visitor and the challenge wall is never bypassed from cache.', 'botblocker-security' );
 			}
 		}
 

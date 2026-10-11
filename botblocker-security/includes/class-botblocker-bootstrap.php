@@ -24,7 +24,7 @@ class BotBlockerBootstrap {
 		}
 
 		// Check minimum requirements (WordPress)
-		if ( version_compare( $GLOBALS['wp_version'], '5.1', '<' ) ) {
+		if ( version_compare( $GLOBALS['wp_version'], '5.9', '<' ) ) {
 			add_action( 'admin_notices', array( self::class, 'minimumWpVersionNotice' ) );
 			return false;
 		}
@@ -74,7 +74,7 @@ class BotBlockerBootstrap {
 	}
 
 	public static function minimumWpVersionNotice(): void {
-		echo '<div class="notice notice-error"><p>' . esc_html__( 'BotBlocker requires WordPress 5.1 or later.', 'botblocker-security' ) . '</p></div>';
+		echo '<div class="notice notice-error"><p>' . esc_html__( 'BotBlocker requires WordPress 5.9 or later.', 'botblocker-security' ) . '</p></div>';
 	}
 
 	/**
@@ -117,7 +117,7 @@ class BotBlockerBootstrap {
 	 * @return void
 	 */
 	public static function sendSecurityHeaders( array $headers ): void {
-		if ( headers_sent() ) {
+		if ( ! static::header_can_send_static() ) {
 			return;
 		}
 		foreach ( $headers as $name => $value ) {
@@ -126,7 +126,21 @@ class BotBlockerBootstrap {
 			}
 			// Strip CR/LF/NUL to prevent header injection.
 			$safe_value = str_replace( array( "\r", "\n", "\0" ), '', (string) $value );
-			header( "{$name}: {$safe_value}", true );
+			static::emit_header_static( "{$name}: {$safe_value}" );
+		}
+	}
+
+	/**
+	 * Static I/O seams for header emission (tests capture instead of sending).
+	 * Runtime behavior is identical — the guard is the same headers_sent().
+	 */
+	protected static function header_can_send_static(): bool {
+		return ! headers_sent();
+	}
+
+	protected static function emit_header_static( string $header_line ): void {
+		if ( static::header_can_send_static() ) {
+			header( $header_line, true );
 		}
 	}
 
@@ -192,6 +206,12 @@ class BotBlockerBootstrap {
 		switch_to_blog( (int) $new_site->blog_id );
 		try {
 			require BOTBLOCKER_DIR . 'includes/database/inc-botblocker-tables.php';
+			// The activator file is required only by the admin helpers, which do
+			// not load on a front-end wp_initialize_site (REST / wpmu_create_blog)
+			// — load it here or the call fatals on a real network.
+			if ( ! class_exists( 'Botblocker_Activator' ) ) {
+				require_once BOTBLOCKER_DIR . 'includes/install/class-botblocker-activator.php';
+			}
 			Botblocker_Activator::activate();
 		} finally {
 			restore_current_blog();
@@ -239,7 +259,7 @@ class BotBlockerBootstrap {
 	public static function pluginRowMeta( array $links, string $file ): array {
 		if ( BOTBLOCKER_BASENAME === $file ) {
 			$row_meta = array(
-				'docs'  => '<a href="https://botblocker.top/docs/" target="_blank">' . esc_html__( 'Docs and FAQs', 'botblocker-security' ) . '</a>',
+				'docs'  => '<a href="' . esc_url( BotBlockerDocs::page( 'README' ) ) . '" target="_blank">' . esc_html__( 'Docs and FAQs', 'botblocker-security' ) . '</a>',
 				'video' => '<a href="https://globus.studio/contact-us-to-develop-agency-solutions/" target="_blank">' . esc_html__( 'Hire Developers', 'botblocker-security' ) . '</a>',
 			);
 			return array_merge( $links, $row_meta );

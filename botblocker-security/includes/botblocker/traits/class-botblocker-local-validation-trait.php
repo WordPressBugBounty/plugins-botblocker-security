@@ -140,6 +140,11 @@ trait BotBlockerLocalValidationTrait {
 			'block_web_engine_options' => array( 'unsupportedFeatures', 'webGLMismatch' ),
 			'block_device_options'     => array( 'touchEventMismatch', 'jitter' ),
 		);
+		foreach ( array_keys( $groups ) as $settingKey ) {
+			if ( ! BotBlockerPro::allowsFeature( $settingKey ) ) {
+				unset( $groups[ $settingKey ] );
+			}
+		}
 
 		$checkWeights = array(
 			'navigatorMismatch'     => 2,
@@ -348,8 +353,8 @@ trait BotBlockerLocalValidationTrait {
 						$payload                = BotBlockerStore::localCheckResult( BBCS_LOCAL_RESULT_COOKIE, 'ALLOW By rule: timezone=' . $this->post_timezone, $this->post_hash_cookie );
 						if ( $this->settings->bbcs_ddos_resilience == 1 ) {
 							$payload = $this->sign_response_payload( (array) $payload );
-							if ( ! headers_sent() && ! empty( $this->uid ) ) {
-								header( 'X-BBCS-' . $this->uid . ': ' . $this->post_hash_cookie, false );
+							if ( $this->header_can_send() && ! empty( $this->uid ) ) {
+								$this->emit_header( 'X-BBCS-' . $this->uid . ': ' . $this->post_hash_cookie, false );
 							}
 						}
 						wp_send_json( $payload );

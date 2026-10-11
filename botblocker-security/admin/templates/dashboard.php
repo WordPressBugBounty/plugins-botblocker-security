@@ -29,6 +29,8 @@ return static function ( Botblocker_Dashboard_View $view, Botblocker_Layout_View
 
 							<?php $view->health_status(); ?>
 
+							<?php $view->pro_status(); ?>
+
 						</div>
 
 						<?php $layout->sidebar(); ?>

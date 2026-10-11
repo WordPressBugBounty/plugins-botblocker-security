@@ -12,6 +12,7 @@ return static function ( Botblocker_SetupWizard_ViewModel $d ): void {
 			<span class="bbcs-chip bbcs-chip--kbd">v<?php echo esc_html( $d->version ); ?></span>
 		</div>
 		<div class="bbcs-plughead-right">
+			<a class="bbcs-btn bbcs-btn--ghost" href="<?php echo esc_url( BotBlockerDocs::page( 'setup-wizard' ) ); ?>" target="_blank" rel="noopener noreferrer"><svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-doc"></use></svg><?php esc_html_e( 'Help', 'botblocker-security' ); ?></a>
 			<a class="bbcs-btn bbcs-btn--ghost" href="<?php echo esc_url( $d->dashboard_url ); ?>"><?php esc_html_e( 'Skip', 'botblocker-security' ); ?></a>
 		</div>
 	</div>

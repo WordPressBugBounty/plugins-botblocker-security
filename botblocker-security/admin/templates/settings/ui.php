@@ -29,12 +29,10 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
     <div role="tabpanel" class="bbcs-tabpanel bbcs-protect-layout" data-tabpanel="settings-ui"<?php echo $isActive ? '' : ' hidden' ?>>
         <?php
         InfoColumn::make()
+        	->withDocPage( BotBlockerDocs::page( 'cache-backends', 'interface-caching' ) )
             ->withIconImage( BOTBLOCKER_URL . 'public/icons/ui.svg', __( 'UI Settings', 'botblocker-security' ) )
             ->withDescription( __( 'Control admin interface caching and statistics display settings.', 'botblocker-security' ) )
             ->withDescription( __( 'Configure report period, timezone, and how statistics are counted.', 'botblocker-security' ) )
-            ->withDocLink( $data->docs_url . '/log-retention-in-botblocker-how-to-manage-storage-period-time-zone-and-analytics/', __( 'Log retention', 'botblocker-security' ) )
-            ->withDocLink( 'https://en.wikipedia.org/wiki/Time_zone', __( 'GMT and Time Zone', 'botblocker-security' ) )
-            ->withDocLink( $data->docs_url . '/interface-caching-in-botblocker-configurable-cache-time-real-time-mode-and-wordpress-transients/', __( 'Cache UI', 'botblocker-security' ) )
             ->render();
         ?>
         <div>
@@ -44,7 +42,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                 ->withItems( static function () use ( $data, $cache_dur ): void {
                     FieldPair::make()
                         ->withItems( static function () use ( $data, $cache_dur ): void {
-                            ToggleOption::make()->withName( 'cache_ui_data' )->withChecked( $data->is_checked( 'cache_ui_data' ) )->withLabel( __( 'Cache Plugin Interface', 'botblocker-security' ) )->withTooltip( __( 'Cache the admin interface for faster loading.', 'botblocker-security' ) )->render();
+                            ToggleOption::make()->withName( 'cache_ui_data' )->withChecked( $data->is_checked( 'cache_ui_data' ) )->withLabel( __( 'Cache Plugin Interface', 'botblocker-security' ) )->withTooltip( __( 'Cache the admin interface for faster loading.', 'botblocker-security' ) )->withDocLink( BotBlockerDocs::url( 'cache_ui_data' ) )->render();
 
                             CustomSelect::make()
                                 ->withName( 'cache_ui_duration' )
@@ -52,6 +50,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                                 ->withOptions( $data->cache_durations )
                                 ->withLabel( __( 'Cache Duration', 'botblocker-security' ) )
                                 ->withTooltip( __( 'How long to cache the interface (in seconds).', 'botblocker-security' ) )
+                                ->withDocLink( BotBlockerDocs::url( 'cache_ui_duration' ) )
                                 ->render();
                         } )
                         ->render();
@@ -60,7 +59,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
 
             SettingsGroup::make()
                 ->withTitle( __( 'Reports and Statistics', 'botblocker-security' ) )
-                ->withItems( static function () use ( $data, $rop, $report_period, $gop, $gmt_offset, $uniq_types, $uniq_type ): void {
+                ->withItems( static function () use ( $rop, $report_period, $gop, $gmt_offset, $uniq_types, $uniq_type ): void {
                     FieldPair::make()
                         ->withItems( static function () use ( $rop, $report_period, $gop, $gmt_offset ): void {
                             CustomSelect::make()
@@ -69,6 +68,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                                 ->withOptions( $rop )
                                 ->withLabel( __( 'Report Period:', 'botblocker-security' ) )
                                 ->withTooltip( __( 'Days to include in reports.', 'botblocker-security' ) )
+                                ->withDocLink( BotBlockerDocs::url( 'admin_report_period' ) )
                                 ->render();
 
                             CustomSelect::make()
@@ -77,6 +77,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                                 ->withOptions( $gop )
                                 ->withLabel( __( 'GMT Offset for Reports:', 'botblocker-security' ) )
                                 ->withTooltip( __( 'Timezone for report timestamps.', 'botblocker-security' ) )
+                                ->withDocLink( BotBlockerDocs::url( 'admin_gmt_offset' ) )
                                 ->render();
                         } )
                         ->render();
@@ -87,6 +88,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                         ->withOptions( $uniq_types )
                         ->withLabel( __( 'Statistics Display Mode', 'botblocker-security' ) )
                         ->withTooltip( __( 'Show unique visitors (by IP) or all requests.', 'botblocker-security' ) )
+                        ->withDocLink( BotBlockerDocs::url( 'admin_uniq_type' ) )
                         ->render();
                 } )
                 ->render();

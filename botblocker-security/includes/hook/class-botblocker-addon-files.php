@@ -17,7 +17,7 @@ class BotBlockerAddonFiles {
 		$allowed_domains = array( 'botblocker.top', 'globus.studio' );
 		$parsed          = wp_parse_url( $url );
 		$scheme          = isset( $parsed['scheme'] ) ? strtolower( (string) $parsed['scheme'] ) : '';
-		if ( ! in_array( $scheme, array( 'http', 'https' ), true ) ) {
+		if ( 'https' !== $scheme ) {
 			return false;
 		}
 		if ( empty( $parsed['host'] ) ) {
@@ -60,7 +60,10 @@ class BotBlockerAddonFiles {
 			return new WP_Error( 'zip_too_large', __( 'Add-on package is too large.', 'botblocker-security' ) );
 		}
 		if ( ! class_exists( 'ZipArchive' ) ) {
-			return true;
+			return new WP_Error( 'zip_unsupported', __( 'The PHP zip extension is required to validate add-on packages.', 'botblocker-security' ) );
+		}
+		if ( filesize( $zip_file ) === 0 ) {
+			return new WP_Error( 'zip_file_count', __( 'Add-on package has an invalid file count.', 'botblocker-security' ) );
 		}
 
 		$zip = new ZipArchive();
@@ -137,7 +140,7 @@ class BotBlockerAddonFiles {
 		$slug  = basename( $source_dir );
 		$addon = BotBlockerAddons::parseManifest( $source_dir, $slug );
 		if ( empty( $addon ) ) {
-			$addon = BotBlockerAddons::scanLegacy( $source_dir, $slug );
+			return new WP_Error( 'manifest_missing', __( 'Add-on package must include bbcs-addon.json.', 'botblocker-security' ) );
 		}
 
 		$expected_slug = isset( $args['slug'] ) ? sanitize_key( (string) $args['slug'] ) : '';
@@ -146,9 +149,6 @@ class BotBlockerAddonFiles {
 		}
 		if ( empty( $addon['valid'] ) ) {
 			return new WP_Error( 'package_invalid', __( 'Add-on package does not match the BotBlocker add-on contract.', 'botblocker-security' ) );
-		}
-		if ( empty( $addon['requires_core'] ) ) {
-			return new WP_Error( 'requires_core_missing', __( 'Add-on package must declare Requires-Core.', 'botblocker-security' ) );
 		}
 
 		$core_version = isset( $args['core_version'] ) && is_string( $args['core_version'] ) && $args['core_version'] !== ''

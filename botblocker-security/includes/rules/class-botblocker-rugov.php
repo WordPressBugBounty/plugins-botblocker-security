@@ -121,10 +121,7 @@ class BotBlockerRugov {
 			$request['hash'] = $stored_hash;
 		}
 
-		$result = BotBlockerWpRequest::send_to_cloud( $request, BOTBLOCKER_API_URL, 'rugov_sync' );
-		if ( false === $result ) {
-			$result = BotBlockerWpRequest::send_to_cloud( $request, BOTBLOCKER_API_GS_URL, 'rugov_sync' );
-		}
+		$result = BotBlockerBackend::sendToCloud( $request, 'rugov_sync' );
 
 		if ( ! is_array( $result ) ) {
 			return false;

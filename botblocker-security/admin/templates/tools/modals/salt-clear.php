@@ -5,12 +5,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use BotBlocker\Component\Base;
+
 return static function (): void {
 	?>
 	<div class="bbcs-modal-overlay" id="confirmSaltClearModal" style="display:none;">
 		<div class="bbcs-modal">
 			<div class="bbcs-modal-header">
-				<div class="bbcs-modal-title"><?php esc_html_e( 'Reset Authentication Cookies', 'botblocker-security' ); ?></div>
+				<div class="bbcs-modal-title"><?php esc_html_e( 'Reset Authentication Cookies', 'botblocker-security' ); ?><?php echo Base::help( '', BotBlockerDocs::url( 'salt' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?></div>
 				<button type="button" class="bbcs-modal-close" data-modal-close>
 					<svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-x"></use></svg>
 				</button>

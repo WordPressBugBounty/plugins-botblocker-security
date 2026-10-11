@@ -26,10 +26,6 @@ class BotBlockerAjaxIpv6Rules {
 		return '%s';
 	}
 
-	protected static function getFileRenderMethod(): string {
-		return 'renderIps';
-	}
-
 	protected static function decodeImportedIpField( $value ) {
 		return $value;
 	}

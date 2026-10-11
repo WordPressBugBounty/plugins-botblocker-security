@@ -22,7 +22,7 @@ return static function ( Botblocker_Integrations_View $view, Botblocker_Layout_V
 						<input type="hidden" name="bbcs_anchor" id="bbcs_anchor" value="">
 
 						<div class="bbcs-pagehead">
-							<div><div class="bbcs-pagehead-title"><?php esc_html_e( 'Integrations', 'botblocker-security' ); ?></div><div class="bbcs-pagehead-sub"><?php esc_html_e( 'Connect external services, caching and notifications', 'botblocker-security' ); ?></div></div>
+							<div><div class="bbcs-pagehead-title"><?php esc_html_e( 'Integrations', 'botblocker-security' ); ?></div><div class="bbcs-pagehead-sub"><?php esc_html_e( 'Connect external services, caching and notifications', 'botblocker-security' ); ?></div><a class="bbcs-link bbcs-pagehead-doc" href="<?php echo esc_url( BotBlockerDocs::page( 'integrations' ) ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Read the documentation', 'botblocker-security' ); ?> &#8599;</a></div>
 							<div class="bbcs-pagehead-actions">
 							<button class="bbcs-btn" type="button" onclick="window.location.href=window.location.href.split('#')[0]" data-bbcs-reset>
 								<svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-refresh"></use></svg>

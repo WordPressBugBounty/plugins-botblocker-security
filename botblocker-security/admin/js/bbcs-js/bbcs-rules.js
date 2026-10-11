@@ -387,8 +387,8 @@
             }
         });
 
-        $(document).on("input", "#priority", function () {
-            $(this).siblings("#priorityValue").val(this.value);
+        $(document).on("input", "#priority, #edit-rule-priority", function () {
+            $(this).siblings("#priorityValue, #edit-rule-priority-value").val(this.value);
         });
 
         $("#editRuleForm").on("submit", function (e) {
@@ -437,7 +437,7 @@
                         $("#editRuleForm")
                             .find('[name="priority"]')
                             .val(data.priority);
-                        $("#editRuleForm").find("#priorityValue").val(data.priority);
+                        $("#editRuleForm").find("#edit-rule-priority-value").val(data.priority);
                         $("#editRuleForm").find('[name="data"]').val(data.data);
                         $("#editRuleForm")
                             .find('[name="comment"]')

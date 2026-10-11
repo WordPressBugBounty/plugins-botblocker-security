@@ -19,10 +19,7 @@ return static function ( Botblocker_IntegrationsViewModel $data, bool $isActive 
 			<div class="bbcs-infocol-ic"><img src="<?php echo esc_url( BOTBLOCKER_URL . 'public/icons/rocket.svg' ); ?>" alt="" class="bbcs-info-img" /></div>
 			<div class="bbcs-infocol-body">
 				<div class="bbcs-infocol-desc"><?php esc_html_e( 'Server-level caches that bypass PHP can serve cached copies of the BotBlocker verification page, breaking protection. Configure a cookie-based exception for every cache in front of your site.', 'botblocker-security' ); ?></div>
-				<div class="bbcs-doclist">
-					<div class="bbcs-doclist-head"><span class="bbcs-help-q">?</span><?php esc_html_e( 'Documentation', 'botblocker-security' ); ?></div>
-					<a href="<?php echo esc_url( $data->docs_url ); ?>/caching/" target="_blank" class="bbcs-link bbcs-fs-xs"><?php esc_html_e( 'Caching', 'botblocker-security' ); ?></a>
-				</div>
+				<div class="bbcs-infocol-doc"><a class="bbcs-link bbcs-fs-sm" href="<?php echo esc_url( BotBlockerDocs::page( 'cache-backends' ) ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Read the documentation', 'botblocker-security' ); ?> &#8599;</a></div>
 			</div>
 		</div>
 		<div>
@@ -46,8 +43,6 @@ return static function ( Botblocker_IntegrationsViewModel $data, bool $isActive 
 						<span class="bbcs-fs-xs <?php echo esc_attr( $bbcs_badge ); ?>"><?php echo esc_html( $bbcs_state_label ); ?></span>
 						<?php if ( ! empty( $bbcs_sys['warning'] ) ) : ?>
 							<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php echo esc_html( $bbcs_sys['warning'] ); ?></span></span>
-						<?php elseif ( ! empty( $bbcs_sys['note'] ) ) : ?>
-							<span class="bbcs-fs-xs bbcs-dim"><?php echo esc_html( $bbcs_sys['note'] ); ?></span>
 						<?php endif; ?>
 					</div>
 				<?php endforeach; ?>

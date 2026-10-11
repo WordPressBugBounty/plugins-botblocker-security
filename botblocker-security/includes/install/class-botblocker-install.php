@@ -58,7 +58,7 @@ class BotBlockerInstall {
 				error_log( '[BBCS DEBUG] [Install] fetchAndStoreParentIPs failed: ' . $e->getMessage() );
 			}
 		}
-		BotBlockerSeedData::insertInitialData( self::createSaltFile( true ) );
+		BotBlockerSeedData::insertInitialData();
 		BotBlockerDb::generateAllFiles();
 		BotBlockerFileRenderer::generateSettingsFile();
 		BotBlockerLlmSync::scheduleSync( 'install', 60 );
@@ -114,10 +114,7 @@ class BotBlockerInstall {
 			'site_url' => BotBlockerMultisite::getCurrentSiteUrl(),
 		);
 
-		$cloud = BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_URL, 'activation' );
-		if ( $cloud === false ) {
-			BotBlockerWpRequest::send_to_cloud( $data, BOTBLOCKER_API_GS_URL, 'activation' );
-		}
+		BotBlockerBackend::sendToCloud( $data, 'activation' );
 	}
 
 	public static function saveSettingsToFile( array $settings ): bool {
@@ -761,6 +758,8 @@ class BotBlockerInstall {
 			$wpdb->bbcs_tls_fingerprints,
 			$wpdb->bbcs_countries,
 			$wpdb->bbcs_audit_log,
+			$wpdb->bbcs_fingerprint,
+			$wpdb->bbcs_sessions,
 		);
 
 		$requiredTables = array_values( array_unique( array_filter( $requiredTables, 'is_string' ) ) );
@@ -834,6 +833,9 @@ class BotBlockerInstall {
 
 	public static function createAsnTable(): void {
 		global $wpdb;
+		if ( empty( $wpdb->bbcs_asn ) ) {
+			return;
+		}
 		$charset_collate = $wpdb->get_charset_collate();
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
@@ -936,88 +938,6 @@ class BotBlockerInstall {
 		) $charset_collate;";
 
 		dbDelta( $sql );
-	}
-
-	public static function createSaltFile( $return_salt_bb = false ) {
-		$saltFilePath = BotBlockerMultisite::getNetworkDataDir() . 'salt.php';
-
-		if ( is_multisite() && file_exists( $saltFilePath ) ) {
-			if ( $return_salt_bb ) {
-				$existing = BotBlockerDataFile::safeLoad( $saltFilePath );
-				if ( is_array( $existing ) && isset( $existing['salt_bb'] ) ) {
-					return (string) $existing['salt_bb'];
-				}
-			} else {
-				return false;
-			}
-		}
-
-		if ( ! file_exists( $saltFilePath ) || $return_salt_bb === true ) {
-			$fallback = get_option( 'bbcs_salt_fallback' );
-			if ( is_array( $fallback ) && ! empty( $fallback['salt_bb'] ) ) {
-				$host_key = ! empty( $fallback['host_key'] ) ? (string) $fallback['host_key'] : md5( get_option( 'siteurl' ) );
-				$salt_bb  = (string) $fallback['salt_bb'];
-				$salt_ps  = ! empty( $fallback['salt_ps'] ) ? (string) $fallback['salt_ps'] : bin2hex( random_bytes( 12 ) );
-				$salt_pz  = ! empty( $fallback['salt_pz'] ) ? (string) $fallback['salt_pz'] : time();
-			} else {
-				$host_key = md5( get_option( 'siteurl' ) );
-				$salt_bb  = bin2hex( random_bytes( 12 ) );
-				$salt_ps  = bin2hex( random_bytes( 12 ) );
-				$salt_pz  = time();
-			}
-
-			$salt_data = array(
-				'host_key' => $host_key,
-				'salt_bb'  => $salt_bb,
-				'salt_ps'  => $salt_ps,
-				'salt_pz'  => $salt_pz,
-			);
-
-			$dir = dirname( $saltFilePath );
-			if ( ! is_dir( $dir ) ) {
-				if ( ! wp_mkdir_p( $dir ) ) {
-					update_option( 'bbcs_salt_fallback', $salt_data );
-					set_transient( 'bbcs_salt_write_error', true, DAY_IN_SECONDS );
-					return $salt_bb;
-				}
-			}
-
-			if ( ! is_writable( $dir ) ) {   // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
-				update_option( 'bbcs_salt_fallback', $salt_data );
-				set_transient( 'bbcs_salt_write_error', true, DAY_IN_SECONDS );
-				return $salt_bb;
-			}
-
-			/**
-			 * REVIEWER NOTE: This operation is not intended for debugging purposes. The following code generates a salt.php file
-			 * to cache plugin salt data, thereby reducing the frequency of database queries and enhancing overall performance.
-			 * No sensitive or user data is exposed by this process.
-			 */
-	         /* phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export */
-			$fileContent = "<?php\nreturn " . var_export( $salt_data, true ) . ";\n";
-			$fileContent = BotBlockerDataFile::sign( $fileContent );
-
-			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents, WordPress.PHP.NoSilencedErrors.Discouraged
-			$result = @file_put_contents( $saltFilePath, $fileContent );
-
-			if ( $result !== false ) {
-				BotBlockerCompiledFile::invalidate( $saltFilePath );
-				delete_option( 'bbcs_salt_fallback' );
-				delete_transient( 'bbcs_salt_write_error' );
-			}
-
-			if ( $result === false ) {
-				update_option( 'bbcs_salt_fallback', $salt_data );
-				set_transient( 'bbcs_salt_write_error', true, DAY_IN_SECONDS );
-				return $salt_bb;
-			}
-
-			BotBlockerCache::clearFileCache();
-
-			return $salt_bb;
-		}
-
-		return false;
 	}
 
 	public static function installMuPlugin(): void {

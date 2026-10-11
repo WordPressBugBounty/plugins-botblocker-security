@@ -274,6 +274,12 @@ class BotBlockerDataCodes {
 					'count'     => true,
 					'searchbot' => false,
 				),
+				62  => array(
+					'msg'       => 'RKN block (Roskomnadzor)',
+					'allow'     => false,
+					'count'     => true,
+					'searchbot' => false,
+				),
 
 				70  => array(
 					'msg'       => 'WordPress cron',

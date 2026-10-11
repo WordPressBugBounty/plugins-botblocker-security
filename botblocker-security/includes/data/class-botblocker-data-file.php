@@ -73,7 +73,6 @@ if ( ! class_exists( 'BotBlockerDataFile' ) ) {
 				'llm_trusted.php'    => 'BotBlockerFileRenderer::renderLlmTrusted',
 				'asn_rules.php'      => 'BotBlockerFileRenderer::renderAsn',
 				'settings.php'       => 'BotBlockerFileRenderer::generateSettingsFile',
-				'salt.php'           => 'BotBlockerInstall::createSaltFile',
 				'tls_fingerprints.php' => 'BotBlockerFileRenderer::renderTlsFingerprints',
 				'geo_countries.php'    => 'BotBlockerFileRenderer::renderCountries',
 				'hot-bans.php'         => 'BotBlockerFileRenderer::renderHotBans',
@@ -116,6 +115,15 @@ if ( ! class_exists( 'BotBlockerDataFile' ) ) {
 			$content = @file_get_contents( $file );
 			if ( $content === false ) {
 				return array();
+			}
+
+			// A correctly signed file whose body is an empty array is legitimate;
+			// a signed non-array body is still treated as an integrity failure.
+			if ( self::verify( $content ) ) {
+				$included = include $file;
+				if ( is_array( $included ) ) {
+					return $included;
+				}
 			}
 
 			// Unsigned or hash-failed content is untrusted: never executed.

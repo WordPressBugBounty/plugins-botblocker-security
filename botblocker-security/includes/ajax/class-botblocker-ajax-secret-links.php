@@ -18,13 +18,8 @@ class BotBlockerAjaxSecretLinks {
 			wp_send_json_error( array( 'message' => __( 'Unauthorized.', 'botblocker-security' ) ) );
 		}
 
-		$salt_bb = BotBlockerInstall::createSaltFile( true );
-		if ( ! is_string( $salt_bb ) || $salt_bb === '' ) {
-			wp_send_json_error( array( 'message' => __( 'Salt is unavailable.', 'botblocker-security' ) ) );
-		}
-
 		global $wpdb;
-		$links = BotBlockerSeedData::generateSecretLinks( $salt_bb );
+		$links = BotBlockerSeedData::generateSecretLinks();
 		foreach ( $links as $key => $value ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom settings table, write-through
 			$wpdb->replace( $wpdb->bbcs_settings, array( 'key' => $key, 'value' => $value ), array( '%s', '%s' ) );
@@ -32,6 +27,7 @@ class BotBlockerAjaxSecretLinks {
 
 		BotBlockerFileRenderer::generateSettingsFile();
 		BotBlockerCache::resetHealthTransients();
+		BotBlockerAlerts::clearSecretLinkUsed();
 
 		// Refresh the in-memory settings AND the mirrored properties the
 		// consumers use (rules-trait/mailer read $this->action_*, not the

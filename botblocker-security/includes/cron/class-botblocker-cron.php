@@ -430,7 +430,7 @@ class BotBlockerCron
 		$columns = BotBlockerDb::sharedColumnList($wpdb->bbcs_hits_suspicious, $wpdb->bbcs_hits_cloud);
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$cloud_result = $columns === '' ? false : $wpdb->query($wpdb->prepare(
-			"INSERT INTO `{$wpdb->bbcs_hits_cloud}` ({$columns}) SELECT {$columns} FROM `{$wpdb->bbcs_hits_suspicious}` WHERE `date` < %d",
+			"INSERT INTO `{$wpdb->bbcs_hits_cloud}` ({$columns}) SELECT {$columns} FROM `{$wpdb->bbcs_hits_suspicious}` WHERE `date` < %d AND `cid` NOT IN (SELECT `cid` FROM `{$wpdb->bbcs_hits_cloud}`)",
 			$delete_before
 		));
 		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -509,6 +509,7 @@ class BotBlockerCron
 		global $wpdb;
 		$BBCS = BotBlocker::getInstance();
 		$last_date        = 0;
+		$last_cid         = '';
 		$request_auth     = BotBlockerPro::buildAuthPayload($BBCS->settings);
 		$request_data     = array();
 		$batch_start_date = null;
@@ -518,8 +519,10 @@ class BotBlockerCron
 			// Should not be cached - it's a cron task for cleanup.
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$suspicious_hits = $wpdb->get_results($wpdb->prepare(
-				"SELECT cid, ip, date FROM `{$wpdb->bbcs_hits_cloud}` WHERE date > %d AND ip != %s ORDER BY date ASC LIMIT %d",
+				"SELECT cid, ip, date FROM `{$wpdb->bbcs_hits_cloud}` WHERE (date > %d OR (date = %d AND cid > %s)) AND ip != %s ORDER BY date ASC, cid ASC LIMIT %d",
 				$last_date,
+				$last_date,
+				$last_cid,
 				BOTBLOCKER_EMPTY,
 				BOTBLOCKER_CLOUD_RECORDS_BATCH
 			), ARRAY_A);
@@ -529,7 +532,9 @@ class BotBlockerCron
 			if ($batch_start_date === null) {
 				$batch_start_date = $suspicious_hits[0]['date'];
 			}
-			$last_date = $batch_end_date = end($suspicious_hits)['date'];
+			$last_row  = end($suspicious_hits);
+			$last_date = $batch_end_date = $last_row['date'];
+			$last_cid  = $last_row['cid'];
 			$batch_cids = array_column($suspicious_hits, 'cid');
 			$all_batch_cids = array_merge($all_batch_cids ?? array(), $batch_cids);
 			$ip_records = array_map(
@@ -544,11 +549,8 @@ class BotBlockerCron
 			unset($compressed);
 			if (count($request_data['hits']) >= BOTBLOCKER_CLOUD_REQUEST_SIZE) {
 				$request_data = array_merge($request_data, $request_auth);
-				$cloud = BotBlockerWpRequest::send_to_cloud($request_data, BOTBLOCKER_API_URL, 'suspicious');
-				if ($cloud === false) {
-					$cloud = BotBlockerWpRequest::send_to_cloud($request_data, BOTBLOCKER_API_GS_URL, 'suspicious');
-				}
-				if ($cloud !== false) {
+				$cloud = BotBlockerBackend::sendToCloud($request_data, 'suspicious');
+				if ($cloud !== false && ! isset($cloud['error'])) {
 					$placeholders = implode(',', array_fill(0, count($all_batch_cids), '%s'));
 					// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared and sanitized. No direct unsanitized SQL is executed.
 					// Should not be cached - it's a cron task for cleanup.
@@ -563,11 +565,8 @@ class BotBlockerCron
 		}
 		if (! empty($request_data)) {
 			$request_data = array_merge($request_data, $request_auth);
-			$cloud = BotBlockerWpRequest::send_to_cloud($request_data, BOTBLOCKER_API_URL, 'suspicious');
-			if ($cloud === false) {
-				$cloud = BotBlockerWpRequest::send_to_cloud($request_data, BOTBLOCKER_API_GS_URL, 'suspicious');
-			}
-			if ($cloud !== false && ! empty($all_batch_cids)) {
+			$cloud = BotBlockerBackend::sendToCloud($request_data, 'suspicious');
+			if ($cloud !== false && ! isset($cloud['error']) && ! empty($all_batch_cids)) {
 				$placeholders = implode(',', array_fill(0, count($all_batch_cids), '%s'));
 				// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared and sanitized. No direct unsanitized SQL is executed.
 				// Should not be cached - it's a cron task for cleanup.
@@ -576,6 +575,38 @@ class BotBlockerCron
 			}
 			$request_data = array();
 		}
+
+		self::capCloudQueue( (int) BOTBLOCKER_CLOUD_RECORDS_BATCH * (int) BOTBLOCKER_CLOUD_REQUEST_SIZE );
+	}
+
+	/**
+	 * Keep the local cloud queue bounded when delivery keeps failing: trim the
+	 * oldest rows beyond one batch so the table cannot grow without bound.
+	 */
+	private static function capCloudQueue( int $cap ): void
+	{
+		global $wpdb;
+		if ( $cap <= 0 || empty( $wpdb->bbcs_hits_cloud ) ) {
+			return;
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$total = (int) $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->bbcs_hits_cloud}`" );
+		if ( $total <= $cap ) {
+			return;
+		}
+
+		$excess = $total - $cap;
+		// hits_cloud has no id column; trim by (date, cid) and delete by cid.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$cids = $wpdb->get_col( $wpdb->prepare( "SELECT cid FROM `{$wpdb->bbcs_hits_cloud}` ORDER BY `date` ASC, `cid` ASC LIMIT %d", $excess ) );
+		if ( ! is_array( $cids ) || ! $cids ) {
+			return;
+		}
+
+		$placeholders = implode( ',', array_fill( 0, count( $cids ), '%s' ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+		$wpdb->query( $wpdb->prepare( "DELETE FROM `{$wpdb->bbcs_hits_cloud}` WHERE cid IN ($placeholders)", ...$cids ) );
 	}
 
 	private static function loadTaskDependencies(): void
@@ -603,8 +634,10 @@ class BotBlockerCron
 			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 			do_action_ref_array($hook, $args);
 		} catch (\Throwable $e) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-			error_log(sprintf('[BBCS] [Cron] Task %s failed: %s in %s:%d', $hook, $e->getMessage(), $e->getFile(), $e->getLine()));
+			if (defined('BBCS_DEBUG') && BBCS_DEBUG) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+				error_log(sprintf('[BBCS] [Cron] Task %s failed: %s in %s:%d', $hook, $e->getMessage(), $e->getFile(), $e->getLine()));
+			}
 		}
 	}
 

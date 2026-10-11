@@ -11,9 +11,9 @@ if ( ! defined( 'BOTBLOCKER_TABLE_PREFIX' ) ) {
 }
 define( 'BOTBLOCKER_PREFIX', 'bb_' ); // The prefix for cache keys (Redis/Memcached) and secret-link values
 
-define( 'BOTBLOCKER_VERSION', '1.7.5' );
+define( 'BOTBLOCKER_VERSION', '1.7.6' );
 // The version number of the plugin
-define( 'BOTBLOCKER_DB_VERSION', '2.11.0' ); // The database version of the plugin
+define( 'BOTBLOCKER_DB_VERSION', '2.12.0' ); // The database version of the plugin
 define( 'BOTBLOCKER_WIZARD_ON_UPDATE', false ); // Show setup wizard after plugin update
 define( 'BOTBLOCKER_MODE_STABLE', 'stable' );
 define( 'BOTBLOCKER_MODE_DEV', 'dev' );
@@ -114,23 +114,6 @@ if ( ! defined( 'BBCS_CLOUD_STATUS_UNKNOWN' ) ) {
 	define( 'BBCS_CLOUD_STATUS_UNKNOWN', 'unknown' );
 }
 
-if ( ! defined( 'BBCS_CLOUD_TYPE_EXTENDED' ) ) {
-	define( 'BBCS_CLOUD_TYPE_EXTENDED', 'cloud_extended' );
-}
-if ( ! defined( 'BBCS_CLOUD_TYPE_BASIC' ) ) {
-	define( 'BBCS_CLOUD_TYPE_BASIC', 'cloud_basic' );
-}
-
-if ( ! defined( 'BBCS_CLOUD_TIER_PREMIUM' ) ) {
-	define( 'BBCS_CLOUD_TIER_PREMIUM', 'premium' );
-}
-if ( ! defined( 'BBCS_CLOUD_TIER_PRO' ) ) {
-	define( 'BBCS_CLOUD_TIER_PRO', 'pro' );
-}
-if ( ! defined( 'BBCS_CLOUD_TIER_ULTIMATE' ) ) {
-	define( 'BBCS_CLOUD_TIER_ULTIMATE', 'ultimate' );
-}
-
 if ( ! defined( 'BBCS_IP_TYPE_IP' ) ) {
 	define( 'BBCS_IP_TYPE_IP', 'ip' );
 }
@@ -158,25 +141,34 @@ if ( ! defined( 'BBCS_CRON_MODE_FALLBACK' ) ) {
 define( 'BOTBLOCKER_SERVER', 'botblocker.top' ); //TODO Parent server botblocker.top
 define( 'BOTBLOCKER_CLOUD_API_ENDPOINT', 'https://' . BOTBLOCKER_SERVER . '/botblocker_cloud_api' );
 define( 'BOTBLOCKER_FEED_URL', 'https://' . BOTBLOCKER_SERVER . '/?feed=rss2' ); // The URL of the BotBlocker feed
-define( 'BOTBLOCKER_API_URL', 'https://api.' . BOTBLOCKER_SERVER . '/v2' ); // The URL of the BotBlocker API
 define( 'BOTBLOCKER_NEWS_URL', 'https://' . BOTBLOCKER_SERVER . '/blog' ); // The URL of the BotBlocker BLOG
-define( 'BOTBLOCKER_DOCS_URL', 'https://' . BOTBLOCKER_SERVER ); // The URL of the BotBlocker DOCS /docs/ deprecated
 define( 'BOTBLOCKER_PRICE_URL', 'https://' . BOTBLOCKER_SERVER . '/botblocker_get_products/' ); // The URL of the BotBlocker products
 define( 'BOTBLOCKER_ADDONS', 'https://' . BOTBLOCKER_SERVER . '/wp-content/plugins/bbcs-addons/master.json' ); // The URL of the BotBlocker addons (stable)
 define( 'BOTBLOCKER_ADDONS_DEV', 'https://' . BOTBLOCKER_SERVER . '/wp-content/plugins/bbcs-addons/dev/master.json' ); // The URL of the BotBlocker addons (dev)
 define( 'BOTBLOCKER_MATERIALS_URL', 'https://' . BOTBLOCKER_SERVER . '/wp-content/plugins/bbcs-materials/' ); // The URL of the BotBlocker materials
 define( 'BOTBLOCKER_JS_ADMIN', true ); // Use JS in the admin panel (only for debug)
 
+// Cloud API backends, priority order; BotBlockerBackend preflight picks the reachable one
+if ( ! defined( 'BOTBLOCKER_API_URLS' ) ) {
+	define(
+		'BOTBLOCKER_API_URLS',
+		array(
+			'https://api.botblocker.top/v2',
+			'https://api.globus.studio/v2',
+			'https://botblocker-security.top/v2',
+			'https://wordpress-security.top/v2',
+		)
+	);
+}
+
+// Future: AWS balancer endpoint returning the ordered API URL list; empty = disabled
+if ( ! defined( 'BOTBLOCKER_BALANCER_URL' ) ) {
+	define( 'BOTBLOCKER_BALANCER_URL', '' );
+}
+
 define( 'BOTBLOCKER_RESERVE_SERVER', 'globus.studio' ); // Reserve server
-define( 'BOTBLOCKER_API_GS_URL', 'https://api.' . BOTBLOCKER_RESERVE_SERVER . '/v2' ); // The URL of the Globus Studio API
 define( 'BOTBLOCKER_BASE_UPDATE', 'https://api.' . BOTBLOCKER_RESERVE_SERVER . '/info/botiptoday' ); // The URL of the base updates
 define( 'BOTBLOCKER_BASE_TOTAL', 'https://api.' . BOTBLOCKER_RESERVE_SERVER . '/info/botiptotal' ); // The URL of the base updates
-
-define( 'BOTBLOCKER_PARENT_IPS_URL', 'https://api.' . BOTBLOCKER_SERVER . '/pool' );
-define( 'BOTBLOCKER_PARENT_IPS_GS_URL', 'https://api.' . BOTBLOCKER_RESERVE_SERVER . '/pool' );
-
-define( 'BOTBLOCKER_API_GS_IPV6', BOTBLOCKER_API_GS_URL . '/ip?v=6&format=json' ); // The URL of the Globus Studio API for IPv6 addresses
-define( 'BOTBLOCKER_API_IPV6', BOTBLOCKER_API_URL . '/ip?v=6&format=json' ); // The URL of the BotBlocker API for IPv6 addresses
 
 define( 'BOTBLOCKER_CLOUD_RECORDS_BATCH', 1000 ); // The number of records in a single batch for cloud requests
 define( 'BOTBLOCKER_CLOUD_REQUEST_SIZE', 5 ); // The number of batches to send in a single request to the cloud
@@ -185,7 +177,7 @@ define( 'BOTBLOCKER_CACHE_NEWS', true ); // Cache news, bot stats, prices
 define( 'BOTBLOCKER_CACHE_NEWS_TIME', 21600 ); // 6 hours in seconds
 define( 'BOTBLOCKER_CACHE_SIDEBAR_STATS', true ); // Cache widgets stats
 define( 'BOTBLOCKER_CACHE_SIDEBAR_STATS_TIME', 7200 ); // 2 hours in seconds
-define( 'BOTBLOCKER_CACHE_REMAINING_HITS_TIME', DAY_IN_SECONDS ); // Cache remaining hits for 1 day
+define( 'BOTBLOCKER_CACHE_REMAINING_HITS_TIME', HOUR_IN_SECONDS ); // Cache remaining hits for 1 hour
 define( 'BOTBLOCKER_CACHE_REMAINING_DAYS_TIME', DAY_IN_SECONDS ); // Cache remaining days for 1 day
 
 define( 'BOTBLOCKER_WIDGETS', true ); // A constant to indicate that the plugin includes dashboard widgets
@@ -280,4 +272,38 @@ if ( ! defined( 'BOTBLOCKER_VISITOR_IP_SOURCE' ) ) {
 }
 if ( ! defined( 'BOTBLOCKER_VISITOR_IP_STRICT' ) ) {
 	define( 'BOTBLOCKER_VISITOR_IP_STRICT', false );
+}
+
+// =====================================================================
+// Freemius integration (includes/integrations/class-botblocker-freemius.php)
+//
+// BBCS_FREEMIUS_ENABLED (bool, default false):
+//   true  - boot the scoped Freemius SDK (vendor/Freemius/2.13.4) at plugin
+//           load. Requires a product ID and public key (see below); without
+//           a valid identity the adapter fails closed and stays disabled.
+//   false - default. No SDK load, no HTTP, no Freemius state.
+//
+// BBCS_FREEMIUS_DEMO (bool, default false):
+//   true  - local-only sandbox: dummy product identity, "Freemius Demo"
+//           admin submenu, deterministic free/trial/paid/expired branches.
+//           No Freemius account, secret, or outbound request. Development
+//           only.
+//
+// BBCS_FREEMIUS_PRODUCT_ID / BBCS_FREEMIUS_PUBLIC_KEY:
+//   Freemius product identity for production enablement. Empty by default.
+//   All four constants may be pre-defined in wp-config.php (loaded before
+//   the plugin) — the guard-defines below never override a pre-defined
+//   value.
+// =====================================================================
+if ( ! defined( 'BBCS_FREEMIUS_ENABLED' ) ) {
+	define( 'BBCS_FREEMIUS_ENABLED', false );
+}
+if ( ! defined( 'BBCS_FREEMIUS_DEMO' ) ) {
+	define( 'BBCS_FREEMIUS_DEMO', false );
+}
+if ( ! defined( 'BBCS_FREEMIUS_PRODUCT_ID' ) ) {
+	define( 'BBCS_FREEMIUS_PRODUCT_ID', '' );
+}
+if ( ! defined( 'BBCS_FREEMIUS_PUBLIC_KEY' ) ) {
+	define( 'BBCS_FREEMIUS_PUBLIC_KEY', '' );
 }

@@ -17,7 +17,7 @@ return static function ( Botblocker_CloudApi_View $view, Botblocker_Layout_View 
 
 				<section class="bbcs-page" data-page="pro">
 					<div class="bbcs-pagehead">
-						<div><div class="bbcs-pagehead-title"><?php esc_html_e( 'BotBlocker PRO', 'botblocker-security' ); ?></div><div class="bbcs-pagehead-sub"><?php esc_html_e( 'Cloud protection and premium features', 'botblocker-security' ); ?></div></div>
+						<div><div class="bbcs-pagehead-title"><?php esc_html_e( 'BotBlocker PRO', 'botblocker-security' ); ?></div><div class="bbcs-pagehead-sub"><?php esc_html_e( 'Cloud protection and premium features', 'botblocker-security' ); ?></div><a class="bbcs-link bbcs-pagehead-doc" href="<?php echo esc_url( BotBlockerDocs::page( 'cloud-api' ) ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Read the documentation', 'botblocker-security' ); ?> &#8599;</a></div>
 					</div>
 					<?php $view->status(); ?>
 				</section>

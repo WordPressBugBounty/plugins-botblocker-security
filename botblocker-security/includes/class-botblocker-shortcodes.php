@@ -25,7 +25,14 @@ class BotBlockerShortcodes {
 		require_once BOTBLOCKER_DIR . 'includes/shortcode/class-botblocker-chart-shortcodes.php';
 		BotBlockerChartShortcodes::register();
 
-		add_shortcode( 'bbcs_lang_options', array( 'BotBlockerLangOptions', 'getOptionsHtml' ) );
+		add_shortcode(
+			'bbcs_lang_options',
+			static function () {
+				ob_start();
+				BotBlockerLangOptions::getOptionsHtml();
+				return (string) ob_get_clean();
+			}
+		);
 
 		add_shortcode(
 			'bbcs_top_ips',

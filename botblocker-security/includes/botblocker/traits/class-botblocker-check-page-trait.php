@@ -12,6 +12,7 @@ trait BotBlockerCheckPageTrait {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [CheckPage] render_check_page() called. Mode=' . (int) $this->settings->bbcs_captcha_mode . ' SecureMode=' . (int) $this->settings->secure_mode . ' DDoS=' . (int) $this->settings->bbcs_ddos_resilience );
 			}
+			$this->set_check_headers();
 			$this->assemble_check_page();
 			$this->load_check_template();
 			$this->process_die();
@@ -76,6 +77,10 @@ trait BotBlockerCheckPageTrait {
 			$host_no_port = $this->host;
 		}
 
+		$backend_urls    = BotBlockerBackend::urls();
+		$backend_primary = isset( $backend_urls[0] ) ? $backend_urls[0] : '';
+		$backend_reserve = $backend_urls !== array() ? end( $backend_urls ) : '';
+
 		$this->js_data = array(
 			'ajaxUrl'            => admin_url( 'admin-ajax.php' ),
 			'verifyUrl'          => home_url( '/bbcs-verify/' ),
@@ -99,8 +104,8 @@ trait BotBlockerCheckPageTrait {
 			'ipVersion'             => $this->ip_version,
 			'recaptchaEnabled'      => ( $this->settings->recaptcha_check == 1 && ! empty( $this->settings->recaptcha_key3 ) && ! ( (int) $this->settings->recaptcha_v3_ipv6_block === 1 && $this->ip_version == 6 ) ),
 			'recaptchaKey3'         => $this->settings->recaptcha_key3,
-			'apiIpv6'               => BOTBLOCKER_API_IPV6,
-			'apiGsIpv6'             => BOTBLOCKER_API_GS_IPV6,
+			'apiIpv6'               => $backend_primary . '/ip?v=6&format=json',
+			'apiGsIpv6'             => $backend_reserve . '/ip?v=6&format=json',
 			'emptyValue'            => BOTBLOCKER_EMPTY,
 			'jsAdminEnabled'        => ( defined( 'BOTBLOCKER_JS_ADMIN' ) && BOTBLOCKER_JS_ADMIN == true ),
 			'jsErrorMessage'        => $this->js_error_message,
@@ -165,7 +170,7 @@ trait BotBlockerCheckPageTrait {
 	}
 
 	private function create_check_inline_assets(): array {
-		$captcha_mode = isset( $this->settings->bbcs_captcha_mode ) ? (int) $this->settings->bbcs_captcha_mode : 0;
+		$captcha_mode = (int) $this->captcha_data['mode'];
 		$external     = array();
 		$styles       = array(
 			BotBlockerSecurityPageAssets::read( $this->dirs['public'], 'css/template.css' ),
@@ -207,6 +212,11 @@ trait BotBlockerCheckPageTrait {
 
 		$scripts[] = 'var bbcsCaptchaData = ' . BotBlockerSecurityPageAssets::json( $this->captcha_data ) . ';';
 		$scripts[] = BotBlockerSecurityPageAssets::read( $this->dirs['public'], 'captcha-js/captcha.js' );
+
+		// External providers can answer with a Button fallback when they fail.
+		if ( null !== $addon_js || 3 === $captcha_mode || 4 === $captcha_mode ) {
+			$scripts[] = BotBlockerSecurityPageAssets::read( $this->dirs['public'], 'captcha-js/mode0.js' );
+		}
 
 		if ( null !== $addon_js ) {
 			$scripts[] = $addon_js['js_content'];

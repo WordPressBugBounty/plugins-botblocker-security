@@ -19,7 +19,7 @@ return static function ( Botblocker_Rules_View $view, Botblocker_Layout_View $la
 
 				<section class="bbcs-page" data-page="rules">
 					<div class="bbcs-pagehead">
-						<div><div class="bbcs-pagehead-title"><?php esc_html_e( 'Rules and IP Lists', 'botblocker-security' ); ?></div><div class="bbcs-pagehead-sub"><?php esc_html_e( 'Granular rules for IPs, ASNs, countries, paths, and headers', 'botblocker-security' ); ?></div></div>
+						<div><div class="bbcs-pagehead-title"><?php esc_html_e( 'Rules and IP Lists', 'botblocker-security' ); ?></div><div class="bbcs-pagehead-sub"><?php esc_html_e( 'Granular rules for IPs, ASNs, countries, paths, and headers', 'botblocker-security' ); ?></div><a class="bbcs-link bbcs-pagehead-doc" href="<?php echo esc_url( BotBlockerDocs::page( 'rules' ) ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Read the documentation', 'botblocker-security' ); ?> &#8599;</a></div>
 						<div class="bbcs-pagehead-actions">
 					<button id="bbcs_pagehead_import" class="bbcs-btn"><svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-upload"></use></svg><?php esc_html_e( 'Import', 'botblocker-security' ); ?></button>
 						<button id="bbcs_pagehead_export" class="bbcs-btn"><svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-doc"></use></svg><?php esc_html_e( 'Export', 'botblocker-security' ); ?></button>

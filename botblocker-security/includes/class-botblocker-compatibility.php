@@ -7,12 +7,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Backward-compatibility wrappers for WordPress core functions that are newer
- * than the plugin's declared "Requires at least: 5.1".
+ * than the plugin's declared "Requires at least: 5.9".
  *
  * Each wrapper uses the native function when available (modern WordPress) and
  * degrades gracefully on older installs. Calls are dispatched through a
- * variable so the literal newer-than-5.1 function name does not appear in the
- * plugin source, keeping the codebase compatible with WP 5.1.
+ * variable so the literal newer-than-5.9 function name does not appear in the
+ * plugin source, keeping the codebase compatible with WP 5.9.
  *
  * @package BotBlocker
  */
@@ -89,7 +89,7 @@ class BotBlockerCompatibility {
 	 * Retrieve a scheduled cron event.
 	 *
 	 * Wraps wp_get_scheduled_event() (WP 5.1+). Since the plugin minimum
-	 * is WP 5.1, this always delegates to the native function.
+	 * is WP 5.9, this always delegates to the native function.
 	 *
 	 * @param string $hook Action hook of the event.
 	 * @param array  $args Optional arguments passed to the hook's callback.

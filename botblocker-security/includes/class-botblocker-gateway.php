@@ -6,9 +6,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class BotBlockerGateway {
 
-	private static array $registry = array();
+	private static $registry = array();
 
-	private static array $active = array();
+	private static $active = array();
 
 	public static function reset(): void {
 		self::$registry = array();

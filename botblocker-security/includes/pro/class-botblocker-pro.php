@@ -7,6 +7,28 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class BotBlockerPro {
 
+	public const TYPE_BASIC    = 'cloud_basic';
+	public const TYPE_EXTENDED = 'cloud_extended';
+
+	public const TIER_PREMIUM  = 'premium';
+	public const TIER_PRO      = 'pro';
+	public const TIER_ULTIMATE = 'ultimate';
+
+	public const PRO_FEATURE_TIERS = array(
+		'check'                    => self::TIER_PRO,
+		'unresponsive'             => self::TIER_PRO,
+		'cloud_fallback_block'     => self::TIER_PRO,
+		'force_cloud_validation'   => self::TIER_ULTIMATE,
+		'hosting_block'            => self::TIER_PRO,
+		'block_vpn_users'          => self::TIER_PRO,
+		'block_tor_users'          => self::TIER_PRO,
+		'block_override'           => self::TIER_PRO,
+		'block_web_engine_options' => self::TIER_PRO,
+		'block_device_options'     => self::TIER_PRO,
+	);
+
+	public const CLOUD_ACCOUNT_KEYS = array( 'cloud_api_type', 'cloud_api_key', 'cloud_api_secret', 'cloud_api_email', 'cloud_api_tier' );
+
 	public static function getSettings(): array {
 		global $wpdb;
 
@@ -37,10 +59,9 @@ class BotBlockerPro {
 			return $cached_settings;
 		}
 
-		$setting_keys = array( 'cloud_api_type', 'cloud_api_key', 'cloud_api_secret', 'cloud_api_email', 'cloud_api_tier' );
-		$settings     = array();
+		$settings = array();
 
-		foreach ( $setting_keys as $key ) {
+		foreach ( self::CLOUD_ACCOUNT_KEYS as $key ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$value            = $wpdb->get_var( $wpdb->prepare( "SELECT value FROM `{$wpdb->bbcs_settings}` WHERE `key` = %s", $key ) );
 			$settings[ $key ] = $value;
@@ -84,13 +105,13 @@ class BotBlockerPro {
 		$cloud_api_type = self::getType();
 		$cloud_api_key  = self::getKey();
 
-		if ( $cloud_api_type === BBCS_CLOUD_TYPE_EXTENDED ) {
+		if ( $cloud_api_type === self::TYPE_EXTENDED ) {
 			if ( self::isKeyHash( $cloud_api_key ) || self::isLegacyKeyHash( $cloud_api_key ) ) {
-				return BBCS_CLOUD_TYPE_EXTENDED;
+				return self::TYPE_EXTENDED;
 			}
-		} elseif ( $cloud_api_type === BBCS_CLOUD_TYPE_BASIC ) {
+		} elseif ( $cloud_api_type === self::TYPE_BASIC ) {
 			if ( self::isKeyHash( $cloud_api_key ) || self::isLegacyKeyHash( $cloud_api_key ) ) {
-				return BBCS_CLOUD_TYPE_BASIC;
+				return self::TYPE_BASIC;
 			}
 		}
 
@@ -98,7 +119,7 @@ class BotBlockerPro {
 	}
 
 	public static function isValidTier( string $tier ): bool {
-		return in_array( $tier, array( BBCS_CLOUD_TIER_PREMIUM, BBCS_CLOUD_TIER_PRO, BBCS_CLOUD_TIER_ULTIMATE ), true );
+		return in_array( $tier, array( self::TIER_PREMIUM, self::TIER_PRO, self::TIER_ULTIMATE ), true );
 	}
 
 	public static function getTier(): string {
@@ -110,11 +131,76 @@ class BotBlockerPro {
 	}
 
 	public static function isActive(): bool {
-		return self::getType() === BBCS_CLOUD_TYPE_EXTENDED && self::getStatus() === BBCS_CLOUD_TYPE_EXTENDED;
+		return self::getType() === self::TYPE_EXTENDED && self::getStatus() === self::TYPE_EXTENDED;
 	}
 
 	public static function isUltimate(): bool {
-		return self::isActive() && self::getTier() === BBCS_CLOUD_TIER_ULTIMATE;
+		return self::isActive() && self::getTier() === self::TIER_ULTIMATE;
+	}
+
+	public static function allowsFeature( string $key ): bool {
+		$has_pro_license      = self::isActive();
+		$has_ultimate_license = self::isUltimate();
+
+		return self::featureAllowed( $key, $has_pro_license, $has_ultimate_license );
+	}
+
+	public static function withoutProFeatures( array $settings = array() ): array {
+		foreach ( array_keys( self::PRO_FEATURE_TIERS ) as $key ) {
+			$settings[ $key ] = 0;
+		}
+		return $settings;
+	}
+
+	public static function disconnectedSettings(): array {
+		return array_merge(
+			array_fill_keys( self::CLOUD_ACCOUNT_KEYS, '' ),
+			self::withoutProFeatures()
+		);
+	}
+
+	private static function featureAllowed( string $key, bool $has_pro_license, bool $has_ultimate_license ): bool {
+		$is_pro_feature = isset( self::PRO_FEATURE_TIERS[ $key ] );
+		if ( ! $is_pro_feature ) {
+			return true;
+		}
+
+		$required_tier = self::PRO_FEATURE_TIERS[ $key ];
+		if ( $required_tier === self::TIER_ULTIMATE ) {
+			return $has_ultimate_license;
+		}
+
+		return $has_pro_license;
+	}
+
+	public static function normalizeSettingRows( array $rows ): array {
+		$values = array();
+		foreach ( $rows as $row ) {
+			if ( ! isset( $row['key'] ) ) {
+				continue;
+			}
+
+			$value = '';
+			if ( isset( $row['value'] ) ) {
+				$value = (string) $row['value'];
+			}
+			$values[ (string) $row['key'] ] = $value;
+		}
+
+		$type = $values['cloud_api_type'] ?? '';
+		$key  = $values['cloud_api_key'] ?? '';
+		$tier = $values['cloud_api_tier'] ?? '';
+
+		$has_valid_key        = self::isKeyHash( $key ) || self::isLegacyKeyHash( $key );
+		$has_pro_license      = $type === self::TYPE_EXTENDED && $has_valid_key;
+		$has_ultimate_license = $has_pro_license && $tier === self::TIER_ULTIMATE;
+
+		foreach ( $rows as $index => $row ) {
+			if ( isset( $row['key'] ) && ! self::featureAllowed( (string) $row['key'], $has_pro_license, $has_ultimate_license ) ) {
+				$rows[ $index ]['value'] = '0';
+			}
+		}
+		return $rows;
 	}
 
 	public static function getRemainingDays() {
@@ -220,17 +306,12 @@ class BotBlockerPro {
 	public static function reset(): void {
 		global $wpdb;
 
-		$cloud_basic_settings = array(
-			'cloud_api_type'           => BBCS_CLOUD_TYPE_BASIC,
-			'cloud_api_tier'           => '',
-			'check'                    => 0,
-			'unresponsive'             => 0,
-			'force_cloud_validation'   => 0,
-			'block_vpn_users'          => 0,
-			'block_tor_users'          => 0,
-			'block_override'           => 0,
-			'block_web_engine_options' => 0,
-			'block_device_options'     => 0,
+		$cloud_basic_settings = array_merge(
+			array(
+				'cloud_api_type' => self::TYPE_BASIC,
+				'cloud_api_tier' => '',
+			),
+			self::withoutProFeatures()
 		);
 
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -244,7 +325,7 @@ class BotBlockerPro {
 
 	public static function buildAuthPayload( $settings = null ): array {
 		if ( $settings === null ) {
-			$settings = BotBlocker::getInstance()->settings ?? null;
+			$settings = BotBlocker::getInstance()->settings;
 		}
 
 		$key     = isset( $settings->cloud_api_key ) ? (string) $settings->cloud_api_key : '';

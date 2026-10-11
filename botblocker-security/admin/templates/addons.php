@@ -17,7 +17,7 @@ return static function ( Botblocker_Addons_View $view, Botblocker_Layout_View $l
 
 				<section class="bbcs-page" data-page="addons">
 					<div class="bbcs-pagehead">
-						<div><div class="bbcs-pagehead-title"><?php esc_html_e( 'Addons', 'botblocker-security' ); ?></div><div class="bbcs-pagehead-sub"><?php esc_html_e( 'Modules that enhance BotBlocker', 'botblocker-security' ); ?></div></div>
+						<div><div class="bbcs-pagehead-title"><?php esc_html_e( 'Addons', 'botblocker-security' ); ?></div><div class="bbcs-pagehead-sub"><?php esc_html_e( 'Modules that enhance BotBlocker', 'botblocker-security' ); ?></div><a class="bbcs-link bbcs-pagehead-doc" href="<?php echo esc_url( BotBlockerDocs::page( 'addons' ) ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Read the documentation', 'botblocker-security' ); ?> &#8599;</a></div>
 						<div class="bbcs-pagehead-actions">
 							<button class="bbcs-btn" id="bbcs-toggle-upload"<?php echo $view->getData()->addons_local_mode ? ' disabled' : ''; ?>><svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-upload"></use></svg><?php esc_html_e( 'Upload ZIP', 'botblocker-security' ); ?></button>
 							<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="bbcs-inline m-0">

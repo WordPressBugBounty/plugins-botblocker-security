@@ -34,6 +34,11 @@ final class Botblocker_SetupWizard_View {
 		$renderer( $this->data );
 	}
 
+	public function recaptcha(): void {
+		$renderer = require BOTBLOCKER_DIR . 'admin/templates/setup-wizard/recaptcha.php';
+		$renderer( $this->data );
+	}
+
 	public function captcha(): void {
 		$renderer = require BOTBLOCKER_DIR . 'admin/templates/setup-wizard/captcha.php';
 		$renderer( $this->data );

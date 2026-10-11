@@ -29,9 +29,9 @@ final class HistoryChart extends Base {
 
 	public function render( bool $return = false ): string {
 		$id      = self::escape( $this->id ?: 'bbcs_hits_and_uniques_chart', 'attr' );
-		$labels  = wp_json_encode( array_values( $this->labels ) );
-		$uniques = wp_json_encode( array_values( $this->uniques ) );
-		$hits    = wp_json_encode( array_values( $this->hits ) );
+		$labels  = self::escape( (string) wp_json_encode( array_values( $this->labels ) ), 'attr' );
+		$uniques = self::escape( (string) wp_json_encode( array_values( $this->uniques ) ), 'attr' );
+		$hits    = self::escape( (string) wp_json_encode( array_values( $this->hits ) ), 'attr' );
 
 		return self::output( '<div id="' . $id . '" class="bbcs-hits-uniques-chart"'
 			. ' data-bbcs-labels=\'' . $labels . '\''

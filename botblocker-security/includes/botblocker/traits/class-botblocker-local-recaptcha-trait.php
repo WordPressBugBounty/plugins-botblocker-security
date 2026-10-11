@@ -48,7 +48,7 @@ trait BotBlockerLocalReCaptchaTrait {
 				wp_send_json( $payload );
 			}
 
-			$force_cloud_active = ( $this->settings->force_cloud_validation == 1 && $this->settings->cloud_api_tier === BBCS_CLOUD_TIER_ULTIMATE );
+			$force_cloud_active = ( $this->settings->force_cloud_validation == 1 && $this->settings->cloud_api_tier === BotBlockerPro::TIER_ULTIMATE );
 			if ( $this->post_recaptcha_score <= $this->settings->recaptcha_tresshold && ! $force_cloud_active ) {
 				$payload = BotBlockerStore::localCheckResult( BBCS_LOCAL_RESULT_ERROR, 'reCaptcha threshold failed', '' );
 				if ( $this->settings->bbcs_ddos_resilience == 1 ) {

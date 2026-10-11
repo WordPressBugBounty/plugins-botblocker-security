@@ -6,6 +6,8 @@ if (! defined('ABSPATH')) {
 	exit;
 }
 
+use BotBlocker\Component\Base;
+
 return static function (Botblocker_RulesViewModel $data): void {
 ?>
 	<div class="bbcs-tabs" role="tablist">
@@ -193,6 +195,7 @@ return static function (Botblocker_RulesViewModel $data): void {
 					<use href="#bbcs-i-trash"></use>
 				</svg><?php esc_html_e('Clear all', 'botblocker-security'); ?></button>
 			<div class="bbcs-row bbcs-g-2" style="margin-left:auto;">
+				<?php echo Base::help( '', BotBlockerDocs::page( 'rules-geo-asn', 'geo' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 				<a href="<?php echo esc_url( $data->mu_geo_url ); ?>" class="bbcs-btn bbcs-btn--sm">
 					<svg class="bbcs-ico bbcs-ico--xs"><use href="#bbcs-i-shield"></use></svg>
 					<?php esc_html_e( 'MU layer', 'botblocker-security' ); ?>

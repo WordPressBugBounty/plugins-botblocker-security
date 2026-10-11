@@ -169,21 +169,20 @@ trait BotBlockerRulesTrait {
 				$this->x_robots_tag['noindex'] = 'noindex';
 				$this->visitorType             = self::VISITOR_SECRET;
 
-				if ( ! $cookie_set ) {
+				if ( isset( $_GET[ $param ] ) && $this->action_disable !== '' && $this->action_disable !== BOTBLOCKER_EMPTY && hash_equals( (string) $this->action_disable, sanitize_text_field( wp_unslash( $_GET[ $param ] ) ) ) ) {  // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					$this->set_secret_cookie();
-				}
-
-				if ( isset( $_GET[ $param ] ) && hash_equals( (string) $this->action_disable, sanitize_text_field( wp_unslash( $_GET[ $param ] ) ) ) ) {  // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					$this->isDisabled = true;
 					$this->secret_link_action = self::SECRET_LINK_BYPASS;
+					BotBlockerAlerts::setSecretLinkUsed( (int) $this->time );
 					BotBlockerStore::storeData( 'BotBlocker skip by secret', 23 );
 					BotBlockerCounters::processHit( 23 );
 					return true;
 				}
 
-				if ( isset( $_GET[ $param ] ) && hash_equals( (string) $this->action_off, sanitize_text_field( wp_unslash( $_GET[ $param ] ) ) ) ) {  // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				if ( isset( $_GET[ $param ] ) && $this->action_off !== '' && $this->action_off !== BOTBLOCKER_EMPTY && hash_equals( (string) $this->action_off, sanitize_text_field( wp_unslash( $_GET[ $param ] ) ) ) ) {  // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					$this->result_of_action = 'BotBlocker stop by secret';
 					$this->secret_link_action = self::SECRET_LINK_OFF;
+					BotBlockerAlerts::setSecretLinkUsed( (int) $this->time );
 					BotBlockerDb::togglePower( 1 );
 					BotBlockerStore::storeData( 'BotBlocker stop by secret', 23 );
 					BotBlockerCounters::processHit( 23 );
@@ -194,9 +193,10 @@ trait BotBlockerRulesTrait {
 					return true;
 				}
 
-				if ( isset( $_GET[ $param ] ) && hash_equals( (string) $this->action_on, sanitize_text_field( wp_unslash( $_GET[ $param ] ) ) ) ) {  // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				if ( isset( $_GET[ $param ] ) && $this->action_on !== '' && $this->action_on !== BOTBLOCKER_EMPTY && hash_equals( (string) $this->action_on, sanitize_text_field( wp_unslash( $_GET[ $param ] ) ) ) ) {  // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					$this->result_of_action = 'BotBlocker start by secret';
 					$this->secret_link_action = self::SECRET_LINK_ON;
+					BotBlockerAlerts::setSecretLinkUsed( (int) $this->time );
 					BotBlockerStore::storeData( 'BotBlocker start by secret', 98 );
 					BotBlockerCounters::processHit( 98 );
 					BotBlockerDb::togglePower( 0 );
@@ -206,9 +206,32 @@ trait BotBlockerRulesTrait {
 
 					return false;
 				}
+
+				// Session bypass after the disable link: logged and audited once, on the link request.
+				if ( $cookie_set && $this->has_valid_secret_cookie() ) {
+					$this->isDisabled = true;
+					return true;
+				}
 			}
 		}
 		return false;
+	}
+
+	public function has_valid_secret_cookie(): bool {
+		$param = (string) $this->settings->secret_botblocker_get_param;
+		$key   = (string) $this->action_disable;
+		if ( $param === '' || $key === '' || $key === BOTBLOCKER_EMPTY || ! isset( $_COOKIE[ $param ] ) || ! is_string( $_COOKIE[ $param ] ) ) {
+			return false;
+		}
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- validated by the strict format regex below
+		if ( ! preg_match( '/^(\d{1,12})\.([a-f0-9]{64})$/', wp_unslash( $_COOKIE[ $param ] ), $m ) ) {
+			return false;
+		}
+		$age = $this->time - (int) $m[1];
+		if ( $age < 0 || $age > self::SECRET_COOKIE_TTL_SECONDS ) {
+			return false;
+		}
+		return hash_equals( hash_hmac( 'sha256', $m[1], $key ), $m[2] );
 	}
 
 	public function check_path_rules(): bool {
@@ -251,6 +274,11 @@ trait BotBlockerRulesTrait {
 	public function check_white_bot(): bool {
 		if ( method_exists( $this, 'lazy_load_search_engines' ) ) {
 			$this->lazy_load_search_engines();
+		}
+		if ( method_exists( $this, 'lazy_load_asn_rules' ) ) {
+			// The ASN-token verification below reads bbcs_asn — load it here,
+			// not only in check_asn_rules() which runs LATER in run()
+			$this->lazy_load_asn_rules();
 		}
 		// UA match + PTR or ASN-table verification.
 		foreach ( $this->bbcs_se as $bbcs_line => $bbcs_sign ) {
@@ -566,6 +594,11 @@ trait BotBlockerRulesTrait {
 					return true; // BotBlocker Server activating cloud API or update bot database
 				}
 
+				// An active hot-ban (cloud-pushed, signed) overrides a stale DB allow row.
+				if ( $this->apply_hot_ban() ) {
+					return false;
+				}
+
 				$this->result_of_action = '<b>Allow</b> by IP rule: ' . $bbcs_ip_test['search'];
 				return $this->allow_access( $bbcs_ip_test );
 			} elseif ( $ip_sign === BBCS_RULE_BLOCK ) {
@@ -577,34 +610,56 @@ trait BotBlockerRulesTrait {
 			}
 		}
 
-		BotBlockerFileRenderer::ensureHotBansIntegrity();
-
-		$hotBansFile = BotBlockerMultisite::getDataDir() . 'hot-bans.php';
-		if ( file_exists( $hotBansFile ) ) {
-			$hotData = BotBlockerDataFile::safeLoad( $hotBansFile );
-			if ( is_array( $hotData ) ) {
-				$family = 'ipv' . $this->ip_version;
-				$entries = isset( $hotData[ $family ] ) && is_array( $hotData[ $family ] ) ? $hotData[ $family ] : array();
-				if ( isset( $entries[ $this->ip ] ) && is_array( $entries[ $this->ip ] ) ) {
-					$entry = $entries[ $this->ip ];
-					if ( ! empty( $entry[1] ) && $entry[1] > $this->time ) {
-						$hotSign = $this->effective_sign( $entry[0] );
-						if ( $hotSign === BBCS_RULE_BLOCK ) {
-							$this->redirect_to_block( 6, 'BLOCK by hot-ban: ' . $this->ip );
-						} elseif ( $hotSign === BBCS_RULE_DARK ) {
-							$this->redirect_to_dark( 'DARK by hot-ban: ' . $this->ip );
-						}
-					}
-				}
-			}
-		}
+		$this->apply_hot_ban();
 
 		if ( $this->visitorType === self::VISITOR_HUMAN ) {
+			// Session = proof of humanity, NOT immunity from the bot-profile
+			// checks: a pre-verified visitor with an empty UA / HTTP/1.0 /
+			// IPv6 / black-listed UA must still be denied before the auto-allow.
+			if ( $this->perform_simple_bot_checks() ) {
+				return true;
+			}
 			BotBlockerStore::storeData( 'Allow by session cookie (auto check)', 4 );
 			BotBlockerCounters::processHit( 4 );
 			return true;
 		}
 
+		return false;
+	}
+
+	/**
+	 * Apply an active signed hot-ban for the current IP. Returns true when a
+	 * hot-ban block/dark fired, so an early allow branch can stop the request.
+	 */
+	private function apply_hot_ban(): bool {
+		BotBlockerFileRenderer::ensureHotBansIntegrity();
+
+		$hotBansFile = BotBlockerMultisite::getDataDir() . 'hot-bans.php';
+		if ( ! file_exists( $hotBansFile ) ) {
+			return false;
+		}
+		$hotData = BotBlockerDataFile::safeLoad( $hotBansFile );
+		if ( ! is_array( $hotData ) ) {
+			return false;
+		}
+		$family  = 'ipv' . $this->ip_version;
+		$entries = isset( $hotData[ $family ] ) && is_array( $hotData[ $family ] ) ? $hotData[ $family ] : array();
+		if ( ! isset( $entries[ $this->ip ] ) || ! is_array( $entries[ $this->ip ] ) ) {
+			return false;
+		}
+		$entry = $entries[ $this->ip ];
+		if ( empty( $entry[1] ) || $entry[1] <= $this->time ) {
+			return false;
+		}
+		$hotSign = $this->effective_sign( $entry[0] );
+		if ( $hotSign === BBCS_RULE_BLOCK ) {
+			$this->redirect_to_block( 6, 'BLOCK by hot-ban: ' . $this->ip );
+			return true;
+		}
+		if ( $hotSign === BBCS_RULE_DARK ) {
+			$this->redirect_to_dark( 'DARK by hot-ban: ' . $this->ip );
+			return true;
+		}
 		return false;
 	}
 

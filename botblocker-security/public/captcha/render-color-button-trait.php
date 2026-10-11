@@ -56,7 +56,7 @@ trait BBCS_RenderColorButtonTrait {
 			'BLUE'   => imagecolorallocate( $imageForCheck, wp_rand( 0, 30 ), wp_rand( 0, 30 ), wp_rand( 155, 255 ) ),
 			'GREEN'  => imagecolorallocate( $imageForCheck, wp_rand( 0, 30 ), wp_rand( 125, 250 ), wp_rand( 0, 30 ) ),
 			'MAROON' => imagecolorallocate( $imageForCheck, wp_rand( 120, 130 ), wp_rand( 0, 20 ), wp_rand( 0, 20 ) ),
-			'PURPLE' => imagecolorallocate( $imageForCheck, wp_rand( 120, 130 ), wp_rand( 0, 20 ), wp_rand( 120, 130 ) ),
+			'PURPLE' => imagecolorallocate( $imageForCheck, wp_rand( 220, 255 ), wp_rand( 0, 30 ), wp_rand( 220, 255 ) ),
 		);
 
 		imagefill( $imageForCheck, 0, 0, $color_code[ $color ] );

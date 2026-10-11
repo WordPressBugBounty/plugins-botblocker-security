@@ -80,7 +80,6 @@ class BotBlockerPalette {
 			array( 'ic' => 'https',   't' => __( 'HTTPS enforcement - redirect, mixed content fixer', 'botblocker-security' ),      'go' => 'addons', 'addon' => 'bbcs-https-protocol', 'pro' => true ),
 			array( 'ic' => 'gauge',   't' => __( 'Behavioral analysis - smart spam scoring', 'botblocker-security' ),               'go' => 'addons', 'addon' => 'bbcs-behavior', 'pro' => true ),
 			array( 'ic' => 'cookie2', 't' => __( 'Cookie consent alert - GDPR, privacy notice', 'botblocker-security' ),             'go' => 'addons', 'addon' => 'bbcs-cookie-alert', 'pro' => true ),
-			array( 'ic' => 'scan',    't' => __( 'Run truth source scan - file integrity', 'botblocker-security' ),                   'go' => 'addons', 'addon' => 'bbcs-truth-source', 'pro' => true ),
 			array( 'ic' => 'plug',    't' => __( 'XML-RPC tunnel - secure remote access, block exploits', 'botblocker-security' ),     'go' => 'addons', 'addon' => 'bbcs-xmlrpc-tunnel', 'pro' => true ),
 		);
 		return apply_filters( 'bbcs_palette_addon_promo_actions', $promos );
@@ -111,7 +110,7 @@ class BotBlockerPalette {
 				$tab_id  = $tab['tab'] ?? '';
 				$go_slug = $tab['go'] ?? ( $top_group['go'] ?? '' );
 				if ( empty( $go_slug ) ) {
-					if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+					if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 						// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 						error_log( sprintf( 'BotBlocker Global Index: Missing required "go" property on tab "%s".', $tab_id ) );
 					}

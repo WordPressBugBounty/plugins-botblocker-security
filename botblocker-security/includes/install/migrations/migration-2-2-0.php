@@ -43,4 +43,6 @@ function bbcs_migration_2_2_0() {
 		wp_schedule_single_event( time() + 30, 'bbcs_summary_backfill' );
 	}
     // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+	return true;
 }

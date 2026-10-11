@@ -63,6 +63,10 @@ class BotBlockerEnv {
 		return ( extension_loaded( 'openssl' ) && function_exists( 'openssl_encrypt' ) && function_exists( 'openssl_decrypt' ) ) ? 1 : 0;
 	}
 
+	public static function check_apcu(): int {
+		return ( extension_loaded( 'apcu' ) && function_exists( 'apcu_enabled' ) && apcu_enabled() ) ? 1 : 0;
+	}
+
 	public static function prefly_check(): array {
 		return array(
 			'curl'     => self::check_curl(),
@@ -76,6 +80,7 @@ class BotBlockerEnv {
 			'gd_func'  => self::check_gd_func(),
 			'json'     => self::check_json(),
 			'openssl'  => self::check_openssl(),
+			'apcu'     => self::check_apcu(),
 		);
 	}
 

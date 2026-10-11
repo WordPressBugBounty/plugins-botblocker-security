@@ -11,6 +11,7 @@ require_once BOTBLOCKER_DIR . 'includes/data/class-botblocker-lang-options.php';
 require_once BOTBLOCKER_DIR . 'includes/data/class-botblocker-system-info-data.php';
 require_once BOTBLOCKER_DIR . 'includes/data/class-botblocker-snav.php';
 require_once BOTBLOCKER_DIR . 'includes/data/class-botblocker-palette.php';
+require_once BOTBLOCKER_DIR . 'includes/data/class-botblocker-docs.php';
 
 // === Install / Activation ===
 require_once BOTBLOCKER_DIR . 'includes/install/class-botblocker-seed-data.php';

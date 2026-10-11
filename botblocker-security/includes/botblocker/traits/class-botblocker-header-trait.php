@@ -20,16 +20,15 @@ trait BotBlockerHeaderTrait {
 	/**
 	 * Finalizes the header set for an allowed request.
 	 *
-	 * Single branching point for the security-headers addon: allowed requests
-	 * (all early-return branches of run() and admin/login/REST contexts) get
-	 * the full addon header set on top of the plugin's own headers, which were
-	 * already queued from run()/set_*_headers(). Security pages never reach
-	 * this method: check/block/denied die inside run() in FULL mode, and in
-	 * FRONTEND mode the should_show_* flags short-circuit it.
+	 * Single exit for allowed requests (all early-return branches of run() and
+	 * admin/login/REST contexts): queues the plugin's X-Robots-Tag, then the
+	 * security-headers addon set. Security pages never reach this method:
+	 * check/block/denied die inside run() in FULL mode, and in FRONTEND mode
+	 * the should_show_* flags short-circuit it.
 	 *
 	 * @since 1.1.2
 	 *
-	 * @return bool True when the addon header set was sent.
+	 * @return bool True when the addon header set was sent (X-Robots-Tag is not counted).
 	 */
 	public function finalize_allowed_headers(): bool {
 		if ( $this->should_show_check_page || $this->should_show_block_page || $this->should_show_denied_page ) {
@@ -38,6 +37,11 @@ trait BotBlockerHeaderTrait {
 
 		if ( ( defined( 'WP_CLI' ) && WP_CLI ) || wp_doing_cron() || wp_doing_ajax() ) {
 			return false;
+		}
+
+		if ( ! $this->isDisabled ) {
+			$this->process_headers();
+			$this->set_x_robot_headers();
 		}
 
 		if ( ! class_exists( 'Botblocker_Security_Headers' ) ) {
@@ -58,16 +62,9 @@ trait BotBlockerHeaderTrait {
 	}
 
 	public function set_iframe_headers(): void {
-		if ( $this->settings->iframe_stop == 1 && ! headers_sent() ) {
-			if ( $this->is_addon_basic_headers_active() ) {
-				return;
-			}
-			header( 'X-Frame-Options: SAMEORIGIN' );
+		if ( $this->settings->iframe_stop == 1 && $this->header_can_send() ) {
+			$this->emit_header( 'X-Frame-Options: SAMEORIGIN' );
 		}
-	}
-
-	private function is_addon_basic_headers_active(): bool {
-		return (bool) apply_filters( 'bbcs_security_headers_handles_basic', false, $this );
 	}
 
 	/**
@@ -75,16 +72,27 @@ trait BotBlockerHeaderTrait {
 	 * Mirrors MU-phase headers from mu-botblocker-header.php.
 	 */
 	private function send_no_cache_headers(): void {
-		if ( ! headers_sent() ) {
-			header( 'Cache-Control: no-store, no-cache, must-revalidate, max-age=0' );
-			header( 'Pragma: no-cache' );
-			header( 'Expires: Thu, 10 Aug 2000 06:00:00 GMT' );
-			header( 'X-LiteSpeed-Cache-Control: no-cache' );
-			header( 'X-Accel-Expires: 0' );
+		if ( $this->header_can_send() ) {
+			$this->emit_header( 'Cache-Control: no-store, no-cache, must-revalidate, max-age=0' );
+			$this->emit_header( 'Pragma: no-cache' );
+			$this->emit_header( 'Expires: Thu, 10 Aug 2000 06:00:00 GMT' );
+			$this->emit_header( 'X-LiteSpeed-Cache-Control: no-cache' );
+			$this->emit_header( 'X-Accel-Expires: 0' );
 			if ( $this->settings->bbcs_ddos_resilience == 1 ) {
-				header( 'CDN-Cache-Control: no-store, private' );
-				header( 'Surrogate-Control: no-store, max-age=0' );
+				$this->emit_header( 'CDN-Cache-Control: no-store, private' );
+				$this->emit_header( 'Surrogate-Control: no-store, max-age=0' );
 			}
+		}
+	}
+
+	/**
+	 * Emits the HTTP status line. Overridable I/O seam: harnesses capture the
+	 * status instead of sending it (WP-PHPUnit CLI always has headers_sent()).
+	 */
+	protected function send_status_header( string $status_line ): void {
+		if ( $this->header_can_send() ) {
+			$this->emit_header( $this->protocol . ' ' . $status_line );
+			$this->emit_header( 'Status: ' . $status_line );
 		}
 	}
 
@@ -94,68 +102,75 @@ trait BotBlockerHeaderTrait {
 	 */
 	public function send_vary_cookie_header(): void {
 		if ( isset( $this->settings->vary_cookie ) && $this->settings->vary_cookie == 1 ) {
-			if ( ! headers_sent() ) {
-				header( 'Vary: Cookie', false );
+			if ( $this->header_can_send() ) {
+				$this->emit_header( 'Vary: Cookie', false );
 			}
 		}
 	}
 
 	public function set_work_headers(): void {
-		if ( headers_sent() ) {
+		if ( ! $this->header_can_send() ) {
 			return;
 		}
 		$this->send_no_cache_headers();
-		header( 'Content-Type: text/html; charset=UTF-8' );
+		$this->emit_header( 'Content-Type: text/html; charset=UTF-8' );
 		if ( isset( $_SERVER['HTTP_ORIGIN'] ) ) {
 			$request_origin = esc_url_raw( wp_unslash( $_SERVER['HTTP_ORIGIN'] ) );
 			$site_host      = wp_parse_url( home_url(), PHP_URL_HOST );
 			$origin_host    = wp_parse_url( $request_origin, PHP_URL_HOST );
 			if ( $site_host && $origin_host && BotBlockerCheck::hosts_equal_www( $site_host, $origin_host ) ) {
-				header( 'Access-Control-Allow-Origin: ' . $request_origin );
-				header( 'Access-Control-Allow-Credentials: true' );
-				header( 'Vary: Origin', false );
+				$this->emit_header( 'Access-Control-Allow-Origin: ' . $request_origin );
+				$this->emit_header( 'Access-Control-Allow-Credentials: true' );
+				$this->emit_header( 'Vary: Origin', false );
 			}
 		}
-		header( 'Access-Control-Allow-Methods: POST' );
+		$this->emit_header( 'Access-Control-Allow-Methods: POST' );
 		if ( ! empty( $this->settings->bbcs_cors_strict_headers ) ) {
-			header( 'Access-Control-Allow-Headers: Content-Type, X-Requested-With' );
+			$this->emit_header( 'Access-Control-Allow-Headers: Content-Type, X-Requested-With' );
 		} else {
-			header( 'Access-Control-Allow-Headers: *' );
+			$this->emit_header( 'Access-Control-Allow-Headers: *' );
 		}
-		header( 'X-Robots-Tag: noindex' );
+		$this->emit_header( 'X-Robots-Tag: noindex' );
 	}
 
 	public function set_check_headers(): void {
-		if ( headers_sent() ) {
-			return;
-		}
 		$this->send_no_cache_headers();
-		header( 'Content-Type: text/html; charset=UTF-8' );
-		header( 'X-Robots-Tag: noindex' );
+		if ( $this->header_can_send() ) {
+			$this->emit_header( 'Content-Type: text/html; charset=UTF-8' );
+			$this->emit_header( 'X-Robots-Tag: noindex' );
+		}
 		$test_code = isset( $this->settings->header_test_code ) && isset( $this->error_headers[ $this->settings->header_test_code ] )
 			? $this->error_headers[ $this->settings->header_test_code ]
 			: '200 OK';
-		header( $this->protocol . ' ' . $test_code );
-		header( 'Status: ' . $test_code );
+		$this->send_status_header( $test_code );
 	}
 
 	public function set_denied_headers(): void {
-		if ( headers_sent() ) {
-			return;
-		}
 		$this->send_no_cache_headers();
-		header( 'X-Robots-Tag: noindex, noarchive' );
+		if ( $this->header_can_send() ) {
+			$this->emit_header( 'X-Robots-Tag: noindex, noarchive' );
+		}
 		$error_code = isset( $this->settings->header_error_code ) && isset( $this->error_headers[ $this->settings->header_error_code ] )
 			? $this->error_headers[ $this->settings->header_error_code ]
 			: '403 Forbidden';
-		header( $this->protocol . ' ' . $error_code );
-		header( 'Status: ' . $error_code );
+		$this->send_status_header( $error_code );
 	}
 
 	public function reset_post_headers(): void {
 		if ( $this->request_method == 'POST' ) {
-			if ( ! headers_sent() ) {
-				header( 'Location: ' . $this->uri );
+			if ( class_exists( 'BotBlockerCheck' )
+				&& BotBlockerCheck::responseFormatForUri( (string) ( $this->uri ?? '' ) ) !== 'html' ) {
+				// API clients cannot follow a 302-to-self PRG loop — the
+				// format-correct refusal replaces the redirect.
+				$this->emit_api_shaped_response(
+					BotBlockerCheck::responseFormatForUri( (string) ( $this->uri ?? '' ) ),
+					$this->denied_status_line(),
+					'bbcs_challenge_required'
+				);
+				return;
+			}
+			if ( $this->header_can_send() ) {
+				$this->emit_header( 'Location: ' . $this->uri );
 			}
 			$this->process_die();
 		}
@@ -220,8 +235,8 @@ trait BotBlockerHeaderTrait {
 			}
 		}
 
-		if ( count( $this->x_robots_tag ) > 0 && ! headers_sent() ) {
-			header( 'X-Robots-Tag: ' . implode( ', ', $this->x_robots_tag ) );
+		if ( count( $this->x_robots_tag ) > 0 && $this->header_can_send() ) {
+			$this->emit_header( 'X-Robots-Tag: ' . implode( ', ', $this->x_robots_tag ) );
 		}
 	}
 }

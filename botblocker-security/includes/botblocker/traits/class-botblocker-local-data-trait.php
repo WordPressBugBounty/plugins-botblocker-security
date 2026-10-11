@@ -11,7 +11,7 @@ trait BotBlockerLocalDataTrait {
 		check_ajax_referer( 'botblocker_nonce', 'nonce' );
 
 		if ( isset( $_POST['error'] ) && sanitize_text_field( wp_unslash( $_POST['error'] ) ) == 'detection_failed' ) {
-			$this->post_antidetect_scope = BOTBLOCKER_EMPTY;
+			$this->post_antidetect_scope = array();
 		} else {
 			$detection_booleans          = array(
 				'navigatorMismatch',
@@ -92,17 +92,25 @@ trait BotBlockerLocalDataTrait {
 		}
 
 		if ( isset( $_POST['country'] ) ) {
-			$this->country = strtoupper( trim( preg_replace( '/[^A-Za-z]/', '', sanitize_text_field( wp_unslash( $_POST['country'] ) ) ) ) );
+			// Keep BOTBLOCKER_EMPTY ('-') so IPv6 visitors without a GeoIP
+			// resolution round-trip the Test hash symmetrically (runtime finding
+			// 2026-09-01: IPv6 stuck on the challenge with Test Hash Error).
+			$this->country = strtoupper( trim( preg_replace( '/[^A-Za-z\-]/', '', sanitize_text_field( wp_unslash( $_POST['country'] ) ) ) ) );
 		} else {
 			$this->country = BOTBLOCKER_EMPTY;
 		}
 
 		if ( isset( $_POST['ip'] ) ) {
-			$this->ip = trim( preg_replace( '/[^0-9a-zA-Z\.\:]/', '', sanitize_text_field( wp_unslash( $_POST['ip'] ) ) ) );
-			if ( filter_var( $this->ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
-				$this->ip = BotBlockerIp::expandIPv6( $this->ip );
-			} elseif ( ! filter_var( $this->ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
-				$this->ip = '';
+			$posted_ip = trim( preg_replace( '/[^0-9a-zA-Z\.\:]/', '', sanitize_text_field( wp_unslash( $_POST['ip'] ) ) ) );
+			if ( filter_var( $posted_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
+				$posted_ip = BotBlockerIp::expandIPv6( $posted_ip );
+			} elseif ( ! filter_var( $posted_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
+				$posted_ip = '';
+			}
+			// The visitor IP is server-derived; a POSTed value may only confirm
+			// it, never override it (spoofed IPs would poison bans and audit).
+			if ( $this->ip === '' || $posted_ip === $this->ip ) {
+				$this->ip = $posted_ip;
 			}
 		} else {
 			$this->ip = '';

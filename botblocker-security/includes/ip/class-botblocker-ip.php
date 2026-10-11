@@ -133,8 +133,13 @@ class BotBlockerIp {
 			throw new \Exception( "Unsupported word size: $word_size" );
 		}
 
-		$value  = 0;
 		$length = strlen( $data );
+
+		if ( $length > 8 ) {
+			return self::bytesToDecimalString( self::gmpOrderedBytes( $data, $options ) );
+		}
+
+		$value  = 0;
 
 		if ( $options & GMP_MSW_FIRST ) {
 			if ( $options & GMP_BIG_ENDIAN ) {
@@ -157,6 +162,55 @@ class BotBlockerIp {
 		}
 
 		return $value;
+	}
+
+	private static function gmpOrderedBytes( string $data, int $options ): array {
+		$length = strlen( $data );
+		$bytes  = array();
+		if ( $options & GMP_MSW_FIRST ) {
+			if ( $options & GMP_BIG_ENDIAN ) {
+				for ( $i = 0; $i < $length; $i++ ) {
+					$bytes[] = ord( $data[ $i ] );
+				}
+			} else {
+				for ( $i = $length - 1; $i >= 0; $i-- ) {
+					$bytes[] = ord( $data[ $i ] );
+				}
+			}
+		} elseif ( $options & GMP_BIG_ENDIAN ) {
+			for ( $i = 0; $i < $length; $i++ ) {
+				$bytes[] = ord( $data[ $length - 1 - $i ] );
+			}
+		} else {
+			for ( $i = $length - 1; $i >= 0; $i-- ) {
+				$bytes[] = ord( $data[ $length - 1 - $i ] );
+			}
+		}
+		return $bytes;
+	}
+
+	private static function bytesToDecimalString( array $bytes ): string {
+		$dec = '0';
+		foreach ( $bytes as $byte ) {
+			$dec = self::decimalMulAdd( $dec, 256, (int) $byte );
+		}
+		return $dec;
+	}
+
+	private static function decimalMulAdd( string $dec, int $mul, int $add ): string {
+		$carry = $add;
+		$out   = '';
+		for ( $i = strlen( $dec ) - 1; $i >= 0; $i-- ) {
+			$product = ( (int) $dec[ $i ] ) * $mul + $carry;
+			$out     = (string) ( $product % 10 ) . $out;
+			$carry   = intdiv( $product, 10 );
+		}
+		while ( $carry > 0 ) {
+			$out   = (string) ( $carry % 10 ) . $out;
+			$carry = intdiv( $carry, 10 );
+		}
+		$out = ltrim( $out, '0' );
+		return $out === '' ? '0' : $out;
 	}
 
 	public static function gmpImport( string $data ) {
@@ -442,20 +496,41 @@ class BotBlockerIp {
 	}
 
 	public static function getCurrentIp(): string {
-		$raw = '';
-		if ( ! empty( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ) {
-			$raw = sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_CONNECTING_IP'] ) );
-		} elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
-			$raw = sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_FORWARDED_FOR'] ) );
-		} elseif ( ! empty( $_SERVER['HTTP_X_REAL_IP'] ) ) {
-			$raw = sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REAL_IP'] ) );
-		} elseif ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) {
-			$raw = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) );
+		$remote = isset( $_SERVER['REMOTE_ADDR'] )
+			? sanitize_text_field( wp_unslash( (string) $_SERVER['REMOTE_ADDR'] ) )
+			: '';
+
+		$raw = self::readTrustedProxyHeader( $remote );
+		if ( $raw === '' ) {
+			$raw = $remote;
 		}
 		if ( strpos( $raw, ',' ) !== false ) {
 			$raw = trim( explode( ',', $raw )[0] );
 		}
 		return sanitize_text_field( $raw );
+	}
+
+	private static function readTrustedProxyHeader( string $remote ): string {
+		if ( $remote === '' || ! class_exists( 'BotBlockerMultisite' ) || ! class_exists( 'BotBlockerDataFile' ) ) {
+			return '';
+		}
+		$file = BotBlockerMultisite::getDataDir() . 'proxy.php';
+		if ( ! file_exists( $file ) ) {
+			return '';
+		}
+		$data  = BotBlockerDataFile::safeLoad( $file );
+		$rules = isset( $data['bbcs_proxy'] ) && is_array( $data['bbcs_proxy'] ) ? $data['bbcs_proxy'] : array();
+		foreach ( $rules as $mask => $attr ) {
+			$attr = (string) $attr;
+			if ( $attr === '' || ! isset( $_SERVER[ $attr ] ) || ! self::netMatch( (string) $mask, $remote ) ) {
+				continue;
+			}
+			$value = sanitize_text_field( wp_unslash( (string) $_SERVER[ $attr ] ) );
+			if ( $value !== '' ) {
+				return $value;
+			}
+		}
+		return '';
 	}
 
 	public static function computePtrSubnet( string $ip, int $ip_version, int $mask_v4, int $mask_v6 ): string {

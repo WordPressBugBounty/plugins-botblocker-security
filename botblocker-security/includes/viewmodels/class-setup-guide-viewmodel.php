@@ -123,7 +123,7 @@ final class Botblocker_SetupGuideViewModel {
 		$this->has_pro       = BotBlockerPro::isActive();
 		$this->has_cloud_api = class_exists( 'BotBlockerPro' ) && BotBlockerPro::isActive();
 
-		$early_addon               = class_exists( 'BotBlockerGateway' ) && BotBlockerGateway::isRegistered( 'early_init' );
+		$early_addon               = class_exists( 'BotBlockerGateway' ) && ! empty( BotBlockerGateway::isEnabled( 'early_init' ) );
 		$this->early_addon_active  = $early_addon;
 		$this->early_available     = $this->has_cloud_api && $early_addon;
 

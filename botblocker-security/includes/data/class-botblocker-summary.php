@@ -152,7 +152,12 @@ class BotBlockerSummary {
 			return;
 		}
 		global $wpdb;
-		$cutoff = gmdate( 'Y-m-d', strtotime( '-' . $store_period . ' days' ) );
+		// date_key is written in the admin-local timezone (see aggregateDay);
+		// the retention cutoff must use the same timezone, not UTC.
+		$BBCS       = BotBlocker::getInstance();
+		$gmt_offset = isset( $BBCS->settings->admin_gmt_offset ) ? (float) $BBCS->settings->admin_gmt_offset : 0;
+		$tz         = new \DateTimeZone( BotBlockerEnv::format_gmt_offset( $gmt_offset ) );
+		$cutoff     = ( new \DateTime( 'now', $tz ) )->modify( '-' . $store_period . ' days' )->format( 'Y-m-d' );
 	    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->query(
 			$wpdb->prepare(

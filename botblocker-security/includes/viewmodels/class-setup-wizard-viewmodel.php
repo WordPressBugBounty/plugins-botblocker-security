@@ -37,12 +37,27 @@ final class Botblocker_SetupWizard_ViewModel {
 	/** @var string */
 	public $pro_url;
 	/** @var string */
-	public $docs_url;
 	/** @var string */
 	public $early_init_slug;
 
 	/** @var string URL for the silent-mode CAPTCHA preview image. */
 	public $captcha_preview_img_url;
+	/** @var string */
+	public $recaptcha_key2;
+	/** @var string */
+	public $recaptcha_secret2;
+	/** @var string */
+	public $recaptcha_key3;
+	/** @var string */
+	public $recaptcha_secret3;
+	/** @var string */
+	public $recaptcha_tresshold;
+	/** @var bool */
+	public $recaptcha_check;
+	/** @var bool */
+	public $recaptcha_v3_ipv6_block;
+	/** @var string */
+	public $recaptcha_provider;
 
 	/** @var string BotBlocker logo URL for the plughead. */
 	public $logo_url;
@@ -53,7 +68,7 @@ final class Botblocker_SetupWizard_ViewModel {
 
 		$this->version           = defined( 'BOTBLOCKER_VERSION' ) ? BOTBLOCKER_VERSION : '';
 		$this->has_pro             = class_exists( 'BotBlockerPro' ) && BotBlockerPro::isActive();
-		$this->early_addon_active  = class_exists( 'BotBlockerGateway' ) && BotBlockerGateway::isRegistered( 'early_init' );
+		$this->early_addon_active  = class_exists( 'BotBlockerGateway' ) && ! empty( BotBlockerGateway::isEnabled( 'early_init' ) );
 		$this->early_available     = $this->has_pro && $this->early_addon_active;
 		$this->early_init_slug     = class_exists( 'BotBlockerGateway' ) ? BotBlockerGateway::firstSlug( 'early_init', 'bbcs-early-init' ) : 'bbcs-early-init';
 		$this->contact_email     = wp_get_current_user()->user_email;
@@ -67,10 +82,17 @@ final class Botblocker_SetupWizard_ViewModel {
 		$this->integrations_url = $bbcsa->pages_integrations;
 		$this->addons_url       = $bbcsa->pages_addons;
 		$this->pro_url          = $bbcsa->pages_cloud_api;
-		$this->docs_url         = BOTBLOCKER_DOCS_URL;
 
 		$this->captcha_preview_img_url = BOTBLOCKER_MATERIALS_URL . 'image/silent-mode.webp';
 		$this->logo_url                = $bbcs->media_logo_botblocker;
+		$this->recaptcha_key2         = (string) ( $bbcs->settings->recaptcha_key2 ?? '' );
+		$this->recaptcha_secret2      = (string) ( $bbcs->settings->recaptcha_secret2 ?? '' );
+		$this->recaptcha_key3         = (string) ( $bbcs->settings->recaptcha_key3 ?? '' );
+		$this->recaptcha_secret3      = (string) ( $bbcs->settings->recaptcha_secret3 ?? '' );
+		$this->recaptcha_tresshold    = (string) ( $bbcs->settings->recaptcha_tresshold ?? '0.5' );
+		$this->recaptcha_check        = (bool) ( $bbcs->settings->recaptcha_check ?? false );
+		$this->recaptcha_v3_ipv6_block = (bool) ( $bbcs->settings->recaptcha_v3_ipv6_block ?? false );
+		$this->recaptcha_provider     = $this->recaptcha_check || $this->recaptcha_key3 !== '' || $this->recaptcha_secret3 !== '' ? 'v3' : ( $this->recaptcha_key2 !== '' || $this->recaptcha_secret2 !== '' ? 'v2' : 'none' );
 	}
 
 

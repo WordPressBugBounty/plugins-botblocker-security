@@ -305,10 +305,6 @@ class BotBlockerAjaxGeo {
 			}
 		}
 
-		if ( ! is_array( $countries ) ) {
-			$countries = array();
-		}
-
 		$sanitized = array_values(
 			array_unique(
 				array_filter(

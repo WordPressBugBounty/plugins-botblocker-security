@@ -9,6 +9,7 @@ if (! defined('ABSPATH')) {
 return static function (Botblocker_ReportsViewModel $data): void {
 ?>
 	<div class="bbcs-card bbcs-card-pad">
+		<div class="bbcs-tabdoc"><a class="bbcs-link bbcs-fs-sm" href="<?php echo esc_url( BotBlockerDocs::page( 'log-and-reports', 'the-audit-log-shows-who-changed-what' ) ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'About the audit log', 'botblocker-security' ); ?> &#8599;</a><a class="bbcs-link bbcs-fs-sm" href="<?php echo esc_url( BotBlockerDocs::page( 'logging-audit', 'audit-log' ) ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Audit log settings', 'botblocker-security' ); ?> &#8599;</a></div>
 		<div class="bbcs-audit-toolbar" id="bbcs-audit-filters">
 			<select id="bbcs-audit-category" class="bbcs-input">
 				<option value=""><?php esc_html_e( 'All categories', 'botblocker-security' ); ?></option>

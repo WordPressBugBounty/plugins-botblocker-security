@@ -81,10 +81,31 @@ trait BotBlockerMuUtils {
 				if ( isset( $_GET[ $param ] ) && in_array( sanitize_text_field( wp_unslash( $_GET[ $param ] ) ), $valid_values, true ) ) {
 					return true;
 				}
+				if ( $cookie_set && $this->has_valid_secret_cookie( $param ) ) {
+					return true;
+				}
 			}
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 		return false;
+	}
+
+	// Same "<issued>.<hmac>" format as BotBlockerCookieTrait::set_secret_cookie().
+	private function has_valid_secret_cookie( string $param ): bool {
+		$key          = (string) ( $this->settings['action_disable'] ?? '' );
+		$empty_marker = defined( 'BOTBLOCKER_EMPTY' ) ? BOTBLOCKER_EMPTY : '-';
+		if ( $key === '' || $key === $empty_marker || ! isset( $_COOKIE[ $param ] ) || ! is_string( $_COOKIE[ $param ] ) ) {
+			return false;
+		}
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- validated by the strict format regex
+		if ( ! preg_match( '/^(\d{1,12})\.([a-f0-9]{64})$/', $_COOKIE[ $param ], $m ) ) {
+			return false;
+		}
+		$age = time() - (int) $m[1];
+		if ( $age < 0 || $age > self::SECRET_COOKIE_TTL_SECONDS ) {
+			return false;
+		}
+		return hash_equals( hash_hmac( 'sha256', $m[1], $key ), $m[2] );
 	}
 
 	private function is_wordpress_maintenance_request(): bool {

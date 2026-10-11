@@ -108,8 +108,8 @@
             if (error === 'package_root') msg = L.package_root || 'The package must contain exactly one root folder.';
             if (error === 'package_slug') msg = L.package_slug || 'The package root folder must be a valid slug.';
             if (error === 'package_invalid') msg = L.package_invalid || 'The package does not match the BotBlocker add-on contract.';
+            if (error === 'manifest_missing') msg = L.manifest_missing || 'Add-on package must include bbcs-addon.json.';
             if (error === 'pro_required') msg = L.pro_required || 'Official BotBlocker add-ons require BotBlocker PRO. Custom ZIP add-ons can still be uploaded.';
-            if (error === 'requires_core_missing') msg = L.requires_core_missing || 'The package must declare Requires-Core.';
             if (error === 'slug_mismatch') msg = L.slug_mismatch || 'The package slug does not match the requested add-on.';
             if (error === 'requires_php') msg = L.requires_php || 'This add-on requires a newer PHP version.';
             if (error === 'file_mods_disabled') msg = L.file_mods_disabled || 'File modifications are disabled for this WordPress installation.';
@@ -117,7 +117,7 @@
             if (error === 'move_source') msg = L.move_source || 'The validated add-on source is missing.';
             if (error === 'backup_failed') msg = L.backup_failed || 'Failed to backup the existing add-on.';
             if (error === 'move_failed') msg = L.move_failed || 'Failed to install the add-on package.';
-            if (/^(upload|zip|extract|package|slug_mismatch|requires_php|requires_core_missing|file_mods_disabled|tmp_failed|move_source|backup_failed|move_failed)/.test(error)) {
+            if (/^(upload|zip|extract|package|manifest_missing|slug_mismatch|requires_php|file_mods_disabled|tmp_failed|move_source|backup_failed|move_failed)/.test(error)) {
                 setUploadPanel(true);
             }
             if (error === 'requires_core') {

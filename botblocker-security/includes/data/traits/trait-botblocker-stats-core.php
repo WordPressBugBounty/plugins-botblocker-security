@@ -18,7 +18,10 @@ trait BotBlockerStatsCoreTrait {
 
 			$bbcs_get_statistics = get_transient( $cache_key );
 
-			if ( $bbcs_get_statistics ) {
+			// The payload is only valid for the period it was computed for;
+			// otherwise getStatistics(1) would serve a warm 30-day payload.
+			if ( is_array( $bbcs_get_statistics )
+				&& (int) get_transient( 'bbcs_get_statistics_period' ) === $period_days ) {
 				$BBCS->counters = $bbcs_get_statistics;
 				return;
 			}
@@ -149,6 +152,7 @@ trait BotBlockerStatsCoreTrait {
 		if ( $BBCS->settings->cache_ui_data == 1 ) {
 
 			set_transient( $cache_key, $BBCS->counters, $BBCS->settings->cache_ui_duration );
+			set_transient( 'bbcs_get_statistics_period', $period_days, $BBCS->settings->cache_ui_duration );
 
 		}
 	}

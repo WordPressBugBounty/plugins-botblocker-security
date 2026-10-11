@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * This class is responsible for all the operations against bots.
  * It handles detections, logging, and blocking of suspicious bot activities.
  *
- * @version    1.7.5
+ * @version    1.7.6
  * @author     BotBlocker Team
  * @package    Botblocker
  * @subpackage Botblocker/includes
@@ -85,6 +85,7 @@ class BotBlocker extends BotBlockerBase {
 		$this->load_data();
 		$this->initialize_config();
 		$this->load_settings();
+		$this->register_wpsc_cookie_exception();
 		$this->generate_connection_id();
 		add_filter( 'http_request_args', array( $this, 'inject_self_call_header' ), 10, 2 );
 
@@ -126,6 +127,8 @@ class BotBlocker extends BotBlockerBase {
 		if ( $this->is_safe_request() ) {
 			return;
 		}
+		// Real pages let through (verified/allow-IP/white-bot/payment) must never land cookie-blind in an anonymous page cache (finding NN/PP).
+		$this->define_no_cache_constants();
 		$this->collect_visitor_data();
 		$this->update_settings_based_on_visitor_data();
 		$this->check_tls_fingerprint();
@@ -181,19 +184,23 @@ class BotBlocker extends BotBlockerBase {
 		if ( $this->payment_bypass_partial ) {
 			$this->visitorType = self::VISITOR_LEGALBOT;
 			$this->white_bot   = 'payment-gateway';
-			$this->set_x_robot_headers();
 			return;
 		}
 
-		$this->process_headers();
+		// Simple bot checks run BEFORE the cookie identity resolves: an unverified
+		// visitor is otherwise bounced to the challenge inside process_cookies()
+		// (redirect_to_dark) and never reaches them, while a verified visitor
+		// returns true there and skips them too - block_ipv6_users, block_empty_ua,
+		// block_proxy_users, block_cf_users, block_simplebot_ua etc. were dead for
+		// BOTH audiences. They must gate every
+		// visitor regardless of cookie state.
+		$this->perform_simple_bot_checks();
 
 		if ( $this->process_cookies() ) {
 			$this->send_vary_cookie_header();
-			$this->set_x_robot_headers();
 			return;
 		}
 
-		$this->perform_simple_bot_checks();
 		$this->validate_referer();
 		$this->check_referer_get_params();
 		$this->check_hosting();
@@ -209,7 +216,6 @@ class BotBlocker extends BotBlockerBase {
 			return;
 		}
 		do_action( 'bbcs_botblocker_allowed_request', null, $this, 'final_allow', array() );
-		$this->set_x_robot_headers();
 	}
 	public function get_bot_blocker_hive(): array {
 		$properties = get_object_vars( $this );
@@ -233,7 +239,6 @@ class BotBlocker extends BotBlockerBase {
 			'recaptcha_secret2',
 			'recaptcha_secret3',
 			'salt',
-			'salt_pz',
 			'redis_password',
 			'memcached_password',
 			'password',

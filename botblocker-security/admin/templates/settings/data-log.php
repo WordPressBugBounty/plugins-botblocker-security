@@ -1,6 +1,8 @@
 <?php
 
 declare(strict_types=1);
+
+use BotBlocker\Component\Base;
 if (!defined('ABSPATH')) exit;
 
 use BotBlocker\Component\InfoColumn;
@@ -20,11 +22,10 @@ return static function ( Botblocker_SettingsViewModel $data, bool $isActive ): v
 	<div role="tabpanel" class="bbcs-tabpanel bbcs-protect-layout" data-tabpanel="data-log"<?php echo $isActive ? '' : ' hidden' ?>>
 		<?php
 		InfoColumn::make()
+			->withDocPage( BotBlockerDocs::page( 'privacy-data' ) )
 			->withIconImage( BOTBLOCKER_URL . 'public/icons/data-log-processing.svg', __( 'Data Log and Processing', 'botblocker-security' ) )
 			->withDescription( __( 'Configure what visitor data BotBlocker records for threat detection and analytics.', 'botblocker-security' ) )
 			->withDescription( __( 'Set the log retention period and enable daylight saving time adjustment if needed.', 'botblocker-security' ) )
-			->withDocLink( $data->docs_url . '/how-botblocker-detects-browser-version-os-and-device-type-pc-mobile-or-tablet/', __( 'How BotBlocker Detects Browser Version, OS, and Device Type', 'botblocker-security' ) )
-			->withDocLink( $data->docs_url . '/log-retention-in-botblocker-how-to-manage-storage-period-time-zone-and-analytics/', __( 'Store logs', 'botblocker-security' ) )
 			->render();
 		?>
 		<div>
@@ -34,15 +35,15 @@ return static function ( Botblocker_SettingsViewModel $data, bool $isActive ): v
 				->withItems( static function () use ( $data, $store_period ): void {
 					FieldPair::make()
 						->withItems( static function () use ( $data ): void {
-							ToggleOption::make()->withName( 'get_browser_type' )->withChecked( $data->is_checked( 'get_browser_type' ) )->withLabel( __( 'Record Browser Type', 'botblocker-security' ) )->withTooltip( __( 'Extract and store visitor browser name and version from User-Agent header.', 'botblocker-security' ) )->render();
-							ToggleOption::make()->withName( 'get_os_type' )->withChecked( $data->is_checked( 'get_os_type' ) )->withLabel( __( 'Record OS Type', 'botblocker-security' ) )->withTooltip( __( 'Extract and store visitor operating system from User-Agent header.', 'botblocker-security' ) )->render();
+							ToggleOption::make()->withName( 'get_browser_type' )->withChecked( $data->is_checked( 'get_browser_type' ) )->withLabel( __( 'Record Browser Type', 'botblocker-security' ) )->withTooltip( __( 'Extract and store visitor browser name and version from User-Agent header.', 'botblocker-security' ) )->withDocLink( BotBlockerDocs::url( 'get_browser_type' ) )->render();
+							ToggleOption::make()->withName( 'get_os_type' )->withChecked( $data->is_checked( 'get_os_type' ) )->withLabel( __( 'Record OS Type', 'botblocker-security' ) )->withTooltip( __( 'Extract and store visitor operating system from User-Agent header.', 'botblocker-security' ) )->withDocLink( BotBlockerDocs::url( 'get_os_type' ) )->render();
 						} )
 						->render();
 
 					FieldPair::make()
 						->withItems( static function () use ( $data ): void {
-							ToggleOption::make()->withName( 'get_device_type' )->withChecked( $data->is_checked( 'get_device_type' ) )->withLabel( __( 'Record Device Type', 'botblocker-security' ) )->withTooltip( __( 'Extract and store visitor device category (PC, Phone, Tablet, TV, Box) from User-Agent header.', 'botblocker-security' ) )->render();
-							ToggleOption::make()->withName( 'daylight_saving_time' )->withChecked( $data->is_checked( 'daylight_saving_time' ) )->withLabel( __( 'Adjust for Daylight Saving Time', 'botblocker-security' ) )->withTooltip( __( 'Adjust recorded timestamps for your timezone\'s daylight saving time. Ensures visit times display correctly in logs and reports year-round.', 'botblocker-security' ) )->render();
+							ToggleOption::make()->withName( 'get_device_type' )->withChecked( $data->is_checked( 'get_device_type' ) )->withLabel( __( 'Record Device Type', 'botblocker-security' ) )->withTooltip( __( 'Extract and store visitor device category (PC, Phone, Tablet, TV, Box) from User-Agent header.', 'botblocker-security' ) )->withDocLink( BotBlockerDocs::url( 'get_device_type' ) )->render();
+							ToggleOption::make()->withName( 'daylight_saving_time' )->withChecked( $data->is_checked( 'daylight_saving_time' ) )->withLabel( __( 'Adjust for Daylight Saving Time', 'botblocker-security' ) )->withTooltip( __( 'Adjust recorded timestamps for your timezone\'s daylight saving time. Ensures visit times display correctly in logs and reports year-round.', 'botblocker-security' ) )->withDocLink( BotBlockerDocs::url( 'daylight_saving_time' ) )->render();
 						} )
 						->render();
 
@@ -53,6 +54,7 @@ return static function ( Botblocker_SettingsViewModel $data, bool $isActive ): v
 								->withValue( $store_period )
 								->withLabel( __( 'Log Retention Period:', 'botblocker-security' ) )
 								->withTooltip( __( 'How many days to keep raw visitor log data before automatic cleanup.', 'botblocker-security' ) )
+								->withDocLink( BotBlockerDocs::url( 'admin_store_period' ) )
 								->render();
 						} )
 						->render();
@@ -64,13 +66,14 @@ return static function ( Botblocker_SettingsViewModel $data, bool $isActive ): v
 				->withItems( static function () use ( $data, $audit_retention_days, $wp_roles, $roles_map ): void {
 					FieldPair::make()
 						->withItems( static function () use ( $data, $audit_retention_days ): void {
-							ToggleOption::make()->withName( 'audit_log_enable' )->withChecked( $data->is_audit_log_enabled() )->withLabel( __( 'Enable Audit Log', 'botblocker-security' ) )->withTooltip( __( 'Record WordPress admin actions in a dedicated audit log table.', 'botblocker-security' ) )->render();
+							ToggleOption::make()->withName( 'audit_log_enable' )->withChecked( $data->is_audit_log_enabled() )->withLabel( __( 'Enable Audit Log', 'botblocker-security' ) )->withTooltip( __( 'Record WordPress admin actions in a dedicated audit log table.', 'botblocker-security' ) )->withDocLink( BotBlockerDocs::url( 'audit_log_enable' ) )->render();
 
 							RetentionDaysSelect::make()
 								->withName( 'audit_log_retention_days' )
 								->withValue( $audit_retention_days )
 								->withLabel( __( 'Audit Log Retention:', 'botblocker-security' ) )
 								->withTooltip( __( 'How long to keep audit log entries before automatic cleanup.', 'botblocker-security' ) )
+								->withDocLink( BotBlockerDocs::url( 'audit_log_retention_days' ) )
 								->render();
 						} )
 						->render();
@@ -86,7 +89,7 @@ return static function ( Botblocker_SettingsViewModel $data, bool $isActive ): v
 								<button class="bbcs-toggle<?php echo $enabled ? ' is-on' : ''; ?>" role="switch" type="button" aria-checked="<?php echo $enabled ? 'true' : 'false'; ?>" data-field="audit_log_roles_<?php echo esc_attr( $role_key ); ?>"><span class="bbcs-toggle-knob"></span></button>
 								<input type="hidden" name="audit_log_roles[<?php echo esc_attr( $role_key ); ?>]" value="<?php echo $enabled ? '1' : '0'; ?>">
 								<span class="bbcs-option-label"><?php echo esc_html( $role_name ); ?></span>
-								<span class="bbcs-help"><span class="bbcs-help-q">?</span><span class="bbcs-help-tip"><?php echo esc_attr( sprintf( /* translators: %s: WordPress role name (e.g., Administrator, Editor) */ __( 'Record audit log entries for actions by %s', 'botblocker-security' ), $role_name ) ); ?></span></span>
+								<?php echo Base::help( sprintf( /* translators: %s: WordPress role name (e.g., Administrator, Editor) */ __( 'Record audit log entries for actions by %s', 'botblocker-security' ), $role_name ), BotBlockerDocs::url( 'audit_log_roles' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 							</div>
 						<?php endforeach; ?>
 					</div>

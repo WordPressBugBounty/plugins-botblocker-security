@@ -111,7 +111,7 @@ class BotBlockerAjaxEmail {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' sendActivationToCloud succeeded' );
 			}
-		} catch ( Exception $e ) {
+		} catch ( \Throwable $e ) {
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' caught exception: ' . $e->getMessage() );
