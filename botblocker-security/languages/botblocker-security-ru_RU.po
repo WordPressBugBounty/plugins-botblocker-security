@@ -3,16 +3,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BotBlocker"
 "Report-Msgid-Bugs-To: "
-"POT-Creation-Date: 2026-09-29 08:28+0000"
-"PO-Revision-Date: 2026-09-29 08:28+0000"
-"Last-Translator: BotBlocker Translator Team"
+"POT-Creation-Date: 2026-10-17 19:03+0000"
+"PO-Revision-Date: 2026-10-17 19:03+0000"
+"Last-Translator: BotBlocker Team (rati karelidze)"
 "Language-Team: Russian"
 "Language: ru_RU"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 &&(n%100<10||n%100>=20)? 1 : 2);"
 "MIME-Version: 1.0"
 "Content-Type: text/plain; charset=UTF-8"
 "Content-Transfer-Encoding: 8bit"
-"X-Generator: BotBlocker Translator Engine"
 "X-Domain: botblocker-security"
 
 
@@ -1607,7 +1606,7 @@ msgstr "Одобрить (разрешить при сбое)"
 
 #: admin/templates/shared/sidebar/rail.php:143
 msgid "Are you getting spam from specific regions? You can block entire high-risk countries in the Rules & IPs section. Country blocking is a highly effective way to reduce unwanted bot traffic by up to 80%."
-msgstr "Получаете спам из определённых регионов? Заблокируйте целые страны в разделе Правила и IP."
+msgstr "Получаете спам из определённых регионов? Вы можете заблокировать целые страны с высоким уровнем риска в разделе «Правила и IP». Блокировка стран — очень эффективный способ сократить нежелательный трафик ботов до 80%."
 
 #: admin/class-botblocker-admin.php:558
 msgid "Are you sure you want to clear all TLS fingerprints?"
@@ -2495,7 +2494,7 @@ msgstr "Домены BotBlocker API и reCaptcha добавляются авто
 
 #: admin/templates/integrations/botblocker-api.php:16
 msgid "BotBlocker API connects your site to cloud threat intelligence for real-time security data beyond local detection."
-msgstr "BotBlocker API подключает ваш сайт к облачной разведке угроз."
+msgstr "BotBlocker API подключает ваш сайт к облачной базе данных угроз, предоставляя данные безопасности в реальном времени, выходящие за рамки локального обнаружения."
 
 #: admin/templates/integrations/botblocker-api.php:80
 msgid "BotBlocker API endpoint for threat intelligence and security updates. Displayed for reference - not editable."
@@ -2616,7 +2615,7 @@ msgstr "Информация о BotBlocker PRO успешно обновлена
 
 #: admin/templates/shared/sidebar/rail.php:142
 msgid "BotBlocker PRO validates visitors in the cloud before they reach your WordPress installation. This preserves your server CPU and memory while stopping aggressive DDoS attacks in their tracks."
-msgstr "BotBlocker PRO проверяет посетителей в облаке до того, как они достигнут вашего WordPress."
+msgstr "BotBlocker PRO проверяет посетителей в облаке ещё до того, как они достигнут вашей установки WordPress. Это сохраняет процессор и память вашего сервера и останавливает агрессивные DDoS-атаки на подходе."
 
 #: public/check-page.php:14
 #: public/template-botblocker-denied.php:19
@@ -3057,7 +3056,7 @@ msgstr "Каталог временно недоступен. Показывае
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:136
 msgid "Catches more malicious code, especially obfuscated or encoded payloads. Uses more CPU and memory per file. Disable if your server is low on resources."
-msgstr "Обнаруживает больше вредоносного кода. Использует больше CPU и памяти."
+msgstr "Обнаруживает больше вредоносного кода, особенно обфусцированные или закодированные полезные нагрузки. Использует больше процессора и памяти на каждый файл. Отключите, если на вашем сервере не хватает ресурсов."
 
 #: addons/bbcs-antispam/views/settings.php:233
 msgid "Category Filter"
@@ -4130,7 +4129,7 @@ msgstr "Cron-задания cPanel"
 
 #: admin/partials/class-botblocker-dashboard-widgets.php:193
 msgid "Create allow/block rules for IPs or subnets. Use import buttons to add search engines and white bots."
-msgstr "Создавайте разрешающие/блокирующие правила для IP."
+msgstr "Создавайте правила разрешения и блокировки для IP-адресов или подсетей. Используйте кнопки импорта, чтобы добавить поисковые системы и белых ботов."
 
 #: admin/templates/integrations/recaptcha-v2.php:31
 #: admin/templates/integrations/recaptcha-v2.php:40
@@ -4515,7 +4514,7 @@ msgstr "Задайте уникальный префикс для всех кл�
 
 #: admin/templates/integrations/redis.php:41
 msgid "Define a unique prefix for all Redis keys to organize data and prevent conflicts with other applications using the same Redis instance."
-msgstr "Уникальный префикс для ключей Redis."
+msgstr "Задайте уникальный префикс для всех ключей Redis, чтобы упорядочить данные и предотвратить конфликты с другими приложениями, использующими тот же экземпляр Redis."
 
 #: addons/bbcs-forced-inclusions/views/settings.php:111
 #: admin/class-botblocker-admin.php:328
@@ -4724,7 +4723,7 @@ msgstr "Отключить reCAPTCHA для посетителей IPv6"
 
 #: admin/templates/integrations/recaptcha-v3.php:27
 msgid "Disable reCaptcha v3 for IPv6 visitors. Google reCaptcha v3 does not support IPv6 scoring, so visitors from IPv6 addresses will bypass reCaptcha checks."
-msgstr "Отключить reCaptcha v3 для IPv6. Google reCaptcha v3 не поддерживает скоринг IPv6."
+msgstr "Отключите reCaptcha v3 для посетителей с IPv6. Google reCaptcha v3 не поддерживает оценку IPv6, поэтому посетители с IPv6-адресов будут обходить проверки reCaptcha."
 
 #: addons/bbcs-forced-inclusions/views/settings.php:137
 msgid "Disable renames the file so WordPress stops running it. The file stays on the server, so you can turn it back on anytime - safe way to test if a file causes a problem. Delete removes it for good."
@@ -4806,7 +4805,7 @@ msgstr "Отключает XML-RPC."
 
 #: admin/class-botblocker-admin.php:244
 msgid "Disabling Early Init mode may reduce protection against advanced bots. Are you sure you want to proceed?"
-msgstr "Отключение Early Init снизит защиту. Продолжить?"
+msgstr "Отключение режима Early Init может снизить защиту от продвинутых ботов. Вы уверены, что хотите продолжить?"
 
 #: admin/templates/cloud-api/status.php:31
 #: admin/templates/integrations/botblocker-api.php:44
@@ -6655,7 +6654,7 @@ msgstr "Таблицы правил брандмауэра недоступны.
 
 #: admin/templates/settings/bot-detection.php:64
 msgid "Flag visitors whose browser language doesn&#39;t match their GeoIP location. May affect travelers and VPN users."
-msgstr "Помечать посетителей с несовпадением языка браузера и GeoIP."
+msgstr "Помечать посетителей, у которых язык браузера не совпадает с местоположением по GeoIP. Может влиять на путешественников и пользователей VPN."
 
 #: addons/bbcs-malware/inc/views/scan-results.php:28
 msgid "Flat"
@@ -6831,7 +6830,7 @@ msgstr "Полностью отключить BotBlocker"
 
 #: admin/templates/settings/captcha-tab.php:79
 msgid "GD library is not enabled on this server. Image Captcha (mode 2) and Color Buttons (mode 1) will not work and will fall back to another mode."
-msgstr "Библиотека GD не включена. Captcha с изображениями не будет работать."
+msgstr "Библиотека GD не включена на этом сервере. Image Captcha (режим 2) и цветные кнопки (режим 1) не будут работать и переключатся на другой режим."
 
 #: includes/hook/class-botblocker-settings-hooks.php:415
 msgid "GD library not available. Captcha mode was adjusted to a compatible mode."
@@ -7013,7 +7012,7 @@ msgstr "Google reCAPTCHA v2"
 
 #: admin/templates/integrations/recaptcha-v2.php:15
 msgid "Google reCaptcha v2 displays interactive puzzles to verify human users before form submission or page access."
-msgstr "Google reCaptcha v2 показывает интерактивные задания."
+msgstr "Google reCaptcha v2 показывает интерактивные головоломки для проверки пользователей-людей перед отправкой формы или доступом к странице."
 
 #: admin/templates/setup-wizard/recaptcha.php:38
 msgid "Google reCAPTCHA v2 keys"
@@ -7303,7 +7302,7 @@ msgstr "Длительность блокировки IP в секундах. (�
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:401
 msgid "How long (in seconds) an IP remains temporarily blocked in the database after triggering the behavior block threshold. (Default: 900)"
-msgstr "Длительность временной блокировки IP. (По умолчанию: 900)"
+msgstr "Как долго (в секундах) IP-адрес остаётся временно заблокированным в базе данных после достижения порога блокировки по поведению. (По умолчанию: 900)"
 
 #: admin/templates/settings/rate-limiting.php:98
 msgid "How long the IP stays blocked after exceeding the rate limit. Default: 600 (10 minutes)."
@@ -7355,11 +7354,11 @@ msgstr "Сколько дней мы помним репутацию подоз�
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:480
 msgid "How many days we remember the reputation history for a /24 subnet (a block of 256 neighboring IPs) before resetting it. (Default: 2)"
-msgstr "Дней памяти репутации подсети /24. (По умолчанию: 2)"
+msgstr "Сколько дней мы храним историю репутации для подсети /24 (блока из 256 соседних IP-адресов) до её сброса. (По умолчанию: 2)"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:492
 msgid "How many hours of inactivity must pass before a suspicious /24 subnet's reputation tier cools down (decays) by 1 level. (Default: 4)"
-msgstr "Часов неактивности подсети до снижения уровня. (По умолчанию: 4)"
+msgstr "Сколько часов бездействия должно пройти, прежде чем уровень репутации подозрительной подсети /24 снизится (уменьшится) на 1 уровень. (По умолчанию: 4)"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:468
 msgid "How many hours of inactivity must pass before a suspicious IP's reputation tier cools down (decays) by 1 level. For example, if set to 16, a Tier 5 IP that is quiet for 32 hours drops to Tier 3. (Default: 16)"
@@ -7513,7 +7512,7 @@ msgstr "Идеально для тестирования"
 
 #: admin/templates/settings/cron.php:124
 msgid "If a scheduled task is missed (WP Cron unstable), BotBlocker will detect and reschedule it on the next check."
-msgstr "Пропущенные задачи Cron будут обнаружены и перепланированы."
+msgstr "Если запланированная задача пропущена (WP-Cron нестабилен), BotBlocker обнаружит и перепланирует её при следующей проверке."
 
 #: addons/bbcs-behavior/views/settings.php:83
 msgid "If a visitor's behavior score (0–100) reaches this threshold, a Captcha challenge is shown. Lower values = stricter. (Default: 50)"
@@ -7661,7 +7660,7 @@ msgstr "Импорт чёрного списка IP из файла — блок
 
 #: admin/partials/class-botblocker-dashboard-widgets.php:180
 msgid "Import IP lists from TXT files. White lists allow IPs, black lists block them. One IP per line."
-msgstr "Импорт списков IP из TXT-файлов."
+msgstr "Импорт списков IP из TXT-файлов. Белые списки разрешают IP-адреса, чёрные списки блокируют их. Один IP в строке."
 
 #: includes/data/class-botblocker-palette.php:166
 msgid "Import IP whitelist from file - allowlist, CSV, bulk add"
@@ -8967,7 +8966,7 @@ msgstr "Максимальная защита, самые строгие лим�
 
 #: addons/bbcs-behavior/views/settings.php:124
 msgid "Maximum requests per hour. Catches slow-crawling scrapers that avoid per-minute limits. (Default: 200)"
-msgstr "Макс. запросов в час. (По умолчанию: 200)"
+msgstr "Максимальное количество запросов в час. Выявляет медленно сканирующих парсеров, которые обходят ограничения в минуту. (По умолчанию: 200)"
 
 #: addons/bbcs-behavior/views/settings.php:112
 msgid "Maximum requests per minute a typical human would make. (Default: 30)"
@@ -9028,7 +9027,7 @@ msgstr "Номер порта Memcached"
 
 #: admin/templates/integrations/memcached.php:16
 msgid "Memcached provides distributed memory caching for security data and visitor analytics, reducing database queries on busy sites."
-msgstr "Memcached для распределённого кеширования."
+msgstr "Memcached обеспечивает распределённое кеширование в памяти для данных безопасности и аналитики посетителей, сокращая количество запросов к базе данных на загруженных сайтах."
 
 #: admin/templates/shared/system-status-lines.php:15
 msgid "memory_limit: "
@@ -9093,7 +9092,7 @@ msgstr "Минимальный балл подозрительности (0-1) �
 
 #: admin/templates/settings/rate-limiting.php:137
 msgid "Minimum threshold as a percentage of block RPM, preventing thresholds from dropping to zero under high subnet pressure. Default: 10%."
-msgstr "Минимальный порог в % от блокировочного RPM. По умолчанию: 10%."
+msgstr "Минимальный порог в процентах от RPM блокировки, который не позволяет порогам опускаться до нуля при высокой нагрузке на подсеть. По умолчанию: 10%."
 
 #: admin/templates/setup-wizard/compatibility.php:32
 msgid "Minor compatibility issues detected"
@@ -9251,7 +9250,7 @@ msgstr "MU-плагин активен. Ранняя фильтрация IP и 
 #: includes/inc-botblocker-ui.php:158
 #: includes/viewmodels/class-chain-context-data.php:104
 msgid "MU plugin mode disabled. You can enable it (or early initialization) for preliminary malicious IP rejection."
-msgstr "MU отключён. Включите для предварительного отклонения IP."
+msgstr "Режим MU-плагина отключён. Вы можете включить его (или раннюю инициализацию) для предварительного отклонения вредоносных IP-адресов."
 
 #: admin/templates/integrations/mu.php:18
 #: admin/templates/integrations/mu.php:26
@@ -10988,7 +10987,7 @@ msgstr "Обнаружен Redis"
 
 #: admin/templates/setup-wizard/cache.php:49
 msgid "Redis is faster for high-traffic sites. Memcached suits distributed systems. You can change this later in Tools."
-msgstr "Redis быстрее. Выбор можно изменить в Инструментах."
+msgstr "Redis быстрее для сайтов с высоким трафиком. Memcached подходит для распределённых систем. Вы можете изменить это позже в разделе «Инструменты»."
 
 #: admin/class-botblocker-setup-wizard-ajax.php:331
 msgid "Redis is not reachable. Connect it before enabling the cache."
@@ -11204,7 +11203,7 @@ msgstr "Заменять полное содержимое записи в ле�
 
 #: admin/templates/settings/cookie.php:96
 msgid "Replaces IP/host/UA-bound cookie hash with a session token. Eliminates Captcha loops for VPN/proxy users. Disable only if experiencing issues."
-msgstr "Заменяет хеш cookie, привязанный к IP/хосту/User-Agent, на токен сессии. Устраняет циклы Captcha для пользователей VPN/прокси. Отключайте только при возникновении проблем."
+msgstr "Заменяет хеш cookie, привязанный к IP/хосту/UA, на токен сессии. Устраняет циклы Captcha для пользователей VPN/прокси. Отключайте только при возникновении проблем."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:66
 msgid "Replaces the default screen shown while the site is in maintenance mode."
@@ -12577,7 +12576,7 @@ msgstr "Простое обнаружение ботов (UA, заголовки
 
 #: admin/templates/settings/bot-detection.php:20
 msgid "Simple bot detection analyzes basic browser characteristics to catch bots that fail to mimic real browsers."
-msgstr "Простое обнаружение ботов по базовым характеристикам."
+msgstr "Простое обнаружение ботов анализирует базовые характеристики браузера, чтобы выявлять ботов, которые не могут выдать себя за настоящие браузеры."
 
 #: includes/viewmodels/class-dashboard-viewmodel.php:162
 msgid "Simple bot UA blocking"
@@ -12746,11 +12745,11 @@ msgstr "Порог спама"
 
 #: admin/templates/integrations/memcached.php:35
 msgid "Specify the Memcached server hostname or IP address. Default is localhost (127.0.0.1) for local installations."
-msgstr "Укажите хост Memcached. По умолчанию: localhost."
+msgstr "Укажите имя хоста или IP-адрес сервера Memcached. По умолчанию — localhost (127.0.0.1) для локальных установок."
 
 #: admin/templates/integrations/redis.php:35
 msgid "Specify the Redis server hostname or IP address. Default is localhost (127.0.0.1) for local Redis installations."
-msgstr "Укажите хост Redis. По умолчанию: localhost."
+msgstr "Укажите имя хоста или IP-адрес сервера Redis. По умолчанию — localhost (127.0.0.1) для локальных установок Redis."
 
 #: addons/bbcs-speedup/inc/class-bbcs-speedup-addons-page.php:25
 msgid "Speed Up"
@@ -12871,7 +12870,7 @@ msgstr "Строгие заголовки CORS"
 #: admin/templates/settings/payment-tab.php:47
 #: includes/data/class-botblocker-snav.php:328
 msgid "Strict Webhook Validation (POST only)"
-msgstr "Строгая проверка вебхуков (только запись)"
+msgstr "Строгая проверка вебхуков (только POST)"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:72
 #: admin/templates/setup-wizard/finish.php:19
@@ -12943,7 +12942,7 @@ msgstr "Множитель подсети"
 
 #: admin/templates/settings/general.php:93
 msgid "Subnet size for verified bot allow-rules (IPv4/IPv6). Smaller = more secure, larger = fewer DNS lookups."
-msgstr "Размер подсети для правил верифицированных ботов."
+msgstr "Размер подсети для правил разрешения проверенных ботов (IPv4/IPv6). Меньше — безопаснее, больше — меньше DNS-запросов."
 
 #: addons/bbcs-behavior/views/settings.php:36
 msgid "Subnetwork"
@@ -13028,7 +13027,7 @@ msgstr "Синхронизировать из облака"
 
 #: admin/templates/settings/tls-fingerprint.php:86
 msgid "Sync known JA3/JA4 TLS fingerprints from the BotBlocker server."
-msgstr "Синхронизировать TLS-отпечатки с сервера BotBlocker."
+msgstr "Синхронизировать известные отпечатки TLS JA3/JA4 с сервера BotBlocker."
 
 #: admin/templates/tools/maintenance-tab.php:151
 #: includes/data/class-botblocker-snav.php:761
@@ -13386,15 +13385,15 @@ msgstr "Сканер вредоносного ПО недоступен."
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:389
 msgid "The maximum number of requests per hour (RPH) a typical human visitor would make. This captures slow-crawling scraping bots that keep their per-minute speed low to avoid basic limiters. (Default: 200)"
-msgstr "Макс. запросов в час. (По умолчанию: 200)"
+msgstr "Максимальное количество запросов в час (RPH), которое сделает типичный посетитель-человек. Это позволяет выявлять медленно сканирующих ботов-парсеров, которые поддерживают низкую скорость запросов в минуту, чтобы обходить базовые ограничители. (По умолчанию: 200)"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:377
 msgid "The maximum number of requests per minute (RPM) a typical human visitor would reasonably make. If a visitor goes over this speed, their behavior score goes up. (Default: 30)"
-msgstr "Макс. запросов в минуту. (По умолчанию: 30)"
+msgstr "Максимальное количество запросов в минуту (RPM), которое типичный посетитель-человек разумно может сделать. Если посетитель превышает эту скорость, его оценка поведения повышается. (По умолчанию: 30)"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:504
 msgid "The maximum penalty level (tier) an IP or subnet can reach. Higher tiers apply a stricter threshold penalty, meaning they trigger blocks much faster. (Default: 6)"
-msgstr "Макс. уровень штрафа. (По умолчанию: 6)"
+msgstr "Максимальный уровень штрафа (tier), которого может достичь IP-адрес или подсеть. Более высокие уровни применяют более строгий штраф к порогу, из-за чего блокировки срабатывают гораздо быстрее. (По умолчанию: 6)"
 
 #: includes/data/class-botblocker-alerts.php:331
 msgid "The Memcached PHP extension is available on this server but Memcached counters are disabled. Enable them if a Memcached server is running."
@@ -13460,11 +13459,11 @@ msgstr "Для использования этого кеша требуется
 
 #: admin/templates/tools/modals/db-repair.php:29
 msgid "The repair page is publicly accessible without authentication while enabled. Disable it after use."
-msgstr "Страница восстановления публично доступна. Отключите после использования."
+msgstr "Пока страница восстановления включена, она доступна всем без аутентификации. Отключите её после использования."
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:400
 msgid "The scan runs in the background and may pause if you close this page. For best results, keep this tab open until the scan finishes."
-msgstr "Сканирование в фоне. Не закрывайте вкладку."
+msgstr "Сканирование выполняется в фоновом режиме и может приостановиться, если вы закроете эту страницу. Для наилучшего результата оставляйте эту вкладку открытой до завершения сканирования."
 
 #. translators: %d: number of high-confidence malware indicators found
 #: addons/bbcs-malware/inc/class-bbcs-malware-background.php:638
@@ -14536,7 +14535,7 @@ msgstr "Загружен файл %title%."
 
 #: admin/partials/class-botblocker-dashboard-widgets.php:186
 msgid "Uploading a new list will add new IPs and skip existing ones. Invalid lines will be skipped automatically."
-msgstr "Загрузка списка добавит новые IP и пропустит существующие."
+msgstr "При загрузке нового списка новые IP-адреса будут добавлены, а существующие пропущены. Некорректные строки будут автоматически пропущены."
 
 #: includes/modal/modal-botblocker-rule-add.php:29
 #: includes/modal/modal-botblocker-rule-edit.php:28

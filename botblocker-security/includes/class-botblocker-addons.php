@@ -1227,6 +1227,9 @@ class BotBlockerAddons {
 
 		// Captcha callbacks live in addon core files; load them pre-run so the
 		// check page (rendered inside run()) and the POST verify can call them.
+		// Re-read the active list: a panic() above deactivated add-ons and the
+		// stale pre-loop list would still register their captcha modes (AUD-25).
+		$active = self::getActive();
 		self::preRunLoadCaptchaAddonCores( $addons, $active );
 		self::registerCaptchaModes( $addons, $active );
 
@@ -1488,6 +1491,11 @@ class BotBlockerAddons {
 			if ( ! empty( $item['url'] ) ) {
 				$slug                  = preg_replace( '/\.zip$/', '', basename( (string) wp_parse_url( $item['url'], PHP_URL_PATH ) ) );
 				$marketBySlug[ $slug ] = $item;
+			}
+			// The feed's slug field is authoritative — a basename that is not
+			// '<slug>.zip' must not make the update a silent no-op (AUD-38).
+			if ( ! empty( $item['slug'] ) ) {
+				$marketBySlug[ sanitize_key( (string) $item['slug'] ) ] = $item;
 			}
 		}
 

@@ -3,16 +3,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BotBlocker"
 "Report-Msgid-Bugs-To: "
-"POT-Creation-Date: 2026-09-29 08:45+0000"
-"PO-Revision-Date: 2026-09-29 08:45+0000"
-"Last-Translator: BotBlocker Translator Team"
+"POT-Creation-Date: 2026-10-17 11:47+0000"
+"PO-Revision-Date: 2026-10-17 11:47+0000"
+"Last-Translator: BotBlocker Team (Kayashinozanz)"
 "Language-Team: Chinese"
 "Language: zh_CN"
 "Plural-Forms: nplurals=1; plural=0;"
 "MIME-Version: 1.0"
 "Content-Type: text/plain; charset=UTF-8"
 "Content-Transfer-Encoding: 8bit"
-"X-Generator: BotBlocker Translator Engine"
 "X-Domain: botblocker-security"
 
 
@@ -24,13 +23,13 @@ msgstr "\"推荐\" 保护已启用"
 #: includes/data/class-botblocker-data-time.php:94
 #, php-format
 msgid "%1$dd %2$dh"
-msgstr "%1$d天 %2$d小時"
+msgstr "%1$d天 %2$d小时"
 
 #. translators: %1$d hours, %2$d minutes, e.g. "12h 30m"
 #: includes/data/class-botblocker-data-time.php:91
 #, php-format
 msgid "%1$dh %2$dm"
-msgstr "%1$d小時 %2$d分鐘"
+msgstr "%1$d小时 %2$d分钟"
 
 #. translators: %1$d minutes, %2$d seconds, e.g. "12m 30s"
 #: includes/data/class-botblocker-data-time.php:87
@@ -124,7 +123,7 @@ msgstr "%s 已启用安装"
 #: includes/ajax/class-botblocker-ajax-ip-rules-trait.php:603
 #, php-format
 msgid "%s is required."
-msgstr "%s 是必填項目。"
+msgstr "%s 为必填项。"
 
 #. translators: %s: linked RU-Gov label
 #: admin/templates/tools/maintenance-tab.php:59
@@ -142,13 +141,13 @@ msgstr "成功建立 %s 規則。"
 #: includes/ajax/class-botblocker-ajax-ip-rules-trait.php:249
 #, php-format
 msgid "%s rule deleted successfully."
-msgstr "成功刪除 %s 規則。"
+msgstr "%s 规则已成功删除。"
 
 #. translators: %s is the IP version label (IPv4 or IPv6).
 #: includes/ajax/class-botblocker-ajax-ip-rules-trait.php:363
 #, php-format
 msgid "%s rule toggled successfully."
-msgstr "已成功切換 %s 規則。"
+msgstr "%s 规则已成功切换。"
 
 #. translators: %s is the IP version label (IPv4 or IPv6).
 #: includes/ajax/class-botblocker-ajax-ip-rules-trait.php:739
@@ -184,7 +183,7 @@ msgstr[0] "(%s 评分)"
 #: admin/templates/settings/tls-fingerprint.php:19
 #: admin/templates/settings/tls-fingerprint.php:20
 msgid "(not detected)"
-msgstr "（未偵測到）"
+msgstr "（未检测到）"
 
 #: includes/inc-botblocker-ui.php:59
 msgid "(Real-time)"
@@ -207,20 +206,20 @@ msgstr "/20 - /64（大型 ISP 範圍）"
 #: includes/data/class-botblocker-data-time.php:52
 #: includes/data/class-botblocker-data-time.php:59
 msgid "/24 - /64 (standard)"
-msgstr "/24 - /64（標準）"
+msgstr "/24 - /64（标准）"
 
 #: includes/data/class-botblocker-data-time.php:51
 #: includes/data/class-botblocker-data-time.php:58
 msgid "/28 - /64 (small subnet)"
-msgstr "/28 - /64（小型子網路）"
+msgstr "/28 - /64（小型子网）"
 
 #: includes/data/class-botblocker-data-time.php:50
 msgid "/32 - /128 (single IP)"
-msgstr "/32 - /128（單一 IP 位址）"
+msgstr "/32 - /128（单个 IP）"
 
 #: admin/partials/class-botblocker-dashboard-widgets.php:200
 msgid "1 = highest. Higher priority rules processed first."
-msgstr "1 = 最高。優先順序較高的規則會優先處理。"
+msgstr "1 = 最高。优先级更高的规则将优先处理。"
 
 #: includes/data/class-botblocker-data-time.php:24
 #: includes/data/class-botblocker-data-time.php:39
@@ -229,17 +228,17 @@ msgstr "1 天"
 
 #: includes/data/class-botblocker-data-time.php:15
 msgid "1 hour"
-msgstr "1 小時"
+msgstr "1 小时"
 
 #: includes/data/class-botblocker-data-time.php:29
 #: includes/data/class-botblocker-data-time.php:44
 msgid "1 month"
-msgstr "1 個月"
+msgstr "1 个月"
 
 #: includes/data/class-botblocker-data-time.php:27
 #: includes/data/class-botblocker-data-time.php:42
 msgid "1 week"
-msgstr "1 週"
+msgstr "1 周"
 
 #: includes/data/class-botblocker-data-time.php:33
 msgid "1 year"
@@ -251,7 +250,7 @@ msgstr "10 天"
 
 #: includes/data/class-botblocker-data-time.php:18
 msgid "12 hours"
-msgstr "12 小時"
+msgstr "12 小时"
 
 #: includes/data/class-botblocker-data-time.php:72
 msgid "120 days"
@@ -276,12 +275,12 @@ msgstr "2 天"
 
 #: includes/data/class-botblocker-data-time.php:16
 msgid "2 hours"
-msgstr "2 小時"
+msgstr "2 小时"
 
 #: includes/data/class-botblocker-data-time.php:28
 #: includes/data/class-botblocker-data-time.php:43
 msgid "2 weeks"
-msgstr "2 週"
+msgstr "2 周"
 
 #: admin/templates/dashboard/quick-links.php:18
 msgid "2FA"
@@ -301,11 +300,11 @@ msgstr "2FA 服务不可用。"
 
 #: includes/data/class-botblocker-snav.php:699
 msgid "2FA Setup"
-msgstr "2FA 設定"
+msgstr "2FA 设置"
 
 #: public/2FA/bbcs-2fa-setup.php:151
 msgid "2FA Setup Complete"
-msgstr "2FA 設定完成"
+msgstr "2FA 设置完成"
 
 #: includes/data/class-botblocker-data-time.php:26
 #: includes/data/class-botblocker-data-time.php:41
@@ -314,7 +313,7 @@ msgstr "3 天"
 
 #: includes/data/class-botblocker-data-time.php:30
 msgid "3 months"
-msgstr "3 個月"
+msgstr "3 个月"
 
 #: includes/data/class-botblocker-data-time.php:69
 msgid "30 days"
@@ -450,7 +449,7 @@ msgstr "需要有效的 IP 地址。"
 
 #: addons/bbcs-pusher/views/settings.php:25
 msgid "A weekly digest with request, block and bot statistics is delivered on a schedule. The add-on never runs on visitor requests."
-msgstr ""
+msgstr "包含 要求、区块 和机器人 统计数据 的每周摘要会在 定时 发送。附加组件 绝不会在访客要求时运行。"
 
 #: addons/bbcs-telegram/views/settings.php:26
 msgid "A weekly security report is delivered to your chat with request, block and bot statistics."
@@ -561,7 +560,7 @@ msgstr "操作排程器队列"
 
 #: addons/bbcs-antispam/views/settings.php:200
 msgid "Action to take on comments classified as spam. Delete: auto-remove. Hold: place in moderation queue."
-msgstr ""
+msgstr "操作 以处理被归类为 标记为垃圾 的评论。删除：自动移除。按住：放入审核队列。"
 
 #: addons/bbcs-forced-inclusions/views/settings.php:39
 #: addons/bbcs-forced-inclusions/views/settings.php:96
@@ -598,7 +597,7 @@ msgstr "启用暴力破解登录保护。"
 
 #: admin/templates/settings/rate-limiting.php:54
 msgid "Activate the Behavioral Engine addon to get advanced multi-signal scoring and IP/subnet reputation protection."
-msgstr "启用行为引擎附加组件以获取高级多信号评分和 IP/子网信誉保护。"
+msgstr "启用行为引擎附加组件，即可获得高级多信号评分和 IP/子网信誉保护。"
 
 #: includes/audit/class-botblocker-audit-logger.php:453
 msgid "Activated the plugin %plugin%."
@@ -618,15 +617,15 @@ msgstr "正在启用..."
 
 #: includes/class-botblocker-toastify.php:263
 msgid "Activation refused: the add-on runtime copy is outdated and could not be refreshed automatically. Check uploads write permissions and try again."
-msgstr ""
+msgstr "启用被拒绝：附加组件 运行时 复制 已过时，且无法自动刷新。检查 上传写入权限以及 再试一次。"
 
 #: includes/ajax/class-botblocker-ajax-email.php:126
 msgid "Activation sent."
-msgstr "啟用信息已发送。"
+msgstr "激活已发送。"
 
 #: includes/ajax/class-botblocker-ajax-email.php:104
 msgid "Activation service is unavailable."
-msgstr "啟用服务不可用。"
+msgstr "激活服务不可用。"
 
 #: addons/bbcs-cron-jobs/views/settings.php:174
 #: addons/bbcs-early-init/views/settings.php:45
@@ -925,13 +924,13 @@ msgstr "附加组件更新检查"
 #: admin/class-botblocker-admin.php:629
 #, php-format
 msgid "Add-on was updated but not reactivated - it requires BotBlocker version %s or higher. Please update the plugin."
-msgstr "附加元件已更新但未重新啟用 - 它需要 BotBlocker 版本 %s 或更高版本。請更新外掛。"
+msgstr "附加组件 已更新，但未重新启用 - 它需要 BotBlocker %s 或更高版本。请 更新 插件。"
 
 #. translators: %s: required BotBlocker version
 #: includes/hook/class-botblocker-addon-hooks.php:695
 #, php-format
 msgid "Add-on was updated but will be switched off - it requires BotBlocker %s or higher. Please update the plugin first."
-msgstr ""
+msgstr "附加组件已更新，但将被停用 - 它需要 BotBlocker %s 或更高版本。请先更新插件。"
 
 #: admin/class-botblocker-admin.php:783
 #: admin/class-botblocker-admin.php:784
@@ -966,7 +965,7 @@ msgstr "附加详情（可选）"
 
 #: includes/shortcode/class-botblocker-rules-shortcodes.php:112
 msgid "Additional Information"
-msgstr "其他資訊"
+msgstr "附加信息"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-addons-page.php:94
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:317
@@ -997,7 +996,7 @@ msgstr "附加组件部分"
 
 #: addons/bbcs-security-headers/views/settings.php:178
 msgid "Adds a default Content-Security-Policy header to limit sources for scripts, styles, images, fonts and other resources. May require plugin/theme testing for compatibility."
-msgstr "新增預設 Content-Security-Policy 標頭以限制指令碼、樣式、圖片、字型及其他資源的來源。可能需要測試外掛／佈景主題的相容性。"
+msgstr "添加 默认 Content-Security-Policy 标头，以限制脚本、样式、图片、字体及其他资源的来源。可能需要针对 兼容性 进行 插件/主题 测试。"
 
 #: includes/inc-botblocker-wp-abilities.php:128
 msgid "Adds a firewall block rule for an IP address and regenerates the runtime ban files."
@@ -1005,7 +1004,7 @@ msgstr "为 IP 地址添加防火墙区块规则，并重新生成运行时封�
 
 #: admin/templates/settings/captcha-tab.php:173
 msgid "Adds a hidden anti-bot trap field and a submit-timing check to the verification page. Disabled by default."
-msgstr ""
+msgstr "向验证 页面 添加隐藏的反机器人陷阱 字段 和提交计时 检查。默认 停用。"
 
 #: addons/bbcs-turnstile/views/settings.php:27
 msgid "Adds Cloudflare Turnstile as an external CAPTCHA provider on the BotBlocker check page. Enter the site key and secret key from your Cloudflare Turnstile dashboard, pick theme and size, then select mode 91 (Cloudflare Turnstile) as the CAPTCHA mode in BotBlocker settings. Verification runs server-side through the Turnstile siteverify endpoint; if the provider is unreachable, the check page degrades to the simple captcha instead of blocking visitors."
@@ -1041,16 +1040,16 @@ msgstr "调整尝试次数限制和区块时间，以平衡安全性和可用性
 
 #: admin/templates/settings/data-log.php:45
 msgid "Adjust for Daylight Saving Time"
-msgstr "為日光節約時間調整"
+msgstr "针对夏令时进行调整"
 
 #: admin/templates/settings/data-log.php:45
 msgid "Adjust recorded timestamps for your timezone's daylight saving time. Ensures visit times display correctly in logs and reports year-round."
-msgstr "依你所在時區的日光節約時間調整記錄的時間戳。確保造訪時間在記錄與報告中全年顯示正確。"
+msgstr "调整记录的时戳以匹配您 时区 的夏令时。确保访问时间全年在日志和报告中都能正确 显示。"
 
 #: admin/templates/settings/log.php:44
 #: includes/data/class-botblocker-snav.php:385
 msgid "Admin and WordPress Logging"
-msgstr "管理員與 WordPress 記錄"
+msgstr "管理员和 WordPress 日志记录"
 
 #: admin/templates/setup-wizard/compatibility.php:17
 msgid "Admin panel"
@@ -1071,15 +1070,15 @@ msgstr "管理员设置"
 
 #: admin/templates/setup-wizard/exclusions.php:16
 msgid "Admins will never be blocked while authenticated"
-msgstr "網站管理員在驗證後絕不會被封鎖"
+msgstr "管理员在已登录状态下绝不会被阻止"
 
 #: includes/data/class-botblocker-pro-features.php:108
 msgid "Advanced analytics & forensics"
-msgstr "進階分析與鑑識"
+msgstr "高级分析和取证"
 
 #: admin/templates/setup-guide/one-click-modal.php:70
 msgid "Advanced bot detection"
-msgstr "進階機器人偵測"
+msgstr "高级机器人检测"
 
 #: admin/templates/setup-wizard/cache.php:20
 msgid "Advanced data structures"
@@ -1092,11 +1091,11 @@ msgstr "高级数据结构"
 #: includes/data/class-botblocker-snav.php:531
 #: includes/viewmodels/class-settings-viewmodel.php:218
 msgid "Advanced Protection"
-msgstr "進階保護"
+msgstr "高级保护"
 
 #: admin/templates/about/body.php:37
 msgid "Advanced protection against bots, spam, and brute-force attacks."
-msgstr "針對機器人、垃圾郵件及暴力破解攻擊的進階保護。"
+msgstr "针对机器人、标记为垃圾 和暴力破解攻击的高级保护。"
 
 #: admin/templates/settings/advanced-protection.php:26
 msgid "Advanced protection uses cloud-based real-time analysis and smart verification to detect sophisticated bots."
@@ -1104,7 +1103,7 @@ msgstr "高级保护使用基于云的实时分析和智能验证来检测复杂
 
 #: includes/data/class-botblocker-pro-features.php:22
 msgid "Advanced reporting, analytics & forensics"
-msgstr "進階報告、分析與鑑識"
+msgstr "高级报告、分析和取证"
 
 #: admin/templates/setup-wizard/finish.php:66
 msgid "Advanced security features for production sites."
@@ -1116,15 +1115,15 @@ msgstr "高级设置 - 专家、微调、深度配置"
 
 #: admin/templates/setup-wizard/presets.php:29
 msgid "Advanced threat detection"
-msgstr "進階威脅偵測"
+msgstr "高级威胁检测"
 
 #: admin/templates/tools/modals/db-repair.php:26
 msgid "After the repair is completed,"
-msgstr "修復完成後，"
+msgstr "修复完成后，"
 
 #: admin/templates/settings/rate-limiting.php:119
 msgid "Aggregate RPM across the subnet. High subnet pressure dynamically lowers per-IP thresholds to catch distributed proxy attacks."
-msgstr "匯總子網路的 RPM。高子網路壓力會動態降低每個 IP 的閾值，以攔截分散式 Proxy 攻擊。"
+msgstr "聚合整个子网的 RPM。高子网压力会动态降低每 IP 阈值，以捕获分布式代理攻击。"
 
 #: addons/bbcs-antispam/inc/class-bbcs-antispam-checker.php:454
 msgid "AI Anti-Spam"
@@ -1140,11 +1139,11 @@ msgstr "AI 反垃圾需要 stream_socket_client PHP 函数（以及用于 wss://
 
 #: admin/templates/setup-wizard/finish.php:76
 msgid "AI behavior analysis"
-msgstr "人工智慧行為分析"
+msgstr "AI 行为分析"
 
 #: addons/bbcs-antispam/views/settings.php:63
 msgid "AI responses are emulated locally with keyword heuristics (mock mode). No real API calls are made — disable before going live."
-msgstr ""
+msgstr "AI 响应通过关键词启发式在本地模拟（模拟模式）。不会进行真实的 API 调用 — 上线前请停用。"
 
 #: addons/bbcs-antispam/views/settings.php:119
 msgid "AI service WebSocket endpoint (wss:// or ws://). Leave empty to use the default endpoint."
@@ -1152,7 +1151,7 @@ msgstr "AI 服务 WebSocket 端点（wss:// 或 ws://）。留空以使用默认
 
 #: addons/bbcs-antispam/views/settings.php:35
 msgid "AI-powered comment spam detection via WebSocket API. Checks comments in real-time or via batch processing, automatically moderates spam and suspicious comments."
-msgstr ""
+msgstr "通过 WebSocket API 实现 AI 驱动的 评论 标记为垃圾 检测。在 实时 中或通过批处理检查评论，自动审核 标记为垃圾 和可疑评论。"
 
 #: addons/bbcs-cron-jobs/views/settings.php:143
 msgid "AJAX Cron Heartbeat"
@@ -1160,7 +1159,7 @@ msgstr "AJAX Cron 心跳"
 
 #: admin/class-botblocker-setup-wizard.php:214
 msgid "AJAX error"
-msgstr "AJAX 錯誤"
+msgstr "AJAX 错误"
 
 #: admin/class-botblocker-setup-wizard.php:218
 msgid "AJAX error during cache save"
@@ -1183,7 +1182,7 @@ msgstr "保存初始化模式期间发生 AJAX 错误"
 #: admin/class-botblocker-admin.php:586
 #: admin/class-botblocker-admin.php:616
 msgid "AJAX Error: "
-msgstr "AJAX 錯誤："
+msgstr "AJAX 错误： "
 
 #: admin/templates/settings/notifications.php:47
 msgid "Alert when server load is critical or unusual bot activity is detected."
@@ -1230,7 +1229,7 @@ msgstr "所有现有 Cookies 将变为无效。"
 
 #: admin/templates/tools/modals/transient-clear.php:19
 msgid "All expired transients will be cleared from the database."
-msgstr "所有過期的暫時性資料將會從資料庫中清除。"
+msgstr "所有已过期的瞬态数据都将从数据库中清除。"
 
 #: includes/utilites/class-botblocker-support.php:123
 msgid "All fields are required."
@@ -1242,11 +1241,11 @@ msgstr "一切就绪！BotBlocker 已配置完成并正在保护您的站点。"
 
 #: admin/templates/settings/ui.php:15
 msgid "All hits"
-msgstr "所有請求"
+msgstr "全部命中"
 
 #: addons/bbcs-https-protocol/views/settings.php:73
 msgid "All HTTP requests are permanently redirected (301) to HTTPS equivalents. This ensures all traffic is encrypted and improves SEO by consolidating your site to one protocol."
-msgstr "所有 HTTP 請求都會永久 (301) 重新導向至對應的 HTTPS 網址。這樣可以確保所有流量都經過加密，並透過合併您的網站為單一通訊協定來改善 SEO。"
+msgstr "所有 HTTP 要求都会被 永久 重定向（301）到 HTTPS 对应地址。这可确保所有流量都经过加密，并通过将您的 站点 整合为一个协议来改善 SEO。"
 
 #: admin/templates/setup-guide/pro-body.php:28
 msgid "All official BotBlocker add-ons"
@@ -1262,7 +1261,7 @@ msgstr "所有路径均已清除。"
 
 #: admin/templates/dashboard/quick-links.php:28
 msgid "All plugin sections in one click"
-msgstr "一鍵顯示所有外掛區段"
+msgstr "所有 插件 部分集中在一个 点击 中"
 
 #: includes/data/class-botblocker-pro-features.php:25
 msgid "All premium add-ons included"
@@ -1274,7 +1273,7 @@ msgstr "所有高级附加组件"
 
 #: admin/templates/tools/modals/log-clear.php:21
 msgid "All previous error records will be deleted."
-msgstr "所有先前的錯誤記錄都將刪除。"
+msgstr "所有先前的错误记录都将被删除。"
 
 #: admin/class-botblocker-admin.php:423
 #: includes/ajax/class-botblocker-ajax-proxy.php:650
@@ -1305,7 +1304,7 @@ msgstr "所有测试均已通过。您的站点已准备好接受保护。"
 #: admin/templates/reports/dashboard.php:16
 #: admin/templates/reports/dashboard.php:21
 msgid "all time"
-msgstr "所有時間"
+msgstr "全部时间"
 
 #: admin/class-botblocker-admin.php:563
 #: includes/ajax/class-botblocker-ajax-tls-fingerprints.php:161
@@ -1314,7 +1313,7 @@ msgstr "所有 TLS 指紋已清除。"
 
 #: includes/ajax/class-botblocker-ajax-maintenance.php:145
 msgid "All transients have been cleared."
-msgstr "所有暫存項目已清除。"
+msgstr "所有瞬态数据均已清除。"
 
 #: includes/utilites/2FA/class-botblocker-two-factor-auth.php:1228
 msgid "All trusted devices have been revoked."
@@ -1326,15 +1325,15 @@ msgstr "所有用户将需要重新进行身份验证。"
 
 #: admin/templates/tools/modals/hits-clear.php:19
 msgid "All visitor data will be permanently deleted:"
-msgstr "所有訪客資料將永久刪除："
+msgstr "所有访客数据将被永久删除："
 
 #: includes/ajax/class-botblocker-ajax-maintenance.php:109
 msgid "All visitors data has been cleared successfully."
-msgstr "所有訪客資料已成功清除。"
+msgstr "所有访客数据已成功清除。"
 
 #: includes/ajax/class-botblocker-ajax-white-bots.php:687
 msgid "All white bots have been cleared."
-msgstr "所有白名單機器人已清除。"
+msgstr "所有白名单机器人已清除。"
 
 #: admin/partials/class-botblocker-dashboard-widgets.php:210
 #: includes/modal/modal-botblocker-asn-add.php:35
@@ -1351,7 +1350,7 @@ msgstr "所有白名單機器人已清除。"
 #: includes/modal/modal-botblocker-white-add.php:35
 #: includes/modal/modal-botblocker-white-edit.php:36
 msgid "Allow"
-msgstr "允許"
+msgstr "允许"
 
 #: admin/templates/setup-wizard/exclusions.php:15
 msgid "Allow administrator login"
@@ -1368,16 +1367,16 @@ msgstr "允许 WordPress 之外的自定义路径"
 #: admin/templates/settings/bot-detection.php:44
 #: includes/data/class-botblocker-snav.php:84
 msgid "Allow Empty Accept-Language in Verification"
-msgstr "在驗證中允許空白的 Accept-Language"
+msgstr "允许验证时 Accept-Language 为空"
 
 #: admin/templates/settings/bot-detection.php:63
 msgid "Allow HTTP OPTIONS requests for CORS preflight (REST API, WooCommerce, external apps)."
-msgstr "允許 CORS 預檢的 HTTP OPTIONS 請求 (REST API、WooCommerce、外部應用程式)。"
+msgstr "允许 CORS 預检的 HTTP OPTIONS 请求 (REST API、WooCommerce、外部应用程式)。"
 
 #: admin/templates/settings/bot-detection.php:63
 #: includes/data/class-botblocker-snav.php:98
 msgid "Allow OPTIONS Preflight"
-msgstr "允許 OPTIONS 預檢"
+msgstr "允许 OPTIONS 預检"
 
 #: admin/partials/class-botblocker-dashboard-widgets.php:232
 msgid "Allow or Block"
@@ -1406,7 +1405,7 @@ msgstr "允许来自您服务器 IP 的要求"
 
 #: admin/templates/settings/bot-detection.php:65
 msgid "Allow WhatsApp to create link previews for shared pages. Warning: this reduces protection across the whole site for matching requests, not just previews. Enable only if really needed."
-msgstr "允許 WhatsApp 為分享的頁面建立連結預覽。警告：這會降低整個網站對應請求的保護，不僅限於預覽。僅在真正需要時啟用。"
+msgstr "允许 WhatsApp 为共享页面 创建 链接 预览。警告：这会降低整个 站点 对匹配要求的保护，而不仅是预览。仅在确实需要时才 启用。"
 
 #: admin/templates/setup-wizard/exclusions.php:29
 msgid "Allow WordPress Cron and server requests"
@@ -1418,7 +1417,7 @@ msgstr "允许您的服务器 IP 绕过更新和自动化任务的安全检查�
 
 #: addons/bbcs-telegram/inc/class-bbcs-telegram-plugin.php:261
 msgid "Allowed"
-msgstr "已允許"
+msgstr "已允许"
 
 #: addons/bbcs-security-headers/inc/class-bbcs-security-headers-addons-page.php:46
 #: addons/bbcs-security-headers/views/settings.php:195
@@ -1433,19 +1432,19 @@ msgstr "允许的主机名 / 域名（以空格分隔）"
 #: addons/bbcs-xmlrpc-tunnel/inc/class-bbcs-xmlrpc-tunnel-addons-page.php:42
 #: addons/bbcs-xmlrpc-tunnel/views/settings.php:75
 msgid "Allowed IP Addresses"
-msgstr "允許的 IP 位址"
+msgstr "允许的 IP 地址"
 
 #: admin/templates/shared/kpi-primary-grid.php:13
 #: admin/templates/shared/kpi-primary-grid.php:40
 msgid "Allowed today"
-msgstr "今日允許"
+msgstr "今日已允许"
 
 #: includes/shortcode/class-botblocker-rules-shortcodes.php:100
 #: includes/shortcode/class-botblocker-rules-shortcodes.php:101
 #: includes/shortcode/class-botblocker-rules-shortcodes.php:104
 #: includes/shortcode/class-botblocker-rules-shortcodes.php:110
 msgid "Allowed:"
-msgstr "已允許："
+msgstr "允许："
 
 #: addons/bbcs-404-guard/inc/class-bbcs-404-guard-addons-page.php:59
 msgid "Allowlist"
@@ -1457,11 +1456,11 @@ msgstr "允许列表（每行一个 IP 或 CIDR）"
 
 #: admin/class-botblocker-admin.php:592
 msgid "An error occurred while performing the operation."
-msgstr "操作時發生錯誤。"
+msgstr "执行操作时发生错误。"
 
 #: admin/class-botblocker-admin.php:606
 msgid "An error occurred while scheduling the ASN database update."
-msgstr "排程 ASN 資料庫更新時發生錯誤。"
+msgstr "定时 ASN 数据库更新时发生错误。"
 
 #: admin/class-botblocker-admin.php:225
 msgid "An error occurred. Please try again later."
@@ -1494,7 +1493,7 @@ msgstr "反侦测浏览器"
 
 #: addons/bbcs-firewall-export/views/settings.php:31
 msgid "Apache Require"
-msgstr "Apache Require"
+msgstr "Apache 要求"
 
 #: includes/viewmodels/class-integrations-viewmodel.php:168
 msgid "APCu"
@@ -1566,7 +1565,7 @@ msgstr "附加署名链接"
 
 #: addons/bbcs-security-headers/views/settings.php:130
 msgid "Applies HSTS to all subdomains. Enable only when every subdomain serves HTTPS - plain HTTP subdomains will be permanently blocked by browsers."
-msgstr ""
+msgstr "将 HSTS 申请到所有子域名。仅当每个子域名都提供 HTTPS 服务时才 启用 - 纯 HTTP 子域名将被浏览器 永久 阻止。"
 
 #: addons/bbcs-https-protocol/inc/class-bbcs-https-protocol-addons-page.php:49
 #: addons/bbcs-https-protocol/views/settings.php:90
@@ -1765,7 +1764,7 @@ msgstr "ASN 数据库更新已安排。"
 
 #: admin/class-botblocker-admin.php:604
 msgid "ASN database update scheduled."
-msgstr "ASN 資料庫更新已排程。"
+msgstr "ASN 数据库更新已定时。"
 
 #: includes/ajax/class-botblocker-ajax-maintenance.php:191
 msgid "ASN database update scheduled. The download will start shortly in the background."
@@ -1788,7 +1787,7 @@ msgstr "ASN DB: 尚未下載。"
 #: includes/modal/modal-botblocker-asn-add.php:48
 #: includes/modal/modal-botblocker-asn-edit.php:49
 msgid "ASN Number"
-msgstr "ASN 號碼"
+msgstr "ASN 编号"
 
 #: includes/ajax/class-botblocker-ajax-asn.php:284
 msgid "ASN rule created successfully."
@@ -1796,7 +1795,7 @@ msgstr "ASN 規則已成功建立。"
 
 #: includes/ajax/class-botblocker-ajax-asn.php:436
 msgid "ASN rule deleted successfully."
-msgstr "ASN 規則已成功刪除。"
+msgstr "ASN 规则已成功删除。"
 
 #: includes/ajax/class-botblocker-ajax-asn.php:188
 msgid "ASN rule not found."
@@ -1809,7 +1808,7 @@ msgstr "ASN 規則優先順序 (1-100)"
 
 #: includes/ajax/class-botblocker-ajax-asn.php:506
 msgid "ASN rule toggled successfully."
-msgstr "ASN 規則已成功切換。"
+msgstr "ASN 规则已成功切换。"
 
 #: includes/ajax/class-botblocker-ajax-asn.php:370
 msgid "ASN rule updated successfully."
@@ -1827,7 +1826,7 @@ msgstr "将签名的 X-BotBlocker-Self 标头附加到发往您自己域名的 W
 #: public/2FA/bbcs-2fa.php:226
 #, php-format
 msgid "Attempts left: %s"
-msgstr "剩餘嘗試次數：%s"
+msgstr "剩余尝试次数：%s"
 
 #: admin/class-botblocker-admin.php:273
 #: admin/templates/rules.php:63
@@ -1873,7 +1872,7 @@ msgstr "作者"
 
 #: admin/templates/integrations/2fa.php:22
 msgid "Authy Setup Guide"
-msgstr "Authy 設定指南"
+msgstr "Authy 设置指南"
 
 #: addons/bbcs-turnstile/views/settings.php:71
 msgid "Auto"
@@ -1889,15 +1888,15 @@ msgstr "自动删除"
 
 #: addons/bbcs-security-headers/views/settings.php:81
 msgid "Auto-detected:"
-msgstr "自動偵測："
+msgstr "自动检测："
 
 #: addons/bbcs-cron-jobs/views/settings.php:135
 msgid "Auto-Draft Cleanup"
-msgstr "自動草稿清理"
+msgstr "自动草稿清理"
 
 #: admin/templates/setup-wizard/compatibility.php:35
 msgid "Auto-fix"
-msgstr "自動修復"
+msgstr "自动修复"
 
 #: admin/templates/settings/general.php:113
 #: includes/data/class-botblocker-snav.php:497
@@ -1911,7 +1910,7 @@ msgstr "自动保存管理员 IP 可在设置中找到。基于角色的 2FA 位
 
 #: includes/data/class-botblocker-pro-features.php:21
 msgid "Auto-update of PTR and User-Agent databases"
-msgstr "PTR 和 User-Agent 資料庫的自動更新"
+msgstr "PTR 和 User-Agent 数据库自动更新"
 
 #: addons/bbcs-cron-jobs/views/settings.php:137
 msgid "Auto-Updates Check"
@@ -1919,11 +1918,11 @@ msgstr "自动更新检查"
 
 #: admin/class-botblocker-setup-wizard.php:211
 msgid "Automatic fix applied (stub). Moving on."
-msgstr "已套用自動修復 (stub)。繼續。"
+msgstr "已应用自动修复（占位）。继续。"
 
 #: admin/templates/setup-guide/pro-body.php:26
 msgid "Automatic signature and AI model updates"
-msgstr "自動簽章和人工智慧型號更新"
+msgstr "自动更新特征和 AI 模型"
 
 #: admin/templates/settings/cron.php:123
 #: includes/data/class-botblocker-snav.php:418
@@ -1932,7 +1931,7 @@ msgstr "自动任务恢复"
 
 #: addons/bbcs-https-protocol/views/settings.php:82
 msgid "Automatically replaces all HTTP URLs with HTTPS URLs in page content, stylesheets, scripts, and images. This fixes mixed content warnings in browsers."
-msgstr "自動將頁面內容、樣式表、指令碼和圖片中的所有 HTTP URL 取代為 HTTPS URL。這會修正瀏覽器中的混合內容警告。"
+msgstr "自动将页面内容、样式表、脚本和图片中的所有 HTTP URL 替换为 HTTPS URL。这会修复浏览器中的混合内容警告。"
 
 #: admin/templates/settings/general.php:113
 msgid "Automatically save admin IPs to prevent lockout when changing settings."
@@ -1950,11 +1949,11 @@ msgstr "自治系统编号"
 
 #: admin/templates/settings/rate-limiting.php:75
 msgid "Average requests per minute over the sliding window that trigger a Captcha challenge. Total hits in window / window minutes. Default: 30."
-msgstr "在滑動視窗內每分鐘的平均請求數，觸發 Captcha 驗證。視窗內的總點擊數 / 視窗分鐘數。預設值：30。"
+msgstr "滑动 窗口 内的平均每分钟要求次数，达到后即 触发 一个 Captcha 验证。窗口 / 窗口 分钟内的总命中数。默认：30。"
 
 #: admin/templates/settings/rate-limiting.php:84
 msgid "Average requests per minute over the sliding window that trigger an immediate block. Total hits in window / window minutes. Default: 50."
-msgstr "在滑動視窗內每分鐘的平均請求數，觸發立即封鎖。視窗內的總點擊數 / 視窗分鐘數。預設值：50。"
+msgstr "滑动 窗口 内的平均每分钟要求次数，达到后即 触发 一个即时 区块。窗口 / 窗口 分钟内的总命中数。默认：50。"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:324
 msgid "Avoid reporting common analytics, payment and CDN script tags as malware indicators."
@@ -2004,7 +2003,7 @@ msgstr "备份成功。"
 
 #: includes/ajax/class-botblocker-ajax-ip-rules-trait.php:299
 msgid "Bad ID."
-msgstr "錯誤的 ID。"
+msgstr "无效 ID。"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:77
 msgid "Balanced - recommended for most sites"
@@ -2020,11 +2019,11 @@ msgstr "平衡安全性和兼容性，使用安全的默认值。"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:289
 msgid "Ban"
-msgstr "封鎖"
+msgstr "封禁"
 
 #: includes/services/class-botblocker-health-service.php:45
 msgid "Ban unresponsive clients"
-msgstr "封鎖無回應的用戶端"
+msgstr "封禁无响应的客户端"
 
 #: admin/templates/setup-guide/one-click-modal.php:32
 msgid "Basic"
@@ -2032,7 +2031,7 @@ msgstr "基本"
 
 #: admin/templates/setup-wizard/presets.php:17
 msgid "Basic bot blocking"
-msgstr "基本 Bot 封鎖"
+msgstr "基础机器人拦截"
 
 #: addons/bbcs-antispam/views/settings.php:424
 #: addons/bbcs-malware/inc/class-bbcs-malware-addons-page.php:73
@@ -2055,11 +2054,11 @@ msgstr "行为设置"
 
 #: includes/data/class-botblocker-pro-features.php:68
 msgid "Behavioral & AI analysis"
-msgstr "行為及人工智慧分析"
+msgstr "行为与 AI 分析"
 
 #: includes/data/class-botblocker-pro-features.php:13
 msgid "Behavioral & AI traffic analysis"
-msgstr "行為及人工智慧流量分析"
+msgstr "行为与 AI 流量分析"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-addons-page.php:36
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:254
@@ -2067,7 +2066,7 @@ msgstr "行為及人工智慧流量分析"
 #: addons/bbcs-behavior/views/settings.php:34
 #: addons/bbcs-behavior/views/settings.php:60
 msgid "Behavioral Analysis"
-msgstr "行為分析"
+msgstr "行为分析"
 
 #: includes/data/class-botblocker-palette.php:81
 msgid "Behavioral analysis - smart spam scoring"
@@ -2075,19 +2074,19 @@ msgstr "行为分析 - 智能标记为垃圾评分"
 
 #: addons/bbcs-behavior/views/settings.php:32
 msgid "Behavioral Analysis Engine"
-msgstr "行為分析引擎"
+msgstr "行为分析引擎"
 
 #: addons/bbcs-behavior/views/settings.php:49
 msgid "Behavioral Analysis requires the Core Rate Inspector (free layer) to be enabled."
-msgstr "行為分析需要啟用核心速率檢查器 (免費層)。"
+msgstr "行为分析需要启用核心速率检查器（免费层）。"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:312
 msgid "Behavioral Analysis requires the Core Rate Inspector (free layer) to be enabled. "
-msgstr "行為分析需要啟用核心速率檢查器 (免費層)。"
+msgstr "行为分析需要启用 Core Rate Inspector（免费层）。 "
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-addons-page.php:26
 msgid "Behavioral Engine"
-msgstr "行為引擎"
+msgstr "行为引擎"
 
 #: admin/partials/class-botblocker-dashboard-widgets.php:168
 #: admin/partials/class-botblocker-dashboard-widgets.php:175
@@ -2157,7 +2156,7 @@ msgstr "区块跨源 iframe 以防止点击劫持。"
 #: admin/templates/settings/connection-types.php:52
 #: includes/viewmodels/class-pro-status-viewmodel.php:101
 msgid "Block data center IPs (VPS, AWS, DigitalOcean, etc.). Search engines are always whitelisted."
-msgstr "封鎖資料中心 IP 位址 (VPS、AWS、DigitalOcean 等)。搜尋引擎永遠列入白名單。"
+msgstr "区块 数据中心 IP（VPS、AWS、DigitalOcean、其他。）。搜索引擎始终加入白名单。"
 
 #: addons/bbcs-404-guard/inc/class-bbcs-404-guard-addons-page.php:51
 #: addons/bbcs-404-guard/views/settings.php:103
@@ -2293,7 +2292,7 @@ msgstr "区块无响应客户端"
 
 #: admin/templates/settings/browser-plugins.php:56
 msgid "Block visitors by persistent fingerprint even if their IP changes. Fingerprint must be blocked 3+ times to activate."
-msgstr "透过持久性指纹封锁访客，即使他们的 IP 位址变更。指纹必须被封锁 3 次以上才能啟用。"
+msgstr "按持久指纹 区块 访客，即使其 IP 发生变化。指纹必须被拦截 3 次以上才会 启用。"
 
 #: admin/templates/settings/browser-plugins.php:35
 msgid "Block visitors using private/incognito browsing mode."
@@ -2487,7 +2486,7 @@ msgstr "BotBlocker API 将您的站点连接到云威胁情报，以获取超出
 
 #: admin/templates/integrations/botblocker-api.php:80
 msgid "BotBlocker API endpoint for threat intelligence and security updates. Displayed for reference - not editable."
-msgstr ""
+msgstr "用于威胁情报和安全更新的 BotBlocker API 端点。仅供参考显示 - 不可编辑。"
 
 #: includes/data/class-botblocker-snav.php:678
 msgid "BotBlocker API Integration"
@@ -2528,7 +2527,7 @@ msgstr "BotBlocker 功能"
 
 #: addons/bbcs-https-protocol/views/settings.php:28
 msgid "BotBlocker HTTPS Protocol automatically upgrades all insecure HTTP connections to secure HTTPS. This protects your visitors' data and improves your site security. The addon provides two essential features: HTTPS Redirect - automatically redirects HTTP traffic to HTTPS. Mixed Content Fixer - replaces insecure content links with secure ones."
-msgstr "BotBlocker HTTPS 通訊協定會自動將所有不安全的 HTTP 連線升級為安全的 HTTPS。這能保護訪客的資料並提升網站安全性。這個附加元件提供兩項基本功能：HTTPS 重新導向 - 自動將 HTTP 流量重新導向至 HTTPS。混合內容修正器 - 將不安全的內容連結取代為安全的連結。"
+msgstr "BotBlocker HTTPS 协议会自动将所有不安全的 HTTP 连接升级为安全的 HTTPS。这保护了您访客的数据，并提高了您 站点 的安全性。附加组件 提供两项基本功能：HTTPS 重定向 - 自动将 HTTP 流量重定向到 HTTPS。混合 内容 修复器 - 将不安全的 内容 链接替换为安全的链接。"
 
 #: admin/templates/settings/captcha-tab.php:25
 #: admin/templates/setup-wizard/captcha.php:27
@@ -2587,7 +2586,7 @@ msgstr "BotBlocker 在正常模式下运行，在基础早期筛选后处理所�
 #: includes/inc-botblocker-ui.php:162
 #: includes/viewmodels/class-chain-context-data.php:109
 msgid "BotBlocker operates in normal mode processing all threat types at WordPress load."
-msgstr "BotBlocker 在一般模式下運作，在 WordPress 載入時處理所有威脅類型。"
+msgstr "BotBlocker 在普通模式下运行，在 WordPress 加载时处理所有威胁类型。"
 
 #: admin/templates/cloud-api.php:20
 #: admin/templates/cloud-api/status.php:66
@@ -2600,7 +2599,7 @@ msgstr "BotBlocker PRO"
 #: admin/class-botblocker-admin.php:544
 #: admin/class-botblocker-admin.php:614
 msgid "BotBlocker PRO information refreshed successfully!"
-msgstr "BotBlocker PRO 資訊重新整理成功！"
+msgstr "BotBlocker PRO 信息已成功刷新！"
 
 #: admin/templates/shared/sidebar/rail.php:142
 msgid "BotBlocker PRO validates visitors in the cloud before they reach your WordPress installation. This preserves your server CPU and memory while stopping aggressive DDoS attacks in their tracks."
@@ -2611,7 +2610,7 @@ msgstr "BotBlocker PRO 会在访客到达您的 WordPress 安装之前，在云�
 #: public/templates/block-page.php:14
 #: public/templates/denied-page.php:14
 msgid "BotBlocker project by GLOBUS.studio"
-msgstr "BotBlocker 專案由 GLOBUS.studio 開發"
+msgstr "BotBlocker 项目由 GLOBUS.studio 开发"
 
 #: admin/partials/class-botblocker-dashboard-widgets.php:109
 msgid "BotBlocker Quick Rule"
@@ -2651,7 +2650,7 @@ msgstr "BotBlocker 安全 - 完整的安全平台"
 
 #: admin/templates/setup-wizard/completed.php:23
 msgid "BotBlocker Security - Setup completed"
-msgstr "BotBlocker 安全性 - 設定完成"
+msgstr "BotBlocker Security - 设置完成"
 
 #: includes/botblocker/traits/class-botblocker-block-page-trait.php:22
 #: includes/botblocker/traits/class-botblocker-check-page-trait.php:276
@@ -2693,7 +2692,7 @@ msgstr "BotBlocker 使用为安全性、兼容性和开源许可证合规性而�
 
 #: addons/bbcs-telegram/inc/class-bbcs-telegram-plugin.php:274
 msgid "BotBlocker Weekly Report"
-msgstr "BotBlocker 每週報告"
+msgstr "BotBlocker 每周报告"
 
 #. REVIEWER NOTE: This image is a static plugin asset, not a user-uploaded Media Library image.
 #. phpcs:ignore PluginCheck.CodeAnalysis.ImageFunctions.NonEnqueuedImage ?>
@@ -2776,7 +2775,7 @@ msgstr "浏览器与插件"
 
 #: admin/templates/setup-guide/status.php:70
 msgid "Browser and protection"
-msgstr "瀏覽器與保護"
+msgstr "浏览器与保护"
 
 #: includes/viewmodels/class-setup-guide-viewmodel.php:218
 msgid "Browser checks"
@@ -2784,12 +2783,12 @@ msgstr "浏览器检查"
 
 #: admin/templates/settings/browser-plugins.php:20
 msgid "Browser detection identifies bots using spoofing, anti-detect tools, and privacy modes. Advanced options verify browser engine consistency."
-msgstr "瀏覽器檢測識別使用欺騙、反偵測工具和隱私模式的漫遊器。進階選項可驗證瀏覽器引擎一致性。"
+msgstr "浏览器检测可识别使用欺骗、反检测工具和隐私模式的机器人。高级选项验证浏览器引擎一致性。"
 
 #: admin/templates/settings/browser-plugins.php:33
 #: includes/data/class-botblocker-snav.php:112
 msgid "Browser Modes"
-msgstr "瀏覽器模式"
+msgstr "浏览器模式"
 
 #: admin/templates/settings/browser-plugins.php:50
 #: includes/data/class-botblocker-snav.php:124
@@ -2804,7 +2803,7 @@ msgstr "浏览器插件"
 
 #: includes/data/traits/trait-botblocker-stats-charts.php:292
 msgid "Browsers"
-msgstr "瀏覽器"
+msgstr "浏览器"
 
 #: addons/bbcs-hide-admin/views/settings.php:29
 msgid "Brute-force Attack"
@@ -2931,7 +2930,7 @@ msgstr "缓存以加快安全检查"
 
 #: admin/templates/integrations/transients.php:15
 msgid "Caching via WordPress Transients API."
-msgstr "透過 WordPress Transients API 進行快取。"
+msgstr "通过 WordPress 瞬态 API 进行缓存。"
 
 #: admin/templates/setup-wizard/presets.php:9
 msgid "Can be changed at any time with one click"
@@ -2976,7 +2975,7 @@ msgstr "Captcha"
 #: includes/services/class-botblocker-health-service.php:20
 #: includes/viewmodels/class-dashboard-viewmodel.php:161
 msgid "Captcha enabled"
-msgstr "Captcha 已啟用"
+msgstr "Captcha 已启用"
 
 #: includes/data/class-botblocker-snav.php:296
 msgid "Captcha Mode"
@@ -2984,7 +2983,7 @@ msgstr "Captcha 模式"
 
 #: includes/shortcode/class-botblocker-health-shortcodes.php:76
 msgid "Captcha mode enabled"
-msgstr "Captcha 模式已啟用"
+msgstr "Captcha 模式已启用"
 
 #: admin/templates/settings/captcha-tab.php:121
 msgid "Captcha Mode:"
@@ -3000,26 +2999,26 @@ msgstr "CAPTCHA 提供商密钥未配置。Captcha 模式已调整为兼容模�
 
 #: admin/templates/settings/captcha-tab.php:104
 msgid "CAPTCHA provider keys are not configured. Enter the site key and secret in the add-on settings before selecting this mode."
-msgstr ""
+msgstr "CAPTCHA 提供商密钥未配置。请先在选择此 模式 之前，于 附加组件 设置中 输入 站点 密钥和机密信息。"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-addons-page.php:39
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:339
 #: addons/bbcs-behavior/views/settings.php:81
 msgid "Captcha Score Threshold"
-msgstr "Captcha 分數閾值"
+msgstr "Captcha 分数阈值"
 
 #: admin/templates/settings/rate-limiting.php:74
 #: includes/data/class-botblocker-snav.php:223
 msgid "Captcha Threshold"
-msgstr "Captcha 閾值"
+msgstr "Captcha 阈值"
 
 #: includes/data/class-botblocker-snav.php:299
 msgid "Captcha Timeout (seconds)"
-msgstr "Captcha 逾時（秒）"
+msgstr "Captcha 超时（秒）"
 
 #: admin/templates/settings/captcha-tab.php:149
 msgid "Captcha Timeout (seconds):"
-msgstr "Captcha 逾時（秒）："
+msgstr "Captcha 超时（秒）："
 
 #: admin/templates/setup-wizard/captcha.php:123
 msgid "CAPTCHA type"
@@ -3043,7 +3042,7 @@ msgstr "目录暂时不可用。显示最后已知的列表。"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:136
 msgid "Catches more malicious code, especially obfuscated or encoded payloads. Uses more CPU and memory per file. Disable if your server is low on resources."
-msgstr "捕獲更多惡意程式碼，尤其是混淆或編碼的酬載。每個檔案使用更多 CPU 和記憶體。如果伺服器資源不足，請停用。"
+msgstr "可捕获更多恶意代码，尤其是经过混淆或编码的有效载荷。每个文件会占用更多 CPU 和内存。如果您的服务器资源不足，请停用。"
 
 #: addons/bbcs-antispam/views/settings.php:233
 msgid "Category Filter"
@@ -3123,7 +3122,7 @@ msgstr "检查您是否认识每个文件。来自您的主机或缓存插件的
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-background.php:517
 msgid "Checking database tables..."
-msgstr "正在檢查資料庫資料表…"
+msgstr "正在检查数据库表…"
 
 #: includes/botblocker/traits/class-botblocker-check-page-trait.php:278
 msgid "Checking your browser before accessing the site"
@@ -3135,7 +3134,7 @@ msgstr "正在检查您的浏览器，然后访问站点"
 #: admin/templates/setup-wizard/compatibility.php:22
 #: admin/templates/setup-wizard/compatibility.php:26
 msgid "Checking..."
-msgstr "檢查中…"
+msgstr "正在检查…"
 
 #: admin/templates/settings/cron.php:131
 msgid "Checks for missed tasks every 15 minutes via the WordPress"
@@ -3184,7 +3183,7 @@ msgstr "选择当有人尝试访问默认登录 URL 时会发生什么。"
 
 #: admin/templates/settings/log.php:16
 msgid "Choose which security events and visitor activities to log."
-msgstr "選取要記錄的安全性事件和訪客活動"
+msgstr "选择 要 日志 哪些安全事件和访客活动。"
 
 #: admin/templates/addons/upload-section.php:18
 msgid "Choose ZIP"
@@ -3215,15 +3214,15 @@ msgstr "分类"
 #: addons/bbcs-speedup/inc/class-bbcs-speedup-addons-page.php:64
 #: addons/bbcs-speedup/views/settings.php:143
 msgid "Cleanup and Simplification"
-msgstr "清理和簡化"
+msgstr "清理和简化"
 
 #: addons/bbcs-cron-jobs/views/settings.php:139
 msgid "Cleanup Expired Recovery Keys"
-msgstr "清理過期的復原金鑰"
+msgstr "清理过期的恢复密钥"
 
 #: includes/cron/class-botblocker-cron.php:104
 msgid "Cleanup Hot Bans"
-msgstr "清理熱門封鎖"
+msgstr "清理热封禁"
 
 #: addons/bbcs-cron-jobs/views/settings.php:141
 msgid "Cleanup Old Comment Meta"
@@ -3235,7 +3234,7 @@ msgstr "清理旧导出文件"
 
 #: addons/bbcs-cron-jobs/views/settings.php:140
 msgid "Cleanup Temp Directories"
-msgstr "清理暫存目錄"
+msgstr "清理临时目录"
 
 #: admin/templates/tools/modals/object-cache.php:24
 #: admin/templates/tools/modals/transient-clear.php:24
@@ -3285,7 +3284,7 @@ msgstr "清除所有規則"
 #: admin/templates/tools/modals/hits-clear.php:13
 #: includes/data/class-botblocker-snav.php:757
 msgid "Clear All Visitor Data"
-msgstr "清除所有訪客資料"
+msgstr "清除所有访客数据"
 
 #: includes/data/class-botblocker-palette.php:176
 msgid "Clear all visitor data - wipe stats, reset counters"
@@ -3293,7 +3292,7 @@ msgstr "清除所有访客数据 - 抹除统计数据、重置计数器"
 
 #: admin/class-botblocker-admin.php:380
 msgid "Clear All White Bots"
-msgstr "清除所有白名單機器人"
+msgstr "清除所有白名单机器人"
 
 #: admin/templates/tools/wordpress-tab.php:37
 #: includes/data/class-botblocker-snav.php:727
@@ -3302,7 +3301,7 @@ msgstr "清除调试日志"
 
 #: admin/templates/tools/maintenance-tab.php:124
 msgid "Clear expired transients from the database"
-msgstr "清除資料庫中過期的暫態資料"
+msgstr "从数据库中清除过期的临时数据"
 
 #: includes/cron/class-botblocker-cron.php:93
 msgid "Clear History"
@@ -3324,7 +3323,7 @@ msgstr "清除对象缓存 - 刷新、redis、memcached、清除"
 
 #: admin/templates/tools/maintenance-tab.php:91
 msgid "Clear outdated logs, remove temporary files, and optimize the database. Regular maintenance prevents storage-related issues."
-msgstr "清除過期記錄、移除暫存檔案，並最佳化資料庫。定期維護可避免儲存空間相關問題。"
+msgstr "清理过期的日志、移除 临时文件并 优化 数据库。定期 维护 可防止与存储相关的问题。"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:377
 msgid "Clear Results"
@@ -3342,11 +3341,11 @@ msgstr "清除日志"
 #: admin/templates/tools/maintenance-tab.php:123
 #: includes/data/class-botblocker-snav.php:758
 msgid "Clear transients"
-msgstr "清除暫態"
+msgstr "清除临时数据"
 
 #: admin/templates/tools/modals/transient-clear.php:13
 msgid "Clear Transients"
-msgstr "清除暫態"
+msgstr "清除瞬态数据"
 
 #: includes/data/class-botblocker-palette.php:175
 msgid "Clear transients - cache, temporary data, cleanup"
@@ -3355,7 +3354,7 @@ msgstr "清除临时数据 - 缓存、临时数据、清理"
 #: admin/templates/tools/maintenance-tab.php:166
 #: includes/data/class-botblocker-snav.php:767
 msgid "Clear visitor cookies"
-msgstr "清除訪客 Cookie"
+msgstr "清除访客 Cookies"
 
 #: includes/data/class-botblocker-palette.php:161
 msgid "Clear visitor cookies - reset tracking, privacy data"
@@ -3409,27 +3408,27 @@ msgstr "点击匹配的图片"
 #: includes/modal/modal-botblocker-white-edit.php:85
 #: includes/utilites/class-botblocker-support.php:31
 msgid "Close"
-msgstr "關閉"
+msgstr "关闭"
 
 #: admin/templates/shared/command-palette.php:18
 msgid "close"
-msgstr "關閉"
+msgstr "关闭"
 
 #: includes/viewmodels/class-setup-guide-viewmodel.php:220
 msgid "Cloud / PRO"
-msgstr "雲端 / 專業版"
+msgstr "云 / PRO"
 
 #: includes/hook/class-botblocker-cloud-api-hooks.php:141
 msgid "Cloud API connection deactivated."
-msgstr "雲端 API 連線已停用。"
+msgstr "云 API 连接已停用。"
 
 #: includes/data/class-botblocker-alerts.php:533
 msgid "Cloud API Expired"
-msgstr "雲端 API 已過期"
+msgstr "Cloud API 已过期"
 
 #: includes/data/class-botblocker-alerts.php:547
 msgid "Cloud API Hits Exhausted"
-msgstr "雲端 API 點擊次數已用盡"
+msgstr "Cloud API 调用次数已用尽"
 
 #: admin/templates/setup-guide/pro-body.php:44
 msgid "Cloud API is active. Full protection enabled."
@@ -3437,36 +3436,36 @@ msgstr "云 API 已启用。全面保护已启用。"
 
 #: includes/hook/class-botblocker-cloud-api-hooks.php:107
 msgid "Cloud API key connected and validated."
-msgstr "雲端 API 索引碼已連線並驗證。"
+msgstr "云 API 密钥已连接并验证。"
 
 #: admin/templates/setup-guide/pro-body.php:49
 msgid "Cloud API provides extended protection with continuous threat intelligence and automation."
-msgstr "雲端 API 提供持續擴展的保護，具備持續的威脅情報與自動化。"
+msgstr "Cloud API 通过持续的威胁情报和自动化提供扩展保护。"
 
 #: includes/hook/class-botblocker-cloud-api-hooks.php:44
 msgid "Cloud API responded with error: "
-msgstr "雲端 API 回應錯誤："
+msgstr "云 API 响应错误： "
 
 #: admin/templates/settings/cookie.php:120
 #: includes/data/class-botblocker-snav.php:471
 msgid "Cloud API Timeout"
-msgstr "雲端 API 逾時"
+msgstr "Cloud API 超时"
 
 #: admin/templates/cloud-api/status.php:63
 msgid "Cloud based verification"
-msgstr "雲端驗證"
+msgstr "基于云的验证"
 
 #: includes/data/class-botblocker-pro-features.php:12
 msgid "Cloud bot detection (live signatures)"
-msgstr "雲端機器人偵測 (即時特徵碼)"
+msgstr "云端机器人检测（实时特征）"
 
 #: includes/data/class-botblocker-pro-features.php:63
 msgid "Cloud bot verification (live)"
-msgstr "雲端機器人驗證 (即時)"
+msgstr "云端机器人验证（实时）"
 
 #: admin/templates/settings/advanced-protection.php:28
 msgid "Cloud databases of threats"
-msgstr "雲端威脅資料庫"
+msgstr "云端威胁数据库"
 
 #: admin/templates/reports/dashboard.php:24
 msgid "Cloud IPs"
@@ -3478,15 +3477,15 @@ msgstr "雲端保護"
 
 #: admin/templates/cloud-api.php:20
 msgid "Cloud protection and premium features"
-msgstr "雲端保護與進階功能"
+msgstr "云保护和高级功能"
 
 #: includes/viewmodels/class-dashboard-viewmodel.php:157
 msgid "Cloud threat checking"
-msgstr "雲端威脅檢查"
+msgstr "云端威胁检查"
 
 #: admin/templates/setup-guide/one-click-modal.php:71
 msgid "Cloud threat intelligence"
-msgstr "雲端威脅情報"
+msgstr "云端威胁情报"
 
 #: admin/templates/settings/advanced-protection.php:27
 #: includes/services/class-botblocker-health-service.php:44
@@ -3509,12 +3508,12 @@ msgstr "云验证、DDoS、强制验证"
 
 #: admin/templates/integrations/botblocker-api.php:21
 msgid "Cloud verification"
-msgstr "雲端驗證"
+msgstr "云端验证"
 
 #: admin/templates/settings/connection-types.php:40
 #: includes/data/class-botblocker-snav.php:193
 msgid "Cloudflare Origin IPs"
-msgstr "Cloudflare 來源 IP"
+msgstr "Cloudflare 源站 IP"
 
 #: addons/bbcs-turnstile/views/settings.php:28
 #: addons/bbcs-turnstile/views/settings.php:36
@@ -3536,15 +3535,15 @@ msgstr "代码"
 
 #: addons/bbcs-malware/views/settings.php:22
 msgid "Code Obfuscation"
-msgstr "程式碼混淆"
+msgstr "代码混淆"
 
 #: includes/services/class-botblocker-health-service.php:54
 msgid "Collect browser type"
-msgstr "收集瀏覽器類型"
+msgstr "收集浏览器类型"
 
 #: includes/services/class-botblocker-health-service.php:56
 msgid "Collect device type"
-msgstr "收集裝置類型"
+msgstr "收集设备类型"
 
 #: includes/services/class-botblocker-health-service.php:55
 msgid "Collect OS type"
@@ -3554,7 +3553,7 @@ msgstr "收集操作系统类型"
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:423
 #: addons/bbcs-behavior/views/settings.php:180
 msgid "Collection Threshold"
-msgstr "收集閾值"
+msgstr "收集阈值"
 
 #: admin/templates/settings/captcha-tab.php:24
 #: admin/templates/setup-wizard/captcha.php:19
@@ -3640,7 +3639,7 @@ msgstr "比較不同方案的功能"
 
 #: admin/templates/cloud-api/status.php:22
 msgid "Compare plan features below. PRO unlocks full per-visit verification, advanced blocking rules, performance add-ons, and priority support."
-msgstr "請比較下方方案功能。專業版解鎖完整的單次瀏覽驗證、進階封鎖規則、效能附加元件及優先支援服務。"
+msgstr "比较下方的方案功能。PRO 解锁完整的每次访问验证、高级阻止规则、性能附加组件和优先支持。"
 
 #: admin/templates/addons/locked-notice.php:31
 #: admin/templates/setup-guide/pro-body.php:38
@@ -3661,7 +3660,7 @@ msgstr "兼容性测试"
 
 #: admin/templates/setup-wizard/init-mode.php:18
 msgid "Compatible with all configurations"
-msgstr "與所有組態相容"
+msgstr "兼容所有配置"
 
 #: admin/templates/setup-wizard/presets.php:20
 msgid "Compatible with all plugins"
@@ -3674,7 +3673,7 @@ msgstr "完整保护清单。查看下方每个项目以确保全面覆盖。"
 #. Description of the plugin
 #: botblocker-security.php
 msgid "Complete security platform for everyday: block bots, brute-force, viruses, spam, fake crawlers. WAF, 2FA, no-malware, proactive defense, 200+ tools"
-msgstr ""
+msgstr "满足日常需求的完整安全平台：区块机器人、暴力破解、病毒、标记为垃圾、假冒爬虫。WAF、2FA、无恶意软件、主动防御、200+ 工具"
 
 #: includes/shortcode/class-botblocker-recommendations-shortcodes.php:35
 msgid "Complete Setup Wizard"
@@ -3692,7 +3691,7 @@ msgstr "可信度"
 
 #: admin/templates/setup-wizard/finish.php:15
 msgid "Configuration summary"
-msgstr "組態摘要"
+msgstr "配置摘要"
 
 #: admin/templates/settings/rate-limiting.php:49
 msgid "Configure Behavioral Engine"
@@ -3716,7 +3715,7 @@ msgstr "配置您接收机器人活动警报的方式和时间。"
 
 #: admin/templates/settings/error.php:22
 msgid "Configure HTTP response codes for blocked visitors, ban durations, and search engine directives."
-msgstr "組態封鎖訪客的 HTTP 回應代碼、封鎖期間及搜尋引擎指令。"
+msgstr "配置被拦截访客的 HTTP 响应代码、封禁时长和搜索引擎指令。"
 
 #: includes/data/class-botblocker-palette.php:150
 msgid "Configure In-App Browser Mode - Instagram, LinkedIn, WhatsApp rescue"
@@ -3740,7 +3739,7 @@ msgstr "配置支付网关 - Stripe、PayPal、签出绕过"
 
 #: admin/templates/tools/botblocker-tab.php:19
 msgid "Configure protection rules and automate threat detection. Reducing junk traffic also improves load times."
-msgstr "組態保護規則並自動化威脅偵測。減少垃圾流量也能改善載入時間。"
+msgstr "配置保护规则并自动检测威胁。减少垃圾流量还能缩短加载时间。"
 
 #: includes/data/class-botblocker-palette.php:153
 msgid "Configure rate limiting - spam, flood, throttle, behavioral"
@@ -3752,11 +3751,11 @@ msgstr "配置 reCaptcha"
 
 #: admin/templates/integrations/redis.php:17
 msgid "Configure Redis host, port, authentication, and key prefix isolation."
-msgstr "組態 Redis 主機、通訊埠、驗證及索引碼前置詞隔離。"
+msgstr "配置 Redis 主机、端口、身份验证，以及键 前缀 隔离。"
 
 #: admin/templates/settings/ui.php:34
 msgid "Configure report period, timezone, and how statistics are counted."
-msgstr "組態報表期間、時區及統計資料計算方式。"
+msgstr "配置 报告周期、时区，以及 统计数据 的计数方式。"
 
 #: admin/templates/tools/wordpress-tab.php:19
 msgid "Configure security settings and automate bot detection to reduce server load and improve loading speed."
@@ -3797,11 +3796,11 @@ msgstr "冲突的插件"
 #: admin/templates/cloud-api/status.php:31
 #: admin/templates/integrations/botblocker-api.php:44
 msgid "Connect"
-msgstr "連接"
+msgstr "连接"
 
 #: includes/components/class-botblocker-component-addons-summary.php:74
 msgid "Connect Cloud API now!"
-msgstr "立即連接 Cloud API！"
+msgstr "立即连接 Cloud API！"
 
 #: admin/templates/integrations.php:25
 msgid "Connect external services, caching and notifications"
@@ -3822,7 +3821,7 @@ msgstr "连接 Google reCAPTCHA v3"
 #: admin/templates/setup-guide/chain-body.php:20
 #: admin/templates/shared/request-chain.php:72
 msgid "Connect now!"
-msgstr "立即連接！"
+msgstr "立即连接！"
 
 #: admin/js/bbcs-js/bbcs-connectors.js:26
 msgid "Connected"
@@ -3847,21 +3846,21 @@ msgstr "连接失败。请检查您的凭据并确认附加组件已启用。"
 
 #: admin/templates/settings/connection-types.php:20
 msgid "Connection filtering blocks suspicious connection methods used by bots and scrapers."
-msgstr "連線篩選會封鎖機器人與擷取工具使用的可疑連線方式。"
+msgstr "连接筛选会对机器人和抓取程序使用的可疑连接方法实施区块。"
 
 #: public/check-page.php:58
 #: public/template-botblocker-denied.php:237
 #: public/templates/block-page.php:54
 #: public/templates/denied-page.php:56
 msgid "Connection ID:"
-msgstr "連線 ID："
+msgstr "连接 ID："
 
 #: public/check-page.php:57
 #: public/template-botblocker-denied.php:236
 #: public/templates/block-page.php:53
 #: public/templates/denied-page.php:55
 msgid "Connection info:"
-msgstr "連線資訊："
+msgstr "连接信息："
 
 #: addons/bbcs-telegram/inc/class-bbcs-telegram-plugin.php:223
 msgid "Connection OK! Check your Telegram chat for the test message."
@@ -3885,12 +3884,12 @@ msgstr "连接测试成功！您将在此处收到每周摘要。"
 #: includes/data/class-botblocker-snav.php:190
 #: includes/viewmodels/class-settings-viewmodel.php:172
 msgid "Connection Types"
-msgstr "連線類型"
+msgstr "连接类型"
 
 #: admin/templates/about/body.php:44
 #: admin/templates/cloud-api/status.php:143
 msgid "Contact us"
-msgstr "聯絡我們"
+msgstr "联系我们"
 
 #: admin/templates/about.php:20
 msgid "Contacts, documentation and server status"
@@ -3920,15 +3919,15 @@ msgstr "控制管理接口缓存和统计数据显示设置。"
 
 #: admin/templates/settings/cookie.php:50
 msgid "Control BotBlocker verification cookies: name, lifetime, salt, and security attributes."
-msgstr "控制 BotBlocker 驗證 Cookie：名稱、有效期限、加密字串與安全性屬性。"
+msgstr "控制 BotBlocker 验证 Cookies：名称、有效期、盐值和安全属性。"
 
 #: admin/templates/settings/general.php:24
 msgid "Control how BotBlocker verifies visitors, applies security rules, and manages hit limits."
-msgstr "控制 BotBlocker 如何驗證訪客、套用安全性規則及管理點擊限制。"
+msgstr "控制 BotBlocker 如何验证访客、申请安全规则并管理命中限制。"
 
 #: admin/templates/settings/rate-limiting.php:28
 msgid "Control request velocity per IP with configurable thresholds, sliding windows, and subnet aggregation."
-msgstr "控制每個 IP 位址的要求速率，可設定閥值、滑動視窗及子網路聚合。"
+msgstr "控制 要求 每个 IP 的速率，支持可配置阈值、滑动 Windows 和子网聚合。"
 
 #: addons/bbcs-xmlrpc-tunnel/views/settings.php:26
 msgid "Control XML-RPC access with IP allowlist support for IPv4 and IPv6. When enabled, only allowlisted IPs can access xmlrpc.php. When disabled, XML-RPC is fully blocked with allowlist bypass capability."
@@ -3948,11 +3947,11 @@ msgstr "Cookie 和会话"
 
 #: includes/data/class-botblocker-palette.php:82
 msgid "Cookie consent alert - GDPR, privacy notice"
-msgstr "Cookie 同意聲明 - GDPR、隱私權通知"
+msgstr "Cookie 同意提示 - GDPR、隐私声明"
 
 #: includes/data/traits/trait-botblocker-stats-charts.php:270
 msgid "Cookie Hits and Visitors"
-msgstr "Cookie 點擊數與訪客"
+msgstr "Cookie 命中次数与访客数"
 
 #: admin/templates/settings/cookie.php:87
 #: includes/data/class-botblocker-snav.php:463
@@ -4059,7 +4058,7 @@ msgstr "无法更新 RU-Gov CIDR 列表（%s）。RKN 封锁可能会基于过�
 
 #: addons/bbcs-404-guard/views/settings.php:75
 msgid "Count and observe 404 activity without challenging or blocking anyone. Use it to tune the threshold before enabling enforcement."
-msgstr ""
+msgstr "统计并观察 404 活动，而不对任何人发起验证挑战或进行阻止。请在启用强制执行前用它调整阈值。"
 
 #: admin/templates/rules/body.php:223
 #: includes/components/class-botblocker-component-latest-hits-table.php:46
@@ -4108,7 +4107,7 @@ msgstr "国家规则切换成功。"
 
 #: admin/templates/settings/payment-tab.php:27
 msgid "Covered: WooCommerce wc-api / wc-ajax, WC REST, EDD, Give, Memberpress, RCP, PMPro, Surecart, plus payment-specific paths and admin-ajax actions for Stripe, PayPal, Mollie, Adyen, Braintree, Square, Razorpay, CloudPayments, WayForPay, LiqPay, Fondy, PayU, Klarna, Paystack, Flutterwave, GoCardless, Paddle, Authorize.Net, 2Checkout and many others."
-msgstr "涵蓋範圍：WooCommerce wc-api / wc-ajax、WC REST、EDD、Give、Memberpress、RCP、PMPro、Surecart，以及 Stripe、PayPal、Mollie、Adyen、Braintree、Square、Razorpay、CloudPayments、WayForPay、LiqPay、Fondy、PayU、Klarna、Paystack、Flutterwave、GoCardless、Paddle、Authorize.Net、2Checkout 等支付專用路徑與 admin-ajax 動作。"
+msgstr "已涵盖：WooCommerce wc-api / wc-ajax、WC REST、EDD、Give、Memberpress、RCP、PMPro、Surecart，以及 Stripe、PayPal、Mollie、Adyen、Braintree、正方形、Razorpay、CloudPayments、WayForPay、LiqPay、Fondy、PayU、Klarna、Paystack、Flutterwave、GoCardless、Paddle、Authorize.Net、2Checkout 等众多服务的支付专用路径和 admin-ajax 操作。"
 
 #: admin/templates/settings/cron.php:69
 msgid "cPanel Cron Jobs"
@@ -4116,7 +4115,7 @@ msgstr "cPanel 排程工作"
 
 #: admin/partials/class-botblocker-dashboard-widgets.php:193
 msgid "Create allow/block rules for IPs or subnets. Use import buttons to add search engines and white bots."
-msgstr "為 IP 或子網路建立允許/封鎖規則。使用匯入按鈕新增搜尋引擎及白名單機器人。"
+msgstr "创建 针对 IP 或子网的允许/区块 规则。使用 导入 按钮来 添加 搜索引擎和白名单机器人。"
 
 #: admin/templates/integrations/recaptcha-v2.php:31
 #: admin/templates/integrations/recaptcha-v2.php:40
@@ -4190,7 +4189,7 @@ msgstr "Cron 任务 - 调度器、作业、自动化"
 
 #: addons/bbcs-security-headers/inc/class-bbcs-security-headers-addons-page.php:44
 msgid "CSP Configuration"
-msgstr "CSP 設定"
+msgstr "CSP 配置"
 
 #: addons/bbcs-security-headers/views/settings.php:185
 msgid "CSP debug mode (Report-Only)"
@@ -4208,7 +4207,7 @@ msgstr "cURL 命令（用于系统 cron）"
 #: addons/bbcs-firewall-export/views/settings.php:147
 #, php-format
 msgid "Current export matches %d active address(es). Save the settings first if you changed anything above."
-msgstr ""
+msgstr "当前导出匹配 %d 个已启用地址。如果您更改了上面的任何内容，请先保存设置。"
 
 #: admin/templates/settings/tls-fingerprint.php:116
 #: includes/data/class-botblocker-snav.php:169
@@ -4257,7 +4256,7 @@ msgstr "自定义登录 URL"
 
 #: addons/bbcs-hide-admin/inc/class-bbcs-hide-admin-plugin.php:61
 msgid "Custom Login URL is invalid. Use only letters, numbers, hyphens, or underscores, and do not use reserved WordPress login endpoints."
-msgstr "自訂登入網址無效。僅可使用英文字母、數字、連字號或底線，且不可使用保留的 WordPress 登入端點。"
+msgstr "自定义 登录 URL 为 无效。仅可使用字母、数字、连字符或下划线，且不要使用保留的 WordPress 登录 端点。"
 
 #: addons/bbcs-hide-admin/inc/class-bbcs-hide-admin-plugin.php:127
 msgid "Custom login URL, login-lock, and anti-bot protections."
@@ -4347,12 +4346,12 @@ msgstr "仪表盘计数器和每日统计数据将被重置。"
 #: includes/modal/modal-botblocker-white-edit.php:60
 #: includes/viewmodels/class-settings-viewmodel.php:195
 msgid "Data"
-msgstr "資料"
+msgstr "数据"
 
 #: admin/templates/setup-guide/status.php:71
 #: includes/viewmodels/class-setup-guide-viewmodel.php:221
 msgid "Data and notifications"
-msgstr "資料與通知"
+msgstr "数据和通知"
 
 #: includes/inc-botblocker-wp-abilities.php:451
 msgid "Data directory writable"
@@ -4376,15 +4375,15 @@ msgstr "数据日志和处理"
 #: admin/templates/tools/maintenance-tab.php:98
 #: includes/data/class-botblocker-snav.php:753
 msgid "Database"
-msgstr "資料庫"
+msgstr "数据库"
 
 #: addons/bbcs-malware/inc/views/scan-results/database-findings.php:18
 msgid "Database Findings"
-msgstr "資料庫發現"
+msgstr "数据库发现项"
 
 #: includes/ajax/class-botblocker-ajax-maintenance.php:58
 msgid "Database has been reinstalled successfully."
-msgstr "資料庫已成功重新安裝。"
+msgstr "数据库已成功重新安装。"
 
 #: admin/templates/integrations/redis.php:59
 msgid "Database Index:"
@@ -4392,7 +4391,7 @@ msgstr "数据库进行索引："
 
 #: admin/class-botblocker-admin.php:584
 msgid "Database reinstalled successfully!"
-msgstr "資料庫重新安裝成功！"
+msgstr "数据库已成功重新安装！"
 
 #: admin/templates/tools/modals/db-repair.php:13
 msgid "Database Repair and Optimization"
@@ -4400,7 +4399,7 @@ msgstr "数据库修复和优化"
 
 #: addons/bbcs-malware/inc/views/scan-results/header.php:51
 msgid "database rows"
-msgstr "資料庫資料列"
+msgstr "数据库行"
 
 #: includes/inc-botblocker-wp-abilities.php:461
 msgid "Database tables present"
@@ -4416,7 +4415,7 @@ msgstr "日期"
 
 #: includes/components/class-botblocker-component-latest-hits-table.php:44
 msgid "Date/Time"
-msgstr "日期/時間"
+msgstr "日期/时间"
 
 #: includes/data/class-botblocker-snav.php:354
 msgid "Daylight Saving Time"
@@ -4477,11 +4476,11 @@ msgstr "调试 WordPress"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-addons-page.php:57
 msgid "Deep Code Analysis"
-msgstr "深層複製程式碼分析"
+msgstr "深度代码分析"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:135
 msgid "Deep code analysis (catches more, costs more)"
-msgstr "深層複製程式碼分析（捕捉更多，成本更高）"
+msgstr "深度代码分析（捕获更多，开销更大）"
 
 #: admin/templates/settings/cookie.php:25
 msgid "default"
@@ -4576,7 +4575,7 @@ msgstr "已部署"
 
 #: includes/utilites/class-botblocker-support.php:53
 msgid "Describe your issue"
-msgstr "描述您的問題"
+msgstr "描述您的问题"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-addons-page.php:75
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:229
@@ -4597,7 +4596,7 @@ msgstr "检测已启用的广告拦截器。可能会影响使用广告拦截扩
 
 #: admin/templates/settings/connection-types.php:25
 msgid "Detect hosting"
-msgstr "偵測主機"
+msgstr "检测托管服务"
 
 #: admin/templates/settings/browser-plugins.php:53
 msgid "Detect tampered browser properties (navigator, plugins)."
@@ -4611,12 +4610,12 @@ msgstr "已检测 / 自动兼容"
 #: includes/data/class-botblocker-snav.php:69
 #: includes/viewmodels/class-settings-viewmodel.php:157
 msgid "Detection"
-msgstr "偵測"
+msgstr "检测"
 
 #: admin/templates/setup-guide/status.php:69
 #: includes/viewmodels/class-setup-guide-viewmodel.php:217
 msgid "Detection and connectivity"
-msgstr "偵測與連線能力"
+msgstr "检测与连接"
 
 #: addons/bbcs-404-guard/views/settings.php:38
 msgid "Detection and Threshold"
@@ -4624,7 +4623,7 @@ msgstr "检测和阈值"
 
 #: addons/bbcs-404-guard/views/settings.php:29
 msgid "Detects path-scanning bots by the rate of 404 responses an IP produces. Once an IP crosses the threshold inside the sliding window, the next request is challenged (CAPTCHA) or blocked through the core traffic decision pipeline. Legitimate broken links from real visitors, logged-in users and allowlisted networks can be excluded, and monitor-only mode records activity without acting."
-msgstr ""
+msgstr "根据 IP 产生 404 响应的速率检测路径扫描机器人。一旦 IP 在滑动窗口内超过阈值，下一个要求就会通过核心流量决策管道受到验证挑战（CAPTCHA）或被阻止。可以排除来自真实访客、已登录用户和允许列表网络的合法失效链接，而仅监控模式会记录活动但不采取行动。"
 
 #: addons/bbcs-404-guard/inc/class-bbcs-404-guard-plugin.php:53
 msgid "Detects path-scanning bots by their 404 rate and challenges or blocks them before they map the site."
@@ -4645,19 +4644,19 @@ msgstr "裝置"
 #: admin/templates/settings/browser-plugins.php:55
 #: includes/data/class-botblocker-snav.php:129
 msgid "Device API Verification"
-msgstr "裝置 API 驗證"
+msgstr "设备 API 验证"
 
 #: includes/services/class-botblocker-health-service.php:50
 msgid "Device API verification"
-msgstr "裝置 API 驗證"
+msgstr "设备 API 验证"
 
 #: admin/templates/about/body.php:204
 msgid "Device Detection:"
-msgstr "裝置偵測："
+msgstr "设备检测："
 
 #: includes/data/traits/trait-botblocker-stats-charts.php:282
 msgid "Device Types"
-msgstr "裝置類型"
+msgstr "设备类型"
 
 #: admin/templates/settings/tls-fingerprint.php:111
 #: includes/data/class-botblocker-snav.php:167
@@ -4702,7 +4701,7 @@ msgstr "完全停用 Feed"
 
 #: admin/templates/integrations/recaptcha-v3.php:27
 msgid "Disable reCaptcha for IPv6 visitors"
-msgstr "對 IPv6 訪客停用 reCaptcha"
+msgstr "为 IPv6 访客停用 reCaptcha"
 
 #: admin/templates/setup-wizard/recaptcha.php:57
 msgid "Disable reCAPTCHA for IPv6 visitors"
@@ -4714,7 +4713,7 @@ msgstr "为 IPv6 访客停用 reCaptcha v3。Google reCaptcha v3 不支持 IPv6 
 
 #: addons/bbcs-forced-inclusions/views/settings.php:137
 msgid "Disable renames the file so WordPress stops running it. The file stays on the server, so you can turn it back on anytime - safe way to test if a file causes a problem. Delete removes it for good."
-msgstr ""
+msgstr "停用 会重命名 文件，使 WordPress 停止运行它。文件 会保留在 服务器 上，因此您可以随时重新启用它——如果某个 文件 导致问题，这是一种安全的 测试 方式。删除 则会将其永久移除。"
 
 #: addons/bbcs-speedup/inc/class-bbcs-speedup-addons-page.php:68
 #: addons/bbcs-speedup/views/settings.php:171
@@ -4764,7 +4763,7 @@ msgstr "已停用（通配符 *）"
 #: addons/bbcs-hide-admin/inc/class-bbcs-hide-admin-addons-page.php:37
 #: addons/bbcs-hide-admin/views/settings.php:74
 msgid "Disabled Behavior"
-msgstr "已停用行為"
+msgstr "停用后的行为"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:162
 msgid "Disabled by default so custom paths cannot scan arbitrary server locations."
@@ -4788,16 +4787,16 @@ msgstr "停用来自外部站点的 oEmbed 发现和嵌入。"
 
 #: addons/bbcs-speedup/views/settings.php:94
 msgid "Disables XML-RPC. Required by some plugins (Jetpack, etc.) and the WordPress mobile app."
-msgstr "停用 XML-RPC。部分外掛 (Jetpack 等) 和 WordPress 行動應用程式需要此功能。"
+msgstr "停用 XML-RPC。部分插件（Jetpack、其他）以及 WordPress 移动应用需要它。"
 
 #: admin/class-botblocker-admin.php:244
 msgid "Disabling Early Init mode may reduce protection against advanced bots. Are you sure you want to proceed?"
-msgstr "停用 Early Init 模式可能會降低對進階機器人的保護。確定要繼續操作嗎？"
+msgstr "停用 Early Init 模式可能会降低对高级机器人的保护。您确定要继续吗？"
 
 #: admin/templates/cloud-api/status.php:31
 #: admin/templates/integrations/botblocker-api.php:44
 msgid "Disconnect"
-msgstr "中斷連線"
+msgstr "断开连接"
 
 #: addons/bbcs-feed-guard/inc/class-bbcs-feed-guard-addons-page.php:54
 msgid "Discovery"
@@ -4813,11 +4812,11 @@ msgstr "显示"
 
 #: addons/bbcs-cookie-alert/views/settings.php:29
 msgid "Displays a lightweight first-party cookie notice for visitors and stores consent locally in a BotBlocker-named cookie. Use it for simple privacy notices where no external consent platform is required. Configure message text, policy link, button label, theme, position, and optional CSS."
-msgstr "顯示輕量化的第一方 Cookie 通知給訪客，並將同意結果儲存在本機的 BotBlocker 命名 Cookie 中。用於不需要外部同意平台的簡單隱私權通知。可設定訊息文字、政策連結、按鈕標籤、佈景主題、排名和選擇性的 CSS。"
+msgstr "为访客显示轻量化第一方 Cookie 通知，并将同意情况本地存储在名为 BotBlocker 的 Cookie 中。将其用于无需外部同意平台的简单隐私通知。配置消息文本、政策链接、按钮标签、主题、位置以及可选的 CSS。"
 
 #: addons/bbcs-404-guard/views/settings.php:121
 msgid "Do not count 404 responses that carry a referer from this site. Real visitors following a broken internal link are usually not scanners."
-msgstr ""
+msgstr "不要统计带有来自此站点的 referer 的 404 响应。跟随失效内部链接的真实访客通常不是扫描器。"
 
 #: includes/class-botblocker-bootstrap.php:262
 msgid "Docs and FAQs"
@@ -4896,12 +4895,12 @@ msgstr "未找到表 %s 的转储文件。"
 #: admin/templates/settings/captcha-tab.php:29
 #: admin/templates/setup-wizard/captcha.php:43
 msgid "Dynamic Digit Captcha"
-msgstr "動態數字 Captcha"
+msgstr "动态数字 Captcha"
 
 #: admin/templates/settings/captcha-tab.php:28
 #: admin/templates/setup-wizard/captcha.php:35
 msgid "Dynamic Shape Captcha"
-msgstr "動態形狀 Captcha"
+msgstr "动态形状 Captcha"
 
 #: admin/templates/settings/payment-tab.php:70
 msgid "E-commerce software detected on this site. Enabling this option is strongly recommended."
@@ -4948,11 +4947,11 @@ msgstr "Early Init - 在 WP 載入前"
 
 #: admin/templates/shared/request-chain.php:90
 msgid "Early Init and MU modes drop blacklisted IPs at the first gate - no WordPress load, no overhead. This saves CPU time by skipping heavier logic for junk traffic before it reaches the main shield."
-msgstr "Early Init 和 MU 模式在第一道關卡就捨棄列入黑名單的 IP - 無需載入 WordPress，沒有負擔。透過在垃圾流量到達主要防護前跳過較重邏輯，可節省 CPU 時間。"
+msgstr "早期初始化和 MU 模式会在第一道关卡丢弃黑名单 IP - 不会加载 WordPress，也没有额外开销。这样可在垃圾流量到达主防护盾之前跳过较重的逻辑，从而保存 CPU 时间。"
 
 #: admin/templates/setup-guide/chain-body.php:49
 msgid "Early Init and MU plugin modes reject requests at the first gate: IPs on the blacklist (bots, malicious networks, previously blocked) are dropped before heavier logic runs. With Early Init, WordPress does not load at all - saving memory and CPU. The MU plugin filters before regular plugins and the theme. Only clean traffic proceeds; junk is dropped as early as possible."
-msgstr "Early Init 和 MU 外掛模式在第一道關卡拒絕請求：列入黑名單的 IP (機器人、惡意網路、先前封鎖的) 會在執行較重邏輯前被捨棄。使用 Early Init 時，WordPress 完全不會載入 - 節省記憶體和 CPU。MU 外掛會在一般外掛和佈景主題之前進行篩選。只有乾淨流量能繼續；垃圾流量會盡早被捨棄。"
+msgstr "Early Init 和 MU 插件 模式会在第一道关卡拒绝要求：黑名单上的 IP（机器人、恶意网络、此前被拦截的）会在更繁重的逻辑运行之前被丢弃。使用 Early Init 时，WordPress 完全不会加载——从而节省 内存 和 CPU。MU 插件 会在常规插件和 主题 之前进行筛选。只有干净的流量会继续；垃圾流量会尽早被丢弃。"
 
 #: includes/ajax/class-botblocker-ajax-early-phase.php:124
 msgid "Early Init failed and was switched off to keep the site running."
@@ -4995,7 +4994,7 @@ msgstr "Early Init 状态"
 
 #: admin/templates/setup-guide/pro-body.php:24
 msgid "Early init: filtering before WordPress loads"
-msgstr "Early init：在 WordPress 載入前篩選"
+msgstr "提前初始化：在 WordPress 加载之前进行筛选"
 
 #: includes/data/class-botblocker-pro-features.php:88
 msgid "Early initialization (pre-WordPress block)"
@@ -5003,7 +5002,7 @@ msgstr "早期初始化（WordPress 加载前的区块）"
 
 #: includes/data/class-botblocker-pro-features.php:17
 msgid "Early initialization - block before WordPress loads"
-msgstr "早期初始化 - 在 WordPress 載入前封鎖"
+msgstr "提前初始化 - 在 WordPress 加载之前 区块"
 
 #: includes/inc-botblocker-ui.php:157
 #: includes/viewmodels/class-chain-context-data.php:103
@@ -5018,15 +5017,15 @@ msgstr "早期初始化已停用。其函数由已启用的 MU 插件处理。"
 #: includes/inc-botblocker-ui.php:151
 #: includes/viewmodels/class-chain-context-data.php:97
 msgid "Early initialization enabled. IP blacklist and base rule filtering run before WordPress loads. MU mode is not required."
-msgstr "早期初始化已啟用。IP 黑名單和基本規則篩選在 WordPress 載入前執行。不需要 MU 模式。"
+msgstr "已启用提前初始化。IP 黑名单和基础规则筛选会在 WordPress 加载之前运行。不需要 MU 模式。"
 
 #: admin/class-botblocker-setup-wizard-ajax.php:242
 msgid "Early initialization requires PRO license."
-msgstr "早期初始化需要 PRO 授權。"
+msgstr "提前初始化需要 PRO 许可证。"
 
 #: addons/bbcs-early-init/views/settings.php:31
 msgid "Early Initialization runs BotBlocker before WordPress core loads. Blocks malicious bots and unwanted traffic before they reach your site."
-msgstr "Early Initialization 在 WordPress 核心載入前執行 BotBlocker。在惡意機器人和垃圾流量到達您的網站前將其封鎖。"
+msgstr "早期初始化会在 WordPress 核心加载之前运行 BotBlocker。在恶意机器人和不需要的流量到达您的 站点 之前进行区块。"
 
 #: admin/templates/settings/status.php:20
 #: includes/data/class-botblocker-snav.php:440
@@ -5407,7 +5406,7 @@ msgstr "请先启用核心速率检查器。"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:54
 msgid "Enable the malware scanner and its settings. You can disable it to hide the scanner UI and prevent any scans, while keeping the settings intact for later use."
-msgstr "啟用惡意程式碼掃描器及其設定。您可以停用它以隱藏掃描器 UI 並防止任何掃描，同時保留設定供日後使用。"
+msgstr "启用恶意软件扫描器及其设置。您可以停用它来隐藏扫描器 UI 并阻止任何扫描，同时保留设置以便日后使用。"
 
 #: addons/bbcs-pusher/views/settings.php:45
 msgid "Enable the weekly digest pushed to your browser via Pusher Channels."
@@ -5436,7 +5435,7 @@ msgstr "启用双重身份验证"
 
 #: admin/templates/shared/sidebar/rail.php:141
 msgid "Enable Two-Factor Authentication (2FA) for all administrator accounts. It adds an essential layer of security that stops 99% of automated credential stuffing and brute-force attacks from accessing your dashboard."
-msgstr "為所有網站管理員帳號啟用兩步驟驗證 (2FA)。它增加了一層必要的安全性，可阻止 99% 的自動化憑證填充和暴力攻擊存取您的控制台。"
+msgstr "启用所有管理员帐户的双重身份验证（2FA）。它添加了必不可少的安全层，可阻止 99% 的自动化凭据填充和暴力破解攻击访问您的仪表盘。"
 
 #: addons/bbcs-xmlrpc-tunnel/inc/class-bbcs-xmlrpc-tunnel-addons-page.php:36
 #: addons/bbcs-xmlrpc-tunnel/views/settings.php:58
@@ -5450,15 +5449,15 @@ msgstr "启用 XML-RPC 信道"
 #: admin/templates/dashboard/hero.php:17
 #: admin/templates/settings/cookie.php:32
 msgid "Enabled"
-msgstr "已啟用"
+msgstr "已启用"
 
 #: admin/templates/settings/cookie.php:36
 msgid "Enabled (Explicit headers)"
-msgstr "已啟用 (明確標頭)"
+msgstr "已启用（显式标头）"
 
 #: admin/templates/settings/cookie.php:19
 msgid "Enabled (Recommended)"
-msgstr "已啟用 (建議)"
+msgstr "已启用（推荐）"
 
 #: admin/templates/settings/payment-tab.php:48
 #: includes/data/class-botblocker-snav.php:329
@@ -5510,7 +5509,7 @@ msgstr "输入许可证密钥"
 
 #: admin/templates/integrations/redis.php:47
 msgid "Enter Redis server authentication password if required. Leave empty if Redis server does not require authentication."
-msgstr "如果需要，請輸入 Redis 伺服器驗證密碼。如果 Redis 伺服器不需要驗證，則留空。"
+msgstr "输入 Redis 服务器身份验证密码（如需要）。如果 Redis 服务器不需要身份验证，请留空。"
 
 #: admin/partials/class-botblocker-dashboard-widgets.php:205
 msgid "Enter single IP or CIDR (e.g. 198.51.100.0/24 or 2001:db8::/32)."
@@ -5654,7 +5653,7 @@ msgstr "每天"
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:122
 msgid "Every mapped domain stops resolving to its site. On a network that uses domain mapping this takes those sites offline."
-msgstr ""
+msgstr "每个映射的域名都会停止解析到其站点。在使用域名映射的网络上，这会使那些站点离线。"
 
 #: admin/partials/class-botblocker-dashboard-widgets.php:184
 msgid "Example:"
@@ -5768,7 +5767,7 @@ msgstr "扩展启发式和行为规则"
 
 #: addons/bbcs-https-protocol/views/settings.php:91
 msgid "Extends mixed content fixing to WordPress admin pages. Enable this if you see mixed content warnings in the admin area."
-msgstr "将混合内容修复扩展到 WordPress 管理页面。如果您在管理区域看到混合内容警告，请启用此项。"
+msgstr "将混合 内容 修复扩展到 WordPress 管理页面。如果您在管理区域看到混合 内容 警告，请 启用 此选项。"
 
 #: admin/templates/shared/system-toggles.php:46
 #: admin/templates/shared/system-toggles.php:47
@@ -5839,15 +5838,15 @@ msgstr "失败尝试时间窗口（秒）："
 
 #: admin/templates/settings/login-brute-force.php:43
 msgid "Failed attempts allowed before blocking the IP."
-msgstr "封鎖 IP 位址前允許的失敗嘗試次數。"
+msgstr "在拦截该 IP 之前允许的失败尝试次数。"
 
 #: includes/data/class-botblocker-snav.php:280
 msgid "Failed Attempts Before Blocking"
-msgstr "封鎖前允許的失敗嘗試次數"
+msgstr "阻止前的失败尝试次数"
 
 #: admin/templates/settings/login-brute-force.php:42
 msgid "Failed Attempts Before Blocking:"
-msgstr "封鎖前允許的失敗嘗試次數："
+msgstr "拦截前的失败尝试次数："
 
 #: admin/class-botblocker-admin.php:587
 msgid "Failed backup: "
@@ -5963,15 +5962,15 @@ msgstr "清除暫存失敗。"
 #: admin/class-botblocker-admin.php:599
 #: includes/ajax/class-botblocker-ajax-maintenance.php:98
 msgid "Failed to clear visitors data."
-msgstr "清除訪客資料失敗。"
+msgstr "清除访客数据失败。"
 
 #: includes/ajax/class-botblocker-ajax-white-bots.php:693
 msgid "Failed to clear white bots."
-msgstr "清除白名單機器人失敗。"
+msgstr "清除白名单机器人失败。"
 
 #: admin/class-botblocker-admin.php:379
 msgid "Failed to clear white bots: "
-msgstr "清除白名單機器人失敗："
+msgstr "清除白名单机器人失败： "
 
 #: admin/class-botblocker-setup-wizard-ajax.php:271
 msgid "Failed to configure Early Init. Check filesystem permissions and try again, or set up Early Init manually."
@@ -6211,13 +6210,13 @@ msgstr "导入白名单机器人失败： "
 #: includes/ajax/class-botblocker-ajax-backup.php:266
 #: includes/ajax/class-botblocker-ajax-backup.php:58
 msgid "Failed to initialize filesystem."
-msgstr "無法初始化檔案系統。"
+msgstr "初始化文件系统失败。"
 
 #. translators: %s is the database table name.
 #: includes/ajax/class-botblocker-ajax-backup.php:432
 #, php-format
 msgid "Failed to insert row into %s."
-msgstr "無法插入資料列至 %s。"
+msgstr "无法将行插入到 %s。"
 
 #: includes/hook/class-botblocker-addon-files.php:233
 msgid "Failed to install add-on package."
@@ -6238,15 +6237,15 @@ msgstr "加载附加组件目录失败。"
 
 #: admin/class-botblocker-admin.php:430
 msgid "Failed to load ASN details: "
-msgstr "無法載入 ASN 詳細資料： "
+msgstr "加载 ASN 详情失败： "
 
 #: admin/class-botblocker-admin.php:344
 msgid "Failed to load IPv4 rule details: "
-msgstr "無法載入 IPv4 規則詳細資料： "
+msgstr "加载 IPv4 规则详情失败： "
 
 #: admin/class-botblocker-admin.php:360
 msgid "Failed to load IPv6 rule details: "
-msgstr "無法載入 IPv6 規則詳細資料： "
+msgstr "加载 IPv6 规则详情失败： "
 
 #: admin/class-botblocker-admin.php:388
 msgid "Failed to load path details: "
@@ -6254,19 +6253,19 @@ msgstr "无法加载路径详情： "
 
 #: admin/class-botblocker-admin.php:399
 msgid "Failed to load proxy details: "
-msgstr "無法載入代理詳細資料： "
+msgstr "加载代理详情失败： "
 
 #: admin/class-botblocker-admin.php:312
 msgid "Failed to load rule details: "
-msgstr "無法載入規則詳細資料： "
+msgstr "加载规则详情失败： "
 
 #: admin/class-botblocker-admin.php:376
 msgid "Failed to load white bot details: "
-msgstr "無法載入允許的機器人詳細資料： "
+msgstr "加载白名单机器人详情失败： "
 
 #: admin/class-botblocker-admin.php:461
 msgid "Failed to load: "
-msgstr "無法載入： "
+msgstr "加载失败： "
 
 #: includes/ajax/class-botblocker-ajax-backup.php:303
 msgid "Failed to open ZIP archive."
@@ -6295,7 +6294,7 @@ msgstr "无法刷新 Cloud API"
 
 #: admin/class-botblocker-admin.php:585
 msgid "Failed to reinstall database: "
-msgstr "重新安裝資料庫失敗: "
+msgstr "重新安装数据库失败： "
 
 #: includes/ajax/class-botblocker-ajax-proxy.php:703
 msgid "Failed to render proxy file."
@@ -6336,7 +6335,7 @@ msgstr "同步 TLS 指紋失敗: "
 
 #: includes/ajax/class-botblocker-ajax-asn.php:512
 msgid "Failed to toggle ASN rule."
-msgstr "切換 ASN 規則失敗。"
+msgstr "切换 ASN 规则失败。"
 
 #: admin/class-botblocker-admin.php:447
 #: includes/ajax/class-botblocker-ajax-geo.php:141
@@ -6349,7 +6348,7 @@ msgstr "无法切换路径。"
 
 #: includes/ajax/class-botblocker-ajax-white-bots.php:405
 msgid "Failed to toggle white bot."
-msgstr "切換白名單機器人失敗。"
+msgstr "切换白名单机器人失败。"
 
 #: admin/class-botblocker-admin.php:635
 msgid "Failed to unpack the add-on package."
@@ -6413,11 +6412,11 @@ msgstr "更新規則失敗: "
 
 #: includes/ajax/class-botblocker-ajax-white-bots.php:272
 msgid "Failed to update white bot."
-msgstr "更新白名單機器人失敗。"
+msgstr "更新白名单机器人失败。"
 
 #: admin/class-botblocker-admin.php:375
 msgid "Failed to update white bot: "
-msgstr "更新白名單機器人失敗: "
+msgstr "更新白名单机器人失败： "
 
 #: admin/class-botblocker-admin.php:460
 msgid "Failed to update: "
@@ -6433,7 +6432,7 @@ msgstr "虚假机器人 (7)"
 
 #: addons/bbcs-telegram/inc/class-bbcs-telegram-plugin.php:265
 msgid "Fake bots"
-msgstr "假冒機器人"
+msgstr "虚假机器人"
 
 #: admin/templates/settings/bot-detection.php:46
 #: includes/data/class-botblocker-snav.php:86
@@ -6482,7 +6481,7 @@ msgstr "此站点已停用 Feed。"
 #: admin/templates/cloud-api/status.php:54
 #: admin/templates/integrations/botblocker-api.php:47
 msgid "Fetch key from cloud"
-msgstr "從雲端擷取索引碼"
+msgstr "从云端获取密钥"
 
 #. translators: %s is the field name
 #. translators: %s is the name of the required field.
@@ -6544,12 +6543,12 @@ msgstr "在插件中不显示而运行的文件"
 
 #: addons/bbcs-malware/inc/views/scan-results/ignored-files.php:18
 msgid "Files you chose to ignore. They no longer count as issues. Restore one to bring it back into the scan results."
-msgstr ""
+msgstr "您选择忽略的文件。它们不再计为问题。恢复其中一个以将其重新纳入扫描结果。"
 
 #: admin/class-botblocker-admin.php:636
 #: includes/class-botblocker-toastify.php:269
 msgid "Filesystem API is not available."
-msgstr "檔案系統 API 無法使用。"
+msgstr "文件系统 API 不可用。"
 
 #: addons/bbcs-antispam/views/settings.php:240
 msgid "Filter by Categories"
@@ -6585,7 +6584,7 @@ msgstr "尋找工具…"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:464
 msgid "finding"
-msgstr "發現"
+msgstr "发现项"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:135
 msgid "Finding added to ignore list."
@@ -6601,11 +6600,11 @@ msgstr "发现已从忽略列表移除。"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:464
 msgid "findings"
-msgstr "發現項目"
+msgstr "发现项"
 
 #: addons/bbcs-malware/inc/views/scan-results/header.php:52
 msgid "Findings:"
-msgstr "發現項目："
+msgstr "发现项："
 
 #: admin/templates/setup-wizard/finish.php:57
 msgid "Fine-tune algorithms"
@@ -6622,7 +6621,7 @@ msgstr "导入需要指纹数据。"
 #: admin/templates/settings/tls-fingerprint.php:68
 #: includes/data/class-botblocker-snav.php:159
 msgid "Fingerprint Database"
-msgstr "指紋資料庫"
+msgstr "指纹数据库"
 
 #: admin/templates/settings/browser-plugins.php:56
 msgid "Fingerprint Sticky Block"
@@ -6639,7 +6638,7 @@ msgstr "防火墙规则表不可用。"
 
 #: admin/templates/settings/bot-detection.php:64
 msgid "Flag visitors whose browser language doesn&#39;t match their GeoIP location. May affect travelers and VPN users."
-msgstr "標示瀏覽器語言與其GeoIP位置不符的訪客。可能會影響旅行者和VPN使用者。"
+msgstr "旗帜 浏览器语言与其 GeoIP 位置不匹配的访客。可能影响旅行者和 VPN 用户。"
 
 #: addons/bbcs-malware/inc/views/scan-results.php:28
 msgid "Flat"
@@ -6652,7 +6651,7 @@ msgstr "灵活"
 #: admin/templates/settings/rate-limiting.php:136
 #: includes/data/class-botblocker-snav.php:234
 msgid "Floor %"
-msgstr "層級 %"
+msgstr "下限 %"
 
 #: admin/templates/tools/modals/rewrite-rules.php:25
 msgid "Flush"
@@ -6672,11 +6671,11 @@ msgstr "扫描目录时跟随符号链接。"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-addons-page.php:55
 msgid "Follow Symlinks"
-msgstr "遵循符號連結"
+msgstr "跟随符号链接"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:111
 msgid "Follow symlinks"
-msgstr "遵循符號連結"
+msgstr "跟随符号链接"
 
 #: admin/templates/tools/modals/db-repair.php:25
 msgid "Follow the link:"
@@ -6684,7 +6683,7 @@ msgstr "请访问链接："
 
 #: admin/templates/setup-wizard/welcome.php:30
 msgid "For important security notifications and special offers."
-msgstr "用於重要安全性通知和特別優惠。"
+msgstr "用于发送重要安全通知和特别优惠。"
 
 #: includes/hook/class-botblocker-addon-hooks.php:313
 #: includes/hook/class-botblocker-addon-hooks.php:412
@@ -6706,7 +6705,7 @@ msgstr "强制全新下载"
 #: admin/templates/settings/advanced-protection.php:47
 #: includes/data/class-botblocker-snav.php:536
 msgid "Force Verification for All"
-msgstr "強制全部驗證"
+msgstr "强制所有访问进行验证"
 
 #: addons/bbcs-firewall-export/views/settings.php:79
 msgid "Format options"
@@ -6719,19 +6718,19 @@ msgstr "找到了更好的替代方案"
 
 #: admin/templates/cloud-api/status.php:99
 msgid "Free"
-msgstr "免費"
+msgstr "免费"
 
 #: admin/templates/cloud-api/status.php:93
 msgid "Free vs BotBlocker PRO"
-msgstr "免費 vs BotBlocker PRO"
+msgstr "免费 vs BotBlocker PRO"
 
 #: admin/templates/cloud-api/status.php:64
 msgid "Free vs PRO"
-msgstr "免費 vs PRO"
+msgstr "免费 vs PRO"
 
 #: admin/templates/about/body.php:191
 msgid "from"
-msgstr "從"
+msgstr "来自"
 
 #: admin/templates/settings/general.php:40
 msgid "Frontend Mode (Check frontend only)"
@@ -6778,7 +6777,7 @@ msgstr "完整模式（检查所有要求）"
 
 #: admin/templates/settings/general.php:42
 msgid "Full Mode: Inspect all requests (frontend, admin, API, AJAX, cron). Frontend Mode: Inspect public-facing requests only."
-msgstr "完整模式：檢查所有請求 (前端、管理、API、AJAX、cron)。前端模式：僅檢查公開請求。"
+msgstr "完整模式：检查所有要求（前端、管理后台、API、AJAX、cron）。前端模式：仅检查面向公众的要求。"
 
 #: includes/ajax/class-botblocker-ajax-profile.php:59
 msgid "Full profile function is not available."
@@ -6802,7 +6801,7 @@ msgstr "完整保护清单、PRO 和要求处理链结"
 
 #: admin/class-botblocker-setup-wizard-ajax.php:42
 msgid "Full protection requires PRO license."
-msgstr "完整保護需要PRO授權。"
+msgstr "完整保护需要 PRO 许可证。"
 
 #: admin/class-botblocker-admin.php:183
 #: admin/class-botblocker-admin.php:682
@@ -6815,7 +6814,7 @@ msgstr "完全停用BotBlocker"
 
 #: admin/templates/settings/captcha-tab.php:79
 msgid "GD library is not enabled on this server. Image Captcha (mode 2) and Color Buttons (mode 1) will not work and will fall back to another mode."
-msgstr "此伺服器未啟用GD庫。圖片Captcha (模式2) 和彩色按鈕 (模式1) 將無法運作，並會退回其他模式。"
+msgstr "此服务器上未启用 GD 库。图片 Captcha（模式 2）和彩色按钮（模式 1）将无法工作，并会回退到另一个模式。"
 
 #: includes/hook/class-botblocker-settings-hooks.php:415
 msgid "GD library not available. Captcha mode was adjusted to a compatible mode."
@@ -6961,7 +6960,7 @@ msgstr "前往网站"
 #: includes/modal/modal-botblocker-rule-add.php:40
 #: includes/modal/modal-botblocker-rule-edit.php:36
 msgid "Google Analytics ID"
-msgstr "Google Analytics ID"
+msgstr "Google 分析 ID"
 
 #: admin/templates/integrations/2fa.php:164
 #: admin/templates/integrations/2fa.php:20
@@ -7167,14 +7166,14 @@ msgstr "聘请开发者"
 #: admin/templates/settings/general.php:55
 #: admin/templates/shared/header/plughead.php:27
 msgid "hits"
-msgstr "點擊次數"
+msgstr "命中次数"
 
 #: includes/data/traits/trait-botblocker-stats-charts.php:257
 #: includes/data/traits/trait-botblocker-stats-charts.php:266
 #, pgettext
 msgctxt "statistics label"
 msgid "Hits"
-msgstr "點擊次數"
+msgstr "命中次数"
 
 #: admin/templates/settings/general.php:49
 #: includes/data/class-botblocker-snav.php:487
@@ -7204,20 +7203,20 @@ msgstr "按住按钮并在绿色区域松开"
 
 #: addons/bbcs-hide-admin/views/settings.php:71
 msgid "Home Page"
-msgstr "首頁"
+msgstr "首页 页面"
 
 #: addons/bbcs-https-protocol/inc/class-bbcs-https-protocol-addons-page.php:56
 #: addons/bbcs-https-protocol/views/settings.php:122
 msgid "Home URL"
-msgstr "首頁 URL"
+msgstr "首页 URL"
 
 #: addons/bbcs-speedup/inc/class-bbcs-speedup-plugin.php:371
 msgid "homepage"
-msgstr "首頁"
+msgstr "首页"
 
 #: admin/templates/setup-wizard/compatibility.php:13
 msgid "Homepage"
-msgstr "首頁"
+msgstr "首页"
 
 #: admin/templates/settings/captcha-tab.php:172
 msgid "Honeypot Field on Challenge Page"
@@ -7236,7 +7235,7 @@ msgstr "钩子。独立于 WP-Cron。"
 
 #: admin/templates/settings/captcha-tab.php:60
 msgid "Horse"
-msgstr "馬"
+msgstr "马"
 
 #: admin/templates/settings/inapp.php:24
 msgid "Hosting / Bad IP (17)"
@@ -7246,7 +7245,7 @@ msgstr "托管 / 不良 IP (17)"
 #: includes/data/class-botblocker-snav.php:201
 #: includes/viewmodels/class-pro-status-viewmodel.php:100
 msgid "Hosting Provider IPs"
-msgstr "主機提供商 IP 位址"
+msgstr "托管服务商 IP"
 
 #: admin/templates/integrations/mu.php:75
 msgid "Hot bans"
@@ -7259,7 +7258,7 @@ msgstr "每小时"
 
 #: admin/templates/dashboard/activity.php:17
 msgid "Hourly visitors chart"
-msgstr "每小時訪客圖表"
+msgstr "每小时访客图表"
 
 #: addons/bbcs-behavior/views/settings.php:228
 msgid "Hours of inactivity before reputation tier cools down by 1 level. (Default: 16)"
@@ -7271,7 +7270,7 @@ msgstr "子网信誉层级冷却 1 级所需的不活动小时数。（默认：
 
 #: admin/templates/settings/data-log.php:26
 msgid "How BotBlocker Detects Browser Version, OS, and Device Type"
-msgstr "BotBlocker 如何偵測瀏覽器版本、作業系統和裝置類型"
+msgstr "BotBlocker 如何检测浏览器版本、操作系统和设备类型"
 
 #: addons/bbcs-behavior/views/settings.php:141
 msgid "How far back (in minutes) to evaluate a visitor's activity patterns. (Default: 10)"
@@ -7279,7 +7278,7 @@ msgstr "回溯多长时间（以分钟为单位）来评估访客的活动样板
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:365
 msgid "How far back in time (in minutes) we look to evaluate a visitor's activity patterns. For example, a 10-minute window means we inspect request patterns over the last 10 minutes. (Default: 10)"
-msgstr "我們回溯多久的時間（以分鐘為單位）來評估訪客的活動模式。例如，10 分鐘視窗意味著我們檢查過去 10 分鐘內的要求模式。（預設值：10）"
+msgstr "我们回溯多长时间（以分钟计）来评估访客的活动样板。例如，10 分钟的 窗口 表示我们检查过去 10 分钟内的 要求 样板。（默认：10）"
 
 #: addons/bbcs-behavior/views/settings.php:153
 msgid "How long (in seconds) an IP remains blocked after triggering the block threshold. (Default: 900)"
@@ -7287,7 +7286,7 @@ msgstr "触发区块阈值后，IP 保持被阻止的时间（以秒为单位）
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:401
 msgid "How long (in seconds) an IP remains temporarily blocked in the database after triggering the behavior block threshold. (Default: 900)"
-msgstr "IP 位址在觸發行為封鎖閾值後在資料庫中保持暫時封鎖多久（以秒為單位）。（預設值：900）"
+msgstr "在触发行为 区块 阈值后，IP 在数据库中被临时拦截多长时间（以秒计）。（默认：900）"
 
 #: admin/templates/settings/rate-limiting.php:98
 msgid "How long the IP stays blocked after exceeding the rate limit. Default: 600 (10 minutes)."
@@ -7295,11 +7294,11 @@ msgstr "超过速率限制后，IP 保持被阻止的时间。默认：600（10 
 
 #: addons/bbcs-404-guard/views/settings.php:104
 msgid "How long the IP stays challenged or blocked after crossing the threshold. The counter restarts afterwards."
-msgstr ""
+msgstr "IP 超过阈值后保持受验证挑战或被阻止的时长。之后计数器会重新开始。"
 
 #: admin/templates/settings/cookie.php:88
 msgid "How long the verification cookie remains valid."
-msgstr "驗證 Cookie 保持有效多久。"
+msgstr "验证 Cookie 保持有效的时间长度。"
 
 #: admin/templates/settings/error.php:63
 msgid "How long to block a visitor before allowing a retry."
@@ -7315,7 +7314,7 @@ msgstr "缓存接口的时间（以秒为单位）。"
 
 #: admin/templates/settings/general.php:101
 msgid "How long to keep allow-rules for verified bots before they expire."
-msgstr "保留已驗證機器人的允許規則多久才過期。"
+msgstr "已验证机器人的允许规则在过期前保留多长时间。"
 
 #: admin/templates/settings/data-log.php:73
 msgid "How long to keep audit log entries before automatic cleanup."
@@ -7335,19 +7334,19 @@ msgstr "在自动清理之前保留原始访客日志数据的天数。"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:456
 msgid "How many days we remember a suspicious IP's reputation. After this time without new activity, their history is completely deleted and their tier resets to 0. (Default: 7)"
-msgstr "我們記住可疑 IP 位址聲譽的天數。在此時間後沒有新活動，其歷史記錄將被完全刪除，並且層級重設為 0。（預設值：7）"
+msgstr "我们会记住可疑 IP 信誉多少天。在此时间后若无 新增 活动，其 历史记录 将被完全删除，且其层级重置为 0。（默认：7）"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:480
 msgid "How many days we remember the reputation history for a /24 subnet (a block of 256 neighboring IPs) before resetting it. (Default: 2)"
-msgstr "我們記住 /24 子網路（包含 256 個相鄰 IP 位址的區塊）的聲譽歷史，然後重設的天數。（預設值：2）"
+msgstr "在重置之前，我们为 /24 子网（由 256 个相邻 IP 组成的区块）保留信誉历史记录的天数。（默认：2）"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:492
 msgid "How many hours of inactivity must pass before a suspicious /24 subnet's reputation tier cools down (decays) by 1 level. (Default: 4)"
-msgstr "可疑的 /24 子網路聲譽層級降低（衰減）1 級前必須經過的閒置時數。（預設值：4）"
+msgstr "可疑 /24 子网的信誉层级降低（衰减）1 级之前，必须经过多少小时的无活动期。（默认：4）"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:468
 msgid "How many hours of inactivity must pass before a suspicious IP's reputation tier cools down (decays) by 1 level. For example, if set to 16, a Tier 5 IP that is quiet for 32 hours drops to Tier 3. (Default: 16)"
-msgstr "可疑 IP 位址的聲譽層級降低（衰減）1 級前必須經過的閒置時數。例如，如果設為 16，安靜 32 小時的層級 5 IP 位址會降至層級 3。（預設值：16）"
+msgstr "可疑 IP 的信誉层级降低（衰减）1 级之前，必须经过多少小时的无活动期。例如，若设为 16，则一个保持静默 32 小时的 5 级 IP 会降至 3 级。（默认：16）"
 
 #: addons/bbcs-404-guard/views/settings.php:57
 msgid "How many not-found requests from one IP inside the window before it is challenged or blocked."
@@ -7368,7 +7367,7 @@ msgstr "工作原理："
 #: addons/bbcs-behavior/views/settings.php:227
 #: addons/bbcs-behavior/views/settings.php:256
 msgid "hr"
-msgstr "小時"
+msgstr "小时"
 
 #: addons/bbcs-security-headers/views/settings.php:129
 msgid "HSTS includeSubDomains"
@@ -7398,18 +7397,18 @@ msgstr "HTTP Accept"
 
 #: admin/templates/settings/error.php:26
 msgid "HTTP Codes"
-msgstr "HTTP 狀態碼"
+msgstr "HTTP 代码"
 
 #: admin/templates/rules/body.php:110
 #: includes/modal/modal-botblocker-proxy-add.php:31
 #: includes/modal/modal-botblocker-proxy-edit.php:32
 msgid "HTTP Header"
-msgstr "HTTP 標頭"
+msgstr "HTTP 标头"
 
 #: includes/modal/modal-botblocker-proxy-add.php:32
 #: includes/modal/modal-botblocker-proxy-edit.php:33
 msgid "HTTP header for forwarding the real IP"
-msgstr "用於轉發真實 IP 位址的 HTTP 標頭"
+msgstr "用于转发真实 IP 的 HTTP 标头"
 
 #: admin/templates/settings/tls-fingerprint.php:53
 msgid "HTTP header name for JA3 fingerprint. Default: X-TLS-JA3. Cloudflare sends Cf-JA3-Fingerprint automatically."
@@ -7434,11 +7433,11 @@ msgstr "验证测试要求返回的 HTTP 响应代码。"
 #: admin/templates/settings/connection-types.php:42
 #: includes/data/class-botblocker-snav.php:195
 msgid "HTTP/1.0 Protocol"
-msgstr "HTTP/1.0 通訊協定"
+msgstr "HTTP/1.0 协议"
 
 #: addons/bbcs-cron-jobs/views/settings.php:138
 msgid "HTTPS Detection"
-msgstr "HTTPS 偵測"
+msgstr "HTTPS 检测"
 
 #: includes/data/class-botblocker-palette.php:80
 msgid "HTTPS enforcement - redirect, mixed content fixer"
@@ -7447,7 +7446,7 @@ msgstr "HTTPS 强制 - 重定向、混合内容修复"
 #: addons/bbcs-https-protocol/inc/class-bbcs-https-protocol-addons-page.php:34
 #: addons/bbcs-https-protocol/views/settings.php:29
 msgid "HTTPS Protocol"
-msgstr "HTTPS 通訊協定"
+msgstr "HTTPS 协议"
 
 #: addons/bbcs-https-protocol/inc/class-bbcs-https-protocol-addons-page.php:39
 msgid "HTTPS Settings"
@@ -7489,11 +7488,11 @@ msgstr "ID"
 #: includes/ajax/class-botblocker-ajax-asn.php:412
 #: includes/ajax/class-botblocker-ajax-white-bots.php:308
 msgid "ID is required for deletion."
-msgstr "刪除時需要 ID。"
+msgstr "删除时必须提供 ID。"
 
 #: admin/templates/setup-wizard/presets.php:19
 msgid "Ideal for testing"
-msgstr "非常適合測試"
+msgstr "适合测试"
 
 #: admin/templates/settings/cron.php:124
 msgid "If a scheduled task is missed (WP Cron unstable), BotBlocker will detect and reschedule it on the next check."
@@ -7501,19 +7500,19 @@ msgstr "如果错过了定时任务（WP Cron 不稳定），BotBlocker 将在�
 
 #: addons/bbcs-behavior/views/settings.php:83
 msgid "If a visitor's behavior score (0–100) reaches this threshold, a Captcha challenge is shown. Lower values = stricter. (Default: 50)"
-msgstr "如果訪客的行為分數 (0–100) 達到此閾值，則會顯示 Captcha 驗證。數值越低越嚴格。(預設值：50)"
+msgstr "如果访客的行为评分（0–100）达到此阈值，则会显示 Captcha 验证挑战。数值越低 = 越严格。（默认: 50）"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:353
 msgid "If a visitor's behavior score (from 0 to 100) reaches this threshold, they are blocked immediately. This should be set higher than the Captcha threshold. Lower values make protection stricter. (Default: 75)"
-msgstr "如果訪客的行為分數 (從 0 到 100) 達到此閾值，則會立即被阻擋。此值應設定得比 Captcha 閾值更高。數值越低，保護越嚴格。(預設值：75)"
+msgstr "如果访客的行为评分（0 到 100）达到此阈值，其将被立即拦截。此值应设置为高于 Captcha 阈值。较低的值会使保护更严格。（默认：75）"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:341
 msgid "If a visitor's behavior score (from 0 to 100) reaches this threshold, we display a Captcha challenge before letting them proceed. Lower values make protection stricter. (Default: 50)"
-msgstr "如果訪客的行為分數 (從 0 到 100) 達到此閾值，我們會先顯示 Captcha 驗證，然後才允許繼續。數值越低，保護越嚴格。(預設值：50)"
+msgstr "如果访客的行为评分（0 到 100）达到此阈值，我们会在允许其继续之前显示一个 Captcha 挑战。较低的值会使保护更严格。（默认：50）"
 
 #: addons/bbcs-behavior/views/settings.php:95
 msgid "If a visitor's behavior score reaches this threshold, they are blocked immediately. Must be higher than Captcha threshold. (Default: 75)"
-msgstr "如果訪客的行為分數達到此閾值，則會立即被阻擋。必須高於 Captcha 閾值。(預設值：75)"
+msgstr "如果访客的行为评分达到此阈值，其将被立即拦截。必须高于 Captcha 阈值。（默认：75）"
 
 #: admin/templates/settings/cron.php:66
 msgid "If WP-Cron is unreliable, set up a system cron job using the commands below."
@@ -7521,7 +7520,7 @@ msgstr "如果 WP-Cron 不可靠，请使用以下命令设置系统 cron 任务
 
 #: addons/bbcs-security-headers/views/settings.php:99
 msgid "If you use payment gateways (Stripe, PayPal, LiqPay, etc.), add their domains to \"Allowed Domains\" below to prevent CSP from blocking checkout scripts."
-msgstr "如果您使用付款閘道 (Stripe、PayPal、LiqPay 等)，請將其網域新增至下方的「允許的網域」中，以避免 CSP 阻擋簽出指令碼。"
+msgstr "如果您使用支付网关（Stripe、PayPal、LiqPay、其他），请将其域名添加到下方的 \"Allowed Domains\" 中，以防止 CSP 拦截 签出 脚本。"
 
 #: admin/templates/settings/traffic.php:20
 msgid "iFrame"
@@ -7529,7 +7528,7 @@ msgstr "iFrame"
 
 #: includes/services/class-botblocker-health-service.php:36
 msgid "Iframe protection (clickjacking)"
-msgstr "iFrame 保護 (點擊劫持)"
+msgstr "iframe 保护（点击劫持）"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:261
 msgid "Ignore"
@@ -7560,11 +7559,11 @@ msgstr "忽略同主机 Referer"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-addons-page.php:96
 msgid "Ignore Trusted External Scripts"
-msgstr "忽略受信任的外部指令碼"
+msgstr "忽略受信任的外部脚本"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:323
 msgid "Ignore trusted external scripts"
-msgstr "忽略受信任的外部指令碼"
+msgstr "忽略受信任的外部脚本"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-results-view.php:378
 #: addons/bbcs-malware/inc/class-bbcs-malware-results-view.php:406
@@ -7587,7 +7586,7 @@ msgstr "已忽略的文件夹"
 #: addons/bbcs-malware/inc/class-bbcs-malware-addons-page.php:100
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:365
 msgid "Ignored Indicator IDs"
-msgstr "已忽略的指標 ID"
+msgstr "已忽略的指标 ID"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-addons-page.php:99
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:356
@@ -7628,7 +7627,7 @@ msgstr "导入"
 
 #: admin/templates/settings/tls-fingerprint.php:76
 msgid "Import a JSON file containing known JA3/JA4 TLS fingerprints. The file must be an array of objects with fields: fingerprint, category, ua_family, description."
-msgstr "匯入包含已知 JA3/JA4 TLS 指紋的 JSON 檔案。此檔案必須是物件陣列，並包含下列欄位：fingerprint、category、ua_family、description。"
+msgstr "导入 一个包含已知 JA3/JA4 TLS 指纹的 JSON 文件。该 文件 必须是对象数组，字段包括：fingerprint、分类、ua_family、description。"
 
 #: admin/templates/tools/botblocker-tab.php:37
 #: includes/data/class-botblocker-snav.php:742
@@ -7698,23 +7697,23 @@ msgstr "导入成功。"
 #: admin/class-botblocker-admin.php:410
 #: admin/class-botblocker-admin.php:515
 msgid "Imported"
-msgstr "已匯入"
+msgstr "已导入"
 
 #: admin/class-botblocker-admin.php:561
 msgid "imported"
-msgstr "已匯入"
+msgstr "已导入"
 
 #: admin/partials/class-botblocker-dashboard-widgets.php:85
 msgid "Imported: "
-msgstr "已匯入："
+msgstr "已导入： "
 
 #: addons/bbcs-speedup/views/settings.php:23
 msgid "Improve site performance by disabling unneeded assets and features. Disable unused scripts, feeds, and UI elements to speed up WordPress."
-msgstr "透過停用不需要的資源和功能來改善網站效能。停用未使用的指令碼、資訊提供和 UI 元素，以加速 WordPress。"
+msgstr "通过停用不需要的资源和功能来提升站点性能。停用未使用的脚本、Feed 和 UI 元素以加快 WordPress。"
 
 #: includes/viewmodels/class-dashboard-viewmodel.php:178
 msgid "Improve your plan for excellent security protection."
-msgstr "升級您的方案，以獲得卓越的安全性保護。"
+msgstr "升级您的方案，获得出色的安全保护。"
 
 #: admin/templates/setup-wizard/init-mode.php:30
 msgid "Improved login page protection"
@@ -7759,7 +7758,7 @@ msgstr "包含发送到暗黑（静默）封禁模式的地址。"
 
 #: addons/bbcs-firewall-export/views/settings.php:65
 msgid "Include addresses that go through the challenge (gray) mode. Enable only if you want those clients dropped at the firewall level."
-msgstr ""
+msgstr "在模式中包含经过验证挑战（灰色）的地址。仅当您希望在防火墙层面丢弃这些客户端时，才启用。"
 
 #: addons/bbcs-firewall-export/views/settings.php:73
 msgid "Include bans that still have remaining TTL. Expired bans are always excluded."
@@ -7785,11 +7784,11 @@ msgstr "包含於 BotBlocker PRO 中"
 #: admin/templates/settings/browser-plugins.php:35
 #: includes/data/class-botblocker-snav.php:114
 msgid "Incognito / Private"
-msgstr "無痕 / 私密"
+msgstr "无痕 / 隐私"
 
 #: admin/templates/settings/browser-plugins.php:23
 msgid "Incognito mode"
-msgstr "無痕模式"
+msgstr "无痕模式"
 
 #: admin/templates/shared/request-chain.php:20
 msgid "Incoming request"
@@ -7814,7 +7813,7 @@ msgstr "不兼容的附加组件已停用：%s。请更新 BotBlocker。"
 #: addons/bbcs-malware/inc/views/scan-results/header.php:65
 #, php-format
 msgid "Increase Max Files or Max Findings to scan more items. Current Max Files: %1$d. Current Max Findings: %2$d."
-msgstr "增加「最大檔案數」或「最大發現數」以掃描更多項目。目前最大檔案數：%1$d。目前最大發現數：%2$d。"
+msgstr "增加最大文件数或最大发现项数以扫描更多项目。当前最大文件数：%1$d。当前最大发现项数：%2$d。"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:287
 msgid "Indicator"
@@ -7824,7 +7823,7 @@ msgstr "指标"
 #: addons/bbcs-malware/inc/views/scan-results/database-findings.php:27
 #: addons/bbcs-malware/inc/views/scan-results/file-findings.php:35
 msgid "Indicators"
-msgstr "指標"
+msgstr "指标"
 
 #: includes/audit/class-botblocker-audit-logger.php:247
 msgid "info"
@@ -7844,7 +7843,7 @@ msgstr "初始化模式"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:417
 msgid "Initializing scanner..."
-msgstr "正在初始化掃描器..."
+msgstr "正在初始化扫描器…"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:468
 msgid "Initializing..."
@@ -7874,7 +7873,7 @@ msgstr "安装封装"
 #: admin/class-botblocker-admin.php:633
 #: includes/class-botblocker-toastify.php:243
 msgid "Installation arguments are missing."
-msgstr "安裝參數遺失。"
+msgstr "缺少安装参数。"
 
 #: admin/templates/setup-guide/status.php:191
 msgid "Installed"
@@ -7894,15 +7893,15 @@ msgstr "即时（实时）"
 
 #: admin/templates/setup-wizard/init-mode.php:50
 msgid "Instant IP blocking"
-msgstr "立即 IP 封鎖"
+msgstr "即时 IP 拦截"
 
 #: admin/templates/setup-wizard/cache.php:18
 msgid "Instant response"
-msgstr "即時回應"
+msgstr "即时响应"
 
 #: addons/bbcs-antispam/views/settings.php:96
 msgid "Instant: checks comments in real-time before they are published. Cron: processes comments in batches via WP-Cron."
-msgstr ""
+msgstr "即时：在评论发布前实时检查评论。Cron：通过 WP-Cron 批量处理评论。"
 
 #: addons/bbcs-firewall-export/inc/class-bbcs-firewall-export.php:196
 #: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:104
@@ -8273,7 +8272,7 @@ msgstr "JA3 DB"
 #: admin/templates/settings/tls-fingerprint.php:52
 #: includes/data/class-botblocker-snav.php:148
 msgid "JA3 Header Name"
-msgstr "JA3 頁首名稱"
+msgstr "JA3 标头名称"
 
 #: admin/templates/reports/dashboard.php:31
 msgid "JA3/4"
@@ -8282,7 +8281,7 @@ msgstr "JA3/4"
 #: admin/templates/settings/tls-fingerprint.php:60
 #: includes/data/class-botblocker-snav.php:149
 msgid "JA4 Header Name"
-msgstr "JA4 頁首名稱"
+msgstr "JA4 标头名称"
 
 #: admin/templates/settings/tls-fingerprint.php:29
 msgid "JA4 Spec"
@@ -8314,7 +8313,7 @@ msgstr "JS 一致性检查"
 
 #: admin/templates/reports/table-header.php:18
 msgid "JS Info"
-msgstr "JS 資訊"
+msgstr "JS 信息"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:398
 msgid "Keep this tab open"
@@ -8391,16 +8390,16 @@ msgstr "统计 404 响应的滑动窗口长度。"
 
 #: admin/templates/about/body.php:158
 msgid "Libraries and resources used in BotBlocker, with licenses and sources."
-msgstr "BotBlocker 使用的库和资源，包含授權方式和来源。"
+msgstr "BotBlocker 中使用的库和资源，包含许可证及来源信息。"
 
 #: admin/templates/integrations/botblocker-api.php:35
 msgid "License"
-msgstr "授權方式"
+msgstr "许可证"
 
 #: admin/templates/cloud-api/status.php:26
 #: admin/templates/integrations/botblocker-api.php:37
 msgid "License key"
-msgstr "授權金鑰"
+msgstr "许可证密钥"
 
 #: admin/templates/dashboard/quick-links.php:20
 msgid "License, cloud API, premium features"
@@ -8630,7 +8629,7 @@ msgstr "记录可疑的虚假机器人日志"
 
 #: admin/templates/settings/log.php:17
 msgid "Log verification requests, allowed visitors, blocked attempts, and admin actions."
-msgstr "記錄驗證請求、允許的訪客、封鎖的嘗試和管理操作。"
+msgstr "日志 验证要求、允许的访客、被拦截的尝试以及管理员操作。"
 
 #: admin/templates/settings/log.php:32
 #: includes/data/class-botblocker-snav.php:377
@@ -8651,7 +8650,7 @@ msgstr "记录 WordPress 操作日志"
 #: includes/data/class-botblocker-snav.php:369
 #: includes/viewmodels/class-settings-viewmodel.php:200
 msgid "Logging"
-msgstr "記錄"
+msgstr "日志记录"
 
 #: admin/templates/settings/log.php:15
 msgid "Logging Settings"
@@ -8683,7 +8682,7 @@ msgstr "日志与基本报告"
 
 #: admin/templates/settings/error.php:72
 msgid "Longer ban applied after repeated failures."
-msgstr "在重複失敗後套用較長的封鎖。"
+msgstr "反复失败后将申请更长的封禁。"
 
 #: public/2FA/bbcs-2fa.php:277
 msgid "Lost access? Send recovery email"
@@ -8691,11 +8690,11 @@ msgstr "无法访问？发送恢复邮箱"
 
 #: admin/templates/setup-wizard/cache.php:31
 msgid "Low resource consumption"
-msgstr "低資源消耗"
+msgstr "低资源消耗"
 
 #: admin/templates/setup-guide/one-click-modal.php:38
 msgid "Low resource usage"
-msgstr "低資源使用量"
+msgstr "低资源占用"
 
 #: admin/templates/setup-wizard/recaptcha.php:71
 msgid "Lower scores block more traffic; higher scores are more permissive."
@@ -8708,7 +8707,7 @@ msgstr "主要"
 
 #: admin/templates/rules/body.php:153
 msgid "Maintained automatically by BotBlocker cloud - read-only. Manage your own ASN rules in the table above."
-msgstr ""
+msgstr "由 BotBlocker 云自动维护 - 只读。在上方的表格中 管理 您自己的 ASN 规则。"
 
 #: admin/templates/tools/maintenance-tab.php:89
 #: includes/data/class-botblocker-snav.php:748
@@ -8718,15 +8717,15 @@ msgstr "维护"
 
 #: includes/shortcode/class-botblocker-sidebar-shortcodes.php:120
 msgid "Malicious IPs in cloud database:"
-msgstr "雲端資料庫中的惡意 IP 位址："
+msgstr "云数据库中的恶意 IP："
 
 #: admin/templates/reports/dashboard.php:26
 msgid "malicious IPs in database"
-msgstr "資料庫中的惡意 IP 位址"
+msgstr "数据库中的恶意 IP"
 
 #: addons/bbcs-malware/views/settings.php:20
 msgid "Malware"
-msgstr "惡意程式碼"
+msgstr "恶意软件"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:220
 msgid "Malware Scan"
@@ -8742,7 +8741,7 @@ msgstr "恶意软件扫描已开始。"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-addons-page.php:36
 msgid "Malware Scanner"
-msgstr "惡意程式碼掃描器"
+msgstr "恶意软件扫描器"
 
 #: admin/templates/integrations/wp-abilities.php:45
 msgid "Malware Scanner (PRO)"
@@ -8750,7 +8749,7 @@ msgstr "恶意软件扫描器（PRO）"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-background.php:635
 msgid "Malware Scanner: High-Confidence Findings"
-msgstr "惡意程式碼掃描器：高可信度發現項目"
+msgstr "恶意软件扫描器：高置信度发现项"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:199
 msgid "Malware Scheduled Scan"
@@ -8779,7 +8778,7 @@ msgstr "管理 PRO"
 
 #: admin/templates/settings/traffic.php:16
 msgid "Manage referrer analysis, UTM processing, and iframe restrictions to control traffic sources."
-msgstr "管理推薦連結來源網址分析、UTM 處理和 iFrame 限制，以控制流量來源。"
+msgstr "管理引荐来源分析、UTM 处理以及 iframe 限制，以控制流量来源。"
 
 #: addons/bbcs-early-init/views/settings.php:97
 #: admin/templates/integrations/mu.php:56
@@ -8792,11 +8791,11 @@ msgstr "管理插件数据库、临时文件、日志和服务数据，以保持
 
 #: admin/templates/setup-wizard/compatibility.php:36
 msgid "Manually"
-msgstr "手動"
+msgstr "手动"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:519
 msgid "Maps activity speed (as a percentage of Max RPM) to a reputation tier 1-5. Tier 6 is the max penalty, assigned automatically when an IP is blocked by the engine. Each mapping goes on its own line."
-msgstr "將活動速度（以最大 RPM 的百分比表示）對應到信譽層級 1-5。層級 6 是最高懲罰，當 IP 位址被引擎封鎖時自動指派。每個對應獨立一行。"
+msgstr "将活动速度（占最大 RPM 的百分比）映射到 1-5 级的信誉层级。6 级是最高惩罚，在 IP 被引擎拦截时自动指派。每个映射单独占一行。"
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:120
 msgid "Maps custom domains to sites on a multisite network, before WordPress decides which site to load."
@@ -8804,11 +8803,11 @@ msgstr "在 WordPress 决定加载哪个站点之前，将自定义域名映射�
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:525
 msgid "Maps traffic speed percentage to reputation tier 1-5 (tier 6 is reserved for blocked IPs). Format: percent:tier (one per line, e.g. 0.35:1)."
-msgstr "將流量速度百分比對應到信譽層級 1-5（層級 6 保留給被封鎖的 IP 位址）。格式：百分比:層級（每行一個，例如 0.35:1）。"
+msgstr "将流量速度百分比映射到信誉层级 1-5（层级 6 保留给被阻止的 IP）。格式：百分比：层级（每行一个，例如 0.35:1）。"
 
 #: addons/bbcs-behavior/views/settings.php:281
 msgid "Maps traffic speed percentage to reputation tier 1–5 (tier 6 reserved for blocked IPs). Format: percent:tier (one per line)."
-msgstr "將流量速度百分比對應到信譽層級 1–5（層級 6 保留給被封鎖的 IP 位址）。格式：百分比:層級（每行一個）。"
+msgstr "将流量速度百分比映射到信誉层级 1–5（层级 6 保留给被阻止的 IP）。格式：percent:tier（每行一个）。"
 
 #: admin/class-botblocker-admin.php:665
 #: admin/templates/addons/addons-content.php:33
@@ -8838,11 +8837,11 @@ msgstr "下方 404 扫描器检测的总切换。"
 
 #: admin/templates/integrations/wp-abilities.php:22
 msgid "Master switch. When off, no BotBlocker ability is registered at all — it is invisible in the ability list, REST, MCP and run endpoints."
-msgstr ""
+msgstr "主 切换。关闭时，完全不会注册任何 BotBlocker 能力 — 它在 能力 列表、REST、MCP 和运行端点中不可见。"
 
 #: admin/templates/setup-wizard/captcha.php:36
 msgid "Match rotating shapes. BotBlocker exclusive."
-msgstr "配對旋轉形狀。BotBlocker 獨家。"
+msgstr "匹配旋转的图形。BotBlocker 独家功能。"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:289
 msgid "Matched content"
@@ -8851,7 +8850,7 @@ msgstr "匹配的内容"
 #: addons/bbcs-malware/inc/class-bbcs-malware-addons-page.php:74
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:218
 msgid "Max DB Rows"
-msgstr "最大資料庫列數"
+msgstr "最大 DB 行数"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-addons-page.php:70
 msgid "Max File Size"
@@ -8873,7 +8872,7 @@ msgstr "最大文件数"
 #: addons/bbcs-malware/inc/class-bbcs-malware-addons-page.php:72
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:199
 msgid "Max Findings"
-msgstr "最大發現數"
+msgstr "最大发现数"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:187
 msgid "Max number of files to scan"
@@ -8881,29 +8880,29 @@ msgstr "要扫描的最大文件数"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:200
 msgid "Max number of malicious findings to report"
-msgstr "要回報的惡意發現最大數量"
+msgstr "要报告的最大恶意发现项数量"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:219
 msgid "Max number of rows to store in the database"
-msgstr "要儲存在資料庫中的最大列數"
+msgstr "要存储在数据库中的最大行数"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-addons-page.php:42
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:387
 #: addons/bbcs-behavior/views/settings.php:122
 msgid "Max RPH Threshold"
-msgstr "最大 RPH 閾值"
+msgstr "最大 RPH 阈值"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-addons-page.php:41
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:375
 #: addons/bbcs-behavior/views/settings.php:110
 msgid "Max RPM Threshold"
-msgstr "最大 RPM 閾值"
+msgstr "最大 RPM 阈值"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-addons-page.php:57
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:502
 #: addons/bbcs-behavior/views/settings.php:270
 msgid "Max Tier"
-msgstr "最大層級"
+msgstr "最大层级"
 
 #: admin/templates/shared/system-status-lines.php:16
 msgid "max_execution_time: "
@@ -8923,11 +8922,11 @@ msgstr "树视图中每个结果卡片嵌入的最大发现数。"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:230
 msgid "Maximum findings shown in the Flat results view before truncating. Switch to Tree view to browse all."
-msgstr ""
+msgstr "扁平化结果视图中截断前显示的最大发现数。切换到树状视图以浏览全部。"
 
 #: admin/templates/setup-guide/one-click-modal.php:68
 msgid "Maximum hardening with cloud threat intelligence."
-msgstr "利用雲端威脅情報達到最大強化。"
+msgstr "借助云端威胁情报实现最高强度加固。"
 
 #: addons/bbcs-feed-guard/views/settings.php:62
 msgid "Maximum number of words kept from the original article in the feed."
@@ -8935,11 +8934,11 @@ msgstr "Feed 中保留原始文章的最大字数。"
 
 #: addons/bbcs-behavior/views/settings.php:272
 msgid "Maximum penalty level an IP or subnet can reach. Higher tiers apply stricter thresholds. (Default: 6)"
-msgstr "IP 位址或子網路可達到的最大懲罰層級。較高層級套用更嚴格的閾值。（預設值：6）"
+msgstr "IP 或子网可达到的最高惩罚级别。更高的层级会申请更严格的阈值。（默认：6）"
 
 #: admin/templates/setup-wizard/init-mode.php:53
 msgid "Maximum protection level"
-msgstr "最大保護層級"
+msgstr "最高保护级别"
 
 #: admin/templates/setup-wizard/presets.php:45
 msgid "Maximum protection with PRO features"
@@ -8951,7 +8950,7 @@ msgstr "最大保護，最嚴格的限制"
 
 #: addons/bbcs-behavior/views/settings.php:124
 msgid "Maximum requests per hour. Catches slow-crawling scrapers that avoid per-minute limits. (Default: 200)"
-msgstr "每小時最大請求數。捕捉規避每分鐘限制的慢速爬蟲。（預設值：200）"
+msgstr "每小时最大要求数。可捕获那些避开每分钟限制的慢速爬行抓取器。（默认：200）"
 
 #: addons/bbcs-behavior/views/settings.php:112
 msgid "Maximum requests per minute a typical human would make. (Default: 30)"
@@ -8964,7 +8963,7 @@ msgstr "即时模式下等待 AI 裁决的最长时间。（5-30，默认：20�
 #: includes/components/class-botblocker-component-health-item.php:74
 #: includes/shortcode/class-botblocker-health-shortcodes.php:243
 msgid "may reduce protection"
-msgstr "可能會降低保護"
+msgstr "可能会降低保护"
 
 #: includes/audit/class-botblocker-audit-logger.php:245
 msgid "medium"
@@ -9000,7 +8999,7 @@ msgstr "检测到 Memcached"
 
 #: includes/data/class-botblocker-snav.php:634
 msgid "Memcached Host Address"
-msgstr "Memcached 主機位址"
+msgstr "Memcached 主机地址"
 
 #: admin/class-botblocker-setup-wizard-ajax.php:356
 msgid "Memcached is not reachable. Connect it before enabling the cache."
@@ -9008,7 +9007,7 @@ msgstr "Memcached 不可达。请在启用缓存之前连接它。"
 
 #: includes/data/class-botblocker-snav.php:635
 msgid "Memcached Port Number"
-msgstr "Memcached 連接埠號碼"
+msgstr "Memcached 端口号"
 
 #: admin/templates/integrations/memcached.php:16
 msgid "Memcached provides distributed memory caching for security data and visitor analytics, reducing database queries on busy sites."
@@ -9024,7 +9023,7 @@ msgstr "memory_limit："
 #: addons/bbcs-hide-admin/views/settings.php:84
 #: admin/class-botblocker-admin.php:491
 msgid "Message"
-msgstr "訊息"
+msgstr "消息"
 
 #: addons/bbcs-hide-admin/views/settings.php:69
 msgid "Message (Default)"
@@ -9073,11 +9072,11 @@ msgstr "将评论归类为标记为垃圾的最低垃圾评分（0-1）。越高
 
 #: addons/bbcs-antispam/views/settings.php:189
 msgid "Minimum suspicious score (0-1) to hold a comment for moderation. Must be lower than Spam Threshold. (Default: 0.3)"
-msgstr ""
+msgstr "将 评论 按住 送去审核所需的最低可疑分数 (0-1)。必须低于 标记为垃圾 阈值。(默认：0.3)"
 
 #: admin/templates/settings/rate-limiting.php:137
 msgid "Minimum threshold as a percentage of block RPM, preventing thresholds from dropping to zero under high subnet pressure. Default: 10%."
-msgstr "最小閾值，以封鎖 RPM 的百分比計算，防止在子網路高壓下閾值降至零。預設值：10%。"
+msgstr "最低阈值占 区块 RPM 的百分比，用于防止在高子网压力下阈值降至零。默认：10%。"
 
 #: admin/templates/setup-wizard/compatibility.php:32
 msgid "Minor compatibility issues detected"
@@ -9149,7 +9148,7 @@ msgstr "缺少必填字段：代理。"
 
 #: includes/ajax/class-botblocker-ajax-rules.php:590
 msgid "Missing rules data."
-msgstr "遺失規則資料。"
+msgstr "缺少规则数据。"
 
 #: admin/templates/settings/inapp.php:25
 msgid "Mobile ISP ranges wrongly flagged as hosting."
@@ -9164,7 +9163,7 @@ msgstr "模式"
 #: includes/viewmodels/class-dashboard-viewmodel.php:142
 #, php-format
 msgid "Mode \"Recommended\" today blocked %1$s bots, passed %2$s search engines."
-msgstr "模式「建議」今天封鎖了 %1$s 個機器人，放行了 %2$s 個搜尋引擎。"
+msgstr "模式 “推荐” 今天拦截了 %1$s 个机器人，放行了 %2$s 个搜索引擎。"
 
 #: includes/helpers/class-health-score-helper.php:15
 #: includes/shortcode/class-botblocker-health-shortcodes.php:44
@@ -9187,15 +9186,15 @@ msgstr "仅监控"
 
 #: admin/templates/setup-guide/pro-body.php:17
 msgid "Monthly or annual subscription with cloud intelligence and premium features."
-msgstr "月費或年費約期授權，提供雲端智慧分析與進階功能。"
+msgstr "按月或按年订阅，包含云端情报和高级功能。"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:76
 msgid "More permissive, fewer false positives"
-msgstr "更寬容，更少的誤報"
+msgstr "更宽松，误报更少"
 
 #: admin/templates/integrations/recaptcha-v3.php:52
 msgid "Move the slider to adjust the threshold level"
-msgstr "移動滑桿以調整閾值等級"
+msgstr "移动滑块以调整阈值级别"
 
 #: includes/audit/class-botblocker-audit-logger.php:423
 msgid "Moved the %post_type% %title% to trash."
@@ -9216,7 +9215,7 @@ msgstr "MU 引导程序文件"
 #: includes/inc-botblocker-ui.php:152
 #: includes/viewmodels/class-chain-context-data.php:98
 msgid "MU mode disabled. Early initialization already performs pre-filtering. Enabling MU is unnecessary."
-msgstr "MU 模式已停用。早期初始化已執行預先過濾，無需啟用 MU 模式。"
+msgstr "MU 模式已停用。早期初始化已执行预筛选。无需启用 MU。"
 
 #: admin/templates/settings/status.php:50
 #: admin/templates/shared/system-toggles.php:45
@@ -9230,12 +9229,12 @@ msgstr "MU 插件"
 #: includes/inc-botblocker-ui.php:155
 #: includes/viewmodels/class-chain-context-data.php:101
 msgid "MU plugin active. Early IP and rule filtering run before other plugins. Early initialization is not required."
-msgstr "MU 外掛已啟用。早期 IP 和規則過濾會在其他外掛之前執行，無需進行早期初始化。"
+msgstr "MU 插件已启用。提前的 IP 和规则筛选会在其他插件之前运行。不需要提前初始化。"
 
 #: includes/inc-botblocker-ui.php:158
 #: includes/viewmodels/class-chain-context-data.php:104
 msgid "MU plugin mode disabled. You can enable it (or early initialization) for preliminary malicious IP rejection."
-msgstr "MU 外掛模式已停用。您可以啟用它（或早期初始化）以進行初步的惡意 IP 排除。"
+msgstr "MU 插件模式已停用。您可以启用它（或提前初始化）以进行初步的恶意 IP 拒绝。"
 
 #: admin/templates/integrations/mu.php:18
 #: admin/templates/integrations/mu.php:26
@@ -9246,7 +9245,7 @@ msgstr "MU 外掛模式已停用。您可以啟用它（或早期初始化）以
 #: includes/data/class-botblocker-snav.php:448
 #: includes/viewmodels/class-integrations-viewmodel.php:178
 msgid "MU-plugin"
-msgstr "MU 外掛"
+msgstr "MU 插件"
 
 #: admin/templates/integrations/mu.php:19
 msgid "MU-plugin mode loads BotBlocker IP protection before regular plugins and WordPress core initialise."
@@ -9258,11 +9257,11 @@ msgstr "mu-plugins 目录已被重新定位。"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:255
 msgid "Multi-signal behavioral analysis for advanced bot detection."
-msgstr "多訊號行為分析，用於進階機器人偵測。"
+msgstr "用于高级机器人检测的多信号行为分析。"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-plugin.php:57
 msgid "Multi-signal behavioral scoring, session limits, and IP reputation decay."
-msgstr ""
+msgstr "多信号行为评分、会话限制以及 IP 信誉衰减。"
 
 #: admin/templates/settings/rate-limiting.php:128
 msgid "Multiplier applied to block RPM for subnet threshold. Higher = more tolerant. Default: 3."
@@ -9303,15 +9302,15 @@ msgstr "生成的脚本所创建的 fail2ban jail 名称。"
 
 #: admin/templates/shared/command-palette.php:16
 msgid "navigate"
-msgstr "導航"
+msgstr "导航"
 
 #: admin/templates/cloud-api/status.php:134
 msgid "Need help with WordPress security?"
-msgstr "需要 WordPress 安全性的協助嗎？"
+msgstr "需要 WordPress 安全方面的帮助吗？"
 
 #: admin/templates/setup-wizard/finish.php:92
 msgid "Need help? Visit our"
-msgstr "需要協助嗎？請造訪我們的"
+msgstr "需要帮助？请访问我们的"
 
 #: addons/bbcs-forced-inclusions/views/settings.php:79
 msgid "Needs attention"
@@ -9329,11 +9328,11 @@ msgstr "网络掩码"
 
 #: addons/bbcs-404-guard/views/settings.php:138
 msgid "Networks that are never counted or blocked. One IPv4/IPv6 address or CIDR range per line; lines starting with # are ignored."
-msgstr ""
+msgstr "绝不会被统计或阻止的网络。每行一个 IPv4/IPv6 地址或 CIDR 范围；以 # 开头的行会被忽略。"
 
 #: addons/bbcs-404-guard/views/settings.php:129
 msgid "Never count or block logged-in users. Recommended: protects editors and administrators from locking themselves out."
-msgstr ""
+msgstr "绝不统计或区块已登录用户。建议：保护编辑器和管理员免于将自己锁定在外。"
 
 #: includes/shortcode/class-botblocker-sidebar-shortcodes.php:83
 msgid "New bots discovered today:"
@@ -9348,7 +9347,7 @@ msgstr "新增错误将在发生时记录日志。"
 #: admin/templates/settings/cron.php:164
 #: admin/templates/settings/cron.php:182
 msgid "Next Run"
-msgstr "下次執行"
+msgstr "下次运行"
 
 #: addons/bbcs-firewall-export/views/settings.php:32
 msgid "nginx access module"
@@ -9382,7 +9381,7 @@ msgstr "沒有警示"
 
 #: includes/hook/class-botblocker-cloud-api-hooks.php:46
 msgid "No API key found for this domain."
-msgstr "找不到此網域名稱的 API 索引碼。"
+msgstr "未找到此域名的 API 密钥。"
 
 #: public/2FA/bbcs-2fa.php:242
 msgid "No backup codes remaining."
@@ -9686,7 +9685,7 @@ msgstr "每行一个指示器 ID。匹配的指示器将被忽略，用于已知
 
 #: addons/bbcs-firewall-export/views/settings.php:120
 msgid "One IP or CIDR per line. These addresses are appended to every generated format in addition to the ban database."
-msgstr ""
+msgstr "每行一个 IP 或 CIDR。除封禁数据库外，这些地址还会附加到每种生成的格式中。"
 
 #: addons/bbcs-xmlrpc-tunnel/views/settings.php:76
 msgid "One IP or CIDR range per line. Supports: single IPs (192.168.1.1), CIDR (10.0.0.0/24), wildcards (192.168.*.*), IPv6 (::1, 2001:db8::/32). Lines starting with # are comments."
@@ -9703,11 +9702,11 @@ msgstr "一键安全设置"
 #: admin/templates/settings/page-head.php:21
 #: admin/templates/setup-guide/status.php:21
 msgid "One-click setup"
-msgstr "一鍵設定"
+msgstr "一键设置"
 
 #: admin/templates/setup-guide/health.php:22
 msgid "One-Click Setup"
-msgstr "一鍵設定"
+msgstr "一键设置"
 
 #: includes/viewmodels/class-settings-viewmodel.php:379
 msgid "One-time"
@@ -9715,7 +9714,7 @@ msgstr "一次性"
 
 #: admin/templates/settings/tls-fingerprint.php:104
 msgid "Only accept TLS fingerprint headers from this trusted proxy IP or CIDR range. Cloudflare IPs are auto-detected."
-msgstr "僅接受來自此受信任代理 IP 或 CIDR 範圍的 TLS 指紋標頭。Cloudflare IP 會自動偵測。"
+msgstr "仅接受来自此受信任代理 IP 或 CIDR 范围的 TLS 指纹标头。Cloudflare IP 将自动检测。"
 
 #: addons/bbcs-antispam/views/settings.php:241
 msgid "Only check comments in selected categories. Leave empty to check all categories."
@@ -9723,11 +9722,11 @@ msgstr "仅检查所选分类中的评论。留空则检查所有分类。"
 
 #: admin/templates/settings/payment-tab.php:28
 msgid "Only safe HTTP methods (GET, POST, HEAD) are bypassed. Hard IP blacklists and country blocks still apply."
-msgstr "僅安全的 HTTP 方法 (GET、POST、HEAD) 會跳過。硬性 IP 黑名單和國家封鎖仍然適用。"
+msgstr "仅绕过安全的 HTTP 方法（GET、文章、HEAD）。硬性 IP 黑名单和国家/地区区块仍会 申请。"
 
 #: admin/templates/shared/command-palette.php:17
 msgid "open"
-msgstr "開啟"
+msgstr "打开"
 
 #: admin/templates/integrations/cache.php:55
 msgid "Open CACHE-COMPATIBILITY.md"
@@ -9823,7 +9822,7 @@ msgstr "或 16 个字符的备份代码"
 
 #: admin/templates/setup-wizard/finish.php:94
 msgid "or contact us at"
-msgstr "或透過以下方式與我們聯絡"
+msgstr "或通过以下方式联系我们"
 
 #. translators: %s: number of remaining backup codes
 #: public/2FA/bbcs-2fa.php:238
@@ -9837,7 +9836,7 @@ msgstr "橙色"
 
 #: admin/partials/class-botblocker-dashboard-widgets.php:230
 msgid "Order of execution"
-msgstr "執行順序"
+msgstr "执行顺序"
 
 #: admin/templates/shared/system-status-lines.php:8
 #: includes/viewmodels/class-about-viewmodel.php:61
@@ -9889,7 +9888,7 @@ msgstr ""
 
 #: admin/templates/integrations/redis.php:46
 msgid "Password:"
-msgstr "密碼："
+msgstr "密码："
 
 #: addons/bbcs-forced-inclusions/views/settings.php:34
 #: addons/bbcs-forced-inclusions/views/settings.php:71
@@ -10003,7 +10002,7 @@ msgstr "性能优化和前端清理，让 WordPress 更快。"
 
 #: admin/templates/tools.php:25
 msgid "Performance, maintenance, and service parameters"
-msgstr "效能、維護與服務參數"
+msgstr "性能、维护和服务参数"
 
 #: includes/ajax/class-botblocker-ajax-maintenance.php:233
 msgid "Permalink rules have been flushed successfully."
@@ -10015,7 +10014,7 @@ msgstr "固定链接规则已成功刷新。"
 #: includes/modal/modal-botblocker-rule-add.php:99
 #: includes/modal/modal-botblocker-rule-edit.php:91
 msgid "Permanently Ban"
-msgstr "永久封鎖"
+msgstr "永久封禁"
 
 #: includes/audit/class-botblocker-audit-logger.php:425
 msgid "Permanently deleted the %post_type% %title%."
@@ -10027,13 +10026,13 @@ msgstr "允许没有 Accept-Language 标头的访客（隐私工具、Tor 最安
 
 #: admin/templates/setup-wizard/cache.php:19
 msgid "Persistent connections"
-msgstr "持久連線"
+msgstr "持久连接"
 
 #: includes/data/traits/trait-botblocker-stats-charts.php:277
 #, pgettext
 msgctxt "device type label"
 msgid "Phone"
-msgstr "手機"
+msgstr "手机"
 
 #: includes/data/class-botblocker-alerts.php:646
 msgid "PHP caching mode - BotBlocker registers its cookie with WP Super Cache (wpsc_add_cookie), so verified pages are keyed per visitor and the challenge wall is never bypassed from cache."
@@ -10051,7 +10050,7 @@ msgstr "PHP 擴充功能未安裝"
 
 #: admin/templates/shared/system-status-lines.php:14
 msgid "PHP vars:"
-msgstr "PHP 變數："
+msgstr "PHP 变量："
 
 #: includes/ajax/class-botblocker-ajax-backup.php:76
 msgid "PHP zip extension is required for backups."
@@ -10069,7 +10068,7 @@ msgstr "PHP: v"
 
 #: admin/templates/setup-wizard/captcha.php:20
 msgid "Pick the correct color. Simple logic, hard to automate."
-msgstr "選取正確的色彩。邏輯簡單，難以自動化。"
+msgstr "选择正确的颜色。逻辑简单，难以自动化。"
 
 #: admin/class-botblocker-setup-wizard.php:230
 #: admin/templates/setup-wizard/completed.php:65
@@ -10099,7 +10098,7 @@ msgstr "请先更新插件。"
 #: admin/class-botblocker-admin.php:186
 #: admin/class-botblocker-admin.php:685
 msgid "Please wait..."
-msgstr "請稍候..."
+msgstr "请稍候…"
 
 #: admin/templates/settings/cron.php:70
 msgid "Plesk Cron"
@@ -10185,7 +10184,7 @@ msgstr "阻止加载 Emoji 脚本和样式。"
 
 #: addons/bbcs-speedup/views/settings.php:190
 msgid "Prevents self-pingbacks when linking to your own posts."
-msgstr "在連結至自己的文章時，防止自我 Pingback。"
+msgstr "在链接到您自己的文章时防止自 Pingback。"
 
 #: includes/data/class-botblocker-snav.php:282
 msgid "Primary Block Time (seconds)"
@@ -10221,7 +10220,7 @@ msgstr "主要验证："
 #: includes/modal/modal-botblocker-white-add.php:18
 #: includes/modal/modal-botblocker-white-edit.php:19
 msgid "Priority"
-msgstr "優先權"
+msgstr "优先级"
 
 #: includes/modal/modal-botblocker-rule-ipv4-add.php:19
 #: includes/modal/modal-botblocker-rule-ipv4-edit.php:20
@@ -10230,7 +10229,7 @@ msgstr "優先權"
 #: includes/modal/modal-botblocker-white-add.php:19
 #: includes/modal/modal-botblocker-white-edit.php:20
 msgid "Priority (1-100)"
-msgstr "優先權 (1 至 100)"
+msgstr "优先级 (1-100)"
 
 #: admin/templates/setup-wizard/finish.php:75
 msgid "Priority support"
@@ -10238,11 +10237,11 @@ msgstr "優先支援"
 
 #: includes/data/class-botblocker-pro-features.php:26
 msgid "Priority support & emergency help (24h)"
-msgstr "優先支援與緊急協助 (24 小時)"
+msgstr "优先支持和紧急帮助（24 小时）"
 
 #: includes/data/class-botblocker-pro-features.php:113
 msgid "Priority support (24h response)"
-msgstr "優先支援 (24 小時內回覆)"
+msgstr "优先支持（24 小时响应）"
 
 #: admin/templates/setup-guide/pro-body.php:27
 msgid "Priority support SLA"
@@ -10251,11 +10250,11 @@ msgstr "優先支援 SLA"
 #: addons/bbcs-cookie-alert/inc/class-bbcs-cookie-alert-settings.php:14
 #: addons/bbcs-cookie-alert/views/settings.php:77
 msgid "Privacy Policy"
-msgstr "隱私權政策"
+msgstr "隐私政策"
 
 #: admin/templates/about/body.php:89
 msgid "Privacy policy"
-msgstr "隱私權政策"
+msgstr "隐私政策"
 
 #: admin/class-botblocker-admin.php:793
 #: admin/class-botblocker-admin.php:794
@@ -10314,11 +10313,11 @@ msgstr "PRO 状态：未启用"
 
 #: admin/templates/shared/sidebar/rail.php:144
 msgid "PRO users automatically share real-time threat intelligence. When one site on our network is attacked by a new botnet, the IP addresses are flagged and all PRO sites are protected instantly."
-msgstr "PRO 使用者會自動分享即時威脅情報。當我們網路中的某個網站遭到新的殭屍網路攻擊時，相關 IP 位址會被標記，所有 PRO 網站都會立即受到保護。"
+msgstr "PRO 用户会自动分享实时威胁情报。当我们网络上的一个站点遭到新增僵尸网络攻击时，这些 IP 地址会被标记，所有 PRO 站点会立即受到保护。"
 
 #: admin/templates/settings/advanced-protection.php:29
 msgid "PRO vs Free"
-msgstr "PRO 與免費版"
+msgstr "PRO 與免费版"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:286
 msgid "Problems found in this folder"
@@ -10333,11 +10332,11 @@ msgstr "个人资料已应用。"
 #: admin/templates/settings/cron.php:165
 #: admin/templates/settings/cron.php:189
 msgid "Progress"
-msgstr "進度"
+msgstr "进度"
 
 #: addons/bbcs-hide-admin/views/settings.php:27
 msgid "Protect default login endpoints and use a custom login URL. Choose the behavior for blocked access and keep your admin area safe."
-msgstr "保護預設的登入端點並使用自訂的登入網址。選取封鎖存取的處理方式，並保護您的管理區域安全。"
+msgstr "保护默认登录端点，并使用一个自定义的登录 URL。针对被拦截的访问选择该行为，保障您的管理区域安全。"
 
 #: public/check-page.php:70
 #: public/template-botblocker-denied.php:243
@@ -10354,7 +10353,7 @@ msgstr "保护已启用"
 
 #: admin/templates/setup-wizard/init-mode.php:51
 msgid "Protection before WP starts"
-msgstr "在 WP 啟動前進行保護"
+msgstr "在 WP 启动前提供保护"
 
 #. translators: %from%: previous protection state; %to%: new protection state.
 #: includes/audit/class-botblocker-audit-logger.php:474
@@ -10372,7 +10371,7 @@ msgstr "保护数据文件"
 
 #: admin/templates/setup-wizard/welcome.php:9
 msgid "Protection from bots, scanners and brute-force in "
-msgstr "防禦殭屍網路、掃描器及暴力破解攻擊 "
+msgstr "防御机器人、扫描器和暴力破解，只需 "
 
 #: addons/bbcs-telegram/inc/class-bbcs-telegram-plugin.php:281
 msgid "Protection is active"
@@ -10384,7 +10383,7 @@ msgstr "保護已停用"
 
 #: admin/templates/setup-wizard/finish.php:18
 msgid "Protection level"
-msgstr "保護層級"
+msgstr "保护级别"
 
 #: admin/class-botblocker-admin.php:253
 #: includes/viewmodels/class-dashboard-viewmodel.php:144
@@ -10395,11 +10394,11 @@ msgstr "保護已暫停"
 
 #: admin/templates/setup-wizard/finish.php:30
 msgid "Protection score"
-msgstr "保護分數"
+msgstr "保护评分"
 
 #: admin/templates/shared/kpi-primary-grid.php:56
 msgid "Protection Score"
-msgstr "保護分數"
+msgstr "保护评分"
 
 #: admin/templates/settings/page-head.php:13
 msgid "Protection Settings"
@@ -10419,12 +10418,12 @@ msgstr "保护 Feed 内容免受抓取：仅摘要条目、归属链接和 noind
 
 #: addons/bbcs-feed-guard/views/settings.php:27
 msgid "Protects your RSS/Atom feed content from scrapers. Full-content feeds are truncated to an excerpt, an attribution link back to the original article is appended, feeds can be marked noindex for search engines, and feed discovery links can be removed or the feeds disabled entirely. Legitimate subscribers and feed readers keep working."
-msgstr ""
+msgstr "保护您的 RSS/Atom Feed 内容免受抓取程序侵扰。完整内容的 Feed 会被截断为摘要，附加一个指回原文的署名链接，可将 Feed 标记为对搜索引擎 noindex，并且可以移除 Feed 发现链接或完全停用 Feed。合法订阅者和 Feed 读者仍可正常工作。"
 
 #: addons/bbcs-https-protocol/inc/class-bbcs-https-protocol-addons-page.php:53
 #: addons/bbcs-https-protocol/views/settings.php:115
 msgid "Protocol Information"
-msgstr "通訊協定資訊"
+msgstr "协议信息"
 
 #: addons/bbcs-https-protocol/inc/class-bbcs-https-protocol-addons-page.php:44
 #: addons/bbcs-https-protocol/views/settings.php:55
@@ -10472,7 +10471,7 @@ msgstr "代理伺服器建立成功。"
 #: admin/class-botblocker-admin.php:420
 #: includes/ajax/class-botblocker-ajax-proxy.php:346
 msgid "Proxy deleted successfully."
-msgstr "代理伺服器刪除成功。"
+msgstr "代理已成功删除。"
 
 #: includes/ajax/class-botblocker-ajax-proxy.php:697
 msgid "Proxy file rendered successfully."
@@ -10481,12 +10480,12 @@ msgstr "代理文件渲染成功。"
 #: addons/bbcs-https-protocol/views/settings.php:98
 #: addons/bbcs-xmlrpc-tunnel/views/settings.php:35
 msgid "Proxy Header Trust"
-msgstr "代理伺服器標頭信任"
+msgstr "代理标头信任"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-addons-page.php:45
 #: addons/bbcs-behavior/views/settings.php:168
 msgid "Proxy Multiplier"
-msgstr "代理伺服器乘數"
+msgstr "代理倍率"
 
 #: includes/ajax/class-botblocker-ajax-proxy.php:184
 #: includes/ajax/class-botblocker-ajax-proxy.php:251
@@ -10495,7 +10494,7 @@ msgstr "找不到代理伺服器。"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:411
 msgid "Proxy Threshold Multiplier"
-msgstr "代理伺服器閾值乘數"
+msgstr "代理阈值倍数"
 
 #: admin/class-botblocker-admin.php:418
 #: includes/ajax/class-botblocker-ajax-proxy.php:275
@@ -10504,7 +10503,7 @@ msgstr "代理伺服器更新成功。"
 
 #: admin/templates/setup-guide/pro-body.php:21
 msgid "Proxy, VPN, and Tor detection"
-msgstr "代理伺服器、VPN 及 Tor 偵測"
+msgstr "代理、VPN 和 Tor 检测"
 
 #: admin/templates/reports/table-header.php:13
 #: admin/templates/settings/bot-detection.php:27
@@ -10551,12 +10550,12 @@ msgstr "PTR 选项"
 #: admin/templates/settings/general.php:100
 #: includes/data/class-botblocker-snav.php:491
 msgid "PTR Rule Lifetime"
-msgstr "PTR 規則生命週期"
+msgstr "PTR 规则有效期"
 
 #: admin/templates/settings/general.php:92
 #: includes/data/class-botblocker-snav.php:490
 msgid "PTR Rule Subnet Mask"
-msgstr "PTR 規則子網路遮罩"
+msgstr "PTR 规则子网掩码"
 
 #: addons/bbcs-behavior/views/settings.php:82
 #: addons/bbcs-behavior/views/settings.php:94
@@ -10565,7 +10564,7 @@ msgstr "分"
 
 #: addons/bbcs-antispam/views/settings.php:212
 msgid "Publish clean (ham) comments immediately, overriding the WordPress moderation settings. When disabled, WordPress decides the final status of clean comments."
-msgstr ""
+msgstr "立即发布干净（正常）评论，覆盖 WordPress 审核设置。停用时，由 WordPress 决定干净评论的最终状态。"
 
 #: public/captcha/render-moving-shapes-button-trait.php:27
 msgid "Purple"
@@ -10602,7 +10601,7 @@ msgstr "Pusher 每周摘要"
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:165
 #, php-format
 msgid "Put here by your hosting company (%s). Leave it alone unless their support team tells you otherwise."
-msgstr ""
+msgstr "由您的托管公司（%s）放在此处。除非其支持团队另有说明，否则请勿改动。"
 
 #: admin/templates/settings/traffic.php:19
 msgid "Query string"
@@ -10610,7 +10609,7 @@ msgstr "查詢字串"
 
 #: includes/utilites/class-botblocker-support.php:52
 msgid "Question"
-msgstr "問題"
+msgstr "问题"
 
 #: admin/templates/dashboard/quick-links.php:27
 msgid "Quick access"
@@ -10630,7 +10629,7 @@ msgstr "快速预设"
 
 #: admin/templates/setup-wizard/finish.php:37
 msgid "Quick start"
-msgstr "快速入門"
+msgstr "快速开始"
 
 #: admin/templates/settings/captcha-tab.php:61
 msgid "Raccoon"
@@ -10660,19 +10659,19 @@ msgstr "速率限制"
 
 #: admin/templates/settings/rate-limiting.php:29
 msgid "Rate limiting protects against brute force, DDoS, and distributed proxy attacks by dynamically adjusting thresholds based on subnet pressure."
-msgstr "速率限制通过根据子网压力动态调整阈值，保护免受暴力破解、DDoS 和分布式代理攻击。"
+msgstr "速率限制通过根据子网压力动态调整阈值，保护站点免受暴力破解、DDoS 和分布式代理攻击。"
 
 #: admin/templates/dashboard/secret.php:40
 msgid "Re-enable BotBlocker"
-msgstr "重新啟用 BotBlocker"
+msgstr "重新启用 BotBlocker"
 
 #: admin/templates/dashboard/secret.php:40
 msgid "Re-enable BotBlocker protection."
-msgstr "重新啟用 BotBlocker 保護。"
+msgstr "重新启用 BotBlocker 保护。"
 
 #: admin/templates/cloud-api/status.php:127
 msgid "Read full comparison"
-msgstr "閱讀完整比較"
+msgstr "阅读完整对比"
 
 #: addons/bbcs-feed-guard/inc/class-bbcs-feed-guard-plugin.php:112
 #: addons/bbcs-feed-guard/inc/class-bbcs-feed-guard-settings.php:17
@@ -10686,7 +10685,7 @@ msgstr "只读"
 
 #: admin/templates/setup-wizard/presets.php:31
 msgid "Real visitors unaffected"
-msgstr "真實訪客不受影響"
+msgstr "真实访客不受影响"
 
 #: admin/templates/setup-guide/pro-body.php:20
 msgid "Real-time cloud threat checks (bots, bad ASN, dynamic proxies)"
@@ -10706,7 +10705,7 @@ msgstr "原因或上下文（例如临时区块）"
 
 #: includes/shortcode/class-botblocker-health-shortcodes.php:84
 msgid "reCaptcha enabled"
-msgstr "reCaptcha 已啟用"
+msgstr "reCaptcha 已启用"
 
 #: addons/bbcs-security-headers/views/settings.php:94
 msgid "reCaptcha not configured - Google domains not included in CSP."
@@ -10715,7 +10714,7 @@ msgstr "reCaptcha 未配置 - Google 域名未包含在 CSP 中。"
 #: admin/templates/integrations/recaptcha-v3.php:48
 #: includes/data/class-botblocker-snav.php:620
 msgid "reCaptcha Threshold Level"
-msgstr "reCaptcha 閾值等級"
+msgstr "reCaptcha 阈值级别"
 
 #: admin/templates/integrations/card.php:13
 #: admin/templates/integrations/integrations-content.php:22
@@ -10730,15 +10729,15 @@ msgstr "reCaptcha v2"
 
 #: admin/templates/settings/captcha-tab.php:26
 msgid "reCaptcha v2 - \"I am not a robot\""
-msgstr "reCaptcha v2 -「我不是機器人」"
+msgstr "reCaptcha v2 -“我不是机器人”"
 
 #: includes/data/class-botblocker-alerts.php:278
 msgid "reCaptcha v2 is selected as the captcha mode but the site/secret keys are empty. Verification silently falls back to the simple check."
-msgstr ""
+msgstr "已选择 reCaptcha v2 作为 captcha 模式，但 站点/secret 密钥为空。验证会静默回退到简单的 检查。"
 
 #: admin/templates/settings/captcha-tab.php:85
 msgid "reCaptcha v2 keys are not configured."
-msgstr "尚未設定 reCaptcha v2 索引碼。"
+msgstr "reCaptcha v2 密钥未配置。"
 
 #: includes/hook/class-botblocker-settings-hooks.php:439
 msgid "reCaptcha v2 keys are not configured. Captcha mode was adjusted to a compatible mode."
@@ -10754,11 +10753,11 @@ msgstr "reCaptcha v2 密钥缺失"
 
 #: includes/data/class-botblocker-snav.php:603
 msgid "reCaptcha v2 Secret Key"
-msgstr "reCaptcha v2 私密金鑰"
+msgstr "reCaptcha v2 密钥"
 
 #: admin/templates/integrations/recaptcha-v2.php:35
 msgid "reCaptcha v2 Secret Key:"
-msgstr "reCaptcha v2 私密金鑰："
+msgstr "reCaptcha v2 密钥："
 
 #: includes/data/class-botblocker-snav.php:602
 msgid "reCaptcha v2 Site Key"
@@ -10779,7 +10778,7 @@ msgstr "reCaptcha v3"
 
 #: includes/services/class-botblocker-health-service.php:32
 msgid "reCaptcha v3 enabled"
-msgstr "reCaptcha v3 已啟用"
+msgstr "reCaptcha v3 已启用"
 
 #: includes/data/class-botblocker-alerts.php:170
 msgid "reCaptcha v3 Keys Missing"
@@ -10787,15 +10786,15 @@ msgstr "reCaptcha v3 密钥缺失"
 
 #: includes/data/class-botblocker-alerts.php:171
 msgid "reCaptcha v3 protection is enabled but the site/secret keys are empty. Verification silently falls back to the simple check."
-msgstr ""
+msgstr "reCaptcha v3 保护已启用，但站点/密钥为空。验证会静默回退到简单的检查。"
 
 #: includes/data/class-botblocker-snav.php:619
 msgid "reCaptcha v3 Secret Key"
-msgstr "reCaptcha v3 私密金鑰"
+msgstr "reCaptcha v3 密钥"
 
 #: admin/templates/integrations/recaptcha-v3.php:38
 msgid "reCaptcha v3 Secret Key:"
-msgstr "reCaptcha v3 私密金鑰："
+msgstr "reCaptcha v3 密钥："
 
 #: includes/data/class-botblocker-snav.php:618
 msgid "reCaptcha v3 Site Key"
@@ -10815,7 +10814,7 @@ msgstr "reCaptcha、Redis、Memcached 整合"
 
 #: addons/bbcs-telegram/views/settings.php:25
 msgid "Receive BotBlocker weekly security reports directly in your Telegram chat. Connect a bot token and chat ID, then enable the weekly report."
-msgstr ""
+msgstr "直接在您的 Telegram 聊天中接收 BotBlocker 每周安全报告。连接机器人 令牌 和聊天 ID，然后 启用 每周报告。"
 
 #: admin/templates/settings/notifications.php:36
 msgid "Receive security alerts via email."
@@ -10833,7 +10832,7 @@ msgstr "推薦"
 
 #: admin/templates/integrations/2fa.php:161
 msgid "Recommended 2FA Apps"
-msgstr "推薦的 2FA 應用程式"
+msgstr "推荐的 2FA 应用"
 
 #: admin/templates/setup-wizard/captcha.php:152
 #: admin/templates/setup-wizard/presets.php:32
@@ -10846,7 +10845,7 @@ msgstr "推荐的预设"
 
 #: admin/templates/setup-wizard/welcome.php:15
 msgid "Recommended preset in one click (~30 seconds)"
-msgstr "透過一鍵點擊即可使用推薦的預設集（約 30 秒）"
+msgstr "推荐 预设，一次 点击（约 30 秒）"
 
 #. translators: %s: WordPress role name (e.g., Administrator, Editor)
 #: admin/templates/settings/data-log.php:89
@@ -10861,16 +10860,16 @@ msgstr "记录被阻止的访客数据，用于攻击样板分析和威胁情报
 #: admin/templates/settings/data-log.php:37
 #: includes/data/class-botblocker-snav.php:351
 msgid "Record Browser Type"
-msgstr "記錄瀏覽器類型"
+msgstr "记录浏览器类型"
 
 #: admin/templates/settings/data-log.php:44
 #: includes/data/class-botblocker-snav.php:353
 msgid "Record Device Type"
-msgstr "記錄裝置類型"
+msgstr "记录设备类型"
 
 #: admin/templates/settings/log.php:55
 msgid "Record internal errors for debugging and support troubleshooting."
-msgstr "記錄內部錯誤以便偵錯和支援故障排除。"
+msgstr "记录内部错误，以供调试和支持故障排查。"
 
 #: admin/templates/settings/data-log.php:38
 #: includes/data/class-botblocker-snav.php:352
@@ -10879,7 +10878,7 @@ msgstr "记录操作系统类型"
 
 #: admin/templates/settings/log.php:57
 msgid "Record traffic during maintenance windows or when protection is intentionally disabled."
-msgstr "在維護時段或保護被刻意停用時記錄流量。"
+msgstr "在 维护 Windows 期间或有意停用保护时记录流量。"
 
 #: admin/templates/settings/log.php:35
 msgid "Record traffic from whitelisted IPs to verify rule effectiveness."
@@ -10891,11 +10890,11 @@ msgstr "记录访客对 WordPress 系统 URL 的访问，例如登录、密码�
 
 #: admin/templates/settings/log.php:34
 msgid "Record visitors detected as likely bots via fingerprinting inconsistencies."
-msgstr "記錄透過指紋不一致性偵測到可能為機器人的訪客。"
+msgstr "记录通过指纹不一致被检测为疑似机器人的访客。"
 
 #: admin/templates/settings/log.php:31
 msgid "Record visitors sent to Captcha challenges. Useful for analysing bot detection effectiveness."
-msgstr "記錄被導向 Captcha 挑戰的訪客。有助於分析機器人偵測效果。"
+msgstr "记录被发送到 Captcha 验证挑战的访客。有助于分析机器人检测的有效性。"
 
 #: admin/templates/settings/log.php:33
 msgid "Record visitors who pass all security checks. Useful for traffic analysis and audit trails."
@@ -10947,7 +10946,7 @@ msgstr "Redis"
 
 #: includes/data/class-botblocker-snav.php:653
 msgid "Redis Authentication Password"
-msgstr "Redis 驗證密碼"
+msgstr "Redis 认证密码"
 
 #: includes/hook/class-botblocker-settings-hooks.php:34
 msgid "Redis backend is not reachable — the integration was left disabled."
@@ -10964,7 +10963,7 @@ msgstr "Redis 缓存集成"
 
 #: includes/data/class-botblocker-snav.php:652
 msgid "Redis Database Index"
-msgstr "Redis 資料庫索引"
+msgstr "Redis 数据库 进行索引"
 
 #: includes/data/class-botblocker-alerts.php:318
 msgid "Redis Detected"
@@ -11037,11 +11036,11 @@ msgstr "重新生成安全操作链接？旧链接将立即失效。"
 
 #: admin/templates/integrations/wp-connectors.php:21
 msgid "Registers BotBlocker in the WordPress Connectors system. Disable if you do not use WordPress Connectors to save ~180ms per admin page load."
-msgstr ""
+msgstr "在 WordPress 连接器 系统 中注册 BotBlocker。停用，如果您不使用 WordPress 连接器来 保存 每次管理员 页面 加载约 180ms。"
 
 #: admin/templates/tools/modals/hits-clear.php:21
 msgid "Regular hits will be removed from the database."
-msgstr "一般點擊將會從資料庫中移除。"
+msgstr "常规命中将从数据库中移除。"
 
 #: admin/templates/setup-wizard/finish.php:27
 #: admin/templates/setup-wizard/init-mode.php:14
@@ -11051,12 +11050,12 @@ msgstr "常规插件"
 #: admin/templates/settings/notifications.php:53
 #: includes/data/class-botblocker-snav.php:580
 msgid "Regular Report Frequency"
-msgstr "一般報告頻率"
+msgstr "定期报告频率"
 
 #: admin/templates/tools/maintenance-tab.php:103
 #: includes/data/class-botblocker-snav.php:755
 msgid "Reinstall Database"
-msgstr "重新安裝資料庫"
+msgstr "重新安装数据库"
 
 #: includes/data/class-botblocker-palette.php:177
 msgid "Reinstall database - reset, fresh start, rebuild tables"
@@ -11064,19 +11063,19 @@ msgstr "重新安装数据库 - 重置、全新开始、重建数据表"
 
 #: admin/templates/integrations/mu.php:50
 msgid "Rejects visitors from the blocked-country list before plugins load. Off by default - any lookup uncertainty passes traffic to the main plugin."
-msgstr ""
+msgstr "在插件加载之前拒绝来自被阻止国家/地区 列表 的访客。默认处于 默认 关闭状态 - 任何 查找 不确定性都会将流量传递给主 插件。"
 
 #: addons/bbcs-early-init/views/settings.php:93
 msgid "Rejects visitors from the blocked-country list before WordPress even loads. Off by default - any lookup uncertainty passes traffic to the main plugin."
-msgstr ""
+msgstr "在 WordPress 加载之前就拒绝来自被封禁国家 列表 的访客。默认 下为关闭状态——任何 查找 的不确定性都会将流量放行至主 插件。"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:446
 msgid "Remember repeat offenders. This tracks the reputation history of suspicious IPs and subnets over several days, making future blocks trigger much faster for repeat offenders. (Default: Enabled)"
-msgstr "記住重複違規者。這會追蹤可疑 IP 和子網路的聲譽記錄數天，讓未來對重複違規者的封鎖更快速地觸發。（預設：啟用）"
+msgstr "记住重复违规者。这会追踪可疑 IP 和子网在多天内的信誉 历史记录，使针对重复违规者的后续区块 触发 快得多。（默认：已启用）"
 
 #: addons/bbcs-behavior/views/settings.php:202
 msgid "Remember repeat offenders. Tracks reputation history of suspicious IPs and subnets over several days. (Default: Enabled)"
-msgstr "記住重複違規者。追蹤可疑 IP 位址和子網路的信譽歷史，持續數天。(預設值：啟用)"
+msgstr "记住重复违规者。在数天内追踪可疑 IP 和子网的信誉历史记录。（默认：已启用）"
 
 #: public/2FA/bbcs-2fa.php:263
 msgid "Remember this device for 30 days"
@@ -11122,7 +11121,7 @@ msgstr "移除 RSS Feed 链接"
 #: addons/bbcs-speedup/inc/class-bbcs-speedup-addons-page.php:67
 #: addons/bbcs-speedup/views/settings.php:159
 msgid "Remove Shortlink"
-msgstr "移除短網址連結"
+msgstr "移除短链接"
 
 #: addons/bbcs-feed-guard/views/settings.php:108
 msgid "Remove the RSS/Atom discovery links from the site head. Existing feed URLs keep working."
@@ -11180,7 +11179,7 @@ msgstr "重复区块时间（秒）："
 
 #: admin/templates/settings/error.php:23
 msgid "Repeated violations result in progressively longer bans. X-Robots-Tag directives prevent SEO penalties on blocked pages."
-msgstr "重複違規會導致逐漸加長的封鎖。X-Robots-Tag 指令可防止被封鎖頁面受到 SEO 懲罰。"
+msgstr "重复违规会导致封禁时间逐步延长。X-Robots-Tag 指令可防止被阻止页面受到 SEO 处罚。"
 
 #: addons/bbcs-feed-guard/views/settings.php:54
 msgid "Replace full post content in feeds with a short excerpt."
@@ -11188,7 +11187,7 @@ msgstr "将 Feed 中的完整文章内容替换为简短摘要。"
 
 #: admin/templates/settings/cookie.php:96
 msgid "Replaces IP/host/UA-bound cookie hash with a session token. Eliminates Captcha loops for VPN/proxy users. Disable only if experiencing issues."
-msgstr "用会话令牌替换绑定 IP/主机/UA 的 Cookie 哈希。为 VPN/代理用户消除 Captcha 循环。仅在遇到问题时停用。"
+msgstr "将 IP/host/UA-bound Cookie 哈希替换为 会话 令牌。为 VPN/代理用户消除 Captcha 循环。仅在遇到问题时才 停用。"
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:66
 msgid "Replaces the default screen shown while the site is in maintenance mode."
@@ -11228,17 +11227,17 @@ msgstr "替换 WordPress 数据库层，通常使用 HyperDB 或 LudicrousDB。"
 
 #: includes/data/class-botblocker-snav.php:558
 msgid "Report Period"
-msgstr "報告期間"
+msgstr "报告周期"
 
 #: admin/templates/settings/ui.php:70
 msgid "Report Period:"
-msgstr "報告期間："
+msgstr "报告周期："
 
 #: admin/class-botblocker-admin.php:773
 #: admin/class-botblocker-admin.php:774
 #: admin/templates/setup-wizard/finish.php:46
 msgid "Reports"
-msgstr "報告"
+msgstr "报告"
 
 #: includes/data/class-botblocker-palette.php:193
 msgid "Reports - log, analytics, history, visitor stats"
@@ -11257,7 +11256,7 @@ msgstr "报告仪表盘"
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:438
 #: addons/bbcs-behavior/views/settings.php:194
 msgid "Reputation Layer"
-msgstr "信譽層"
+msgstr "信誉层"
 
 #: addons/bbcs-pusher/inc/bbcs-pusher-js.php:43
 #: addons/bbcs-telegram/inc/bbcs-telegram-js.php:40
@@ -11287,7 +11286,7 @@ msgstr "已拦截的要求"
 
 #: addons/bbcs-security-headers/views/settings.php:138
 msgid "Requests inclusion in the browser HSTS preload list. Enable only after registering the domain at hstspreload.org - the directive is ignored otherwise."
-msgstr ""
+msgstr "将要求纳入浏览器 HSTS 预加载 列表。启用 仅在 hstspreload.org 注册 域名 之后——否则该指令会被忽略。"
 
 #: admin/templates/cloud-api/status.php:40
 #: admin/templates/dashboard/pro-status.php:35
@@ -11397,7 +11396,7 @@ msgstr "重置内部 WordPress 缓存和外部缓存系统（Redis、Memcached�
 
 #: admin/templates/setup-wizard/completed.php:81
 msgid "Resetting..."
-msgstr "重設中..."
+msgstr "正在重置…"
 
 #: includes/data/class-botblocker-alerts.php:685
 msgid "Respects DONOTCACHEPAGE automatically - no cookie exception needed."
@@ -11418,7 +11417,7 @@ msgstr "REST API"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:265
 msgid "Restore"
-msgstr "還原"
+msgstr "恢复"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:266
 #: addons/bbcs-malware/inc/views/scan-results/ignored-files.php:43
@@ -11445,7 +11444,7 @@ msgstr "限制代理服务器、数据中心、VPN 和传统协议，以减少�
 
 #: includes/botblocker/traits/class-botblocker-check-page-trait.php:128
 msgid "Retrying..."
-msgstr "重試中..."
+msgstr "正在重试…"
 
 #: addons/bbcs-feed-guard/views/settings.php:116
 msgid "Return HTTP 403 for every feed request. This disables feeds for real subscribers too."
@@ -11473,7 +11472,7 @@ msgstr "反向 DNS (PTR)"
 
 #: admin/templates/setup-guide/one-click-modal.php:95
 msgid "Review security score"
-msgstr "檢視安全性分數"
+msgstr "查看安全评分"
 
 #: admin/templates/integrations/2fa.php:128
 msgid "Revoke all trusted devices"
@@ -11556,13 +11555,13 @@ msgstr "RU-Gov 列表更新已计划。"
 
 #: includes/ajax/class-botblocker-ajax-rugov.php:36
 msgid "RU-Gov sync not available."
-msgstr "RU-Gov 同步無法使用"
+msgstr "RU-Gov 同步不可用。"
 
 #. translators: %1$s: number of IP ranges, %2$s: time since last update
 #: admin/templates/tools/maintenance-tab.php:52
 #, php-format
 msgid "RU-Gov: %1$s ranges | updated %2$s ago"
-msgstr "RU-Gov：%1$s 個範圍 | %2$s 前更新"
+msgstr "RU-Gov：%1$s 个范围 | 更新于 %2$s 前"
 
 #: includes/cron/class-botblocker-cron.php:99
 msgid "RUGOV Freshness Check"
@@ -11614,22 +11613,22 @@ msgstr "規則已成功建立。"
 
 #: includes/modal/modal-botblocker-hits-add-rule.php:53
 msgid "Rule data"
-msgstr "規則資料"
+msgstr "规则数据"
 
 #: admin/class-botblocker-admin.php:333
 #: includes/ajax/class-botblocker-ajax-rules.php:347
 msgid "Rule deleted successfully."
-msgstr "規則已成功刪除。"
+msgstr "规则已成功删除。"
 
 #: includes/modal/modal-botblocker-hits-add-rule.php:95
 #: includes/modal/modal-botblocker-rule-add.php:108
 #: includes/modal/modal-botblocker-rule-edit.php:100
 msgid "Rule expiration date and time"
-msgstr "規則到期日期與時間"
+msgstr "规则过期日期和时间"
 
 #: admin/partials/class-botblocker-dashboard-widgets.php:233
 msgid "Rule lifetime"
-msgstr "規則生命週期"
+msgstr "规则有效期"
 
 #: includes/ajax/class-botblocker-ajax-ip-rules-trait.php:1107
 #: includes/ajax/class-botblocker-ajax-ip-rules-trait.php:320
@@ -11649,7 +11648,7 @@ msgstr "規則優先順序 (1-100)"
 #: admin/class-botblocker-admin.php:330
 #: includes/ajax/class-botblocker-ajax-rules.php:431
 msgid "Rule toggled successfully."
-msgstr "規則已成功切換。"
+msgstr "规则已成功切换。"
 
 #: addons/bbcs-firewall-export/views/settings.php:41
 msgid "Rule types to export"
@@ -11824,7 +11823,7 @@ msgstr "请将这些代码保存在安全的地方。每个代码只能使用一
 #: admin/class-botblocker-setup-wizard.php:220
 #: includes/utilites/class-botblocker-deactivation-feedback.php:70
 msgid "Saving..."
-msgstr "儲存中..."
+msgstr "正在保存…"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:80
 msgid "Scan active and inactive themes for malicious code."
@@ -11911,7 +11910,7 @@ msgstr "扫描 WordPress 数据库，以查找文章、页面、选项、用户�
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:88
 msgid "Scan the wp-content/uploads directory for malicious files."
-msgstr "掃描 wp-content/uploads 目錄，尋找惡意檔案。"
+msgstr "扫描 wp-content/uploads 目录，尋找惡意档案。"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-addons-page.php:51
 msgid "Scan Themes"
@@ -11952,11 +11951,11 @@ msgstr "通过完整性哈希检查扫描 WordPress 核心"
 
 #: addons/bbcs-malware/inc/views/scan-results/header.php:51
 msgid "Scanned:"
-msgstr "已掃描："
+msgstr "已扫描："
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-background.php:516
 msgid "Scanning database"
-msgstr "正在掃描資料庫"
+msgstr "正在扫描数据库"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-background.php:487
 msgid "Scanning files for malware"
@@ -11964,7 +11963,7 @@ msgstr "正在扫描文件以查找恶意软件"
 
 #: addons/bbcs-malware/views/settings.php:18
 msgid "Scans WordPress files and database content for dangerous execution, obfuscation, encoded payloads, injected scripts, and known webshell markers. Findings are indicators for review. Do not delete files before checking backups and confirming the payload."
-msgstr "掃描 WordPress 檔案和資料庫內容，以尋找危險的執行、混淆、編碼負載、注入的指令碼和已知的 webshell 標記。這些發現是供審查的指標。在檢查備份並確認負載之前，請勿刪除檔案。"
+msgstr "扫描 WordPress 文件和数据库内容，以查找危险执行、混淆、编码载荷、注入脚本和已知 webshell 标记。发现结果仅为供审查的指标。在检查备份并确认载荷之前，请勿删除文件。"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-plugin.php:128
 msgid "Scans WordPress files for malware indicators, obfuscation chains, and webshell patterns."
@@ -12012,7 +12011,7 @@ msgstr "分数阈值"
 #: includes/modal/modal-botblocker-rule-add.php:36
 #: includes/modal/modal-botblocker-rule-edit.php:34
 msgid "Script Name"
-msgstr "指令碼名稱"
+msgstr "脚本名称"
 
 #: admin/templates/rules/body.php:62
 #: admin/templates/shared/header/plughead.php:110
@@ -12027,7 +12026,7 @@ msgstr "搜索审计日志…"
 
 #: addons/bbcs-telegram/inc/class-bbcs-telegram-plugin.php:264
 msgid "Search bots"
-msgstr "搜尋機器人"
+msgstr "搜索机器人"
 
 #: admin/class-botblocker-admin.php:451
 msgid "Search by code, rule, comment…"
@@ -12046,11 +12045,11 @@ msgstr "搜尋 Cron 工作…"
 
 #: admin/templates/setup-wizard/welcome.php:18
 msgid "Search engine verification, SEO protection from fake crawlers"
-msgstr "搜尋引擎驗證，SEO 防範虛假爬蟲"
+msgstr "搜索引擎验证，防止假冒爬虫的 SEO 保护"
 
 #: includes/components/class-botblocker-component-counters-grid.php:28
 msgid "Search engine visits"
-msgstr "搜尋引擎造訪"
+msgstr "搜索引擎访问"
 
 #: admin/templates/shared/kpi-primary-grid.php:51
 msgid "Search Engines"
@@ -12073,20 +12072,20 @@ msgstr "秒"
 
 #: includes/data/class-botblocker-snav.php:283
 msgid "Secondary Block Time (seconds)"
-msgstr "次要封鎖時間（秒）"
+msgstr "辅助 区块 时间（秒）"
 
 #: includes/services/class-botblocker-health-service.php:43
 #: includes/shortcode/class-botblocker-health-shortcodes.php:86
 msgid "Secondary time ban enabled"
-msgstr "次要時間封鎖已啟用"
+msgstr "二级时间封禁已启用"
 
 #: includes/botblocker/traits/class-botblocker-block-page-trait.php:39
 msgid "Seconds remaining until unlock:"
-msgstr "解鎖剩餘秒數："
+msgstr "解锁剩余秒数："
 
 #: includes/botblocker/traits/class-botblocker-response-trait.php:367
 msgid "Seconds until unlock:"
-msgstr "解鎖秒數："
+msgstr "解锁剩余秒数："
 
 #: addons/bbcs-hcaptcha/views/settings.php:55
 #: addons/bbcs-turnstile/views/settings.php:55
@@ -12101,7 +12100,7 @@ msgstr "密钥"
 #: admin/templates/integrations/recaptcha-v2.php:40
 #: admin/templates/integrations/recaptcha-v3.php:43
 msgid "Secret key not set."
-msgstr "未設定密鑰。"
+msgstr "未设置密钥。"
 
 #: includes/audit/class-botblocker-audit-logger.php:476
 msgid "Secret link disabled protection site-wide from %ip%."
@@ -12139,12 +12138,12 @@ msgstr "安全操作链接已重新生成。旧链接不再有效。"
 
 #: admin/templates/tools/wordpress-tab.php:18
 msgid "Security and performance tools for your WordPress site: block unwanted traffic, filter suspicious requests, and optimize resource usage."
-msgstr "適用於 WordPress 網站的安全性和效能工具：封鎖不必要的流量、過濾可疑請求，並最佳化資源使用。"
+msgstr "适用于您的 WordPress 站点 的安全与性能工具：区块 不需要的流量、筛选 可疑要求，以及 优化 资源使用情况。"
 
 #: addons/bbcs-speedup/inc/class-bbcs-speedup-addons-page.php:49
 #: addons/bbcs-speedup/views/settings.php:85
 msgid "Security and Privacy"
-msgstr "安全性與隱私權"
+msgstr "安全和隐私"
 
 #: admin/templates/about/body.php:143
 msgid "Security blog"
@@ -12169,7 +12168,7 @@ msgstr "安全错误。请刷新页面并再试一次。"
 
 #: addons/bbcs-security-headers/inc/class-bbcs-security-headers-addons-page.php:24
 msgid "Security Headers"
-msgstr "安全性標頭"
+msgstr "安全标头"
 
 #: includes/data/class-botblocker-palette.php:76
 msgid "Security headers - HSTS, CSP, permissions policy"
@@ -12181,11 +12180,11 @@ msgstr "由于检测到冲突的插件，安全标头已被停用。"
 
 #: includes/data/class-botblocker-pro-features.php:83
 msgid "Security headers management"
-msgstr "安全性標頭管理"
+msgstr "安全标头管理"
 
 #: includes/data/class-botblocker-pro-features.php:16
 msgid "Security headers management (HSTS, CSP, X-Frame, Permissions-Policy)"
-msgstr "安全性標頭管理（HSTS、CSP、X-Frame、權限政策）"
+msgstr "安全标头管理（HSTS、CSP、X-Frame、Permissions-Policy）"
 
 #: admin/templates/setup-guide/health.php:13
 msgid "Security Health Status"
@@ -12201,7 +12200,7 @@ msgstr "安全性結果"
 
 #: addons/bbcs-hide-admin/views/settings.php:30
 msgid "Security Through Obscurity"
-msgstr "透過隱匿的安全性"
+msgstr "隐蔽式安全"
 
 #: admin/templates/shared/sidebar/rail.php:150
 msgid "Security Tips"
@@ -12217,7 +12216,7 @@ msgstr "SecurityHeaders.com — 标头等级"
 
 #: admin/templates/cloud-api/status.php:126
 msgid "See pricing"
-msgstr "查看定價"
+msgstr "查看定价"
 
 #: addons/bbcs-antispam/views/settings.php:263
 msgid "Select a category"
@@ -12255,12 +12254,12 @@ msgstr "选择当 BotBlocker 需要额外证明时访客看到的验证。"
 
 #: admin/templates/integrations/redis.php:60
 msgid "Select the Redis database index (0-15) to use. Default is 0. Different database indexes provide logical isolation between applications sharing the same Redis server."
-msgstr "選取要使用的 Redis 資料庫索引 (0-15)。預設值為 0。不同的資料庫索引可為共用同一 Redis 伺服器的應用程式提供邏輯隔離。"
+msgstr "选择 要使用的 Redis 数据库 进行索引（0-15）。默认 为 0。对不同的数据库进行索引可在共享同一 Redis 服务器 的应用程序之间提供逻辑隔离。"
 
 #: admin/templates/settings/connection-types.php:59
 #: includes/data/class-botblocker-snav.php:207
 msgid "Self Connections"
-msgstr "自我連線"
+msgstr "自身连接"
 
 #: admin/templates/settings/connection-types.php:62
 msgid "Self-call secret header proof"
@@ -12283,7 +12282,7 @@ msgstr "发送包含 BotBlocker 管理链接的邮箱"
 #: admin/templates/settings/cookie.php:128
 #: includes/data/class-botblocker-snav.php:472
 msgid "Send Vary: Cookie Header"
-msgstr "傳送 Vary: Cookie 標頭"
+msgstr "发送 Vary: Cookie 标头"
 
 #: admin/templates/dashboard/secret.php:51
 msgid "Send via email"
@@ -12312,7 +12311,7 @@ msgstr "发送 Content-Security-Policy-Report-Only 而不是 Content-Security-Po
 
 #: includes/data/class-botblocker-pro-features.php:24
 msgid "SEO bots whitelist management"
-msgstr "SEO 機器人允許清單管理"
+msgstr "SEO 机器人白名单管理"
 
 #: admin/templates/settings/captcha-tab.php:55
 msgid "Separate Requests (Legacy)"
@@ -12335,11 +12334,11 @@ msgstr "服务器端口："
 
 #: admin/templates/integrations/cache.php:21
 msgid "Server-level caches that bypass PHP can serve cached copies of the BotBlocker verification page, breaking protection. Configure a cookie-based exception for every cache in front of your site."
-msgstr ""
+msgstr "绕过 PHP 的服务器级缓存可能会提供 BotBlocker 验证 页面 的缓存复制，从而破坏保护。配置 一个基于 Cookie 的例外，用于每个 缓存 在您 站点 前面。"
 
 #: admin/templates/cloud-api/status.php:138
 msgid "Server-side protection setup"
-msgstr "伺服器端保護設定"
+msgstr "服务器端保护设置"
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:60
 msgid "Serves full pages from a page cache before WordPress finishes loading."
@@ -12356,11 +12355,11 @@ msgstr "会话令牌验证已启用"
 
 #: addons/bbcs-hide-admin/views/settings.php:61
 msgid "Set a custom login endpoint to hide wp-login.php. Use only letters, numbers, hyphens, or underscores. Do not use .php, slashes, or query strings."
-msgstr "設定自訂登入端點以隱藏 wp-login.php。僅使用字母、數字、連字號或底線。請勿使用 .php、斜線或查詢字串。"
+msgstr "将自定义登录端点设置为隐藏 wp-login.php。仅使用字母、数字、连字符或下划线。请勿使用 .php、斜杠或查询字符串。"
 
 #: admin/templates/settings/cookie.php:76
 msgid "Set SameSite attribute (Lax, Strict, None)."
-msgstr "設定 SameSite 屬性 (Lax、Strict、None)。"
+msgstr "设置 SameSite 属性（Lax、Strict、None）。"
 
 #: admin/templates/settings/data-log.php:25
 msgid "Set the log retention period and enable daylight saving time adjustment if needed."
@@ -12368,15 +12367,15 @@ msgstr "设置日志保留期，并在需要时启用夏令时调整。"
 
 #: admin/templates/integrations/recaptcha-v3.php:50
 msgid "Set the reCaptcha threshold level (0.1–1.0)"
-msgstr "設定 reCaptcha 閾值層級 (0.1–1.0)"
+msgstr "设置 reCaptcha 阈值级别（0.1–1.0）"
 
 #: admin/templates/integrations/recaptcha-v3.php:17
 msgid "Set the score threshold: lower = stricter blocking, higher = more permissive."
-msgstr "設定分數閾值：較低 = 封鎖更嚴格，較高 = 更寬容。"
+msgstr "设置分数阈值：越低 = 拦截越严格，越高 = 越宽松。"
 
 #: public/2FA/bbcs-2fa-setup.php:145
 msgid "Set up 2FA for your account"
-msgstr "為你的帳號設定 2FA"
+msgstr "为您的账户设置 2FA"
 
 #: admin/templates/setup-wizard/recaptcha.php:16
 msgid "Set up Google verification separately from your primary BotBlocker challenge."
@@ -12384,13 +12383,13 @@ msgstr "将 Google 验证与您的主要 BotBlocker 验证分开设置。"
 
 #: includes/data/class-botblocker-palette.php:156
 msgid "Set up two-factor authentication - 2FA, MFA, OTP, recovery"
-msgstr "設定兩步驟驗證 - 2FA、MFA、OTP、復原"
+msgstr "设置双重身份验证 - 2FA、MFA、OTP、恢复"
 
 #: includes/data/traits/trait-botblocker-stats-charts.php:276
 #, pgettext
 msgctxt "device type label"
 msgid "Set-top Box"
-msgstr "機上盒"
+msgstr "机顶盒"
 
 #: addons/bbcs-early-init/inc/class-bbcs-early-init-addons-page.php:55
 #: addons/bbcs-early-init/views/settings.php:76
@@ -12422,7 +12421,7 @@ msgstr "设置部分"
 
 #: admin/templates/setup-wizard/completed.php:43
 msgid "Setup completed"
-msgstr "設定完成"
+msgstr "设置完成"
 
 #: includes/data/class-botblocker-palette.php:197
 msgid "Setup Guide - wizard, onboarding, getting started, first setup"
@@ -12529,7 +12528,7 @@ msgstr "签名数据库 URL"
 
 #: admin/templates/settings/payment-tab.php:47
 msgid "Signature headers are always verified for format (min 8 chars, POST only). When enabled, payment bypass additionally applies to POST requests only: GET requests with payment query keys or ajax actions will not bypass the shield. Callbacks matched by generic markers (webhook, ipn, callback_handler) always keep IP and rate-limit rules active. Reduces attack surface while keeping real webhooks working."
-msgstr ""
+msgstr "签名标头始终会验证格式（至少 8 个字符，仅 文章）。启用后，支付绕过会额外仅申请于 文章 要求：带有支付查询键或 AJAX 操作的 GET 要求不会绕过防护。由通用标记（webhook、ipn、callback_handler）匹配的回调始终会保留 IP 和速率限制规则 已启用。在保持真实 webhook 正常工作的同时减少 攻击 面。"
 
 #: includes/audit/class-botblocker-audit-logger.php:414
 msgid "Signed in from a trusted device."
@@ -12662,7 +12661,7 @@ msgstr "跳过对所有已登录用户的检查"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:120
 msgid "Skip hash-comparison integrity warnings for plugins and themes that ship with WordPress (Akismet, default themes, etc.). Version mismatches between bundled copies and wp.org often cause false positives. Added files and malware patterns are still always scanned."
-msgstr "对随 WordPress 发行的插件和主题（Akismet、預設主题等）跳过哈希比较完整性警告。捆绑副本与 wp.org 之间的版本不匹配经常导致误报。新增文件和恶意程式碼模式仍始终进行扫描。"
+msgstr "对随 WordPress 一同提供的插件和主题跳过哈希比对完整性警告（Akismet、默认 主题、其他）。捆绑的复制件与 wp.org 之间的版本不匹配经常导致误报。新增的文件和恶意软件样板仍会始终被扫描。"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:119
 msgid "Skip integrity check for bundled plugins & themes"
@@ -12670,7 +12669,7 @@ msgstr "对捆绑插件和主题跳过完整性检查"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:332
 msgid "Skip scanning files inside assets/ directories. These typically contain static frontend resources (JS, CSS, images) with low malware risk. Disable for full coverage."
-msgstr "跳过扫描 assets/ 目录内的文件。这些目录通常包含静态前端资源（JS、CSS、图像），恶意程式碼风险较低。禁用此项以进行全面扫描。"
+msgstr "跳过扫描 assets/ 目录内的文件。这些目录通常包含恶意软件风险较低的静态前端资源（JS、CSS、图片）。要获得完整覆盖，请停用。"
 
 #: admin/class-botblocker-admin.php:321
 #: admin/class-botblocker-admin.php:411
@@ -12766,15 +12765,15 @@ msgstr "SSL/HTTPS 未启用"
 
 #: admin/templates/setup-wizard/init-mode.php:17
 msgid "Standard loading"
-msgstr "標準載入"
+msgstr "标准加载"
 
 #: admin/templates/setup-wizard/cache.php:43
 msgid "Standard performance"
-msgstr "標準效能"
+msgstr "标准性能"
 
 #: public/captcha/render-moving-shapes-button-trait.php:19
 msgid "Star"
-msgstr "星標"
+msgstr "星标"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:376
 msgid "Start Background Scan"
@@ -12782,7 +12781,7 @@ msgstr "开始后台扫描"
 
 #: admin/templates/setup-wizard/welcome.php:35
 msgid "Start setup"
-msgstr "開始設定"
+msgstr "开始设置"
 
 #: admin/templates/setup-guide/one-click-modal.php:97
 msgid "Start wizard"
@@ -12829,7 +12828,7 @@ msgstr "停止访客图标"
 
 #: admin/templates/integrations/transients.php:24
 msgid "Store Cloud API responses in transients"
-msgstr "將 Cloud API 回應儲存在暫存中"
+msgstr "将云端 API 响应存储到瞬态中"
 
 #: admin/templates/settings/data-log.php:27
 msgid "Store logs"
@@ -12850,19 +12849,19 @@ msgstr "嚴格"
 #: admin/templates/settings/cookie.php:138
 #: includes/data/class-botblocker-snav.php:473
 msgid "Strict CORS Headers"
-msgstr "嚴格的 CORS 標頭"
+msgstr "严格的 CORS 标头"
 
 #: admin/templates/settings/payment-tab.php:47
 #: includes/data/class-botblocker-snav.php:328
 msgid "Strict Webhook Validation (POST only)"
-msgstr "嚴格的 Webhook 驗證 (僅 POST)"
+msgstr "严格 Webhook 验证（仅限 文章）"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:72
 #: admin/templates/setup-wizard/finish.php:19
 #: includes/helpers/class-health-score-helper.php:13
 #: includes/shortcode/class-botblocker-health-shortcodes.php:42
 msgid "Strong"
-msgstr "強"
+msgstr "强"
 
 #: includes/ajax/class-botblocker-ajax-profile.php:72
 msgid "Strong profile function is not available."
@@ -12870,15 +12869,15 @@ msgstr "强个人资料函数不可用。"
 
 #: admin/templates/setup-guide/one-click-modal.php:48
 msgid "Strong Protection"
-msgstr "強保護"
+msgstr "强力保护"
 
 #: admin/templates/setup-wizard/presets.php:26
 msgid "Strong protection"
-msgstr "強保護"
+msgstr "强力保护"
 
 #: admin/templates/setup-guide/one-click-modal.php:72
 msgid "Strongest protection mode"
-msgstr "最強保護模式"
+msgstr "最强保护模式"
 
 #: addons/bbcs-cookie-alert/inc/class-bbcs-cookie-alert-addons-page.php:56
 #: addons/bbcs-cookie-alert/views/settings.php:112
@@ -12888,42 +12887,42 @@ msgstr "样式"
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:300
 #: admin/templates/settings/rate-limiting.php:31
 msgid "Subnet"
-msgstr "子網路"
+msgstr "子网"
 
 #: admin/templates/settings/rate-limiting.php:117
 #: admin/templates/settings/rate-limiting.php:119
 #: includes/data/class-botblocker-snav.php:230
 #: includes/data/class-botblocker-snav.php:232
 msgid "Subnet Aggregation"
-msgstr "子網路聚合"
+msgstr "子网聚合"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-addons-page.php:56
 #: addons/bbcs-behavior/views/settings.php:255
 msgid "Subnet Decay Interval"
-msgstr "子網路衰減間隔"
+msgstr "子网衰减间隔"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:490
 msgid "Subnet Decay Interval (hours)"
-msgstr "子網路衰減間隔 (小時)"
+msgstr "子网衰减间隔（小时）"
 
 #: admin/templates/settings/rate-limiting.php:147
 #: includes/data/class-botblocker-snav.php:235
 msgid "Subnet Mask"
-msgstr "子網路遮罩"
+msgstr "子网掩码"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-addons-page.php:55
 #: addons/bbcs-behavior/views/settings.php:243
 msgid "Subnet Max Age"
-msgstr "子網路最大壽命"
+msgstr "子网最大时限"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:478
 msgid "Subnet Max Age (days)"
-msgstr "子網路最大壽命 (天)"
+msgstr "子网最大存续时间（天）"
 
 #: admin/templates/settings/rate-limiting.php:127
 #: includes/data/class-botblocker-snav.php:233
 msgid "Subnet Multiplier"
-msgstr "子網路乘數"
+msgstr "子网乘数"
 
 #: admin/templates/settings/general.php:93
 msgid "Subnet size for verified bot allow-rules (IPv4/IPv6). Smaller = more secure, larger = fewer DNS lookups."
@@ -12931,7 +12930,7 @@ msgstr "已验证机器人允许规则的子网大小（IPv4/IPv6）。较小 = 
 
 #: addons/bbcs-behavior/views/settings.php:36
 msgid "Subnetwork"
-msgstr "子網路"
+msgstr "子网"
 
 #: admin/templates/shared/sidebar/rail.php:85
 msgid "Subscribe"
@@ -12954,11 +12953,11 @@ msgstr "成功：IP 規則已新增"
 
 #: admin/class-botblocker-admin.php:560
 msgid "Successfully imported"
-msgstr "匯入成功"
+msgstr "成功导入"
 
 #: admin/partials/class-botblocker-dashboard-widgets.php:84
 msgid "Successfully imported "
-msgstr "匯入成功 "
+msgstr "成功导入 "
 
 #: admin/templates/dashboard/quick-links.php:21
 #: admin/templates/shared/header/plughead.php:107
@@ -12969,7 +12968,7 @@ msgstr "支援"
 
 #: admin/templates/about.php:20
 msgid "Support & About"
-msgstr "支援與關於"
+msgstr "支持与关于"
 
 #: admin/templates/setup-wizard/finish.php:93
 msgid "support center"
@@ -12981,7 +12980,7 @@ msgstr "支持论坛"
 
 #: admin/templates/about/body.php:49
 msgid "Support ticket"
-msgstr "支援工單"
+msgstr "支持工单"
 
 #: addons/bbcs-telegram/inc/class-bbcs-telegram-plugin.php:263
 msgid "Suspicious"
@@ -12999,7 +12998,7 @@ msgstr "已将主题从 %from% 切换到 %to%。"
 
 #: includes/cron/class-botblocker-cron.php:96
 msgid "Sync Early Init Data"
-msgstr "同步早期初始化資料"
+msgstr "同步早期初始化数据"
 
 #: admin/class-botblocker-admin.php:471
 msgid "Sync failed: "
@@ -13008,7 +13007,7 @@ msgstr "同步失敗： "
 #: admin/class-botblocker-admin.php:468
 #: admin/templates/rules.php:27
 msgid "Sync from Cloud"
-msgstr "從雲端同步"
+msgstr "从云端同步"
 
 #: admin/templates/settings/tls-fingerprint.php:86
 msgid "Sync known JA3/JA4 TLS fingerprints from the BotBlocker server."
@@ -13067,7 +13066,7 @@ msgstr "系统状态 - 健康、服务器、诊断"
 
 #: admin/templates/rules.php:44
 msgid "Table overview"
-msgstr "表格總覽"
+msgstr "表格概览"
 
 #: includes/data/traits/trait-botblocker-stats-charts.php:278
 #, pgettext
@@ -13081,7 +13080,7 @@ msgstr "立即生效。"
 
 #: admin/partials/class-botblocker-dashboard-widgets.php:231
 msgid "Target IP/Subnet"
-msgstr "目標 IP 位址/子網路"
+msgstr "目标 IP/子网"
 
 #. translators: %s: cron hook name
 #: includes/cron/class-botblocker-cron.php:332
@@ -13123,7 +13122,7 @@ msgstr "Telegram BotFather"
 #: addons/bbcs-telegram/inc/class-bbcs-telegram-addons-page.php:27
 #: addons/bbcs-telegram/views/settings.php:35
 msgid "Telegram Configuration"
-msgstr "Telegram 設定"
+msgstr "Telegram 配置"
 
 #: addons/bbcs-telegram/inc/class-bbcs-telegram-addons-page.php:17
 #: addons/bbcs-telegram/inc/class-bbcs-telegram-addons-page.php:29
@@ -13136,7 +13135,7 @@ msgstr "Telegram 通知"
 
 #: includes/data/class-botblocker-alerts.php:192
 msgid "Telegram notifications are enabled but the bot token or chat id is missing. Alerts will not be delivered."
-msgstr ""
+msgstr "Telegram 通知已启用，但机器人令牌或聊天 ID 缺失。警报将无法送达。"
 
 #: includes/data/class-botblocker-alerts.php:191
 msgid "Telegram Notifications Not Configured"
@@ -13152,7 +13151,7 @@ msgstr "Telegram 支援"
 
 #: addons/bbcs-telegram/inc/class-bbcs-telegram-plugin.php:106
 msgid "Telegram Weekly Report"
-msgstr "Telegram 週報"
+msgstr "Telegram 每周报告"
 
 #: addons/bbcs-feed-guard/views/settings.php:100
 msgid "Tell search engines not to index feed URLs."
@@ -13173,7 +13172,7 @@ msgstr "临时 - 我稍后会重新开启"
 
 #: includes/hook/class-botblocker-addon-files.php:98
 msgid "Temporary extraction directory is missing."
-msgstr "暫時解壓縮目錄遺失。"
+msgstr "临时解压目录缺失。"
 
 #: admin/templates/about/body.php:92
 msgid "Terms of service"
@@ -13219,7 +13218,7 @@ msgstr "该文件已被其他要求更改。请刷新页面并再试一次。"
 #: includes/hook/class-botblocker-settings-hooks.php:575
 #, php-format
 msgid "The \"%s\" add-on provided the selected CAPTCHA type and is no longer active. Captcha mode was adjusted to a compatible mode."
-msgstr ""
+msgstr "“%s” 附加组件 提供了所选的 CAPTCHA 类型，并且不再 已启用。Captcha 模式 已调整为兼容的 模式。"
 
 #: includes/class-botblocker-toastify.php:272
 #: includes/hook/class-botblocker-addon-files.php:352
@@ -13263,15 +13262,15 @@ msgstr "附加组件上传失败。"
 
 #: admin/templates/tools/modals/db-repair.php:26
 msgid "the added line from wp-config.php."
-msgstr "從 wp-config.php 新增的行。"
+msgstr "从 wp-config.php 中删除添加的行。"
 
 #: admin/templates/integrations/apcu.php:21
 msgid "The apcu PHP extension is required to use this cache. Install it via your hosting control panel or contact your host."
-msgstr ""
+msgstr "使用此缓存需要 apcu PHP 扩展。请通过您的托管控制面板安装，或联系您的主机商。"
 
 #: admin/templates/settings/rate-limiting.php:47
 msgid "The Behavioral Engine is installed and active. You can customize the multi-signal thresholds, session limits, and IP reputation decay."
-msgstr "行為引擎已安裝並啟用。您可以自訂多重訊號閾值、工作階段限制和 IP 信譽衰減。"
+msgstr "行为引擎已安装并 已启用。您可以 定制 多信号阈值、会话 限制和 IP 信誉衰减。"
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:92
 msgid "The built-in database error screen is used instead. Cosmetic only."
@@ -13293,7 +13292,7 @@ msgstr "wp-config.php 中设置了 DISALLOW_FILE_MODS 常量，因此此页面�
 
 #: admin/templates/shared/sidebar/rail.php:145
 msgid "The Early Init add-on allows BotBlocker to execute at the very beginning of the WordPress load cycle. This stops bad bots early, saving massive amounts of database queries and server resources."
-msgstr "Early Init 附加元件允許 BotBlocker 在 WordPress 載入週期的最開始執行。這可以及早阻止惡意機器人，節省大量資料庫查詢和伺服器資源。"
+msgstr "Early Init 附加组件允许 BotBlocker 在 WordPress 加载周期的最开始执行。这会尽早阻止不良机器人，节省大量数据库查询和服务器资源。"
 
 #: admin/templates/settings/cron.php:118
 msgid "The fallback runner checks overdue tasks (>1.5× interval) and recreates missing cron events. Runs automatically every 15 minutes via the WordPress init hook."
@@ -13320,17 +13319,17 @@ msgstr "文件 %s 将被关闭："
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:149
 #: addons/bbcs-forced-inclusions/inc/class-file-operator.php:121
 msgid "The file could not be deleted. Your server may not allow it - ask your hosting company to check the file permissions."
-msgstr ""
+msgstr "无法删除该文件。您的服务器可能不允许此操作 — 请联系您的托管公司检查文件权限。"
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:151
 #: addons/bbcs-forced-inclusions/inc/class-file-operator.php:87
 msgid "The file could not be turned back on. Your server may not allow it - ask your hosting company to check the file permissions."
-msgstr ""
+msgstr "无法重新启用该文件。您的服务器可能不允许此操作 — 请联系您的托管公司检查文件权限。"
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:150
 #: addons/bbcs-forced-inclusions/inc/class-file-operator.php:50
 msgid "The file could not be turned off. Your server may not allow it - ask your hosting company to check the file permissions."
-msgstr ""
+msgstr "无法停用该文件。您的服务器可能不允许此操作 — 请联系您的托管公司检查文件权限。"
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:139
 msgid "The file gets its original name back."
@@ -13370,15 +13369,15 @@ msgstr "恶意软件扫描器不可用。"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:389
 msgid "The maximum number of requests per hour (RPH) a typical human visitor would make. This captures slow-crawling scraping bots that keep their per-minute speed low to avoid basic limiters. (Default: 200)"
-msgstr "典型的人類訪客每小時最大請求數（RPH）。這會捕獲緩慢爬行的抓取機器人，它們保持每分鐘低速以避免基本限制器。（預設值：200）"
+msgstr "典型人类访客每小时会发出的最大要求数（RPH）。这可捕获那些保持低每分钟速度以避开基本限制器的慢速爬行抓取机器人。（默认：200）"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:377
 msgid "The maximum number of requests per minute (RPM) a typical human visitor would reasonably make. If a visitor goes over this speed, their behavior score goes up. (Default: 30)"
-msgstr "典型的人類訪客每分鐘合理請求的最大數量（RPM）。如果訪客超過此速度，其行為分數將會提高。（預設值：30）"
+msgstr "普通真人访客在一分钟内合理发出的最大要求数（RPM）。如果访客超过此速度，其行为评分就会上升。（默认：30）"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:504
 msgid "The maximum penalty level (tier) an IP or subnet can reach. Higher tiers apply a stricter threshold penalty, meaning they trigger blocks much faster. (Default: 6)"
-msgstr "IP 位址或子網路可達到的最高懲罰等級（層級）。更高的層級適用更嚴格的閾值懲罰，意味著它們觸發封鎖的速度會更快。（預設值：6）"
+msgstr "IP 或子网可达到的最大惩罚等级（层级）。更高的层级会 申请 更严格的阈值惩罚，意味着其会更快地 触发 区块。（默认：6）"
 
 #: includes/data/class-botblocker-alerts.php:331
 msgid "The Memcached PHP extension is available on this server but Memcached counters are disabled. Enable them if a Memcached server is running."
@@ -13386,7 +13385,7 @@ msgstr "此服务器上提供了 Memcached PHP 扩展，但 Memcached 计数器�
 
 #: admin/templates/integrations/memcached.php:21
 msgid "The memcached PHP extension is required to use this cache. Install it via your hosting control panel or contact your host."
-msgstr "需要 memcached PHP 擴充功能才能使用此快取。請透過您的主機控制面板安裝，或聯絡您的主機商。"
+msgstr "使用此 缓存 需要 memcached PHP 扩展。请通过您的托管 控制 面板 安装，或联系您的主机服务商。"
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:111
 msgid "The original file is erased from its active location."
@@ -13440,7 +13439,7 @@ msgstr "此服务器上提供了 Redis PHP 扩展，但 Redis 计数器已停用
 
 #: admin/templates/integrations/redis.php:21
 msgid "The redis PHP extension is required to use this cache. Install it via your hosting control panel or contact your host."
-msgstr "需要 redis PHP 擴充功能才能使用此快取。請透過您的主機控制面板安裝，或聯絡您的主機商。"
+msgstr "使用此缓存需要 redis PHP 扩展。请通过您的托管控制面板安装，或联系您的主机商。"
 
 #: admin/templates/tools/modals/db-repair.php:29
 msgid "The repair page is publicly accessible without authentication while enabled. Disable it after use."
@@ -13448,7 +13447,7 @@ msgstr "启用期间，修复页面无需身份验证即可公开访问。使用
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:400
 msgid "The scan runs in the background and may pause if you close this page. For best results, keep this tab open until the scan finishes."
-msgstr "掃描在背景執行，如果您關閉此頁面可能會暫停。為獲得最佳結果，請保持此分頁開啟直到掃描完成。"
+msgstr "扫描在后台运行，如果您关闭此页面，可能会暂停。为获得最佳结果，请保持此标签打开，直到扫描完成。"
 
 #. translators: %d: number of high-confidence malware indicators found
 #: addons/bbcs-malware/inc/class-bbcs-malware-background.php:638
@@ -13472,7 +13471,7 @@ msgstr "所选的 CAPTCHA 提供商附加组件未处于已启用状态。"
 
 #: admin/templates/settings/captcha-tab.php:96
 msgid "The selected CAPTCHA provider addon is not active. Visitors get the simple button challenge until it is activated."
-msgstr ""
+msgstr "所选的 CAPTCHA 提供商 附加组件 未 已启用。在它被 已启用 之前，访客将获得简单的 按钮 验证挑战。"
 
 #: addons/bbcs-hcaptcha/views/settings.php:85
 msgid "The size of the hCaptcha widget."
@@ -13489,11 +13488,11 @@ msgstr "临时解压文件夹缺失。"
 
 #: addons/bbcs-cookie-alert/views/settings.php:55
 msgid "The text displayed in the cookie notice. Keep it concise and informative."
-msgstr "Cookie 通知中顯示的文字。請保持簡潔且資訊豐富。"
+msgstr "在 Cookie 通知中显示的文本。请保持简洁且信息丰富。"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:425
 msgid "The traffic activity level (as a fraction of the Core Rate Inspector's block RPM limit) where we start tracking and recording reputation. For example, at 0.10, once a visitor reaches 10% of that core limit, we begin monitoring their patterns. (Default: 0.10)"
-msgstr ""
+msgstr "我们开始追踪并记录信誉时的流量活动水平（作为 Core Rate Inspector 的 区块 RPM 限制的分数）。例如，当值为 0.10 时，一旦访客达到该核心限制的 10%，我们便开始监控其样板。（默认：0.10）"
 
 #: admin/class-botblocker-admin.php:640
 #: includes/class-botblocker-toastify.php:248
@@ -13527,11 +13526,11 @@ msgstr "Turnstile 小工具的视觉主题。"
 
 #: admin/templates/tools/modals/log-clear.php:19
 msgid "The WordPress log file (debug.log) will be cleared:"
-msgstr "WordPress 記錄檔（debug.log）將被清除："
+msgstr "WordPress 记录档（debug.log）将被清除："
 
 #: addons/bbcs-forced-inclusions/views/settings.php:162
 msgid "The WPMU_PLUGIN_DIR constant is set - your mu-plugins are loading from a non-standard location. If you did not change this, an attacker may have redirected the directory to hide malicious files."
-msgstr ""
+msgstr "WPMU_PLUGIN_DIR 常量已被设置 — 您的 mu-plugins 正从非标准位置加载。如果不是您更改的，攻击者可能已将该目录重定向，以隐藏恶意文件。"
 
 #: addons/bbcs-hcaptcha/views/settings.php:72
 #: addons/bbcs-turnstile/views/settings.php:73
@@ -13550,7 +13549,7 @@ msgstr "主题"
 #: includes/data/class-botblocker-alerts.php:775
 #, php-format
 msgid "These add-ons could not start and were switched off to keep the site running: %s. Your settings are kept. Please update or reinstall them."
-msgstr ""
+msgstr "以下附加组件无法启动，为保持站点正常运行已被关闭：%s。您的设置已保留。请更新或重新安装它们。"
 
 #: admin/templates/settings/status.php:22
 msgid "These options require no form save - they apply immediately and are safe to experiment with."
@@ -13562,7 +13561,7 @@ msgstr "第三方"
 
 #: admin/templates/tools/modals/log-clear.php:22
 msgid "This action cannot be undone."
-msgstr "此操作無法復原。"
+msgstr "此操作无法撤销。"
 
 #: admin/class-botblocker-admin.php:655
 #: includes/class-botblocker-toastify.php:262
@@ -13587,7 +13586,7 @@ msgstr "此附加组件需要 PHP %s 或更高版本。"
 
 #: addons/bbcs-https-protocol/views/settings.php:40
 msgid "This addon requires HTTPS to be installed and enabled. Please install an SSL certificate before enabling these features."
-msgstr "此附加元件需要安裝並啟用 HTTPS。啟用這些功能前，請先安裝 SSL 憑證。"
+msgstr "此附加组件要求安装并启用 HTTPS。请在启用这些功能之前安装 SSL 证书。"
 
 #: admin/templates/tools/modals/rewrite-rules.php:20
 msgid "This can help resolve 404 errors after changing permalink structure."
@@ -13615,15 +13614,15 @@ msgstr "此文件属于高风险文件之一：在您撤消此操作之前，您
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:239
 msgid "This file only does something on a multisite network, and your site is not one. It is doing nothing here, so it is worth finding out who put it there."
-msgstr ""
+msgstr "此文件仅在多站点网络上起作用，而您的站点不是其中之一。它在这里不起任何作用，因此值得查明是谁把它放在那里。"
 
 #: admin/templates/tools/modals/salt-clear.php:24
 msgid "This process is irreversible."
-msgstr "此程序無法逆轉。"
+msgstr "此过程不可逆。"
 
 #: addons/bbcs-hide-admin/inc/class-bbcs-hide-admin-plugin.php:67
 msgid "This URL conflicts with an existing page, post, or taxonomy on your site. Choose a different login slug."
-msgstr "此網址與您網站上的現有頁面、文章或分類法衝突。請選擇不同的登入代稱。"
+msgstr "此 URL 与您 站点 上的 现有 页面、文章 或 分类法 冲突。选择 一个不同的 登录 别名。"
 
 #: includes/data/class-botblocker-pro-features.php:19
 msgid "Threat intelligence & zero-day botnet feeds"
@@ -13631,36 +13630,36 @@ msgstr "威胁情报与零日僵尸网络 Feed"
 
 #: addons/bbcs-behavior/views/settings.php:33
 msgid "Three-layer behavioral engine combining Free rate-limit inspection (RPM velocity with quadratic subnet pressure) with Pro multi-signal scoring (velocity, URI diversity, session depth, timing regularity, referer consistency) and IP/subnet reputation tracking with lazy decay. Detects and blocks robotic traffic through layered analysis."
-msgstr "三層行為引擎，結合自由的速率限制檢查（RPM 速度與二次子網路壓力）與 Pro 的多訊號評分（速度、URI 多樣性、工作階段深度、時間規律性、參照位址一致性）以及 IP 位址/子網路信譽追蹤與延遲衰減。透過分層分析偵測並封鎖機器人流量。"
+msgstr "三层行为引擎，将免费版速率限制检查（带二次子网压力的 RPM 速度）与专业版多信号评分（速度、URI 多样性、会话 深度、时间规律性、referer 一致性）以及带惰性衰减的 IP/子网信誉追踪相结合。通过分层分析检测机器人流量并执行区块处理。"
 
 #: admin/templates/dashboard/quick-links.php:21
 msgid "Tickets, Telegram, documentation"
-msgstr "客服票證、Telegram、文件"
+msgstr "工单、Telegram、文档"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-addons-page.php:58
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:517
 #: addons/bbcs-behavior/views/settings.php:280
 msgid "Tier Thresholds"
-msgstr "層級閾值"
+msgstr "层级阈值"
 
 #: addons/bbcs-behavior/views/settings.php:271
 msgid "tiers"
-msgstr "層級"
+msgstr "层级"
 
 #: admin/class-botblocker-admin.php:489
 #: admin/templates/reports/audit-log.php:47
 #: admin/templates/reports/table-header.php:12
 msgid "Time"
-msgstr "時間"
+msgstr "时间"
 
 #: admin/templates/settings/captcha-tab.php:150
 msgid "Time allowed to complete Captcha verification."
-msgstr "完成 Captcha 驗證所允許的時間。"
+msgstr "完成 Captcha 验证所允许的时间。"
 
 #: includes/services/class-botblocker-health-service.php:42
 #: includes/shortcode/class-botblocker-health-shortcodes.php:85
 msgid "Time ban enabled"
-msgstr "時間封鎖已啟用"
+msgstr "时间封禁已启用"
 
 #: admin/templates/settings/login-brute-force.php:52
 msgid "Time period for counting failed login attempts."
@@ -13710,11 +13709,11 @@ msgstr "TLS 指紋同步失敗： "
 #: includes/data/class-botblocker-snav.php:135
 #: includes/viewmodels/class-settings-viewmodel.php:164
 msgid "TLS Fingerprinting"
-msgstr "TLS 指紋辨識"
+msgstr "TLS 指紋辨识"
 
 #: admin/templates/settings/tls-fingerprint.php:27
 msgid "TLS fingerprinting detects bots by analyzing the TLS handshake signature (JA3/JA4). Real browsers have distinct TLS fingerprints vs headless/automation tools."
-msgstr "TLS 指紋辨識透過分析 TLS 交握簽章 (JA3/JA4) 來偵測機器人。真正的瀏覽器和無頭/自動化工具相比，會有不同的 TLS 指紋。"
+msgstr "TLS 指纹识别通过分析 TLS 握手签名 (JA3/JA4) 来检测机器人。真实浏览器与无头/自动化工具具有不同的 TLS 指纹。"
 
 #: admin/class-botblocker-admin.php:565
 #: includes/ajax/class-botblocker-ajax-tls-fingerprints.php:218
@@ -13740,24 +13739,24 @@ msgstr "Toast 通知："
 
 #: includes/components/class-botblocker-component-counters-grid.php:25
 msgid "Today blocked"
-msgstr "今日已封鎖"
+msgstr "今日已封禁"
 
 #: includes/components/class-botblocker-component-counters-grid.php:24
 msgid "Today hits"
-msgstr "今日點擊數"
+msgstr "今日命中"
 
 #: admin/templates/dashboard/activity.php:10
 msgid "Today's activity"
-msgstr "今日活動"
+msgstr "今日活动"
 
 #: includes/components/class-botblocker-component-sidebar-nav.php:132
 msgid "Toggle navigation"
-msgstr "切換導覽"
+msgstr "切换导航"
 
 #: admin/class-botblocker-admin.php:329
 #: admin/class-botblocker-admin.php:444
 msgid "Toggle On/Off"
-msgstr "切換開/關"
+msgstr "开启/关闭"
 
 #: admin/templates/plugins/deactivation-feedback-modal.php:11
 #: includes/utilites/class-botblocker-deactivation-feedback.php:138
@@ -13804,7 +13803,7 @@ msgstr "工具 - 维护、实用程序、修复、清理"
 
 #: admin/templates/tools/botblocker-tab.php:18
 msgid "Tools for blocking bots, filtering suspicious traffic, and optimizing server resources."
-msgstr "用於封鎖機器人、過濾可疑流量及最佳化伺服器資源的工具。"
+msgstr "用于阻止机器人、筛选可疑流量以及优化服务器资源的工具。"
 
 #: admin/templates/tools/tools-content.php:19
 msgid "Tools sections"
@@ -13822,7 +13821,7 @@ msgstr "頂端"
 #: includes/class-botblocker-shortcodes.php:143
 #, php-format
 msgid "Top %d Browsers"
-msgstr "前 %d 名瀏覽器"
+msgstr "前 %d 个浏览器"
 
 #. translators: %d is the number of top countries to display.
 #: includes/class-botblocker-shortcodes.php:135
@@ -13838,11 +13837,11 @@ msgstr "前 %d 名裝置"
 
 #: includes/viewmodels/class-reports-viewmodel.php:137
 msgid "Top Countries"
-msgstr "熱門國家"
+msgstr "前几位国家/地区"
 
 #: includes/viewmodels/class-reports-viewmodel.php:136
 msgid "Top IPs"
-msgstr "熱門 IP"
+msgstr "前几个 IP"
 
 #. translators: %d is the number of top IP addresses to display.
 #: includes/class-botblocker-shortcodes.php:131
@@ -13858,30 +13857,30 @@ msgstr "Tor"
 #: includes/data/class-botblocker-snav.php:203
 #: includes/viewmodels/class-pro-status-viewmodel.php:110
 msgid "Tor Exit Nodes"
-msgstr "Tor 出口節點"
+msgstr "Tor 出口节点"
 
 #: admin/templates/shared/kpi-primary-grid.php:18
 msgid "Total allowed"
-msgstr "總允許數"
+msgstr "已允许总数"
 
 #: admin/templates/reports/dashboard.php:19
 #: admin/templates/shared/kpi-primary-grid.php:32
 #: admin/templates/shared/sidebar/rail.php:29
 #: includes/components/class-botblocker-component-counters-grid.php:27
 msgid "Total blocked"
-msgstr "總封鎖數"
+msgstr "已拦截总数"
 
 #: includes/components/class-botblocker-component-counters-grid.php:26
 msgid "Total hits"
-msgstr "總點擊數"
+msgstr "总命中"
 
 #: includes/shortcode/class-botblocker-rules-shortcodes.php:100
 msgid "Total IPv4 rules:"
-msgstr "IPv4 規則總數："
+msgstr "IPv4 规则总数："
 
 #: includes/shortcode/class-botblocker-rules-shortcodes.php:101
 msgid "Total IPv6 rules:"
-msgstr "IPv6 規則總數："
+msgstr "IPv6 规则总数："
 
 #: includes/shortcode/class-botblocker-rules-shortcodes.php:104
 msgid "Total paths:"
@@ -13894,11 +13893,11 @@ msgstr "要求总数"
 
 #: includes/shortcode/class-botblocker-rules-shortcodes.php:110
 msgid "Total rules:"
-msgstr "規則總數："
+msgstr "规则总数："
 
 #: includes/shortcode/class-botblocker-rules-shortcodes.php:107
 msgid "Total white bots:"
-msgstr "白名單機器人總數："
+msgstr "白名单机器人总数："
 
 #: admin/templates/settings/log.php:46
 msgid "Track admin panel activity for security auditing and multi-user accountability."
@@ -13927,11 +13926,11 @@ msgstr "流量"
 
 #: includes/data/class-botblocker-snav.php:241
 msgid "Traffic & Referrer"
-msgstr "流量與推薦連結來源"
+msgstr "流量与来源"
 
 #: includes/viewmodels/class-settings-viewmodel.php:176
 msgid "Traffic &amp; Referrer"
-msgstr "流量與推薦連結來源"
+msgstr "流量 &amp; 来源"
 
 #: addons/bbcs-behavior/views/settings.php:182
 msgid "Traffic activity level (as fraction of Max RPM) where reputation tracking starts. (Default: 0.10)"
@@ -13945,7 +13944,7 @@ msgstr "流量和来源设置"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:413
 msgid "Traffic from known proxies or VPNs is more likely to be automated. We raise this visitor's block and CAPTCHA score thresholds by this factor, making the engine stricter and reducing false positives on shared or proxy networks. Higher values mean fewer, later triggers. (Default: 1.15)"
-msgstr ""
+msgstr "来自已知代理或 VPN 的流量更可能是自动化的。我们按此系数提高该访客的 区块 和 CAPTCHA 分数阈值，使引擎更严格，并减少共享或代理网络上的误报。值越高意味着触发更少、更晚。（默认：1.15）"
 
 #: includes/inc-botblocker-wp-abilities.php:421
 msgid "Traffic tables are not available."
@@ -13959,7 +13958,7 @@ msgstr "暫存"
 
 #: admin/templates/integrations/transients.php:17
 msgid "Transients API"
-msgstr "Transients API"
+msgstr "瞬态 API"
 
 #: admin/class-botblocker-admin.php:596
 msgid "Transients successfully cleared!"
@@ -13967,12 +13966,12 @@ msgstr "暫存已成功清除！"
 
 #: addons/bbcs-malware/inc/views/scan-results.php:29
 msgid "Tree"
-msgstr "樹狀結構"
+msgstr "树状"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-addons-page.php:76
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:237
 msgid "Tree View Cap"
-msgstr "樹狀檢視上限"
+msgstr "树状视图上限"
 
 #: public/captcha/render-moving-shapes-button-trait.php:18
 msgid "Triangle"
@@ -13980,11 +13979,11 @@ msgstr "三角形"
 
 #: addons/bbcs-https-protocol/views/settings.php:105
 msgid "Trust proxy headers for HTTPS detection"
-msgstr "信任代理標頭以進行 HTTPS 偵測"
+msgstr "信任代理标头以进行 HTTPS 检测"
 
 #: addons/bbcs-xmlrpc-tunnel/views/settings.php:42
 msgid "Trust proxy headers for IP allowlisting"
-msgstr "信任代理標頭以進行 IP 位址允許清單"
+msgstr "信任代理标头以进行 IP 白名单"
 
 #: admin/templates/setup-wizard/exclusions.php:22
 msgid "Trust your current IP"
@@ -13994,11 +13993,11 @@ msgstr "信任您的当前 IP"
 #: admin/templates/rules/body.php:14
 #: includes/viewmodels/class-rules-viewmodel.php:121
 msgid "Trusted Bots"
-msgstr "受信任的機器人"
+msgstr "受信任的机器人"
 
 #: admin/templates/rules.php:40
 msgid "Trusted Bots:"
-msgstr "受信任的機器人："
+msgstr "受信任的机器人："
 
 #: admin/templates/shared/sidebar/rail.php:36
 msgid "Trusted by users"
@@ -14046,15 +14045,15 @@ msgstr "开启"
 
 #: addons/bbcs-behavior/views/settings.php:69
 msgid "Turn on advanced behavior checking. Analyzes multiple signals (click speed, timing regularity, missing referrers, page diversity) to identify robotic traffic."
-msgstr "啟用進階行為檢查。分析多種信號（點擊速度、時間規律性、缺少推薦連結來源網址、頁面多樣性），以識別機器人流量。"
+msgstr "开启高级行为检查。分析多个信号（点击速度、时间规律性、缺少来源页、页面多样性）以识别机器人流量。"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:331
 msgid "Turn on advanced behavior checking. Unlike simple speed limits, this analyzes multiple signals (like click speed, timing regularity, missing referrers, and page diversity) to identify robotic traffic."
-msgstr "啟用進階行為檢查。不同於簡單的速度限制，這會分析多種信號（例如點擊速度、時間規律性、缺少推薦連結來源網址和頁面多樣性），以識別機器人流量。"
+msgstr "开启高级行为检查。与简单的速度限制不同，此功能会分析多个信号（如点击速度、时间规律性、缺少来源页以及页面多样性）以识别机器人流量。"
 
 #: addons/bbcs-antispam/views/settings.php:80
 msgid "Turn on AI-powered comment spam detection. Uses WebSocket API to analyze comments and filter spam."
-msgstr ""
+msgstr "启用 AI 驱动的 评论 标记为垃圾 检测。使用 WebSocket API 分析评论并 筛选 标记为垃圾。"
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:142
 msgid "Turn this file back on now?"
@@ -14082,11 +14081,11 @@ msgstr "已关闭（仍在服务器上）"
 
 #: addons/bbcs-forced-inclusions/views/settings.php:82
 msgid "Turning this off can take the site offline or slow it down a lot. Read the note next to the name first."
-msgstr ""
+msgstr "停用此项可能导致 站点 离线或大幅变慢。请先阅读名称旁边的 批注。"
 
 #: addons/bbcs-security-headers/views/settings.php:114
 msgid "Turns all BotBlocker security headers on or off. Use to globally disable header output for testing or compatibility checks."
-msgstr "開啟或關閉所有 BotBlocker 安全性標頭，用於在測試或相容性檢查時全域停用標頭輸出。"
+msgstr "开启或关闭所有 BotBlocker 安全标头。用于在测试或兼容性检查时全局停用标头输出。"
 
 #: includes/data/traits/trait-botblocker-stats-charts.php:279
 #, pgettext
@@ -14096,7 +14095,7 @@ msgstr "TV"
 
 #: admin/templates/settings/notifications.php:17
 msgid "Twice a week"
-msgstr "每週兩次"
+msgstr "每周两次"
 
 #: includes/data/class-botblocker-palette.php:190
 msgid "Two-Factor Auth - 2FA, MFA, OTP, authentication"
@@ -14107,23 +14106,23 @@ msgstr "双重认证 - 2FA、MFA、OTP、认证"
 #: public/2FA/bbcs-2fa.php:196
 #: public/2FA/bbcs-2fa.php:211
 msgid "Two-Factor Authentication"
-msgstr "兩步驟驗證"
+msgstr "双重身份验证"
 
 #: includes/data/class-botblocker-pro-features.php:58
 msgid "Two-Factor Authentication (2FA)"
-msgstr "兩步驟驗證 (2FA)"
+msgstr "两步验证（2FA）"
 
 #: admin/templates/integrations/2fa.php:14
 msgid "Two-Factor Authentication (2FA) requires a time-based code from your authenticator app in addition to your password. This prevents unauthorized access even if your password is compromised. You can set which user roles require 2FA and generate backup codes for emergency access."
-msgstr "兩步驟驗證 (2FA) 需要您使用驗證器應用程式中基於時間的代碼，以及您的密碼。這樣即使密碼已洩漏，也能防止未經授權的存取。您可以設定哪些使用者角色需要 2FA，並產生用於緊急存取的備用代碼。"
+msgstr "双因素身份验证 (2FA) 除密码外，还需要来自您身份验证器应用的基于时间的一次性代码。即使密码已泄露，这也能防止未经授权的访问。您可以设置哪些用户角色需要 2FA，并为紧急访问生成备份代码。"
 
 #: admin/class-botblocker-admin.php:531
 msgid "Two-Factor Authentication enabled."
-msgstr "已啟用兩步驟驗證。"
+msgstr "双重身份验证已启用。"
 
 #: includes/utilites/2FA/class-botblocker-two-factor-auth.php:1134
 msgid "Two-factor authentication enabled."
-msgstr "已啟用兩步驟驗證。"
+msgstr "双重认证已启用。"
 
 #: admin/class-botblocker-admin.php:532
 msgid "Two-Factor Authentication has been reset."
@@ -14131,11 +14130,11 @@ msgstr "双重认证已重置。"
 
 #: includes/data/class-botblocker-alerts.php:219
 msgid "Two-factor authentication is enabled but your account has no authenticator secret yet. Set it up to protect this account."
-msgstr ""
+msgstr "双重身份验证已启用，但您的帐户尚无身份验证器密钥。请进行设置以保护此帐户。"
 
 #: public/2FA/bbcs-2fa-setup.php:152
 msgid "Two-factor authentication is now active on your account."
-msgstr "您帳號的兩步驟驗證現已啟用。"
+msgstr "您的账户现已启用双因素身份验证。"
 
 #: includes/utilites/2FA/class-botblocker-two-factor-auth.php:1095
 #: includes/utilites/2FA/class-botblocker-two-factor-auth.php:218
@@ -14157,7 +14156,7 @@ msgstr "双重身份验证未验证"
 
 #: public/2FA/bbcs-2fa-setup.php:132
 msgid "Two-Factor Authentication Setup"
-msgstr "兩步驟驗證設定"
+msgstr "双因素身份验证设置"
 
 #: includes/audit/class-botblocker-audit-logger.php:413
 msgid "Two-factor check failed."
@@ -14189,11 +14188,11 @@ msgstr "已为用户 #%object_id% 重置双重身份验证。"
 #: includes/modal/modal-botblocker-rule-add.php:19
 #: includes/modal/modal-botblocker-rule-edit.php:19
 msgid "Type"
-msgstr "類型"
+msgstr "类型"
 
 #: includes/ajax/class-botblocker-ajax-hits.php:361
 msgid "Type or data is not set or empty."
-msgstr "類型或資料未設定或為空。"
+msgstr "类型或数据未设置或为空。"
 
 #: admin/templates/rules/body.php:164
 msgid "UA Tokens"
@@ -14220,7 +14219,7 @@ msgstr "无法重置双重身份验证。"
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-ajax.php:17
 #: includes/ajax/class-botblocker-ajax-email.php:69
 msgid "Unauthorized"
-msgstr "未經授權的"
+msgstr "未授权"
 
 #: addons/bbcs-forced-inclusions/inc/class-ajax-handler.php:28
 #: addons/bbcs-pusher/inc/class-bbcs-pusher-plugin.php:307
@@ -14328,7 +14327,7 @@ msgstr "未經授權的"
 #: includes/hook/class-botblocker-cloud-api-hooks.php:35
 #: includes/hook/class-botblocker-cloud-api-hooks.php:72
 msgid "Unauthorized."
-msgstr "未經授權的。"
+msgstr "未授权。"
 
 #: admin/templates/shared/system-toggles.php:46
 #: admin/templates/shared/system-toggles.php:47
@@ -14359,15 +14358,15 @@ msgstr "唯一 IP 位址"
 #, pgettext
 msgctxt "statistics label"
 msgid "Unique Visitors"
-msgstr "唯一訪客"
+msgstr "唯一 访客"
 
 #: admin/templates/settings/ui.php:14
 msgid "Unique Visitors (by IP)"
-msgstr "唯一訪客（按 IP 位址）"
+msgstr "唯一访客（按 IP）"
 
 #: includes/shortcode/class-botblocker-chart-shortcodes.php:35
 msgid "Unknown chart data type."
-msgstr "未知的圖表資料類型。"
+msgstr "未知的图表数据类型。"
 
 #: includes/cron/class-botblocker-cron.php:303
 #: includes/cron/class-botblocker-cron.php:310
@@ -14376,7 +14375,7 @@ msgstr "未知的 cron 任务。"
 
 #: admin/class-botblocker-setup-wizard.php:213
 msgid "Unknown error"
-msgstr "未知的錯誤"
+msgstr "未知错误"
 
 #: addons/bbcs-firewall-export/inc/class-bbcs-firewall-export.php:201
 msgid "Unknown export format."
@@ -14384,15 +14383,15 @@ msgstr "未知的导出格式。"
 
 #: includes/inc-botblocker-ui.php:54
 msgid "Unknown period"
-msgstr "未知的期間"
+msgstr "未知时段"
 
 #: admin/templates/setup-wizard/finish.php:65
 msgid "Unlock PRO protection"
-msgstr "解鎖 PRO 保護"
+msgstr "解锁 PRO 保护"
 
 #: includes/shortcode/class-botblocker-health-shortcodes.php:91
 msgid "Unresponsive IP blocking"
-msgstr "無回應 IP 封鎖"
+msgstr "无响应 IP 阻止"
 
 #: includes/inc-botblocker-wp-abilities.php:415
 msgid "Unsupported period."
@@ -14400,7 +14399,7 @@ msgstr "不支持的周期。"
 
 #: addons/bbcs-forced-inclusions/views/settings.php:138
 msgid "Unsure what a file does? Ask your host before removing it. Some hosts restore their own files automatically, so a disabled file may reappear."
-msgstr ""
+msgstr "不确定文件的作用？删除前请先咨询您的主机商。某些主机商会自动恢复自己的文件，因此已停用的文件可能会重新出现。"
 
 #: admin/class-botblocker-admin.php:668
 #: admin/templates/addons/addon-market-card.php:106
@@ -14420,7 +14419,7 @@ msgstr "更新全部（%d）"
 #: admin/templates/tools/maintenance-tab.php:130
 #: includes/data/class-botblocker-snav.php:759
 msgid "Update ASN database"
-msgstr "更新 ASN 資料庫"
+msgstr "更新 ASN 数据库"
 
 #: includes/data/class-botblocker-palette.php:173
 msgid "Update ASN database - geo, network, country data"
@@ -14498,7 +14497,7 @@ msgstr "升级到 PRO - 高级版、定价、许可证、功能"
 
 #: admin/templates/settings/rate-limiting.php:38
 msgid "Upgrade to Pro for the Behavioral Engine. It features advanced multi-signal scoring and decay-based reputation, preventing bots from spamming your site by tightening thresholds for repeat offenders."
-msgstr "升級至 Pro 版以使用行為引擎。其具備進階多訊號評分及基於衰減的聲譽系統，可藉由對重複違規者加強門檻來防止機器人對你的網站進行垃圾攻擊。"
+msgstr "升级至 Pro 以使用行为引擎。它具有高级多信号评分和基于衰减的信誉，通过对屡次违规者收紧阈值，防止机器人向您的站点滥发内容。"
 
 #: admin/partials/class-botblocker-dashboard-widgets.php:133
 msgid "Upgrade your plan for better protection."
@@ -14518,7 +14517,7 @@ msgstr ""
 
 #: admin/partials/class-botblocker-dashboard-widgets.php:186
 msgid "Uploading a new list will add new IPs and skip existing ones. Invalid lines will be skipped automatically."
-msgstr "上傳新清單將新增 IP 位址，並略過既有的 IP 位址。無效的行將會自動略過。"
+msgstr "上传一个 新增 列表 将 添加 新增 IP，并跳过 现有 的 IP。无效 行将被自动跳过。"
 
 #: includes/modal/modal-botblocker-rule-add.php:29
 #: includes/modal/modal-botblocker-rule-edit.php:28
@@ -14527,11 +14526,11 @@ msgstr "URI"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:292
 msgid "URL to fetch remote regex signatures for malware detection. Endpoint must return JSON with version + signatures array. Each signature: id, severity (critical/high/medium/low), regex (valid PHP regex), score (1-100), confidence, category, description."
-msgstr "用於擷取遠端 Regex 簽章以進行惡意軟體偵測的 URL。端點必須傳回包含版本及簽章陣列的 JSON。每個簽章包含：ID、嚴重性（critical/high/medium/low）、Regex（有效的 PHP Regex）、分數（1-100）、可信度、分類、說明。"
+msgstr "用于获取恶意软件检测远程正则表达式签名的 URL。端点必须返回包含版本 + 签名数组的 JSON。每个签名：id、严重性（critical/high/medium/low）、正则表达式（有效的 PHP 正则表达式）、分数（1-100）、置信度、分类、描述。"
 
 #: addons/bbcs-hide-admin/views/settings.php:98
 msgid "URL to redirect to when someone tries to access the default login URL. Only used when behavior is set to Redirect."
-msgstr "當有人嘗試存取預設登入 URL 時要重新導向的 URL。僅在行為設為「重新導向」時使用。"
+msgstr "当有人试图访问默认登录 URL 时，URL 至重定向。仅在行为设置为重定向时使用。"
 
 #: admin/templates/integrations/botblocker-api.php:57
 msgid "Usage"
@@ -14563,23 +14562,23 @@ msgstr "使用 noindex 和 noarchive 指令防止搜索引擎索引被阻止的�
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-addons-page.php:89
 msgid "Use Remote Regex Signatures"
-msgstr "使用遠端 Regex 簽章"
+msgstr "使用远程正则签名"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:282
 msgid "Use remote regex signatures"
-msgstr "使用遠端 Regex 簽章"
+msgstr "使用远程正则表达式签名"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:283
 msgid "Use remote regex signatures for malware detection."
-msgstr "使用遠端 Regex 簽章進行惡意軟體偵測。"
+msgstr "使用远程正则表达式签名进行恶意软件检测。"
 
 #: addons/bbcs-security-headers/views/settings.php:56
 msgid "Use these options to enable or disable groups of security response headers. These headers enhance browser protections and privacy, but some may require theme/plugin compatibility checks. If you are running a local site without HTTPS, disable HSTS and CSP temporarily to avoid mixed content issues. Re-enable them on production for better security posture."
-msgstr "使用這些選項來啟用或停用安全性回應標頭群組。這些標頭會增強瀏覽器保護和隱私，但部分可能需要進行佈景主題／外掛相容性檢查。如果你正在本機網站上執行且未使用 HTTPS，請暫時停用 HSTS 和 CSP 以避免混合內容問題。請在正式環境中重新啟用它們以獲得更好的安全性態勢。"
+msgstr "使用这些选项来启用或停用安全响应标头组合。这些标头可增强浏览器保护和隐私，但其中一些可能需要主题/插件兼容性检查。如果您运行的是没有 HTTPS 的本地站点，请临时停用 HSTS 和 CSP，以避免混合内容问题。在生产环境中重新启用它们以获得更好的安全态势。"
 
 #: admin/templates/about/body.php:191
 msgid "used with attribution"
-msgstr "以姓名標示方式使用"
+msgstr "使用时需注明出处"
 
 #: includes/audit/class-botblocker-audit-logger.php:408
 msgid "User %login% logged in."
@@ -14630,7 +14629,7 @@ msgstr "使用者代理程式異常"
 #: includes/modal/modal-botblocker-white-add.php:49
 #: includes/modal/modal-botblocker-white-edit.php:50
 msgid "User-Agent substring identifying the bot"
-msgstr "用於識別機器人的使用者代理程式子字串"
+msgstr "用于识别机器人的 User-Agent 子字符串"
 
 #: admin/templates/settings/traffic.php:18
 msgid "UTM"
@@ -14639,11 +14638,11 @@ msgstr "UTM"
 #: admin/templates/settings/traffic.php:30
 #: includes/data/class-botblocker-snav.php:248
 msgid "UTM Referrer Processing"
-msgstr "UTM 推薦連結來源網址處理"
+msgstr "UTM 引荐来源处理"
 
 #: includes/services/class-botblocker-health-service.php:51
 msgid "UTM referrer processing"
-msgstr "UTM 推薦連結來源網址處理"
+msgstr "UTM 引荐来源处理"
 
 #: includes/hook/class-botblocker-addon-files.php:187
 msgid "Validated add-on source is missing."
@@ -14652,37 +14651,37 @@ msgstr "已验证的附加组件源缺失。"
 #: includes/modal/modal-botblocker-rule-add.php:65
 #: includes/modal/modal-botblocker-rule-edit.php:59
 msgid "Value to match - format depends on selected type (e.g. user agent string, referer URL, language code, country code, URI path)"
-msgstr "要比對的值 - 格式取決於選取的類型 (例如使用者代理程式字串、推薦連結來源網址、語言代碼、國家代碼、URI 路徑)"
+msgstr "要匹配的值 - 格式取决于所选的类型（例如 用户 代理字符串、referer URL、语言代码、国家/地区代码、URI 路径）"
 
 #: public/2FA/bbcs-2fa-setup.php:186
 #: public/2FA/bbcs-2fa.php:250
 msgid "Verification Code"
-msgstr "驗證碼"
+msgstr "验证码"
 
 #: includes/utilites/2FA/class-botblocker-two-factor-auth.php:1069
 msgid "Verification code is required."
-msgstr "驗證碼為必填。"
+msgstr "验证码是必需的。"
 
 #: admin/class-botblocker-admin.php:530
 #: public/captcha/render-hold-button-trait.php:32
 msgid "Verification failed."
-msgstr "驗證失敗。"
+msgstr "验证失败。"
 
 #: includes/botblocker/traits/class-botblocker-check-page-trait.php:129
 msgid "Verification failed. Please complete the challenge below."
-msgstr "驗證失敗。請完成下方的驗證。"
+msgstr "验证失败。请完成下方的挑战。"
 
 #: admin/templates/reports/dashboard.php:29
 msgid "Verification Sources"
-msgstr "驗證來源"
+msgstr "验证来源"
 
 #: admin/templates/shared/kpi-primary-grid.php:53
 msgid "verified and passed"
-msgstr "已驗證並通過"
+msgstr "已验证并通过"
 
 #: admin/templates/rules.php:40
 msgid "verified crawlers -"
-msgstr "已驗證的爬蟲 -"
+msgstr "已验证的爬虫 -"
 
 #: public/2FA/bbcs-2fa.php:266
 msgid "Verify"
@@ -14707,7 +14706,7 @@ msgstr "通过云数据库验证每位访客。仅限 Ultimate 层级。"
 
 #: addons/bbcs-antispam/views/settings.php:142
 msgid "Verify the server TLS certificate on wss:// connections. Keep enabled unless you have a specific reason to disable it."
-msgstr ""
+msgstr "在 wss:// 连接上验证服务器 TLS 证书。除非您有特定理由将其停用，否则请保持启用。"
 
 #: addons/bbcs-antispam/views/settings.php:141
 msgid "Verify TLS Certificate"
@@ -14717,7 +14716,7 @@ msgstr "验证 TLS 证书"
 #: addons/bbcs-malware/inc/class-bbcs-malware-background.php:356
 #, php-format
 msgid "Verifying %s integrity"
-msgstr "驗證 %s 完整性"
+msgstr "正在验证 %s 完整性"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-background.php:272
 msgid "Verifying file integrity..."
@@ -14726,7 +14725,7 @@ msgstr "正在验证文件完整性..."
 #: includes/botblocker/traits/class-botblocker-check-page-trait.php:127
 #: public/captcha/render-hold-button-trait.php:31
 msgid "Verifying..."
-msgstr "驗證中…"
+msgstr "正在验证…"
 
 #: includes/components/class-botblocker-component-info-column.php:228
 #: includes/shortcode/class-botblocker-sidebar-shortcodes.php:200
@@ -14764,12 +14763,12 @@ msgstr "查看详情"
 
 #: admin/templates/shared/sidebar/rail.php:65
 msgid "View on WordPress.org"
-msgstr "在 WordPress.org 上檢視"
+msgstr "在 WordPress.org 上查看"
 
 #: admin/templates/setup-wizard/init-mode.php:39
 #: admin/templates/setup-wizard/presets.php:40
 msgid "View plans"
-msgstr "檢視方案"
+msgstr "查看方案"
 
 #: addons/bbcs-malware/inc/views/scan-results.php:26
 msgid "View:"
@@ -14786,7 +14785,7 @@ msgstr "访客日志设置"
 
 #: admin/class-botblocker-admin.php:598
 msgid "Visitors data successfully cleared!"
-msgstr "訪客資料已成功清除！"
+msgstr "访客数据已成功清除！"
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:68
 msgid "Visitors see the built-in maintenance screen instead. Cosmetic only."
@@ -14798,26 +14797,26 @@ msgstr "VPN"
 
 #: includes/data/class-botblocker-pro-features.php:73
 msgid "VPN / Tor / proxy blocking"
-msgstr "VPN / Tor / 代理封鎖"
+msgstr "VPN / Tor / 代理阻止"
 
 #: admin/templates/setup-wizard/finish.php:74
 #: includes/viewmodels/class-dashboard-viewmodel.php:163
 msgid "VPN and Tor blocking"
-msgstr "VPN 及 Tor 封鎖"
+msgstr "VPN 和 Tor 拦截"
 
 #: admin/templates/settings/connection-types.php:53
 #: includes/data/class-botblocker-snav.php:202
 #: includes/viewmodels/class-pro-status-viewmodel.php:105
 msgid "VPN Connections"
-msgstr "VPN 連線"
+msgstr "VPN 连接"
 
 #: includes/data/class-botblocker-pro-features.php:14
 msgid "VPN, Tor and proxy blocking"
-msgstr "VPN、Tor 及代理封鎖"
+msgstr "VPN、Tor 和代理阻止"
 
 #: includes/data/class-botblocker-alerts.php:654
 msgid "W3 Total Cache detected. If using Disk Enhanced mode with rewrite rules, add a cookie-based server exception. See CACHE-COMPATIBILITY.md."
-msgstr "偵測到 W3 Total Cache。如果使用含有重寫規則的磁碟增強模式，請新增基於 cookie 的伺服器例外狀況。請參閱 CACHE-COMPATIBILITY.md。"
+msgstr "检测到 W3 Total 缓存。如果使用带 重写 规则的 Disk Enhanced 模式，请 添加 基于 Cookie 的 服务器 例外。请参阅 CACHE-COMPATIBILITY.md。"
 
 #: addons/bbcs-cookie-alert/inc/class-bbcs-cookie-alert-settings.php:12
 msgid "We use cookies to improve site security and user experience."
@@ -14835,7 +14834,7 @@ msgstr "Web"
 #: admin/templates/shared/system-status-lines.php:9
 #: includes/viewmodels/class-about-viewmodel.php:62
 msgid "Web:"
-msgstr "網頁："
+msgstr "Web："
 
 #: admin/templates/settings/payment-tab.php:29
 msgid "Webhook"
@@ -14883,11 +14882,11 @@ msgstr "BotBlocker 收集哪些数据"
 
 #: addons/bbcs-404-guard/views/settings.php:96
 msgid "What happens to an IP that crosses the threshold. CAPTCHA is milder: real users can pass, bots usually cannot."
-msgstr ""
+msgstr "IP 超过阈值后会发生什么。CAPTCHA 更温和：真实用户可以通行，机器人通常不能。"
 
 #: addons/bbcs-antispam/views/settings.php:220
 msgid "What to do with a comment when the AI service is unreachable. Hold: place in moderation queue (recommended). Approve: publish unchecked."
-msgstr ""
+msgstr "当 AI 服务 无法连接时，如何处理 评论。按住：放入审核队列（推荐）。批准：发布 保持未选中。"
 
 #: admin/templates/setup-wizard/welcome.php:20
 msgid "What was blocked and why: reason + URL + IP"
@@ -14919,7 +14918,7 @@ msgstr "当云端 API 返回意外数据时 - 阻止访客并清除缓存，而�
 
 #: includes/viewmodels/class-pro-status-viewmodel.php:91
 msgid "When cloud API returns unexpected data - block the visitor instead of silent pass."
-msgstr ""
+msgstr "当云端 API 返回意外数据时 - 对访客执行区块，而不是静默放行。"
 
 #: admin/templates/settings/general.php:114
 msgid "When enabled, all authenticated WordPress users (including subscribers, authors, contributors) bypass BotBlocker checks. By default, only administrators, editors and moderators are bypassed."
@@ -14935,7 +14934,7 @@ msgstr "启用时，支付回调仍会跳过 Captcha，但 IP 黑名单、ASN �
 
 #: admin/templates/settings/payment-tab.php:40
 msgid "When enabled, requests matching well-known payment callback patterns (paths, query keys, admin-ajax actions, signature headers) skip JS-challenge, Captcha and rate-limit. Recommended for any site with WooCommerce or another e-commerce plugin."
-msgstr "启用时，匹配已知支付回调模式（路径、查询键、admin-ajax 操作、签名标头）的请求跳过 JS 挑战、Captcha 和速率限制。建议任何使用 WooCommerce 或其他电子商务插件的网站使用。"
+msgstr "启用后，匹配知名付款 回调 样板的要求（路径、查询键、admin-ajax 操作、签名标头）会跳过 JS 挑战、Captcha 和速率限制。建议为任何使用 WooCommerce 或其他电子商务 插件 的 站点 启用。"
 
 #: addons/bbcs-xmlrpc-tunnel/views/settings.php:43
 msgid "When enabled, X-Forwarded-For and CF-Connecting-IP headers are trusted for IP allowlisting. WARNING: These headers are client-spoofable — only enable if your server is behind a trusted reverse proxy that strips these headers from external requests."
@@ -15050,7 +15049,7 @@ msgstr "WordPress 连接器"
 
 #: admin/templates/integrations/wp-connectors.php:15
 msgid "WordPress Connectors integrates your site with the WordPress ecosystem. Disable to save ~180ms per page load when not needed."
-msgstr ""
+msgstr "WordPress 连接器将您的 站点 与 WordPress 生态系统集成。不需要时，停用 以 保存 每次 页面 加载约 180ms。"
 
 #: admin/templates/tools/tools-content.php:22
 #: includes/data/class-botblocker-snav.php:719
@@ -15068,11 +15067,11 @@ msgstr "WordPress 核心已更新。"
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:56
 msgid "WordPress falls back to a per-request cache. The site keeps working but gets slower, and there is a brief extra load while the cache refills."
-msgstr ""
+msgstr "WordPress 会回退到按请求的缓存。站点仍可工作但会变慢，并且在缓存重新填充期间会有短暂的额外负载。"
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:116
 msgid "WordPress falls back to its single-server database layer. On a replicated or sharded setup the site can stop working entirely."
-msgstr ""
+msgstr "WordPress 会回退到其单服务器数据库层。在复制或分片设置中，站点可能完全停止工作。"
 
 #: addons/bbcs-feed-guard/views/settings.php:28
 msgid "WordPress Feeds"
@@ -15096,7 +15095,7 @@ msgstr "WordPress 隐私屏幕"
 
 #: addons/bbcs-forced-inclusions/views/settings.php:128
 msgid "WordPress runs these files automatically - they never appear on the Plugins screen, so you cannot switch them off there. Hosts use them for their own tools; attackers use them because nobody looks there."
-msgstr ""
+msgstr "WordPress 会自动运行这些文件 - 它们从不会出现在插件页面上，因此您无法在那里将它们切换关闭。主机商将这些文件用于自己的工具；攻击者使用它们，因为没人会查看那里。"
 
 #: addons/bbcs-forced-inclusions/views/settings.php:76
 msgid "WordPress runs this file on every page."
@@ -15172,7 +15171,7 @@ msgstr "检测到 WP Rocket。将 BotBlocker Cookie 添加至 WP Rocket 设置�
 
 #: includes/data/class-botblocker-alerts.php:644
 msgid "WP Super Cache (Expert/mod_rewrite mode) serves cached pages via .htaccess, bypassing PHP. Switch to the PHP caching mode so the BotBlocker cookie registration applies. See CACHE-COMPATIBILITY.md."
-msgstr ""
+msgstr "WP Super 缓存（Expert/mod_rewrite 模式）通过 .htaccess 提供缓存的页面，绕过了 PHP。请 切换 到 PHP 缓存 模式，以便申请 BotBlocker Cookie 注册。请参阅 CACHE-COMPATIBILITY.md。"
 
 #: addons/bbcs-early-init/inc/class-bbcs-early-init-addons-page.php:49
 #: addons/bbcs-early-init/views/settings.php:49
@@ -15270,7 +15269,7 @@ msgstr "您可以稍后在设置中更改此选择。"
 
 #: admin/partials/class-botblocker-dashboard-widgets.php:182
 msgid "You can prepare your list in any text editor. Each line should contain a single IP address or subnet in CIDR format (e.g. 192.168.1.0/24)."
-msgstr "您可以在任何文本编辑器中准备列表。每行应包含一个 IP 地址或 CIDR 格式的子网（例如 192.168.1.0/24）。"
+msgstr "您可以在任意文本 编辑器 中准备 列表。每行应包含一个 CIDR 格式的 IP 地址或子网（例如 192.168.1.0/24）。"
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:126
 msgid "You can turn it back on from this page whenever you want."
@@ -15300,7 +15299,7 @@ msgstr "您将在此处收到每周安全性报告。"
 
 #: includes/data/class-botblocker-alerts.php:227
 msgid "Your authenticator secret is saved but the QR code was not verified yet. Complete the verification to actually protect this account."
-msgstr ""
+msgstr "您的身份验证器密钥已保存，但二维码尚未验证。请完成验证以真正保护此帐户。"
 
 #: admin/templates/setup-guide/chain-body.php:56
 msgid "Your browser does not support the video tag."

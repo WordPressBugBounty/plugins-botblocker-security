@@ -165,15 +165,31 @@ final class BotBlockerMultisite {
 	}
 
 	public static function getDataDir(): string {
-		if ( defined( 'BOTBLOCKER_DATA_DIR' ) ) {
-			return rtrim( (string) BOTBLOCKER_DATA_DIR, '/\\' ) . '/';
-		}
 		static $dataDir = array();
 		$blog_id        = function_exists( 'get_current_blog_id' ) ? get_current_blog_id() : 0;
+		if ( defined( 'BOTBLOCKER_DATA_DIR' ) ) {
+			$owner = null;
+			if ( defined( 'BOTBLOCKER_DATA_DIR_BLOG' ) ) {
+				$owner = (int) BOTBLOCKER_DATA_DIR_BLOG;
+			}
+			if ( self::dataDirOverride( rtrim( (string) BOTBLOCKER_DATA_DIR, '/\\' ) . '/', $owner, $blog_id, is_multisite() ) === '' ) {
+				// The constant belongs to another blog (F-17) - resolve this blog's own folder.
+				return self::getUploadsDir() . 'data/';
+			}
+			return rtrim( (string) BOTBLOCKER_DATA_DIR, '/\\' ) . '/';
+		}
 		if ( ! isset( $dataDir[ $blog_id ] ) ) {
 			$dataDir[ $blog_id ] = self::getUploadsDir() . 'data/';
 		}
 		return $dataDir[ $blog_id ];
+	}
+
+	// Pure decision seam: '' = the process-wide data dir belongs to another blog and must be ignored here.
+	public static function dataDirOverride( string $constant_dir, ?int $owner_blog, int $current_blog, bool $multisite ): string {
+		if ( ! $multisite || $owner_blog === null || $owner_blog === $current_blog ) {
+			return $constant_dir;
+		}
+		return '';
 	}
 
 	public static function getNetworkDataDir(): string {

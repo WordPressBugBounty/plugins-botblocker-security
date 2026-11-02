@@ -311,13 +311,10 @@ class BotBlockerCron
 			}
 		}
 
-		self::runTask( $hook );
-
 		$now   = time();
 		$event = BotBlockerCompatibility::getScheduledEvent( $hook );
-		if ( $event ) {
-			wp_unschedule_event( $event->timestamp, $hook );
-		}
+		wp_unschedule_hook( $hook );
+		self::runTask( $hook );
 		if ( $is_core ) {
 			if ( $all_tasks[ $hook ]['schedule'] !== null ) {
 				wp_schedule_event( $now + $all_tasks[ $hook ]['interval'], $all_tasks[ $hook ]['schedule'], $hook );
@@ -348,12 +345,8 @@ class BotBlockerCron
 		$now   = time();
 
 		foreach ( $tasks as $hook => $config ) {
+			wp_unschedule_hook( $hook );
 			self::runTask( $hook );
-
-			$event = BotBlockerCompatibility::getScheduledEvent( $hook );
-			if ( $event ) {
-				wp_unschedule_event( $event->timestamp, $hook );
-			}
 			if ( ! empty( $config['schedule'] ) ) {
 				wp_schedule_event( $now + $config['interval'], $config['schedule'], $hook );
 			}
@@ -392,10 +385,9 @@ class BotBlockerCron
 
 			$overdue_threshold = $event->timestamp + ( $config['interval'] * 1.5 );
 			if ( $current_time > $overdue_threshold ) {
+				wp_unschedule_hook( $hook );
 				self::runTask( $hook );
 				$ran[] = $hook;
-
-				wp_unschedule_event( $event->timestamp, $hook );
 				if ( ! empty( $config['schedule'] ) ) {
 					wp_schedule_event( $current_time + $config['interval'], $config['schedule'], $hook );
 				}
@@ -514,6 +506,7 @@ class BotBlockerCron
 		$request_data     = array();
 		$batch_start_date = null;
 		$batch_end_date   = null;
+		$delivered        = false;
 		while (true) {
 			// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared and sanitized. No direct unsanitized SQL is executed.
 			// Should not be cached - it's a cron task for cleanup.
@@ -551,6 +544,7 @@ class BotBlockerCron
 				$request_data = array_merge($request_data, $request_auth);
 				$cloud = BotBlockerBackend::sendToCloud($request_data, 'suspicious');
 				if ($cloud !== false && ! isset($cloud['error'])) {
+					$delivered    = true;
 					$placeholders = implode(',', array_fill(0, count($all_batch_cids), '%s'));
 					// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared and sanitized. No direct unsanitized SQL is executed.
 					// Should not be cached - it's a cron task for cleanup.
@@ -567,6 +561,7 @@ class BotBlockerCron
 			$request_data = array_merge($request_data, $request_auth);
 			$cloud = BotBlockerBackend::sendToCloud($request_data, 'suspicious');
 			if ($cloud !== false && ! isset($cloud['error']) && ! empty($all_batch_cids)) {
+				$delivered    = true;
 				$placeholders = implode(',', array_fill(0, count($all_batch_cids), '%s'));
 				// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared and sanitized. No direct unsanitized SQL is executed.
 				// Should not be cached - it's a cron task for cleanup.
@@ -576,7 +571,9 @@ class BotBlockerCron
 			$request_data = array();
 		}
 
-		self::capCloudQueue( (int) BOTBLOCKER_CLOUD_RECORDS_BATCH * (int) BOTBLOCKER_CLOUD_REQUEST_SIZE );
+		if ( ! $delivered ) {
+			self::capCloudQueue( (int) BOTBLOCKER_CLOUD_RECORDS_BATCH * (int) BOTBLOCKER_CLOUD_REQUEST_SIZE );
+		}
 	}
 
 	/**

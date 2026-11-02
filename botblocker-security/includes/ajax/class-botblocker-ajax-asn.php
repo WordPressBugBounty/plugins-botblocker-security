@@ -338,6 +338,13 @@ class BotBlockerAjaxAsn {
 		if ( $asnum === null ) {
 			wp_send_json_error( __( 'Invalid ASN number.', 'botblocker-security' ) );
 		}
+		// Existence precheck: without it a zero-affected update reads as success
+		// and writes an audit event for a rule that does not exist (AUD-26).
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$bbcs_asn_exists = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$wpdb->bbcs_asn} WHERE id = %d", $id ) );
+		if ( ! $bbcs_asn_exists ) {
+			wp_send_json_error( __( 'ASN rule not found.', 'botblocker-security' ) );
+		}
 		$data = array(
 			'priority' => isset( $_POST['priority'] ) ? absint( wp_unslash( $_POST['priority'] ) ) : 50,
 			'asnum'    => $asnum,

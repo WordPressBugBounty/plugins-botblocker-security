@@ -95,9 +95,11 @@ class BotBlockerAjaxAudit {
 			'date_to'     => isset( $_POST['date_to'] ) ? absint( wp_unslash( $_POST['date_to'] ) ) : 0,
 		);
 
-		nocache_headers();
-		header( 'Content-Type: text/csv; charset=utf-8' );
-		header( 'Content-Disposition: attachment; filename=bbcs-audit-log.csv' );
+		if ( ! headers_sent() ) {
+			nocache_headers();
+			header( 'Content-Type: text/csv; charset=utf-8' );
+			header( 'Content-Disposition: attachment; filename=bbcs-audit-log.csv' );
+		}
 
 		$out = fopen( 'php://output', 'w' );
 		if ( ! $out ) {
@@ -108,7 +110,7 @@ class BotBlockerAjaxAudit {
 
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 		fclose( $out );
-		exit;
+		BotBlocker::getInstance()->process_die_silent();
 	}
 
 	/**

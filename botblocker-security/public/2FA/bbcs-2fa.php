@@ -103,15 +103,10 @@ add_action(
 				}
 
 				// Verify the backup codes (16-character hex)
-				if ( ! $code_verified && ! empty( $backup_codes ) && strlen( $code ) > 6 ) {
-					$code_trim = strtoupper( $code );
-					$found     = BotBlockerTwoFactorAuth::verifyBackupCode( $code_trim, $backup_codes );
-					if ( $found !== false ) {
+				if ( ! $code_verified && strlen( $code ) > 6 ) {
+					if ( BotBlockerTwoFactorAuth::redeemBackupCode( $user_id, $code ) ) {
 						$code_verified = true;
 						$verified_via  = BotBlockerTwoFactorAuth::VERIFIED_VIA_BACKUP_CODE;
-						// Delete the used backup code (supporting both hashes and plaintext)
-						unset( $backup_codes[ $found ] );
-						update_user_meta( $user_id, '_2fa_backup_codes', array_values( $backup_codes ) );
 					}
 				}
 

@@ -1,45 +1,60 @@
 <?php
+    /**
+     * @package     Freemius
+     * @copyright   Copyright (c) 2015, Freemius, Inc.
+     * @license     https://www.gnu.org/licenses/gpl-3.0.html GNU General Public License Version 3
+     * @since       1.2.2.7
+     */
 
-namespace BotBlocker\Vendor;
-
-/**
- * @package     Freemius
- * @copyright   Copyright (c) 2015, Freemius, Inc.
- * @license     https://www.gnu.org/licenses/gpl-3.0.html GNU General Public License Version 3
- * @since       1.2.2.7
- */
-if (!\defined('ABSPATH')) {
-    exit;
-}
-/**
- * @var array    $VARS
- * @var Freemius $fs
- */
-$fs = freemius($VARS['id']);
-$slug = $fs->get_slug();
-$menu_items = $fs->get_menu_items();
-$show_settings_with_tabs = $fs->show_settings_with_tabs();
-$tabs = array();
-foreach ($menu_items as $priority => $items) {
-    foreach ($items as $item) {
-        if (!$item['show_submenu']) {
-            $submenu_name = 'wp-support-forum' === $item['menu_slug'] ? 'support' : $item['menu_slug'];
-            if ('pricing' === $submenu_name && !$fs->is_pricing_page_visible()) {
-                continue;
-            }
-            if (!$show_settings_with_tabs || !$fs->is_submenu_item_visible($submenu_name, \true)) {
-                continue;
-            }
-        }
-        $url = $fs->_get_admin_page_url($item['menu_slug']);
-        $title = $item['menu_title'];
-        $tab = array('label' => $title, 'href' => $url, 'slug' => $item['menu_slug']);
-        if ('pricing' === $item['menu_slug'] && $fs->is_in_trial_promotion()) {
-            $tab['href'] .= '&trial=true';
-        }
-        $tabs[] = $tab;
+    if ( ! defined( 'ABSPATH' ) ) {
+        exit;
     }
-}
+
+    /**
+     * @var array    $VARS
+     * @var Freemius $fs
+     */
+    $fs = freemius( $VARS['id'] );
+
+    $slug = $fs->get_slug();
+
+    $menu_items = $fs->get_menu_items();
+
+    $show_settings_with_tabs = $fs->show_settings_with_tabs();
+
+    $tabs = array();
+    foreach ( $menu_items as $priority => $items ) {
+        foreach ( $items as $item ) {
+            if ( ! $item['show_submenu'] ) {
+                $submenu_name = ('wp-support-forum' === $item['menu_slug']) ?
+                    'support' :
+                    $item['menu_slug'];
+
+                if ( 'pricing' === $submenu_name && ! $fs->is_pricing_page_visible() ) {
+                    continue;
+                }
+
+                if ( ! $show_settings_with_tabs || ! $fs->is_submenu_item_visible( $submenu_name, true ) ) {
+                    continue;
+                }
+            }
+
+            $url   = $fs->_get_admin_page_url( $item['menu_slug'] );
+            $title = $item['menu_title'];
+
+            $tab = array(
+                'label' => $title,
+                'href'  => $url,
+                'slug'  => $item['menu_slug'],
+            );
+
+            if ( 'pricing' === $item['menu_slug'] && $fs->is_in_trial_promotion() ) {
+                $tab['href'] .= '&trial=true';
+            }
+
+            $tabs[] = $tab;
+        }
+    }
 ?>
 <script type="text/javascript">
     (function ($) {
@@ -66,9 +81,7 @@ foreach ($menu_items as $priority => $items) {
                 }
             }
 
-            <?php 
-if (0 < \count($tabs)) {
-    ?>
+            <?php if (0 < count( $tabs )) : ?>
             if (null == $tab) {
                 // No tabs found, therefore, create new tabs section if required.
                 var $h1 = $wrap.find('h1');
@@ -90,87 +103,55 @@ if (0 < \count($tabs)) {
             $tab.removeAttr('target');
             $tab.removeClass('nav-tab-active');
             $tab.addClass('fs-tab');
-            $tab.addClass('<?php 
-    echo $fs->get_unique_affix();
-    ?>');
+            $tab.addClass('<?php echo $fs->get_unique_affix() ?>');
 
             var $tabClone = null;
 
-            <?php 
-    $freemius_context_page = null;
-    ?>
+            <?php $freemius_context_page = null ?>
 
-            <?php 
-    foreach ($tabs as $tab) {
-        ?>
-            <?php 
-        $is_support_tab = 'wp-support-forum' == $tab['slug'];
-        ?>
+            <?php foreach ($tabs as $tab) : ?>
+            <?php $is_support_tab = ( 'wp-support-forum' == $tab['slug'] ) ?>
             // Add the Freemius tabs.
             $tabClone = $tab.clone();
-            $tabClone.html(<?php 
-        echo \json_encode($tab['label']);
-        ?>)
-                .attr('href', '<?php 
-        echo $is_support_tab ? $fs->get_support_forum_url() : $tab['href'];
-        ?>')
+            $tabClone.html(<?php echo json_encode( $tab['label'] ) ?>)
+                .attr('href', '<?php echo $is_support_tab ? $fs->get_support_forum_url() : $tab['href'] ?>')
                 .appendTo($tabsWrapper)
                 // Remove any custom click events.
                 .off('click', '**')
-                .addClass('<?php 
-        echo $tab['slug'];
-        ?>')
+                .addClass('<?php echo $tab['slug'] ?>')
                 // Avoid tab click triggering parent events.
                 .click(function (e) {
                     e.stopPropagation();
                 });
 
-            <?php 
-        if ($is_support_tab) {
-            ?>
+            <?php if ($is_support_tab) : ?>
             // Open support in a new tab/page.
             $tabClone.attr('target', '_blank');
-            <?php 
-        }
-        ?>
+            <?php endif ?>
 
-            <?php 
-        if ($fs->is_admin_page($tab['slug'])) {
-            ?>
-            <?php 
-            $freemius_context_page = $tab['slug'];
-            ?>
+            <?php if ($fs->is_admin_page( $tab['slug'] )) : ?>
+            <?php $freemius_context_page = $tab['slug'] ?>
             // Select the relevant Freemius tab.
             $tabs.removeClass('nav-tab-active');
             $tabClone.addClass('nav-tab-active');
 
-            <?php 
-            if (\in_array($freemius_context_page, array('pricing', 'contact', 'checkout'))) {
-                ?>
+            <?php if (in_array( $freemius_context_page, array( 'pricing', 'contact', 'checkout' ) )) : ?>
             // Add AJAX loader.
             $tabClone.prepend('<i class="fs-ajax-spinner"></i>');
             // Hide loader after content fully loaded.
             $('.wrap i' + 'frame').load(function () {
                 $(".fs-ajax-spinner").hide();
             });
-            <?php 
-            }
-            ?>
+            <?php endif ?>
 
             // Fix URLs that are starting with a hashtag.
             $tabs.each(function (j, tab) {
                 if (0 === $(tab).attr('href').indexOf('#')) {
-                    $(tab).attr('href', '<?php 
-            echo esc_js($fs->main_menu_url());
-            ?>' + $(tab).attr('href'));
+                    $(tab).attr('href', '<?php echo esc_js( $fs->main_menu_url() ) ?>' + $(tab).attr('href'));
                 }
             });
-            <?php 
-        }
-        ?>
-            <?php 
-    }
-    ?>
+            <?php endif ?>
+            <?php endforeach ?>
 
             var selectTab = function ($tab) {
                 $(window).load(function () {
@@ -193,19 +174,17 @@ if (0 < \count($tabs)) {
                 }
             }
 
-            <?php 
-    if (\is_string($freemius_context_page) && \in_array($freemius_context_page, array('pricing', 'contact', 'checkout'))) {
-        ?>
+            <?php if (is_string( $freemius_context_page ) && in_array( $freemius_context_page, array(
+            'pricing',
+            'contact',
+            'checkout'
+        ) )) : ?>
             // Add margin to the upper section of the tabs to give extra space for the HTTPS header.
             // @todo This code assumes that the wrapper style is fully loaded, if there's a stylesheet that is not loaded via the HTML head, it may cause unpredicted margin-top.
             var $tabsWrap = $tabsWrapper.parents('.wrap');
             $tabsWrap.css('marginTop', (parseInt($tabsWrap.css('marginTop'), 10) + 30) + 'px');
-            <?php 
-    }
-    ?>
-            <?php 
-}
-?>
+            <?php endif ?>
+            <?php endif ?>
         });
     })(jQuery);
-</script><?php 
+</script>

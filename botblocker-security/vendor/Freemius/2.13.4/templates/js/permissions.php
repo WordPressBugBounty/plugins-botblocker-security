@@ -1,16 +1,13 @@
 <?php
-
-namespace BotBlocker\Vendor;
-
-/**
- * @package     Freemius
- * @copyright   Copyright (c) 2015, Freemius, Inc.
- * @license     https://www.gnu.org/licenses/gpl-3.0.html GNU General Public License Version 3
- * @since       2.5.1
- */
-if (!\defined('ABSPATH')) {
-    exit;
-}
+    /**
+     * @package     Freemius
+     * @copyright   Copyright (c) 2015, Freemius, Inc.
+     * @license     https://www.gnu.org/licenses/gpl-3.0.html GNU General Public License Version 3
+     * @since       2.5.1
+     */
+    if ( ! defined( 'ABSPATH' ) ) {
+        exit;
+    }
 ?>
 <script type="text/javascript">
     ( function ( $ ) {
@@ -70,23 +67,15 @@ if (!\defined('ABSPATH')) {
 
         function setUpdatingLabel( $button, isEnabled ) {
             $button.text( isEnabled ?
-                '<?php 
-fs_esc_js_echo_inline('Opting in', 'opting-in');
-?>...' :
-                '<?php 
-fs_esc_js_echo_inline('Opting out', 'opting-out');
-?>...'
+                '<?php fs_esc_js_echo_inline( 'Opting in', 'opting-in' ) ?>...' :
+                '<?php fs_esc_js_echo_inline( 'Opting out', 'opting-out' ) ?>...'
             );
         }
 
         function getOptInLabel( isEnabled ) {
             return isEnabled ?
-                '<?php 
-echo esc_js(fs_text_x_inline('Opt In', 'verb', 'opt-in'));
-?>' :
-                '<?php 
-echo esc_js(fs_text_x_inline('Opt Out', 'verb', 'opt-out'));
-?>';
+                '<?php echo esc_js( fs_text_x_inline( 'Opt In', 'verb', 'opt-in' ) ) ?>' :
+                '<?php echo esc_js( fs_text_x_inline( 'Opt Out', 'verb', 'opt-out' ) ) ?>';
         }
 
         function setOptInLabel( $button, isEnabled ) {
@@ -138,17 +127,13 @@ echo esc_js(fs_text_x_inline('Opt Out', 'verb', 'opt-out'));
                         $permissionsContainer = $( '#fs_opt_out_' + pluginID );
 
                     $.ajax( {
-                        url     : <?php 
-echo Freemius::ajax_url();
-?>,
+                        url     : <?php echo Freemius::ajax_url() ?>,
                         method  : 'POST',
                         data    : {
                             action          : $permissionsContainer.data( 'action' ),
                             security        : $permissionsContainer.data( 'security' ),
                             module_id       : pluginID,
-                            _wp_http_referer: '<?php 
-echo Freemius::current_page_url();
-?>',
+                            _wp_http_referer: '<?php echo Freemius::current_page_url() ?>',
                             permissions     : permissions.join( ',' ),
                             is_enabled      : isEnabled
                         },
@@ -349,9 +334,7 @@ echo Freemius::current_page_url();
                         isEnabled,
                         function () {
                             $switchFeedback.addClass( 'success' );
-                            $switchFeedback.html( '<i class="dashicons dashicons-yes"></i> <?php 
-echo esc_js(fs_text_inline('Saved', 'saved'));
-?>' );
+                            $switchFeedback.html( '<i class="dashicons dashicons-yes"></i> <?php echo esc_js( fs_text_inline( 'Saved', 'saved' ) ) ?>' );
 
                             var
                                 $permissionsGroup = $switch.closest( '.fs-permissions-section' ),
@@ -499,9 +482,7 @@ echo esc_js(fs_text_inline('Saved', 'saved'));
                             ! isEnabled,
                             function () {
                                 $switchFeedback.addClass( 'success' );
-                                $switchFeedback.html( '<i class="dashicons dashicons-yes"></i> <?php 
-echo esc_js(fs_text_inline('Saved', 'saved'));
-?>' );
+                                $switchFeedback.html( '<i class="dashicons dashicons-yes"></i> <?php echo esc_js( fs_text_inline( 'Saved', 'saved' ) ) ?>' );
 
                                 toggleGroupOptOut( $optOutButton, ! isEnabled );
                             },
@@ -562,4 +543,4 @@ echo esc_js(fs_text_inline('Saved', 'saved'));
 
         };
     } )( jQuery );
-</script><?php 
+</script>

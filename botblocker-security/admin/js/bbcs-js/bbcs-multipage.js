@@ -44,6 +44,7 @@ jQuery(function ($) {
     addons:       ADMIN_URL + 'admin.php?page=bbcs_addons',
     pro:          ADMIN_URL + 'admin.php?page=bbcs_cloud_api',
     support:      ADMIN_URL + 'admin.php?page=bbcs_about',
+    selftest:     ADMIN_URL + 'admin.php?page=bbcs_selftest',
     '2fa':        ADMIN_URL + 'admin.php?page=bbcs_integrations',
     setup_wizard: ADMIN_URL + 'admin.php?page=bbcs_setup_wizard'
   };

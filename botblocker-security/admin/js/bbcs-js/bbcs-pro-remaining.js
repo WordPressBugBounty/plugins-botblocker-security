@@ -30,6 +30,15 @@
         }
     }
 
+    // An empty word means the license expired: hide it so "Expired" stands alone.
+    function setDaysWord(selector, text) {
+        var fieldMissing = typeof text === "undefined" || text === null;
+        if (fieldMissing) {
+            return;
+        }
+        $(selector).text(text).prop("hidden", text === "");
+    }
+
     function fill(data) {
         $("[data-bbcs-remaining]").each(function () {
             var kind = $(this).data("bbcs-remaining");
@@ -41,8 +50,13 @@
             if (kind === "hits" && data.remaining_hits_text) {
                 text = data.remaining_hits_text;
             }
+            if (kind === "days" && data.remaining_days_text) {
+                text = data.remaining_days_text;
+            }
             $(this).text(text).removeClass("is-empty");
         });
+        setDaysWord("[data-bbcs-remaining-unit='days']", data.remaining_days_unit);
+        setDaysWord("[data-bbcs-remaining-label='days']", data.remaining_days_label);
         if ($.inArray(data.alert_level, LEVELS) !== -1) {
             applyLevel(data.alert_level);
         }
@@ -62,7 +76,7 @@
             },
         })
             .done(function (response) {
-                if (response && response.success) {
+                if (response && response.data) {
                     fill(response.data);
                 }
             })

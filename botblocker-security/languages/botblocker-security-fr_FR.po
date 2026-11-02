@@ -3,16 +3,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BotBlocker"
 "Report-Msgid-Bugs-To: "
-"POT-Creation-Date: 2026-09-29 08:31+0000"
-"PO-Revision-Date: 2026-09-29 08:31+0000"
-"Last-Translator: BotBlocker Translator Team"
+"POT-Creation-Date: 2026-10-16 22:48+0000"
+"PO-Revision-Date: 2026-10-16 22:48+0000"
+"Last-Translator: BotBlocker Team (christophejamot)"
 "Language-Team: French"
 "Language: fr_FR"
 "Plural-Forms: nplurals=2; plural=(n > 1);"
 "MIME-Version: 1.0"
 "Content-Type: text/plain; charset=UTF-8"
 "Content-Transfer-Encoding: 8bit"
-"X-Generator: BotBlocker Translator Engine"
 "X-Domain: botblocker-security"
 
 
@@ -1982,7 +1981,7 @@ msgstr "Retour à la Marketplace"
 
 #: includes/data/class-botblocker-marketing-blocks.php:112
 msgid "Back up your site and review the update before upgrading."
-msgstr ""
+msgstr "Sauvegardez votre site et Donner son avis la mise à jour avant de procéder à la mise à niveau."
 
 #: admin/templates/dashboard/quick-links.php:22
 msgid "Background tasks and scheduling"
@@ -3424,7 +3423,7 @@ msgstr "fermer"
 
 #: includes/viewmodels/class-setup-guide-viewmodel.php:220
 msgid "Cloud / PRO"
-msgstr "Cloud / PRO"
+msgstr "cloud / PRO"
 
 #: includes/hook/class-botblocker-cloud-api-hooks.php:141
 msgid "Cloud API connection deactivated."
@@ -5474,7 +5473,7 @@ msgstr "Appliquer les règles IP / ASN pour les rappels de paiement"
 
 #: addons/bbcs-https-protocol/inc/class-bbcs-https-protocol.php:143
 msgid "Enforces HTTPS, handles protocol redirection, and fixes mixed content."
-msgstr ""
+msgstr "Impose HTTPS, gère la poignée de redirection de protocole et épingle le contenu mixte."
 
 #: admin/templates/settings/browser-plugins.php:54
 #: includes/data/class-botblocker-snav.php:128
@@ -6539,7 +6538,7 @@ msgstr "Fichier réactivé. WordPress l'exécute à nouveau."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-operator.php:49
 msgid "File turned off. WordPress is no longer running it."
-msgstr ""
+msgstr "Le fichier est devenu inactif. WordPress ne l’exécute Aucun plus."
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:450
 #: addons/bbcs-malware/inc/views/scan-results/header.php:51
@@ -6552,7 +6551,7 @@ msgstr "Fichiers qui s'exécutent sans apparaître dans les extensions"
 
 #: addons/bbcs-malware/inc/views/scan-results/ignored-files.php:18
 msgid "Files you chose to ignore. They no longer count as issues. Restore one to bring it back into the scan results."
-msgstr ""
+msgstr "Fichiers que vous avez choisi d’ignorer. Ils ne comptent Aucun plus comme des problèmes. Restaurez-en un pour le réintégrer dans les résultats analyser."
 
 #: admin/class-botblocker-admin.php:636
 #: includes/class-botblocker-toastify.php:269
@@ -8927,11 +8926,11 @@ msgstr "Compatibilité maximale pour les tests et une protection à faible impac
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:238
 msgid "Maximum findings embedded per results card for the Tree view."
-msgstr ""
+msgstr "Nombre maximal de constats Embarqué par carte de résultats pour l’arborescence voir."
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:230
 msgid "Maximum findings shown in the Flat results view before truncating. Switch to Tree view to browse all."
-msgstr ""
+msgstr "Nombre maximal de constats affichés dans la vue des résultats à plat voir avant troncature. Passez à la vue Arborescence voir pour tout parcourir."
 
 #: admin/templates/setup-guide/one-click-modal.php:68
 msgid "Maximum hardening with cloud threat intelligence."
@@ -9877,7 +9876,7 @@ msgstr "Surcharger la détection"
 #: includes/modal/modal-botblocker-rule-add.php:32
 #: includes/modal/modal-botblocker-rule-edit.php:30
 msgid "Page"
-msgstr "Page"
+msgstr "page"
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:62
 msgid "Page caching stops. Pages are generated on every request, so the site gets slower."
@@ -10045,7 +10044,7 @@ msgstr "Téléphone"
 
 #: includes/data/class-botblocker-alerts.php:646
 msgid "PHP caching mode - BotBlocker registers its cookie with WP Super Cache (wpsc_add_cookie), so verified pages are keyed per visitor and the challenge wall is never bypassed from cache."
-msgstr ""
+msgstr "Mode de mise en cache PHP — BotBlocker fait S’inscrire son Cookie auprès de WP Super Cache (wpsc_add_cookie), de sorte que les pages vérifiées soient indexées par visiteur et que le mur de défi ne soit jamais contourné depuis le cache."
 
 #: includes/data/class-botblocker-alerts.php:656
 msgid "PHP caching mode - respects DONOTCACHEPAGE automatically."
@@ -10610,7 +10609,7 @@ msgstr "Résumé hebdomadaire Pusher"
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:165
 #, php-format
 msgid "Put here by your hosting company (%s). Leave it alone unless their support team tells you otherwise."
-msgstr ""
+msgstr "Placé ici par votre entreprise d’hébergement (%s). N’y touchez pas, sauf si leur équipe prendre en charge vous indique le contraire."
 
 #: admin/templates/settings/traffic.php:19
 msgid "Query string"
@@ -11045,7 +11044,7 @@ msgstr "Régénérer les liens d’action de sécurité ? Les anciens liens cess
 
 #: admin/templates/integrations/wp-connectors.php:21
 msgid "Registers BotBlocker in the WordPress Connectors system. Disable if you do not use WordPress Connectors to save ~180ms per admin page load."
-msgstr ""
+msgstr "Fait S’inscrire BotBlocker dans le système WordPress Connectors. Désactivez cette option si vous n’utilisez pas WordPress Connectors pour Enregistrer ~180 ms par chargement de page dans l’administration."
 
 #: admin/templates/tools/modals/hits-clear.php:21
 msgid "Regular hits will be removed from the database."
@@ -11196,7 +11195,7 @@ msgstr "Remplacer le contenu complet des publications dans les flux par un court
 
 #: admin/templates/settings/cookie.php:96
 msgid "Replaces IP/host/UA-bound cookie hash with a session token. Eliminates Captcha loops for VPN/proxy users. Disable only if experiencing issues."
-msgstr "Remplace le hash de Cookie lié à l’IP/hôte/UA par un jeton de session. Élimine les boucles CAPTCHA pour les internautes VPN/proxy. Désactiver uniquement en cas de problème."
+msgstr "Remplace le hash Cookie lié à IP/hôte/UA par un jeton de session. Élimine les boucles CAPTCHA pour les internautes VPN/proxy. Désactivez uniquement en cas de problème."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:66
 msgid "Replaces the default screen shown while the site is in maintenance mode."
@@ -11295,7 +11294,7 @@ msgstr "Requêtes bloquées"
 
 #: addons/bbcs-security-headers/views/settings.php:138
 msgid "Requests inclusion in the browser HSTS preload list. Enable only after registering the domain at hstspreload.org - the directive is ignored otherwise."
-msgstr ""
+msgstr "Émet une requête d’inclusion dans la liste de préchargement HSTS navigateur. Activez uniquement après avoir inscrit le domaine sur hstspreload.org — sinon, la directive est ignorée."
 
 #: admin/templates/cloud-api/status.php:40
 #: admin/templates/dashboard/pro-status.php:35
@@ -11692,11 +11691,11 @@ msgstr "Règles et listes IP"
 
 #: admin/class-botblocker-admin.php:477
 msgid "Rules downloaded successfully."
-msgstr ""
+msgstr "Règles téléchargées bien."
 
 #: admin/class-botblocker-admin.php:334
 msgid "Rules exported successfully."
-msgstr ""
+msgstr "Règles exportées bien."
 
 #: includes/ajax/class-botblocker-ajax-rules.php:733
 msgid "Rules file generated successfully."
@@ -11704,7 +11703,7 @@ msgstr "Fichier de règles bien généré."
 
 #: admin/class-botblocker-admin.php:335
 msgid "Rules imported successfully."
-msgstr ""
+msgstr "Règles importées bien."
 
 #: addons/bbcs-early-init/views/settings.php:98
 #: admin/templates/integrations/mu.php:57
@@ -11755,7 +11754,7 @@ msgstr "En cours d'exécution sur votre site"
 
 #: includes/inc-botblocker-wp-abilities.php:111
 msgid "Runs a set of read-only health checks against the BotBlocker data directory and database tables."
-msgstr ""
+msgstr "Exécute une définir de contrôles de santé en lecture seule sur le répertoire de données BotBlocker et les tables de base de données."
 
 #: addons/bbcs-early-init/inc/bbcs-early-init-core.php:62
 msgid "Runs BotBlocker filtering before WordPress loads through wp-config bootstrap integration."
@@ -11890,7 +11889,7 @@ msgstr "Résultats d'analyse effacés."
 
 #: addons/bbcs-malware/inc/views/scan-results.php:25
 msgid "Scan results view"
-msgstr ""
+msgstr "analyser résultats voir"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-addons-page.php:46
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:47
@@ -12143,7 +12142,7 @@ msgstr "Liens d'action de sécurité"
 
 #: includes/ajax/class-botblocker-ajax-secret-links.php:52
 msgid "Security action links regenerated. Old links no longer work."
-msgstr ""
+msgstr "Les liens d’action de sécurité ont été régénérés. Les anciens liens ne fonctionnent Aucun plus."
 
 #: admin/templates/tools/wordpress-tab.php:18
 msgid "Security and performance tools for your WordPress site: block unwanted traffic, filter suspicious requests, and optimize resource usage."
@@ -12536,8 +12535,9 @@ msgid "Signature DB URL"
 msgstr "URL de la Signature DB"
 
 #: admin/templates/settings/payment-tab.php:47
+#, fuzzy
 msgid "Signature headers are always verified for format (min 8 chars, POST only). When enabled, payment bypass additionally applies to POST requests only: GET requests with payment query keys or ajax actions will not bypass the shield. Callbacks matched by generic markers (webhook, ipn, callback_handler) always keep IP and rate-limit rules active. Reduces attack surface while keeping real webhooks working."
-msgstr ""
+msgstr "Les entêtes de signature sont toujours vérifiés pour leur format (8 caractères min., POST uniquement). Lorsque cette option est activée, la dérogation de paiement s’applique en plus aux requêtes POST uniquement : les requêtes GET avec des clés de paiement requête ou des actions ajax ne contourneront pas le bouclier. Les rappels correspondant à des marqueurs génériques (crochet web, ipn, callback_handler) conservent toujours les règles d’IP et de limite de débit actives. Réduit la surface d’attaque tout en laissant fonctionner les vrais crochets web."
 
 #: includes/audit/class-botblocker-audit-logger.php:414
 msgid "Signed in from a trusted device."
@@ -13227,7 +13227,7 @@ msgstr "Ce fichier a déjà été modifié par une autre requête. Actualisez la
 #: includes/hook/class-botblocker-settings-hooks.php:575
 #, php-format
 msgid "The \"%s\" add-on provided the selected CAPTCHA type and is no longer active. Captcha mode was adjusted to a compatible mode."
-msgstr ""
+msgstr "Le module « %s » a fourni le type Sélectionné CAPTCHA et n’est Aucun plus actif. Le mode CAPTCHA a été ajusté à un mode compatible."
 
 #: includes/class-botblocker-toastify.php:272
 #: includes/hook/class-botblocker-addon-files.php:352
@@ -14139,8 +14139,9 @@ msgid "Two-Factor Authentication has been reset."
 msgstr "L’authentification à deux facteurs a été réinitialisée."
 
 #: includes/data/class-botblocker-alerts.php:219
+#, fuzzy
 msgid "Two-factor authentication is enabled but your account has no authenticator secret yet. Set it up to protect this account."
-msgstr ""
+msgstr "L’authentification à deux facteurs est activée, mais votre compte n’a Aucun encore de secret d’authentification. définir-le en place pour protéger ce compte."
 
 #: public/2FA/bbcs-2fa-setup.php:152
 msgid "Two-factor authentication is now active on your account."
@@ -14536,7 +14537,7 @@ msgstr "URI"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:292
 msgid "URL to fetch remote regex signatures for malware detection. Endpoint must return JSON with version + signatures array. Each signature: id, severity (critical/high/medium/low), regex (valid PHP regex), score (1-100), confidence, category, description."
-msgstr "URL pour récupérer les signatures regex distantes pour la détection de logiciels malveillants. Le point de terminaison doit renvoyer du JSON avec version + tableau de signatures. Chaque signature : id, sévérité (critique/élevée/moyenne/faible), regex (expression régulière PHP valide), score (1-100), confiance, catégorie, description."
+msgstr "URL pour récupérer les signatures regex distantes pour la détection de logiciels malveillants. Le point de terminaison doit renvoyer du JSON avec version + tableau de signatures. Chaque signature : id, sévérité (critical/high/medium/low), regex (regex PHP valide), score (1-100), confiance, catégorie, description."
 
 #: addons/bbcs-hide-admin/views/settings.php:98
 msgid "URL to redirect to when someone tries to access the default login URL. Only used when behavior is set to Redirect."

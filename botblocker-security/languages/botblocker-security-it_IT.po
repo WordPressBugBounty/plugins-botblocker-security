@@ -3,16 +3,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BotBlocker"
 "Report-Msgid-Bugs-To: "
-"POT-Creation-Date: 2026-09-29 08:38+0000"
-"PO-Revision-Date: 2026-09-29 08:38+0000"
-"Last-Translator: BotBlocker Translator Team"
+"POT-Creation-Date: 2026-10-17 19:48+0000"
+"PO-Revision-Date: 2026-10-17 19:48+0000"
+"Last-Translator: BotBlocker Team (ubermann)"
 "Language-Team: Italian"
 "Language: it_IT"
 "Plural-Forms: nplurals=2; plural=(n != 1);"
 "MIME-Version: 1.0"
 "Content-Type: text/plain; charset=UTF-8"
 "Content-Transfer-Encoding: 8bit"
-"X-Generator: BotBlocker Translator Engine"
 "X-Domain: botblocker-security"
 
 
@@ -54,7 +53,7 @@ msgstr "%1$s (supporta BotBlocker <= %2$s)"
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:153
 #, php-format
 msgid "%1$s Usually put there by: %2$s If you turn it off: %3$s"
-msgstr ""
+msgstr "%1$s Di solito inserito da: %2$s Se lo off: %3$s"
 
 #. translators: %d: number of add-ons with a newer version available.
 #: includes/data/class-botblocker-alerts.php:466
@@ -341,7 +340,7 @@ msgstr "404: la pagina non è stata trovata"
 
 #: addons/bbcs-404-guard/inc/class-bbcs-404-guard-addons-page.php:29
 msgid "404 Scanner Guard"
-msgstr "404 Scanner Guard"
+msgstr "Protezione scanner 404"
 
 #: addons/bbcs-404-guard/inc/class-bbcs-404-guard-addons-page.php:34
 msgid "404 Scanner Guard Settings"
@@ -386,11 +385,11 @@ msgstr "<strong>Nota:</strong> Dopo aver fatto clic su \"Reimposta 2FA\", l'uten
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:55
 msgid "A caching plugin, or your host."
-msgstr ""
+msgstr "Un plugin di cache, oppure il suo ospita."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:85
 msgid "A custom install script, or a host provisioning tool."
-msgstr ""
+msgstr "Uno script di installazione personalizzato, oppure uno strumento di provisioning ospita."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:73
 msgid "A developer or debugging plugin."
@@ -424,15 +423,15 @@ msgstr "Un amministratore di rete multisito."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:61
 msgid "A page-caching plugin, or your host."
-msgstr ""
+msgstr "Un plugin di cache delle pagine, oppure il suo ospita."
 
 #: addons/bbcs-forced-inclusions/views/settings.php:56
 msgid "A plugin in wp-content/mu-plugins that is always on and cannot be switched off on the Plugins screen."
-msgstr ""
+msgstr "Un plugin in wp-content/mu-plugins che è sempre on e non può essere disattivato off on la schermo Plugin."
 
 #: addons/bbcs-forced-inclusions/views/settings.php:131
 msgid "a plugin that is always on. It runs on every page and cannot be switched off on the Plugins screen."
-msgstr ""
+msgstr "un plugin che è sempre on. Viene eseguito on ogni pagina e non può essere disattivato off on la schermo Plugin."
 
 #: addons/bbcs-forced-inclusions/views/settings.php:55
 msgid "A single file in wp-content that replaces one built-in part of WordPress."
@@ -805,19 +804,19 @@ msgstr "Aggiungi header Vary: Cookie per compatibilità CDN. Potrebbe ridurre la
 #: admin/templates/settings/status.php:41
 #: admin/templates/shared/system-toggles.php:21
 msgid "Add-on"
-msgstr "Add-on"
+msgstr "add-on"
 
 #. translators: %s: add-on name
 #: includes/hook/class-botblocker-addon-hooks.php:291
 #, php-format
 msgid "Add-on \"%s\" failed and was switched off to keep the site running."
-msgstr ""
+msgstr "add-on «%s» non è riuscito ed è stato disattivato off per mantenere il sito in esecuzione."
 
 #. translators: %slug%: add-on slug; %event%: lifecycle event name.
 #: includes/audit/class-botblocker-audit-logger.php:467
 #, php-format
 msgid "Add-on %slug%: %event%."
-msgstr "Add-on %slug%: %event%."
+msgstr "add-on %slug%: %event%."
 
 #: admin/class-botblocker-admin.php:670
 #: includes/class-botblocker-addons-market.php:493
@@ -937,7 +936,7 @@ msgstr "L'add-on è stato aggiornato ma non è stato riattivato: richiede BotBlo
 #: includes/hook/class-botblocker-addon-hooks.php:695
 #, php-format
 msgid "Add-on was updated but will be switched off - it requires BotBlocker %s or higher. Please update the plugin first."
-msgstr ""
+msgstr "add-on è stato aggiornato ma verrà disattivato off - richiede BotBlocker %s o versione superiore. NON SI TRADUCE aggiornamento prima il plugin."
 
 #: admin/class-botblocker-admin.php:783
 #: admin/class-botblocker-admin.php:784
@@ -955,7 +954,7 @@ msgstr "Add-on bloccati. Attiva Cloud API per utilizzare le caratteristiche del 
 
 #: includes/data/class-botblocker-alerts.php:772
 msgid "Add-ons Switched Off"
-msgstr ""
+msgstr "Add-on disattivati off"
 
 #: includes/data/class-botblocker-snav.php:681
 msgid "Additional API URL"
@@ -1019,7 +1018,7 @@ msgstr "Aggiunge Cloudflare Turnstile come provider CAPTCHA esterno nella pagina
 
 #: addons/bbcs-security-headers/views/settings.php:162
 msgid "Adds Cross-Origin-Opener-Policy: same-origin-allow-popups. Protects against window.opener attacks and Spectre while keeping popup payments and OAuth flows working."
-msgstr ""
+msgstr "Aggiunge Cross-Origin-Opener-Policy: same-origin-allow-popups. Protegge dagli attacchi a window.opener e da Spectre mantenendo i pagamenti nei popup e i flussi OAuth elaborazione in corso."
 
 #: addons/bbcs-hcaptcha/views/settings.php:27
 msgid "Adds hCaptcha as an external CAPTCHA provider on the BotBlocker check page. Enter the site key and secret key from your hCaptcha dashboard, pick theme and size, then select mode 90 (hCaptcha) as the CAPTCHA mode in BotBlocker settings. Verification runs server-side through the hCaptcha siteverify endpoint; if the provider is unreachable, the check page degrades to the simple captcha instead of blocking visitors."
@@ -2716,19 +2715,19 @@ msgstr "botblocker/block-ip — aggiunge una regola di blocco del firewall e rig
 
 #: admin/templates/integrations/wp-abilities.php:29
 msgid "botblocker/check-ip — checks an IP address against the firewall rules and returns the matched rules."
-msgstr ""
+msgstr "botblocker/check-ip — verifica un IP indirizzo rispetto alle regole del firewall e return le regole di corrispondenza."
 
 #: admin/templates/integrations/wp-abilities.php:28
 msgid "botblocker/get-firewall-status — returns the protection mode, enabled state and plugin version."
-msgstr ""
+msgstr "botblocker/get-firewall-status — return la modalità di protezione, lo stato di abilitato e la versione di plugin."
 
 #: admin/templates/integrations/wp-abilities.php:30
 msgid "botblocker/get-ip-rules — returns the firewall rules matching a given IP address."
-msgstr ""
+msgstr "botblocker/get-ip-rules — return le regole del firewall in corrispondenza con un determinato IP indirizzo."
 
 #: admin/templates/integrations/wp-abilities.php:47
 msgid "botblocker/get-scan-results — returns the status and findings of the latest malware scan."
-msgstr ""
+msgstr "botblocker/get-scan-results — return lo stato e i risultati dell’ultima scansione malware."
 
 #: admin/templates/integrations/wp-abilities.php:31
 msgid "botblocker/get-traffic-summary — aggregated request, block, captcha, suspicious and proxy counters."
@@ -2740,7 +2739,7 @@ msgstr "botblocker/run-diagnostics — controlli di integrità in sola lettura p
 
 #: admin/templates/integrations/wp-abilities.php:46
 msgid "botblocker/run-malware-scan — starts a background malware scan through the Malware Scanner add-on."
-msgstr ""
+msgstr "botblocker/run-malware-scan — avvia una scansione malware sfondo tramite il Malware Scanner add-on."
 
 #: admin/templates/integrations/wp-abilities.php:39
 msgid "botblocker/unblock-ip — removes firewall rules for an IP address and regenerates the runtime ban files. Destructive, requires manage_options."
@@ -3007,7 +3006,7 @@ msgstr "Le chiavi del provider CAPTCHA non sono configurate. La modalità captch
 
 #: admin/templates/settings/captcha-tab.php:104
 msgid "CAPTCHA provider keys are not configured. Enter the site key and secret in the add-on settings before selecting this mode."
-msgstr ""
+msgstr "Le chiavi del provider CAPTCHA non sono configurate. Invio la chiave e il secret di sito nelle impostazioni di add-on prima di selezionare questa modalità."
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-addons-page.php:39
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:339
@@ -3046,7 +3045,7 @@ msgstr "Gatto"
 
 #: includes/class-botblocker-addons-market.php:491
 msgid "Catalog is temporarily unavailable. Showing the last known list."
-msgstr ""
+msgstr "Il catalogo è temporaneamente non disponibile. Viene mostrato l’elenco durare conosciuto."
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:136
 msgid "Catches more malicious code, especially obfuscated or encoded payloads. Uses more CPU and memory per file. Disable if your server is low on resources."
@@ -3082,7 +3081,7 @@ msgstr "Modificate le opzioni di WordPress: %options%."
 
 #: admin/templates/about/body.php:148
 msgid "Changelog"
-msgstr "Changelog"
+msgstr "changelog"
 
 #: addons/bbcs-pusher/inc/class-bbcs-pusher-addons-page.php:34
 #: addons/bbcs-pusher/views/settings.php:104
@@ -3126,7 +3125,7 @@ msgstr "Verifica parametri GET nel referrer"
 
 #: addons/bbcs-forced-inclusions/views/settings.php:136
 msgid "Check that you recognise every file. A few from your host or caching plugin is normal."
-msgstr ""
+msgstr "Verifichi di riconoscere ogni file. Alcuni dal suo ospita o dal plugin di cache sono normale."
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-background.php:517
 msgid "Checking database tables..."
@@ -3150,7 +3149,7 @@ msgstr "Verifica la presenza di attività perse ogni 15 minuti tramite WordPress
 
 #: includes/inc-botblocker-wp-abilities.php:34
 msgid "Checks whether an IP address matches any configured firewall rule and returns the matched rules."
-msgstr ""
+msgstr "Verifica se un IP indirizzo è in corrispondenza con una qualsiasi regola del firewall configurata e return le regole di corrispondenza."
 
 #: admin/class-botblocker-admin.php:638
 #: includes/class-botblocker-toastify.php:246
@@ -4048,7 +4047,7 @@ msgstr "Impossibile scaricare il database ASN. Verrà riprovato automaticamente.
 
 #: addons/bbcs-forced-inclusions/inc/class-file-operator.php:41
 msgid "Could not generate a secure token. Please try again."
-msgstr ""
+msgstr "Impossibile generare un token sicuro. NON SI TRADUCE provi di nuovo."
 
 #: includes/cache/class-botblocker-llm-sync.php:326
 msgid "Could not sync the LLM provider list. Trusted LLM bots may not be recognized."
@@ -4062,7 +4061,7 @@ msgstr "Impossibile sincronizzare l’elenco delle impronte TLS. Il rilevamento 
 #: includes/rules/class-botblocker-rugov.php:106
 #, php-format
 msgid "Could not update the RU-Gov CIDR list (%s). RKN blocking may run on outdated data."
-msgstr ""
+msgstr "Impossibile aggiornamento l’elenco CIDR RU-Gov (%s). Il blocco RKN potrebbe funzionare on dati obsoleti."
 
 #: addons/bbcs-404-guard/views/settings.php:75
 msgid "Count and observe 404 activity without challenging or blocking anyone. Use it to tune the threshold before enabling enforcement."
@@ -4721,7 +4720,7 @@ msgstr "Disabilita reCaptcha v3 per visitatori IPv6. Google reCaptcha v3 non sup
 
 #: addons/bbcs-forced-inclusions/views/settings.php:137
 msgid "Disable renames the file so WordPress stops running it. The file stays on the server, so you can turn it back on anytime - safe way to test if a file causes a problem. Delete removes it for good."
-msgstr ""
+msgstr "disabilita rinomina il file in modo che WordPress smetta di eseguirlo. Il file rimane on il server, così può riattivarlo on in qualsiasi momento - un modo sicuro per verificare se un file causa un problema. elimina lo rimuove definitivamente."
 
 #: addons/bbcs-speedup/inc/class-bbcs-speedup-addons-page.php:68
 #: addons/bbcs-speedup/views/settings.php:171
@@ -4963,7 +4962,7 @@ msgstr "Le modalità plugin Early Init e MU respingono le richieste al primo acc
 
 #: includes/ajax/class-botblocker-ajax-early-phase.php:124
 msgid "Early Init failed and was switched off to keep the site running."
-msgstr ""
+msgstr "Early Init non è riuscito ed è stato disattivato off per mantenere il sito in esecuzione."
 
 #: admin/templates/integrations/mu.php:40
 msgid "Early Init is enabled"
@@ -5118,7 +5117,7 @@ msgstr "email"
 #: includes/data/class-botblocker-snav.php:573
 #: includes/utilites/class-botblocker-support.php:47
 msgid "Email"
-msgstr "Email"
+msgstr "email"
 
 #: includes/ajax/class-botblocker-ajax-email.php:88
 msgid "Email is required."
@@ -5504,11 +5503,11 @@ msgstr "Inserisci un codice TOTP a 6 cifre"
 
 #: admin/class-botblocker-setup-wizard-ajax.php:141
 msgid "Enter both Google reCAPTCHA v2 keys or choose Skip Google reCAPTCHA."
-msgstr ""
+msgstr "Invio entrambe le chiavi di Google reCAPTCHA v2 oppure scegliere Salta Google reCAPTCHA."
 
 #: admin/class-botblocker-setup-wizard-ajax.php:146
 msgid "Enter both Google reCAPTCHA v3 keys before enabling protection."
-msgstr ""
+msgstr "Invio entrambe le chiavi di Google reCAPTCHA v3 prima di abilitare la protezione."
 
 #: admin/templates/cloud-api/status.php:28
 #: admin/templates/integrations/botblocker-api.php:39
@@ -5662,7 +5661,7 @@ msgstr "Ogni giorno"
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:122
 msgid "Every mapped domain stops resolving to its site. On a network that uses domain mapping this takes those sites offline."
-msgstr ""
+msgstr "Ogni dominio mappato smette di risolversi verso il suo sito. on un network o rete che usa la mappatura dominio, questo mette offline quei siti."
 
 #: admin/partials/class-botblocker-dashboard-widgets.php:184
 msgid "Example:"
@@ -6505,15 +6504,15 @@ msgstr "Il campo '%s' è necessario."
 #: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:274
 #: addons/bbcs-malware/inc/views/scan-results/file-findings.php:34
 msgid "File"
-msgstr "File"
+msgstr "file"
 
 #: addons/bbcs-forced-inclusions/inc/class-ajax-handler.php:31
 msgid "File changes are switched off on this site (DISALLOW_FILE_MODS)."
-msgstr ""
+msgstr "Le modifiche di file sono state disattivate off on questa sito (DISALLOW_FILE_MODS)."
 
 #: addons/bbcs-forced-inclusions/views/settings.php:151
 msgid "File changes are switched off on this site."
-msgstr ""
+msgstr "Le modifiche file vengono disattivate off on questa sito."
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:148
 #: addons/bbcs-forced-inclusions/inc/class-file-operator.php:127
@@ -6535,11 +6534,11 @@ msgstr "Le modifiche ai file sono disabilitate."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-operator.php:86
 msgid "File turned back on. WordPress is running it again."
-msgstr ""
+msgstr "file è stato riattivato on. WordPress lo sta eseguendo di nuovo."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-operator.php:49
 msgid "File turned off. WordPress is no longer running it."
-msgstr ""
+msgstr "file è stato disattivato off. WordPress non lo esegue più."
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:450
 #: addons/bbcs-malware/inc/views/scan-results/header.php:51
@@ -7225,7 +7224,7 @@ msgstr "homepage"
 
 #: admin/templates/setup-wizard/compatibility.php:13
 msgid "Homepage"
-msgstr "Homepage"
+msgstr "homepage"
 
 #: admin/templates/settings/captcha-tab.php:172
 msgid "Honeypot Field on Challenge Page"
@@ -7236,7 +7235,7 @@ msgstr "Campo honeypot sulla pagina di verifica"
 #: admin/templates/settings/cron.php:161
 #: admin/templates/settings/cron.php:173
 msgid "Hook"
-msgstr "Hook"
+msgstr "hook"
 
 #: admin/templates/settings/cron.php:131
 msgid "hook. Independent of WP Cron."
@@ -9658,7 +9657,7 @@ msgstr "di traffico"
 
 #: admin/templates/dashboard/pro-status.php:75
 msgid "Off"
-msgstr "Off"
+msgstr "off"
 
 #: includes/class-botblocker-toastify.php:244
 msgid "Official BotBlocker add-ons require BotBlocker PRO."
@@ -9674,7 +9673,7 @@ msgstr "Vecchie versioni HTTP"
 
 #: admin/templates/dashboard/pro-status.php:73
 msgid "On"
-msgstr "On"
+msgstr "on"
 
 #: addons/bbcs-antispam/views/settings.php:219
 msgid "On API Error"
@@ -9897,7 +9896,7 @@ msgstr ""
 
 #: admin/templates/integrations/redis.php:46
 msgid "Password:"
-msgstr "Password:"
+msgstr "password:"
 
 #: addons/bbcs-forced-inclusions/views/settings.php:34
 #: addons/bbcs-forced-inclusions/views/settings.php:71
@@ -10083,31 +10082,31 @@ msgstr "Scegli il colore corretto. Logica semplice, difficile da automatizzare."
 #: admin/templates/setup-wizard/completed.php:65
 #: includes/class-botblocker-toastify.php:96
 msgid "Please Confirm"
-msgstr ""
+msgstr "NON SI TRADUCE Conferma"
 
 #: includes/botblocker/traits/class-botblocker-block-page-trait.php:21
 #: includes/botblocker/traits/class-botblocker-check-page-trait.php:277
 #: includes/botblocker/traits/class-botblocker-denied-page-trait.php:20
 #: public/template-botblocker-denied.php:217
 msgid "Please enable JavaScript and reload the page"
-msgstr ""
+msgstr "NON SI TRADUCE abilita JavaScript e ricarichi la pagina"
 
 #: admin/class-botblocker-admin.php:533
 msgid "Please enter a valid 6-digit code."
-msgstr ""
+msgstr "NON SI TRADUCE Invio un valido codice di 6 cifre."
 
 #: admin/class-botblocker-admin.php:442
 msgid "Please select a country."
-msgstr ""
+msgstr "NON SI TRADUCE selezioni un paese."
 
 #: admin/class-botblocker-admin.php:663
 msgid "Please update the plugin first."
-msgstr ""
+msgstr "NON SI TRADUCE aggiornamento prima il plugin."
 
 #: admin/class-botblocker-admin.php:186
 #: admin/class-botblocker-admin.php:685
 msgid "Please wait..."
-msgstr ""
+msgstr "NON SI TRADUCE attendere…"
 
 #: admin/templates/settings/cron.php:70
 msgid "Plesk Cron"
@@ -10263,7 +10262,7 @@ msgstr "Privacy policy"
 
 #: admin/templates/about/body.php:89
 msgid "Privacy policy"
-msgstr "Privacy policy"
+msgstr "privacy policy"
 
 #: admin/class-botblocker-admin.php:793
 #: admin/class-botblocker-admin.php:794
@@ -10427,7 +10426,7 @@ msgstr "Protegge il contenuto del feed dagli scraper: voci solo con riassunto, c
 
 #: addons/bbcs-feed-guard/views/settings.php:27
 msgid "Protects your RSS/Atom feed content from scrapers. Full-content feeds are truncated to an excerpt, an attribution link back to the original article is appended, feeds can be marked noindex for search engines, and feed discovery links can be removed or the feeds disabled entirely. Legitimate subscribers and feed readers keep working."
-msgstr ""
+msgstr "Protegge il contenuto del feed RSS/Atom dai raccoglitori di dati. I feed a contenuto completo vengono troncati a un riassunto, viene aggiunto un link di attribuzione verso l’articolo originale, i feed possono essere contrassegnati come noindex per i motori di ricerca e i link di scoperta del feed possono essere rimossi oppure i feed possono essere disabilitato del tutto. Gli abbonati legittimi e i lettori del feed continuano a elaborazione in corso."
 
 #: addons/bbcs-https-protocol/inc/class-bbcs-https-protocol-addons-page.php:53
 #: addons/bbcs-https-protocol/views/settings.php:115
@@ -11017,11 +11016,11 @@ msgstr "Riduci il carico del server - la spazzatura viene bloccata prima che WP 
 #: includes/modal/modal-botblocker-rule-add.php:27
 #: includes/modal/modal-botblocker-rule-edit.php:26
 msgid "Referer"
-msgstr "Referer"
+msgstr "referer"
 
 #: admin/class-botblocker-admin.php:508
 msgid "Referer:"
-msgstr "Referer:"
+msgstr "referer:"
 
 #: admin/templates/integrations/botblocker-api.php:70
 msgid "Refresh PRO status"
@@ -11041,11 +11040,11 @@ msgstr "Rigenera i collegamenti"
 
 #: admin/class-botblocker-admin.php:161
 msgid "Regenerate security action links? Old links will stop working immediately."
-msgstr ""
+msgstr "Rigenerare i collegamenti alle azioni di sicurezza? I vecchi collegamenti smetteranno immediatamente di elaborazione in corso."
 
 #: admin/templates/integrations/wp-connectors.php:21
 msgid "Registers BotBlocker in the WordPress Connectors system. Disable if you do not use WordPress Connectors to save ~180ms per admin page load."
-msgstr ""
+msgstr "Registra BotBlocker nel sistema WordPress Connectors. disabilita se non si utilizza WordPress Connectors per salva ~180 ms per ogni caricamento dell’area amministrativa pagina."
 
 #: admin/templates/tools/modals/hits-clear.php:21
 msgid "Regular hits will be removed from the database."
@@ -11134,7 +11133,7 @@ msgstr "Rimuovi lo shortlink"
 
 #: addons/bbcs-feed-guard/views/settings.php:108
 msgid "Remove the RSS/Atom discovery links from the site head. Existing feed URLs keep working."
-msgstr ""
+msgstr "Rimuovi i collegamenti di scoperta RSS/Atom dalla head sito. Gli URL feed esistenti mantengono elaborazione in corso."
 
 #: includes/inc-botblocker-wp-abilities.php:153
 msgid "Removes firewall rules for an IP address and regenerates the runtime ban files."
@@ -11196,7 +11195,7 @@ msgstr "Sostituisce il contenuto completo dell'articolo nei feed con un breve ri
 
 #: admin/templates/settings/cookie.php:96
 msgid "Replaces IP/host/UA-bound cookie hash with a session token. Eliminates Captcha loops for VPN/proxy users. Disable only if experiencing issues."
-msgstr "Sostituisce l'hash del cookie legato a IP/host/UA con un token di sessione. Elimina i loop del Captcha per gli utenti VPN/proxy. Disabilita solo se si riscontrano problemi."
+msgstr "Sostituisce l’hash del cookie legato a IP/ospita/UA con un token di sessione. Elimina i loop Captcha per gli utenti VPN/proxy. disabilita solo se riscontri problemi."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:66
 msgid "Replaces the default screen shown while the site is in maintenance mode."
@@ -11212,15 +11211,15 @@ msgstr "Sostituisce la routine che crea le tabelle del database durante l’inst
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:96
 msgid "Replaces the screen shown for a deleted site on a multisite network."
-msgstr ""
+msgstr "Sostituisce il schermo mostrato per un eliminato sito on un multisito network o rete."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:108
 msgid "Replaces the screen shown for a suspended site on a multisite network."
-msgstr ""
+msgstr "Sostituisce il schermo mostrato per un sito sospeso on un multisito network o rete."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:102
 msgid "Replaces the screen shown for an inactive site on a multisite network."
-msgstr ""
+msgstr "Sostituisce il schermo mostrato per un sito inattivo on un multisito network o rete."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:72
 msgid "Replaces the screen shown when PHP hits a fatal error."
@@ -11457,23 +11456,23 @@ msgstr "Nuovo tentativo..."
 
 #: addons/bbcs-feed-guard/views/settings.php:116
 msgid "Return HTTP 403 for every feed request. This disables feeds for real subscribers too."
-msgstr ""
+msgstr "return HTTP 403 per ogni richiesta feed. Questo disabilita i feed anche per gli abbonati reali."
 
 #: includes/inc-botblocker-wp-abilities.php:81
 msgid "Returns aggregated request, block, captcha and proxy counters for a period."
-msgstr ""
+msgstr "Return i contatori aggregati di richieste, blocchi, captcha e proxy per un periodo."
 
 #: includes/inc-botblocker-wp-abilities.php:16
 msgid "Returns the current BotBlocker protection mode, enabled state and plugin version."
-msgstr ""
+msgstr "Return l’attuale modalità di protezione di BotBlocker, lo stato di abilitato e la versione di plugin."
 
 #: includes/inc-botblocker-wp-abilities.php:59
 msgid "Returns the firewall rules matching a given IP address."
-msgstr ""
+msgstr "Return le regole del firewall in corrispondenza con un determinato IP indirizzo."
 
 #: includes/inc-botblocker-wp-abilities.php:193
 msgid "Returns the status and findings of the latest malware scan from the BotBlocker Malware Scanner add-on."
-msgstr ""
+msgstr "Return lo stato e i risultati dell’ultima scansione malware dal Malware Scanner add-on di BotBlocker."
 
 #: admin/templates/settings/general.php:63
 msgid "Reverse DNS (PTR)"
@@ -12398,7 +12397,7 @@ msgstr "Configura l'autenticazione a due fattori - 2FA, MFA, OTP, recupero"
 #, pgettext
 msgctxt "device type label"
 msgid "Set-top Box"
-msgstr "Set-top Box"
+msgstr "Set-top box"
 
 #: addons/bbcs-early-init/inc/class-bbcs-early-init-addons-page.php:55
 #: addons/bbcs-early-init/views/settings.php:76
@@ -12537,7 +12536,7 @@ msgstr "URL del Signature DB"
 
 #: admin/templates/settings/payment-tab.php:47
 msgid "Signature headers are always verified for format (min 8 chars, POST only). When enabled, payment bypass additionally applies to POST requests only: GET requests with payment query keys or ajax actions will not bypass the shield. Callbacks matched by generic markers (webhook, ipn, callback_handler) always keep IP and rate-limit rules active. Reduces attack surface while keeping real webhooks working."
-msgstr ""
+msgstr "Gli header di firma vengono sempre verificati nel formato (min 8 caratteri, solo POST). Quando abilitato, il bypass del pagamento si applica inoltre esclusivamente alle richieste POST: le richieste GET con chiavi di query di pagamento o azioni AJAX non aggireranno lo scudo. I callback corrispondenti a indicatori generici (webhook, ipn, callback_handler) mantengono sempre attive le regole IP e di limitazione della frequenza. Riduce la superficie di attacco mantenendo funzionanti i webhook reali."
 
 #: includes/audit/class-botblocker-audit-logger.php:414
 msgid "Signed in from a trusted device."
@@ -13177,7 +13176,7 @@ msgstr "Ban temporanei (non ancora scaduti)"
 #: admin/templates/plugins/deactivation-feedback-modal.php:10
 #: includes/utilites/class-botblocker-deactivation-feedback.php:137
 msgid "Temporary - I will turn it back on later"
-msgstr ""
+msgstr "Temporaneo - lo riattiverò on più tardi"
 
 #: includes/hook/class-botblocker-addon-files.php:98
 msgid "Temporary extraction directory is missing."
@@ -13275,7 +13274,7 @@ msgstr "la riga aggiunta da wp-config.php."
 
 #: admin/templates/integrations/apcu.php:21
 msgid "The apcu PHP extension is required to use this cache. Install it via your hosting control panel or contact your host."
-msgstr ""
+msgstr "L’estensione PHP apcu è necessario per utilizzare questa cache. La installi tramite il pannello di controllo del Tuo hosting o contatti il Tuo ospita."
 
 #: admin/templates/settings/rate-limiting.php:47
 msgid "The Behavioral Engine is installed and active. You can customize the multi-signal thresholds, session limits, and IP reputation decay."
@@ -13317,13 +13316,13 @@ msgstr "Il file %s verrà eliminato dal tuo server:"
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:135
 #, php-format
 msgid "The file %s will be turned back on:"
-msgstr ""
+msgstr "Il file %s verrà riattivato on:"
 
 #. translators: %s: file path relative to wp-content
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:121
 #, php-format
 msgid "The file %s will be turned off:"
-msgstr ""
+msgstr "Il file %s verrà disattivato off:"
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:149
 #: addons/bbcs-forced-inclusions/inc/class-file-operator.php:121
@@ -13338,7 +13337,7 @@ msgstr "Il file non può essere riattivato. Il server potrebbe non consentirlo: 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:150
 #: addons/bbcs-forced-inclusions/inc/class-file-operator.php:50
 msgid "The file could not be turned off. Your server may not allow it - ask your hosting company to check the file permissions."
-msgstr ""
+msgstr "Non è stato possibile impostare file su off. Il Tuo server potrebbe non consentirlo: chieda alla Tua società di hosting di verificare le autorizzazioni di file."
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:139
 msgid "The file gets its original name back."
@@ -13559,7 +13558,7 @@ msgstr "Temi"
 #: includes/data/class-botblocker-alerts.php:775
 #, php-format
 msgid "These add-ons could not start and were switched off to keep the site running: %s. Your settings are kept. Please update or reinstall them."
-msgstr "Questi add-on non hanno potuto avviarsi e sono stati messi off per mantenere il sito in esecuzione: %s. Le Sue impostazioni sono conservate. NON SI TRADUCE aggiornamento o reinstallarli."
+msgstr "Questi add-on non sono riusciti ad avviarsi e sono stati off per mantenere il sito in funzione: %s. Le sue impostazioni sono conservate. NON SI TRADUCE aggiorni o reinstalli gli add-on."
 
 #: admin/templates/settings/status.php:22
 msgid "These options require no form save - they apply immediately and are safe to experiment with."
@@ -13620,7 +13619,7 @@ msgstr "Questo file è già on."
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:105
 msgid "This file is one of the risky ones: your site can go offline or slow down badly until you undo this."
-msgstr ""
+msgstr "Questa file è una di quelle rischiose: il Tuo sito può andare offline o rallentare gravemente giù finché non annulla questa operazione."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:239
 msgid "This file only does something on a multisite network, and your site is not one. It is doing nothing here, so it is worth finding out who put it there."
@@ -14063,7 +14062,7 @@ msgstr "Attiva il controllo avanzato del comportamento. A differenza dei semplic
 
 #: addons/bbcs-antispam/views/settings.php:80
 msgid "Turn on AI-powered comment spam detection. Uses WebSocket API to analyze comments and filter spam."
-msgstr ""
+msgstr "Attiva on la rilevazione di commenta spam basata sull’IA. Utilizza l’API WebSocket per analizzare i commenti e filtro spam."
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:142
 msgid "Turn this file back on now?"
@@ -14091,7 +14090,7 @@ msgstr "Messo off (ancora on sul server)"
 
 #: addons/bbcs-forced-inclusions/views/settings.php:82
 msgid "Turning this off can take the site offline or slow it down a lot. Read the note next to the name first."
-msgstr ""
+msgstr "Modificare questo off può mettere offline il sito o rallentarlo giù molto. Legga prima il nota accanto al nome."
 
 #: addons/bbcs-security-headers/views/settings.php:114
 msgid "Turns all BotBlocker security headers on or off. Use to globally disable header output for testing or compatibility checks."
@@ -14409,7 +14408,7 @@ msgstr "Periodo non supportato."
 
 #: addons/bbcs-forced-inclusions/views/settings.php:138
 msgid "Unsure what a file does? Ask your host before removing it. Some hosts restore their own files automatically, so a disabled file may reappear."
-msgstr "Non è sicuro di cosa faccia un file? Chieda al Suo ospita prima di rimuoverlo. Alcuni ospita ripristinano automaticamente i propri file, quindi un file disabilitato potrebbe riapparire."
+msgstr "Non è sicuro di cosa faccia un file? Chieda al suo ospita prima di rimuoverlo. Alcuni fornitori di hosting ripristinano automaticamente i propri file, quindi un disabilitato file potrebbe riapparire."
 
 #: admin/class-botblocker-admin.php:668
 #: admin/templates/addons/addon-market-card.php:106
@@ -14786,7 +14785,7 @@ msgstr "Visualizza:"
 
 #: admin/templates/setup-wizard/recaptcha.php:27
 msgid "Visible checkbox or challenge. Choose its BotBlocker mode on next step."
-msgstr ""
+msgstr "checkbox visibile o challenge. Scelga la relativa modalità BotBlocker on il passaggio successivo."
 
 #: admin/templates/settings/log.php:29
 #: includes/data/class-botblocker-snav.php:374
@@ -14912,7 +14911,7 @@ msgstr "Cosa c'è di nuovo in"
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:112
 msgid "Whatever the file was doing stops working immediately."
-msgstr ""
+msgstr "Qualunque cosa stesse facendo il file si interrompe elaborazione in corso immediatamente."
 
 #: admin/templates/setup-wizard/init-mode.php:9
 msgid "When BotBlocker activates. Earlier = stronger protection."
@@ -14928,7 +14927,7 @@ msgstr "Quando l'API cloud restituisce dati inattesi - blocca il visitatore e in
 
 #: includes/viewmodels/class-pro-status-viewmodel.php:91
 msgid "When cloud API returns unexpected data - block the visitor instead of silent pass."
-msgstr ""
+msgstr "In caso di return di dati imprevisti dall'API cloud, bloccare il visitatore anziché lasciar passare in silenzio."
 
 #: admin/templates/settings/general.php:114
 msgid "When enabled, all authenticated WordPress users (including subscribers, authors, contributors) bypass BotBlocker checks. By default, only administrators, editors and moderators are bypassed."
@@ -15059,7 +15058,7 @@ msgstr "Connettori WordPress"
 
 #: admin/templates/integrations/wp-connectors.php:15
 msgid "WordPress Connectors integrates your site with the WordPress ecosystem. Disable to save ~180ms per page load when not needed."
-msgstr ""
+msgstr "WordPress Connectors integra il Tuo sito con l’ecosistema WordPress. disabilita a salva ~180 ms per ogni caricamento di pagina quando non necessario."
 
 #: admin/templates/tools/tools-content.php:22
 #: includes/data/class-botblocker-snav.php:719
@@ -15077,11 +15076,11 @@ msgstr "Il core di WordPress è stato aggiornato."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:56
 msgid "WordPress falls back to a per-request cache. The site keeps working but gets slower, and there is a brief extra load while the cache refills."
-msgstr ""
+msgstr "WordPress ripiega su una cache per singola richiesta. Il sito mantiene elaborazione in corso ma diventa più lento, e c’è un breve carico aggiuntivo mentre la cache si riempie di nuovo."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:116
 msgid "WordPress falls back to its single-server database layer. On a replicated or sharded setup the site can stop working entirely."
-msgstr ""
+msgstr "WordPress ripiega sul suo livello database a server singolo. on un configurazione replicato o shardato, il sito può smettere di elaborazione in corso del tutto."
 
 #: addons/bbcs-feed-guard/views/settings.php:28
 msgid "WordPress Feeds"
@@ -15109,7 +15108,7 @@ msgstr ""
 
 #: addons/bbcs-forced-inclusions/views/settings.php:76
 msgid "WordPress runs this file on every page."
-msgstr ""
+msgstr "WordPress esegue questo file on ogni pagina."
 
 #: admin/templates/cloud-api/status.php:137
 msgid "WordPress security audit"
@@ -15135,7 +15134,7 @@ msgstr "Ottimizzazioni velocità di WordPress"
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:138
 msgid "WordPress starts running it again on the next page load."
-msgstr ""
+msgstr "WordPress ricomincia a eseguirlo on al successivo caricamento pagina."
 
 #: includes/botblocker/class-botblocker.php:321
 msgid "WordPress stopped by BotBlocker"
@@ -15283,11 +15282,11 @@ msgstr "Puoi preparare la tua lista in qualsiasi editor di testo. Ogni riga deve
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:126
 msgid "You can turn it back on from this page whenever you want."
-msgstr ""
+msgstr "È possibile riattivarlo on da questa pagina in qualsiasi momento."
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:140
 msgid "You can turn it off again at any time."
-msgstr ""
+msgstr "È possibile disattivarlo off di nuovo in qualsiasi momento."
 
 #: includes/shortcode/class-botblocker-sidebar-shortcodes.php:129
 #: includes/shortcode/class-botblocker-sidebar-shortcodes.php:162
@@ -15382,7 +15381,7 @@ msgstr "La sua chiave app Pusher (pubblica)."
 
 #: addons/bbcs-pusher/views/settings.php:83
 msgid "Your Pusher app secret. Used to sign events; never share it."
-msgstr ""
+msgstr "Il segreto dell’app Pusher. Utilizzato per firmare gli eventi; non condivisione mai questo valore."
 
 #: addons/bbcs-pusher/views/settings.php:94
 msgid "Your Pusher cluster, e.g. mt1, eu, us2. Leave empty to use the default."

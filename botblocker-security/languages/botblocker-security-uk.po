@@ -3,16 +3,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BotBlocker"
 "Report-Msgid-Bugs-To: "
-"POT-Creation-Date: 2026-09-29 08:28+0000"
-"PO-Revision-Date: 2026-09-29 08:28+0000"
-"Last-Translator: BotBlocker Translator Team"
+"POT-Creation-Date: 2026-10-16 22:47+0000"
+"PO-Revision-Date: 2026-10-16 22:47+0000"
+"Last-Translator: BotBlocker Team (Yaroslavlukasev)"
 "Language-Team: Ukrainian"
 "Language: uk"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 &&(n%100<10||n%100>=20)? 1 : 2);"
 "MIME-Version: 1.0"
 "Content-Type: text/plain; charset=UTF-8"
 "Content-Transfer-Encoding: 8bit"
-"X-Generator: BotBlocker Translator Engine"
 "X-Domain: botblocker-security"
 
 
@@ -462,7 +461,7 @@ msgstr "Потрібна дійсна IP-адреса."
 
 #: addons/bbcs-pusher/views/settings.php:25
 msgid "A weekly digest with request, block and bot statistics is delivered on a schedule. The add-on never runs on visitor requests."
-msgstr ""
+msgstr "Щотижневий дайджест зі статистикою запитів, блокувань і ботів надсилається за відкласти. Додаток ніколи не запускається під час запитів відвідувачів."
 
 #: addons/bbcs-telegram/views/settings.php:26
 msgid "A weekly security report is delivered to your chat with request, block and bot statistics."
@@ -1384,12 +1383,12 @@ msgstr "Дозволити порожній заголовок Accept-Language �
 
 #: admin/templates/settings/bot-detection.php:63
 msgid "Allow HTTP OPTIONS requests for CORS preflight (REST API, WooCommerce, external apps)."
-msgstr "Дозволити HTTP-запити ПАРАМЕТРИ для попередньої перевірки CORS (REST API, WooCommerce, зовнішні застосунки)."
+msgstr "Дозволити HTTP-запити OPTIONS для попередньої перевірки CORS (REST API, WooCommerce, зовнішні застосунки)."
 
 #: admin/templates/settings/bot-detection.php:63
 #: includes/data/class-botblocker-snav.php:98
 msgid "Allow OPTIONS Preflight"
-msgstr "Дозволити попередню перевірку ПАРАМЕТРИ"
+msgstr "Дозволити попередню перевірку OPTIONS"
 
 #: admin/partials/class-botblocker-dashboard-widgets.php:232
 msgid "Allow or Block"
@@ -8724,7 +8723,7 @@ msgstr "Основний"
 
 #: admin/templates/rules/body.php:153
 msgid "Maintained automatically by BotBlocker cloud - read-only. Manage your own ASN rules in the table above."
-msgstr ""
+msgstr "Підтримується автоматично хмарою BotBlocker – лише для читання. керувати власні правила ASN у таблиці вище."
 
 #: admin/templates/tools/maintenance-tab.php:89
 #: includes/data/class-botblocker-snav.php:748
@@ -8800,7 +8799,7 @@ msgstr "Керуйте аналізом джерел переходу, обро�
 #: addons/bbcs-early-init/views/settings.php:97
 #: admin/templates/integrations/mu.php:56
 msgid "Manage the blocked-country list on the"
-msgstr ""
+msgstr "керувати перелік заблокованих країн на"
 
 #: admin/templates/tools/maintenance-tab.php:90
 msgid "Manage the plugin database, temporary files, logs, and service data to keep your site running efficiently."
@@ -8935,7 +8934,7 @@ msgstr "Максимальна сумісність для тестування 
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:238
 msgid "Maximum findings embedded per results card for the Tree view."
-msgstr ""
+msgstr "Максимум знахідок, вбудованих у картку результатів, для переглянути дерева."
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:230
 msgid "Maximum findings shown in the Flat results view before truncating. Switch to Tree view to browse all."
@@ -9232,7 +9231,7 @@ msgstr "Файл завантажувача MU"
 #: includes/inc-botblocker-ui.php:152
 #: includes/viewmodels/class-chain-context-data.php:98
 msgid "MU mode disabled. Early initialization already performs pre-filtering. Enabling MU is unnecessary."
-msgstr "Режим MU вимкнено: рання ініціалізація вже здійснює попередню фільтрацію, увімкнення MU не потрібне."
+msgstr "Режим MU вимкнено. Рання ініціалізація вже виконує попередню фільтрацію. Увімкнення MU не потрібне."
 
 #: admin/templates/settings/status.php:50
 #: admin/templates/shared/system-toggles.php:45
@@ -11204,7 +11203,7 @@ msgstr "Замінити повний вміст запису в каналах 
 
 #: admin/templates/settings/cookie.php:96
 msgid "Replaces IP/host/UA-bound cookie hash with a session token. Eliminates Captcha loops for VPN/proxy users. Disable only if experiencing issues."
-msgstr "Замінює хеш cookie, прив'язаний до IP/хоста/UA, на токен сесії. Усуває цикли Captcha для користувачів VPN/проксі. Вимикайте лише за наявності проблем."
+msgstr "Замінює хеш кукі, прив’язаний до IP/host/UA-bound, на токен сесії. Усуває цикли Captcha для користувачів VPN/проксі. Вимикайте лише у разі виникнення проблем."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:66
 msgid "Replaces the default screen shown while the site is in maintenance mode."
@@ -11564,7 +11563,7 @@ msgstr "Оновлення переліку RU-Gov вже в черзі."
 
 #: includes/rules/class-botblocker-rugov.php:103
 msgid "RU-Gov List Update Failed"
-msgstr ""
+msgstr "RU-Gov перелік оновлення не вдалося"
 
 #: includes/ajax/class-botblocker-ajax-rugov.php:46
 msgid "RU-Gov list update scheduled."
@@ -11898,7 +11897,7 @@ msgstr "Результати сканування очищено."
 
 #: addons/bbcs-malware/inc/views/scan-results.php:25
 msgid "Scan results view"
-msgstr ""
+msgstr "Результати сканування переглянути"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-addons-page.php:46
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:47
@@ -12481,7 +12480,7 @@ msgstr "Показувати унікальних відвідувачів (за
 #: addons/bbcs-malware/inc/views/scan-results/database-tree.php:29
 #, php-format
 msgid "Showing first %1$d of %2$d database findings. Increase Tree View Cap in settings to see all."
-msgstr ""
+msgstr "Показано перші %1$d з %2$d знахідок бази даних. Збільште обмеження переглянути дерева в налаштування, щоб побачити все."
 
 #. translators: %1$d is the tree view cap, %2$d is the total number of findings.
 #: addons/bbcs-malware/inc/views/scan-results/file-tree.php:30
@@ -12492,7 +12491,7 @@ msgstr "Показано перші %1$d з %2$d знахідок. Збільш�
 #: addons/bbcs-malware/inc/views/scan-results/ignored-tree.php:24
 #, php-format
 msgid "Showing first %1$d of %2$d ignored entries. Increase Tree View Cap in settings to see all."
-msgstr ""
+msgstr "Показано перші %1$d з %2$d ігнорованих записів. Збільште обмеження переглянути дерева в налаштування, щоб побачити все."
 
 #. translators: %1$d is the number of findings shown, %2$d is the total number of findings.
 #: addons/bbcs-malware/inc/views/scan-results/file-findings.php:104
@@ -12871,7 +12870,7 @@ msgstr "Суворі хедери CORS"
 #: admin/templates/settings/payment-tab.php:47
 #: includes/data/class-botblocker-snav.php:328
 msgid "Strict Webhook Validation (POST only)"
-msgstr "Сувора перевірка вебхука (лише запис)"
+msgstr "Сувора перевірка вебхука (лише POST)"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:72
 #: admin/templates/setup-wizard/finish.php:19
@@ -13511,7 +13510,7 @@ msgstr "Текст, який відображається у сповіщенн�
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:425
 msgid "The traffic activity level (as a fraction of the Core Rate Inspector's block RPM limit) where we start tracking and recording reputation. For example, at 0.10, once a visitor reaches 10% of that core limit, we begin monitoring their patterns. (Default: 0.10)"
-msgstr ""
+msgstr "Рівень діяльність трафіку (як частка від ліміту RPM блокувань Core Rate Inspector), на якому ми починаємо відстежувати й записувати репутацію. Наприклад, при 0.10, щойно відвідувач досягає 10% цього базового ліміту, ми починаємо відстежувати його патерни. (початковий: 0.10)"
 
 #: admin/class-botblocker-admin.php:640
 #: includes/class-botblocker-toastify.php:248
@@ -13568,7 +13567,7 @@ msgstr "Теми"
 #: includes/data/class-botblocker-alerts.php:775
 #, php-format
 msgid "These add-ons could not start and were switched off to keep the site running: %s. Your settings are kept. Please update or reinstall them."
-msgstr ""
+msgstr "Ці додатки не змогли запуститися й були вимкнені, щоб сайт продовжував працювати: %s. Ваші налаштування збережено. Будь ласка, оновлення їх або встановіть заново."
 
 #: admin/templates/settings/status.php:22
 msgid "These options require no form save - they apply immediately and are safe to experiment with."
@@ -13629,7 +13628,7 @@ msgstr "Цей файл уже ввімкнено."
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:105
 msgid "This file is one of the risky ones: your site can go offline or slow down badly until you undo this."
-msgstr ""
+msgstr "Цей файл – один із ризикованих: ваш сайт може поза мережею або сильно сповільнитися, доки ви не скасувати це."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:239
 msgid "This file only does something on a multisite network, and your site is not one. It is doing nothing here, so it is worth finding out who put it there."
@@ -14197,7 +14196,7 @@ msgstr "Налаштування двокрокової автентифікац
 #: includes/audit/class-botblocker-audit-logger.php:417
 #, php-format
 msgid "Two-factor was reset for user #%object_id%."
-msgstr ""
+msgstr "Двокрокову автентифікацію було скидати для користувача #%object_id%."
 
 #: addons/bbcs-forced-inclusions/views/settings.php:32
 #: addons/bbcs-forced-inclusions/views/settings.php:51
@@ -14233,7 +14232,7 @@ msgstr "Надшвидкий кеш в оперативній пам'яті. М�
 
 #: includes/utilites/2FA/class-botblocker-two-factor-auth.php:1171
 msgid "Unable to reset 2FA."
-msgstr ""
+msgstr "Не вдалося скидати 2FA."
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-ajax.php:17
 #: includes/ajax/class-botblocker-ajax-email.php:69

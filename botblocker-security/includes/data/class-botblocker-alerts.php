@@ -140,11 +140,30 @@ class BotBlockerAlerts {
 	}
 
 	/**
+	 * The key fingerprints the settings the detectors read (AUD-33): a settings
+	 * write changes the fingerprint so the stale cached alert set is never
+	 * served — telegram/wizard/2FA have their own invalidation hooks.
+	 *
 	 * @param int $user_id
 	 * @return string
 	 */
-	private static function configCacheKey( int $user_id ): string {
-		return 'bbcs_alert_config_' . $user_id;
+	public static function configCacheKey( int $user_id ): string {
+		$bb = class_exists( 'BotBlocker' ) ? BotBlocker::getInstance() : null;
+		$fp = '0';
+		if ( $bb !== null && isset( $bb->settings ) ) {
+			$fp = md5(
+				(string) ( $bb->settings->bbcs_captcha_mode ?? '' ) . '|'
+				. (string) ( $bb->settings->recaptcha_check ?? '' ) . '|'
+				. (string) ( $bb->settings->recaptcha_key2 ?? '' ) . '|'
+				. (string) ( $bb->settings->recaptcha_secret2 ?? '' ) . '|'
+				. (string) ( $bb->settings->recaptcha_key3 ?? '' ) . '|'
+				. (string) ( $bb->settings->recaptcha_secret3 ?? '' ) . '|'
+				. (string) ( $bb->settings->bbcs_2fa_enable ?? '' ) . '|'
+				. (string) ( $bb->settings->redis_enable ?? '' ) . '|'
+				. (string) ( $bb->settings->memcached_enable ?? '' )
+			);
+		}
+		return 'bbcs_alert_config_' . $user_id . '_' . $fp;
 	}
 
 	/**
@@ -566,12 +585,19 @@ class BotBlockerAlerts {
 
 	public static function setCloudApiExpired( ?int $days_left = null ): void {
 		/* translators: %d: number of days left before the cloud API expires. */
-		$about_to_expire_message = __( 'Your cloud API will expire in %d days.', 'botblocker-security' );
+		$about_to_expire_message = _n( 'Your cloud API will expire in %d day.', 'Your cloud API will expire in %d days.', (int) $days_left, 'botblocker-security' );
 		$message                 = $days_left !== null ? sprintf( $about_to_expire_message, intval( $days_left ) ) : __( 'Your cloud API has expired. Please renew it.', 'botblocker-security' );
+		if ( $days_left === 0 ) {
+			$message = __( 'Your cloud API expires today.', 'botblocker-security' );
+		}
+		$title = __( 'Cloud API Expired', 'botblocker-security' );
+		if ( $days_left !== null ) {
+			$title = __( 'Cloud API Expiring Soon', 'botblocker-security' );
+		}
 		$alert                   = array(
 			'type'    => 'cloud_api_expired',
 			'icon'    => 'fas fa-exclamation-circle bg-danger text-light',
-			'title'   => __( 'Cloud API Expired', 'botblocker-security' ),
+			'title'   => $title,
 			'message' => $message,
 		);
 

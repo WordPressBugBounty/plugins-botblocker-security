@@ -157,6 +157,8 @@ class BotBlockerSettings
 	public $mu_geo_enable = 0;
 
 	public $early_init_enable 	= 0;
+	public $early_cache_gate = 1;
+	public $early_cache_pass_ttl = 900;
 	public $early_geo_enable 	= 0;
 
 	public $x_robots_directives = array();

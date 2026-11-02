@@ -23,8 +23,13 @@ return static function (Botblocker_IntegrationsViewModel $data, bool $isActive):
 			<div class="bbcs-setgroup">
 				<div class="bbcs-setgroup-head"><?php esc_html_e('PRO Status', 'botblocker-security'); ?></div>
 				<div class="bbcs-option bbcs-hoverbg">
+					<?php if ( $data->is_expired ) : ?>
+					<span class="bbcs-pill bbcs-pill--red"><?php esc_html_e('Expired', 'botblocker-security'); ?></span>
+					<span class="bbcs-option-label"><?php esc_html_e('PRO Status: Expired', 'botblocker-security'); ?></span>
+					<?php else : ?>
 					<span class="bbcs-pill bbcs-pill--<?php echo $data->is_cloud_api_active ? 'green' : 'amber'; ?>"><?php echo $data->is_cloud_api_active ? esc_html__('Active', 'botblocker-security') : esc_html__('Inactive', 'botblocker-security'); ?></span>
 					<span class="bbcs-option-label"><?php echo $data->is_cloud_api_active ? esc_html__('PRO Status: Active', 'botblocker-security') : esc_html__('PRO Status: Inactive', 'botblocker-security'); ?></span>
+					<?php endif; ?>
 				</div>
 			</div>
 
@@ -40,6 +45,11 @@ return static function (Botblocker_IntegrationsViewModel $data, bool $isActive):
 					<button type="button" id="bbcs_toggle_cloud_api_btn" class="bbcs-btn <?php echo $data->is_cloud_api_active ? 'bbcs-btn--danger' : 'bbcs-btn--pri'; ?>" data-is-active="<?php echo $data->is_cloud_api_active ? '1' : '0'; ?>">
 						<?php echo $data->is_cloud_api_active ? esc_html__( 'Disconnect', 'botblocker-security' ) : esc_html__( 'Connect', 'botblocker-security' ); ?>
 					</button>
+					<?php if ( ! $data->is_cloud_api_active ) : ?>
+					<a id="bbcs_cloud_api_account_link" class="bbcs-btn" href="<?php echo esc_url( $data->account_url ); ?>" target="_blank" rel="noopener noreferrer">
+						<?php esc_html_e( 'Already have a license? Get your key', 'botblocker-security' ); ?>
+					</a>
+					<?php endif; ?>
 				</div>
 				<?php wp_nonce_field( 'bbcs_connect_cloud_api_action', 'bbcs_connect_cloud_api_nonce' ); ?>
 				<?php wp_nonce_field( 'bbcs_deactivate_cloud_api_action', 'bbcs_deactivate_cloud_api_nonce' ); ?>
@@ -54,8 +64,8 @@ return static function (Botblocker_IntegrationsViewModel $data, bool $isActive):
 						<div class="bbcs-statbox-lbl"><?php esc_html_e( 'requests remaining', 'botblocker-security' ); ?></div>
 					</div>
 					<div class="bbcs-statbox">
-						<div class="bbcs-stat bbcs-stat--sm<?php echo $data->remaining_days === false ? ' is-loading is-empty' : ''; ?>" id="bbcs_stat_days" data-bbcs-remaining="days"><?php echo esc_html( $data->remaining_days === false ? '30' : (string) (int) $data->remaining_days ); ?></div>
-						<div class="bbcs-statbox-lbl"><?php esc_html_e( 'days remaining', 'botblocker-security' ); ?></div>
+						<div class="bbcs-stat bbcs-stat--sm<?php echo $data->remaining_days === false ? ' is-loading is-empty' : ''; ?>" id="bbcs_stat_days" data-bbcs-remaining="days"><?php echo esc_html( $data->remaining_days === false ? '30' : BotBlockerPro::remainingDaysText( $data->remaining_days ) ); ?></div>
+						<div class="bbcs-statbox-lbl" data-bbcs-remaining-label="days"<?php echo BotBlockerPro::isExpired() ? ' hidden' : ''; ?>><?php echo esc_html( $data->remaining_days === false ? __( 'days remaining', 'botblocker-security' ) : BotBlockerPro::remainingDaysLabel( $data->remaining_days ) ); ?></div>
 					</div>
 				</div>
 				<div class="bbcs-field">

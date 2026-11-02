@@ -430,6 +430,15 @@ trait BotBlockerAjaxIpRulesTrait {
 			}
 			wp_send_json_error( __( 'Invalid IP address or CIDR notation provided.', 'botblocker-security' ) );
 		}
+
+		if ( ! static::isIpFamilyForHandler( $ip ) ) {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log, WordPress.PHP.DevelopmentFunctions.error_log_var_export -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [AJAX] ' . $ip_label . '_create_rule wrong IP family: ' . $ip );
+			}
+			/* translators: %s: IP version label, either "IPv4" or "IPv6". */
+			wp_send_json_error( sprintf( __( 'Invalid %s address or CIDR notation provided.', 'botblocker-security' ), static::getIpVersionLabel() ) );
+		}
 		// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
 	    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$exists = $wpdb->get_var(
@@ -621,6 +630,15 @@ trait BotBlockerAjaxIpRulesTrait {
 			wp_send_json_error( __( 'Invalid IP address or CIDR notation provided.', 'botblocker-security' ) );
 		}
 
+		if ( ! static::isIpFamilyForHandler( $ip ) ) {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log, WordPress.PHP.DevelopmentFunctions.error_log_var_export -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [AJAX] ' . $ip_label . '_update_rule wrong IP family: ' . $ip );
+			}
+			/* translators: %s: IP version label, either "IPv4" or "IPv6". */
+			wp_send_json_error( sprintf( __( 'Invalid %s address or CIDR notation provided.', 'botblocker-security' ), static::getIpVersionLabel() ) );
+		}
+
 		// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
 	    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$duplicate = $wpdb->get_var(
@@ -793,6 +811,55 @@ trait BotBlockerAjaxIpRulesTrait {
 		wp_send_json_success( $rules );
 	}
 
+	/**
+	 * The handler table only stores one address family; an input of the other
+	 * family must be rejected before encodeIpForStorage() (a raw IPv4 value
+	 * would throw a TypeError in the strict-typed v6 encoder, AUD-11).
+	 */
+	protected static function isIpFamilyForHandler( string $ip ): bool {
+		$base  = (string) strstr( $ip, '/', true );
+		$base  = $base !== '' ? $base : $ip;
+		$is_v6 = static::getIpVersionLabel() === 'IPv6';
+		return $is_v6
+			? filter_var( $base, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) !== false
+			: filter_var( $base, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) !== false;
+	}
+
+	/**
+	 * JSON-import rows must carry a search address of the handler family and
+	 * bound fields that encode a real value (16-byte binary, 32-hex or an IP
+	 * literal for v6; numeric or IP literal for v4) — anything else is skipped
+	 * instead of desynchronizing the BINARY(16) range index (AUD-12).
+	 */
+	protected static function isValidImportedIpPair( string $search, $ip1, $ip2 ): bool {
+		if ( ! static::isIpFamilyForHandler( $search ) ) {
+			return false;
+		}
+		$is_v6 = static::getIpVersionLabel() === 'IPv6';
+		foreach ( array( $ip1, $ip2 ) as $bound ) {
+			if ( ! $is_v6 && is_int( $bound ) ) {
+				continue;
+			}
+			if ( ! is_string( $bound ) || $bound === '' ) {
+				return false;
+			}
+			if ( ! $is_v6 ) {
+				if ( is_numeric( $bound ) || filter_var( $bound, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) !== false ) {
+					continue;
+				}
+				return false;
+			}
+			if ( strlen( $bound ) === 16 || preg_match( '/^[0-9a-fA-F]{32}$/', $bound ) === 1 ) {
+				continue;
+			}
+			if ( filter_var( $bound, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) !== false ) {
+				continue;
+			}
+			return false;
+		}
+		return true;
+	}
+
 	public static function handleImport(): void {
 		$ip_label = strtolower( static::getIpVersionLabel() );
 
@@ -850,6 +917,11 @@ trait BotBlockerAjaxIpRulesTrait {
 				$priority = intval( $rule['priority'] ?? 50 );
 				$ip1      = static::decodeImportedIpField( $rule['ip1'] ?? '' );
 				$ip2      = static::decodeImportedIpField( $rule['ip2'] ?? '' );
+
+				if ( ! static::isValidImportedIpPair( $search, $ip1, $ip2 ) ) {
+					++$skipped;
+					continue;
+				}
 				$expires  = intval( $rule['expires'] ?? 0 );
 				$disable  = intval( $rule['disable'] ?? 0 );
 				$rule_val = sanitize_text_field( $rule['rule'] ?? '' );
@@ -1276,6 +1348,14 @@ trait BotBlockerAjaxIpRulesTrait {
 						error_log( '[BBCS DEBUG] [AJAX] ' . $ip_label . '_import_list line[' . $i . '] invalid IP' );
 					}
 					wp_send_json_error( __( 'Invalid IP address or CIDR notation provided.', 'botblocker-security' ) );
+				}
+				if ( ! static::isIpFamilyForHandler( $ip ) ) {
+					if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+						// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log, WordPress.PHP.DevelopmentFunctions.error_log_var_export -- guarded by BBCS_DEBUG
+						error_log( '[BBCS DEBUG] [AJAX] ' . $ip_label . '_import_list line[' . $i . '] wrong IP family: ' . $ip );
+					}
+					/* translators: %s: IP version label, either "IPv4" or "IPv6". */
+					wp_send_json_error( sprintf( __( 'Invalid %s address or CIDR notation provided.', 'botblocker-security' ), static::getIpVersionLabel() ) );
 				}
 				$data = array(
 					'priority' => 10,

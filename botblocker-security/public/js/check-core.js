@@ -396,6 +396,9 @@ window[bbcsJsData.checkFunctionName] = function(s, d, x, ajaxEndpoint) {
     formData.append('from_suspect', bbcsJsData.suspectStatus);
     formData.append('suspect_reason', bbcsJsData.reasonForAction);
     formData.append('check_result', bbcsJsData.resultOfAction);
+    if (bbcsJsData.selfTest) {
+        formData.append('bbcs_selftest', bbcsJsData.selfTest);
+    }
 
     // The captcha challenge token is ONE-TIME (server deletes its transient on
     // verify). Attach it ONLY to an actual captcha answer submission (x = answer
@@ -457,6 +460,18 @@ window[bbcsJsData.checkFunctionName] = function(s, d, x, ajaxEndpoint) {
                     }
 
                     // ddos mode: a cookie is only trusted from a signed response
+                    if (bbcsJsData.selfTest && typeof(obj.cookie) == "string") {
+                        // Self-test: open the site as a verified visitor, keep the admin's own cookies untouched.
+                        try {
+                            sessionStorage.removeItem('bbcsRedirectCount');
+                            sessionStorage.removeItem('bbcsMode8Retries');
+                        } catch (e) {
+                        }
+
+                        document.getElementById("content").innerHTML = bbcsJsData.approvedText;
+                        window.location.href = bbcsJsData.redirectUrl;
+                        return;
+                    }
                     if (typeof(obj.cookie) == "string" && (!bbcsJsData.ddosResilience || bbcsSigValid)) {
                         bbcsDebugLog('Cookie received, value=' + obj.cookie.substring(0,20) + '... uid=' + bbcsJsData.uid + ' redirectUrl=' + bbcsJsData.redirectUrl);
                         if (bbcsJsData.ddosResilience) {

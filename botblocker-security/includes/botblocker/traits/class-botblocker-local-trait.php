@@ -152,6 +152,7 @@ trait BotBlockerLocalTrait {
 		}
 
 		if ( $this->settings->botblocker_force_check == 1 ) {
+			BotBlockerSelfTest::record( 'captcha_required', 'Force check' );
 			$payload = BotBlockerStore::localCheckResult( BBCS_LOCAL_RESULT_ERROR, 'Force check captcha required', '' );
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
@@ -163,6 +164,7 @@ trait BotBlockerLocalTrait {
 			wp_send_json( $payload );
 		}
 
+		BotBlockerSelfTest::markPassed( 'passed_silently', $message );
 		$this->post_hash_cookie = $this->create_session_token() . '-' . $this->time;
 		$payload                = BotBlockerStore::localCheckResult( BBCS_LOCAL_RESULT_COOKIE, $message, $this->post_hash_cookie );
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {

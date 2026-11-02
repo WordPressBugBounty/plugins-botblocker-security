@@ -392,12 +392,16 @@ class BotBlockerSettingsHooks {
 
 		// CAPTCHA mode server-side validation: correct incompatible modes.
 		$captcha_mode = isset( $_POST['bbcs_captcha_mode'] ) ? (int) $_POST['bbcs_captcha_mode'] : (int) BOTBLOCKER_CAPTCHA_MODE_DEFAULT;
+		// Keys posted in THIS save must count for the mode validation — the
+		// in-memory settings still hold the pre-save values (AUD-21).
+		$effective_key2    = isset( $_POST['recaptcha_key2'] ) ? sanitize_text_field( wp_unslash( $_POST['recaptcha_key2'] ) ) : (string) BotBlocker::getInstance()->settings->recaptcha_key2;
+		$effective_secret2 = isset( $_POST['recaptcha_secret2'] ) ? sanitize_text_field( wp_unslash( $_POST['recaptcha_secret2'] ) ) : (string) BotBlocker::getInstance()->settings->recaptcha_secret2;
 		$gd_ok        = isset( BotBlocker::getInstance()->prefly['gd'] ) && BotBlocker::getInstance()->prefly['gd'] === 1;
 		$gd_modes     = array( BOTBLOCKER_CAPTCHA_MODE_COLOR_BUTTONS, BOTBLOCKER_CAPTCHA_MODE_IMAGE );
 		$recaptcha_v2_modes = array( BOTBLOCKER_CAPTCHA_MODE_RECAPTCHA_V2_BUTTON, BOTBLOCKER_CAPTCHA_MODE_RECAPTCHA_V2 );
 		if ( ! $gd_ok && in_array( $captcha_mode, $gd_modes, true ) ) {
-			$has_recaptcha_v2 = ! empty( BotBlocker::getInstance()->settings->recaptcha_key2 )
-				&& ! empty( BotBlocker::getInstance()->settings->recaptcha_secret2 );
+			$has_recaptcha_v2 = ! empty( $effective_key2 )
+				&& ! empty( $effective_secret2 );
 			$fallback_mode = $has_recaptcha_v2 ? (string) BOTBLOCKER_CAPTCHA_MODE_RECAPTCHA_V2 : (string) BOTBLOCKER_CAPTCHA_MODE_BUTTON;
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->replace(
@@ -420,8 +424,8 @@ class BotBlockerSettingsHooks {
 
 		// reCAPTCHA v2 server-side validation: modes 3/4 require configured Site/Secret keys.
 		if ( in_array( $captcha_mode, $recaptcha_v2_modes, true ) ) {
-			$has_recaptcha_v2_keys = ! empty( BotBlocker::getInstance()->settings->recaptcha_key2 )
-				&& ! empty( BotBlocker::getInstance()->settings->recaptcha_secret2 );
+			$has_recaptcha_v2_keys = ! empty( $effective_key2 )
+				&& ! empty( $effective_secret2 );
 			if ( ! $has_recaptcha_v2_keys ) {
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$wpdb->replace(

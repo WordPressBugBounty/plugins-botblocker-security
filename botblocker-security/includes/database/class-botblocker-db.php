@@ -48,10 +48,10 @@ class BotBlockerDb {
 			return false;
 		}
 
-		$subnet_setting = isset( $BBCS->settings->ptrcache_subnet ) ? $BBCS->settings->ptrcache_subnet : '24-64';
-		$parts          = explode( '-', $subnet_setting );
-		$mask_v4        = isset( $parts[0] ) ? (int) $parts[0] : 24;
-		$mask_v6        = isset( $parts[1] ) ? (int) $parts[1] : 64;
+		$subnet_setting = isset( $BBCS->settings->ptrcache_subnet ) ? (string) $BBCS->settings->ptrcache_subnet : '24-64';
+		$masks          = BotBlockerIp::parseRateSubnetMask( $subnet_setting );
+		$mask_v4        = $masks[0];
+		$mask_v6        = $masks[1];
 
 		$search_cidr = BotBlockerIp::computePtrSubnet( $BBCS->ip, $BBCS->ip_version, $mask_v4, $mask_v6 );
 

@@ -12,6 +12,9 @@ trait BotBlockerStatsMapTrait {
 		$BBCS                        = BotBlocker::getInstance();
 		[$ip_not_in_sql, $ip_params] = BotBlockerDb::getIPNotLikeSQL();
 
+		// Clamp BEFORE keying or parallel entries appear for the same window (AUD-32).
+		$days = min( max( $days, 1 ), 365 );
+
 		$cache_key = 'bbcs_visitors_map_data_' . $days;
 
 		if ( $BBCS->settings->cache_ui_data == 1 ) {
@@ -21,8 +24,6 @@ trait BotBlockerStatsMapTrait {
 				return $cached;
 			}
 		}
-
-		$days = min( max( $days, 1 ), 365 );
 
 		$gmt_offset     = isset( $BBCS->settings->admin_gmt_offset ) ? (float) $BBCS->settings->admin_gmt_offset : 0;
 		$gmt_offset_str = BotBlockerEnv::format_gmt_offset( $gmt_offset );

@@ -185,6 +185,7 @@ trait BotBlockerPostTrait {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [Post] STEP_DIE: timeout (post_date > time)' );
 			}
+			BotBlockerSelfTest::record( 'captcha_timeout', 'Challenge time is in the future' );
 			$payload = array( 'error' => 'timeout' );
 			if ( $this->settings->bbcs_ddos_resilience == 1 ) {
 				$payload = $this->sign_response_payload( $payload );
@@ -199,6 +200,7 @@ trait BotBlockerPostTrait {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [Post] STEP_DIE: timeout (date diff=' . ( $this->time - $post_date ) . ' > captcha_wait=' . $this->settings->bbcs_captcha_wait . ')' );
 			}
+			BotBlockerSelfTest::record( 'captcha_timeout', 'Waited ' . ( $this->time - $post_date ) . 's, limit ' . $this->settings->bbcs_captcha_wait . 's' );
 			$payload = array( 'error' => 'timeout' );
 			if ( $this->settings->bbcs_ddos_resilience == 1 ) {
 				$payload = $this->sign_response_payload( $payload );
@@ -305,6 +307,7 @@ trait BotBlockerPostTrait {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [Post] STEP_DIE: silent_no_challenge_token' );
 			}
+			BotBlockerSelfTest::record( 'captcha_timeout', 'Silent challenge token missing' );
 			$payload = array( 'error' => 'timeout' );
 			if ( $this->settings->bbcs_ddos_resilience == 1 ) {
 				$payload = $this->sign_response_payload( $payload );
@@ -419,6 +422,7 @@ trait BotBlockerPostTrait {
 			error_log( '[BBCS DEBUG] [Post] STEP: reached_success_exit' );
 		}
 
+		BotBlockerSelfTest::markPassed( 'captcha_solved' );
 		$hash = $this->create_session_token() . '-' . $this->time;
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
@@ -549,6 +553,18 @@ trait BotBlockerPostTrait {
 		}
 		check_ajax_referer( 'botblocker_nonce', 'nonce' );
 
+		// Self-test: never ban the admin's IP for a wrong answer.
+		if ( BotBlockerSelfTest::isActive() ) {
+			BotBlockerSelfTest::record( 'captcha_wrong', $reason );
+
+			$payload = array( 'error' => 'Wrong Click' );
+			if ( $this->settings->bbcs_ddos_resilience == 1 ) {
+				$payload = $this->sign_response_payload( $payload );
+			}
+
+			$this->process_die( wp_json_encode( $payload ) );
+		}
+
 		global $wpdb;
 
 		// Ban the server-resolved client IP (trusted proxy map); REMOTE_ADDR is the fallback only.
@@ -568,6 +584,15 @@ trait BotBlockerPostTrait {
 			$this->ip_version = 4;
 		} elseif ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
 			$this->ip_version = 6;
+		}
+
+		// An IP the site already allows is never banned for a wrong answer.
+		if ( $this->is_allowed_by_ip_rule( $ip ) ) {
+			$payload = array( 'error' => 'Wrong Click' );
+			if ( $this->settings->bbcs_ddos_resilience == 1 ) {
+				$payload = $this->sign_response_payload( $payload );
+			}
+			$this->process_die( wp_json_encode( $payload ) );
 		}
 
 		$fromdate = $this->time - 86401;
@@ -689,5 +714,51 @@ trait BotBlockerPostTrait {
 			$payload = $this->sign_response_payload( $payload );
 		}
 		$this->process_die( wp_json_encode( $payload ) );
+	}
+
+	// Same rule match as check_ip_rules(): the first enabled rule by priority decides.
+	private function is_allowed_by_ip_rule( string $ip ): bool {
+		global $wpdb;
+
+		if ( $this->ip_version == 4 ) {
+			// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$rule = $wpdb->get_row(
+				$wpdb->prepare(
+					"SELECT `rule`, `expires` FROM `{$wpdb->bbcs_ipv4rules}` WHERE disable = %d AND CAST(ip1 AS UNSIGNED) <= %d AND CAST(ip2 AS UNSIGNED) >= %d AND NOT ( readonly = %d AND comment IN ( %s, %s, %s, %s ) ) ORDER BY priority ASC",
+					0,
+					BotBlockerIp::toNumeric( $ip ),
+					BotBlockerIp::toNumeric( $ip ),
+					1,
+					'Local IP',
+					'Local IP from SERVER_ADDR',
+					'Server IPv4',
+					'Server IPv6'
+				),
+				ARRAY_A
+			);
+		} else {
+			// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$rule = $wpdb->get_row(
+				$wpdb->prepare(
+					"SELECT `rule`, `expires` FROM `{$wpdb->bbcs_ipv6rules}` WHERE disable = %d AND ip1 <= %s AND ip2 >= %s AND NOT ( readonly = %d AND comment IN ( %s, %s, %s, %s ) ) ORDER BY priority ASC",
+					0,
+					BotBlockerIp::toBinary( $ip ),
+					BotBlockerIp::toBinary( $ip ),
+					1,
+					'Local IP',
+					'Local IP from SERVER_ADDR',
+					'Server IPv4',
+					'Server IPv6'
+				),
+				ARRAY_A
+			);
+		}
+
+		if ( ! $rule ) {
+			return false;
+		}
+		return $rule['rule'] === BBCS_RULE_ALLOW && (int) $rule['expires'] > $this->time;
 	}
 }

@@ -11,7 +11,7 @@ if ( ! defined( 'BOTBLOCKER_TABLE_PREFIX' ) ) {
 }
 define( 'BOTBLOCKER_PREFIX', 'bb_' ); // The prefix for cache keys (Redis/Memcached) and secret-link values
 
-define( 'BOTBLOCKER_VERSION', '1.7.6' );
+define( 'BOTBLOCKER_VERSION', '1.7.7' );
 // The version number of the plugin
 define( 'BOTBLOCKER_DB_VERSION', '2.12.0' ); // The database version of the plugin
 define( 'BOTBLOCKER_WIZARD_ON_UPDATE', false ); // Show setup wizard after plugin update
@@ -140,12 +140,17 @@ if ( ! defined( 'BBCS_CRON_MODE_FALLBACK' ) ) {
 
 define( 'BOTBLOCKER_SERVER', 'botblocker.top' ); //TODO Parent server botblocker.top
 define( 'BOTBLOCKER_CLOUD_API_ENDPOINT', 'https://' . BOTBLOCKER_SERVER . '/botblocker_cloud_api' );
+if ( ! defined( 'BOTBLOCKER_ACTIVATE_ENDPOINT' ) ) {
+	define( 'BOTBLOCKER_ACTIVATE_ENDPOINT', 'https://' . BOTBLOCKER_SERVER . '/wp-json/wlm/v1/activate' );
+}
 define( 'BOTBLOCKER_FEED_URL', 'https://' . BOTBLOCKER_SERVER . '/?feed=rss2' ); // The URL of the BotBlocker feed
 define( 'BOTBLOCKER_NEWS_URL', 'https://' . BOTBLOCKER_SERVER . '/blog' ); // The URL of the BotBlocker BLOG
 define( 'BOTBLOCKER_PRICE_URL', 'https://' . BOTBLOCKER_SERVER . '/botblocker_get_products/' ); // The URL of the BotBlocker products
+define( 'BOTBLOCKER_PLANS_URL', 'https://' . BOTBLOCKER_SERVER . '/botblocker_get_plans/' ); // The URL of the BotBlocker PRO plans
 define( 'BOTBLOCKER_ADDONS', 'https://' . BOTBLOCKER_SERVER . '/wp-content/plugins/bbcs-addons/master.json' ); // The URL of the BotBlocker addons (stable)
 define( 'BOTBLOCKER_ADDONS_DEV', 'https://' . BOTBLOCKER_SERVER . '/wp-content/plugins/bbcs-addons/dev/master.json' ); // The URL of the BotBlocker addons (dev)
 define( 'BOTBLOCKER_MATERIALS_URL', 'https://' . BOTBLOCKER_SERVER . '/wp-content/plugins/bbcs-materials/' ); // The URL of the BotBlocker materials
+define( 'BOTBLOCKER_ACCOUNT_URL', 'https://' . BOTBLOCKER_SERVER . '/my-account/' ); // The URL of the BotBlocker customer account
 define( 'BOTBLOCKER_JS_ADMIN', true ); // Use JS in the admin panel (only for debug)
 
 // Cloud API backends, priority order; BotBlockerBackend preflight picks the reachable one
@@ -277,33 +282,24 @@ if ( ! defined( 'BOTBLOCKER_VISITOR_IP_STRICT' ) ) {
 // =====================================================================
 // Freemius integration (includes/integrations/class-botblocker-freemius.php)
 //
-// BBCS_FREEMIUS_ENABLED (bool, default false):
-//   true  - boot the scoped Freemius SDK (vendor/Freemius/2.13.4) at plugin
+// BBCS_FREEMIUS_ENABLED (bool, default true):
+//   true  - default. Boot the scoped Freemius SDK (vendor/Freemius/2.13.4) at plugin
 //           load. Requires a product ID and public key (see below); without
 //           a valid identity the adapter fails closed and stays disabled.
-//   false - default. No SDK load, no HTTP, no Freemius state.
-//
-// BBCS_FREEMIUS_DEMO (bool, default false):
-//   true  - local-only sandbox: dummy product identity, "Freemius Demo"
-//           admin submenu, deterministic free/trial/paid/expired branches.
-//           No Freemius account, secret, or outbound request. Development
-//           only.
+//   false - no SDK load, no HTTP, no Freemius state.
 //
 // BBCS_FREEMIUS_PRODUCT_ID / BBCS_FREEMIUS_PUBLIC_KEY:
-//   Freemius product identity for production enablement. Empty by default.
-//   All four constants may be pre-defined in wp-config.php (loaded before
+//   Freemius product identity. Both values are public.
+//   All three constants may be pre-defined in wp-config.php (loaded before
 //   the plugin) — the guard-defines below never override a pre-defined
 //   value.
 // =====================================================================
 if ( ! defined( 'BBCS_FREEMIUS_ENABLED' ) ) {
-	define( 'BBCS_FREEMIUS_ENABLED', false );
-}
-if ( ! defined( 'BBCS_FREEMIUS_DEMO' ) ) {
-	define( 'BBCS_FREEMIUS_DEMO', false );
+	define( 'BBCS_FREEMIUS_ENABLED', true );
 }
 if ( ! defined( 'BBCS_FREEMIUS_PRODUCT_ID' ) ) {
-	define( 'BBCS_FREEMIUS_PRODUCT_ID', '' );
+	define( 'BBCS_FREEMIUS_PRODUCT_ID', '31746' );
 }
 if ( ! defined( 'BBCS_FREEMIUS_PUBLIC_KEY' ) ) {
-	define( 'BBCS_FREEMIUS_PUBLIC_KEY', '' );
+	define( 'BBCS_FREEMIUS_PUBLIC_KEY', 'pk_1b368ebf073d2cc1598716d0442f2' );
 }

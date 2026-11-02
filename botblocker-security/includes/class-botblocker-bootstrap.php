@@ -37,6 +37,9 @@ class BotBlockerBootstrap {
 		add_action( 'wp_ajax_bbcs_botblocker_check', array( self::class, 'ajaxCheck' ) );
 		add_action( 'wp_ajax_nopriv_bbcs_botblocker_check', array( self::class, 'ajaxCheck' ) );
 
+		require_once __DIR__ . '/class-botblocker-self-test.php';
+		BotBlockerSelfTest::register();
+
 		add_action( 'plugins_loaded', array( self::class, 'runShield' ), -9998 );
 
 		add_action( 'wp_initialize_site', array( self::class, 'onWpInitializeSite' ), 200 );

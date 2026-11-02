@@ -25,6 +25,13 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive) use 
 			->withDocPage( BotBlockerDocs::page( 'strict-checks' ) )
 			->withIconImage( BOTBLOCKER_URL . 'public/icons/advanced-protection.svg', __( 'Advanced Protection', 'botblocker-security' ) )
 			->withDescription( __( 'Advanced protection uses cloud-based real-time analysis and smart verification to detect sophisticated bots.', 'botblocker-security' ) )
+			->withNote(
+				esc_html__( 'See what a new visitor gets.', 'botblocker-security' )
+				. ' <a href="' . esc_url( BotBlockerMultisite::getAdminPageUrl( 'bbcs_selftest' ) ) . '">'
+				. esc_html__( 'Run the Protection Test', 'botblocker-security' )
+				. '</a>',
+				InfoColumn::NOTE_INFO
+			)
 			->render();
 		?>
 		<div>

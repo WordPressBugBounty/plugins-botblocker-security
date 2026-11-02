@@ -62,28 +62,7 @@ final class Botblocker_RulesViewModel {
 		$this->urls->integrations = $BBCSA->pages_integrations;
 
 
-		$geo_countries = BotBlockerMultisite::getOption( 'bbcs_blocked_countries', array() );
-		if ( is_string( $geo_countries ) ) {
-			$decoded = json_decode( $geo_countries, true );
-			if ( json_last_error() === JSON_ERROR_NONE && is_array( $decoded ) ) {
-				$geo_countries = $decoded;
-			} else {
-				$geo_countries = array_filter( array_map( 'trim', explode( ',', $geo_countries ) ) );
-			}
-		}
-		if ( is_array( $geo_countries ) ) {
-			$geo_countries = array_map( 'strtoupper', $geo_countries );
-			$geo_countries = array_filter(
-				$geo_countries,
-				static function ( $item ): bool {
-					return preg_match( '/^[A-Z]{2}$/', (string) $item ) === 1;
-				}
-			);
-			$geo_countries = array_values( array_unique( $geo_countries ) );
-		} else {
-			$geo_countries = array();
-		}
-
+		$geo_countries = BotBlockerData::getBlockedCountries();
 		$this->geo_countries       = $geo_countries;
 		$this->geo_countries_count = count( $geo_countries );
 

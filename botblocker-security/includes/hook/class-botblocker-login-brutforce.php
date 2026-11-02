@@ -22,8 +22,18 @@ class BotBlockerLoginBruteForce {
 		return 'bbcs_login_bf_repeat_' . md5( $ip );
 	}
 
+	public static function getCounterKey( string $ip ): string {
+		return 'bbcs_login_bf_cnt_' . md5( $ip );
+	}
+
 	public static function getAttempts( string $cache_key ): ?array {
 		try {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+			$simulated = apply_filters( 'pre_transient_' . $cache_key, false );
+			if ( false !== $simulated ) {
+				return is_array( $simulated ) ? $simulated : null;
+			}
+
 			$storage = BotBlockerCache::connect();
 
 			if ( $storage !== null ) {
@@ -192,23 +202,29 @@ class BotBlockerLoginBruteForce {
 		$primary_block   = (int) ( $BBCS->settings->login_brutforce_primary_block_time ?? 900 );
 		$secondary_block = (int) ( $BBCS->settings->login_brutforce_secondary_block_time ?? 1800 );
 
-		$cache_key  = self::getCacheKey( $ip );
-		$repeat_key = self::getRepeatKey( $ip );
+		$cache_key   = self::getCacheKey( $ip );
+		$repeat_key  = self::getRepeatKey( $ip );
+		$counter_key = self::getCounterKey( $ip );
 
 		$now = time();
 
 		$attempt_data = self::getAttempts( $cache_key );
 
 		if ( $attempt_data === null || ! isset( $attempt_data['count'], $attempt_data['first_attempt'] ) || ( $now - $attempt_data['first_attempt'] ) > $period ) {
+			BotBlockerCache::deleteCounterRow( $counter_key );
 			$attempt_data = array(
 				'count'         => 1,
 				'first_attempt' => $now,
 			);
+			self::setAttempts( $cache_key, $attempt_data, $period );
+			BotBlockerCache::bumpCounterRow( $counter_key, 1 );
 		} else {
-			++$attempt_data['count'];
+			$count = max( (int) $attempt_data['count'], BotBlockerCache::readCounterRow( $counter_key ) );
+			++$count;
+			$attempt_data['count'] = $count;
+			self::setAttempts( $cache_key, $attempt_data, $period );
+			BotBlockerCache::bumpCounterRow( $counter_key, $count );
 		}
-
-		self::setAttempts( $cache_key, $attempt_data, $period );
 
 		if ( $attempt_data['count'] >= $max_attempts ) {
 			$repeat_data = self::getAttempts( $repeat_key );
@@ -232,10 +248,15 @@ class BotBlockerLoginBruteForce {
 				),
 				$period
 			);
+			BotBlockerCache::deleteCounterRow( $counter_key );
 		}
 	}
 
 	public static function deleteAttempts( string $cache_key ): void {
+		if ( strpos( $cache_key, 'bbcs_login_bf_' ) === 0 ) {
+			BotBlockerCache::deleteCounterRow( 'bbcs_login_bf_cnt_' . substr( $cache_key, strlen( 'bbcs_login_bf_' ) ) );
+		}
+
 		$storage = BotBlockerCache::connect();
 
 		if ( $storage !== null ) {

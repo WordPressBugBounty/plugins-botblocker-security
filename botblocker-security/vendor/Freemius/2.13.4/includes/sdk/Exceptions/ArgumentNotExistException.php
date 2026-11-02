@@ -1,16 +1,13 @@
 <?php
-
-namespace BotBlocker\Vendor;
-
-if (!\defined('ABSPATH')) {
-    exit;
-}
-if (!\class_exists('BotBlocker\Vendor\Freemius_InvalidArgumentException')) {
-    exit;
-}
-if (!\class_exists('BotBlocker\Vendor\Freemius_ArgumentNotExistException')) {
-    class Freemius_ArgumentNotExistException extends Freemius_InvalidArgumentException
-    {
+    if ( ! defined( 'ABSPATH' ) ) {
+        exit;
     }
-    \class_alias('BotBlocker\Vendor\Freemius_ArgumentNotExistException', 'Freemius_ArgumentNotExistException', \false);
-}
+
+	if ( ! class_exists( 'Freemius_InvalidArgumentException' ) ) {
+		exit;
+	}
+
+	if ( ! class_exists( 'Freemius_ArgumentNotExistException' ) ) {
+		class Freemius_ArgumentNotExistException extends Freemius_InvalidArgumentException {
+		}
+	}

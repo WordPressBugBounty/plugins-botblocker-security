@@ -29,6 +29,19 @@ abstract class BotBlockerBase {
 	// Server-side limit for the disable-link session cookie (browsers may restore session cookies).
 	public const SECRET_COOKIE_TTL_SECONDS = 7200;
 
+	// Early Init cache pass lifetime bounds; on a cache HIT the main shield is skipped for up to this long.
+	public const CACHE_PASS_TTL_MIN = 60;
+	public const CACHE_PASS_TTL_MAX = 3600;
+
+	// Cache pass cookie name = settings cookie + suffix; the prefix separates its HMAC from others keyed with the salt.
+	public const CACHE_PASS_COOKIE_SUFFIX = '_cp';
+	public const CACHE_PASS_SIGN_PREFIX   = 'cache-pass|';
+
+	// Values of BBCS_EARLY_CACHE_GATE, defined by Early Init.
+	public const CACHE_GATE_OPEN = 'open';
+	public const CACHE_GATE_PASS = 'pass';
+	public const CACHE_GATE_DENY = 'deny';
+
 	protected static $instance = null;
 	public $time;
 	public $isProxy     = BOTBLOCKER_EMPTY;

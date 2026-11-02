@@ -476,6 +476,7 @@ trait BotBlockerResponseTrait {
 	public function redirect_to_dark( string $result ): void {
 		$this->suspect_status   = 2;
 		$this->result_of_action = $result;
+		BotBlockerSelfTest::record( 'challenge_page', $result );
 		$format                 = $this->api_response_format();
 		if ( 'html' !== $format ) {
 			// API clients cannot run the JS challenge — emit the format-correct

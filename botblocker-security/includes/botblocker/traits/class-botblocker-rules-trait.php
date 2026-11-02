@@ -544,7 +544,7 @@ trait BotBlockerRulesTrait {
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$bbcs_ip_test = $wpdb->get_row(
 				$wpdb->prepare(
-					"SELECT * FROM `{$wpdb->bbcs_ipv4rules}` WHERE disable = %d AND ip1 <= %s AND ip2 >= %s AND NOT ( readonly = %d AND comment IN ( %s, %s, %s, %s ) ) ORDER BY priority ASC",
+					"SELECT * FROM `{$wpdb->bbcs_ipv4rules}` WHERE disable = %d AND CAST(ip1 AS UNSIGNED) <= %d AND CAST(ip2 AS UNSIGNED) >= %d AND NOT ( readonly = %d AND comment IN ( %s, %s, %s, %s ) ) ORDER BY priority ASC",
 					0,
 					$this->ipnum,
 					$this->ipnum,
@@ -584,7 +584,9 @@ trait BotBlockerRulesTrait {
 
 			}
 			$ip_sign = $this->effective_sign( $bbcs_ip_test['rule'] );
-			if ( $ip_sign === BBCS_RULE_ALLOW ) {
+			if ( $ip_sign === BBCS_RULE_ALLOW && BotBlockerSelfTest::isActive() ) {
+				BotBlockerSelfTest::record( 'allow_rule_ignored', (string) $bbcs_ip_test['search'] );
+			} elseif ( $ip_sign === BBCS_RULE_ALLOW ) {
 
 				if ( (int) $bbcs_ip_test['readonly'] === 1 && ( $bbcs_ip_test['comment'] === 'IPv4 BotBlocker Server' || $bbcs_ip_test['comment'] === 'IPv6 BotBlocker Server' ) ) {
 					$this->visitorType = self::VISITOR_BOTBLOCKER;
@@ -600,6 +602,9 @@ trait BotBlockerRulesTrait {
 				}
 
 				$this->result_of_action = '<b>Allow</b> by IP rule: ' . $bbcs_ip_test['search'];
+				if ( $this->early_cache_gate_active() ) {
+					$this->set_cache_pass_cookie();
+				}
 				return $this->allow_access( $bbcs_ip_test );
 			} elseif ( $ip_sign === BBCS_RULE_BLOCK ) {
 				$this->redirect_to_block( 6, 'BLOCK by IP rule: ' . $bbcs_ip_test['search'], $bbcs_ip_test );
@@ -621,6 +626,9 @@ trait BotBlockerRulesTrait {
 			}
 			BotBlockerStore::storeData( 'Allow by session cookie (auto check)', 4 );
 			BotBlockerCounters::processHit( 4 );
+			if ( $this->early_cache_gate_active() ) {
+				$this->set_cache_pass_cookie();
+			}
 			return true;
 		}
 
@@ -743,7 +751,7 @@ trait BotBlockerRulesTrait {
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$bbcs_ip_test = $wpdb->get_row(
 				$wpdb->prepare(
-					"SELECT * FROM `{$wpdb->bbcs_ipv4rules}` WHERE disable = %d AND ip1 <= %s AND ip2 >= %s AND NOT ( readonly = %d AND comment IN ( %s, %s, %s, %s ) ) ORDER BY priority ASC",
+					"SELECT * FROM `{$wpdb->bbcs_ipv4rules}` WHERE disable = %d AND CAST(ip1 AS UNSIGNED) <= %d AND CAST(ip2 AS UNSIGNED) >= %d AND NOT ( readonly = %d AND comment IN ( %s, %s, %s, %s ) ) ORDER BY priority ASC",
 					0,
 					$this->ipnum,
 					$this->ipnum,

@@ -102,6 +102,14 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
 			);
 		}
 
+		$info->withNote(
+			esc_html__( 'See what a new visitor gets.', 'botblocker-security' )
+			. ' <a href="' . esc_url( BotBlockerMultisite::getAdminPageUrl( 'bbcs_selftest' ) ) . '">'
+			. esc_html__( 'Run the Protection Test', 'botblocker-security' )
+			. '</a>',
+			InfoColumn::NOTE_INFO
+		);
+
 		$info->render();
 		?>
 		<div>

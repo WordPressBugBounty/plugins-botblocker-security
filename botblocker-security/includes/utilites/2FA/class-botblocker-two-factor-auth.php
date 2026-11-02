@@ -582,6 +582,43 @@ class BotBlockerTwoFactorAuth {
 		return $result;
 	}
 
+	/**
+	 * Single-use backup-code redemption. The stored list is re-read on every
+	 * attempt; a unique option row (option_name has a UNIQUE key) is the atomic
+	 * claim, so two parallel POSTs with one leaked code cannot both succeed
+	 * (AUD-16). The used code is removed from the stored list on success.
+	 */
+	public static function redeemBackupCode( int $user_id, string $code ): bool {
+		$stored = get_user_meta( $user_id, '_2fa_backup_codes', true );
+		if ( ! is_array( $stored ) || empty( $stored ) ) {
+			return false;
+		}
+
+		$normalized = strtoupper( trim( $code ) );
+		$found      = self::verifyBackupCode( $normalized, $stored );
+		if ( $found === false ) {
+			return false;
+		}
+
+		global $wpdb;
+		$claim = 'bbcs_2fa_bc_' . $user_id . '_' . md5( $normalized );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->query(
+			$wpdb->prepare(
+				"INSERT IGNORE INTO {$wpdb->options} (option_name, option_value, autoload) VALUES (%s, %s, 'no')",
+				$claim,
+				'1'
+			)
+		);
+		if ( (int) $wpdb->rows_affected === 0 ) {
+			return false;
+		}
+
+		unset( $stored[ $found ] );
+		update_user_meta( $user_id, '_2fa_backup_codes', array_values( $stored ) );
+		return true;
+	}
+
 	public static function generateBackupCodes( int $count = 10 ): array {
 		$codes = array();
 		for ( $i = 0; $i < $count; $i++ ) {
@@ -618,19 +655,13 @@ class BotBlockerTwoFactorAuth {
 	}
 
 	public static function checkRateLimit( $user_id ): bool {
-		$data = get_transient( 'bbcs_2fa_attempts_' . $user_id );
+		$attempts_key = 'bbcs_2fa_attempts_' . $user_id;
+		$counter_key  = 'bbcs_2fa_attempts_cnt_' . (int) $user_id;
+		$data         = get_transient( $attempts_key );
 
 		// No record - first attempt in this window.
 		if ( $data === false ) {
-			set_transient(
-				'bbcs_2fa_attempts_' . $user_id,
-				array(
-					'count' => 1,
-					'since' => time(),
-				),
-				300
-			); // 5 minutes
-			return true;
+			return self::startRateLimitWindow( $attempts_key, $counter_key );
 		}
 
 		// Backwards compat: old format stored a plain integer.
@@ -643,27 +674,27 @@ class BotBlockerTwoFactorAuth {
 
 		// Fallback TTL check: persistent object cache may ignore TTL.
 		// If 5+ minutes have passed since the window started, reset the counter.
-		if ( time() - $data['since'] >= 300 ) {
-			set_transient(
-				'bbcs_2fa_attempts_' . $user_id,
-				array(
-					'count' => 1,
-					'since' => time(),
-				),
-				300
-			);
+		if ( time() - (int) $data['since'] >= 300 ) {
+			return self::startRateLimitWindow( $attempts_key, $counter_key );
+		}
+
+		if ( BotBlockerCache::consumeCounterRow( $counter_key, 5 ) ) {
+			$data['count'] = (int) $data['count'] + 1;
+			set_transient( $attempts_key, $data, 300 );
 			return true;
 		}
 
-		if ( $data['count'] >= 5 ) {
-			return false;
-		}
+		return false;
+	}
 
+	private static function startRateLimitWindow( string $attempts_key, string $counter_key ): bool {
+		BotBlockerCache::deleteCounterRow( $counter_key );
+		BotBlockerCache::consumeCounterRow( $counter_key, 5 );
 		set_transient(
-			'bbcs_2fa_attempts_' . $user_id,
+			$attempts_key,
 			array(
-				'count' => $data['count'] + 1,
-				'since' => $data['since'],
+				'count' => 1,
+				'since' => time(),
 			),
 			300
 		);
@@ -672,6 +703,7 @@ class BotBlockerTwoFactorAuth {
 
 	public static function resetRateLimit( $user_id ): void {
 		delete_transient( 'bbcs_2fa_attempts_' . $user_id );
+		BotBlockerCache::deleteCounterRow( 'bbcs_2fa_attempts_cnt_' . (int) $user_id );
 	}
 
 	// Backup Code Regeneration: Generates plain codes, hashes them, and stores them
@@ -714,6 +746,14 @@ class BotBlockerTwoFactorAuth {
 		delete_user_meta( $user_id, '_2fa_trusted_devices' );
 		delete_user_meta( $user_id, '_2fa_recovery_token' );
 		delete_transient( 'bbcs_2fa_attempts_' . $user_id );
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
+				$wpdb->esc_like( 'bbcs_2fa_bc_' . $user_id . '_' ) . '%'
+			)
+		);
 
 		return true;
 	}
@@ -812,7 +852,6 @@ class BotBlockerTwoFactorAuth {
 	public static function verifyRecoveryToken( $user_id, $token ): bool {
 		$user_id = (int) $user_id;
 		$stored  = get_user_meta( $user_id, '_2fa_recovery_token', true );
-		delete_user_meta( $user_id, '_2fa_recovery_token' );
 
 		if ( ! is_array( $stored ) || empty( $stored['hash'] ) || empty( $stored['created'] ) ) {
 			return false;
@@ -822,7 +861,12 @@ class BotBlockerTwoFactorAuth {
 			return false;
 		}
 
-		return password_verify( (string) $token, (string) $stored['hash'] );
+		if ( ! password_verify( (string) $token, (string) $stored['hash'] ) ) {
+			return false;
+		}
+
+		delete_user_meta( $user_id, '_2fa_recovery_token' );
+		return true;
 	}
 
 	public static function handleRecoveryForUser( $user_id, $token ): bool {

@@ -1,16 +1,14 @@
 <?php
+    /**
+     * @package   Freemius
+     * @copyright Copyright (c) 2015, Freemius, Inc.
+     * @license   https://www.gnu.org/licenses/gpl-3.0.html GNU General Public License Version 3
+     * @since     2.5.0
+     */
 
-namespace BotBlocker\Vendor;
-
-/**
- * @package   Freemius
- * @copyright Copyright (c) 2015, Freemius, Inc.
- * @license   https://www.gnu.org/licenses/gpl-3.0.html GNU General Public License Version 3
- * @since     2.5.0
- */
-if (!\defined('ABSPATH')) {
-    exit;
-}
+    if ( ! defined( 'ABSPATH' ) ) {
+        exit;
+    }
 ?>
 <script type="text/javascript">
     ( function( $ ) {
@@ -41,9 +39,7 @@ if (!\defined('ABSPATH')) {
                     $optionsContainer = $this.parents( '.fs-clone-resolution-options-container' ),
                     cursor            = $body.css( 'cursor' ),
                     beforeUnload      = function() {
-                        return '<?php 
-fs_esc_js_echo_inline('Please wait', 'please-wait');
-?>';
+                        return '<?php fs_esc_js_echo_inline( 'Please wait', 'please-wait' ) ?>';
                     };
 
                 $.ajax( {
@@ -51,12 +47,8 @@ fs_esc_js_echo_inline('Please wait', 'please-wait');
                     url       : $optionsContainer.data( 'ajax-url' ),
                     method    : 'POST',
                     data      : {
-                        action      : '<?php 
-echo $VARS['ajax_action'];
-?>',
-                        security    : '<?php 
-echo wp_create_nonce($VARS['ajax_action']);
-?>',
+                        action      : '<?php echo $VARS['ajax_action'] ?>',
+                        security    : '<?php echo wp_create_nonce( $VARS['ajax_action'] ) ?>',
                         clone_action: $this.data( 'clone-action' ),
                         blog_id     : $optionsContainer.data( 'blog-id' )
                     },
@@ -94,4 +86,4 @@ echo wp_create_nonce($VARS['ajax_action']);
             } );
         } );
     } )( jQuery );
-</script><?php 
+</script>

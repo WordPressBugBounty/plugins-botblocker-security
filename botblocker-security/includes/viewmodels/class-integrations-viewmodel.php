@@ -71,6 +71,8 @@ final class Botblocker_IntegrationsViewModel {
 
 	/** @var bool */
 	public $is_cloud_api_active;
+	/** @var bool */
+	public $is_expired;
 	/** @var string */
 	public $cloud_api_key;
 	/** @var int|false */
@@ -81,6 +83,8 @@ final class Botblocker_IntegrationsViewModel {
 	public $connect_nonce;
 	/** @var string */
 	public $deactivate_nonce;
+	/** @var string */
+	public $account_url;
 
 	/** @var bool */
 	public $mu_active;
@@ -138,11 +142,13 @@ final class Botblocker_IntegrationsViewModel {
 		$this->has_apcu_ext      = extension_loaded( 'apcu' );
 
 		$this->is_cloud_api_active = BotBlockerPro::isActive();
+		$this->is_expired          = $this->is_cloud_api_active && BotBlockerPro::isExpired();
 		$this->cloud_api_key       = $this->is_cloud_api_active ? BotBlockerPro::getKey() : '';
 		$this->remaining_hits      = BotBlockerPro::getRemainingHits();
 		$this->remaining_days      = BotBlockerPro::getRemainingDays();
 		$this->connect_nonce       = wp_create_nonce( 'bbcs_connect_cloud_api_action' );
 		$this->deactivate_nonce    = wp_create_nonce( 'bbcs_deactivate_cloud_api_action' );
+		$this->account_url         = BOTBLOCKER_ACCOUNT_URL;
 
 		// Vertical sidebar nav - single group with all integration tabs
 		$this->nav_groups = array(

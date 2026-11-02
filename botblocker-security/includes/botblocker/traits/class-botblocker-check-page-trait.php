@@ -111,7 +111,7 @@ trait BotBlockerCheckPageTrait {
 			'jsErrorMessage'        => $this->js_error_message,
 			'cookieDisabledText'    => BotBlockerCaptchaRenderer::t( 'Cookies are disabled in your browser. Enable cookies to continue.' ),
 			'jsDisabledText'        => BotBlockerCaptchaRenderer::t( 'JavaScript is disabled in your browser. Enable JavaScript to continue.' ),
-			'redirectUrl'        => esc_js( esc_url_raw( $bot_blocker_redirect_url ) ),
+			'redirectUrl'        => esc_url_raw( $bot_blocker_redirect_url ),
 			'checkFunctionName'  => $botblocker_check_function_name,
 			'selectRequestMode'  => $this->select_request_mode,
 			'ruleRecordId'       => $this->rule_record_id,
@@ -129,6 +129,7 @@ trait BotBlockerCheckPageTrait {
 			'retryingText'           => BotBlockerCaptchaRenderer::t( 'Retrying...' ),
 			'verificationFailedText' => BotBlockerCaptchaRenderer::t( 'Verification failed. Please complete the challenge below.' ),
 			'ddosResilience'         => ( $this->settings->bbcs_ddos_resilience == 1 ),
+			'selfTest'               => BotBlockerSelfTest::token(),
 		);
 	}
 

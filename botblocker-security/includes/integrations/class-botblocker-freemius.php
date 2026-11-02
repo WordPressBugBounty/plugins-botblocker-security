@@ -8,9 +8,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class BotBlockerFreemius {
 
-	private const ENABLED = false;
-	private const DEMO_ENABLED = false;
+	private const ENABLED = true;
 	private const SDK_PATH = 'vendor/Freemius/2.13.4/standalone/autoloader.php';
+	private const CONNECT_CHANGES = array( 'activated', 'upgraded', 'changed', 'extended' );
+	private const DISCONNECT_CHANGES = array( 'cancelled', 'expired', 'downgraded' );
+	const CONNECT_HOOK = 'bbcs_freemius_connect';
+	private const KEY_PREFIX = 'sk_';
 	private static $instance = null;
 
 	public static function boot(): bool {
@@ -18,7 +21,6 @@ final class BotBlockerFreemius {
 			return false;
 		}
 		if ( self::$instance !== null ) {
-			self::registerDemoHook();
 			return true;
 		}
 
@@ -28,7 +30,7 @@ final class BotBlockerFreemius {
 		}
 
 		try {
-			self::$instance = \BotBlocker\Vendor\fs_dynamic_init( $config );
+			self::$instance = fs_dynamic_init( $config );
 		} catch ( \Throwable $exception ) {
 			self::$instance = null;
 			return false;
@@ -39,16 +41,82 @@ final class BotBlockerFreemius {
 			return false;
 		}
 
+		self::$instance->add_action( 'after_license_change', array( self::class, 'onLicenseChange' ) );
+		self::$instance->add_action( 'after_license_deactivation', array( self::class, 'disconnectLicense' ) );
+		self::$instance->add_action( 'after_license_activation', array( self::class, 'scheduleConnect' ) );
+		self::$instance->add_filter( 'show_deactivation_feedback_form', '__return_false' );
+		self::$instance->add_filter( 'show_deactivation_subscription_cancellation', '__return_false' );
+		add_action( self::CONNECT_HOOK, array( self::class, 'connectLicense' ) );
+		$basename = self::$instance->get_plugin_basename();
+		add_filter( 'plugin_action_links_' . $basename, array( self::class, 'removeActionLinks' ), 11 );
+		add_filter( 'network_admin_plugin_action_links_' . $basename, array( self::class, 'removeActionLinks' ), 11 );
+
 		if ( function_exists( 'do_action' ) ) {
 			do_action( 'bbcs_freemius_loaded', self::$instance );
 		}
-		self::registerDemoHook();
 
 		return true;
 	}
 
 	public static function instance() {
 		return self::$instance;
+	}
+
+	public static function setInstance( $instance ): void {
+		self::$instance = $instance;
+	}
+
+	public static function reset(): void {
+		self::$instance = null;
+	}
+
+	public static function removeActionLinks( $links ) {
+		if ( ! is_array( $links ) || ! is_object( self::$instance ) ) {
+			return $links;
+		}
+		$affix = self::$instance->get_unique_affix();
+		unset( $links[ 'activate-license ' . $affix ], $links[ 'opt-in-or-opt-out ' . $affix ] );
+
+		return $links;
+	}
+
+	public static function onLicenseChange( $plan_change ): void {
+		if ( in_array( (string) $plan_change, self::CONNECT_CHANGES, true ) ) {
+			self::connectLicense();
+		} elseif ( in_array( (string) $plan_change, self::DISCONNECT_CHANGES, true ) ) {
+			self::disconnectLicense();
+		}
+	}
+
+	public static function scheduleConnect(): void {
+		if ( false === wp_next_scheduled( self::CONNECT_HOOK ) ) {
+			wp_schedule_single_event( time(), self::CONNECT_HOOK );
+		}
+	}
+
+	public static function disconnectLicense(): void {
+		require_once BOTBLOCKER_DIR . 'includes/hook/class-botblocker-cloud-api-hooks.php';
+		BotBlockerCloudApiHooks::disconnect();
+	}
+
+	public static function checkoutUrl( int $plan_id, string $billing_cycle ): string {
+		if ( ! is_object( self::$instance ) ) {
+			return '';
+		}
+
+		return (string) self::$instance->checkout_url( $billing_cycle, false, array( 'plan_id' => $plan_id, 'licenses' => 1 ) );
+	}
+
+	public static function hasLicense(): bool {
+		return is_object( self::$instance ) && self::$instance->has_active_valid_license();
+	}
+
+	public static function accountUrl(): string {
+		if ( ! is_object( self::$instance ) ) {
+			return '';
+		}
+
+		return (string) self::$instance->get_account_url();
 	}
 
 	public static function status(): array {
@@ -76,90 +144,46 @@ final class BotBlockerFreemius {
 		);
 	}
 
-	public static function demoStatus( string $scenario = 'free' ): array {
-		$states = array(
-			'free'    => array( 'license_status' => 'free', 'entitlement' => 'free', 'plan' => 'Free', 'trial' => false, 'feature_access' => false ),
-			'trial'   => array( 'license_status' => 'trial', 'entitlement' => 'trial', 'plan' => 'Demo Trial', 'trial' => true, 'feature_access' => true ),
-			'paid'    => array( 'license_status' => 'paid', 'entitlement' => 'paid', 'plan' => 'Demo Pro', 'trial' => false, 'feature_access' => true ),
-			'expired' => array( 'license_status' => 'expired', 'entitlement' => 'expired', 'plan' => 'Demo Pro', 'trial' => false, 'feature_access' => false ),
-		);
-		if ( ! isset( $states[ $scenario ] ) ) {
-			$scenario = 'free';
-		}
-
-		return array_merge(
-			array(
-				'demo'       => true,
-				'scenario'   => $scenario,
-				'activated'  => 'free' !== $scenario,
-				'expiration' => 'expired' === $scenario ? 'expired' : null,
-			),
-			$states[ $scenario ]
-		);
+	public static function connectLicense(): void {
+		self::connect();
 	}
 
-	public static function renderDemoPage(): void {
-		if ( ! self::isDemoEnabled() || ( function_exists( 'current_user_can' ) && ! current_user_can( 'manage_options' ) ) ) {
-			return;
-		}
-
-		$scenario = 'free';
-		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- read-only demo scenario selector, admin-gated above
-		if ( isset( $_GET['bbcs_freemius_demo_scenario'] ) && is_string( $_GET['bbcs_freemius_demo_scenario'] ) ) {
-			$scenario = sanitize_key( wp_unslash( $_GET['bbcs_freemius_demo_scenario'] ) );
-		}
-		// phpcs:enable WordPress.Security.NonceVerification.Recommended
-		$demo   = self::demoStatus( $scenario );
-		$actual = self::status();
-		$access = $demo['feature_access'] ? 'available' : 'locked';
-		$loaded = class_exists( 'BotBlocker\\Vendor\\Freemius', false ) ? 'yes' : 'no';
-		$base   = function_exists( 'admin_url' ) ? admin_url( 'admin.php?page=bbcs_freemius_demo' ) : '?page=bbcs_freemius_demo';
-
-		echo '<div class="wrap">';
-		echo '<h1>Freemius SDK demo</h1>';
-		echo '<p>Local-only integration proof. No Freemius account or secret is connected.</p>';
-		echo '<p>SDK loaded: <strong>' . esc_html( $loaded ) . '</strong> | Actual license: <strong>' . esc_html( (string) ( $actual['license_status'] ?? 'none' ) ) . '</strong></p>';
-		echo '<h2>Simulated entitlement</h2><p>Scenario: <strong>' . esc_html( ucfirst( $demo['scenario'] ) ) . '</strong> | Feature access: <strong>' . esc_html( $access ) . '</strong></p>';
-		echo '<p>';
-		foreach ( array( 'free', 'trial', 'paid', 'expired' ) as $option ) {
-			$url = add_query_arg( 'bbcs_freemius_demo_scenario', $option, $base );
-			echo '<a class="button' . ( $option === $demo['scenario'] ? ' button-primary' : '' ) . '" href="' . esc_url( $url ) . '">' . esc_html( ucfirst( $option ) ) . '</a> ';
-		}
-		echo '</p></div>';
+	public static function ownsKey( string $key ): bool {
+		return is_object( self::$instance ) && 0 === strpos( $key, self::KEY_PREFIX );
 	}
 
-	public static function registerDemoPage(): void {
-		if ( ! self::isDemoEnabled() || ( function_exists( 'current_user_can' ) && ! current_user_can( 'manage_options' ) ) ) {
-			return;
+	public static function activateKey( string $key ): ?string {
+		$result = self::$instance->activate_migrated_license( $key );
+		if ( ! is_array( $result ) || empty( $result['success'] ) ) {
+			if ( is_array( $result ) && ! empty( $result['error'] ) && is_string( $result['error'] ) ) {
+				return sanitize_text_field( $result['error'] );
+			}
+			return __( 'License activation failed. Try again later.', 'botblocker-security' );
 		}
 
-		add_submenu_page(
-			'bbcs_dashboard',
-			'Freemius Demo',
-			'Freemius Demo',
-			'manage_options',
-			'bbcs_freemius_demo',
-			array( __CLASS__, 'renderDemoPage' )
-		);
+		wp_unschedule_hook( self::CONNECT_HOOK );
+		$error = self::connect();
+		if ( false === $error ) {
+			return __( 'License activation failed. Try again later.', 'botblocker-security' );
+		}
+		return $error;
 	}
 
-	private static function registerDemoHook(): void {
-		if ( self::isDemoEnabled() && function_exists( 'add_action' ) ) {
-			add_action( 'admin_menu', array( __CLASS__, 'registerDemoPage' ), 20 );
+	private static function connect() {
+		if ( ! is_object( self::$instance ) || ! self::$instance->has_active_valid_license() ) {
+			return false;
 		}
-	}
-
-	private static function isDemoEnabled(): bool {
-		$enabled = defined( 'BBCS_FREEMIUS_DEMO' ) ? (bool) constant( 'BBCS_FREEMIUS_DEMO' ) : self::DEMO_ENABLED;
-		if ( function_exists( 'apply_filters' ) ) {
-			$enabled = apply_filters( 'bbcs_freemius_demo_enabled', $enabled );
+		$license = self::$instance->_get_license();
+		if ( ! is_object( $license ) || empty( $license->secret_key ) || empty( $license->id ) ) {
+			return false;
 		}
 
-		return (bool) $enabled;
+		require_once BOTBLOCKER_DIR . 'includes/hook/class-botblocker-cloud-api-hooks.php';
+		return BotBlockerCloudApiHooks::connectKey( (string) $license->secret_key, (int) $license->id );
 	}
 
 	private static function isEnabled(): bool {
-		$enabled = self::isDemoEnabled() || ( defined( 'BBCS_FREEMIUS_ENABLED' ) ? (bool) constant( 'BBCS_FREEMIUS_ENABLED' ) : self::ENABLED );
+		$enabled = defined( 'BBCS_FREEMIUS_ENABLED' ) ? (bool) constant( 'BBCS_FREEMIUS_ENABLED' ) : self::ENABLED;
 		if ( function_exists( 'apply_filters' ) ) {
 			$enabled = apply_filters( 'bbcs_freemius_enabled', $enabled );
 		}
@@ -175,21 +199,19 @@ final class BotBlockerFreemius {
 			'public_key'          => defined( 'BBCS_FREEMIUS_PUBLIC_KEY' ) ? constant( 'BBCS_FREEMIUS_PUBLIC_KEY' ) : null,
 			'is_premium'          => false,
 			'has_premium_version' => false,
-			'has_paid_plans'      => false,
+			'has_paid_plans'      => true,
 			'is_org_compliant'    => true,
 			'anonymous_mode'      => true,
-			'menu'                => array(),
+			'menu'                => array(
+				'slug'        => 'bbcs_dashboard',
+				'account'     => true,
+				'pricing'     => false,
+				'contact'     => false,
+				'support'     => false,
+				'affiliation' => false,
+				'addons'      => false,
+			),
 		);
-		if ( self::isDemoEnabled() ) {
-			if ( ! is_numeric( $config['id'] ) ) {
-				$config['id'] = 900001;
-			} elseif ( (int) $config['id'] < 1 ) {
-				$config['id'] = 900001;
-			}
-			if ( ! is_string( $config['public_key'] ) || '' === trim( $config['public_key'] ) ) {
-				$config['public_key'] = 'pk_local_demo';
-			}
-		}
 		if ( function_exists( 'apply_filters' ) ) {
 			$config = apply_filters( 'bbcs_freemius_config', $config );
 		}
@@ -208,6 +230,6 @@ final class BotBlockerFreemius {
 		}
 
 		require_once $path;
-		return class_exists( 'BotBlocker\\Vendor\\Freemius', false );
+		return class_exists( 'Freemius', false );
 	}
 }

@@ -7,6 +7,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'BotBlockerDataFile' ) ) {
 
+	/**
+	 * Generated-file integrity marker. This is CORRUPTION DETECTION, not
+	 * tamper resistance: the hash is unkeyed, so any principal that can write
+	 * the data directory can re-sign content (AUD-30, accepted 2026-10-26).
+	 * A data-dir writer can already execute PHP through these generated files;
+	 * the marker protects against truncation/partial writes and accidental
+	 * edits, and triggers a rebuild from the DB.
+	 */
 	class BotBlockerDataFile {
 
 		// Layer-1 shared class: bump on every member addition (see BotBlockerCompiledFile::EXPECTED_CLASS_REV).

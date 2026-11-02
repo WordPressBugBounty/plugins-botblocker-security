@@ -1,26 +1,27 @@
 <?php
+	/**
+	 * @package   Freemius
+	 * @copyright Copyright (c) 2015, Freemius, Inc.
+	 * @license   https://www.gnu.org/licenses/gpl-3.0.html GNU General Public License Version 3
+     *
+     * @author Leo Fajardo (@leorw)
+	 * @since 2.5.0
+	 */
 
-namespace BotBlocker\Vendor;
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
 
-/**
- * @package   Freemius
- * @copyright Copyright (c) 2015, Freemius, Inc.
- * @license   https://www.gnu.org/licenses/gpl-3.0.html GNU General Public License Version 3
- *
- * @author Leo Fajardo (@leorw)
- * @since 2.5.0
- */
-if (!\defined('ABSPATH')) {
-    exit;
-}
-/**
- * @var array $VARS
- */
-$fs = freemius($VARS['id']);
-$slug = $fs->get_slug();
-$user = $fs->get_user();
-$current_email_address = $user->email;
-fs_enqueue_local_style('fs_dialog_boxes', '/admin/dialog-boxes.css');
+	/**
+	 * @var array $VARS
+	 */
+	$fs   = freemius( $VARS['id'] );
+	$slug = $fs->get_slug();
+
+	$user                  = $fs->get_user();
+	$current_email_address = $user->email;
+
+	fs_enqueue_local_style( 'fs_dialog_boxes', '/admin/dialog-boxes.css' );
 ?>
 <script type="text/javascript">
 ( function ( $ ) {
@@ -28,70 +29,71 @@ fs_enqueue_local_style('fs_dialog_boxes', '/admin/dialog-boxes.css');
 		    '<div class="fs-modal fs-modal-email-address-update">'
 		    + '	<div class="fs-modal-dialog">'
 		    + '		<div class="fs-modal-header">'
-		    + '		    <h4><?php 
-fs_esc_attr_echo_inline('Email address update', 'email-address-update', $slug);
-?></h4>'
-            + '         <a href="!#" class="fs-close"><i class="dashicons dashicons-no" title="<?php 
-echo esc_js(fs_text_x_inline('Dismiss', 'close window', 'dismiss', $slug));
-?>"></i></a>'
+		    + '		    <h4><?php fs_esc_attr_echo_inline( 'Email address update', 'email-address-update', $slug ) ?></h4>'
+            + '         <a href="!#" class="fs-close"><i class="dashicons dashicons-no" title="<?php echo esc_js( fs_text_x_inline( 'Dismiss', 'close window', 'dismiss', $slug ) ) ?>"></i></a>'
 		    + '		</div>'
 		    + '		<div class="fs-modal-body">'
 		    + '			<div class="fs-modal-panel active">'
             + '             <div class="notice notice-error inline fs-update-error-message"><p></p></div>'
-            + '             <p><?php 
-fs_echo_inline('Enter the new email address', 'enter-new-email-address', $slug);
-?>:</p>'
+            + '             <p><?php fs_echo_inline( 'Enter the new email address', 'enter-new-email-address' , $slug ) ?>:</p>'
             + '	    	    <input type="text" class="fs-new-email-address-input" />'
             + '             <div class="fs-email-addresses-ownership-options" style="display: none">'
-            + '                 <p><?php 
-echo \sprintf(fs_esc_html_inline('Are both %s and %s your email addresses?', 'email-addresses-ownership-confirmation', $slug), \sprintf('<strong>%s</strong>', $current_email_address), '<strong class="fs-new-email-address"></strong>');
-?></p>'
+            + '                 <p><?php echo sprintf(
+                                    fs_esc_html_inline( 'Are both %s and %s your email addresses?', 'email-addresses-ownership-confirmation' , $slug ),
+                                    sprintf( '<strong>%s</strong>', $current_email_address ),
+                                    '<strong class="fs-new-email-address"></strong>'
+                                ) ?></p>'
             + '                 <ul>'
             + '                     <li>'
             + '                         <label>'
             + '                             <span><input type="radio" name="email-addresses-ownership" value="both"/></span>'
-            + '                             <span><?php 
-fs_echo_inline('Yes - both addresses are mine', 'both-addresses-are-mine', $slug);
-?></span>'
+            + '                             <span><?php fs_echo_inline( 'Yes - both addresses are mine', 'both-addresses-are-mine', $slug ); ?></span>'
             + '                         </label>'
             + '                     </li>'
             + '                     <li>'
             + '                         <label>'
             + '                             <span><input type="radio" name="email-addresses-ownership" value="current"/></span>'
-            + '                             <div><?php 
-echo \sprintf(fs_esc_html_inline("%s is my client's email address", 'client-email-address-confirmation', $slug), '<strong class="fs-new-email-address"></strong>');
-?></span>'
+            + '                             <div><?php echo sprintf(
+                                                fs_esc_html_inline( "%s is my client's email address", 'client-email-address-confirmation', $slug ),
+                                                '<strong class="fs-new-email-address"></strong>'
+                                            ) ?></span>'
             + '                         </label>'
             + '                     </li>'
             + '                     <li>'
             + '                         <label>'
             + '                             <span><input type="radio" name="email-addresses-ownership" value="new"/></span>'
-            + '                             <div><?php 
-echo \sprintf(fs_esc_html_inline("%s is my email address", 'email-address-ownership-confirmation', $slug), '<strong class="fs-new-email-address"></strong>');
-?></span>'
+            + '                             <div><?php echo sprintf(
+                                                fs_esc_html_inline( "%s is my email address", 'email-address-ownership-confirmation', $slug ),
+                                                '<strong class="fs-new-email-address"></strong>'
+                                            ) ?></span>'
             + '                         </label>'
             + '                     </li>'
             + '                 </ul>'
             + '             </div>'
             + '             <div class="fs-assets-transfership-options" style="display: none">'
-            + '                 <p><?php 
-echo \sprintf(fs_esc_html_inline('Would you like to merge %s into %s?', 'accounts-merge-confirmation', $slug), \sprintf('<strong>%s</strong>', $current_email_address), '<strong class="fs-new-email-address"></strong>');
-?></p>'
+            + '                 <p><?php echo sprintf(
+                                    fs_esc_html_inline( 'Would you like to merge %s into %s?', 'accounts-merge-confirmation' , $slug ),
+                                    sprintf( '<strong>%s</strong>', $current_email_address ),
+                                    '<strong class="fs-new-email-address"></strong>'
+                                ) ?></p>'
             + '                 <ul>'
             + '                     <li>'
             + '                         <label>'
             + '                             <span><input type="radio" name="assets-transfer-type" value="all" /></span>'
-            + '                             <span><?php 
-echo \sprintf(fs_esc_html_inline('Yes - move all my data and assets from %s to %s', 'move-all-data-and-assets-into-new-account', $slug), \sprintf('<strong>%s</strong>', $current_email_address), '<strong class="fs-new-email-address"></strong>');
-?></span>'
+            + '                             <span><?php echo sprintf(
+                                                fs_esc_html_inline( 'Yes - move all my data and assets from %s to %s', 'move-all-data-and-assets-into-new-account', $slug ),
+                                                sprintf( '<strong>%s</strong>', $current_email_address ),
+                                                '<strong class="fs-new-email-address"></strong>'
+                                            ) ?></span>'
             + '                         </label>'
             + '                     </li>'
             + '                     <li>'
             + '                         <label>'
             + '                             <span><input type="radio" name="assets-transfer-type" value="plugin" /></span>'
-            + '                             <span><?php 
-echo \sprintf(fs_esc_html_inline("No - only move this site's data to %s", 'move-only-plugin-data-into-new-account', $slug), '<strong class="fs-new-email-address"></strong>');
-?></span>'
+            + '                             <span><?php echo sprintf(
+                                                fs_esc_html_inline( "No - only move this site's data to %s", 'move-only-plugin-data-into-new-account', $slug ),
+                                                '<strong class="fs-new-email-address"></strong>'
+                                            ) ?></span>'
             + '                         </label>'
             + '                     </li>'
             + '                 </ul>'
@@ -99,12 +101,8 @@ echo \sprintf(fs_esc_html_inline("No - only move this site's data to %s", 'move-
             + '         </div>'
 		    + '		</div>'
 		    + '		<div class="fs-modal-footer">'
-		    + '			<button class="button button-primary button-update" disabled><?php 
-fs_esc_js_echo_inline('Update', 'update-email-address', $slug);
-?></button>'
-		    + '			<button class="button button-secondary button-close"><?php 
-fs_esc_js_echo_inline('Cancel', 'cancel', $slug);
-?></button>'
+		    + '			<button class="button button-primary button-update" disabled><?php fs_esc_js_echo_inline( 'Update', 'update-email-address', $slug ) ?></button>'
+		    + '			<button class="button button-secondary button-close"><?php fs_esc_js_echo_inline( 'Cancel', 'cancel', $slug ) ?></button>'
 		    + '		</div>'
 		    + '	</div>'
 		    + '</div>',
@@ -170,9 +168,7 @@ fs_esc_js_echo_inline('Cancel', 'cancel', $slug);
                 return;
             }
 
-            if ( previousEmailAddress === '<?php 
-echo $current_email_address;
-?>' ) {
+            if ( previousEmailAddress === '<?php echo $current_email_address ?>' ) {
                 closeModal();
                 return;
             }
@@ -189,20 +185,12 @@ echo $current_email_address;
             }
 
             $.ajax( {
-                url       : <?php 
-echo Freemius::ajax_url();
-?>,
+                url       : <?php echo Freemius::ajax_url() ?>,
                 method    : 'POST',
                 data      : {
-                    action       : '<?php 
-echo $fs->get_ajax_action('update_email_address');
-?>',
-                    security     : '<?php 
-echo $fs->get_ajax_security('update_email_address');
-?>',
-                    module_id    : '<?php 
-echo $fs->get_id();
-?>',
+                    action       : '<?php echo $fs->get_ajax_action( 'update_email_address' ) ?>',
+                    security     : '<?php echo $fs->get_ajax_security( 'update_email_address' ) ?>',
+                    module_id    : '<?php echo $fs->get_id() ?>',
                     transfer_type: transferType,
                     email_address: previousEmailAddress
                 },
@@ -226,9 +214,7 @@ echo $fs->get_id();
                     }
                 },
                 error     : function () {
-                    showError( '<?php 
-fs_esc_js_echo_inline('Unexpected error, try again in 5 minutes. If the error persists, please contact support.', 'unexpected-error', $slug);
-?>' );
+                    showError( '<?php fs_esc_js_echo_inline( 'Unexpected error, try again in 5 minutes. If the error persists, please contact support.', 'unexpected-error', $slug ) ?>' );
 
                     resetUpdateButton();
                 }
@@ -303,17 +289,13 @@ fs_esc_js_echo_inline('Unexpected error, try again in 5 minutes. If the error pe
 
 		disableUpdateButton();
 
-        $updateButton.text( <?php 
-echo \json_encode(fs_text_inline('Update', 'update-email-address', $slug));
-?> );
+        $updateButton.text( <?php echo json_encode( fs_text_inline( 'Update', 'update-email-address', $slug ) ) ?> );
 	}
 
     function resetUpdateButton() {
         maybeEnableUpdateButton();
 
-        $updateButton.text( <?php 
-echo \json_encode(fs_text_inline('Update', 'update-email-address', $slug));
-?> );
+        $updateButton.text( <?php echo json_encode( fs_text_inline( 'Update', 'update-email-address', $slug ) ) ?> );
     }
 
 	function maybeEnableUpdateButton() {
@@ -362,4 +344,4 @@ echo \json_encode(fs_text_inline('Update', 'update-email-address', $slug));
         }
     }
 } )( jQuery );
-</script><?php 
+</script>

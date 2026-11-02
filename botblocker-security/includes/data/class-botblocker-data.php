@@ -37,31 +37,32 @@ class BotBlockerData {
 		}
 		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
-		// Bridge until migration 2.10 moves the legacy option into the table.
-		$blockedCountries = BotBlockerMultisite::getOption( 'bbcs_blocked_countries', array() );
-		if ( is_string( $blockedCountries ) ) {
-			$decoded = json_decode( $blockedCountries, true );
+		// Compatibility bridge for pre-table installs and for a table that holds
+		// no active block rows. The legacy option is deleted after every
+		// successful table write, so it cannot resurrect cleared blocks.
+		return self::normalizeLegacyCountries( BotBlockerMultisite::getOption( 'bbcs_blocked_countries', array() ) );
+	}
+
+	private static function normalizeLegacyCountries( $value ): array {
+		if ( is_string( $value ) ) {
+			$decoded = json_decode( $value, true );
 			if ( json_last_error() === JSON_ERROR_NONE && is_array( $decoded ) ) {
-				$blockedCountries = $decoded;
+				$value = $decoded;
 			} else {
-				$blockedCountries = array_filter( array_map( 'trim', explode( ',', $blockedCountries ) ) );
+				$value = array_filter( array_map( 'trim', explode( ',', $value ) ) );
 			}
 		}
-
-		if ( is_array( $blockedCountries ) ) {
-			$blockedCountries = array_map( 'strtoupper', $blockedCountries );
-			$blockedCountries = array_filter(
-				$blockedCountries,
-				function ( $item ) {
-					return preg_match( '/^[A-Z]{2}$/', (string) $item );
-				}
-			);
-			$blockedCountries = array_values( array_unique( $blockedCountries ) );
-		} else {
-			$blockedCountries = array();
+		if ( ! is_array( $value ) ) {
+			return array();
 		}
-
-		return $blockedCountries;
+		$out = array();
+		foreach ( $value as $item ) {
+			$code = is_string( $item ) ? strtoupper( trim( $item ) ) : '';
+			if ( preg_match( '/^[A-Z]{2}$/', $code ) ) {
+				$out[] = $code;
+			}
+		}
+		return array_values( array_unique( $out ) );
 	}
 
 	public static function getXRobotTags(): array {

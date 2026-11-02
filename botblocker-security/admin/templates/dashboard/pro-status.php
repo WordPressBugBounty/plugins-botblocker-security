@@ -40,8 +40,8 @@ return static function ( Botblocker_ProStatusViewModel $data ): void {
 			<div class="bbcs-row bbcs-g-2h">
 				<span class="bbcs-tile bbcs-tile--sm bbcs-acc-amber"><svg class="bbcs-ico"><use href="#bbcs-i-clock"></use></svg></span>
 				<div class="bbcs-fill">
-					<div class="bbcs-stat bbcs-stat--sm <?php echo esc_attr( $alert_class ); ?><?php echo $data->remaining_days === false ? ' is-loading is-empty' : ''; ?>" data-bbcs-remaining="days"><?php echo esc_html( $data->remaining_days === false ? '30' : (string) (int) $data->remaining_days ); ?></div>
-					<div class="bbcs-statbox-lbl"><?php esc_html_e( 'days remaining', 'botblocker-security' ); ?></div>
+					<div class="bbcs-stat bbcs-stat--sm <?php echo esc_attr( $alert_class ); ?><?php echo $data->remaining_days === false ? ' is-loading is-empty' : ''; ?>" data-bbcs-remaining="days"><?php echo esc_html( $data->remaining_days === false ? '30' : BotBlockerPro::remainingDaysText( $data->remaining_days ) ); ?></div>
+					<div class="bbcs-statbox-lbl" data-bbcs-remaining-label="days"<?php echo BotBlockerPro::isExpired() ? ' hidden' : ''; ?>><?php echo esc_html( $data->remaining_days === false ? __( 'days remaining', 'botblocker-security' ) : BotBlockerPro::remainingDaysLabel( $data->remaining_days ) ); ?></div>
 				</div>
 			</div>
 		</div>

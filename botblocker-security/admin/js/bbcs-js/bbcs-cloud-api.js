@@ -1,6 +1,13 @@
 (function ($) {
     'use strict';
 
+    $(document).on('click', '#bbcs_pro_buy .bbcs-seg-opt', function () {
+        var $opt = $(this);
+        $opt.addClass('is-active').attr('aria-pressed', 'true')
+            .siblings('.bbcs-seg-opt').removeClass('is-active').attr('aria-pressed', 'false');
+        $('#bbcs_pro_buy').toggleClass('is-annual', $opt.data('value') === 'annual');
+    });
+
     // Cloud API status
     $(document).ready(function () {
         $('#bbcs_refresh_cloud_api').on('click', function () {

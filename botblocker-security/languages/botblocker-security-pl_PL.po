@@ -3,16 +3,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BotBlocker"
 "Report-Msgid-Bugs-To: "
-"POT-Creation-Date: 2026-09-29 08:32+0000"
-"PO-Revision-Date: 2026-09-29 08:32+0000"
-"Last-Translator: BotBlocker Translator Team"
+"POT-Creation-Date: 2026-10-17 19:34+0000"
+"PO-Revision-Date: 2026-10-17 19:34+0000"
+"Last-Translator: BotBlocker Team (Grzegorz B.)"
 "Language-Team: Polish"
 "Language: pl_PL"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);"
 "MIME-Version: 1.0"
 "Content-Type: text/plain; charset=UTF-8"
 "Content-Transfer-Encoding: 8bit"
-"X-Generator: BotBlocker Translator Engine"
 "X-Domain: botblocker-security"
 
 
@@ -466,7 +465,7 @@ msgstr "Cotygodniowe podsumowanie ze statystykami żądań, blokad i botów jest
 
 #: addons/bbcs-telegram/views/settings.php:26
 msgid "A weekly security report is delivered to your chat with request, block and bot statistics."
-msgstr ""
+msgstr "Cotygodniowy raport zabezpieczenia jest dostarczany do twój czatu ze statystykami żądań, blokad i botów."
 
 #: addons/bbcs-pusher/views/settings.php:70
 msgid "a1b2c3d4e5f6g7h8"
@@ -1021,7 +1020,7 @@ msgstr "Dodaje ukryte pole pułapki antybotowej i sprawdzanie czasu wysyłania d
 
 #: addons/bbcs-turnstile/views/settings.php:27
 msgid "Adds Cloudflare Turnstile as an external CAPTCHA provider on the BotBlocker check page. Enter the site key and secret key from your Cloudflare Turnstile dashboard, pick theme and size, then select mode 91 (Cloudflare Turnstile) as the CAPTCHA mode in BotBlocker settings. Verification runs server-side through the Turnstile siteverify endpoint; if the provider is unreachable, the check page degrades to the simple captcha instead of blocking visitors."
-msgstr ""
+msgstr "Dodaje Cloudflare Turnstile jako zewnętrznego dostawcę CAPTCHA na strona sprawdzającej BotBlocker. wpisz witryna klucz i klucz prywatny z twój kokpitu Cloudflare Turnstile, wybierz motyw i rozmiar, a następnie wybierz tryb 91 (Cloudflare Turnstile) jako tryb CAPTCHA w ustawieniach BotBlocker. Weryfikacja odbywa się po stronie serwera przez punkt końcowy siteverify Turnstile; jeśli dostawca jest nieosiągalny, strona sprawdzająca przechodzi na prosty captcha zamiast blokować odwiedzających."
 
 #: addons/bbcs-security-headers/views/settings.php:162
 msgid "Adds Cross-Origin-Opener-Policy: same-origin-allow-popups. Protects against window.opener attacks and Spectre while keeping popup payments and OAuth flows working."
@@ -1029,7 +1028,7 @@ msgstr "Dodaje Cross-Origin-Opener-Policy: same-origin-allow-popups. Chroni prze
 
 #: addons/bbcs-hcaptcha/views/settings.php:27
 msgid "Adds hCaptcha as an external CAPTCHA provider on the BotBlocker check page. Enter the site key and secret key from your hCaptcha dashboard, pick theme and size, then select mode 90 (hCaptcha) as the CAPTCHA mode in BotBlocker settings. Verification runs server-side through the hCaptcha siteverify endpoint; if the provider is unreachable, the check page degrades to the simple captcha instead of blocking visitors."
-msgstr ""
+msgstr "Dodaje hCaptcha jako zewnętrznego dostawcę CAPTCHA na strona sprawdzającej BotBlocker. wpisz witryna klucz i klucz prywatny z twój kokpitu hCaptcha, wybierz motyw i rozmiar, a następnie wybierz tryb 90 (hCaptcha) jako tryb CAPTCHA w ustawieniach BotBlocker. Weryfikacja odbywa się po stronie serwera przez punkt końcowy siteverify hCaptcha; jeśli dostawca jest nieosiągalny, strona sprawdzająca przechodzi na prosty captcha zamiast blokować odwiedzających."
 
 #: addons/bbcs-security-headers/views/settings.php:170
 msgid "Adds Origin-Agent-Cluster: ?1 to isolate the document at origin level in the browser process model."
@@ -1074,7 +1073,7 @@ msgstr "Dziennik panelu administracyjnego"
 
 #: includes/inc-botblocker-wp-abilities.php:252
 msgid "Administrative abilities exposed by the BotBlocker Security plugin."
-msgstr ""
+msgstr "Administracyjne możliwości udostępnione przez BotBlocker zabezpieczenia wtyczka."
 
 #: admin/templates/settings/general.php:109
 #: includes/data/class-botblocker-snav.php:495
@@ -2340,7 +2339,7 @@ msgstr "Zablokowane dzisiaj"
 
 #: includes/inc-botblocker-wp-abilities.php:510
 msgid "Blocked via WP Abilities"
-msgstr ""
+msgstr "Zablokowano przez WP możliwości"
 
 #: includes/shortcode/class-botblocker-rules-shortcodes.php:100
 #: includes/shortcode/class-botblocker-rules-shortcodes.php:101
@@ -2639,7 +2638,7 @@ msgstr "BotBlocker wymaga WordPress 5.9 lub nowszego."
 
 #: includes/audit/class-botblocker-audit-logger.php:469
 msgid "BotBlocker rule changed (%action%)."
-msgstr "Zmieniono regułę BotBlocker (%działanie%)."
+msgstr "Zmieniono regułę BotBlocker (%action%)."
 
 #: includes/data/class-botblocker-alerts.php:295
 msgid "BotBlocker runs in development mode (.bbcdev marker). Remove the marker on production sites."
@@ -2858,7 +2857,7 @@ msgstr "Kup PRO"
 
 #: admin/templates/settings/payment-tab.php:26
 msgid "Bypass BotBlocker checks for incoming payment gateway callbacks (webhooks / IPN / postbacks) so legitimate payment notifications are never blocked."
-msgstr "Funkcja Bypass BotBlocker monitoruje przychodzące powiadomienia zwrotne z bramek płatniczych (webhooki / IPN / postbacki), dzięki czemu legalne powiadomienia o płatnościach nigdy nie są blokowane."
+msgstr "Pomijaj kontrole BotBlocker dla przychodzących wywołań zwrotnych bramki płatności (webhooki / IPN / postbacki), aby uzasadnione powiadomienia o płatnościach nigdy nie były blokowane."
 
 #: includes/data/class-botblocker-snav.php:660
 #: includes/viewmodels/class-integrations-viewmodel.php:172
@@ -2896,7 +2895,7 @@ msgstr "Interfejs wtyczki pamięci podręcznej"
 
 #: admin/templates/integrations/apcu.php:36
 msgid "Cache security counters and visitor data in APCu instead of the database."
-msgstr ""
+msgstr "pamięć podręczna zabezpieczenia liczniki i dane odwiedzających w APCu zamiast baza danych."
 
 #: admin/templates/integrations/memcached.php:32
 msgid "Cache security counters and visitor data in Memcached instead of the database."
@@ -3041,11 +3040,11 @@ msgstr "Rodzaj CAPTCHA"
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:102
 msgid "Careful: deleting this file can take your site offline, and it cannot be undone. Delete it anyway?"
-msgstr ""
+msgstr "Uwaga: usunięcie tego pliku może spowodować niedostępność twój witryna i nie można tego cofnąć. usuwać go mimo wszystko?"
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:103
 msgid "Careful: turning this file off can take your site offline until you turn it back on. Continue?"
-msgstr ""
+msgstr "Uwaga: wyłączenie tego pliku może spowodować niedostępność twój witryna do momentu ponownego włączenia. Kontynuować?"
 
 #: admin/templates/settings/captcha-tab.php:63
 msgid "Cat"
@@ -3133,7 +3132,7 @@ msgstr "Sprawdź parametry GET w odsyłaczu"
 
 #: addons/bbcs-forced-inclusions/views/settings.php:136
 msgid "Check that you recognise every file. A few from your host or caching plugin is normal."
-msgstr ""
+msgstr "Sprawdź, czy rozpoznajesz każdy plik. Kilka plików od twój dostawcy hostingu lub wtyczka pamięci podręcznej to norma."
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-background.php:517
 msgid "Checking database tables..."
@@ -3853,11 +3852,11 @@ msgstr "Połączenie nie powiodło się."
 
 #: addons/bbcs-telegram/inc/class-bbcs-telegram-plugin.php:225
 msgid "Connection failed. Check your bot token and chat ID."
-msgstr ""
+msgstr "Połączenie nie powiodło się. Sprawdź twój token bota i identyfikator czatu."
 
 #: addons/bbcs-pusher/inc/class-bbcs-pusher-plugin.php:312
 msgid "Connection failed. Check your credentials and that the add-on is enabled."
-msgstr ""
+msgstr "Połączenie nie powiodło się. Sprawdź twój dane dostępowe i to, czy dodatek jest włączony."
 
 #: admin/templates/settings/connection-types.php:20
 msgid "Connection filtering blocks suspicious connection methods used by bots and scrapers."
@@ -3879,7 +3878,7 @@ msgstr "Informacje o połączeniu:"
 
 #: addons/bbcs-telegram/inc/class-bbcs-telegram-plugin.php:223
 msgid "Connection OK! Check your Telegram chat for the test message."
-msgstr ""
+msgstr "Połączenie OK! Sprawdź twój czat Telegram w poszukiwaniu wiadomości testowej."
 
 #: addons/bbcs-pusher/inc/class-bbcs-pusher-plugin.php:310
 msgid "Connection OK! Open your browser client to see the test event."
@@ -5125,7 +5124,7 @@ msgstr "email"
 #: includes/data/class-botblocker-snav.php:573
 #: includes/utilites/class-botblocker-support.php:47
 msgid "Email"
-msgstr "Email"
+msgstr "email"
 
 #: includes/ajax/class-botblocker-ajax-email.php:88
 msgid "Email is required."
@@ -5425,7 +5424,7 @@ msgstr "Włącz skaner złośliwego oprogramowania i jego ustawienia. Możesz go
 
 #: addons/bbcs-pusher/views/settings.php:45
 msgid "Enable the weekly digest pushed to your browser via Pusher Channels."
-msgstr ""
+msgstr "włącz cotygodniowe podsumowanie wysyłane do twój przeglądarki przez Pusher Channels."
 
 #: addons/bbcs-cookie-alert/views/settings.php:47
 msgid "Enable this option to display a simple cookie notice to your visitors."
@@ -6250,7 +6249,7 @@ msgstr "Nie udało się zainstalować pakietu dodatku."
 
 #: admin/class-botblocker-admin.php:669
 msgid "Failed to load add-on catalog."
-msgstr ""
+msgstr "Nie udało się wczytywać katalogu dodatków."
 
 #: admin/class-botblocker-admin.php:430
 msgid "Failed to load ASN details: "
@@ -8724,7 +8723,7 @@ msgstr "Główny"
 
 #: admin/templates/rules/body.php:153
 msgid "Maintained automatically by BotBlocker cloud - read-only. Manage your own ASN rules in the table above."
-msgstr ""
+msgstr "Utrzymywane automatycznie przez chmurę BotBlocker—tylko do odczytu. Zarządzaj twój własnymi regułami ASN w tabeli powyżej."
 
 #: admin/templates/tools/maintenance-tab.php:89
 #: includes/data/class-botblocker-snav.php:748
@@ -8935,11 +8934,11 @@ msgstr "Maksymalna kompatybilność do testowania i ochrony o niskim wpływie."
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:238
 msgid "Maximum findings embedded per results card for the Tree view."
-msgstr ""
+msgstr "Maksymalna liczba ustaleń osadzonych na kartę wyników dla widoku drzewa zobacz."
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:230
 msgid "Maximum findings shown in the Flat results view before truncating. Switch to Tree view to browse all."
-msgstr ""
+msgstr "Maksymalna liczba ustaleń wyświetlanych w płaskim widoku wyników zobacz przed obcięciem. Przełącz na widok drzewa zobacz, aby przeglądać wszystkie."
 
 #: admin/templates/setup-guide/one-click-modal.php:68
 msgid "Maximum hardening with cloud threat intelligence."
@@ -9215,7 +9214,7 @@ msgstr "Przesuń pokaz slajdów, aby dostosować poziom progu"
 
 #: includes/audit/class-botblocker-audit-logger.php:423
 msgid "Moved the %post_type% %title% to trash."
-msgstr ""
+msgstr "Przeniesiono %post_type% %title% do przenosić do kosza."
 
 #: addons/bbcs-pusher/views/settings.php:92
 msgid "mt1"
@@ -10434,8 +10433,9 @@ msgid "Protects feed content from scrapers: excerpt-only entries, attribution li
 msgstr "Chroni treść kanałów RSS przed skrobakami: wpisy tylko z zajawką, odnośniki atrybucji i kanały RSS z noindex."
 
 #: addons/bbcs-feed-guard/views/settings.php:27
+#, fuzzy
 msgid "Protects your RSS/Atom feed content from scrapers. Full-content feeds are truncated to an excerpt, an attribution link back to the original article is appended, feeds can be marked noindex for search engines, and feed discovery links can be removed or the feeds disabled entirely. Legitimate subscribers and feed readers keep working."
-msgstr ""
+msgstr "Chroni twój kanały RSS/Atom treść przed skrobakami. Kanały z pełną treścią są obcinane do zajawka, dołączany jest odnośnik atrybucji odnośnik prowadzący z powrotem do oryginalnego artykułu, kanały można oznaczyć jako noindex dla wyszukiwarek, a odnośniki odkrywania kanałów można usunąć lub całkowicie wyłączyć same kanały. Legalni subskrybenci i czytniki kanałów nadal działają."
 
 #: addons/bbcs-https-protocol/inc/class-bbcs-https-protocol-addons-page.php:53
 #: addons/bbcs-https-protocol/views/settings.php:115
@@ -10618,7 +10618,7 @@ msgstr "Cotygodniowe podsumowanie Pusher"
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:165
 #, php-format
 msgid "Put here by your hosting company (%s). Leave it alone unless their support team tells you otherwise."
-msgstr ""
+msgstr "Umieszczone tutaj przez firmę hostingową twój (%s). Proszę tego nie ruszać, chyba że zespół obsługiwać zaleci inaczej."
 
 #: admin/templates/settings/traffic.php:19
 msgid "Query string"
@@ -10831,7 +10831,7 @@ msgstr "Integracje reCaptcha, Redis, Memcached"
 
 #: addons/bbcs-telegram/views/settings.php:25
 msgid "Receive BotBlocker weekly security reports directly in your Telegram chat. Connect a bot token and chat ID, then enable the weekly report."
-msgstr ""
+msgstr "Otrzymuj cotygodniowe raporty zabezpieczenia BotBlocker bezpośrednio w twój czacie Telegram. Połącz token bota i identyfikator czatu, a następnie włącz cotygodniowy raport."
 
 #: admin/templates/settings/notifications.php:36
 msgid "Receive security alerts via email."
@@ -10927,7 +10927,7 @@ msgstr "Zapisuj działania administratora WordPress w dedykowanej tabeli dzienni
 
 #: public/2FA/bbcs-2fa.php:273
 msgid "Recovery email sent. Check your inbox."
-msgstr ""
+msgstr "Wysłano email odzyskiwania. Proszę sprawdzić skrzynkę odbiorczą twój."
 
 #: public/captcha/render-moving-shapes-button-trait.php:24
 msgid "Red"
@@ -11084,7 +11084,7 @@ msgstr "Odrzuca odwiedzających z listy zablokowanych krajów przed wczytywaniem
 
 #: addons/bbcs-early-init/views/settings.php:93
 msgid "Rejects visitors from the blocked-country list before WordPress even loads. Off by default - any lookup uncertainty passes traffic to the main plugin."
-msgstr ""
+msgstr "Odrzuca odwiedzających z listy zablokowanych krajów, zanim WordPress w ogóle zacznie się wczytywać. Domyślnie wyłączone — każda niepewność wyszukiwania przepuszcza ruch do głównego wtyczka."
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:446
 msgid "Remember repeat offenders. This tracks the reputation history of suspicious IPs and subnets over several days, making future blocks trigger much faster for repeat offenders. (Default: Enabled)"
@@ -11204,7 +11204,7 @@ msgstr "Zastępuj pełną treść wpisu w kanałach krótką zajawką."
 
 #: admin/templates/settings/cookie.php:96
 msgid "Replaces IP/host/UA-bound cookie hash with a session token. Eliminates Captcha loops for VPN/proxy users. Disable only if experiencing issues."
-msgstr "Zastępuje skrót pliku ciasteczka powiązany z IP/hostem/UA tokenem sesji. Eliminuje pętle Captcha dla użytkowników VPN/proxy. Wyłącz tylko w przypadku problemów."
+msgstr "Zastępuje powiązany z IP/host/UA skrót plik ciasteczka tokenem sesji. Eliminuje pętle Captcha u użytkowników VPN/proxy. Należy wyłączyć tylko w przypadku wystąpienia problemów."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:66
 msgid "Replaces the default screen shown while the site is in maintenance mode."
@@ -11453,7 +11453,7 @@ msgstr "Przywróć katalog"
 
 #: includes/audit/class-botblocker-audit-logger.php:424
 msgid "Restored the %post_type% %title% from trash."
-msgstr ""
+msgstr "Przywrócono %post_type% %title% z przenosić do kosza."
 
 #: admin/templates/settings/connection-types.php:21
 msgid "Restrict proxy servers, data centers, VPNs, and legacy protocols to reduce automated threats."
@@ -11759,7 +11759,7 @@ msgstr "Uruchomiono"
 
 #: addons/bbcs-forced-inclusions/views/settings.php:170
 msgid "Running on your site"
-msgstr ""
+msgstr "Działa na twój witryna"
 
 #: includes/inc-botblocker-wp-abilities.php:111
 msgid "Runs a set of read-only health checks against the BotBlocker data directory and database tables."
@@ -12351,7 +12351,7 @@ msgstr "Port serwera:"
 
 #: admin/templates/integrations/cache.php:21
 msgid "Server-level caches that bypass PHP can serve cached copies of the BotBlocker verification page, breaking protection. Configure a cookie-based exception for every cache in front of your site."
-msgstr ""
+msgstr "Pamięci podręczne na poziomie serwera, które omijają PHP, mogą udostępniać kopie z pamięci podręcznej strona weryfikacji BotBlocker, psując ochronę. Skonfiguruj wyjątek oparty na plikach ciasteczek dla każdego pamięć podręczna przed twój witryna."
 
 #: admin/templates/cloud-api/status.php:138
 msgid "Server-side protection setup"
@@ -12396,7 +12396,7 @@ msgstr "Skonfiguruj 2FA dla swojego konta"
 
 #: admin/templates/setup-wizard/recaptcha.php:16
 msgid "Set up Google verification separately from your primary BotBlocker challenge."
-msgstr ""
+msgstr "Skonfiguruj weryfikację Google osobno od twój głównego wyzwania BotBlocker."
 
 #: includes/data/class-botblocker-palette.php:156
 msgid "Set up two-factor authentication - 2FA, MFA, OTP, recovery"
@@ -12545,7 +12545,7 @@ msgstr "Adres URL bazy sygnatur"
 
 #: admin/templates/settings/payment-tab.php:47
 msgid "Signature headers are always verified for format (min 8 chars, POST only). When enabled, payment bypass additionally applies to POST requests only: GET requests with payment query keys or ajax actions will not bypass the shield. Callbacks matched by generic markers (webhook, ipn, callback_handler) always keep IP and rate-limit rules active. Reduces attack surface while keeping real webhooks working."
-msgstr ""
+msgstr "Format nagłówków podpisu jest zawsze weryfikowany (min. 8 znaków, tylko POST). Po włączeniu obejście płatności dodatkowo dotyczy wyłącznie żądań POST: żądania GET z kluczami zapytania płatności lub ajax działania nie ominą osłony. Wywołania zwrotne dopasowane przez ogólne znaczniki (webhook, ipn, callback_handler) zawsze zachowują aktywne reguły IP i limitów szybkości. Zmniejsza to powierzchnię ataku, zachowując działanie prawdziwych webhooków."
 
 #: includes/audit/class-botblocker-audit-logger.php:414
 msgid "Signed in from a trusted device."
@@ -13283,7 +13283,7 @@ msgstr "dodany wiersz z wp-config.php."
 
 #: admin/templates/integrations/apcu.php:21
 msgid "The apcu PHP extension is required to use this cache. Install it via your hosting control panel or contact your host."
-msgstr ""
+msgstr "Rozszerzenie apcu PHP jest wymagane, aby korzystać z tej pamięć podręczna. Zainstaluj je przez twój panel sterowania hostingu panel lub skontaktuj się z twój dostawcą hostingu."
 
 #: admin/templates/settings/rate-limiting.php:47
 msgid "The Behavioral Engine is installed and active. You can customize the multi-signal thresholds, session limits, and IP reputation decay."
@@ -13319,7 +13319,7 @@ msgstr "Mechanizm zapasowy sprawdza zaległe zadania (>1.5× interwału) i odtwa
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:108
 #, php-format
 msgid "The file %s will be deleted from your server:"
-msgstr ""
+msgstr "Plik %s zostanie usunięty z twój serwera:"
 
 #. translators: %s: file path relative to wp-content
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:135
@@ -13354,7 +13354,7 @@ msgstr "Plik odzyskuje swoją oryginalną nazwę."
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:125
 msgid "The file stays on your server - nothing is deleted. Use delete for that."
-msgstr ""
+msgstr "Plik pozostaje na twój serwerze—nic nie zostanie usunięte. Użyj w tym celu usuwać."
 
 #: admin/templates/tools/modals/object-cache.php:19
 msgid "The internal WordPress cache and external caching systems (Redis, Memcached) will be reset."
@@ -13549,7 +13549,7 @@ msgstr "Plik dziennika WordPress (debug.log) zostanie wyczyszczony:"
 
 #: addons/bbcs-forced-inclusions/views/settings.php:162
 msgid "The WPMU_PLUGIN_DIR constant is set - your mu-plugins are loading from a non-standard location. If you did not change this, an attacker may have redirected the directory to hide malicious files."
-msgstr ""
+msgstr "Stała WPMU_PLUGIN_DIR jest ustawiona—twój mu-plugins wczytują się z niestandardowej lokalizacji. Jeśli nie zmienił Pan tego, osoba atakująca mogła przekierować katalog, aby ukryć złośliwe pliki."
 
 #: addons/bbcs-hcaptcha/views/settings.php:72
 #: addons/bbcs-turnstile/views/settings.php:73
@@ -13568,7 +13568,7 @@ msgstr "Motywy"
 #: includes/data/class-botblocker-alerts.php:775
 #, php-format
 msgid "These add-ons could not start and were switched off to keep the site running: %s. Your settings are kept. Please update or reinstall them."
-msgstr ""
+msgstr "Te dodatki nie można było uruchomienia i zostały wyłączone, aby utrzymać działanie witryna: %s. twój ustawienia są zachowane. Proszę je zaktualizować lub zainstalować ponownie."
 
 #: admin/templates/settings/status.php:22
 msgid "These options require no form save - they apply immediately and are safe to experiment with."
@@ -13629,11 +13629,11 @@ msgstr "Ten plik jest już włączony."
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:105
 msgid "This file is one of the risky ones: your site can go offline or slow down badly until you undo this."
-msgstr ""
+msgstr "Ten plik należy do tych ryzykownych: twój witryna może stać się niedostępna lub mocno zwolnić, dopóki nie cofniesz tej operacji."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:239
 msgid "This file only does something on a multisite network, and your site is not one. It is doing nothing here, so it is worth finding out who put it there."
-msgstr ""
+msgstr "Ten plik coś robi tylko na sieć witryn, a twój witryna nim nie jest. Tutaj nic nie robi, więc warto ustalić, kto go tutaj umieścił."
 
 #: admin/templates/tools/modals/salt-clear.php:24
 msgid "This process is irreversible."
@@ -13750,7 +13750,7 @@ msgstr "Aby włączyć naprawę i optymalizację bazy danych:"
 
 #: addons/bbcs-security-headers/views/settings.php:72
 msgid "To let a scanner (e.g. securityheaders.com) see your live page instead of the challenge page, find its bot in BotBlocker reports and whitelist its IP under White Bots → Search Engines (se). A rating is computed even on the challenge page itself — whitelisting is only needed for the production look."
-msgstr ""
+msgstr "Aby skaner (np. securityheaders.com) zobaczył twój strona na żywo zamiast strona wyzwania, znajdź jego bota w raportach BotBlocker i dodaj jego IP do listy dozwolonych w sekcji White Bots → Search Engines (se). ocena jest obliczany nawet na samych strona wyzwania—lista dozwolonych jest potrzebna tylko dla produkcyjnego wyglądu."
 
 #: admin/templates/about/body.php:213
 msgid "Toast Notifications:"
@@ -14149,7 +14149,7 @@ msgstr "Uwierzytelnianie dwuetapowe zostało zresetowane."
 
 #: includes/data/class-botblocker-alerts.php:219
 msgid "Two-factor authentication is enabled but your account has no authenticator secret yet. Set it up to protect this account."
-msgstr ""
+msgstr "Uwierzytelnianie dwuskładnikowe jest włączone, ale twój konto nie ma jeszcze klucza aplikacji uwierzytelniającej. Skonfiguruj je, aby chronić to konto."
 
 #: public/2FA/bbcs-2fa-setup.php:152
 msgid "Two-factor authentication is now active on your account."
@@ -14418,7 +14418,7 @@ msgstr "Nieobsługiwany okres."
 
 #: addons/bbcs-forced-inclusions/views/settings.php:138
 msgid "Unsure what a file does? Ask your host before removing it. Some hosts restore their own files automatically, so a disabled file may reappear."
-msgstr ""
+msgstr "Nie masz pewności, co robi dany plik? Zapytaj twój dostawcę hostingu przed jego usunięciem. Niektórzy dostawcy hostingu automatycznie przywracają własne pliki, więc wyłączony plik może pojawić się ponownie."
 
 #: admin/class-botblocker-admin.php:668
 #: admin/templates/addons/addon-market-card.php:106
@@ -14545,7 +14545,7 @@ msgstr "URI"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:292
 msgid "URL to fetch remote regex signatures for malware detection. Endpoint must return JSON with version + signatures array. Each signature: id, severity (critical/high/medium/low), regex (valid PHP regex), score (1-100), confidence, category, description."
-msgstr "Adres URL do pobierania zdalnych sygnatur regex do wykrywania złośliwego oprogramowania. Punkt końcowy musi zwracać JSON z wersją i tablicą sygnatur. Każda sygnatura: identyfikator, ważność (krytyczna/wysoka/średnia/niska), regex (poprawny regex PHP), wynik (1-100), pewność, kategoria, opis."
+msgstr "adres URL, aby pobierać zdalne sygnatury wyrażeń regularnych do wykrywania złośliwego oprogramowania. Punkt końcowy musi zwracać JSON z tablicą version i tablicą signatures. Każda sygnatura: identyfikator, poziom ważności (critical/high/medium/low), wyrażenie regularne (prawidłowe wyrażenie regularne PHP), ocena (1-100), pewność, kategoria, opis."
 
 #: addons/bbcs-hide-admin/views/settings.php:98
 msgid "URL to redirect to when someone tries to access the default login URL. Only used when behavior is set to Redirect."
@@ -15068,7 +15068,7 @@ msgstr "Łączniki WordPressa"
 
 #: admin/templates/integrations/wp-connectors.php:15
 msgid "WordPress Connectors integrates your site with the WordPress ecosystem. Disable to save ~180ms per page load when not needed."
-msgstr ""
+msgstr "Łączniki WordPress integrują twój witryna z ekosystemem WordPress. Wyłącz, aby zaoszczędzić ~180 ms na strona wczytywać, gdy nie są potrzebne."
 
 #: admin/templates/tools/tools-content.php:22
 #: includes/data/class-botblocker-snav.php:719

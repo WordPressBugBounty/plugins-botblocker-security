@@ -54,6 +54,30 @@ trait BotBlockerCookieTrait {
 		);
 	}
 
+	public function early_cache_gate_active(): bool {
+		return defined( 'BBCS_EARLY_CACHE_GATE' ) && BBCS_EARLY_CACHE_GATE !== self::CACHE_GATE_OPEN;
+	}
+
+	public function cache_pass_ttl(): int {
+		return max( self::CACHE_PASS_TTL_MIN, min( self::CACHE_PASS_TTL_MAX, (int) $this->settings->early_cache_pass_ttl ) );
+	}
+
+	// Same "<expires>.<hmac>" format the Early Init gate verifies before letting a page cache serve HTML; bound to the proxy-resolved IP.
+	public function set_cache_pass_cookie(): void {
+		$expires = $this->time + $this->cache_pass_ttl();
+		$this->set_cookie(
+			$this->settings->cookie . self::CACHE_PASS_COOKIE_SUFFIX,
+			$this->cache_pass_value( $expires ),
+			$expires,
+			false,
+			$this->settings->samesite
+		);
+	}
+
+	public function cache_pass_value( int $expires ): string {
+		return $expires . '.' . hash_hmac( 'sha256', self::CACHE_PASS_SIGN_PREFIX . $this->uid . '|' . $this->ip . '|' . $expires, $this->settings->salt );
+	}
+
 	// Value is "<issued>.<hmac>", keyed by the disable token, so nobody without the link can forge it.
 	public function set_secret_cookie(): void {
 		$issued = (string) $this->time;

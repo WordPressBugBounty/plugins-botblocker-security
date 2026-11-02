@@ -3,16 +3,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BotBlocker"
 "Report-Msgid-Bugs-To: "
-"POT-Creation-Date: 2026-09-29 08:53+0000"
-"PO-Revision-Date: 2026-09-29 08:53+0000"
-"Last-Translator: BotBlocker Translator Team"
+"POT-Creation-Date: 2026-10-17 11:05+0000"
+"PO-Revision-Date: 2026-10-17 11:05+0000"
+"Last-Translator: BotBlocker Team (marianneberglun)"
 "Language-Team: Swedish"
 "Language: sv_SE"
 "Plural-Forms: nplurals=2; plural=(n != 1);"
 "MIME-Version: 1.0"
 "Content-Type: text/plain; charset=UTF-8"
 "Content-Transfer-Encoding: 8bit"
-"X-Generator: BotBlocker Translator Engine"
 "X-Domain: botblocker-security"
 
 
@@ -460,7 +459,7 @@ msgstr "En veckovis sammanfattning med statistik över förfrågningar, blockeri
 
 #: addons/bbcs-telegram/views/settings.php:26
 msgid "A weekly security report is delivered to your chat with request, block and bot statistics."
-msgstr ""
+msgstr "En veckovis säkerhetsrapport levereras till ditt-chatten med statistik över förfrågningar, blockeringar och botar."
 
 #: addons/bbcs-pusher/views/settings.php:70
 msgid "a1b2c3d4e5f6g7h8"
@@ -624,7 +623,7 @@ msgstr "Aktiverar..."
 
 #: includes/class-botblocker-toastify.php:263
 msgid "Activation refused: the add-on runtime copy is outdated and could not be refreshed automatically. Check uploads write permissions and try again."
-msgstr ""
+msgstr "Aktivering nekades: utökning-körningsexemplaret är föråldrat och kunde inte uppdateras automatiskt. kolla in skrivtillåtelser för uppladdningar och försök igen."
 
 #: includes/ajax/class-botblocker-ajax-email.php:126
 msgid "Activation sent."
@@ -695,7 +694,7 @@ msgstr "Lägg till"
 
 #: addons/bbcs-feed-guard/views/settings.php:74
 msgid "Add a link back to the original article at the end of each feed entry."
-msgstr ""
+msgstr "Lägg till en länk tillbaka till den ursprungliga artikel kl. i slutet av varje flöde inlägg."
 
 #: admin/partials/class-botblocker-dashboard-widgets.php:223
 msgid "Add a short note to remember why you created this rule."
@@ -1011,11 +1010,11 @@ msgstr "Lägger till en brandväggsblockeringsregel för en IP-adress och åters
 
 #: admin/templates/settings/captcha-tab.php:173
 msgid "Adds a hidden anti-bot trap field and a submit-timing check to the verification page. Disabled by default."
-msgstr ""
+msgstr "Lägger till ett dold fält för anti-bot-fälla och en kolla in för inlämningstid till verifierings-sida. inaktiverad av standard."
 
 #: addons/bbcs-turnstile/views/settings.php:27
 msgid "Adds Cloudflare Turnstile as an external CAPTCHA provider on the BotBlocker check page. Enter the site key and secret key from your Cloudflare Turnstile dashboard, pick theme and size, then select mode 91 (Cloudflare Turnstile) as the CAPTCHA mode in BotBlocker settings. Verification runs server-side through the Turnstile siteverify endpoint; if the provider is unreachable, the check page degrades to the simple captcha instead of blocking visitors."
-msgstr ""
+msgstr "Lägger till Cloudflare Turnstile som extern CAPTCHA-leverantör på BotBlocker kolla in sida. ange webbplats-nyckeln och den hemliga nyckeln från ditt Cloudflare Turnstile Adminpanel, välj tema och storlek, ange sedan välj läge 91 (Cloudflare Turnstile) som CAPTCHA-läge i BotBlocker inställningar. Verifieringen körs på serversidan via Turnstile siteverify-ändpunkt; om leverantören inte går att nå degraderas kolla in sida till den enkla captchan i stället för att blockera besökare."
 
 #: addons/bbcs-security-headers/views/settings.php:162
 msgid "Adds Cross-Origin-Opener-Policy: same-origin-allow-popups. Protects against window.opener attacks and Spectre while keeping popup payments and OAuth flows working."
@@ -1023,7 +1022,7 @@ msgstr "Lägger till Cross-Origin-Opener-Policy: same-origin-allow-popups. Skydd
 
 #: addons/bbcs-hcaptcha/views/settings.php:27
 msgid "Adds hCaptcha as an external CAPTCHA provider on the BotBlocker check page. Enter the site key and secret key from your hCaptcha dashboard, pick theme and size, then select mode 90 (hCaptcha) as the CAPTCHA mode in BotBlocker settings. Verification runs server-side through the hCaptcha siteverify endpoint; if the provider is unreachable, the check page degrades to the simple captcha instead of blocking visitors."
-msgstr ""
+msgstr "Lägger till hCaptcha som extern CAPTCHA-leverantör på BotBlocker kolla in sida. ange webbplats-nyckeln och den hemliga nyckeln från ditt hCaptcha Adminpanel, välj tema och storlek, ange sedan välj läge 90 (hCaptcha) som CAPTCHA-läge i BotBlocker inställningar. Verifieringen körs på serversidan via hCaptcha siteverify-ändpunkt; om leverantören inte går att nå degraderas kolla in sida till den enkla captchan i stället för att blockera besökare."
 
 #: addons/bbcs-security-headers/views/settings.php:170
 msgid "Adds Origin-Agent-Cluster: ?1 to isolate the document at origin level in the browser process model."
@@ -2145,7 +2144,7 @@ msgstr "Blockera klienter som inte svarar på verifieringskontroller."
 
 #: includes/viewmodels/class-pro-status-viewmodel.php:86
 msgid "Block clients that don't respond to verification checks."
-msgstr ""
+msgstr "Blockera klienter som inte svarar när verifieringar kollas in."
 
 #: admin/templates/settings/bot-detection.php:66
 msgid "Block connections from known RKN-listed government IP addresses."
@@ -2736,7 +2735,7 @@ msgstr "botblocker/get-traffic-summary — aggregerade räknare för förfrågni
 
 #: admin/templates/integrations/wp-abilities.php:32
 msgid "botblocker/run-diagnostics — read-only health checks for the data directory and database tables."
-msgstr ""
+msgstr "botblocker/run-diagnostics — skrivskyddade hälsokontroller att kolla in för data-katalog och databastabeller."
 
 #: admin/templates/integrations/wp-abilities.php:46
 msgid "botblocker/run-malware-scan — starts a background malware scan through the Malware Scanner add-on."
@@ -3530,7 +3529,7 @@ msgstr "Cloudflare Turnstile"
 
 #: addons/bbcs-turnstile/inc/class-bbcs-turnstile-plugin.php:70
 msgid "Cloudflare Turnstile as an external CAPTCHA provider for the BotBlocker check page."
-msgstr ""
+msgstr "Cloudflare Turnstile som extern CAPTCHA-leverantör för BotBlocker kolla in sida."
 
 #: addons/bbcs-pusher/inc/class-bbcs-pusher-addons-page.php:33
 #: addons/bbcs-pusher/views/settings.php:93
@@ -3850,7 +3849,7 @@ msgstr "Anslutningen misslyckades. Kolla in din bot-token och ditt chatt-ID."
 
 #: addons/bbcs-pusher/inc/class-bbcs-pusher-plugin.php:312
 msgid "Connection failed. Check your credentials and that the add-on is enabled."
-msgstr ""
+msgstr "anslutning misslyckades. kolla in ditt-inloggningsuppgifter och att utökning är aktiverat."
 
 #: admin/templates/settings/connection-types.php:20
 msgid "Connection filtering blocks suspicious connection methods used by bots and scrapers."
@@ -3872,11 +3871,11 @@ msgstr "Anslutningsinfo:"
 
 #: addons/bbcs-telegram/inc/class-bbcs-telegram-plugin.php:223
 msgid "Connection OK! Check your Telegram chat for the test message."
-msgstr ""
+msgstr "anslutning OK! kolla in ditt Telegram-chatt för testmeddelandet."
 
 #: addons/bbcs-pusher/inc/class-bbcs-pusher-plugin.php:310
 msgid "Connection OK! Open your browser client to see the test event."
-msgstr ""
+msgstr "anslutning OK! Öppna ditt webbläsare-klienten för att se testfall."
 
 #: addons/bbcs-telegram/inc/class-bbcs-telegram-plugin.php:345
 msgid "Connection test successful!"
@@ -4631,7 +4630,7 @@ msgstr "Identifiering och tröskelvärde"
 
 #: addons/bbcs-404-guard/views/settings.php:29
 msgid "Detects path-scanning bots by the rate of 404 responses an IP produces. Once an IP crosses the threshold inside the sliding window, the next request is challenged (CAPTCHA) or blocked through the core traffic decision pipeline. Legitimate broken links from real visitors, logged-in users and allowlisted networks can be excluded, and monitor-only mode records activity without acting."
-msgstr ""
+msgstr "Upptäcker sökvägsskannande bottar utifrån frekvensen av 404-svar som en IP genererar. När en IP passerar tröskelvärdet inom det glidande fönstret utmanas nästa begäran (CAPTCHA) eller blockeras via kärnans trafikbeslutspipeline. Legitima trasiga länkar från riktiga besökare, inloggade användare och vitlistade nätverk kan undantas, och läget Endast övervakning registrerar aktivitet som ett objekt utan att agera."
 
 #: addons/bbcs-404-guard/inc/class-bbcs-404-guard-plugin.php:53
 msgid "Detects path-scanning bots by their 404 rate and challenges or blocks them before they map the site."
@@ -4958,6 +4957,7 @@ msgid "Early Init and MU modes drop blacklisted IPs at the first gate - no WordP
 msgstr "Early Init- och MU-lägena släpper svartlistade IP-adresser vid första grinden - ingen WordPress-laddning, inget overhead. Detta sparar CPU-tid genom att hoppa över tyngre logik för skräptrafik innan den når huvudskölden."
 
 #: admin/templates/setup-guide/chain-body.php:49
+#, fuzzy
 msgid "Early Init and MU plugin modes reject requests at the first gate: IPs on the blacklist (bots, malicious networks, previously blocked) are dropped before heavier logic runs. With Early Init, WordPress does not load at all - saving memory and CPU. The MU plugin filters before regular plugins and the theme. Only clean traffic proceeds; junk is dropped as early as possible."
 msgstr "Early Init- och MU-tilläggslägen avvisar förfrågningar vid första grinden: IP-adresser på svartlistan (robotar, skadliga nätverk, tidigare blockerade) släpps innan tyngre logik körs. Med Early Init laddas WordPress inte alls - vilket sparar minne och CPU. MU-tillägget filtrerar före vanliga tillägg och temat. Endast ren trafik fortsätter; skräp släpps så tidigt som möjligt."
 
@@ -5418,7 +5418,7 @@ msgstr "Aktivera Malware Scanner och dess inställningar. Du kan inaktivera det 
 
 #: addons/bbcs-pusher/views/settings.php:45
 msgid "Enable the weekly digest pushed to your browser via Pusher Channels."
-msgstr ""
+msgstr "aktivera veckosammanfattningen som skickas till ditt webbläsare via Pusher Channels."
 
 #: addons/bbcs-cookie-alert/views/settings.php:47
 msgid "Enable this option to display a simple cookie notice to your visitors."
@@ -5433,7 +5433,7 @@ msgstr "Aktivera TLS-fingeravtryckskontroll"
 #: admin/templates/settings/tls-fingerprint.php:84
 #: includes/ajax/class-botblocker-ajax-tls-fingerprints.php:192
 msgid "Enable TLS Fingerprint Check and save settings before syncing."
-msgstr ""
+msgstr "aktivera TLS-fingeravtryck kolla in och spara inställningar före synkronisering."
 
 #: admin/templates/integrations/2fa.php:33
 #: includes/data/class-botblocker-snav.php:694
@@ -5785,7 +5785,7 @@ msgstr "Utökning saknas"
 
 #: addons/bbcs-security-headers/views/settings.php:70
 msgid "External header check services"
-msgstr ""
+msgstr "Externa sidhuvud kolla in tjänster"
 
 #: admin/templates/settings/connection-types.php:50
 #: includes/data/class-botblocker-snav.php:199
@@ -6904,7 +6904,7 @@ msgstr "Skaffa BotBlocker PRO"
 #: admin/templates/integrations/wp-abilities.php:28
 #: includes/inc-botblocker-wp-abilities.php:15
 msgid "Get firewall status"
-msgstr ""
+msgstr "Hämta brandväggsStatusuppdatering"
 
 #: admin/templates/integrations/wp-abilities.php:30
 #: includes/inc-botblocker-wp-abilities.php:58
@@ -8716,7 +8716,7 @@ msgstr "Huvud"
 
 #: admin/templates/rules/body.php:153
 msgid "Maintained automatically by BotBlocker cloud - read-only. Manage your own ASN rules in the table above."
-msgstr ""
+msgstr "Underhålls automatiskt av BotBlocker Cloud – endast läsning. hantera ditt egna ASN-regler i tabellen över."
 
 #: admin/templates/tools/maintenance-tab.php:89
 #: includes/data/class-botblocker-snav.php:748
@@ -8846,7 +8846,7 @@ msgstr "Huvudbrytare för 404-skannerdetekteringen nedan."
 
 #: admin/templates/integrations/wp-abilities.php:22
 msgid "Master switch. When off, no BotBlocker ability is registered at all — it is invisible in the ability list, REST, MCP and run endpoints."
-msgstr ""
+msgstr "Huvudbrytare. När den är av registreras ingen BotBlocker-förmåga kl. alls – den är osynlig i förmåga-listan, REST, MCP och kör-ändpunkter."
 
 #: admin/templates/setup-wizard/captcha.php:36
 msgid "Match rotating shapes. BotBlocker exclusive."
@@ -9270,7 +9270,7 @@ msgstr "Analys av flera signalbeteenden för avancerad botdetektion."
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-plugin.php:57
 msgid "Multi-signal behavioral scoring, session limits, and IP reputation decay."
-msgstr ""
+msgstr "Beteendepoäng baserat på flera signaler, sessionsbegränsningar och gradvis försämrat IP-rykte."
 
 #: admin/templates/settings/rate-limiting.php:128
 msgid "Multiplier applied to block RPM for subnet threshold. Higher = more tolerant. Default: 3."
@@ -10138,7 +10138,7 @@ msgstr "Policy-URL"
 #: addons/bbcs-cookie-alert/inc/class-bbcs-cookie-alert-addons-page.php:57
 #: addons/bbcs-cookie-alert/views/settings.php:123
 msgid "Position"
-msgstr "Position"
+msgstr "position"
 
 #: admin/templates/shared/system-status-lines.php:17
 msgid "post_max_size: "
@@ -10569,7 +10569,7 @@ msgstr "PTR-regelns nätmask"
 #: addons/bbcs-behavior/views/settings.php:82
 #: addons/bbcs-behavior/views/settings.php:94
 msgid "pts"
-msgstr "pts"
+msgstr "p"
 
 #: addons/bbcs-antispam/views/settings.php:212
 msgid "Publish clean (ham) comments immediately, overriding the WordPress moderation settings. When disabled, WordPress decides the final status of clean comments."
@@ -10860,7 +10860,7 @@ msgstr "Rekommenderad förinställning med ett klick (~30 sekunder)"
 #: admin/templates/settings/data-log.php:89
 #, php-format
 msgid "Record audit log entries for actions by %s"
-msgstr ""
+msgstr "objekt inlägg i granskningsloggen för åtgärder av %s"
 
 #: admin/templates/settings/log.php:36
 msgid "Record blocked visitor data for attack pattern analysis and threat intelligence."
@@ -10895,7 +10895,7 @@ msgstr "Registrera trafik från vitlistade IP-adresser för att kontrollera rege
 
 #: admin/templates/settings/log.php:48
 msgid "Record visitor hits to WordPress system URLs such as logins, password resets, and blocked access attempts."
-msgstr ""
+msgstr "objekt besökarträffar på WordPress system-URL:er som att logga in, återställa lösenord och blockerade åtkomstförsök."
 
 #: admin/templates/settings/log.php:34
 msgid "Record visitors detected as likely bots via fingerprinting inconsistencies."
@@ -10911,15 +10911,15 @@ msgstr "Registrera besökare som klarar alla säkerhetskontroller. Användbart f
 
 #: admin/templates/settings/log.php:47
 msgid "Record visits to BotBlocker admin screens in the log."
-msgstr ""
+msgstr "objekt besök på BotBlocker admin-vyer i loggen."
 
 #: admin/templates/settings/data-log.php:67
 msgid "Record WordPress admin actions in a dedicated audit log table."
-msgstr ""
+msgstr "objekt WordPress adminåtgärder i en dedikerad tabell för granskningsloggen."
 
 #: public/2FA/bbcs-2fa.php:273
 msgid "Recovery email sent. Check your inbox."
-msgstr ""
+msgstr "Återställnings-e-post skickat. kolla in ditt inkorg."
 
 #: public/captcha/render-moving-shapes-button-trait.php:24
 msgid "Red"
@@ -11196,7 +11196,7 @@ msgstr "Ersätt hela inläggets innehåll i flöden med ett kort utdrag."
 
 #: admin/templates/settings/cookie.php:96
 msgid "Replaces IP/host/UA-bound cookie hash with a session token. Eliminates Captcha loops for VPN/proxy users. Disable only if experiencing issues."
-msgstr "Ersätter cookie-hash bunden till IP/värd/UA med en sessionstoken. Eliminerar Captcha-loopar för VPN-/proxyanvändare. Inaktivera endast om du upplever problem."
+msgstr "Ersätter IP/webbhotell/UA-bunden Cookie-hash med en sessions-token. Eliminerar Captcha-loopar för användare med VPN/proxy. inaktivera endast om du upplever problem."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:66
 msgid "Replaces the default screen shown while the site is in maintenance mode."
@@ -11755,7 +11755,7 @@ msgstr "Körs på ditt webbplats"
 
 #: includes/inc-botblocker-wp-abilities.php:111
 msgid "Runs a set of read-only health checks against the BotBlocker data directory and database tables."
-msgstr ""
+msgstr "Kör en uppsättning skrivskyddade kontroller för att kolla in BotBlocker-data-katalog och databastabeller."
 
 #: addons/bbcs-early-init/inc/bbcs-early-init-core.php:62
 msgid "Runs BotBlocker filtering before WordPress loads through wp-config bootstrap integration."
@@ -12300,7 +12300,7 @@ msgstr "Skicka via e-post"
 #: admin/templates/settings/advanced-protection.php:39
 #: includes/viewmodels/class-pro-status-viewmodel.php:81
 msgid "Send visitors on the check page to BotBlocker Cloud for a verdict."
-msgstr ""
+msgstr "Skicka besökare på kolla in sida till BotBlocker Cloud för ett utlåtande."
 
 #: includes/utilites/class-botblocker-support.php:140
 msgid "Sending failed. Please try again later."
@@ -12343,7 +12343,7 @@ msgstr "Serverport:"
 
 #: admin/templates/integrations/cache.php:21
 msgid "Server-level caches that bypass PHP can serve cached copies of the BotBlocker verification page, breaking protection. Configure a cookie-based exception for every cache in front of your site."
-msgstr ""
+msgstr "Cacheminnen på servernivå som kringgår PHP kan leverera cachade kopior av sida för BotBlocker-verifiering, vilket bryter skyddet. konfigurera ett cookiebaserat undantag för varje cache framför ditt webbplats."
 
 #: admin/templates/cloud-api/status.php:138
 msgid "Server-side protection setup"
@@ -12388,7 +12388,7 @@ msgstr "Konfigurera 2FA för ditt konto"
 
 #: admin/templates/setup-wizard/recaptcha.php:16
 msgid "Set up Google verification separately from your primary BotBlocker challenge."
-msgstr ""
+msgstr "Ställ in Google-verifiering separat från ditt primära BotBlocker-utmaning."
 
 #: includes/data/class-botblocker-palette.php:156
 msgid "Set up two-factor authentication - 2FA, MFA, OTP, recovery"
@@ -12537,7 +12537,7 @@ msgstr "Signature DB-URL"
 
 #: admin/templates/settings/payment-tab.php:47
 msgid "Signature headers are always verified for format (min 8 chars, POST only). When enabled, payment bypass additionally applies to POST requests only: GET requests with payment query keys or ajax actions will not bypass the shield. Callbacks matched by generic markers (webhook, ipn, callback_handler) always keep IP and rate-limit rules active. Reduces attack surface while keeping real webhooks working."
-msgstr ""
+msgstr "Signatur-Rubriker kontrolleras alltid avseende format (minst 8 tecken, endast POST). När aktiverat verkställs betalningskringgåendet dessutom endast för POST-förfrågningar: GET-förfrågningar med betalnings-query-nycklar eller ajax-åtgärder kringgår inte skyddet. Återanrop som matchas av generiska markörer (webhook, ipn, callback_handler) behåller alltid IP- och hastighetsbegränsningsregler aktiv. Minskar angreppsytan samtidigt som riktiga webhooks fortsätter fungera."
 
 #: includes/audit/class-botblocker-audit-logger.php:414
 msgid "Signed in from a trusted device."
@@ -13311,7 +13311,7 @@ msgstr "Reservhanteraren kontrollerar försenade uppgifter (>1,5× intervall) oc
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:108
 #, php-format
 msgid "The file %s will be deleted from your server:"
-msgstr ""
+msgstr "Filen %s kommer att borttagen från ditt server:"
 
 #. translators: %s: file path relative to wp-content
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:135
@@ -13328,7 +13328,7 @@ msgstr "Filen %s kommer att stängas av:"
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:149
 #: addons/bbcs-forced-inclusions/inc/class-file-operator.php:121
 msgid "The file could not be deleted. Your server may not allow it - ask your hosting company to check the file permissions."
-msgstr ""
+msgstr "Filen kunde inte borttagen. ditt server kanske inte tillåt den – be ditt webbhotell företag att kolla in filens tillåtelser."
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:151
 #: addons/bbcs-forced-inclusions/inc/class-file-operator.php:87
@@ -13346,7 +13346,7 @@ msgstr "Filen får tillbaka sitt ursprungliga namn."
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:125
 msgid "The file stays on your server - nothing is deleted. Use delete for that."
-msgstr ""
+msgstr "Filen ligger kvar på ditt server – ingenting borttagen. Använd Ta bort för det."
 
 #: admin/templates/tools/modals/object-cache.php:19
 msgid "The internal WordPress cache and external caching systems (Redis, Memcached) will be reset."
@@ -13377,6 +13377,7 @@ msgid "The malware scanner is not available."
 msgstr "Skanningen efter skadlig kod är inte tillgänglig."
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:389
+#, fuzzy
 msgid "The maximum number of requests per hour (RPH) a typical human visitor would make. This captures slow-crawling scraping bots that keep their per-minute speed low to avoid basic limiters. (Default: 200)"
 msgstr "Det maximala antalet förfrågningar per timme (RPH) som en typisk mänsklig besökare skulle göra. Detta genomför långsamt krypande skrapningsbotar som håller sin hastighet per minut låg för att undvika grundläggande begränsare. (Standard: 200)"
 
@@ -13540,7 +13541,7 @@ msgstr "WordPress-loggfilen (debug.log) kommer att rensas:"
 
 #: addons/bbcs-forced-inclusions/views/settings.php:162
 msgid "The WPMU_PLUGIN_DIR constant is set - your mu-plugins are loading from a non-standard location. If you did not change this, an attacker may have redirected the directory to hide malicious files."
-msgstr ""
+msgstr "WPMU_PLUGIN_DIR-konstant är inställt – ditt mu-tillägg laddar in från en icke-standardplats. Om du inte har ändrat detta kan en angripare ha omdirigerat katalog till dölj skadliga filer."
 
 #: addons/bbcs-hcaptcha/views/settings.php:72
 #: addons/bbcs-turnstile/views/settings.php:73
@@ -13559,7 +13560,7 @@ msgstr "Teman"
 #: includes/data/class-botblocker-alerts.php:775
 #, php-format
 msgid "These add-ons could not start and were switched off to keep the site running: %s. Your settings are kept. Please update or reinstall them."
-msgstr ""
+msgstr "Dessa utökningar kunde inte starta och stängdes av för att hålla webbplats igång: %s. ditt inställningar behålls. Vänligen uppdatera eller installera om dem."
 
 #: admin/templates/settings/status.php:22
 msgid "These options require no form save - they apply immediately and are safe to experiment with."
@@ -13620,11 +13621,11 @@ msgstr "Denna fil är redan påslagen."
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:105
 msgid "This file is one of the risky ones: your site can go offline or slow down badly until you undo this."
-msgstr ""
+msgstr "Den här filen är en av de riskabla: ditt webbplats kan gå offline eller saktas ner kraftigt tills du ångrar detta."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:239
 msgid "This file only does something on a multisite network, and your site is not one. It is doing nothing here, so it is worth finding out who put it there."
-msgstr ""
+msgstr "Den här filen gör bara något i ett multisite-nätverk, och ditt webbplats är inte ett sådant. Den gör ingenting här, så det är värt att ta reda på vem som lade den där."
 
 #: admin/templates/tools/modals/salt-clear.php:24
 msgid "This process is irreversible."
@@ -13741,7 +13742,7 @@ msgstr "För att aktivera databasreparation och optimering:"
 
 #: addons/bbcs-security-headers/views/settings.php:72
 msgid "To let a scanner (e.g. securityheaders.com) see your live page instead of the challenge page, find its bot in BotBlocker reports and whitelist its IP under White Bots → Search Engines (se). A rating is computed even on the challenge page itself — whitelisting is only needed for the production look."
-msgstr ""
+msgstr "För att låta en skanner (t.ex. securityheaders.com) se ditt live sida i stället för utmanings-sida, hitta dess bot i BotBlocker-rapporter och vitlista dess IP under White Bots → sökmotorer (se). En bedömning beräknas även på själva utmanings-sida — vitlistning behövs bara för produktionsutseendet."
 
 #: admin/templates/about/body.php:213
 msgid "Toast Notifications:"
@@ -14170,11 +14171,11 @@ msgstr "Inställning av tvåfaktorsautentisering"
 
 #: includes/audit/class-botblocker-audit-logger.php:413
 msgid "Two-factor check failed."
-msgstr ""
+msgstr "Tvåfaktors-kolla in misslyckades."
 
 #: includes/audit/class-botblocker-audit-logger.php:412
 msgid "Two-factor check passed via %via%."
-msgstr ""
+msgstr "Tvåfaktors-kolla in godkändes via %via%."
 
 #: admin/templates/dashboard/quick-links.php:18
 msgid "Two-factor login protection"
@@ -14536,7 +14537,7 @@ msgstr "URI"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:292
 msgid "URL to fetch remote regex signatures for malware detection. Endpoint must return JSON with version + signatures array. Each signature: id, severity (critical/high/medium/low), regex (valid PHP regex), score (1-100), confidence, category, description."
-msgstr "URL för att hämta fjärrsignaturer för regex för detektering av skadlig programvara. Ändpunkten måste returnera JSON med version + signatur-array. Varje signatur: id, allvarlighetsgrad (kritisk/hög/medium/låg), regex (giltigt PHP-regex), poäng (1-100), konfidens, kategori, beskrivning."
+msgstr "URL för att hämta fjärranslutna regex-signaturer för detektering av skadlig kod. Ändpunkten måste returnera JSON med version + signatures-array. Varje signatur: id, allvarlighetsgrad (critical/high/medium/low), regex (giltig PHP-regex), poäng (1-100), konfidens, kategori, beskrivning."
 
 #: addons/bbcs-hide-admin/views/settings.php:98
 msgid "URL to redirect to when someone tries to access the default login URL. Only used when behavior is set to Redirect."
@@ -14769,7 +14770,7 @@ msgstr "Visa och hantera alla schemalagda cron-jobb i WordPress. Inaktivera oön
 #: addons/bbcs-malware/inc/views/scan-results/file-findings.php:87
 #: addons/bbcs-malware/inc/views/scan-results/ignored-files.php:38
 msgid "View details"
-msgstr ""
+msgstr "vy detaljer"
 
 #: admin/templates/shared/sidebar/rail.php:65
 msgid "View on WordPress.org"
@@ -15059,7 +15060,7 @@ msgstr "WordPress-anslutare"
 
 #: admin/templates/integrations/wp-connectors.php:15
 msgid "WordPress Connectors integrates your site with the WordPress ecosystem. Disable to save ~180ms per page load when not needed."
-msgstr ""
+msgstr "WordPress Anslutare integrerar ditt webbplats med WordPress-ekosystemet. inaktivera för att spara ~180ms per sida-laddning när det inte behövs."
 
 #: admin/templates/tools/tools-content.php:22
 #: includes/data/class-botblocker-snav.php:719
@@ -15165,7 +15166,7 @@ msgstr "Fungerar överallt"
 #: admin/templates/integrations/wp-abilities.php:21
 #: includes/viewmodels/class-integrations-viewmodel.php:185
 msgid "WP Abilities API"
-msgstr ""
+msgstr "WP-förmåge-API"
 
 #: includes/data/class-botblocker-snav.php:408
 msgid "WP Cron"
@@ -15287,7 +15288,7 @@ msgstr "Du kan slå på den igen från den här sidan när du vill."
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:140
 msgid "You can turn it off again at any time."
-msgstr ""
+msgstr "Du kan stänga av det igen kl. när som helst."
 
 #: includes/shortcode/class-botblocker-sidebar-shortcodes.php:129
 #: includes/shortcode/class-botblocker-sidebar-shortcodes.php:162
@@ -15378,11 +15379,11 @@ msgstr "Ditt Pusher-app-ID från adminpanelen."
 
 #: addons/bbcs-pusher/views/settings.php:72
 msgid "Your Pusher app key (public)."
-msgstr ""
+msgstr "ditt Pusher app nyckel (Offentlig)."
 
 #: addons/bbcs-pusher/views/settings.php:83
 msgid "Your Pusher app secret. Used to sign events; never share it."
-msgstr ""
+msgstr "ditt Pusher app hemlighet. Används för att signera fall; dela den aldrig."
 
 #: addons/bbcs-pusher/views/settings.php:94
 msgid "Your Pusher cluster, e.g. mt1, eu, us2. Leave empty to use the default."
@@ -15394,7 +15395,7 @@ msgstr "Din säkerhetskonfiguration är klar."
 
 #: addons/bbcs-antispam/views/settings.php:109
 msgid "Your site API key for the AI WebSocket service. Register at ai.globus.studio to get your key."
-msgstr ""
+msgstr "ditt webbplats API-nyckel för AI WebSocket tjänst. Registrera kl. ai.globus.studio för att få ditt nyckel."
 
 #: admin/templates/setup-wizard/finish.php:10
 msgid "Your site is protected!"

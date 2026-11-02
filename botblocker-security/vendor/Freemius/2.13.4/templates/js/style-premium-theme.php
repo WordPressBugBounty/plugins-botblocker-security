@@ -1,37 +1,34 @@
 <?php
+	/**
+	 * @package     Freemius
+	 * @copyright   Copyright (c) 2015, Freemius, Inc.
+	 * @license     https://www.gnu.org/licenses/gpl-3.0.html GNU General Public License Version 3
+	 * @since       1.2.2.7
+	 *
+	 */
 
-namespace BotBlocker\Vendor;
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
 
-/**
- * @package     Freemius
- * @copyright   Copyright (c) 2015, Freemius, Inc.
- * @license     https://www.gnu.org/licenses/gpl-3.0.html GNU General Public License Version 3
- * @since       1.2.2.7
- *
- */
-if (!\defined('ABSPATH')) {
-    exit;
-}
-/**
- * @var array    $VARS
- * @var Freemius $fs
- */
-$fs = freemius($VARS['id']);
-$premium_slug = $fs->get_premium_slug();
+	/**
+	 * @var array    $VARS
+	 * @var Freemius $fs
+	 */
+	$fs = freemius( $VARS['id'] );
+
+	$premium_slug = $fs->get_premium_slug();
+
 ?>
 <script type="text/javascript">
 	(function ($) {
 		// Select the premium theme version.
-		var $theme             = $('#<?php 
-echo $premium_slug;
-?>-name').parents('.theme'),
+		var $theme             = $('#<?php echo $premium_slug ?>-name').parents('.theme'),
 		    addPremiumMetadata = function (firstCall) {
 			    if (!firstCall) {
 				    // Seems like the original theme element is removed from the DOM,
 				    // so we need to reselect the updated one.
-				    $theme = $('#<?php 
-echo $premium_slug;
-?>-name').parents('.theme');
+				    $theme = $('#<?php echo $premium_slug ?>-name').parents('.theme');
 			    }
 
 			    if (0 === $theme.find('.fs-premium-theme-badge-container').length) {
@@ -39,19 +36,11 @@ echo $premium_slug;
 
 				    var $themeBadgeContainer = $( '<div class="fs-premium-theme-badge-container"></div>' );
 
-				    $themeBadgeContainer.append( '<div class="fs-badge fs-premium-theme-badge">' + <?php 
-echo \json_encode($fs->get_text_inline('Premium', 'premium'));
-?> + '</div>' );
+				    $themeBadgeContainer.append( '<div class="fs-badge fs-premium-theme-badge">' + <?php echo json_encode( $fs->get_text_inline( 'Premium', 'premium' ) ) ?> + '</div>' );
 
-				    <?php 
-if ($fs->is_beta()) {
-    ?>
-                    $themeBadgeContainer.append( '<div class="fs-badge fs-beta-theme-badge">' + <?php 
-    echo \json_encode($fs->get_text_inline('Beta', 'beta'));
-    ?> + '</div>' );
-                    <?php 
-}
-?>
+				    <?php if ( $fs->is_beta() ) : ?>
+                    $themeBadgeContainer.append( '<div class="fs-badge fs-beta-theme-badge">' + <?php echo json_encode( $fs->get_text_inline( 'Beta', 'beta' ) ) ?> + '</div>' );
+                    <?php endif ?>
 
 				    $theme.append( $themeBadgeContainer );
 			    }
@@ -61,4 +50,4 @@ if ($fs->is_beta()) {
 
 		$theme.contentChange(addPremiumMetadata);
 	})(jQuery);
-</script><?php 
+</script>

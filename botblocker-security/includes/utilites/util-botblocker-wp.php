@@ -140,6 +140,7 @@ class BotBlockerWpUtility {
 				'bbcs_addons',
 				'bbcs_cloud_api',
 				'bbcs_about',
+				'bbcs_selftest',
 			);
 
 			return in_array( sanitize_text_field( wp_unslash( $_GET['page'] ) ), $bbcs_pages );

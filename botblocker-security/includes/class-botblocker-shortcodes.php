@@ -38,14 +38,14 @@ class BotBlockerShortcodes {
 			'bbcs_top_ips',
 			function ( $atts ) {
 				$BBCS = BotBlocker::getInstance();
-				$cache_key = 'bbcs_top_ips';
+				$atts = shortcode_atts( array( 'limit' => 5, 'days' => 7 ), $atts, 'bbcs_top_ips' );
+				$cache_key = 'bbcs_top_ips_' . absint( $atts['limit'] ) . '_' . absint( $atts['days'] );
 				if ( $BBCS->settings->cache_ui_data == 1 ) {
 					$cached = get_transient( $cache_key );
 					if ( $cached ) {
 						return $cached;
 					}
 				}
-				$atts   = shortcode_atts( array( 'limit' => 5, 'days' => 7 ), $atts, 'bbcs_top_ips' );
 				$output = self::renderTopList( 'ip', intval( $atts['limit'] ), intval( $atts['days'] ) );
 				if ( $BBCS->settings->cache_ui_data == 1 ) {
 					set_transient( $cache_key, $output, $BBCS->settings->cache_ui_duration );
@@ -58,8 +58,9 @@ class BotBlockerShortcodes {
 			'bbcs_top_countries',
 			function ( $atts ) {
 				$BBCS = BotBlocker::getInstance();
+				$atts = shortcode_atts( array( 'limit' => 5, 'days' => 7 ), $atts, 'bbcs_top_countries' );
 
-				$cache_key          = 'bbcs_top_countries';
+				$cache_key = 'bbcs_top_countries_' . absint( $atts['limit'] ) . '_' . absint( $atts['days'] );
 
 				if ( $BBCS->settings->cache_ui_data == 1 ) {
 					$cached = get_transient( $cache_key );
@@ -67,7 +68,6 @@ class BotBlockerShortcodes {
 						return $cached;
 					}
 				}
-				$atts   = shortcode_atts( array( 'limit' => 5, 'days' => 7 ), $atts, 'bbcs_top_countries' );
 				$output = self::renderTopList( 'country', intval( $atts['limit'] ), intval( $atts['days'] ) );
 				if ( $BBCS->settings->cache_ui_data == 1 ) {
 					set_transient( $cache_key, $output, $BBCS->settings->cache_ui_duration );
@@ -80,7 +80,8 @@ class BotBlockerShortcodes {
 			'bbcs_top_devices',
 			function ( $atts ) {
 				$BBCS = BotBlocker::getInstance();
-				$cache_key          = 'bbcs_top_devices';
+				$atts = shortcode_atts( array( 'limit' => 5, 'days' => 7 ), $atts, 'bbcs_top_devices' );
+				$cache_key = 'bbcs_top_devices_' . absint( $atts['limit'] ) . '_' . absint( $atts['days'] );
 
 				if ( $BBCS->settings->cache_ui_data == 1 ) {
 					$cached = get_transient( $cache_key );
@@ -88,7 +89,6 @@ class BotBlockerShortcodes {
 						return $cached;
 					}
 				}
-				$atts   = shortcode_atts( array( 'limit' => 5, 'days' => 7 ), $atts, 'bbcs_top_devices' );
 				$output = self::renderTopList( 'device', intval( $atts['limit'] ), intval( $atts['days'] ) );
 				if ( $BBCS->settings->cache_ui_data == 1 ) {
 					set_transient( $cache_key, $output, $BBCS->settings->cache_ui_duration );
@@ -101,7 +101,8 @@ class BotBlockerShortcodes {
 			'bbcs_top_browsers',
 			function ( $atts ) {
 				$BBCS = BotBlocker::getInstance();
-				$cache_key          = 'bbcs_top_browsers';
+				$atts = shortcode_atts( array( 'limit' => 5, 'days' => 7 ), $atts, 'bbcs_top_browsers' );
+				$cache_key = 'bbcs_top_browsers_' . absint( $atts['limit'] ) . '_' . absint( $atts['days'] );
 
 				if ( $BBCS->settings->cache_ui_data == 1 ) {
 					$cached = get_transient( $cache_key );
@@ -109,7 +110,6 @@ class BotBlockerShortcodes {
 						return $cached;
 					}
 				}
-				$atts   = shortcode_atts( array( 'limit' => 5, 'days' => 7 ), $atts, 'bbcs_top_browsers' );
 				$output = self::renderTopList( 'browser', intval( $atts['limit'] ), intval( $atts['days'] ) );
 				if ( $BBCS->settings->cache_ui_data == 1 ) {
 					set_transient( $cache_key, $output, $BBCS->settings->cache_ui_duration );

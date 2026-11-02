@@ -430,10 +430,40 @@ class BotBlockerFileRenderer {
 	 * Permanent bans (BOTBLOCKER_EXP_INF) live in ip.php only.
 	 */
 	public static function renderHotBans(): void {
+		$hot = self::collectHotBansFromDb();
+
+		$file = BotBlockerMultisite::getDataDir() . 'hot-bans.php';
+
+		$lockFp = self::acquireHotBanLock();
+		if ( ! $lockFp ) {
+			return;
+		}
+
+		$total = count( $hot['ipv4'] ) + count( $hot['ipv6'] );
+		if ( $total === 0 ) {
+			if ( file_exists( $file ) ) {
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+				@unlink( $file );
+				BotBlockerCompiledFile::invalidate( $file );
+			}
+			self::releaseHotBanLock( $lockFp );
+			return;
+		}
+
+		self::atomicFileWrite( $file, self::buildHotBansContent( $hot ) );
+		self::releaseHotBanLock( $lockFp );
+	}
+
+	/**
+	 * DB source for hot-bans.php. Kept lock-free so callers that already hold
+	 * the hot-ban lock can rebuild without re-entering acquireHotBanLock().
+	 *
+	 * @return array{ipv4: array<string, array{0:string,1:int}>, ipv6: array<string, array{0:string,1:int}>}
+	 */
+	private static function collectHotBansFromDb(): array {
 		global $wpdb;
 
-		$now            = time();
-
+		$now = time();
 		$hot = array(
 			'ipv4' => array(),
 			'ipv6' => array(),
@@ -469,26 +499,7 @@ class BotBlockerFileRenderer {
 		}
 		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
-		$file = BotBlockerMultisite::getDataDir() . 'hot-bans.php';
-
-		$lockFp = self::acquireHotBanLock();
-		if ( ! $lockFp ) {
-			return;
-		}
-
-		$total = count( $hot['ipv4'] ) + count( $hot['ipv6'] );
-		if ( $total === 0 ) {
-			if ( file_exists( $file ) ) {
-				// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
-				@unlink( $file );
-				BotBlockerCompiledFile::invalidate( $file );
-			}
-			self::releaseHotBanLock( $lockFp );
-			return;
-		}
-
-		self::atomicFileWrite( $file, self::buildHotBansContent( $hot ) );
-		self::releaseHotBanLock( $lockFp );
+		return $hot;
 	}
 
 	private static function isHotBansTampered(): bool {
@@ -525,6 +536,34 @@ class BotBlockerFileRenderer {
 			'ipv4' => ( isset( $data['ipv4'] ) && is_array( $data['ipv4'] ) ) ? $data['ipv4'] : array(),
 			'ipv6' => ( isset( $data['ipv6'] ) && is_array( $data['ipv6'] ) ) ? $data['ipv6'] : array(),
 		);
+	}
+
+	/**
+	 * Loads hot-bans entries with a legacy fallback: safeLoad() rejects unsigned
+	 * files, and silently dropping their entries on append/remove would unban
+	 * every listed IP. A syntactically broken file cannot be parsed, so rebuild
+	 * from the DB source instead of overwriting it with an empty baseline
+	 * (AUD-05). Callers hold the hot-ban lock.
+	 */
+	private static function loadHotBansData( string $file ): array {
+		$data = BotBlockerDataFile::safeLoad( $file );
+		if ( ! empty( $data ) || ! file_exists( $file ) ) {
+			return self::normalizeHotBansData( $data );
+		}
+		$content = @file_get_contents( $file );
+		if ( false === $content || false !== strrpos( $content, '// HASH:' ) ) {
+			return array( 'ipv4' => array(), 'ipv6' => array() );
+		}
+		try {
+			$parsed = include $file;
+		} catch ( \Throwable $e ) {
+			$parsed = null;
+		}
+		if ( ! is_array( $parsed ) ) {
+			$parsed = self::collectHotBansFromDb();
+			self::atomicFileWrite( $file, self::buildHotBansContent( $parsed ) );
+		}
+		return self::normalizeHotBansData( $parsed );
 	}
 
 	private static function buildHotBansContent( array $data ): string {
@@ -609,7 +648,7 @@ class BotBlockerFileRenderer {
 			return;
 		}
 
-		$data = self::normalizeHotBansData( BotBlockerDataFile::safeLoad( $file ) );
+		$data = self::loadHotBansData( $file );
 
 		$key   = filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ? 'ipv6' : 'ipv4';
 		$found = false;
@@ -658,10 +697,7 @@ class BotBlockerFileRenderer {
 			return;
 		}
 
-		$existing = array( 'ipv4' => array(), 'ipv6' => array() );
-		if ( file_exists( $file ) ) {
-			$existing = self::normalizeHotBansData( BotBlockerDataFile::safeLoad( $file ) );
-		}
+		$existing = self::loadHotBansData( $file );
 
 		self::pruneExpiredHotBans( $existing );
 
@@ -705,10 +741,7 @@ class BotBlockerFileRenderer {
 			return;
 		}
 
-		$existing = array( 'ipv4' => array(), 'ipv6' => array() );
-		if ( file_exists( $file ) ) {
-			$existing = self::normalizeHotBansData( BotBlockerDataFile::safeLoad( $file ) );
-		}
+		$existing = self::loadHotBansData( $file );
 
 		// Prune expired entries inline - no extra I/O (already read the file).
 		self::pruneExpiredHotBans( $existing );
@@ -768,7 +801,7 @@ class BotBlockerFileRenderer {
 			return;
 		}
 
-		$data = self::normalizeHotBansData( BotBlockerDataFile::safeLoad( $file ) );
+		$data = self::loadHotBansData( $file );
 
 		$changed = self::pruneExpiredHotBans( $data );
 		if ( ! $changed ) {

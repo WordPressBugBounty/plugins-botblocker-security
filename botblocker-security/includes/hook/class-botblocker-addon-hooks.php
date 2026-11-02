@@ -303,7 +303,10 @@ class BotBlockerAddonHooks {
 			error_log( '[BBCS DEBUG] [Addons] Toggle: slug=' . $slug . ' action=' . ( $is_now_active ? 'activate' : 'deactivate' ) . ' status=success' );
 		}
 
-		BBCS_Toastify::flash( __( 'Add-on updated successfully.', 'botblocker-security' ), BBCS_Toastify::TYPE_SUCCESS, BBCS_Toastify::PAGE_ADDONS );
+		$toast = $is_now_active
+			? __( 'Add-on activated successfully.', 'botblocker-security' )
+			: __( 'Add-on deactivated successfully.', 'botblocker-security' );
+		BBCS_Toastify::flash( $toast, BBCS_Toastify::TYPE_SUCCESS, BBCS_Toastify::PAGE_ADDONS );
 		wp_safe_redirect( BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' ) );
 		exit;
 	}

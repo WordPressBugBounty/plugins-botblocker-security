@@ -133,10 +133,11 @@ class BotBlockerAjaxMaintenance {
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' cap check passed' );
 		}
 		global $wpdb;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", '%\_transient\_bbcs%' ) );
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", '%\_transient\_timeout_bbcs%' ) );
+		// Keep the fixed UI list and add a prefix sweep for every other
+		// bbcs_* transient (AUD-28). Both paths go through delete_transient()
+		// so an external object cache is invalidated, not just the DB rows.
+		BotBlockerCache::clearTransients();
+		BotBlockerCache::clearTransientsByMask( 'bbcs_' );
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' transients cleared successfully' );

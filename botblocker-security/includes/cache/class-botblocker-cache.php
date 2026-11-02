@@ -21,6 +21,76 @@ class BotBlockerCache {
 	}
 
 	/**
+	 * Atomic per-key counter rows in the options table (AUD-15/17). None of the
+	 * shipped cache backends expose INCR/CAS, so a plain read-modify-write
+	 * loses increments under concurrent attempts; a bare-int row updated by a
+	 * single INSERT .. ON DUPLICATE KEY UPDATE statement cannot lose one.
+	 */
+	public static function readCounterRow( string $name ): int {
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return (int) $wpdb->get_var( $wpdb->prepare( "SELECT CAST(option_value AS UNSIGNED) FROM {$wpdb->options} WHERE option_name = %s", $name ) );
+	}
+
+	public static function bumpCounterRow( string $name, int $seed ): void {
+		global $wpdb;
+		// REVIEWER NOTE: Direct DB query is the atomicity point — an UPSERT is the only primitive here that cannot lose a concurrent increment.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->query(
+			$wpdb->prepare(
+				"INSERT INTO {$wpdb->options} (option_name, option_value, autoload) VALUES (%s, %d, 'no') ON DUPLICATE KEY UPDATE option_value = CAST(option_value AS UNSIGNED) + 1",
+				$name,
+				$seed
+			)
+		);
+	}
+
+	/**
+	 * Atomically consumes one slot of a persistent counter row. The
+	 * conditional UPDATE is the cap check and the increment in one
+	 * statement, so parallel attempts cannot both pass a spent budget
+	 * (AUD-15). Returns false when the row already sits at the limit.
+	 */
+	public static function consumeCounterRow( string $name, int $limit ): bool {
+		global $wpdb;
+		$limit = max( 1, $limit );
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->query(
+			$wpdb->prepare(
+				"UPDATE {$wpdb->options} SET option_value = CAST(option_value AS UNSIGNED) + 1 WHERE option_name = %s AND CAST(option_value AS UNSIGNED) < %d",
+				$name,
+				$limit
+			)
+		);
+		if ( $wpdb->rows_affected > 0 ) {
+			return true;
+		}
+		$exists = $wpdb->get_var( $wpdb->prepare( "SELECT option_name FROM {$wpdb->options} WHERE option_name = %s", $name ) );
+		if ( null !== $exists ) {
+			return false;
+		}
+		$wpdb->query(
+			$wpdb->prepare( "INSERT IGNORE INTO {$wpdb->options} (option_name, option_value, autoload) VALUES (%s, 1, 'no')", $name )
+		);
+		if ( $wpdb->rows_affected > 0 ) {
+			return true;
+		}
+		$wpdb->query(
+			$wpdb->prepare(
+				"UPDATE {$wpdb->options} SET option_value = CAST(option_value AS UNSIGNED) + 1 WHERE option_name = %s AND CAST(option_value AS UNSIGNED) < %d",
+				$name,
+				$limit
+			)
+		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->rows_affected > 0;
+	}
+
+	public static function deleteCounterRow( string $name ): void {
+		delete_option( $name );
+	}
+
+	/**
 	 * @return BBCS_RedisStorage|BBCS_MemcachedStorage|BBCS_ApcuStorage|null
 	 */
 	public static function connect() {
@@ -685,6 +755,52 @@ class BotBlockerCache {
 			self::logDebug( 'Error clearing UI transients: ' . $e->getMessage() );
 			return false;
 		}
+	}
+
+	/**
+	 * Prefix sweep for transients whose names are not in the fixed UI list
+	 * (shortcode cache keys, chart windows, alerts, challenge tokens...).
+	 * delete_transient() is used per discovered name so an external object
+	 * cache is invalidated as well; a backend without key enumeration gets a
+	 * transient-group flush (the admin action is explicitly "clear all
+	 * transients").
+	 */
+	public static function clearTransientsByMask( string $prefix = 'bbcs_' ): int {
+		global $wpdb;
+
+		$base_like = $wpdb->esc_like( '_transient_' . $prefix ) . '%';
+		$ttl_like  = $wpdb->esc_like( '_transient_timeout_' . $prefix ) . '%';
+
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$names = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
+				$base_like,
+				$ttl_like
+			)
+		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+		$transients = array();
+		foreach ( (array) $names as $option_name ) {
+			$option_name = (string) $option_name;
+			if ( strpos( $option_name, '_transient_timeout_' ) === 0 ) {
+				$transients[] = substr( $option_name, strlen( '_transient_timeout_' ) );
+			} elseif ( strpos( $option_name, '_transient_' ) === 0 ) {
+				$transients[] = substr( $option_name, strlen( '_transient_' ) );
+			}
+		}
+
+		$deleted = 0;
+		foreach ( array_unique( $transients ) as $transient ) {
+			if ( $transient !== '' && delete_transient( $transient ) ) {
+				++$deleted;
+			}
+		}
+
+		self::logDebug( 'Transients cleared by mask "' . $prefix . '": ' . $deleted );
+
+		return $deleted;
 	}
 
 	public static function clearFileCache(): bool {

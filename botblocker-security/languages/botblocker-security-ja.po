@@ -3,16 +3,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BotBlocker"
 "Report-Msgid-Bugs-To: "
-"POT-Creation-Date: 2026-09-29 08:34+0000"
-"PO-Revision-Date: 2026-09-29 08:34+0000"
-"Last-Translator: BotBlocker Translator Team"
+"POT-Creation-Date: 2026-10-17 10:57+0000"
+"PO-Revision-Date: 2026-10-17 10:57+0000"
+"Last-Translator: BotBlocker Team (kuro_ryota)"
 "Language-Team: Japanese"
 "Language: ja"
 "Plural-Forms: nplurals=1; plural=0;"
 "MIME-Version: 1.0"
 "Content-Type: text/plain; charset=UTF-8"
 "Content-Transfer-Encoding: 8bit"
-"X-Generator: BotBlocker Translator Engine"
 "X-Domain: botblocker-security"
 
 
@@ -931,7 +930,7 @@ msgstr "アドオンは更新されましたが再アクティブ化されませ
 #: includes/hook/class-botblocker-addon-hooks.php:695
 #, php-format
 msgid "Add-on was updated but will be switched off - it requires BotBlocker %s or higher. Please update the plugin first."
-msgstr ""
+msgstr "アドオンは更新されましたが、無効化されます - BotBlocker %s 以降が必要です。先に プラグイン を 更新する してください。"
 
 #: admin/class-botblocker-admin.php:783
 #: admin/class-botblocker-admin.php:784
@@ -1628,7 +1627,7 @@ msgstr "本当にこの ASN ルールを削除してもよいですか ?"
 
 #: admin/class-botblocker-admin.php:445
 msgid "Are you sure you want to delete this country rule?"
-msgstr ""
+msgstr "本当に〜してもよいですか ? この国別ルールを削除してもよいですか ?"
 
 #: admin/class-botblocker-admin.php:341
 msgid "Are you sure you want to delete this IPv4 rule?"
@@ -1668,7 +1667,7 @@ msgstr "本当にすべてのASNルールを削除してもよいですか？"
 
 #: admin/class-botblocker-admin.php:446
 msgid "Are you sure you want to remove all country rules?"
-msgstr ""
+msgstr "本当に〜してもよいですか ? すべて 件の国別ルールを削除してもよいですか ?"
 
 #: admin/class-botblocker-admin.php:353
 msgid "Are you sure you want to remove all IPv4 rules?"
@@ -5752,7 +5751,7 @@ msgstr "ルールを JSON にエクスポート - バックアップ、保存、
 
 #: addons/bbcs-firewall-export/views/settings.php:30
 msgid "Exports the active BotBlocker ban list as ready-to-use firewall rules for Apache (.htaccess Require not ip / Deny from), nginx (deny list), fail2ban (persistent jail installer script), and iptables/ip6tables (dedicated DROP chain script). Permanent and temporary blocks are taken from the IP rules database; expired bans are never included. Download the format you need and deploy it on the front-end server or edge firewall."
-msgstr ""
+msgstr "アクティブな BotBlocker の禁止リストを、すぐに使えるファイアウォールルールとしてエクスポートします: Apache (.htaccess の Require not ip / Deny from)、nginx (拒否リスト)、fail2ban (永続的な jail の インストーラ スクリプト)、iptables/ip6tables (専用の ドロップ チェーンスクリプト)。永続的および一時的なブロックは IP ルールデータベースから取得されます。期限切れの禁止は含まれません。必要な形式をダウンロードし、フロントエンド サーバー またはエッジファイアウォールに展開してください。"
 
 #: admin/templates/integrations/wp-abilities.php:16
 msgid "Expose BotBlocker to the WordPress Abilities API. When disabled, nothing is registered — the abilities do not exist for REST, MCP or AI clients."
@@ -11188,7 +11187,7 @@ msgstr "フィード内の完全な投稿するコンテンツを短い抜粋に
 
 #: admin/templates/settings/cookie.php:96
 msgid "Replaces IP/host/UA-bound cookie hash with a session token. Eliminates Captcha loops for VPN/proxy users. Disable only if experiencing issues."
-msgstr "IP/ホスト/UAバインドCookieハッシュをセッショントークンに置き換えます。VPN/プロキシユーザーのCaptchaループを排除します。問題が発生している場合のみ無効化してください。"
+msgstr "IP/ホスト/UA-bound Cookie ハッシュをセッショントークンに置き換えます。VPN/プロキシユーザーの Captcha ループを解消します。問題が発生している場合にのみ 無効化 してください。"
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:66
 msgid "Replaces the default screen shown while the site is in maintenance mode."
@@ -11548,7 +11547,7 @@ msgstr "RU-Govリストの更新はすでにキューに入っています。"
 
 #: includes/rules/class-botblocker-rugov.php:103
 msgid "RU-Gov List Update Failed"
-msgstr ""
+msgstr "RU-Gov リストの 更新する に失敗しました"
 
 #: includes/ajax/class-botblocker-ajax-rugov.php:46
 msgid "RU-Gov list update scheduled."
@@ -12529,7 +12528,7 @@ msgstr "シグネチャ DB URL"
 
 #: admin/templates/settings/payment-tab.php:47
 msgid "Signature headers are always verified for format (min 8 chars, POST only). When enabled, payment bypass additionally applies to POST requests only: GET requests with payment query keys or ajax actions will not bypass the shield. Callbacks matched by generic markers (webhook, ipn, callback_handler) always keep IP and rate-limit rules active. Reduces attack surface while keeping real webhooks working."
-msgstr ""
+msgstr "署名ヘッダーは常に形式について検証されます (最小 8 文字、投稿する のみ)。有効化すると、支払いのバイパスはさらに 投稿する リクエストのみに適用されます: 支払い クエリー キーや ajax アクションを含む GET リクエストはシールドをバイパスしません。汎用マーカー (webhook、ipn、callback_handler) に一致するコールバックは、常に IP およびレート制限ルールを有効なままにします。実際の webhook を動作させながら、攻撃対象領域を減らします。"
 
 #: includes/audit/class-botblocker-audit-logger.php:414
 msgid "Signed in from a trusted device."
@@ -14443,7 +14442,7 @@ msgstr "統計を更新する"
 #: includes/hook/class-botblocker-addon-hooks.php:143
 #, php-format
 msgid "Updated %1$d add-on(s). Failed to update: %2$s."
-msgstr ""
+msgstr "%1$d 件のアドオンを更新しました。更新する に失敗しました: %2$s。"
 
 #. translators: %1$s: time since last update
 #: admin/templates/rules/body.php:143
@@ -15172,7 +15171,7 @@ msgstr "WP Rocket が検出されました。BotBlocker の Cookie を WP Rocket
 
 #: includes/data/class-botblocker-alerts.php:644
 msgid "WP Super Cache (Expert/mod_rewrite mode) serves cached pages via .htaccess, bypassing PHP. Switch to the PHP caching mode so the BotBlocker cookie registration applies. See CACHE-COMPATIBILITY.md."
-msgstr "WP Super Cache (エキスパート/mod_rewrite モード) は .htaccess 経由でキャッシュされた固定ページを提供し、PHP をバイパスします。BotBlocker の Cookie 登録が適用されるように、PHP キャッシュモードに切り替えてください。CACHE-COMPATIBILITY.md を参照してください。"
+msgstr "WP Super Cache (Expert/mod_rewrite モード） は .htaccess 経由でキャッシュされた固定ページを配信するため、PHP がバイパスされます。BotBlocker の Cookie 登録が適用されるように、PHP キャッシュモードに切り替えてください。CACHE-COMPATIBILITY.md を参照してください。"
 
 #: addons/bbcs-early-init/inc/class-bbcs-early-init-addons-page.php:49
 #: addons/bbcs-early-init/views/settings.php:49

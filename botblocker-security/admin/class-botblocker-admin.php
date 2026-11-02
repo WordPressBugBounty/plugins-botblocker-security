@@ -41,6 +41,7 @@ class Botblocker_Admin {
 			'botblocker_page_bbcs_setup_guide',
 			'botblocker_page_bbcs_about',
 			'botblocker_page_bbcs_addons',
+			'botblocker_page_bbcs_selftest',
 		);
 
 		$screen_ids = $base_ids;
@@ -103,6 +104,10 @@ class Botblocker_Admin {
 		// jsvectormap CSS - dashboard world map and reports geo chart.
 		if ( $this->is_screen( $screen->id, 'toplevel_page_bbcs_dashboard' ) || $this->is_screen( $screen->id, 'botblocker_page_bbcs_reports' ) ) {
 			wp_enqueue_style( BOTBLOCKER_SHORT_NAME . '-jsvectormap', plugin_dir_url( __FILE__ ) . 'css/jsvectormap/jsvectormap.min.css', $deps, BOTBLOCKER_VERSION, 'all' );
+		}
+
+		if ( $this->is_screen( $screen->id, 'botblocker_page_bbcs_selftest' ) ) {
+			wp_enqueue_style( 'bbcs-selftest', plugin_dir_url( __FILE__ ) . 'css/bbcs-selftest.css', array( 'bbcs-main' ), BOTBLOCKER_VERSION, 'all' );
 		}
 
 		// Setup wizard CSS - setup guide and settings pages (one-click modal).
@@ -618,6 +623,11 @@ class Botblocker_Admin {
 			) );
 		}
 
+		// Protection Test page.
+		if ( $this->is_screen( $screen->id, 'botblocker_page_bbcs_selftest' ) ) {
+			wp_enqueue_script( BOTBLOCKER_SHORT_NAME . '-selftest-js', plugin_dir_url( __FILE__ ) . 'js/bbcs-js/bbcs-selftest.js', array( BOTBLOCKER_SHORT_NAME . '-multipage-js' ), BOTBLOCKER_VERSION, true );
+		}
+
 		// Add-ons page.
 		if ( $this->is_screen( $screen->id, 'botblocker_page_bbcs_addons' ) ) {
 			wp_enqueue_script( BOTBLOCKER_SHORT_NAME . '-addons-js', plugin_dir_url( __FILE__ ) . 'js/bbcs-js/bbcs-addons.js', array( 'jquery' ), BOTBLOCKER_VERSION, true );
@@ -693,14 +703,9 @@ class Botblocker_Admin {
 	public function add_admin_menu(): void {
 		$cap = BotBlockerMultisite::canManage();
 
-		$menu_title = 'BotBlocker';
-		if ( class_exists( 'BotBlockerAddonsMarket' ) ) {
-			$menu_title .= BotBlockerAddonsMarket::menuBubbleHtml();
-		}
-
 		add_menu_page(
 			'BotBlocker',
-			$menu_title,
+			'BotBlocker',
 			$cap,
 			'bbcs_dashboard',
 			array( $this, 'dashboard_page' ),
@@ -808,6 +813,16 @@ class Botblocker_Admin {
 			array( $this, 'about_page' )
 		);
 
+		// 11) Protection Test
+		add_submenu_page(
+			'bbcs_dashboard',
+			__( 'Protection Test', 'botblocker-security' ),
+			__( 'Protection Test', 'botblocker-security' ),
+			$cap,
+			'bbcs_selftest',
+			array( $this, 'selftest_page' )
+		);
+
 		add_submenu_page(
 			'',
 			__( 'Setup Wizard', 'botblocker-security' ),
@@ -818,6 +833,17 @@ class Botblocker_Admin {
 		);
 
 		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+		if ( class_exists( 'BotBlockerAddonsMarket' ) ) {
+			global $menu;
+			if ( is_array( $menu ) ) {
+				foreach ( $menu as $key => $item ) {
+					if ( isset( $item[2] ) && 'bbcs_dashboard' === $item[2] ) {
+						$menu[ $key ][0] .= BotBlockerAddonsMarket::menuBubbleHtml();
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	public function dashboard_page(): void {
@@ -985,6 +1011,21 @@ class Botblocker_Admin {
 
 		$this->render_page( 'about', $view, $layout );
 		do_action( 'bbcs_show_support_button' );
+	}
+
+	public function selftest_page(): void {
+		require_once BOTBLOCKER_DIR . 'includes/viewmodels/class-selftest-viewmodel.php';
+		require_once BOTBLOCKER_DIR . 'includes/components/component-loader.php';
+		require_once BOTBLOCKER_DIR . 'admin/views/class-selftest-view.php';
+		require_once BOTBLOCKER_DIR . 'admin/views/class-layout-view.php';
+
+		$vm     = new Botblocker_SelfTestViewModel();
+		$view   = new Botblocker_SelfTest_View( $vm );
+		$layout = new Botblocker_Layout_View( $vm );
+
+		wp_localize_script( BOTBLOCKER_SHORT_NAME . '-selftest-js', 'bbcsSelfTestCfg', $vm->scriptConfig() );
+
+		$this->render_page( 'selftest', $view, $layout );
 	}
 
 	public function add_to_admin_bar( WP_Admin_Bar $wp_admin_bar ): void {

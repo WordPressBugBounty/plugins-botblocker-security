@@ -108,7 +108,7 @@ class BotBlockerRugov {
 				)
 			);
 		}
-		if ( $failures < 7 ) {
+		if ( $failures < 7 && wp_next_scheduled( 'bbcs_rugov_update_event', array( 'retry' ) ) === false ) {
 			$backoff = min( 6, $failures );
 			$delay   = max( HOUR_IN_SECONDS, $backoff * HOUR_IN_SECONDS );
 			wp_schedule_single_event( time() + $delay, 'bbcs_rugov_update_event', array( 'retry' ) );

@@ -10,19 +10,81 @@ use BotBlocker\Component\Base;
 return static function ( Botblocker_CloudApiViewModel $data ): void {
 
 	?>
+	<?php if ( ! $data->is_cloud_api_active ) : ?>
+	<div class="bbcs-card bbcs-card-pad bbcs-mb-5h" id="bbcs_pro_buy">
+		<div class="bbcs-section-head bbcs-mb-4">
+			<div><div class="bbcs-section-title"><?php esc_html_e( 'Get BotBlocker PRO', 'botblocker-security' ); ?></div><div class="bbcs-muted bbcs-fs-xs bbcs-mt-1"><?php esc_html_e( 'Pay securely via Freemius and PRO activates on this site automatically, or buy on our website.', 'botblocker-security' ); ?></div></div>
+			<?php if ( ! empty( $data->pro_plans ) ) : ?>
+			<div class="bbcs-seg" role="group" aria-label="<?php esc_attr_e( 'Billing period', 'botblocker-security' ); ?>">
+				<button type="button" class="bbcs-seg-opt is-active" data-value="monthly" aria-pressed="true"><?php esc_html_e( 'Monthly', 'botblocker-security' ); ?></button>
+				<button type="button" class="bbcs-seg-opt" data-value="annual" aria-pressed="false"><?php esc_html_e( 'Annual', 'botblocker-security' ); ?></button>
+			</div>
+			<?php endif; ?>
+		</div>
+		<?php if ( empty( $data->pro_plans ) ) : ?>
+		<a class="bbcs-btn bbcs-btn--pri" href="<?php echo esc_url( $data->pricing_url ); ?>" target="_blank" rel="noopener noreferrer"><svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-crown"></use></svg><?php esc_html_e( 'Buy on the website', 'botblocker-security' ); ?> &#8599;</a>
+		<?php else : ?>
+		<div class="bbcs-grid bbcs-grid--3">
+			<?php foreach ( $data->pro_plans as $bbcs_plan ) : ?>
+				<div class="bbcs-inner bbcs-plan <?php echo esc_attr( $bbcs_plan['modifier'] ); ?>">
+					<div class="bbcs-plan-head">
+						<div class="bbcs-plan-name"><?php echo esc_html( $bbcs_plan['name'] ); ?></div>
+						<div class="bbcs-cycle--monthly">
+							<div class="bbcs-plan-price"><span class="bbcs-plan-amount">$<?php echo esc_html( $bbcs_plan['monthly'] ); ?></span>&nbsp;<span class="bbcs-muted bbcs-fs-sm"><?php esc_html_e( '/ month', 'botblocker-security' ); ?></span></div>
+							<div class="bbcs-muted bbcs-fs-xs bbcs-mt-1"><?php esc_html_e( 'Billed monthly', 'botblocker-security' ); ?></div>
+						</div>
+						<div class="bbcs-cycle--annual">
+							<div class="bbcs-plan-price"><span class="bbcs-plan-amount">$<?php echo esc_html( $bbcs_plan['annual'] ); ?></span>&nbsp;<span class="bbcs-muted bbcs-fs-sm"><?php esc_html_e( '/ year', 'botblocker-security' ); ?></span></div>
+							<div class="bbcs-muted bbcs-fs-xs bbcs-mt-1">
+								<?php
+								/* translators: %s: monthly equivalent of the annual price in USD */
+								echo esc_html( sprintf( __( '$%s / month, billed annually', 'botblocker-security' ), $bbcs_plan['annual_monthly'] ) );
+								?>
+							</div>
+						</div>
+					</div>
+					<div class="bbcs-plan-feats">
+						<?php foreach ( $bbcs_plan['features'] as $bbcs_feature ) : ?>
+							<div class="bbcs-feature"><span class="bbcs-status-ic--inline"><svg class="bbcs-ico bbcs-ico--sm bbcs-ico--thick"><use href="#bbcs-i-check"></use></svg></span><?php echo esc_html( $bbcs_feature ); ?></div>
+						<?php endforeach; ?>
+					</div>
+					<div class="bbcs-col bbcs-g-2">
+						<?php if ( '' !== $bbcs_plan['checkout_monthly'] ) : ?>
+							<a class="bbcs-btn bbcs-btn--pri bbcs-btn--block bbcs-cycle--monthly" href="<?php echo esc_url( $bbcs_plan['checkout_monthly'] ); ?>"><svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-crown"></use></svg><?php esc_html_e( 'Buy via Freemius', 'botblocker-security' ); ?></a>
+							<a class="bbcs-btn bbcs-btn--pri bbcs-btn--block bbcs-cycle--annual" href="<?php echo esc_url( $bbcs_plan['checkout_annual'] ); ?>"><svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-crown"></use></svg><?php esc_html_e( 'Buy via Freemius', 'botblocker-security' ); ?></a>
+						<?php endif; ?>
+						<a class="bbcs-link bbcs-fs-sm bbcs-plan-alt" href="<?php echo esc_url( $data->pricing_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Buy on the website', 'botblocker-security' ); ?> &#8599;</a>
+					</div>
+				</div>
+			<?php endforeach; ?>
+		</div>
+		<?php endif; ?>
+	</div>
+	<?php endif; ?>
+
 	<div class="bbcs-grid bbcs-grid--2 bbcs-mb-5h">
 		<div class="bbcs-card bbcs-card-pad bbcs-card--stretch">
 			<div class="bbcs-row bbcs-g-2h bbcs-mb-4">
 				<span class="bbcs-tile bbcs-tile--sm bbcs-acc-amber"><svg class="bbcs-ico"><use href="#bbcs-i-crown"></use></svg></span>
 				<div>
 					<div class="bbcs-section-title bbcs-fs-xl"><?php esc_html_e( 'PRO Status', 'botblocker-security' ); ?></div>
+					<?php if ( $data->is_expired ) : ?>
+					<div class="bbcs-pill bbcs-pill--red bbcs-mt-xs"><?php esc_html_e( 'Expired', 'botblocker-security' ); ?></div>
+					<?php else : ?>
 					<div class="bbcs-pill <?php echo $data->is_cloud_api_active ? 'bbcs-pill--green' : 'bbcs-pill--amber'; ?> bbcs-mt-xs"><?php echo $data->is_cloud_api_active ? esc_html__( 'Active', 'botblocker-security' ) : esc_html__( 'Inactive', 'botblocker-security' ); ?></div>
+					<?php endif; ?>
 				</div>
 			</div>
 
 			<p class="bbcs-fs-sm bbcs-muted bbcs-mb-2"><?php esc_html_e( 'Shows your BotBlocker PRO connection and subscription status. An active subscription delivers live security updates, firewall rules, and premium bot-detection from the BotBlocker network.', 'botblocker-security' ); ?></p>
 			<p class="bbcs-fs-sm bbcs-muted bbcs-mb-3"><?php esc_html_e( 'Compare plan features below. PRO unlocks full per-visit verification, advanced blocking rules, performance add-ons, and priority support.', 'botblocker-security' ); ?></p>
 
+			<?php if ( $data->managed_by_freemius ) : ?>
+			<div class="bbcs-field" id="bbcs_freemius_license">
+				<div class="bbcs-field-label"><?php esc_html_e( 'License key', 'botblocker-security' ); ?></div>
+				<p class="bbcs-fs-sm bbcs-muted"><?php esc_html_e( 'Your license is managed by Freemius.', 'botblocker-security' ); ?> <a class="bbcs-link" href="<?php echo esc_url( $data->freemius_account_url ); ?>"><?php esc_html_e( 'Manage license', 'botblocker-security' ); ?></a></p>
+			</div>
+			<?php else : ?>
 			<form onsubmit="return false;">
 			<div class="bbcs-field">
 				<div class="bbcs-field-label"><?php esc_html_e( 'License key', 'botblocker-security' ); ?><?php echo Base::help( '', BotBlockerDocs::url( 'cloud_api_key' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?></div>
@@ -35,11 +97,12 @@ return static function ( Botblocker_CloudApiViewModel $data ): void {
 				</div>
 			</div>
 			</form>
+			<?php endif; ?>
 			<div id="cloud-status" class="active">
 			<?php
 			$bbcs_fetching = $data->is_cloud_api_active && $data->should_fetch;
 			$bbcs_hits_txt = $data->remaining_hits === false ? ( $bbcs_fetching ? number_format_i18n( 123456 ) : '–' ) : number_format_i18n( (int) $data->remaining_hits );
-			$bbcs_days_txt = $data->remaining_days === false ? ( $bbcs_fetching ? '30' : '–' ) : (string) (int) $data->remaining_days;
+			$bbcs_days_txt = $data->remaining_days === false ? ( $bbcs_fetching ? '30' : '–' ) : BotBlockerPro::remainingDaysText( $data->remaining_days );
 			?>
 			<div class="bbcs-grid bbcs-grid--2 bbcs-mt-1 bbcs-mb-4">
 				<div class="bbcs-inner bbcs-statbox">
@@ -48,13 +111,17 @@ return static function ( Botblocker_CloudApiViewModel $data ): void {
 				</div>
 				<div class="bbcs-inner bbcs-statbox">
 					<div class="bbcs-stat bbcs-stat--sm<?php echo $bbcs_fetching && $data->remaining_days === false ? ' is-loading is-empty' : ''; ?>" id="bbcs_stat_days"<?php echo $data->is_cloud_api_active ? ' data-bbcs-remaining="days"' : ''; ?>><?php echo esc_html( $bbcs_days_txt ); ?></div>
-					<div class="bbcs-statbox-lbl"><?php esc_html_e( 'days remaining', 'botblocker-security' ); ?></div>
+					<div class="bbcs-statbox-lbl" data-bbcs-remaining-label="days"<?php echo BotBlockerPro::isExpired() ? ' hidden' : ''; ?>><?php echo esc_html( $data->remaining_days === false ? __( 'days remaining', 'botblocker-security' ) : BotBlockerPro::remainingDaysLabel( $data->remaining_days ) ); ?></div>
 				</div>
 			</div>
 			</div>
 			<?php if ( $data->is_cloud_api_active ) : ?>
 			<div class="bbcs-row bbcs-g-2">
 				<button type="button" id="bbcs_refresh_cloud_api" class="bbcs-btn bbcs-btn--pri"><svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-refresh"></use></svg><?php esc_html_e( 'Refresh status', 'botblocker-security' ); ?></button>
+			</div>
+			<?php else : ?>
+			<div class="bbcs-row bbcs-g-2">
+				<a id="bbcs_cloud_api_account_link" class="bbcs-btn" href="<?php echo esc_url( $data->account_url ); ?>" target="_blank" rel="noopener noreferrer"><svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-key"></use></svg><?php esc_html_e( 'Already have a license? Get your key', 'botblocker-security' ); ?></a>
 			</div>
 			<?php endif; ?>
 

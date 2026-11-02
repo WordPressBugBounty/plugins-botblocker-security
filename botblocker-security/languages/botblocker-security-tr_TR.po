@@ -3,16 +3,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BotBlocker"
 "Report-Msgid-Bugs-To: "
-"POT-Creation-Date: 2026-09-29 08:40+0000"
-"PO-Revision-Date: 2026-09-29 08:40+0000"
-"Last-Translator: BotBlocker Translator Team"
+"POT-Creation-Date: 2026-10-17 19:53+0000"
+"PO-Revision-Date: 2026-10-17 19:53+0000"
+"Last-Translator: BotBlocker Team (Erdemselvi)"
 "Language-Team: Turkish"
 "Language: tr_TR"
 "Plural-Forms: nplurals=1; plural=0;"
 "MIME-Version: 1.0"
 "Content-Type: text/plain; charset=UTF-8"
 "Content-Transfer-Encoding: 8bit"
-"X-Generator: BotBlocker Translator Engine"
 "X-Domain: botblocker-security"
 
 
@@ -561,7 +560,7 @@ msgstr "Eylem Zamanlayıcı Sırası"
 
 #: addons/bbcs-antispam/views/settings.php:200
 msgid "Action to take on comments classified as spam. Delete: auto-remove. Hold: place in moderation queue."
-msgstr ""
+msgstr "eylem: istenmeyen olarak sınıflandırılan yorum yap için uygulanacak eylem. Sil: otomatik kaldır. Beklet: denetim kuyruğuna yerleştir."
 
 #: addons/bbcs-forced-inclusions/views/settings.php:39
 #: addons/bbcs-forced-inclusions/views/settings.php:96
@@ -1856,15 +1855,15 @@ msgstr "Atıf Etiketi"
 #: admin/templates/settings/data-log.php:63
 #: includes/data/class-botblocker-snav.php:359
 msgid "Audit Log"
-msgstr ""
+msgstr "denetlemek günlüğü"
 
 #: includes/data/class-botblocker-snav.php:362
 msgid "Audit Log Retention"
-msgstr ""
+msgstr "denetlemek günlük saklama süresi"
 
 #: admin/templates/settings/data-log.php:72
 msgid "Audit Log Retention:"
-msgstr ""
+msgstr "denetlemek günlük saklama süresi:"
 
 #: includes/shortcode/class-botblocker-sidebar-shortcodes.php:202
 #: includes/shortcode/class-botblocker-sidebar-shortcodes.php:233
@@ -1881,7 +1880,7 @@ msgstr "Otomatik"
 
 #: addons/bbcs-antispam/views/settings.php:211
 msgid "Auto-approve Ham Comments"
-msgstr ""
+msgstr "İstenmeyen Değil yorum yap otomatik onayı"
 
 #: addons/bbcs-antispam/views/settings.php:202
 msgid "Auto-delete"
@@ -3597,7 +3596,7 @@ msgstr "Yorum yap"
 #: includes/audit/class-botblocker-audit-logger.php:445
 #, php-format
 msgid "Comment #%object_id% changed from %from% to %to%."
-msgstr ""
+msgstr "yorum yap #%object_id%, %from% değerinden %to% değerine değişti."
 
 #: admin/partials/class-botblocker-dashboard-widgets.php:221
 msgid "Comment (optional)"
@@ -3768,7 +3767,7 @@ msgstr "Basit bot algılamayı yapılandır - tarayıcı, kazıyıcı, kullanıc
 
 #: admin/templates/integrations/apcu.php:17
 msgid "Configure the APCu key prefix for isolation from other applications sharing the same server memory."
-msgstr ""
+msgstr "Aynı sunucu belleğini paylaşılıyor diğer uygulamalardan yalıtmak için APCu tuş ön ekini yapılandırın."
 
 #: admin/templates/settings/data-log.php:24
 msgid "Configure what visitor data BotBlocker records for threat detection and analytics."
@@ -4544,7 +4543,7 @@ msgstr "Bu dosyayı silmek istiyor musunuz?"
 #: includes/audit/class-botblocker-audit-logger.php:447
 #, php-format
 msgid "Deleted comment #%object_id%."
-msgstr ""
+msgstr "yorum yap silindi: #%object_id%."
 
 #. translators: %object_id%: numeric term ID; %taxonomy%: taxonomy name.
 #: includes/audit/class-botblocker-audit-logger.php:452
@@ -4817,7 +4816,7 @@ msgstr "Ziyaretçiler için hafif bir birinci taraf tanımlama bilgisi bildirimi
 
 #: addons/bbcs-404-guard/views/settings.php:121
 msgid "Do not count 404 responses that carry a referer from this site. Real visitors following a broken internal link are usually not scanners."
-msgstr ""
+msgstr "Bu site adresinden yönlendiren taşıyan 404 yanıtlarını saymayın. Bozuk bir dahili bağlantı adresini Takip ediliyor gerçek ziyaretçiler genellikle tarayıcı değildir."
 
 #: includes/class-botblocker-bootstrap.php:262
 msgid "Docs and FAQs"
@@ -5097,7 +5096,7 @@ msgstr "Güvenilir Botu Düzenle"
 #: includes/audit/class-botblocker-audit-logger.php:442
 #, php-format
 msgid "Edited comment #%object_id%."
-msgstr ""
+msgstr "yorum yap düzenlendi: #%object_id%."
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:411
 msgid "Elapsed time"
@@ -5161,7 +5160,7 @@ msgstr "Boş User-Agent engellemesi"
 
 #: addons/bbcs-antispam/views/settings.php:88
 msgid "Emulate AI response locally without API key. Uses keyword heuristics to classify comments. Disable when real API is available."
-msgstr ""
+msgstr "API tuş olmadan AI yanıtını yerel olarak taklit edin. Yorum yap sınıflandırmak için anahtar sözcük sezgisel yöntemlerini kullanır. Gerçek API kullanılabilir olduğunda etkisizleştir."
 
 #: admin/class-botblocker-admin.php:463
 msgid "Enable"
@@ -5189,7 +5188,7 @@ msgstr "APCu sayaçlarını etkinleştir"
 #: admin/templates/settings/data-log.php:67
 #: includes/data/class-botblocker-snav.php:361
 msgid "Enable Audit Log"
-msgstr ""
+msgstr "etkinleştir denetlemek günlüğü"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:260
 msgid "Enable automatic background scans at regular intervals."
@@ -5467,7 +5466,7 @@ msgstr "IP / ASN Kurallarını Ödeme Geri Aramaları için Zorunlu Tut"
 
 #: addons/bbcs-https-protocol/inc/class-bbcs-https-protocol.php:143
 msgid "Enforces HTTPS, handles protocol redirection, and fixes mixed content."
-msgstr ""
+msgstr "HTTPS'yi zorunlu kılar, protokol yönlendirmesini tanıtıcı olarak işler ve karışık içerik düzeltir."
 
 #: admin/templates/settings/browser-plugins.php:54
 #: includes/data/class-botblocker-snav.php:128
@@ -8621,7 +8620,7 @@ msgstr "Kayıt Saklama Süresi:"
 
 #: addons/bbcs-antispam/views/settings.php:459
 msgid "Log spam detection results to error_log. Useful for debugging."
-msgstr ""
+msgstr "istenmeyen algılama sonuçlarını error_log dosyasına kaydedin. Hata ayıklama için kullanışlıdır."
 
 #: admin/templates/settings/log.php:34
 #: includes/data/class-botblocker-snav.php:379
@@ -9040,7 +9039,7 @@ msgstr "Bir yorum yap denetim için bekletildiğinde gösterilen ileti (şüphel
 
 #: addons/bbcs-antispam/inc/class-bbcs-antispam-checker.php:479
 msgid "Message:"
-msgstr ""
+msgstr "ileti:"
 
 #: addons/bbcs-antispam/views/settings.php:384
 msgid "Messages"
@@ -9073,7 +9072,7 @@ msgstr "Bir yorum yap istenmeyen olarak sınıflandırmak için minimum istenmey
 
 #: addons/bbcs-antispam/views/settings.php:189
 msgid "Minimum suspicious score (0-1) to hold a comment for moderation. Must be lower than Spam Threshold. (Default: 0.3)"
-msgstr ""
+msgstr "denetim için bir yorum yap tutmak üzere en düşük şüpheli puan (0-1). istenmeyen eşiğinden düşük olmalıdır. (varsayılan: 0.3)"
 
 #: admin/templates/settings/rate-limiting.php:137
 msgid "Minimum threshold as a percentage of block RPM, preventing thresholds from dropping to zero under high subnet pressure. Default: 10%."
@@ -9516,7 +9515,7 @@ msgstr "Hiçbiri"
 #: addons/bbcs-hcaptcha/views/settings.php:80
 #: addons/bbcs-turnstile/views/settings.php:81
 msgid "Normal"
-msgstr "Normal"
+msgstr "normal"
 
 #: admin/templates/setup-guide/pro-body.php:13
 msgid "Not Active"
@@ -9637,7 +9636,7 @@ msgstr "Nesne Kimliği"
 
 #: admin/class-botblocker-admin.php:495
 msgid "Object type"
-msgstr ""
+msgstr "Nesne yazmak"
 
 #: admin/templates/shared/kpi-primary-grid.php:15
 #: admin/templates/shared/kpi-primary-grid.php:20
@@ -10561,7 +10560,7 @@ msgstr "PTR Kuralı Alt Ağ Maskesi"
 #: addons/bbcs-behavior/views/settings.php:82
 #: addons/bbcs-behavior/views/settings.php:94
 msgid "pts"
-msgstr "pts"
+msgstr "puan"
 
 #: addons/bbcs-antispam/views/settings.php:212
 msgid "Publish clean (ham) comments immediately, overriding the WordPress moderation settings. When disabled, WordPress decides the final status of clean comments."
@@ -11188,7 +11187,7 @@ msgstr "Akışlardaki tam yazı içeriğini kısa bir özetle değiştirin."
 
 #: admin/templates/settings/cookie.php:96
 msgid "Replaces IP/host/UA-bound cookie hash with a session token. Eliminates Captcha loops for VPN/proxy users. Disable only if experiencing issues."
-msgstr "IP/sunucu/UA'ya bağlı tanımlama bilgisi özetini bir oturum belirteci ile değiştirir. VPN/proxy kullanıcıları için Captcha döngülerini ortadan kaldırır. Yalnızca sorun yaşarsanız etkisizleştirin."
+msgstr "IP/sunucu/UA-bound Tanımlama bilgisi hash değerini bir oturum belirteç ile değiştirir. VPN/proxy kullanıcılar için Captcha döngülerini ortadan kaldırır. Yalnızca sorun yaşıyorsanız etkisizleştir."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:66
 msgid "Replaces the default screen shown while the site is in maintenance mode."
@@ -12023,7 +12022,7 @@ msgstr "Ara"
 
 #: admin/class-botblocker-admin.php:487
 msgid "Search audit log…"
-msgstr ""
+msgstr "ara denetlemek günlüğü…"
 
 #: addons/bbcs-telegram/inc/class-bbcs-telegram-plugin.php:264
 msgid "Search bots"
@@ -12529,7 +12528,7 @@ msgstr "İmza DB adresi"
 
 #: admin/templates/settings/payment-tab.php:47
 msgid "Signature headers are always verified for format (min 8 chars, POST only). When enabled, payment bypass additionally applies to POST requests only: GET requests with payment query keys or ajax actions will not bypass the shield. Callbacks matched by generic markers (webhook, ipn, callback_handler) always keep IP and rate-limit rules active. Reduces attack surface while keeping real webhooks working."
-msgstr ""
+msgstr "İmza üst bilgileri her zaman biçim açısından doğrulanır (en az 8 karakter, yalnızca POST). Etkinleştirildiğinde, ödeme atlaması ek olarak yalnızca POST isteklerine uygulanır: ödeme sorgu anahtarları veya AJAX eylemleri içeren GET istekleri kalkanı atlamaz. Genel işaretleyicilerle (webhook, ipn, callback_handler) eşleşen geri çağırmalar IP ve hız sınırı kurallarını her zaman etkin tutar. Gerçek webhook'ların çalışmaya devam etmesini sağlarken saldırı yüzeyini azaltır."
 
 #: includes/audit/class-botblocker-audit-logger.php:414
 msgid "Signed in from a trusted device."
@@ -12714,19 +12713,19 @@ msgstr "Kaynak"
 
 #: addons/bbcs-antispam/views/settings.php:199
 msgid "Spam Action"
-msgstr ""
+msgstr "istenmeyen eylem"
 
 #: addons/bbcs-antispam/views/settings.php:163
 msgid "Spam Detection"
-msgstr ""
+msgstr "istenmeyen algılaması"
 
 #: addons/bbcs-antispam/views/settings.php:400
 msgid "Spam Message"
-msgstr ""
+msgstr "istenmeyen ileti"
 
 #: addons/bbcs-antispam/views/settings.php:176
 msgid "Spam Threshold"
-msgstr ""
+msgstr "istenmeyen eşiği"
 
 #: admin/templates/integrations/memcached.php:35
 msgid "Specify the Memcached server hostname or IP address. Default is localhost (127.0.0.1) for local installations."
@@ -15172,7 +15171,7 @@ msgstr "WP Rocket algılandı. BotBlocker tanımlama bilgisini WP Rocket ayarlar
 
 #: includes/data/class-botblocker-alerts.php:644
 msgid "WP Super Cache (Expert/mod_rewrite mode) serves cached pages via .htaccess, bypassing PHP. Switch to the PHP caching mode so the BotBlocker cookie registration applies. See CACHE-COMPATIBILITY.md."
-msgstr "WP Super Cache (Uzman/mod_rewrite kipi) önbelleğe alınmış sayfaları .htaccess üzerinden sunar ve PHP'yi atlar. BotBlocker tanımlama bilgisi kaydının uygulanması için PHP önbellekleme kipine geçin. CACHE-COMPATIBILITY.md dosyasına bakın."
+msgstr "WP Super Cache (Expert/mod_rewrite kipi) önbelleğe alınmış sayfaları .htaccess üzerinden sunar ve PHP'yi atlar. BotBlocker tanımlama bilgisi kaydının uygulanabilmesi için PHP önbellekleme kipine geçin. CACHE-COMPATIBILITY.md dosyasına bakın."
 
 #: addons/bbcs-early-init/inc/class-bbcs-early-init-addons-page.php:49
 #: addons/bbcs-early-init/views/settings.php:49

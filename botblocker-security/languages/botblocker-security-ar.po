@@ -3,16 +3,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BotBlocker"
 "Report-Msgid-Bugs-To: "
-"POT-Creation-Date: 2026-09-29 08:47+0000"
-"PO-Revision-Date: 2026-09-29 08:47+0000"
-"Last-Translator: BotBlocker Translator Team"
+"POT-Creation-Date: 2026-10-17 20:04+0000"
+"PO-Revision-Date: 2026-10-17 20:04+0000"
+"Last-Translator: BotBlocker Team (Mohamed Ibrahim)"
 "Language-Team: Arabic"
 "Language: ar"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 ? 4 : 5;"
 "MIME-Version: 1.0"
 "Content-Type: text/plain; charset=UTF-8"
 "Content-Transfer-Encoding: 8bit"
-"X-Generator: BotBlocker Translator Engine"
 "X-Domain: botblocker-security"
 
 
@@ -61,24 +60,24 @@ msgstr "%1$s عادةً ما يوضع هناك بواسطة: %2$s إذا قمت 
 #, php-format, plural
 msgid "%d add-on has a new version available."
 msgid_plural "%d add-ons have new versions available."
-msgstr[0] "لا توجد إضافات ملحقة لديها نسخة جديدة متاحة."
-msgstr[1] "إضافة ملحقة واحدة لديها نسخة جديدة متاحة."
-msgstr[2] "إضافتان ملحقتان لديهما نسخة جديدة متاحة."
-msgstr[3] "%d إضافات ملحقة لديها نسخة جديدة متاحة."
-msgstr[4] "%d إضافة ملحقة لديها نسخة جديدة متاحة."
-msgstr[5] "%d إضافة ملحقة لديها نسخة جديدة متاحة."
+msgstr[0] "لا توجد أي إضافة لديها نسخة جديدة متاحة. %d"
+msgstr[1] "%d إضافة لديها نسخة جديدة متاحة."
+msgstr[2] "إضافتان لديهما نسخة جديدة متاحة. %d"
+msgstr[3] "%d إضافات لديها نسخة جديدة متاحة."
+msgstr[4] "%d إضافة لديها نسخة جديدة متاحة."
+msgstr[5] "%d إضافة لديها نسخة جديدة متاحة."
 
 #. translators: %d: number of days
 #: includes/components/class-botblocker-component-retention-days-select.php:23
 #, php-format, plural
 msgid "%d day"
 msgid_plural "%d days"
-msgstr[0] "لا توجد أيام."
-msgstr[1] "يوم واحد."
-msgstr[2] "يومان."
-msgstr[3] "%d أيام."
-msgstr[4] "%d يومًا."
-msgstr[5] "%d يوم."
+msgstr[0] "لا أيام %d"
+msgstr[1] "%d يوم"
+msgstr[2] "يومان %d"
+msgstr[3] "%d أيام"
+msgstr[4] "%d يومًا"
+msgstr[5] "%d يوم"
 
 #. translators: %d: one-time task count
 #: admin/templates/settings/cron.php:53
@@ -97,9 +96,9 @@ msgstr "%d متكرر"
 #, php-format, plural
 msgid "%d stale task executed."
 msgid_plural "%d stale tasks executed."
-msgstr[0] "لم يتم تنفيذ أي مهام قديمة."
-msgstr[1] "تم تنفيذ مهمة قديمة واحدة."
-msgstr[2] "تم تنفيذ مهمتان قديمتان."
+msgstr[0] "لم يتم تنفيذ أي مهمة قديمة. %d"
+msgstr[1] "تم تنفيذ %d مهمة قديمة."
+msgstr[2] "تم تنفيذ مهمتين قديمتين. %d"
 msgstr[3] "تم تنفيذ %d مهام قديمة."
 msgstr[4] "تم تنفيذ %d مهمة قديمة."
 msgstr[5] "تم تنفيذ %d مهمة قديمة."
@@ -109,9 +108,9 @@ msgstr[5] "تم تنفيذ %d مهمة قديمة."
 #, php-format, plural
 msgid "%d task executed."
 msgid_plural "%d tasks executed."
-msgstr[0] "لم يتم تنفيذ أي مهام."
-msgstr[1] "تم تنفيذ مهمة واحدة."
-msgstr[2] "تم تنفيذ مهمتان."
+msgstr[0] "لم يتم تنفيذ أي مهمة. %d"
+msgstr[1] "تم تنفيذ %d مهمة."
+msgstr[2] "تم تنفيذ مهمتين. %d"
 msgstr[3] "تم تنفيذ %d مهام."
 msgstr[4] "تم تنفيذ %d مهمة."
 msgstr[5] "تم تنفيذ %d مهمة."
@@ -127,12 +126,12 @@ msgstr "%d مهام"
 #, php-format, plural
 msgid "%ds"
 msgid_plural "%ds"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
-msgstr[5] ""
+msgstr[0] "%d ثانية"
+msgstr[1] "%d ثانية"
+msgstr[2] "%d ثانيتان"
+msgstr[3] "%d ثوانٍ"
+msgstr[4] "%d ثانية"
+msgstr[5] "%d ثانية"
 
 #: admin/js/bbcs-js/bbcs-connectors.js:96
 msgid "%s activated successfully."
@@ -206,7 +205,7 @@ msgid "(%s rating)"
 msgid_plural "(%s ratings)"
 msgstr[0] "(%s تقييمات)"
 msgstr[1] "(%s تقييم)"
-msgstr[2] "(تقييمان)"
+msgstr[2] "(%s تقييمان)"
 msgstr[3] "(%s تقييمات)"
 msgstr[4] "(%s تقييم)"
 msgstr[5] "(%s تقييم)"
@@ -480,7 +479,7 @@ msgstr "عنوان IP صالح مطلوب."
 
 #: addons/bbcs-pusher/views/settings.php:25
 msgid "A weekly digest with request, block and bot statistics is delivered on a schedule. The add-on never runs on visitor requests."
-msgstr "يتم تسليم ملخص أسبوعي يحتوي على إحصائيات الطلبات والمُكوِّنات والروبوتات وفق جدول زمني. لا تعمل الإضافة أبدًا على طلبات الزائر."
+msgstr "يُسلَّم ملخص أسبوعي يتضمن إحصائيات الطلبات ومُكوِّن والروبوتات وفق جدول زمني. لا تعمل الإضافة أبدًا على طلبات زائر."
 
 #: addons/bbcs-telegram/views/settings.php:26
 msgid "A weekly security report is delivered to your chat with request, block and bot statistics."
@@ -591,7 +590,7 @@ msgstr "طابور جدولة الإجراءات"
 
 #: addons/bbcs-antispam/views/settings.php:200
 msgid "Action to take on comments classified as spam. Delete: auto-remove. Hold: place in moderation queue."
-msgstr "الإجراء الذي سيتم اتخاذه على التعليقات المصنفة كمزعجة. حذف: إزالة تلقائية. تعليق: وضعها في قائمة الانتظار للمراجعة."
+msgstr "الإجراء الذي يجب اتخاذه بشأن التعليقات المصنّفة كمزعج. حذف: إزالة تلقائية. إيقاف: وضع في قائمة انتظار الإشراف."
 
 #: addons/bbcs-forced-inclusions/views/settings.php:39
 #: addons/bbcs-forced-inclusions/views/settings.php:96
@@ -753,7 +752,7 @@ msgstr "أضف دولة"
 
 #: addons/bbcs-security-headers/views/settings.php:196
 msgid "Add external domains that should be allowed in Content-Security-Policy. One domain per line. These will be added to script-src, connect-src, frame-src and img-src directives."
-msgstr "أضف نطاقات خارجية ينبغي السماح بها في سياسة أمان المحتوى (Content-Security-Policy). نطاق واحد في كل سطر. ستُضاف هذه إلى توجيهات script-src و connect-src و frame-src و img-src."
+msgstr "أضف النطاقات الخارجية التي يجب السماح بها في Content-Security-Policy. نطاق واحد لكل سطر. ستُضاف هذه النطاقات إلى توجيهات script-src وconnect-src وframe-src وimg-src."
 
 #: includes/modal/modal-botblocker-rule-add.php:10
 msgid "Add Generic Rule"
@@ -855,7 +854,7 @@ msgstr "تم حذف الملحق."
 
 #: includes/hook/class-botblocker-addon-hooks.php:21
 msgid "Add-on install, update, and delete are disabled in local add-on mode."
-msgstr "عمليات تنصيب الملحق وتحديثه وحذفه معطلة في وضع الملحق المحلي."
+msgstr "الوظائف الإضافية تنصيب، وتحديث، وحذف مُعطّل في وضع الوظائف الإضافية المحلي."
 
 #: admin/class-botblocker-admin.php:624
 #: includes/hook/class-botblocker-addon-hooks.php:405
@@ -1031,7 +1030,7 @@ msgstr "يضيف ترويسة Content-Security-Policy افتراضية لتقي�
 
 #: includes/inc-botblocker-wp-abilities.php:128
 msgid "Adds a firewall block rule for an IP address and regenerates the runtime ban files."
-msgstr ""
+msgstr "يضيف قاعدة مُكوِّن للجدار الناري لعنوان IP ويعيد إنشاء ملفات الحظر وقت التشغيل."
 
 #: admin/templates/settings/captcha-tab.php:173
 msgid "Adds a hidden anti-bot trap field and a submit-timing check to the verification page. Disabled by default."
@@ -1039,7 +1038,7 @@ msgstr "يضيف حقل فخ مخفي مضاد للروبوتات وفحص تو�
 
 #: addons/bbcs-turnstile/views/settings.php:27
 msgid "Adds Cloudflare Turnstile as an external CAPTCHA provider on the BotBlocker check page. Enter the site key and secret key from your Cloudflare Turnstile dashboard, pick theme and size, then select mode 91 (Cloudflare Turnstile) as the CAPTCHA mode in BotBlocker settings. Verification runs server-side through the Turnstile siteverify endpoint; if the provider is unreachable, the check page degrades to the simple captcha instead of blocking visitors."
-msgstr "يضيف Cloudflare Turnstile كمزود CAPTCHA خارجي في صفحة التحقق الخاصة بـ BotBlocker. أدخل مفتاح الموقع والمفتاح السري من لوحة تحكم Cloudflare Turnstile، اختر القالب والحجم، ثم اختر الوضع 91 (Cloudflare Turnstile) كوضع CAPTCHA في إعدادات BotBlocker. يتم التحقق من جهة الخادم عبر نقطة نهاية siteverify الخاصة بـ Turnstile؛ إذا كان المزود غير قابل للوصول، تتدهور صفحة التحقق إلى captcha البسيط بدلاً من حظر الزوار."
+msgstr "يضيف Cloudflare Turnstile كمزوّد CAPTCHA خارجي على صفحة فحص BotBlocker. أدخل مفتاح الموقع والمفتاح السري من لوحة تحكم Cloudflare Turnstile الخاصة بك، واختر القالب والحجم، ثم حدد الوضع 91 (Cloudflare Turnstile) كوضع CAPTCHA في إعدادات BotBlocker. يتم التحقق من جهة الخادم عبر نقطة نهاية siteverify الخاصة بـTurnstile؛ وإذا تعذر الوصول إلى المزوّد، فستتراجع صفحة الفحص إلى الكابتشا البسيطة بدلًا من حظر الزوار."
 
 #: addons/bbcs-security-headers/views/settings.php:162
 msgid "Adds Cross-Origin-Opener-Policy: same-origin-allow-popups. Protects against window.opener attacks and Spectre while keeping popup payments and OAuth flows working."
@@ -1047,7 +1046,7 @@ msgstr "يضيف Cross-Origin-Opener-Policy: same-origin-allow-popups. يحمي 
 
 #: addons/bbcs-hcaptcha/views/settings.php:27
 msgid "Adds hCaptcha as an external CAPTCHA provider on the BotBlocker check page. Enter the site key and secret key from your hCaptcha dashboard, pick theme and size, then select mode 90 (hCaptcha) as the CAPTCHA mode in BotBlocker settings. Verification runs server-side through the hCaptcha siteverify endpoint; if the provider is unreachable, the check page degrades to the simple captcha instead of blocking visitors."
-msgstr "يضيف hCaptcha كمزود CAPTCHA خارجي في صفحة التحقق الخاصة بـ BotBlocker. أدخل مفتاح الموقع والمفتاح السري من لوحة تحكم hCaptcha، اختر القالب والحجم، ثم اختر الوضع 90 (hCaptcha) كوضع CAPTCHA في إعدادات BotBlocker. يتم التحقق من جهة الخادم عبر نقطة نهاية siteverify الخاصة بـ hCaptcha؛ إذا كان المزود غير قابل للوصول، تتدهور صفحة التحقق إلى captcha البسيط بدلاً من حظر الزوار."
+msgstr "يضيف hCaptcha كمزوّد CAPTCHA خارجي على صفحة فحص BotBlocker. أدخل مفتاح الموقع والمفتاح السري من لوحة تحكم hCaptcha الخاصة بك، واختر القالب والحجم، ثم حدد الوضع 90 (hCaptcha) كوضع CAPTCHA في إعدادات BotBlocker. يتم التحقق من جهة الخادم عبر نقطة نهاية siteverify الخاصة بـhCaptcha؛ وإذا تعذر الوصول إلى المزوّد، فستتراجع صفحة الفحص إلى الكابتشا البسيطة بدلًا من حظر الزوار."
 
 #: addons/bbcs-security-headers/views/settings.php:170
 msgid "Adds Origin-Agent-Cluster: ?1 to isolate the document at origin level in the browser process model."
@@ -1059,7 +1058,7 @@ msgstr "يضيف ترويسة Permissions-Policy لتقييد ميزات الم�
 
 #: addons/bbcs-security-headers/inc/class-bbcs-security-headers-plugin.php:138
 msgid "Adds security headers, CSP controls, and optional MU-phase header dispatch."
-msgstr ""
+msgstr "يضيف ترويسات الأمان، وعناصر التحكم في CSP، وإرسال الترويسة الاختياري في مرحلة MU."
 
 #: addons/bbcs-security-headers/views/settings.php:122
 msgid "Adds Strict-Transport-Security header for HTTPS responses (max-age=1 year). Only works on HTTPS sites."
@@ -1174,7 +1173,7 @@ msgstr "تحليل سلوك الذكاء الاصطناعي"
 
 #: addons/bbcs-antispam/views/settings.php:63
 msgid "AI responses are emulated locally with keyword heuristics (mock mode). No real API calls are made — disable before going live."
-msgstr ""
+msgstr "يتم محاكاة ردود الذكاء الاصطناعي محليًا باستخدام كلمة مفتاحية الاستدلالية (وضع المحاكاة). لا يتم إجراء أي واجهة برمجة التطبيقات (API) حقيقية — تعطيل قبل التشغيل الفعلي."
 
 #: addons/bbcs-antispam/views/settings.php:119
 msgid "AI service WebSocket endpoint (wss:// or ws://). Leave empty to use the default endpoint."
@@ -1436,7 +1435,7 @@ msgstr "السماح بالطلبات من عنوان IP لخادمك"
 
 #: admin/templates/settings/bot-detection.php:65
 msgid "Allow WhatsApp to create link previews for shared pages. Warning: this reduces protection across the whole site for matching requests, not just previews. Enable only if really needed."
-msgstr "السماح لـ WhatsApp بإنشاء معاينات الروابط للصفحات المشتركة. تحذير: هذا يقلل الحماية عبر الموقع بالكامل للطلبات المطابقة، وليس فقط المعاينات. قم بالتفعيل فقط إذا لزم الأمر حقًا."
+msgstr "اسمح لـ WhatsApp بإنشاء رابط معاينات للصفحات التي تتم مشاركتها. تحذير: هذا يقلل الحماية عبر كامل موقع للطلبات المطابقة، وليس المعاينات فقط. تفعيل فقط إذا لزم الأمر حقًا."
 
 #: admin/templates/setup-wizard/exclusions.php:29
 msgid "Allow WordPress Cron and server requests"
@@ -1532,7 +1531,7 @@ msgstr "APCu"
 
 #: includes/hook/class-botblocker-settings-hooks.php:62
 msgid "APCu backend is not reachable — the integration was left disabled."
-msgstr ""
+msgstr "الواجهة الخلفية APCu غير قابلة للوصول — تم يسار التكامل مُعطّل."
 
 #: admin/templates/integrations/apcu.php:35
 msgid "APCu Cache Integration"
@@ -1540,7 +1539,7 @@ msgstr "تكاملة ذاكرة التخزين المؤقت APCu"
 
 #: admin/templates/integrations/apcu.php:26
 msgid "APCu is shared memory of one PHP process pool. Cache invalidation and security counters are not shared across PHP-FPM pools or web servers — for load-balanced or multi-pool hosting enable Redis or Memcached instead."
-msgstr ""
+msgstr "APCu هي ذاكرة مشتركة لمجموعة عمليات PHP واحدة. لا تتم مشاركة إبطال ذاكرة التخزين المؤقت وعدادات الأمان عبر مجموعات PHP-FPM أو ويب الخوادم — للاستضافة الموزعة على أكثر من خادم أو متعددة المجموعات تفعيل Redis أو Memcached بدلاً من ذلك."
 
 #: admin/templates/integrations/apcu.php:16
 msgid "APCu provides in-process shared memory caching for security counters and visitor data, with no disk I/O and no network connection."
@@ -1596,7 +1595,7 @@ msgstr "إضافة رابط الإسناد"
 
 #: addons/bbcs-security-headers/views/settings.php:130
 msgid "Applies HSTS to all subdomains. Enable only when every subdomain serves HTTPS - plain HTTP subdomains will be permanently blocked by browsers."
-msgstr ""
+msgstr "يطبّق HSTS على جميع النطاقات الفرعية. تفعيل فقط عندما يخدم كل نطاق فرعي بروتوكول HTTPS - سيتم بشكل دائم حظر النطاقات الفرعية التي تعمل عبر HTTP العادي من قبل المتصفحات."
 
 #: addons/bbcs-https-protocol/inc/class-bbcs-https-protocol-addons-page.php:49
 #: addons/bbcs-https-protocol/views/settings.php:90
@@ -1624,8 +1623,9 @@ msgid "Approve (fail-open)"
 msgstr "موافقة (فشل مفتوح)"
 
 #: admin/templates/shared/sidebar/rail.php:143
+#, fuzzy
 msgid "Are you getting spam from specific regions? You can block entire high-risk countries in the Rules & IPs section. Country blocking is a highly effective way to reduce unwanted bot traffic by up to 80%."
-msgstr "هل تتلقى بريدًا مزعجًا من مناطق محددة؟ يمكنك حظر دول بأكملها عالية المخاطر في قسم القواعد وعناوين IP. يعد حظر الدول وسيلة فعالة للغاية لتقليل حركة الروبوتات غير المرغوب فيها بنسبة تصل إلى 80%."
+msgstr "هل تتلقى مزعج من مناطق محددة؟ يمكنك مُكوِّن دولًا كاملة عالية الخطورة في قسم القواعد وعناوين IP. حظر الدول طريقة فعّالة للغاية لتقليل حركة الروبوتات غير المرغوب فيها بنسبة تصل إلى 80%."
 
 #: admin/class-botblocker-admin.php:558
 msgid "Are you sure you want to clear all TLS fingerprints?"
@@ -1851,7 +1851,7 @@ msgstr "تم إنشاء ملف قواعد ASN بنجاح."
 
 #: admin/templates/settings/connection-types.php:62
 msgid "Attach a signed X-BotBlocker-Self header to outgoing WordPress HTTP API calls to your own domain and accept it as self-call proof. Disable only if your hosting/WAF interferes with unknown request headers."
-msgstr ""
+msgstr "أرفق ترويسة X-BotBlocker-Self موقّعًا بطلبات HTTP ووردبريس واجهة برمجة التطبيقات (API) الصادرة إلى نطاق الخاص بك واقبله كإثبات للاستدعاء الذاتي. تعطيل فقط إذا كانت خدمة الاستضافة/WAF لديك تتداخل مع غير معروف ترويسات الخاص بالطلب."
 
 #. translators: %s: number of remaining verification attempts
 #: public/2FA/bbcs-2fa.php:226
@@ -1980,11 +1980,11 @@ msgstr "رقم النظام المستقل"
 
 #: admin/templates/settings/rate-limiting.php:75
 msgid "Average requests per minute over the sliding window that trigger a Captcha challenge. Total hits in window / window minutes. Default: 30."
-msgstr "متوسط الطلبات في الدقيقة خلال النافذة المنزلقة التي تشغل تحدي Captcha. إجمالي الزيارات في النافذة / دقائق النافذة. الافتراضي: 30."
+msgstr "متوسط الطلبات في الدقيقة خلال النافذة المنزلقة التي تُطلق تحدّي Captcha. إجمالي الزيارات في النافذة / دقائق النافذة. افتراضي: 30."
 
 #: admin/templates/settings/rate-limiting.php:84
 msgid "Average requests per minute over the sliding window that trigger an immediate block. Total hits in window / window minutes. Default: 50."
-msgstr "متوسط الطلبات في الدقيقة خلال النافذة المنزلقة التي تشغل حظرًا فوريًا. إجمالي الزيارات في النافذة / دقائق النافذة. الافتراضي: 50."
+msgstr "متوسط الطلبات في الدقيقة خلال النافذة المنزلقة التي تؤدي إلى مُكوِّن فوري. إجمالي مرات الوصول في النافذة / دقائق النافذة. افتراضي: 50."
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:324
 msgid "Avoid reporting common analytics, payment and CDN script tags as malware indicators."
@@ -2149,7 +2149,7 @@ msgstr "حظر الوصول عبر بروتوكول IPv6."
 #: admin/templates/integrations/wp-abilities.php:38
 #: includes/inc-botblocker-wp-abilities.php:127
 msgid "Block an IP address"
-msgstr ""
+msgstr "مُكوِّن عنوان IP"
 
 #: includes/data/class-botblocker-palette.php:164
 msgid "Block an IP address - ban, deny, blacklist"
@@ -2169,7 +2169,7 @@ msgstr "حظر العملاء الذين لا يستجيبون لفحوصات ا
 
 #: includes/viewmodels/class-pro-status-viewmodel.php:86
 msgid "Block clients that don't respond to verification checks."
-msgstr ""
+msgstr "عملاء مُكوِّن الذين لا يستجيبون لفحوصات التحقق."
 
 #: admin/templates/settings/bot-detection.php:66
 msgid "Block connections from known RKN-listed government IP addresses."
@@ -2192,7 +2192,7 @@ msgstr "حظر عناوين IP لمراكز البيانات (VPS، AWS، Digita
 #: addons/bbcs-404-guard/inc/class-bbcs-404-guard-addons-page.php:51
 #: addons/bbcs-404-guard/views/settings.php:103
 msgid "Block Duration (minutes)"
-msgstr ""
+msgstr "مدة مُكوِّن (بالدقائق)"
 
 #: admin/templates/settings/login-brute-force.php:66
 msgid "Block duration for first-time offenders."
@@ -2246,7 +2246,7 @@ msgstr "معدل الحظر"
 
 #: addons/bbcs-404-guard/views/settings.php:93
 msgid "Block request"
-msgstr ""
+msgstr "طلب مُكوِّن"
 
 #: admin/templates/settings/bot-detection.php:43
 msgid "Block requests with missing Accept-Language header."
@@ -2335,7 +2335,7 @@ msgstr "حظر الزوار بدون دعم JavaScript."
 
 #: admin/templates/integrations/2fa.php:39
 msgid "Block XML-RPC login for 2FA users"
-msgstr ""
+msgstr "مُكوِّن تسجيل الدخول عبر XML-RPC لمصادقة 2FA مستخدمين"
 
 #: addons/bbcs-telegram/inc/class-bbcs-telegram-plugin.php:262
 msgid "Blocked"
@@ -2558,7 +2558,7 @@ msgstr "ميزات BotBlocker"
 
 #: addons/bbcs-https-protocol/views/settings.php:28
 msgid "BotBlocker HTTPS Protocol automatically upgrades all insecure HTTP connections to secure HTTPS. This protects your visitors' data and improves your site security. The addon provides two essential features: HTTPS Redirect - automatically redirects HTTP traffic to HTTPS. Mixed Content Fixer - replaces insecure content links with secure ones."
-msgstr "يقوم بروتوكول BotBlocker HTTPS بترقية جميع اتصالات HTTP غير الآمنة تلقائيًا إلى HTTPS الآمن. يحمي هذا بيانات زوارك ويحسّن أمان موقعك. توفر الإضافة ميزتين أساسيتين: إعادة توجيه HTTPS - يعيد توجيه حركة مرور HTTP إلى HTTPS تلقائيًا. مُصلح المحتوى المختلط - يستبدل روابط المحتوى غير الآمنة بروابط آمنة."
+msgstr "يقوم BotBlocker HTTPS Protocol بترقية جميع اتصالات HTTP غير الآمنة تلقائيًا إلى HTTPS الآمن. هذا يحمي بيانات زوارك ويحسّن أمان موقعك. تقدّم الإضافة ميزتين أساسيتين: HTTPS Redirect - يعيد توجيه حركة HTTP إلى HTTPS تلقائيًا. Mixed Content Fixer - يستبدل روابط المحتوى غير الآمن بأخرى آمنة."
 
 #: admin/templates/settings/captcha-tab.php:25
 #: admin/templates/setup-wizard/captcha.php:27
@@ -2736,7 +2736,7 @@ msgstr "إضافة ووردبريس BotBlocker"
 
 #: admin/templates/integrations/wp-abilities.php:38
 msgid "botblocker/block-ip — adds a firewall block rule and regenerates the runtime ban files. Destructive, requires manage_options."
-msgstr ""
+msgstr "botblocker/block-ip — يضيف قاعدة مُكوِّن لجدار الحماية ويعيد توليد ملفات الحظر وقت التشغيل. إجراء مدمّر، ويتطلب manage_options."
 
 #: admin/templates/integrations/wp-abilities.php:29
 msgid "botblocker/check-ip — checks an IP address against the firewall rules and returns the matched rules."
@@ -2756,7 +2756,7 @@ msgstr "botblocker/get-scan-results — يعيد حالة ونتائج أحدث 
 
 #: admin/templates/integrations/wp-abilities.php:31
 msgid "botblocker/get-traffic-summary — aggregated request, block, captcha, suspicious and proxy counters."
-msgstr ""
+msgstr "botblocker/get-traffic-summary — عدّادات الطلبات المجمّعة، ومُكوِّن، وCaptcha، والمشبوهة، والوكيل."
 
 #: admin/templates/integrations/wp-abilities.php:32
 msgid "botblocker/run-diagnostics — read-only health checks for the data directory and database tables."
@@ -2768,7 +2768,7 @@ msgstr "botblocker/run-malware-scan — يبدأ فحصًا خلفيًا للب�
 
 #: admin/templates/integrations/wp-abilities.php:39
 msgid "botblocker/unblock-ip — removes firewall rules for an IP address and regenerates the runtime ban files. Destructive, requires manage_options."
-msgstr ""
+msgstr "botblocker/unblock-ip — يقوم بإزالة قواعد جدار الحماية لعنوان IP ويعيد توليد ملفات الحظر وقت التشغيل. إجراء مدمّر، ويتطلب manage_options."
 
 #: admin/templates/shared/system-status-lines.php:13
 #: includes/viewmodels/class-about-viewmodel.php:67
@@ -3078,7 +3078,7 @@ msgstr "الكتالوج غير متاح مؤقتًا. يتم عرض آخر قا
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:136
 msgid "Catches more malicious code, especially obfuscated or encoded payloads. Uses more CPU and memory per file. Disable if your server is low on resources."
-msgstr "يلتقط المزيد من التعليمات البرمجية الخبيثة، خاصة الحمولات المشوشة أو المشفرة. يستخدم المزيد من CPU والذاكرة لكل ملف. قم بتعطيله إذا كان خادمك منخفض الموارد."
+msgstr "يلتقط مزيدًا من الشيفرات الخبيثة، لا سيما الحمولات المشوشة أو المرمزة. يستهلك مزيدًا من CPU والذاكرة لكل ملف. تعطيل إذا كان خادم لديك يعاني من نقص الموارد."
 
 #: addons/bbcs-antispam/views/settings.php:233
 msgid "Category Filter"
@@ -3231,7 +3231,7 @@ msgstr "CID:"
 
 #: admin/templates/settings/rate-limiting.php:148
 msgid "CIDR mask pair for subnet aggregation (v4_v6). Tighter masks target attackers more precisely. Default: 24-64."
-msgstr "زوج أقنعة CIDR لتجميع الشبكات الفرعية (v4_v6). الأقنعة الأضيق تستهدف المهاجمين بدقة أكبر. الافتراضي: 24-64."
+msgstr "زوج أقنعة CIDR لتجميع الشبكات الفرعية (v4_v6). الأقنعة الأضيق تستهدف المهاجمين بدقة أكبر. افتراضي: 24-64."
 
 #: public/captcha/render-moving-shapes-button-trait.php:16
 msgid "Circle"
@@ -3709,7 +3709,7 @@ msgstr "قائمة تدقيق الحماية الكاملة. راجع كل عن�
 #. Description of the plugin
 #: botblocker-security.php
 msgid "Complete security platform for everyday: block bots, brute-force, viruses, spam, fake crawlers. WAF, 2FA, no-malware, proactive defense, 200+ tools"
-msgstr ""
+msgstr "منصة أمان كاملة للاستخدام اليومي: مُكوِّن الروبوتات، وهجمات القوة الغاشمة، والفيروسات، ومزعج، والزاحفات المزيفة. WAF، 2FA، خالٍ من البرمجيات الخبيثة، دفاع استباقي، أكثر من 200 أداة"
 
 #: includes/shortcode/class-botblocker-recommendations-shortcodes.php:35
 msgid "Complete Setup Wizard"
@@ -3959,7 +3959,7 @@ msgstr "التحكم في ملفات تعريف الارتباط الخاصة ب
 
 #: admin/templates/settings/general.php:24
 msgid "Control how BotBlocker verifies visitors, applies security rules, and manages hit limits."
-msgstr "التحكم في كيفية تحقق BotBlocker من الزوار وتطبيق قواعد الأمان وإدارة حدود الضربات."
+msgstr "تحكم في كيفية قيام BotBlocker بالتحقق من الزوار، وتطبيق قواعد الأمان، وإدارة حدود الزيارات."
 
 #: admin/templates/settings/rate-limiting.php:28
 msgid "Control request velocity per IP with configurable thresholds, sliding windows, and subnet aggregation."
@@ -4296,7 +4296,7 @@ msgstr "رابط تسجيل الدخول المخصص غير صالح. استخ�
 
 #: addons/bbcs-hide-admin/inc/class-bbcs-hide-admin-plugin.php:127
 msgid "Custom login URL, login-lock, and anti-bot protections."
-msgstr ""
+msgstr "عنوان URL لتسجيل دخول مخصص، وقفل تسجيل الدخول، وحمايات ضد البوتات."
 
 #: addons/bbcs-hide-admin/views/settings.php:87
 msgid "Custom message shown when the default login URL is accessed and behavior is set to Message."
@@ -4620,7 +4620,7 @@ msgstr "صفوف تفصيلية لكل تصنيف"
 
 #: admin/templates/setup-wizard/finish.php:47
 msgid "Detailed logs of all blocks"
-msgstr "سجلات مفصلة لجميع المكوِّنات"
+msgstr "سجلات مُفصَّل لجميع عمليات الحظر مكوِّنات"
 
 #: admin/class-botblocker-admin.php:486
 msgid "Details"
@@ -4659,11 +4659,11 @@ msgstr "الكشف والحد"
 
 #: addons/bbcs-404-guard/views/settings.php:29
 msgid "Detects path-scanning bots by the rate of 404 responses an IP produces. Once an IP crosses the threshold inside the sliding window, the next request is challenged (CAPTCHA) or blocked through the core traffic decision pipeline. Legitimate broken links from real visitors, logged-in users and allowlisted networks can be excluded, and monitor-only mode records activity without acting."
-msgstr "يكشف بوتات فحص المسارات من خلال معدل استجابات 404 التي ينتجها عنوان IP. بمجرد أن يتجاوز عنوان IP الحد داخل النافذة المنزلقة، يتم تحدّي الطلب التالي (CAPTCHA) أو حظره عبر مسار قرار حركة المرور الأساسي. يمكن استثناء الروابط المعطوبة المشروعة من الزوار الحقيقيين والمستخدمين المسجّلين دخولهم والشبكات المدرجة في القائمة المسموح بها، ويسجّل وضع المراقبة فقط النشاط دون اتخاذ أي إجراء."
+msgstr "يكتشف الروبوتات التي تفحص المسارات من خلال معدل استجابات 404 التي يصدرها عنوان IP. بمجرد أن يتجاوز عنوان IP العتبة داخل النافذة المنزلقة، يُتحدى الطلب التالي (CAPTCHA) أو يُحظر عبر مسار قرار حركة المرور الأساسي. يمكن استثناء الروابط المكسورة المشروعة من الزوار الحقيقيين، والمستخدمين المسجلين دخولهم، والشبكات المدرجة في قائمة السماح، ويسجل وضع المراقبة فقط النشاط دون اتخاذ إجراء."
 
 #: addons/bbcs-404-guard/inc/class-bbcs-404-guard-plugin.php:53
 msgid "Detects path-scanning bots by their 404 rate and challenges or blocks them before they map the site."
-msgstr ""
+msgstr "يكتشف الروبوتات التي تفحص المسارات من خلال معدل أخطاء 404 لديها ويتحداها أو مكوِّنات قبل أن ترسم خريطة موقع."
 
 #: includes/data/class-botblocker-alerts.php:294
 msgid "Development Mode Active"
@@ -4749,7 +4749,7 @@ msgstr "تعطيل reCaptcha v3 لزوار IPv6. لا يدعم Google reCaptcha 
 
 #: addons/bbcs-forced-inclusions/views/settings.php:137
 msgid "Disable renames the file so WordPress stops running it. The file stays on the server, so you can turn it back on anytime - safe way to test if a file causes a problem. Delete removes it for good."
-msgstr ""
+msgstr "تعطيل يعيد تسمية الملف بحيث يتوقف ووردبريس عن تشغيله. يبقى الملف على خادم، لذا يمكنك إعادة تفعيله في أي وقت - طريقة آمنة لاختبار ما إذا كان ملف ما يسبب مشكلة. حذف إزالة نهائية له."
 
 #: addons/bbcs-speedup/inc/class-bbcs-speedup-addons-page.php:68
 #: addons/bbcs-speedup/views/settings.php:171
@@ -4848,7 +4848,7 @@ msgstr "عرض"
 
 #: addons/bbcs-cookie-alert/views/settings.php:29
 msgid "Displays a lightweight first-party cookie notice for visitors and stores consent locally in a BotBlocker-named cookie. Use it for simple privacy notices where no external consent platform is required. Configure message text, policy link, button label, theme, position, and optional CSS."
-msgstr "يعرض إشعارًا خفيفًا لملفات تعريف الارتباط الأولية للزوار ويخزن الموافقة محليًا في ملف تعريف ارتباط باسم BotBlocker. استخدمه لإشعارات الخصوصية البسيطة حيث لا يلزم وجود منصة موافقة خارجية. قم بتكوين نص الرسالة ورابط السياسة وتسمية الزر والقالب والموضع وCSS الاختياري."
+msgstr "يعرض إشعار كوكي خفيف من الطرف الأول للزوار ويخزن الموافقة محليًا في كوكي باسم BotBlocker. استخدمه لإشعارات الخصوصية البسيطة حيث لا تكون أي منصة موافقة خارجية مطلوبة. اضبط نص الرسالة، ورابط السياسة، وتسمية الزر، والقالب، والموضع، وCSS الاختياري."
 
 #: addons/bbcs-404-guard/views/settings.php:121
 msgid "Do not count 404 responses that carry a referer from this site. Real visitors following a broken internal link are usually not scanners."
@@ -4987,7 +4987,7 @@ msgstr "تقوم أوضاع Early Init و MU بإسقاط عناوين IP الم
 
 #: admin/templates/setup-guide/chain-body.php:49
 msgid "Early Init and MU plugin modes reject requests at the first gate: IPs on the blacklist (bots, malicious networks, previously blocked) are dropped before heavier logic runs. With Early Init, WordPress does not load at all - saving memory and CPU. The MU plugin filters before regular plugins and the theme. Only clean traffic proceeds; junk is dropped as early as possible."
-msgstr "أوضاع Early Init و MU plugin ترفض الطلبات عند البوابة الأولى: يتم إسقاط عناوين IP الموجودة في القائمة السوداء (البوتات، والشبكات الخبيثة، والمحجوبة سابقًا) قبل تشغيل المنطق الأثقل. مع Early Init، لا يتم تحميل ووردبريس على الإطلاق - مما يوفر الذاكرة والمعالج. تقوم إضافة MU بعوامل التصفية قبل الإضافات العادية والقالب. فقط حركة المرور النظيفة تستمر؛ يتم إسقاط النفايات في أقرب وقت ممكن."
+msgstr "ترفض أوضاع Early Init وMU plugin الطلبات عند البوابة الأولى: تُسقط عناوين IP الموجودة في القائمة السوداء (الروبوتات، والشبكات الخبيثة، والمحظورة سابقًا) قبل تشغيل المنطق الأثقل. مع Early Init، لا يتم تحميل ووردبريس على الإطلاق - ما يوفر الذاكرة وCPU. يُشغَّل MU plugin عوامل التصفية قبل الإضافات العادية والقالب. لا تمر إلا حركة المرور النظيفة؛ وتُسقط الفضلات في أقرب وقت ممكن."
 
 #: includes/ajax/class-botblocker-ajax-early-phase.php:124
 msgid "Early Init failed and was switched off to keep the site running."
@@ -5053,7 +5053,7 @@ msgstr "التهيئة المبكرة مُعطّلة. يتم التعامل مع
 #: includes/inc-botblocker-ui.php:151
 #: includes/viewmodels/class-chain-context-data.php:97
 msgid "Early initialization enabled. IP blacklist and base rule filtering run before WordPress loads. MU mode is not required."
-msgstr "التهيئة المبكرة مُفعّلة. تعمل القائمة السوداء لعناوين IP وتصفية القواعد الأساسية قبل تحميل ووردبريس. وضع MU غير مطلوب."
+msgstr "تم تفعيل التهيئة المبكرة. تعمل تصفية القائمة السوداء لعناوين IP والقواعد الأساسية قبل تحميل ووردبريس. وضع MU غير مطلوب."
 
 #: admin/class-botblocker-setup-wizard-ajax.php:242
 msgid "Early initialization requires PRO license."
@@ -5196,7 +5196,7 @@ msgstr "حظر User-Agent الفارغ"
 
 #: addons/bbcs-antispam/views/settings.php:88
 msgid "Emulate AI response locally without API key. Uses keyword heuristics to classify comments. Disable when real API is available."
-msgstr ""
+msgstr "حاكِ استجابة الذكاء الاصطناعي محليًا دون مفتاح واجهة برمجة التطبيقات (API). يستخدم كلمة مفتاحية أساليب استكشافية لتصنيف تعليقات. تعطيل عند توفر واجهة برمجة التطبيقات (API) حقيقي."
 
 #: admin/class-botblocker-admin.php:463
 msgid "Enable"
@@ -5260,7 +5260,7 @@ msgstr "تفعيل مصادقة العاملين الثنائية من BotBlocke
 
 #: admin/templates/integrations/2fa.php:34
 msgid "Enable BotBlocker Two-Factor Authentication for enhanced security."
-msgstr "تمكين مصادقة العاملين من BotBlocker لتعزيز الأمان."
+msgstr "تفعيل المصادقة الثنائية من BotBlocker مصادقة لتعزيز الأمان."
 
 #: addons/bbcs-security-headers/views/settings.php:146
 msgid "Enable common protection headers: X-Frame-Options, X-Content-Type-Options, X-XSS-Protection, Referrer-Policy, and X-Permitted-Cross-Domain-Policies."
@@ -5502,7 +5502,7 @@ msgstr "فرض قواعد IP / ASN لاستدعاءات الدفع"
 
 #: addons/bbcs-https-protocol/inc/class-bbcs-https-protocol.php:143
 msgid "Enforces HTTPS, handles protocol redirection, and fixes mixed content."
-msgstr ""
+msgstr "يفرض HTTPS، ويعالج إعادة توجيه البروتوكول، ويصلح المحتوى المختلط."
 
 #: admin/templates/settings/browser-plugins.php:54
 #: includes/data/class-botblocker-snav.php:128
@@ -5792,11 +5792,11 @@ msgstr "تصدير القواعد إلى JSON - نسخة احتياطية، حف
 
 #: addons/bbcs-firewall-export/views/settings.php:30
 msgid "Exports the active BotBlocker ban list as ready-to-use firewall rules for Apache (.htaccess Require not ip / Deny from), nginx (deny list), fail2ban (persistent jail installer script), and iptables/ip6tables (dedicated DROP chain script). Permanent and temporary blocks are taken from the IP rules database; expired bans are never included. Download the format you need and deploy it on the front-end server or edge firewall."
-msgstr "يُصدّر قائمة الحظر النشطة في BotBlocker كقواعد جدار حماية جاهزة للاستخدام لـ Apache (.htaccess Require not ip / Deny from)، وnginx (قائمة المنع)، وfail2ban (نص برمجي لمثبّت الحجز الدائم)، وiptables/ip6tables (نص برمجي مخصص لسلسلة DROP). تُؤخذ المكوِّنات الدائمة والمؤقتة من قاعدة بيانات قواعد IP؛ ولا تُضمَّن أبدًا عمليات الحظر منتهية الصلاحية. تنزيل الصيغة التي تحتاجها وانشرها على الخادم الأمامي أو جدار الحماية الطرفي."
+msgstr "يصدّر قائمة الحظر النشطة في BotBlocker كقواعد جدار حماية جاهزة للاستخدام لـ Apache (.htaccess Require not ip / Deny from)، وnginx (قائمة deny)، وfail2ban (نص برمجي لتثبيت سجن دائم)، وiptables/ip6tables (نص برمجي لسلسلة DROP مخصصة). يتم أخذ مكوِّنات الدائم والمؤقت من قواعد IP قاعدة بيانات؛ لا تُضمَّن عمليات الحظر المنتهية أبدًا. تنزيل صيغة الذي تحتاجه وانشره على خادم للواجهة الأمامية أو جدار الحماية الطرفي."
 
 #: admin/templates/integrations/wp-abilities.php:16
 msgid "Expose BotBlocker to the WordPress Abilities API. When disabled, nothing is registered — the abilities do not exist for REST, MCP or AI clients."
-msgstr ""
+msgstr "اكشف BotBlocker لـووردبريس Abilities واجهة برمجة التطبيقات (API). عند مُعطّل، لا يتم تسجيل أي شيء — فلا توجد القدرات لـREST أو MCP أو عملاء الذكاء الاصطناعي."
 
 #: admin/templates/settings/captcha-tab.php:158
 msgid "Extended Captcha Check"
@@ -5863,7 +5863,7 @@ msgstr "اسم حجز fail2ban"
 
 #: addons/bbcs-firewall-export/views/settings.php:33
 msgid "fail2ban jail.conf manual"
-msgstr ""
+msgstr "fail2ban jail.conf يدوي"
 
 #: addons/bbcs-firewall-export/views/settings.php:34
 msgid "fail2ban-client commands"
@@ -6584,7 +6584,7 @@ msgstr "ملفات تعمل دون أن تظهر في الإضافات"
 
 #: addons/bbcs-malware/inc/views/scan-results/ignored-files.php:18
 msgid "Files you chose to ignore. They no longer count as issues. Restore one to bring it back into the scan results."
-msgstr "الملفات التي اخترت تجاهلها. لم تعد تُحتسب كمشكلات. استعد أحدها لإعادته إلى نتائج الفحص."
+msgstr "الملفات التي اخترت تجاهلها. لم تعد تُحسب كمشكلات. استعد أحدها لإعادته إلى نتائج الفحص."
 
 #: admin/class-botblocker-admin.php:636
 #: includes/class-botblocker-toastify.php:269
@@ -7065,7 +7065,7 @@ msgstr "تم منح صلاحية مدير عام إلى %login%."
 
 #: admin/templates/rules.php:22
 msgid "Granular rules for IPs, ASNs, countries, paths, and headers"
-msgstr "قواعد دقيقة لعناوين IP وASNs والدول والمسارات والترويسات"
+msgstr "قواعد دقيقة لعناوين IP، وASNs، والدول، والمسارات، وترويسات"
 
 #: includes/modal/modal-botblocker-asn-add.php:36
 #: includes/modal/modal-botblocker-asn-edit.php:37
@@ -7104,7 +7104,7 @@ msgstr "Hardenize — الترويسات + TLS + نظام أسماء النطا�
 
 #: admin/templates/settings/advanced-protection.php:53
 msgid "Hardens the verification cycle against server-side interference (DDoS protection, WAF, CDN, rate-limiters). Adds response signing, circuit breaker, and transport hardening. Disable if your hosting environment interferes with these protections."
-msgstr "يُعزز دورة التحقق ضد تداخل الخادم (حماية DDoS، WAF، CDN، محددات المعدل). يضيف توقيع الاستجابة، وقاطع الدائرة، وتعزيز النقل. قم بتعطيله إذا تداخلت بيئة الاستضافة لديك مع هذه الحمايات."
+msgstr "يقوّي دورة التحقق ضد التدخل من جانب الخادم (حماية DDoS، وWAF، وCDN، ومحددات المعدل). يضيف توقيع الاستجابة، وقاطع الدارة، وتقوية النقل. تعطيل إذا كانت بيئة الاستضافة لديك تتعارض مع هذه الحمايات."
 
 #: addons/bbcs-hcaptcha/views/settings.php:36
 msgid "hCaptcha"
@@ -7311,7 +7311,7 @@ msgstr "ساعات عدم النشاط قبل أن يبرد مستوى سمعة 
 
 #: admin/templates/settings/data-log.php:26
 msgid "How BotBlocker Detects Browser Version, OS, and Device Type"
-msgstr "كيف يكتشف BotBlocker إصدار المتصفح ونظام التشغيل ونوع الجهاز"
+msgstr "كيف يكتشف BotBlocker نسخة المتصفح، ونظام التشغيل، ونوع الجهاز"
 
 #: addons/bbcs-behavior/views/settings.php:141
 msgid "How far back (in minutes) to evaluate a visitor's activity patterns. (Default: 10)"
@@ -7319,7 +7319,7 @@ msgstr "كم المدة (بالدقائق) التي نعود إليها لتقي
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:365
 msgid "How far back in time (in minutes) we look to evaluate a visitor's activity patterns. For example, a 10-minute window means we inspect request patterns over the last 10 minutes. (Default: 10)"
-msgstr "إلى أي مدى في الماضي (بالدقائق) ننظر لتقييم أنماط نشاط الزائر. على سبيل المثال، نافذة مدتها 10 دقائق تعني أننا نفحص أنماط الطلبات خلال آخر 10 دقائق. (افتراضي: 10)"
+msgstr "إلى أي مدى زمني (بالدقائق) نرجع لتقييم أنماط نشاط الزائر. على سبيل المثال، نافذة 10 دقائق تعني أننا نفحص أنماط الطلبات على مدى آخر 10 دقائق. (افتراضي: 10)"
 
 #: addons/bbcs-behavior/views/settings.php:153
 msgid "How long (in seconds) an IP remains blocked after triggering the block threshold. (Default: 900)"
@@ -7419,6 +7419,7 @@ msgid "HSTS preload"
 msgstr "HSTS preload"
 
 #: addons/bbcs-firewall-export/views/settings.php:138
+#, fuzzy
 msgid "htaccess: Apache 2.4 RequireAll/Require not ip with an Apache 2.2 fallback. nginx: ngx_http_access_module deny list. fail2ban: installer that creates a persistent jail and bans every address via banip. iptables: idempotent BBCS_EXPORT chain script (ip6tables for IPv6)."
 msgstr "htaccess: Apache 2.4 RequireAll/Require not ip مع بديل Apache 2.2. nginx: قائمة الحظر ngx_http_access_module. fail2ban: مثبّت ينشئ حجزًا دائمًا ويحظر كل عنوان عبر banip. iptables: سكربت سلسلة BBCS_EXPORT متساوي القوة (ip6tables لـ IPv6)."
 
@@ -7541,19 +7542,19 @@ msgstr "إذا فاتت مهمة مجدولة (WP-Cron غير مستقر)، سي
 
 #: addons/bbcs-behavior/views/settings.php:83
 msgid "If a visitor's behavior score (0–100) reaches this threshold, a Captcha challenge is shown. Lower values = stricter. (Default: 50)"
-msgstr "إذا وصلت درجة سلوك الزائر (0–100) إلى هذا الحد، يُعرض تحدي Captcha. القيم الأقل = أكثر تشدداً. (الافتراضي: 50)"
+msgstr "إذا بلغت درجة سلوك الزائر (0–100) هذا الحد، فسيُعرض تحدي Captcha. قيم أقل = أكثر صرامة. (افتراضي: 50)"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:353
 msgid "If a visitor's behavior score (from 0 to 100) reaches this threshold, they are blocked immediately. This should be set higher than the Captcha threshold. Lower values make protection stricter. (Default: 75)"
-msgstr "إذا وصلت درجة سلوك الزائر (من 0 إلى 100) إلى هذا الحد، يتم حظره فوراً. يجب أن يكون أعلى من حد Captcha. القيم الأقل تجعل الحماية أكثر تشدداً. (الافتراضي: 75)"
+msgstr "إذا بلغت درجة سلوك الزائر (من 0 إلى 100) هذا الحد، فسيُحظر فورًا. ينبغي أن يكون هذا أعلى من حد Captcha. القيم الأقل تجعل الحماية أكثر صرامة. (افتراضي: 75)"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:341
 msgid "If a visitor's behavior score (from 0 to 100) reaches this threshold, we display a Captcha challenge before letting them proceed. Lower values make protection stricter. (Default: 50)"
-msgstr "إذا وصلت درجة سلوك الزائر (من 0 إلى 100) إلى هذا الحد، نعرض تحدي Captcha قبل السماح له بالمتابعة. القيم الأقل تجعل الحماية أكثر تشدداً. (الافتراضي: 50)"
+msgstr "إذا بلغت درجة سلوك الزائر (من 0 إلى 100) هذا الحد، نعرض تحدي Captcha قبل السماح له بالمتابعة. القيم الأقل تجعل الحماية أكثر صرامة. (افتراضي: 50)"
 
 #: addons/bbcs-behavior/views/settings.php:95
 msgid "If a visitor's behavior score reaches this threshold, they are blocked immediately. Must be higher than Captcha threshold. (Default: 75)"
-msgstr "إذا وصلت درجة سلوك الزائر إلى هذا الحد، يتم حظره فوراً. يجب أن يكون أعلى من حد Captcha. (الافتراضي: 75)"
+msgstr "إذا بلغت درجة سلوك الزائر هذا الحد، فسيُحظر فورًا. يجب أن يكون أعلى من حد Captcha. (افتراضي: 75)"
 
 #: admin/templates/settings/cron.php:66
 msgid "If WP-Cron is unreliable, set up a system cron job using the commands below."
@@ -7685,7 +7686,7 @@ msgstr "استيراد قائمة IP السوداء من ملف - قائمة ا�
 
 #: admin/partials/class-botblocker-dashboard-widgets.php:180
 msgid "Import IP lists from TXT files. White lists allow IPs, black lists block them. One IP per line."
-msgstr "استيراد قوائم IP من ملفات TXT. القوائم البيضاء تسمح بعناوين IP، والقوائم السوداء تحظرها. عنوان IP واحد لكل سطر."
+msgstr "استورد قوائم IP من ملفات TXT. القوائم البيضاء تسمح بعناوين IP، والقوائم السوداء مُكوِّن بها. عنوان IP واحد في كل سطر."
 
 #: includes/data/class-botblocker-palette.php:166
 msgid "Import IP whitelist from file - allowlist, CSV, bulk add"
@@ -7807,7 +7808,7 @@ msgstr "تضمين الحظر الذي لا يزال لديه TTL متبقٍ. ا
 
 #: addons/bbcs-firewall-export/views/settings.php:49
 msgid "Include permanent and temporary bans with the block action."
-msgstr ""
+msgstr "تضمين عمليات الحظر الدائمة والمؤقتة مع مُكوِّن إجراء."
 
 #: admin/templates/cloud-api/status.php:109
 #: admin/templates/cloud-api/status.php:116
@@ -7854,7 +7855,7 @@ msgstr "تم تعطيل الإضافات غير المتوافقة: %s. يرجى
 #: addons/bbcs-malware/inc/views/scan-results/header.php:65
 #, php-format
 msgid "Increase Max Files or Max Findings to scan more items. Current Max Files: %1$d. Current Max Findings: %2$d."
-msgstr "زيادة الحد الأقصى للملفات أو الحد الأقصى للنتائج لفحص المزيد من العناصر. الحد الأقصى الحالي للملفات: %1$d. الحد الأقصى الحالي للنتائج: %2$d."
+msgstr "زد الحد الأقصى للملفات أو الحد الأقصى للنتائج لفحص المزيد من العناصر. الحد الأقصى الحالي للملفات: %1$d. الحد الأقصى الحالي للنتائج: %2$d."
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:287
 msgid "Indicator"
@@ -8372,7 +8373,7 @@ msgstr "نوع"
 
 #: includes/data/class-botblocker-alerts.php:691
 msgid "Kinsta hosting detected. Add the BotBlocker cookie as a cache bypass rule in the Kinsta dashboard. See CACHE-COMPATIBILITY.md."
-msgstr "تم اكتشاف استضافة Kinsta. أضف ملف تعريف الارتباط BotBlocker كقاعدة تجاوز ذاكرة التخزين المؤقت في لوحة تحكم Kinsta. راجع CACHE-COMPATIBILITY.md."
+msgstr "تم اكتشاف استضافة Kinsta. أضف كوكي BotBlocker كقاعدة تجاوز لذاكرة التخزين المؤقت في لوحة تحكم Kinsta. راجع CACHE-COMPATIBILITY.md."
 
 #: addons/bbcs-cron-jobs/views/settings.php:128
 #: addons/bbcs-cron-jobs/views/settings.php:70
@@ -8739,7 +8740,7 @@ msgstr "استخدام منخفض للموارد"
 
 #: admin/templates/setup-wizard/recaptcha.php:71
 msgid "Lower scores block more traffic; higher scores are more permissive."
-msgstr ""
+msgstr "الدرجات الأقل مُكوِّن مزيدًا من المرور؛ الدرجات الأعلى أكثر تسامحًا."
 
 #: addons/bbcs-cookie-alert/inc/class-bbcs-cookie-alert-addons-page.php:44
 #: addons/bbcs-cookie-alert/views/settings.php:39
@@ -8975,7 +8976,7 @@ msgstr "الحد الأقصى لعدد الكلمات المحتفظ بها من
 
 #: addons/bbcs-behavior/views/settings.php:272
 msgid "Maximum penalty level an IP or subnet can reach. Higher tiers apply stricter thresholds. (Default: 6)"
-msgstr "أقصى مستوى عقوبة يمكن أن يصل إليه IP أو الشبكة الفرعية. تطبق المستويات الأعلى عتبات أكثر صرامة. (الافتراضي: 6)"
+msgstr "الحد الأقصى لمستوى العقوبة الذي يمكن أن يصل إليه IP أو شبكة فرعية. تطبّق الطبقات الأعلى حدودًا أكثر صرامة. (افتراضي: 6)"
 
 #: admin/templates/setup-wizard/init-mode.php:53
 msgid "Maximum protection level"
@@ -8991,7 +8992,7 @@ msgstr "أقصى حماية، أضيق الحدود"
 
 #: addons/bbcs-behavior/views/settings.php:124
 msgid "Maximum requests per hour. Catches slow-crawling scrapers that avoid per-minute limits. (Default: 200)"
-msgstr "الحد الأقصى للطلبات في الساعة. يلتقط المتسللين الزاحفين ببطء الذين يتجنبون الحدود في الدقيقة. (الافتراضي: 200)"
+msgstr "الحد الأقصى للطلبات في الساعة. يلتقط الكاشطات البطيئة التي تتجنب حدود الدقيقة. (افتراضي: 200)"
 
 #: addons/bbcs-behavior/views/settings.php:112
 msgid "Maximum requests per minute a typical human would make. (Default: 30)"
@@ -9023,7 +9024,7 @@ msgstr "Memcached"
 
 #: includes/hook/class-botblocker-settings-hooks.php:49
 msgid "Memcached backend is not reachable — the integration was left disabled."
-msgstr ""
+msgstr "الواجهة الخلفية Memcached غير قابلة للوصول — تُرك التكامل مُعطّلًا."
 
 #: includes/ajax/class-botblocker-ajax-cache.php:73
 msgid "Memcached backend is not reachable."
@@ -9109,11 +9110,11 @@ msgstr "حمل خادم ضئيل"
 
 #: addons/bbcs-antispam/views/settings.php:177
 msgid "Minimum spam score (0-1) to classify a comment as spam. Higher = stricter. (Default: 0.5)"
-msgstr "الحد الأدنى لدرجة التصنيف كمحتوى مزعج (0-1) لتصنيف تعليق كمزعج. القيمة الأعلى تعني تشددًا أكبر. (الافتراضي: 0.5)"
+msgstr "الحد الأدنى لدرجة المزعج (0-1) لتصنيف تعليق بوصفه مزعجًا. كلما ارتفعت زادت الصرامة. (افتراضي: 0.5)"
 
 #: addons/bbcs-antispam/views/settings.php:189
 msgid "Minimum suspicious score (0-1) to hold a comment for moderation. Must be lower than Spam Threshold. (Default: 0.3)"
-msgstr "الحد الأدنى لدرجة الاشتباه (0-1) لتعليق تعليق للمراجعة. يجب أن يكون أقل من عتبة المحتوى المزعج. (الافتراضي: 0.3)"
+msgstr "الحد الأدنى لدرجة الاشتباه (0-1) لإيقاف تعليق بغرض الإشراف. يجب أن يكون أقل من عتبة المزعج. (افتراضي: 0.3)"
 
 #: admin/templates/settings/rate-limiting.php:137
 msgid "Minimum threshold as a percentage of block RPM, preventing thresholds from dropping to zero under high subnet pressure. Default: 10%."
@@ -9256,7 +9257,7 @@ msgstr "ملف محمّل MU"
 #: includes/inc-botblocker-ui.php:152
 #: includes/viewmodels/class-chain-context-data.php:98
 msgid "MU mode disabled. Early initialization already performs pre-filtering. Enabling MU is unnecessary."
-msgstr "وضع MU مُعطّل. التهيئة المبكرة تقوم بالفعل بالتصفية المسبقة. تفعيل MU غير ضروري."
+msgstr "وضع MU مُعطّل. التهيئة المبكرة تُجري التصفية المسبقة بالفعل. تفعيل MU غير ضروري."
 
 #: admin/templates/settings/status.php:50
 #: admin/templates/shared/system-toggles.php:45
@@ -9270,7 +9271,7 @@ msgstr "إضافة MU"
 #: includes/inc-botblocker-ui.php:155
 #: includes/viewmodels/class-chain-context-data.php:101
 msgid "MU plugin active. Early IP and rule filtering run before other plugins. Early initialization is not required."
-msgstr "إضافة MU نشطة. تصفية IP والقواعد المبكرة تعمل قبل الإضافات الأخرى. التهيئة المبكرة غير مطلوبة."
+msgstr "إضافة MU نشطة. تعمل تصفية IP والقواعد المبكرة قبل الإضافات الأخرى. التهيئة المبكرة غير مطلوبة."
 
 #: includes/inc-botblocker-ui.php:158
 #: includes/viewmodels/class-chain-context-data.php:104
@@ -9302,11 +9303,11 @@ msgstr "تحليل سلوكي متعدد الإشارات لاكتشاف الر�
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-plugin.php:57
 msgid "Multi-signal behavioral scoring, session limits, and IP reputation decay."
-msgstr ""
+msgstr "تقييم سلوكي متعدد الإشارات، وحدود الجلسة، وتلاشي سمعة IP."
 
 #: admin/templates/settings/rate-limiting.php:128
 msgid "Multiplier applied to block RPM for subnet threshold. Higher = more tolerant. Default: 3."
-msgstr "مُضاعف يُطبّق على RPM المُكوِّن لعتبة الشبكة الفرعية. أعلى = أكثر تسامحاً. افتراضي: 3."
+msgstr "مُضاعِف يُطبَّق على مُكوِّن RPM لعتبة الشبكة الفرعية. أعلى = أكثر تسامحًا. افتراضي: 3."
 
 #: addons/bbcs-behavior/views/settings.php:170
 msgid "Multiplier for behavior metrics from proxy/VPN traffic. (Default: 1.15)"
@@ -9320,7 +9321,7 @@ msgstr "إضافة يجب استخدامها"
 #: admin/templates/integrations/mu.php:21
 #: admin/templates/settings/status.php:24
 msgid "Must-Use Plugins (WordPress.org)"
-msgstr ""
+msgstr "إضافات Must-Use (ووردبريس.org)"
 
 #: addons/bbcs-forced-inclusions/views/settings.php:139
 msgid "Must-use plugins explained"
@@ -9372,8 +9373,9 @@ msgid "Networks that are never counted or blocked. One IPv4/IPv6 address or CIDR
 msgstr "الشبكات التي لا تُحتسب أو تُحظر أبدًا. عنوان IPv4/IPv6 واحد أو نطاق CIDR لكل سطر؛ الأسطر التي تبدأ بـ # يتم تجاهلها."
 
 #: addons/bbcs-404-guard/views/settings.php:129
+#, fuzzy
 msgid "Never count or block logged-in users. Recommended: protects editors and administrators from locking themselves out."
-msgstr ""
+msgstr "لا تحسب أو مُكوِّن مستخدمين المسجّلين للدخول أبدًا. موصى به: يحمي المحررين والمديرين من قفل حساباتهم."
 
 #: includes/shortcode/class-botblocker-sidebar-shortcodes.php:83
 msgid "New bots discovered today:"
@@ -9396,7 +9398,7 @@ msgstr "وحدة وصول nginx"
 
 #: includes/data/class-botblocker-alerts.php:664
 msgid "Nginx detected with WP_CACHE enabled. If using FastCGI Cache, ensure the BotBlocker cookie bypasses it. See CACHE-COMPATIBILITY.md."
-msgstr "تم اكتشاف Nginx مع تفعيل WP_CACHE. إذا كنت تستخدم FastCGI Cache، فتأكد من أن ملف تعريف الارتباط الخاص بـ BotBlocker يتجاوزه. راجع CACHE-COMPATIBILITY.md."
+msgstr "تم اكتشاف Nginx مع تفعيل WP_CACHE. إذا كنت تستخدم FastCGI Cache، فتأكد من أن كوكي BotBlocker يتجاوزه. راجع CACHE-COMPATIBILITY.md."
 
 #: includes/data/class-botblocker-alerts.php:666
 msgid "Nginx detected without WP_CACHE - no PHP-level page cache in front of the site."
@@ -9627,7 +9629,7 @@ msgstr "لم يتم العثور على شيء حول"
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:147
 #: addons/bbcs-forced-inclusions/views/settings.php:174
 msgid "Nothing is loading this way right now. That is a normal, clean result."
-msgstr ""
+msgstr "لا شيء يتم تحميله بهذه الطريقة يمين الآن. هذا نتيجة طبيعي ونظيف."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:86
 msgid "Nothing on a site that is already installed. It only runs during setup."
@@ -9718,7 +9720,7 @@ msgstr "مرة في الشهر"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:357
 msgid "One fnmatch wildcard per line (e.g. \"wp-content/cache/*\", \"*.log\"). Matching integrity findings are silenced across every scan root. Bulk equivalent of the per-file Ignore button."
-msgstr "حرف بدل fnmatch واحد لكل سطر (مثل «wp-content/cache/*»، «*.log»). يتم كتم نتائج السلامة المطابقة عبر كل جذر فحص. مكافئ جماعي لزر التجاهل لكل ملف."
+msgstr "حرف بدل fnmatch واحد لكل سطر (مثل «wp-content/cache/*»، «*.log»). تُكتَّم نتائج السلامة المطابقة عبر كل جذر فحص. مكافئ جماعي لزر التجاهل الخاص بكل ملف."
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:366
 msgid "One indicator ID per line. Matching indicators will be ignored for known-benign findings."
@@ -9730,7 +9732,7 @@ msgstr "عنوان IP أو CIDR واحد لكل سطر. تُضاف هذه الع
 
 #: addons/bbcs-xmlrpc-tunnel/views/settings.php:76
 msgid "One IP or CIDR range per line. Supports: single IPs (192.168.1.1), CIDR (10.0.0.0/24), wildcards (192.168.*.*), IPv6 (::1, 2001:db8::/32). Lines starting with # are comments."
-msgstr "نطاق IP أو CIDR واحد في كل سطر. يدعم: عناوين IP فردية (192.168.1.1)، CIDR (10.0.0.0/24)، أحرف البدل (192.168.*.*)، IPv6 (::1, 2001:db8::/32). الأسطر التي تبدأ بـ # هي تعليقات."
+msgstr "عنوان IP واحد أو نطاق CIDR واحد في كل سطر. يدعم: عناوين IP مفردة (192.168.1.1)، وCIDR (10.0.0.0/24)، وأحرف البدل (192.168.*.*)، وIPv6 (::1، 2001:db8::/32). الأسطر التي تبدأ بـ # تكون تعليقات."
 
 #: admin/templates/setup-guide/one-click-modal.php:55
 msgid "One-click activation"
@@ -10043,7 +10045,7 @@ msgstr "تحسينات الأداء وتنظيفات الواجهة الأمام
 
 #: admin/templates/tools.php:25
 msgid "Performance, maintenance, and service parameters"
-msgstr "معلمات الأداء والصيانة والخدمة"
+msgstr "الأداء، والصيانة، ومُعاملات الخدمة"
 
 #: includes/ajax/class-botblocker-ajax-maintenance.php:233
 msgid "Permalink rules have been flushed successfully."
@@ -10063,7 +10065,7 @@ msgstr ""
 
 #: admin/templates/settings/bot-detection.php:44
 msgid "Permit CAPTCHA verification for visitors without Accept-Language header (privacy tools, Tor safest mode). Falls back to site default locale. Keep disabled unless you serve privacy-focused users."
-msgstr "السماح بالتحقق من CAPTCHA للزوار الذين لا يملكون ترويسة Accept-Language (أدوات الخصوصية، الوضع الأكثر أمانًا في Tor). يعود إلى اللغة الافتراضية للموقع. يُبقي مُعطّلاً ما لم تخدم مستخدمين مهتمين بالخصوصية."
+msgstr "اسمح بالتحقق عبر CAPTCHA لـ زوار دون Accept-Language ترويسة (أدوات خصوصية، وضع Tor الأكثر أمانًا). يعود افتراضيًا إلى لغة موقع افتراضي. أبقِ مُعطّل ما لم تكن تخدم مستخدمين التي تركز على الخصوصية."
 
 #: admin/templates/setup-wizard/cache.php:19
 msgid "Persistent connections"
@@ -10459,7 +10461,7 @@ msgstr "يحمي محتوى الخلاصة من الكاشطات: إدخالات
 
 #: addons/bbcs-feed-guard/views/settings.php:27
 msgid "Protects your RSS/Atom feed content from scrapers. Full-content feeds are truncated to an excerpt, an attribution link back to the original article is appended, feeds can be marked noindex for search engines, and feed discovery links can be removed or the feeds disabled entirely. Legitimate subscribers and feed readers keep working."
-msgstr ""
+msgstr "يحمي محتوى تغذية RSS/Atom الخاصة بك من الكاشطات. يتم اقتطاع التغذيات كاملة المحتوى إلى مقتطف، ويُضاف رابط إسناد يعود إلى مقالة / مقالات الأصلي، ويمكن تعليم التغذيات بـ noindex لمحركات بحث، ويمكن إزالة روابط اكتشاف التغذية أو مُعطّل التغذيات بالكامل. يظل المشتركون الشرعيون وقارئات التغذية يعملون."
 
 #: addons/bbcs-https-protocol/inc/class-bbcs-https-protocol-addons-page.php:53
 #: addons/bbcs-https-protocol/views/settings.php:115
@@ -10605,7 +10607,7 @@ msgstr "نقاط"
 
 #: addons/bbcs-antispam/views/settings.php:212
 msgid "Publish clean (ham) comments immediately, overriding the WordPress moderation settings. When disabled, WordPress decides the final status of clean comments."
-msgstr ""
+msgstr "انشر تعليقات النظيفة (غير المزعجة) فورًا، متجاوزًا إعدادات الإشراف في ووردبريس. عند مُعطّل، يقرر ووردبريس حالة النهائي لـ تعليقات النظيفة."
 
 #: public/captcha/render-moving-shapes-button-trait.php:27
 msgid "Purple"
@@ -10855,7 +10857,7 @@ msgstr "تكاملات reCaptcha و Redis و Memcached"
 
 #: addons/bbcs-telegram/views/settings.php:25
 msgid "Receive BotBlocker weekly security reports directly in your Telegram chat. Connect a bot token and chat ID, then enable the weekly report."
-msgstr ""
+msgstr "تلقي تقارير BotBlocker الأمنية الأسبوعية مباشرة في دردشة Telegram الخاصة بك. قم بتوصيل رمز البوت ودردشة مُعرِّف، ثم تفعيل التقرير الأسبوعي."
 
 #: admin/templates/settings/notifications.php:36
 msgid "Receive security alerts via email."
@@ -10886,7 +10888,7 @@ msgstr "الإعداد المسبق الموصى به"
 
 #: admin/templates/setup-wizard/welcome.php:15
 msgid "Recommended preset in one click (~30 seconds)"
-msgstr ""
+msgstr "إعداد مسبق موصى به بنقرة انقر واحدة (~30 ثانية)"
 
 #. translators: %s: WordPress role name (e.g., Administrator, Editor)
 #: admin/templates/settings/data-log.php:89
@@ -10991,7 +10993,7 @@ msgstr "كلمة مرور مصادقة Redis"
 
 #: includes/hook/class-botblocker-settings-hooks.php:34
 msgid "Redis backend is not reachable — the integration was left disabled."
-msgstr ""
+msgstr "الواجهة الخلفية Redis غير قابلة للوصول — تم يسار التكامل مُعطّل."
 
 #: includes/ajax/class-botblocker-ajax-cache.php:58
 msgid "Redis backend is not reachable."
@@ -11077,7 +11079,7 @@ msgstr "إعادة توليد روابط إجراء الأمان؟ ستتوقف 
 
 #: admin/templates/integrations/wp-connectors.php:21
 msgid "Registers BotBlocker in the WordPress Connectors system. Disable if you do not use WordPress Connectors to save ~180ms per admin page load."
-msgstr ""
+msgstr "يسجل BotBlocker في نظام ووردبريس Connectors. تعطيل إذا كنت لا تستخدم ووردبريس Connectors لتوفير ~180 مللي ثانية لكل تحميل صفحة للمشرف."
 
 #: admin/templates/tools/modals/hits-clear.php:21
 msgid "Regular hits will be removed from the database."
@@ -11100,7 +11102,7 @@ msgstr "إعادة تثبيت قاعدة بيانات"
 
 #: includes/data/class-botblocker-palette.php:177
 msgid "Reinstall database - reset, fresh start, rebuild tables"
-msgstr ""
+msgstr "أعد تنصيب قاعدة بيانات - إعادة تعيين، بداية جديدة، إعادة بناء الجداول"
 
 #: admin/templates/integrations/mu.php:50
 msgid "Rejects visitors from the blocked-country list before plugins load. Off by default - any lookup uncertainty passes traffic to the main plugin."
@@ -11112,11 +11114,11 @@ msgstr "يرفض الزوار من قائمة الدول المحظورة قبل
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:446
 msgid "Remember repeat offenders. This tracks the reputation history of suspicious IPs and subnets over several days, making future blocks trigger much faster for repeat offenders. (Default: Enabled)"
-msgstr "تذكر المخالفين المتكررين. يتتبع هذا سجل سمعة عناوين IP والشبكات الفرعية المشبوهة على مدى عدة أيام، مما يجعل المكوِّنات المستقبلية تعمل بشكل أسرع بكثير للمخالفين المتكررين. (افتراضي: مفعّل)"
+msgstr "تذكّر المخالفين المتكررين. يتتبع هذا سجل السمعة لعناوين IP والشبكات الفرعية المشبوهة على مدى عدة أيام، مما يجعل مكوِّنات المستقبلي يُفعّل أسرع بكثير بالنسبة للمخالفين المتكررين. (افتراضي: مفعّل)"
 
 #: addons/bbcs-behavior/views/settings.php:202
 msgid "Remember repeat offenders. Tracks reputation history of suspicious IPs and subnets over several days. (Default: Enabled)"
-msgstr "تذكر المخالفين المتكررين. يتتبع سجل سمعة عناوين IP والشبكات الفرعية المشبوهة على مدى عدة أيام. (افتراضي: ممكّن)"
+msgstr "تذكّر المخالفين المتكررين. يتتبع سجل السمعة لعناوين IP والشبكات الفرعية المشبوهة على مدى عدة أيام. (افتراضي: مُفعّل)"
 
 #: public/2FA/bbcs-2fa.php:263
 msgid "Remember this device for 30 days"
@@ -11170,7 +11172,7 @@ msgstr "إزالة روابط اكتشاف RSS/Atom من ترويسة الموق
 
 #: includes/inc-botblocker-wp-abilities.php:153
 msgid "Removes firewall rules for an IP address and regenerates the runtime ban files."
-msgstr ""
+msgstr "يقوم بإزالة قواعد الجدار الناري لعنوان IP ويعيد إنشاء ملفات الحظر وقت التشغيل."
 
 #: addons/bbcs-speedup/views/settings.php:52
 msgid "Removes jQuery Migrate. May break older plugins that use deprecated jQuery functions."
@@ -11228,7 +11230,7 @@ msgstr "استبدال محتوى المقالة الكامل في الخلاص�
 
 #: admin/templates/settings/cookie.php:96
 msgid "Replaces IP/host/UA-bound cookie hash with a session token. Eliminates Captcha loops for VPN/proxy users. Disable only if experiencing issues."
-msgstr "يستبدل تجزئة ملفات تعريف الارتباط المرتبطة بـ IP/المضيف/وكيل المستخدم برمز جلسة. يزيل حلقات Captcha لمستخدمي VPN/البروكسي. قم بالتعطيل فقط إذا واجهت مشاكل."
+msgstr "يستبدل تجزئة ملف تعريف الارتباط المرتبطة بـ IP/المضيف/UA برمز جلسة. يزيل حلقات Captcha لـ مستخدمين الخاصة بـ VPN/الوكيل. تعطيل فقط إذا واجهت مشكلات."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:66
 msgid "Replaces the default screen shown while the site is in maintenance mode."
@@ -11327,7 +11329,7 @@ msgstr "الطلبات المحظورة"
 
 #: addons/bbcs-security-headers/views/settings.php:138
 msgid "Requests inclusion in the browser HSTS preload list. Enable only after registering the domain at hstspreload.org - the directive is ignored otherwise."
-msgstr ""
+msgstr "يطلب الإدراج في قائمة التحميل المسبق HSTS الخاصة بالمتصفح. تفعيل فقط بعد تسجيل نطاق في hstspreload.org - يتم تجاهل التوجيه بخلاف ذلك."
 
 #: admin/templates/cloud-api/status.php:40
 #: admin/templates/dashboard/pro-status.php:35
@@ -11493,7 +11495,7 @@ msgstr "إرجاع HTTP 403 لكل طلب خلاصة. يؤدي هذا إلى ت�
 
 #: includes/inc-botblocker-wp-abilities.php:81
 msgid "Returns aggregated request, block, captcha and proxy counters for a period."
-msgstr ""
+msgstr "يعيد عدادات الطلبات المُجمَّعة، ومُكوِّن، وCaptcha، والوكيل لفترة معينة."
 
 #: includes/inc-botblocker-wp-abilities.php:16
 msgid "Returns the current BotBlocker protection mode, enabled state and plugin version."
@@ -11807,7 +11809,7 @@ msgstr "الإعدادات الافتراضية الآمنة"
 
 #: admin/templates/setup-wizard/welcome.php:23
 msgid "Safe defaults: compatible with WooCommerce, Elementor, caches"
-msgstr "الإعدادات الافتراضية الآمنة: متوافقة مع WooCommerce وElementor وذاكرة التخزين المؤقت"
+msgstr "إعدادات افتراضية آمنة: متوافقة مع WooCommerce، وElementor، وذاكرات التخزين المؤقت"
 
 #: admin/templates/settings/cookie.php:104
 #: admin/templates/settings/cookie.php:54
@@ -12004,7 +12006,7 @@ msgstr "فحص الملفات للكشف عن البرمجيات الخبيثة"
 
 #: addons/bbcs-malware/views/settings.php:18
 msgid "Scans WordPress files and database content for dangerous execution, obfuscation, encoded payloads, injected scripts, and known webshell markers. Findings are indicators for review. Do not delete files before checking backups and confirming the payload."
-msgstr "يفحص ملفات ووردبريس ومحتوى قاعدة البيانات بحثاً عن تنفيذ خطير، تشويش، حمولات مشفرة، برامج نصية محقونة، وعلامات webshell المعروفة. النتائج هي مؤشرات للمراجعة. لا تقم بحذف الملفات قبل التحقق من النسخ الاحتياطية وتأكيد الحمولة."
+msgstr "يفحص ملفات ووردبريس ومحتوى قاعدة بيانات بحثًا عن تنفيذ خطير، وتعتيم، وحمولات مُشفرة، ونصوص برمجية مُحقنة، وعلامات webshell معروفة. النتائج مؤشرات للمراجعة. لا تحذف الملفات قبل التحقق من النسخ الاحتياطية وتأكيد الحمولة."
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-plugin.php:128
 msgid "Scans WordPress files for malware indicators, obfuscation chains, and webshell patterns."
@@ -12071,7 +12073,7 @@ msgstr "بوتات البحث"
 
 #: admin/class-botblocker-admin.php:451
 msgid "Search by code, rule, comment…"
-msgstr ""
+msgstr "بحث حسب الشفرة، القاعدة، تعليق…"
 
 #: admin/class-botblocker-admin.php:318
 #: admin/class-botblocker-admin.php:417
@@ -12396,7 +12398,7 @@ msgstr "تم تفعيل تحقق رمز الجلسة"
 
 #: addons/bbcs-hide-admin/views/settings.php:61
 msgid "Set a custom login endpoint to hide wp-login.php. Use only letters, numbers, hyphens, or underscores. Do not use .php, slashes, or query strings."
-msgstr "تعيين نقطة نهاية مخصصة لتسجيل الدخول لإخفاء wp-login.php. استخدم فقط الأحرف والأرقام والشرطات أو الشرطات السفلية. لا تستخدم .php أو الشرطات المائلة أو سلاسل الاستعلام."
+msgstr "عيّن نقطة نهاية تسجيل دخول مخصصة لإخفاء wp-login.php. استخدم الأحرف والأرقام والشرطات أو الشرطات السفلية فقط. لا تستخدم .php أو الشرطات المائلة أو سلاسل الاستعلام."
 
 #: admin/templates/settings/cookie.php:76
 msgid "Set SameSite attribute (Lax, Strict, None)."
@@ -12569,7 +12571,7 @@ msgstr "رابط Signature DB"
 
 #: admin/templates/settings/payment-tab.php:47
 msgid "Signature headers are always verified for format (min 8 chars, POST only). When enabled, payment bypass additionally applies to POST requests only: GET requests with payment query keys or ajax actions will not bypass the shield. Callbacks matched by generic markers (webhook, ipn, callback_handler) always keep IP and rate-limit rules active. Reduces attack surface while keeping real webhooks working."
-msgstr "تُتحقق دائمًا من ترويسات التوقيع من حيث الصيغة (8 أحرف كحد أدنى، مقالة فقط). عند التفعيل، ينطبق تجاوز الدفع أيضًا على طلبات المقالة فقط: طلبات GET التي تحتوي على مفاتيح استعلام الدفع أو إجراءات ajax لن تتجاوز الدرع. تحافظ عمليات الاستدعاء المطابقة للعلامات العامة (webhook، ipn، callback_handler) دائمًا على قواعد IP وتحديد المعدل نشطة. يقلل من سطح الهجوم مع الحفاظ على عمل خطافات الويب الحقيقية."
+msgstr "يتم دائمًا التحقق من ترويسات التوقيع لـ صيغة (8 محارف كحد أدنى، POST فقط). عند التفعيل، ينطبق تجاوز الدفع إضافةً على طلبات POST فقط: طلبات GET التي تحتوي على مفاتيح استعلام للدفع أو إجراءات ajax لن تتجاوز الدرع. الاستدعاءات المرتبطة بعلامات عامة (webhook، ipn، callback_handler) تُبقي قواعد IP وتحديد المعدل نشطة دائمًا. يقلل مساحة الهجوم مع إبقاء webhooks الحقيقية تعمل."
 
 #: includes/audit/class-botblocker-audit-logger.php:414
 msgid "Signed in from a trusted device."
@@ -12702,7 +12704,7 @@ msgstr "تخطي الفحوصات لجميع المستخدمين المسجلي
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:120
 msgid "Skip hash-comparison integrity warnings for plugins and themes that ship with WordPress (Akismet, default themes, etc.). Version mismatches between bundled copies and wp.org often cause false positives. Added files and malware patterns are still always scanned."
-msgstr "تخطَّ تحذيرات سلامة مقارنة التجزئة للإضافات والقوالب التي تأتي مع ووردبريس (Akismet، القوالب الافتراضية، إلخ). غالبًا ما تسبب عدم تطابق النسخ بين النسخ المرفقة و wp.org إنذارات خاطئة. لا يزال يتم دائمًا فحص الملفات المضافة وأنماط البرمجيات الخبيثة."
+msgstr "تخطَّ تحذيرات السلامة الخاصة بمقارنة التجزئة للإضافات والقوالب المرفقة مع ووردبريس (Akismet، والقوالب الافتراضية، إلخ). غالبًا ما تتسبب حالات عدم تطابق النسخة بين النسخ المرفقة وwp.org في نتائج إيجابية خاطئة. لا يزال يتم دائمًا فحص الملفات المضافة وأنماط البرمجيات الخبيثة."
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:119
 msgid "Skip integrity check for bundled plugins & themes"
@@ -12710,7 +12712,7 @@ msgstr "تخطي فحص السلامة للإضافات والقوالب الم�
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:332
 msgid "Skip scanning files inside assets/ directories. These typically contain static frontend resources (JS, CSS, images) with low malware risk. Disable for full coverage."
-msgstr "تخطي فحص الملفات داخل أدلة assets/. تحتوي هذه عادةً على موارد واجهة أمامية ثابتة (JS، CSS، صور) ذات مخاطر منخفضة للبرامج الضارة. قم بالتعطيل للتغطية الكاملة."
+msgstr "تخطَّ فحص الملفات داخل أدلة assets/. تحتوي هذه عادةً على موارد واجهة أمامية ثابتة (JS، CSS، الصور) ذات خطر برمجيات خبيثة منخفض. تعطيل للحصول على تغطية كاملة."
 
 #: admin/class-botblocker-admin.php:321
 #: admin/class-botblocker-admin.php:411
@@ -13410,15 +13412,15 @@ msgstr "فاحص البرمجيات الخبيثة غير متاح."
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:389
 msgid "The maximum number of requests per hour (RPH) a typical human visitor would make. This captures slow-crawling scraping bots that keep their per-minute speed low to avoid basic limiters. (Default: 200)"
-msgstr "الحد الأقصى لعدد الطلبات في الساعة (RPH) الذي قد يقدمه زائر بشري عادي. يلتقط هذا روبوتات الزحف البطيئة التي تحافظ على سرعتها في الدقيقة منخفضة لتجنب المحددات الأساسية. (الافتراضي: 200)"
+msgstr "الحد الأقصى لعدد الطلبات في الساعة (RPH) التي قد يرسلها زائر بشري نموذجي. يلتقط هذا روبوتات الكشط البطيئة التي تُبقي سرعتها في الدقيقة منخفضة لتجنب المحدّدات الأساسية. (افتراضي: 200)"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:377
 msgid "The maximum number of requests per minute (RPM) a typical human visitor would reasonably make. If a visitor goes over this speed, their behavior score goes up. (Default: 30)"
-msgstr "الحد الأقصى لعدد الطلبات في الدقيقة (RPM) الذي قد يقدمه زائر بشري عادي بشكل معقول. إذا تجاوز الزائر هذه السرعة، يرتفع تقييم سلوكه. (الافتراضي: 30)"
+msgstr "الحد الأقصى لعدد الطلبات في الدقيقة (RPM) التي قد يرسلها زائر بشري نموذجي بشكل معقول. إذا تجاوز الزائر هذه السرعة، ترتفع درجة سلوكه. (افتراضي: 30)"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:504
 msgid "The maximum penalty level (tier) an IP or subnet can reach. Higher tiers apply a stricter threshold penalty, meaning they trigger blocks much faster. (Default: 6)"
-msgstr "أقصى مستوى عقوبة (فئة) يمكن أن يصل إليه عنوان IP أو الشبكة الفرعية. تطبق الفئات الأعلى عقوبة عتبة أكثر صرامة، مما يعني أنها تؤدي إلى الحظر بسرعة أكبر. (الافتراضي: 6)"
+msgstr "الحد الأقصى لمستوى العقوبة (الطبقة) الذي يمكن أن يصل إليه عنوان IP أو الشبكة الفرعية. تُطبّق الطبقات الأعلى عقوبة عتبة أكثر صرامة، مما يعني أنها تُفعّل مكوِّنات أسرع بكثير. (افتراضي: 6)"
 
 #: includes/data/class-botblocker-alerts.php:331
 msgid "The Memcached PHP extension is available on this server but Memcached counters are disabled. Enable them if a Memcached server is running."
@@ -13495,12 +13497,12 @@ msgstr "يتم تشغيل الفحص في الخلفية وقد يتوقف مؤ�
 #, php-format, plural
 msgid "The scheduled malware scan found %d high-confidence indicator. Review the Malware Scanner results."
 msgid_plural "The scheduled malware scan found %d high-confidence indicators. Review the Malware Scanner results."
-msgstr[0] "لم يعثر فحص البرمجيات الخبيثة المجدول على أي مؤشر عالي الثقة. راجع نتائج فاحص البرمجيات الخبيثة."
-msgstr[1] "عثر فحص البرمجيات الخبيثة المجدول على مؤشر واحد عالي الثقة. راجع نتائج فاحص البرمجيات الخبيثة."
-msgstr[2] "عثر فحص البرمجيات الخبيثة المجدول على مؤشرين عاليي الثقة. راجع نتائج فاحص البرمجيات الخبيثة."
-msgstr[3] "عثر فحص البرمجيات الخبيثة المجدول على %d مؤشرات عالية الثقة. راجع نتائج فاحص البرمجيات الخبيثة."
-msgstr[4] "عثر فحص البرمجيات الخبيثة المجدول على %d مؤشرًا عالي الثقة. راجع نتائج فاحص البرمجيات الخبيثة."
-msgstr[5] "عثر فحص البرمجيات الخبيثة المجدول على %d مؤشر عالي الثقة. راجع نتائج فاحص البرمجيات الخبيثة."
+msgstr[0] "لم يعثر فحص البرامج الضارة المجدول على أي مؤشر عالي الثقة. راجع نتائج ماسح البرامج الضارة. %d"
+msgstr[1] "عثر فحص البرامج الضارة المجدول على %d مؤشر عالي الثقة. راجع نتائج ماسح البرامج الضارة."
+msgstr[2] "عثر فحص البرامج الضارة المجدول على %d مؤشرين عاليي الثقة. راجع نتائج ماسح البرامج الضارة."
+msgstr[3] "عثر فحص البرامج الضارة المجدول على %d مؤشرات عالية الثقة. راجع نتائج ماسح البرامج الضارة."
+msgstr[4] "عثر فحص البرامج الضارة المجدول على %d مؤشرًا عالي الثقة. راجع نتائج ماسح البرامج الضارة."
+msgstr[5] "عثر فحص البرامج الضارة المجدول على %d مؤشر عالي الثقة. راجع نتائج ماسح البرامج الضارة."
 
 #: addons/bbcs-hcaptcha/views/settings.php:57
 #: addons/bbcs-turnstile/views/settings.php:57
@@ -13538,7 +13540,7 @@ msgstr "النص المعروض في إشعار ملفات تعريف الارت
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:425
 msgid "The traffic activity level (as a fraction of the Core Rate Inspector's block RPM limit) where we start tracking and recording reputation. For example, at 0.10, once a visitor reaches 10% of that core limit, we begin monitoring their patterns. (Default: 0.10)"
-msgstr "مستوى نشاط حركة المرور (كنسبة من حد RPM للمُكوِّن الخاص بفاحص المعدل الأساسي) حيث نبدأ تتبع السمعة وتسجيلها. على سبيل المثال، عند 0.10، بمجرد أن يصل الزائر إلى 10% من ذلك الحد الأساسي، نبدأ في مراقبة أنماطه. (افتراضي: 0.10)"
+msgstr "مستوى نشاط الزيارات (ككسر من حد RPM مُكوِّن الخاص بفاحص المعدل الأساسي) الذي نبدأ عنده تتبع السمعة وتسجيلها. على سبيل المثال، عند 0.10، بمجرد أن يصل زائر إلى 10% من ذلك الحد الأساسي، نبدأ في مراقبة أنماط الخاص به. (افتراضي: 0.10)"
 
 #: admin/class-botblocker-admin.php:640
 #: includes/class-botblocker-toastify.php:248
@@ -13595,7 +13597,7 @@ msgstr "قوالب"
 #: includes/data/class-botblocker-alerts.php:775
 #, php-format
 msgid "These add-ons could not start and were switched off to keep the site running: %s. Your settings are kept. Please update or reinstall them."
-msgstr "تعذر بدء هذه الإضافات وتم إيقاف تشغيلها للحفاظ على تشغيل الموقع: %s. تم الاحتفاظ بإعداداتك. يرجى تحديثها أو إعادة تثبيتها."
+msgstr "تعذر تشغيل هذه الإضافات وتم إيقافها للحفاظ على استمرار عمل الموقع: %s. تم الاحتفاظ بإعداداتك. يُرجى تحديثها أو إعادة تنصيبها."
 
 #: admin/templates/settings/status.php:22
 msgid "These options require no form save - they apply immediately and are safe to experiment with."
@@ -13990,7 +13992,7 @@ msgstr "إعدادات المرور والمُحيل"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:413
 msgid "Traffic from known proxies or VPNs is more likely to be automated. We raise this visitor's block and CAPTCHA score thresholds by this factor, making the engine stricter and reducing false positives on shared or proxy networks. Higher values mean fewer, later triggers. (Default: 1.15)"
-msgstr "الزيارات من الوكلاء المعروفين أو شبكات VPN أكثر عرضة لأن تكون آلية. نرفع عتبات النقاط لمُكوِّن هذا زائر و CAPTCHA بهذا المعامل، مما يجعل المحرك أكثر صرامة ويقلل من الإيجابيات الكاذبة على شبكات المشتركة أو الوكيلة. القيم الأعلى تعني محفزات أقل وأكثر تأخرًا. (افتراضي: 1.15)"
+msgstr "الزيارات من وكلاء معروفين أو شبكات VPN أكثر عرضة لأن تكون آلية. نرفع مُكوِّن الخاص بـ زائر وعتبات نتيجة CAPTCHA بهذا المعامل، مما يجعل المحرك أكثر صرامة ويقلل من الإيجابيات الكاذبة على شبكات المشتركة أو الوكيلة. القيم الأعلى تعني تفعيلات أقل وأكثر تأخرًا. (افتراضي: 1.15)"
 
 #: includes/inc-botblocker-wp-abilities.php:421
 msgid "Traffic tables are not available."
@@ -14160,7 +14162,7 @@ msgstr "المصادقة الثنائية (2FA)"
 
 #: admin/templates/integrations/2fa.php:14
 msgid "Two-Factor Authentication (2FA) requires a time-based code from your authenticator app in addition to your password. This prevents unauthorized access even if your password is compromised. You can set which user roles require 2FA and generate backup codes for emergency access."
-msgstr "تتطلب المصادقة الثنائية (2FA) رمزًا زمنيًا من تطبيق المصادقة الخاص بك بالإضافة إلى كلمة مرورك. يمنع هذا الوصول غير المصرح حتى إذا تم اختراق كلمة مرورك. يمكنك تعيين أدوار المستخدمين التي تتطلب 2FA وإنشاء رموز نسخ احتياطي للوصول في حالات الطوارئ."
+msgstr "تتطلب المصادقة الثنائية (2FA) رمزًا زمنيًا من تطبيق المصادقة الخاص بك بالإضافة إلى كلمة المرور. يمنع هذا الوصول غير المصرّح به حتى إذا تم اختراق كلمة المرور. يمكنك تعيين أدوار المستخدمين التي تتطلب 2FA وإنشاء رموز نسخ احتياطية للوصول في حالات الطوارئ."
 
 #: admin/class-botblocker-admin.php:531
 msgid "Two-Factor Authentication enabled."
@@ -14445,7 +14447,7 @@ msgstr "فترة غير مدعومة."
 
 #: addons/bbcs-forced-inclusions/views/settings.php:138
 msgid "Unsure what a file does? Ask your host before removing it. Some hosts restore their own files automatically, so a disabled file may reappear."
-msgstr "غير متأكد مما يفعله الملف؟ اسأل مضيفك قبل إزالته. بعض المضيفين يستعيدون ملفاتهم تلقائيًا، لذا قد يظهر الملف المُعطّل مرة أخرى."
+msgstr "غير متأكد مما يفعله الملف؟ اسأل مزود الاستضافة قبل إزالته. تستعيد بعض مزودي الاستضافة ملفاتها الخاصة تلقائيًا، لذا قد يظهر ملف مُعطّل مرة أخرى."
 
 #: admin/class-botblocker-admin.php:668
 #: admin/templates/addons/addon-market-card.php:106
@@ -14572,7 +14574,7 @@ msgstr "URI"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:292
 msgid "URL to fetch remote regex signatures for malware detection. Endpoint must return JSON with version + signatures array. Each signature: id, severity (critical/high/medium/low), regex (valid PHP regex), score (1-100), confidence, category, description."
-msgstr "الرابط لجلب توقيعات regex البعيدة لكشف البرمجيات الخبيثة. يجب أن تُرجع نقطة النهاية JSON يحتوي على نسخة + مصفوفة توقيعات. كل توقيع: مُعرِّف، الخطورة (حرجة/عالية/متوسطة/منخفضة)، regex (regex PHP صالح)، النتيجة (1-100)، الثقة، التصنيف، الوصف."
+msgstr "URL لجلب توقيعات regex عن بُعد لاكتشاف البرمجيات الخبيثة. يجب أن تُرجع نقطة النهاية JSON يتضمن نسخة + مصفوفة signatures. كل توقيع: مُعرِّف، والخطورة (critical/high/medium/low)، وregex (صالح PHP regex)، والنتيجة (1-100)، والثقة، والتصنيف، والوصف."
 
 #: addons/bbcs-hide-admin/views/settings.php:98
 msgid "URL to redirect to when someone tries to access the default login URL. Only used when behavior is set to Redirect."
@@ -14588,7 +14590,7 @@ msgstr "استخدم تحقق BotBlocker فقط. يمكنك إضافة Google ل
 
 #: admin/templates/settings/cookie.php:139
 msgid "Use explicit CORS headers (Content-Type, X-Requested-With) instead of wildcard (*). Fixes Fetch-spec violation when Access-Control-Allow-Credentials is active. Enable if CAPTCHA verification breaks in browsers."
-msgstr "استخدم ترويسات CORS الصريحة (Content-Type, X-Requested-With) بدلاً من حرف البدل (*). يعالج انتهاك مواصفة Fetch عند تفعيل Access-Control-Allow-Credentials. فعّله إذا فشل التحقق من CAPTCHA في المتصفحات."
+msgstr "استخدم ترويسات CORS صريحة (Content-Type، X-Requested-With) بدلًا من حرف البدل (*). يصلح انتهاك مواصفات Fetch عندما يكون Access-Control-Allow-Credentials نشطًا. تفعيل إذا تعطل التحقق من CAPTCHA في المتصفحات."
 
 #: public/2FA/bbcs-2fa-setup.php:169
 msgid "Use Google Authenticator or any TOTP app to scan the code, or enter the key manually."
@@ -14620,7 +14622,7 @@ msgstr "استخدام تواقيع regex عن بُعد لاكتشاف البر�
 
 #: addons/bbcs-security-headers/views/settings.php:56
 msgid "Use these options to enable or disable groups of security response headers. These headers enhance browser protections and privacy, but some may require theme/plugin compatibility checks. If you are running a local site without HTTPS, disable HSTS and CSP temporarily to avoid mixed content issues. Re-enable them on production for better security posture."
-msgstr "استخدم هذه الخيارات لتفعيل أو تعطيل مجموعات من ترويسات استجابة الأمان. تعزز هذه الترويسات حماية المتصفح والخصوصية، ولكن قد يتطلب بعضها فحوصات توافق مع القالب/الإضافة. إذا كنت تدير موقعًا محليًا بدون HTTPS، قم بتعطيل HSTS و CSP مؤقتًا لتجنب مشكلات المحتوى المختلط. أعد تفعيلها في بيئة الإنتاج لوضع أمان أفضل."
+msgstr "استخدم هذه الخيارات لتفعيل مجموعات من ترويسات استجابة الأمان أو تعطيلها. تعزز هذه الترويسات حماية المتصفح والخصوصية، لكن بعضها قد يتطلب فحوصات توافق مع القالب أو الإضافة. إذا كنت تشغّل موقعًا محليًا بدون HTTPS، فعطّل HSTS وCSP مؤقتًا لتجنب مشكلات المحتوى المختلط. أعد تفعيلهما في البيئة التشغيلية للحصول على وضع أمان أفضل."
 
 #: admin/templates/about/body.php:191
 msgid "used with attribution"
@@ -14862,7 +14864,7 @@ msgstr "حظر VPN و Tor والوكيل"
 
 #: includes/data/class-botblocker-alerts.php:654
 msgid "W3 Total Cache detected. If using Disk Enhanced mode with rewrite rules, add a cookie-based server exception. See CACHE-COMPATIBILITY.md."
-msgstr "تم اكتشاف W3 Total Cache. إذا كنت تستخدم وضع Disk Enhanced مع قواعد إعادة الكتابة، أضف استثناءً للخادم يعتمد على ملفات تعريف الارتباط. انظر CACHE-COMPATIBILITY.md."
+msgstr "تم اكتشاف W3 Total Cache. إذا كنت تستخدم وضع Disk Enhanced مع قواعد إعادة الكتابة، فأضف استثناء خادم قائمًا على الكوكي. راجع CACHE-COMPATIBILITY.md."
 
 #: addons/bbcs-cookie-alert/inc/class-bbcs-cookie-alert-settings.php:12
 msgid "We use cookies to improve site security and user experience."
@@ -14932,7 +14934,7 @@ msgstr "ما يحدث لعنوان IP الذي يتجاوز الحد. CAPTCHA أ
 
 #: addons/bbcs-antispam/views/settings.php:220
 msgid "What to do with a comment when the AI service is unreachable. Hold: place in moderation queue (recommended). Approve: publish unchecked."
-msgstr "ما يجب فعله مع التعليق عندما يتعذر الوصول إلى خدمة الذكاء الاصطناعي. الإيقاف: وضعه في قائمة الإشراف (موصى به). الموافقة: نشره دون فحص."
+msgstr "ما يجب فعله بالتعليق عندما يتعذر الوصول إلى خدمة AI. إيقاف: وضع في قائمة انتظار الإشراف (موصى به). موافقة: نشر دون فحص."
 
 #: admin/templates/setup-wizard/welcome.php:20
 msgid "What was blocked and why: reason + URL + IP"
@@ -14964,7 +14966,7 @@ msgstr "عندما ترجع واجهة برمجة التطبيقات (API) ال�
 
 #: includes/viewmodels/class-pro-status-viewmodel.php:91
 msgid "When cloud API returns unexpected data - block the visitor instead of silent pass."
-msgstr ""
+msgstr "عندما تُرجع واجهة برمجة التطبيقات (API) السحابية بيانات غير متوقع - مُكوِّن زائر بدلًا من المرور الصامت."
 
 #: admin/templates/settings/general.php:114
 msgid "When enabled, all authenticated WordPress users (including subscribers, authors, contributors) bypass BotBlocker checks. By default, only administrators, editors and moderators are bypassed."
@@ -15213,11 +15215,11 @@ msgstr "تم تمكين WP Cron"
 
 #: includes/data/class-botblocker-alerts.php:679
 msgid "WP Rocket detected. Add the BotBlocker cookie to the \"Never Cache Cookies\" list in WP Rocket settings. See CACHE-COMPATIBILITY.md."
-msgstr "تم اكتشاف WP Rocket. أضف ملف تعريف ارتباط BotBlocker إلى قائمة \"ملفات تعريف الارتباط غير المخزنة مؤقتًا\" في إعدادات WP Rocket. راجع CACHE-COMPATIBILITY.md."
+msgstr "تم اكتشاف WP Rocket. أضف كوكي BotBlocker إلى قائمة «Never Cache Cookies» في إعدادات WP Rocket. راجع CACHE-COMPATIBILITY.md."
 
 #: includes/data/class-botblocker-alerts.php:644
 msgid "WP Super Cache (Expert/mod_rewrite mode) serves cached pages via .htaccess, bypassing PHP. Switch to the PHP caching mode so the BotBlocker cookie registration applies. See CACHE-COMPATIBILITY.md."
-msgstr "يقدّم WP Super Cache (وضع الخبير/mod_rewrite) الصفحات المخزنة مؤقتًا عبر .htaccess، متجاوزًا PHP. انتقل إلى وضع التخزين المؤقت بـ PHP حتى يُطبَّق تسجيل ملف تعريف ارتباط BotBlocker. راجع CACHE-COMPATIBILITY.md."
+msgstr "يقدّم WP Super Cache (وضع Expert/mod_rewrite) الصفحات المخزنة مؤقتًا عبر .htaccess، متجاوزًا PHP. بدّل إلى وضع التخزين المؤقت PHP كي ينطبق تسجيل كوكي BotBlocker. راجع CACHE-COMPATIBILITY.md."
 
 #: addons/bbcs-early-init/inc/class-bbcs-early-init-addons-page.php:49
 #: addons/bbcs-early-init/views/settings.php:49
@@ -15303,7 +15305,7 @@ msgstr "نعم"
 #. Author of the plugin
 #: botblocker-security.php
 msgid "Yevhen Leonidov"
-msgstr "Yevhen Leonidov"
+msgstr "يفهين ليونيدوف"
 
 #: includes/inc-botblocker-wp-abilities.php:237
 msgid "You are not allowed to execute BotBlocker abilities."
@@ -15418,7 +15420,7 @@ msgstr "مفتاح تطبيق Pusher الخاص بك (عام)."
 
 #: addons/bbcs-pusher/views/settings.php:83
 msgid "Your Pusher app secret. Used to sign events; never share it."
-msgstr ""
+msgstr "سر تطبيق Pusher الخاص بك. يُستخدم لتوقيع الأحداث؛ لا مشاركةه أبدًا."
 
 #: addons/bbcs-pusher/views/settings.php:94
 msgid "Your Pusher cluster, e.g. mt1, eu, us2. Leave empty to use the default."

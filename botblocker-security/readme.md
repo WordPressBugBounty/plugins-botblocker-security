@@ -4,7 +4,7 @@ Tags: security, firewall, anti-spam, captcha, brute force
 Requires at least: 5.9
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.7.6
+Stable tag: 1.7.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -304,6 +304,10 @@ GPLv2 or later. See LICENSE.txt for details.
 
 Developed and maintained by GLOBUS.studio. Concept, architecture & code - Yevhen Leonidov ([https://leonidov.dev/](https://leonidov.dev/)). Code, code review - Andrii Lukashevych. Code, translations - Aleksandr Kinakh.
 
+= Where can I find the glossary? =
+
+New to website security? The words BotBlocker uses, in plain language, are in the [glossary](https://docs.botblocker.top/#/en/glossary).
+
 == Screenshots ==
 
 1. Dashboard with KPI cards, attack map, blocked-vs-allowed chart, hourly bar chart, distribution donuts, and social proof card
@@ -322,7 +326,26 @@ Developed and maintained by GLOBUS.studio. Concept, architecture & code - Yevhen
 14. Settings panel with security presets, CAPTCHA, integrations (reCAPTCHA, Redis, Memcached), and detailed options
 
 == Changelog ==
- 
+
+= 1.7.7 =
+Enable Freemius licensing by default, with PRO checkout on the PRO page and an already-have-a-license link
+Activate any license key through one endpoint and keep the Cloud connection in sync with the Freemius license
+Mark expired licenses, turn PRO features off on expiry and title warnings as Expiring Soon
+Disconnect from the Cloud when a license ends and reconnect after license activation
+Add the Form CAPTCHA (shortcode) add-on
+Add the page cache add-on with Early Init cache pass support
+Stop WP Fastest Cache from serving cached pages to denied requests
+Add a CAPTCHA self-test flow for admin verdicts
+Ask what broke and offer a pause instead of deactivating the plugin
+Fix Early Init cache pass for visitors allowed by IP rules and apply IP rules to proxy-resolved addresses
+Fix Early Init data directory scoping on multisite and stop wp-config rewrites on Windows health checks
+Fix Button check fallback text in hCaptcha and Turnstile
+Never ban an already allowed IP for a wrong answer
+Fix utm_referrer redirect URLs that contain a plain ampersand and keep admin menu screen IDs stable
+Fix suspicious hits loss and stop Clear transients from flushing other plugins' transients
+Keep cron retries queued by admin-run tasks
+Update the antispam add-on and translations
+
 = 1.7.6 =
 Add hCaptcha and Cloudflare Turnstile CAPTCHA add-ons
 Add Firewall Export add-on

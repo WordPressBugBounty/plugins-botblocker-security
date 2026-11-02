@@ -31,6 +31,11 @@ class BotBlockerCloudBb {
 		}
 	}
 
+	private static function isRejected( string $api_key ): bool {
+		$cloud = BotBlockerBackend::sendToCloud( array( 'cloud_api_key' => $api_key ), 'validate_api_key' );
+		return is_array( $cloud ) && ! empty( $cloud['rejected'] );
+	}
+
 	public static function register(): void {
 		add_action( 'init', array( self::class, 'registerRewriteRules' ) );
 		add_filter( 'query_vars', array( self::class, 'addQueryVars' ) );
@@ -57,12 +62,8 @@ class BotBlockerCloudBb {
 						wp_send_json_error( 'Unauthorized: missing license key.', 403 );
 						return;
 					}
-					if ( $stored_key !== '' && ! hash_equals( $stored_key, $api_key ) ) {
-						// Only the key in use may change this site; a different key is a licence change from an admin session.
-						wp_send_json_error( 'Unauthorized: key is not the active one.', 403 );
-						return;
-					}
-					if ( $stored_key === '' || ! isset( $_POST['cloud_api_key'] ) ) {
+					$is_stored_key = $stored_key !== '' && hash_equals( $stored_key, $api_key );
+					if ( ! $is_stored_key || ! isset( $_POST['cloud_api_key'] ) ) {
 						// Anyone can ring without the stored key, so those rings are throttled; the owner's push never is.
 						if ( get_transient( 'bbcs_cloud_doorbell_cooldown' ) ) {
 							wp_send_json_error( 'Too many requests.', 429 );
@@ -72,7 +73,7 @@ class BotBlockerCloudBb {
 					}
 					$cloud = BotBlockerBackend::sendToCloud( array( 'cloud_api_key' => $api_key ), 'fetch_api_key' );
 					if ( is_array( $cloud ) && isset( $cloud['expired'] ) && $cloud['expired'] === 1 ) {
-						if ( $stored_key === '' ) {
+						if ( ! $is_stored_key ) {
 							wp_send_json_error( 'Unauthorized: expired key is not the active one.', 403 );
 							return;
 						}
@@ -85,6 +86,12 @@ class BotBlockerCloudBb {
 							}
 						);
 						wp_send_json_success( array( 'message' => 'Cloud API expired alert set.' ) );
+						return;
+					}
+					if ( $is_stored_key && is_array( $cloud ) && isset( $cloud['error'] ) && self::isRejected( $api_key ) ) {
+						require_once BOTBLOCKER_DIR . 'includes/hook/class-botblocker-cloud-api-hooks.php';
+						BotBlockerCloudApiHooks::disconnect();
+						wp_send_json_success( array( 'message' => 'Cloud API disconnected.' ) );
 						return;
 					}
 					if ( ! is_array( $cloud ) || isset( $cloud['error'] ) || empty( $cloud['api_key'] ) || empty( $cloud['api_secret'] ) ) {

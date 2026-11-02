@@ -21,6 +21,30 @@ the snippets below.
 
 ---
 
+## Early Init Page-Cache Gate
+
+With the [Early Init addon](https://docs.botblocker.top/#/addon-early-init?id=fast-cached-pages-for-verified-visitors)
+active and **Cached pages for verified visitors** on (default), PHP cache
+plugins serve cached pages to verified visitors only:
+
+1. After verification BotBlocker sets a short-lived cache pass cookie
+   (`<cookie>_cp`, HttpOnly, lifetime = **Re-check verified visitors every**,
+   default 15 minutes). The pass is signed with the site salt and bound to the
+   visitor's uid and IP.
+2. Early Init runs from `wp-config.php` before the cache plugin. Without a
+   valid pass it disables `advanced-cache.php` for the request and, for
+   WP Fastest Cache, turns its cache off for the request. The visitor gets a
+   fresh page and the full BotBlocker check.
+3. While the gate is on, BotBlocker no longer defines `DONOTCACHEPAGE` on
+   normal pages, so verified pages can be cached. Check, block and denied
+   pages still define it.
+
+The gate cannot see caches served before PHP runs: `.htaccess` or Nginx
+rewrite rules that send cached files directly, LiteSpeed server cache, Varnish
+and CDN page caching. After turning the gate or Early Init off, purge the page cache.
+
+---
+
 ## WordPress Cache Plugins
 
 ### WP Super Cache - PHP / Legacy mode

@@ -3,16 +3,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BotBlocker"
 "Report-Msgid-Bugs-To: "
-"POT-Creation-Date: 2026-09-29 08:50+0000"
-"PO-Revision-Date: 2026-09-29 08:50+0000"
-"Last-Translator: BotBlocker Translator Team"
+"POT-Creation-Date: 2026-10-17 20:12+0000"
+"PO-Revision-Date: 2026-10-17 20:12+0000"
+"Last-Translator: BotBlocker Team (Martijn Herrman)"
 "Language-Team: Dutch"
 "Language: nl_NL"
 "Plural-Forms: nplurals=2; plural=(n != 1);"
 "MIME-Version: 1.0"
 "Content-Type: text/plain; charset=UTF-8"
 "Content-Transfer-Encoding: 8bit"
-"X-Generator: BotBlocker Translator Engine"
 "X-Domain: botblocker-security"
 
 
@@ -54,7 +53,7 @@ msgstr "%1$s (ondersteunt BotBlocker <= %2$s)"
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:153
 #, php-format
 msgid "%1$s Usually put there by: %2$s If you turn it off: %3$s"
-msgstr ""
+msgstr "%1$s Meestal daar geplaatst door: %2$s Als u het uitschakelt: %3$s"
 
 #. translators: %d: number of add-ons with a newer version available.
 #: includes/data/class-botblocker-alerts.php:466
@@ -341,7 +340,7 @@ msgstr "404 Niet gevonden"
 
 #: addons/bbcs-404-guard/inc/class-bbcs-404-guard-addons-page.php:29
 msgid "404 Scanner Guard"
-msgstr "404 Scanner Guard"
+msgstr "404-scannerbeveiliging"
 
 #: addons/bbcs-404-guard/inc/class-bbcs-404-guard-addons-page.php:34
 msgid "404 Scanner Guard Settings"
@@ -386,7 +385,7 @@ msgstr "<strong>Let op:</strong> Na het klikken op ‘Reset 2FA’ moet de gebru
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:55
 msgid "A caching plugin, or your host."
-msgstr ""
+msgstr "Een caching plugin, of u host."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:85
 msgid "A custom install script, or a host provisioning tool."
@@ -424,7 +423,7 @@ msgstr "Een multisite-netwerkbeheerder."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:61
 msgid "A page-caching plugin, or your host."
-msgstr ""
+msgstr "Een pagina-caching plugin, of u host."
 
 #: addons/bbcs-forced-inclusions/views/settings.php:56
 msgid "A plugin in wp-content/mu-plugins that is always on and cannot be switched off on the Plugins screen."
@@ -460,7 +459,7 @@ msgstr ""
 
 #: addons/bbcs-telegram/views/settings.php:26
 msgid "A weekly security report is delivered to your chat with request, block and bot statistics."
-msgstr ""
+msgstr "Een wekelijks beveiligingsrapport wordt geleverd aan u chat met aanvraag, blokkeren en botstatistieken."
 
 #: addons/bbcs-pusher/views/settings.php:70
 msgid "a1b2c3d4e5f6g7h8"
@@ -695,11 +694,11 @@ msgstr "Toevoegen"
 
 #: addons/bbcs-feed-guard/views/settings.php:74
 msgid "Add a link back to the original article at the end of each feed entry."
-msgstr ""
+msgstr "toevoegen een link terug naar het originele artikel aan het einde van elk feed-item."
 
 #: admin/partials/class-botblocker-dashboard-widgets.php:223
 msgid "Add a short note to remember why you created this rule."
-msgstr "Voeg een korte notitie toe om te onthouden waarom je deze regel hebt aangemaakt."
+msgstr "toevoegen een korte notitie om te onthouden waarom u deze regel heeft aangemaakt."
 
 #: includes/data/class-botblocker-palette.php:165
 msgid "Add a white bot - allowlist, trusted, search engine"
@@ -805,7 +804,7 @@ msgstr "Voeg Vary: Cookie header toe voor CDN-compatibiliteit. Kan de cache-hitr
 #: admin/templates/settings/status.php:41
 #: admin/templates/shared/system-toggles.php:21
 msgid "Add-on"
-msgstr "Add-on"
+msgstr "add-on"
 
 #. translators: %s: add-on name
 #: includes/hook/class-botblocker-addon-hooks.php:291
@@ -817,7 +816,7 @@ msgstr "Add-on ‘%s’ is mislukt en werd uitgeschakeld om de site draaiende te
 #: includes/audit/class-botblocker-audit-logger.php:467
 #, php-format
 msgid "Add-on %slug%: %event%."
-msgstr "Add-on %slug%: %event%."
+msgstr "add-on %slug%: %event%."
 
 #: admin/class-botblocker-admin.php:670
 #: includes/class-botblocker-addons-market.php:493
@@ -831,7 +830,7 @@ msgstr "Add-on verwijderd."
 
 #: includes/hook/class-botblocker-addon-hooks.php:21
 msgid "Add-on install, update, and delete are disabled in local add-on mode."
-msgstr "Installatie, update en verwijdering van add-ons zijn uitgeschakeld in lokale add-onmodus."
+msgstr "add-on installatie, updaten, en verwijderen zijn uitgeschakeld in lokale add-on modus."
 
 #: admin/class-botblocker-admin.php:624
 #: includes/hook/class-botblocker-addon-hooks.php:405
@@ -943,7 +942,7 @@ msgstr "Add-on is geüpdatet maar wordt uitgeschakeld - hiervoor is BotBlocker %
 #: admin/class-botblocker-admin.php:784
 #: admin/templates/setup-guide/status.php:167
 msgid "Add-ons"
-msgstr "Add-ons"
+msgstr "add-ons"
 
 #: includes/data/class-botblocker-alerts.php:804
 msgid "Add-ons Deactivated"
@@ -981,7 +980,7 @@ msgstr "Extra opties"
 
 #: admin/class-botblocker-admin.php:259
 msgid "addon"
-msgstr "addon"
+msgstr "add-on"
 
 #: admin/templates/setup-wizard/init-mode.php:41
 msgid "Addon required"
@@ -991,7 +990,7 @@ msgstr "Addon vereist"
 #: admin/templates/dashboard/quick-links.php:15
 #: includes/viewmodels/class-addons-viewmodel.php:258
 msgid "Addons"
-msgstr "Addons"
+msgstr "Add-ons"
 
 #: includes/data/class-botblocker-palette.php:194
 msgid "Addons - extensions, plugins, marketplace, more features"
@@ -1134,7 +1133,7 @@ msgstr "RPM aggregeren over het subnet. Hoge subnetdruk verlaagt dynamisch de pe
 
 #: addons/bbcs-antispam/inc/class-bbcs-antispam-checker.php:454
 msgid "AI Anti-Spam"
-msgstr "AI Anti-Spam"
+msgstr "AI-antispam"
 
 #: addons/bbcs-antispam/views/settings.php:34
 msgid "AI Anti-Spam Comments"
@@ -1162,7 +1161,7 @@ msgstr "AI-aangedreven reactiespamdetectie via WebSocket API. Controleert reacti
 
 #: addons/bbcs-cron-jobs/views/settings.php:143
 msgid "AJAX Cron Heartbeat"
-msgstr "AJAX Cron Heartbeat"
+msgstr "AJAX Cron heartbeat"
 
 #: admin/class-botblocker-setup-wizard.php:214
 msgid "AJAX error"
@@ -1455,7 +1454,7 @@ msgstr "Toegestaan:"
 
 #: addons/bbcs-404-guard/inc/class-bbcs-404-guard-addons-page.php:59
 msgid "Allowlist"
-msgstr "Allowlist"
+msgstr "Toegestane lijst"
 
 #: addons/bbcs-404-guard/views/settings.php:137
 msgid "Allowlist (one IP or CIDR per line)"
@@ -1634,7 +1633,7 @@ msgstr "Weet u zeker dat u deze ASN-regel wilt verwijderen?"
 
 #: admin/class-botblocker-admin.php:445
 msgid "Are you sure you want to delete this country rule?"
-msgstr ""
+msgstr "Weet u zeker dat u deze landregel wilt verwijderen?"
 
 #: admin/class-botblocker-admin.php:341
 msgid "Are you sure you want to delete this IPv4 rule?"
@@ -1674,7 +1673,7 @@ msgstr "Weet u zeker dat u alle ASN-regels wilt verwijderen?"
 
 #: admin/class-botblocker-admin.php:446
 msgid "Are you sure you want to remove all country rules?"
-msgstr ""
+msgstr "Weet u zeker dat u alle landregels wilt verwijderen?"
 
 #: admin/class-botblocker-admin.php:353
 msgid "Are you sure you want to remove all IPv4 rules?"
@@ -1827,7 +1826,7 @@ msgstr "ASN-regelbestand succesvol gegenereerd."
 
 #: admin/templates/settings/connection-types.php:62
 msgid "Attach a signed X-BotBlocker-Self header to outgoing WordPress HTTP API calls to your own domain and accept it as self-call proof. Disable only if your hosting/WAF interferes with unknown request headers."
-msgstr ""
+msgstr "Voeg een ondertekende X-BotBlocker-Self-header toe aan uitgaande WordPress HTTP API-aanroepen naar u eigen domein en accepteer deze als bewijs van een self-call. Schakel dit alleen uit als u hosting/WAF interfereert met onbekende aanvraag headers."
 
 #. translators: %s: number of remaining verification attempts
 #: public/2FA/bbcs-2fa.php:226
@@ -1883,7 +1882,7 @@ msgstr "Authy setup gids"
 
 #: addons/bbcs-turnstile/views/settings.php:71
 msgid "Auto"
-msgstr "Auto"
+msgstr "Automatisch"
 
 #: addons/bbcs-antispam/views/settings.php:211
 msgid "Auto-approve Ham Comments"
@@ -1982,7 +1981,7 @@ msgstr "Terug naar Marketplace"
 
 #: includes/data/class-botblocker-marketing-blocks.php:112
 msgid "Back up your site and review the update before upgrading."
-msgstr ""
+msgstr "Maak een back-up van u site/locatie en beoordelen de updaten voordat u een upgrade uitvoert."
 
 #: admin/templates/dashboard/quick-links.php:22
 msgid "Background tasks and scheduling"
@@ -2053,7 +2052,7 @@ msgstr "bbcs-site"
 #: admin/templates/plugins/deactivation-feedback-modal.php:23
 #: includes/utilites/class-botblocker-deactivation-feedback.php:65
 msgid "Before you go"
-msgstr ""
+msgstr "Voordat u weggaat"
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-addons-page.php:31
 msgid "Behavior Settings"
@@ -3034,11 +3033,11 @@ msgstr "CAPTCHA-type"
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:102
 msgid "Careful: deleting this file can take your site offline, and it cannot be undone. Delete it anyway?"
-msgstr ""
+msgstr "Let op: verwijderen dit bestand kan u site/locatie offline halen, en dit kan niet ongedaan worden gemaakt. verwijderen het toch?"
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:103
 msgid "Careful: turning this file off can take your site offline until you turn it back on. Continue?"
-msgstr ""
+msgstr "Let op: het uitschakelen van dit bestand kan u site/locatie offline halen totdat u het weer inschakelt. Doorgaan?"
 
 #: admin/templates/settings/captcha-tab.php:63
 msgid "Cat"
@@ -3050,7 +3049,7 @@ msgstr "Catalogus is tijdelijk niet beschikbaar. Laatst bekende lijst wordt geto
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:136
 msgid "Catches more malicious code, especially obfuscated or encoded payloads. Uses more CPU and memory per file. Disable if your server is low on resources."
-msgstr "Vangt meer kwaadaardige code op, met name versluierde of gecodeerde payloads. Gebruikt meer CPU en geheugen per bestand. Schakel uit als je server weinig resources heeft."
+msgstr "Vangt meer kwaadaardige code, vooral verhulde of gecodeerde payloads. Gebruikt meer CPU en geheugen per bestand. Schakel dit uit als u server onvoldoende gegevensbronnen heeft."
 
 #: addons/bbcs-antispam/views/settings.php:233
 msgid "Category Filter"
@@ -3082,7 +3081,7 @@ msgstr "WordPress-opties gewijzigd: %options%."
 
 #: admin/templates/about/body.php:148
 msgid "Changelog"
-msgstr "Changelog"
+msgstr "changelog"
 
 #: addons/bbcs-pusher/inc/class-bbcs-pusher-addons-page.php:34
 #: addons/bbcs-pusher/views/settings.php:104
@@ -3091,7 +3090,7 @@ msgstr "Kanaal"
 
 #: addons/bbcs-pusher/views/settings.php:105
 msgid "Channel name your browser client subscribes to. Keep it unique to your site."
-msgstr ""
+msgstr "Kanaalnaam waarop u browserclient zich abonneert. Houd deze uniek voor u site/locatie."
 
 #: includes/utilites/class-botblocker-support.php:66
 msgid "Chat"
@@ -3126,7 +3125,7 @@ msgstr "GET-parameters in referrer controleren"
 
 #: addons/bbcs-forced-inclusions/views/settings.php:136
 msgid "Check that you recognise every file. A few from your host or caching plugin is normal."
-msgstr ""
+msgstr "Controleer of u elk bestand herkent. Een paar van u host of caching plugin is normaal."
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-background.php:517
 msgid "Checking database tables..."
@@ -3846,11 +3845,11 @@ msgstr "Verbinding mislukt."
 
 #: addons/bbcs-telegram/inc/class-bbcs-telegram-plugin.php:225
 msgid "Connection failed. Check your bot token and chat ID."
-msgstr ""
+msgstr "Verbinding mislukt. Controleer u bottoken en chat-ID."
 
 #: addons/bbcs-pusher/inc/class-bbcs-pusher-plugin.php:312
 msgid "Connection failed. Check your credentials and that the add-on is enabled."
-msgstr ""
+msgstr "Verbinding mislukt. Controleer u inloggegevens en of de add-on is ingeschakeld."
 
 #: admin/templates/settings/connection-types.php:20
 msgid "Connection filtering blocks suspicious connection methods used by bots and scrapers."
@@ -3872,11 +3871,11 @@ msgstr "Verbindingsinformatie:"
 
 #: addons/bbcs-telegram/inc/class-bbcs-telegram-plugin.php:223
 msgid "Connection OK! Check your Telegram chat for the test message."
-msgstr ""
+msgstr "Verbinding OK! Controleer u Telegram-chat voor het test-bericht."
 
 #: addons/bbcs-pusher/inc/class-bbcs-pusher-plugin.php:310
 msgid "Connection OK! Open your browser client to see the test event."
-msgstr ""
+msgstr "Verbinding OK! Open u browserclient om de testgebeurtenis te bekijken."
 
 #: addons/bbcs-telegram/inc/class-bbcs-telegram-plugin.php:345
 msgid "Connection test successful!"
@@ -3884,7 +3883,7 @@ msgstr "Verbindingstest succesvol!"
 
 #: addons/bbcs-pusher/inc/class-bbcs-pusher-plugin.php:299
 msgid "Connection test successful! You will receive the weekly digest here."
-msgstr ""
+msgstr "Verbindingstest geslaagd! u ontvangt hier de wekelijkse samenvatting."
 
 #: admin/templates/settings/connection-types.php:19
 #: admin/templates/settings/connection-types.php:37
@@ -3938,6 +3937,7 @@ msgid "Control request velocity per IP with configurable thresholds, sliding win
 msgstr "Beheer aanvraagsnelheid per IP met configureerbare drempels, sliding windows en subnet-aggregatie."
 
 #: addons/bbcs-xmlrpc-tunnel/views/settings.php:26
+#, fuzzy
 msgid "Control XML-RPC access with IP allowlist support for IPv4 and IPv6. When enabled, only allowlisted IPs can access xmlrpc.php. When disabled, XML-RPC is fully blocked with allowlist bypass capability."
 msgstr "Beheer XML-RPC-toegang met IP-toegangsondersteuning voor IPv4 en IPv6. Indien ingeschakeld, hebben alleen IP's op de toegangslijst toegang tot xmlrpc.php. Indien uitgeschakeld, wordt XML-RPC volledig geblokkeerd met de mogelijkheid tot het omzeilen van de toegangslijst."
 
@@ -4215,7 +4215,7 @@ msgstr "cURL-opdracht (voor systeemcron)"
 #: addons/bbcs-firewall-export/views/settings.php:147
 #, php-format
 msgid "Current export matches %d active address(es). Save the settings first if you changed anything above."
-msgstr ""
+msgstr "Huidige export komt overeen met %d actief adres/adressen. opslaan/besparen eerst de instellingen als u hierboven iets heeft gewijzigd."
 
 #: admin/templates/settings/tls-fingerprint.php:116
 #: includes/data/class-botblocker-snav.php:169
@@ -4383,7 +4383,7 @@ msgstr "Gegevenslogboek en -verwerking"
 #: admin/templates/tools/maintenance-tab.php:98
 #: includes/data/class-botblocker-snav.php:753
 msgid "Database"
-msgstr "Database"
+msgstr "database"
 
 #: addons/bbcs-malware/inc/views/scan-results/database-findings.php:18
 msgid "Database Findings"
@@ -4721,7 +4721,7 @@ msgstr "reCaptcha v3 uitschakelen voor IPv6-bezoekers. Google reCaptcha v3 onder
 
 #: addons/bbcs-forced-inclusions/views/settings.php:137
 msgid "Disable renames the file so WordPress stops running it. The file stays on the server, so you can turn it back on anytime - safe way to test if a file causes a problem. Delete removes it for good."
-msgstr ""
+msgstr "Uitschakelen hernoemt het bestand zodat WordPress stopt met het uitvoeren ervan. Het bestand blijft op de server, dus u kan het op elk moment weer inschakelen - een veilige manier om te testen of een bestand een probleem veroorzaakt. verwijderen verwijdert het definitief."
 
 #: addons/bbcs-speedup/inc/class-bbcs-speedup-addons-page.php:68
 #: addons/bbcs-speedup/views/settings.php:171
@@ -4853,7 +4853,7 @@ msgstr "Hond"
 
 #: addons/bbcs-firewall-export/views/settings.php:132
 msgid "Download .htaccess"
-msgstr "Download .htaccess"
+msgstr "download .htaccess"
 
 #: admin/class-botblocker-admin.php:472
 #: admin/templates/rules.php:28
@@ -4871,7 +4871,7 @@ msgstr "Debuglog downloaden"
 
 #: addons/bbcs-firewall-export/views/settings.php:134
 msgid "Download fail2ban script"
-msgstr "Download fail2ban script"
+msgstr "Download fail2ban-script"
 
 #: addons/bbcs-firewall-export/views/settings.php:128
 msgid "Download firewall rules"
@@ -4879,7 +4879,7 @@ msgstr "Download firewall regels"
 
 #: addons/bbcs-firewall-export/views/settings.php:135
 msgid "Download iptables script"
-msgstr "Download iptables script"
+msgstr "Download iptables-script"
 
 #: addons/bbcs-firewall-export/views/settings.php:133
 msgid "Download nginx deny list"
@@ -5418,7 +5418,7 @@ msgstr "Schakel de malwarescanner en de instellingen ervan in. U kunt deze uitsc
 
 #: addons/bbcs-pusher/views/settings.php:45
 msgid "Enable the weekly digest pushed to your browser via Pusher Channels."
-msgstr ""
+msgstr "Schakel de wekelijkse samenvatting in die naar u browser wordt gepusht via Pusher Channels."
 
 #: addons/bbcs-cookie-alert/views/settings.php:47
 msgid "Enable this option to display a simple cookie notice to your visitors."
@@ -5433,7 +5433,7 @@ msgstr "TLS-vingerafdrukcontrole inschakelen"
 #: admin/templates/settings/tls-fingerprint.php:84
 #: includes/ajax/class-botblocker-ajax-tls-fingerprints.php:192
 msgid "Enable TLS Fingerprint Check and save settings before syncing."
-msgstr ""
+msgstr "Schakel TLS Fingerprint Check en opslaan/besparen instellingen in voordat u synchroniseert."
 
 #: admin/templates/integrations/2fa.php:33
 #: includes/data/class-botblocker-snav.php:694
@@ -5760,7 +5760,7 @@ msgstr "Exporteer regels naar JSON - back-up, opslaan, downloaden"
 
 #: addons/bbcs-firewall-export/views/settings.php:30
 msgid "Exports the active BotBlocker ban list as ready-to-use firewall rules for Apache (.htaccess Require not ip / Deny from), nginx (deny list), fail2ban (persistent jail installer script), and iptables/ip6tables (dedicated DROP chain script). Permanent and temporary blocks are taken from the IP rules database; expired bans are never included. Download the format you need and deploy it on the front-end server or edge firewall."
-msgstr ""
+msgstr "Exporteert de actieve BotBlocker-banlijst als kant-en-klare firewallregels voor Apache (.htaccess Require not ip / Deny from), nginx (deny list), fail2ban (persistent jail installer-script) en iptables/ip6tables (toegewijde DROP chain-script). Permanente en tijdelijke blokken worden overgenomen uit de IP-regels database; verlopen bans worden nooit opgenomen. download het format u nodig hebt en implementeer het op de front-end server of edge firewall."
 
 #: admin/templates/integrations/wp-abilities.php:16
 msgid "Expose BotBlocker to the WordPress Abilities API. When disabled, nothing is registered — the abilities do not exist for REST, MCP or AI clients."
@@ -6548,11 +6548,11 @@ msgstr "bestanden"
 
 #: addons/bbcs-forced-inclusions/views/settings.php:127
 msgid "Files that run without showing up in Plugins"
-msgstr ""
+msgstr "Bestanden die uitvoeren zonder in plugins te verschijnen"
 
 #: addons/bbcs-malware/inc/views/scan-results/ignored-files.php:18
 msgid "Files you chose to ignore. They no longer count as issues. Restore one to bring it back into the scan results."
-msgstr ""
+msgstr "Bestanden die u heeft gekozen te negeren. Ze tellen niet langer als problemen. terugzetten er één om deze terug te zetten in de scanresultaten."
 
 #: admin/class-botblocker-admin.php:636
 #: includes/class-botblocker-toastify.php:269
@@ -7101,7 +7101,7 @@ msgstr "Headerinstellingen"
 #: addons/bbcs-security-headers/inc/class-bbcs-security-headers-addons-page.php:29
 #: admin/templates/settings/error.php:28
 msgid "Headers"
-msgstr "Headers"
+msgstr "headers"
 
 #: admin/templates/settings/error.php:82
 #: includes/data/class-botblocker-snav.php:518
@@ -7116,7 +7116,7 @@ msgstr "Gezondheidsstatus"
 #: admin/templates/plugins/deactivation-feedback-modal.php:29
 #: includes/utilites/class-botblocker-deactivation-feedback.php:66
 msgid "Help us improve BotBlocker. Why are you deactivating the plugin?"
-msgstr ""
+msgstr "Help ons BotBlocker te verbeteren. Waarom bent u de plugin aan het deactiveren?"
 
 #: admin/templates/tools/maintenance-tab.php:173
 msgid "Helps resolve 404 errors after changing the permalink structure"
@@ -7225,7 +7225,7 @@ msgstr "homepage"
 
 #: admin/templates/setup-wizard/compatibility.php:13
 msgid "Homepage"
-msgstr "Homepage"
+msgstr "homepage"
 
 #: admin/templates/settings/captcha-tab.php:172
 msgid "Honeypot Field on Challenge Page"
@@ -7767,7 +7767,7 @@ msgstr "Adressen opnemen die naar de dark (stille) ban-modus zijn verzonden."
 
 #: addons/bbcs-firewall-export/views/settings.php:65
 msgid "Include addresses that go through the challenge (gray) mode. Enable only if you want those clients dropped at the firewall level."
-msgstr ""
+msgstr "Neem adressen op die door de challenge-modus (grijs) gaan. Schakel dit alleen in als u wilt dat die clients op firewallniveau worden gedropt."
 
 #: addons/bbcs-firewall-export/views/settings.php:73
 msgid "Include bans that still have remaining TTL. Expired bans are always excluded."
@@ -8540,7 +8540,7 @@ msgstr "Laadt met standaard plugins. Geschikt voor de meeste sites."
 #: admin/templates/dashboard/activity.php:12
 #: admin/templates/dashboard/quick-links.php:14
 msgid "Log"
-msgstr "Log"
+msgstr "log"
 
 #: admin/templates/settings/log.php:46
 #: includes/data/class-botblocker-snav.php:387
@@ -8716,7 +8716,7 @@ msgstr "Hoofd"
 
 #: admin/templates/rules/body.php:153
 msgid "Maintained automatically by BotBlocker cloud - read-only. Manage your own ASN rules in the table above."
-msgstr ""
+msgstr "Automatisch onderhouden door BotBlocker cloud - alleen-lezen. Beheer u eigen ASN-regels in de bovenstaande tabel."
 
 #: admin/templates/tools/maintenance-tab.php:89
 #: includes/data/class-botblocker-snav.php:748
@@ -8754,7 +8754,7 @@ msgstr "Malwarescanner"
 
 #: admin/templates/integrations/wp-abilities.php:45
 msgid "Malware Scanner (PRO)"
-msgstr "Malware Scanner (PRO)"
+msgstr "Malwarescanner (PRO)"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-background.php:635
 msgid "Malware Scanner: High-Confidence Findings"
@@ -8846,7 +8846,7 @@ msgstr "Hoofdschakelaar voor de 404-scannerdetectie hieronder."
 
 #: admin/templates/integrations/wp-abilities.php:22
 msgid "Master switch. When off, no BotBlocker ability is registered at all — it is invisible in the ability list, REST, MCP and run endpoints."
-msgstr ""
+msgstr "Hoofdschakelaar. Wanneer uitgeschakeld, wordt er helemaal geen BotBlocker-ability geregistreerd — het is onzichtbaar in de ability-lijst, REST, MCP en uitvoeren-endpoints."
 
 #: admin/templates/setup-wizard/captcha.php:36
 msgid "Match rotating shapes. BotBlocker exclusive."
@@ -9270,7 +9270,7 @@ msgstr "Multi-signaal gedragsanalyse voor geavanceerde botdetectie."
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-plugin.php:57
 msgid "Multi-signal behavioral scoring, session limits, and IP reputation decay."
-msgstr ""
+msgstr "Gedragsscore op basis van meerdere signalen, beperkingen per sessie en verval van IP-reputatie."
 
 #: admin/templates/settings/rate-limiting.php:128
 msgid "Multiplier applied to block RPM for subnet threshold. Higher = more tolerant. Default: 3."
@@ -9283,7 +9283,7 @@ msgstr "Vermenigvuldigingsfactor voor gedragsstatistieken van proxy/VPN-verkeer.
 #: addons/bbcs-forced-inclusions/views/settings.php:130
 #: addons/bbcs-forced-inclusions/views/settings.php:57
 msgid "Must-use plugin"
-msgstr "Must-use plugin"
+msgstr "Must-use-plugin"
 
 #: admin/templates/integrations/mu.php:21
 #: admin/templates/settings/status.php:24
@@ -9475,7 +9475,7 @@ msgstr "Geen toestemming."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:244
 msgid "No Plugin Name header found - suspicious for malware. Run a malware scan on this file."
-msgstr ""
+msgstr "Geen plugin Naam header gevonden - verdacht voor malware. uitvoeren een malware-scan op dit bestand."
 
 #: includes/ajax/class-botblocker-ajax-ip-rules-trait.php:831
 msgid "No rules provided."
@@ -9586,7 +9586,7 @@ msgstr "Niet gesynchroniseerd"
 
 #: addons/bbcs-firewall-export/views/settings.php:140
 msgid "Note: extra IPs/CIDRs from the field above are saved only after you save the settings."
-msgstr ""
+msgstr "let op: extra IP's/CIDR's uit het veld hierboven worden pas opgeslagen nadat u de instellingen hebt opgeslagen."
 
 #: admin/class-botblocker-admin.php:263
 msgid "Nothing found for"
@@ -9739,7 +9739,7 @@ msgstr "openen"
 
 #: admin/templates/integrations/cache.php:55
 msgid "Open CACHE-COMPATIBILITY.md"
-msgstr "Open CACHE-COMPATIBILITY.md"
+msgstr "CACHE-COMPATIBILITY.md openen"
 
 #: includes/data/class-botblocker-palette.php:149
 msgid "Open dashboard - protection status, overview, main page"
@@ -10031,7 +10031,7 @@ msgstr "De %post_type% %title% is permanent verwijderd."
 
 #: admin/templates/settings/bot-detection.php:44
 msgid "Permit CAPTCHA verification for visitors without Accept-Language header (privacy tools, Tor safest mode). Falls back to site default locale. Keep disabled unless you serve privacy-focused users."
-msgstr "Sta CAPTCHA-verificatie toe voor bezoekers zonder Accept-Language-header (privacy-tools, Tor-veiligste modus). Valt terug op de standaardtaal van de site. Hou uitgeschakeld tenzij je privacygerichte gebruikers bedient."
+msgstr "CAPTCHA-verificatie toestaan voor bezoekers zonder Accept-Language-header (privacy-tools, Tor veiligste modus). Valt terug op de standaard locale van site/locatie. Laat uitgeschakeld, tenzij u privacygerichte gebruikers wilt bedienen."
 
 #: admin/templates/setup-wizard/cache.php:19
 msgid "Persistent connections"
@@ -10119,11 +10119,11 @@ msgstr "Plugin-compatibiliteitsgidsen"
 
 #: includes/shortcode/class-botblocker-sidebar-shortcodes.php:204
 msgid "Plugin homepage"
-msgstr "Plugin homepage"
+msgstr "plugin homepage"
 
 #: includes/shortcode/class-botblocker-sidebar-shortcodes.php:181
 msgid "Plugins"
-msgstr "Plugins"
+msgstr "plugins"
 
 #: addons/bbcs-cookie-alert/inc/class-bbcs-cookie-alert-addons-page.php:49
 #: addons/bbcs-cookie-alert/views/settings.php:76
@@ -10345,7 +10345,7 @@ msgstr "Voortgang"
 
 #: addons/bbcs-hide-admin/views/settings.php:27
 msgid "Protect default login endpoints and use a custom login URL. Choose the behavior for blocked access and keep your admin area safe."
-msgstr "Bescherm standaard login-eindpunten en gebruik een aangepaste login-URL. Kies het gedrag voor geblokkeerde toegang en houd je beheergebied veilig."
+msgstr "Bescherm standaard login-endpoints en gebruik een aangepaste login-URL. Kies het gedrag voor geblokkeerde toegang en houd u beheerders-gebied veilig."
 
 #: public/check-page.php:70
 #: public/template-botblocker-denied.php:243
@@ -10427,7 +10427,7 @@ msgstr "Beschermt feedcontent tegen scrapers: alleen samenvatting-items, attribu
 
 #: addons/bbcs-feed-guard/views/settings.php:27
 msgid "Protects your RSS/Atom feed content from scrapers. Full-content feeds are truncated to an excerpt, an attribution link back to the original article is appended, feeds can be marked noindex for search engines, and feed discovery links can be removed or the feeds disabled entirely. Legitimate subscribers and feed readers keep working."
-msgstr ""
+msgstr "Beschermt u RSS/Atom-feed-content tegen scrapers. Feeds met volledige content worden ingekort tot een samenvatting, een attributie-link naar het oorspronkelijke artikel wordt toegevoegd, feeds kunnen op noindex worden gezet voor zoekopdracht-zoekmachines, en feeddetectie-links kan worden verwijderd of de feeds kunnen volledig worden uitgeschakeld. Legitieme abonnees en feedlezers blijven werken."
 
 #: addons/bbcs-https-protocol/inc/class-bbcs-https-protocol-addons-page.php:53
 #: addons/bbcs-https-protocol/views/settings.php:115
@@ -10610,7 +10610,7 @@ msgstr "Pusher wekelijkse samenvatting"
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:165
 #, php-format
 msgid "Put here by your hosting company (%s). Leave it alone unless their support team tells you otherwise."
-msgstr ""
+msgstr "Hier geplaatst door u hostingbedrijf (%s). Laat het met rust tenzij hun supportteam u anders vertelt."
 
 #: admin/templates/settings/traffic.php:19
 msgid "Query string"
@@ -10823,7 +10823,7 @@ msgstr "reCaptcha, Redis, Memcached integraties"
 
 #: addons/bbcs-telegram/views/settings.php:25
 msgid "Receive BotBlocker weekly security reports directly in your Telegram chat. Connect a bot token and chat ID, then enable the weekly report."
-msgstr ""
+msgstr "Ontvang BotBlocker wekelijkse beveiligingsrapporten direct in u Telegram-chat. Verbind een bot-token en chat-ID, en schakel vervolgens de wekelijkse rapport in."
 
 #: admin/templates/settings/notifications.php:36
 msgid "Receive security alerts via email."
@@ -10919,7 +10919,7 @@ msgstr "WordPress-beheeracties vastleggen in een speciale audit-logtabel."
 
 #: public/2FA/bbcs-2fa.php:273
 msgid "Recovery email sent. Check your inbox."
-msgstr ""
+msgstr "Herstel e-mail verzonden. Controleer u inbox."
 
 #: public/captcha/render-moving-shapes-button-trait.php:24
 msgid "Red"
@@ -11045,7 +11045,7 @@ msgstr "Beveiligingsactielinks opnieuw genereren? Oude links stoppen onmiddellij
 
 #: admin/templates/integrations/wp-connectors.php:21
 msgid "Registers BotBlocker in the WordPress Connectors system. Disable if you do not use WordPress Connectors to save ~180ms per admin page load."
-msgstr ""
+msgstr "Registreert BotBlocker in het WordPress Connectors-systeem. Schakel dit uit als u geen WordPress Connectors gebruikt om ~180ms per admin pagina-load te opslaan/besparen."
 
 #: admin/templates/tools/modals/hits-clear.php:21
 msgid "Regular hits will be removed from the database."
@@ -11196,7 +11196,7 @@ msgstr "Vervang volledige berichtcontent in feeds door een korte samenvatting."
 
 #: admin/templates/settings/cookie.php:96
 msgid "Replaces IP/host/UA-bound cookie hash with a session token. Eliminates Captcha loops for VPN/proxy users. Disable only if experiencing issues."
-msgstr "Vervangt IP/host/UA-gebonden cookie-hash door een sessietoken. Elimineert Captcha-lussen voor VPN/proxy-gebruikers. Uitschakelen alleen bij problemen."
+msgstr "Vervangt IP/host/UA-bound cookie-hash door een sessietoken. Elimineert Captcha-lussen voor VPN/proxy-gebruikers. Schakel alleen uit bij problemen."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:66
 msgid "Replaces the default screen shown while the site is in maintenance mode."
@@ -11295,7 +11295,7 @@ msgstr "Aanvragen geblokkeerd"
 
 #: addons/bbcs-security-headers/views/settings.php:138
 msgid "Requests inclusion in the browser HSTS preload list. Enable only after registering the domain at hstspreload.org - the directive is ignored otherwise."
-msgstr ""
+msgstr "aanvragen opname in de HSTS-preloadlijst van de browser. Schakel dit alleen in nadat u het domein heeft geregistreerd op hstspreload.org - anders wordt de richtlijn genegeerd."
 
 #: admin/templates/cloud-api/status.php:40
 #: admin/templates/dashboard/pro-status.php:35
@@ -11358,7 +11358,7 @@ msgstr "Reserve Globus Studio API-endpoint gebruikt als fallback. Weergegeven te
 #: admin/templates/settings/page-head.php:27
 #: admin/templates/tools.php:29
 msgid "Reset"
-msgstr "Reset"
+msgstr "reset"
 
 #: admin/templates/integrations/2fa.php:110
 #: admin/templates/integrations/2fa.php:123
@@ -11449,7 +11449,7 @@ msgstr "De %post_type% %title% teruggezet vanuit de prullenbak."
 
 #: admin/templates/settings/connection-types.php:21
 msgid "Restrict proxy servers, data centers, VPNs, and legacy protocols to reduce automated threats."
-msgstr "Beperk proxyservers, datacenters, VPN's en verouderde protocollen om geautomatiseerde bedreigingen te verminderen."
+msgstr "Beperk proxyservers, datacenters, VPN's en legacy-protocollen om geautomatiseerde dreigingen te verminderen."
 
 #: includes/botblocker/traits/class-botblocker-check-page-trait.php:128
 msgid "Retrying..."
@@ -11751,7 +11751,7 @@ msgstr "Wordt uitgevoerd"
 
 #: addons/bbcs-forced-inclusions/views/settings.php:170
 msgid "Running on your site"
-msgstr ""
+msgstr "Actief op u site/locatie"
 
 #: includes/inc-botblocker-wp-abilities.php:111
 msgid "Runs a set of read-only health checks against the BotBlocker data directory and database tables."
@@ -12343,7 +12343,7 @@ msgstr "Serverpoort:"
 
 #: admin/templates/integrations/cache.php:21
 msgid "Server-level caches that bypass PHP can serve cached copies of the BotBlocker verification page, breaking protection. Configure a cookie-based exception for every cache in front of your site."
-msgstr ""
+msgstr "Caches op serverniveau die PHP omzeilen, kunnen gecachte kopieën van de BotBlocker-verificatie pagina serveren, waardoor de bescherming wordt doorbroken. Configureer een op cookies gebaseerde uitzondering voor elke cache vóór u site/locatie."
 
 #: admin/templates/cloud-api/status.php:138
 msgid "Server-side protection setup"
@@ -12388,7 +12388,7 @@ msgstr "Stel 2FA in voor uw account"
 
 #: admin/templates/setup-wizard/recaptcha.php:16
 msgid "Set up Google verification separately from your primary BotBlocker challenge."
-msgstr ""
+msgstr "Stel Google-verificatie apart in van u primaire BotBlocker-uitdaging."
 
 #: includes/data/class-botblocker-palette.php:156
 msgid "Set up two-factor authentication - 2FA, MFA, OTP, recovery"
@@ -12537,7 +12537,7 @@ msgstr "URL van de Handtekeningendatabase"
 
 #: admin/templates/settings/payment-tab.php:47
 msgid "Signature headers are always verified for format (min 8 chars, POST only). When enabled, payment bypass additionally applies to POST requests only: GET requests with payment query keys or ajax actions will not bypass the shield. Callbacks matched by generic markers (webhook, ipn, callback_handler) always keep IP and rate-limit rules active. Reduces attack surface while keeping real webhooks working."
-msgstr ""
+msgstr "Handtekening-headers worden altijd geverifieerd voor format (min. 8 tekens, alleen POST). Indien ingeschakeld, geldt de betalingsbypass bovendien alleen voor POST-aanvragen: GET-aanvragen met betalingsquery-sleutels/toetsen of ajax-acties omzeilen het schild niet. Callbacks die overeenkomen met generieke markers (webhook, ipn, callback_handler) houden IP- en snelheidsbeperkingsregels altijd actief. Dit verkleint het aanvalsoppervlak terwijl echte webhooks blijven werken."
 
 #: includes/audit/class-botblocker-audit-logger.php:414
 msgid "Signed in from a trusted device."
@@ -13164,7 +13164,7 @@ msgstr "Telegram Wekelijks Rapport"
 
 #: addons/bbcs-feed-guard/views/settings.php:100
 msgid "Tell search engines not to index feed URLs."
-msgstr ""
+msgstr "Vertel zoekopdracht-zoekmachines om feed-URL's niet te indexeren."
 
 #: admin/templates/dashboard/secret.php:38
 msgid "Temporarily disable BotBlocker checks for this session."
@@ -13217,7 +13217,7 @@ msgstr "Testen..."
 #: addons/bbcs-forced-inclusions/inc/class-file-operator.php:24
 #: addons/bbcs-forced-inclusions/inc/class-file-operator.php:70
 msgid "That file is not one this add-on is allowed to touch."
-msgstr ""
+msgstr "Dat bestand is er geen die deze add-on toegestaan/toegestane mag aanraken."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-operator.php:138
 msgid "That file was already changed by another request. Refresh the page and try again."
@@ -13275,7 +13275,7 @@ msgstr "de toegevoegde regel uit wp-config.php."
 
 #: admin/templates/integrations/apcu.php:21
 msgid "The apcu PHP extension is required to use this cache. Install it via your hosting control panel or contact your host."
-msgstr ""
+msgstr "De apcu PHP-extensie is vereist om deze cache te gebruiken. Installeer deze via het u hostingbedienings-paneel/scherm of neem contact op met u host."
 
 #: admin/templates/settings/rate-limiting.php:47
 msgid "The Behavioral Engine is installed and active. You can customize the multi-signal thresholds, session limits, and IP reputation decay."
@@ -13311,7 +13311,7 @@ msgstr "De fallback-runner controleert achterstallige taken (>1,5× interval) en
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:108
 #, php-format
 msgid "The file %s will be deleted from your server:"
-msgstr ""
+msgstr "Het bestand %s wordt verwijderd van u server:"
 
 #. translators: %s: file path relative to wp-content
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:135
@@ -13328,17 +13328,17 @@ msgstr "Het bestand %s wordt uitgeschakeld:"
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:149
 #: addons/bbcs-forced-inclusions/inc/class-file-operator.php:121
 msgid "The file could not be deleted. Your server may not allow it - ask your hosting company to check the file permissions."
-msgstr ""
+msgstr "Het bestand kon niet worden verwijderd. u server mag het misschien niet toestaan - vraag u hostingbedrijf om de bestandsrechten te controleren."
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:151
 #: addons/bbcs-forced-inclusions/inc/class-file-operator.php:87
 msgid "The file could not be turned back on. Your server may not allow it - ask your hosting company to check the file permissions."
-msgstr ""
+msgstr "Het bestand kon niet weer worden ingeschakeld. u server mag het misschien niet toestaan - vraag u hostingbedrijf om de bestandsrechten te controleren."
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:150
 #: addons/bbcs-forced-inclusions/inc/class-file-operator.php:50
 msgid "The file could not be turned off. Your server may not allow it - ask your hosting company to check the file permissions."
-msgstr ""
+msgstr "Het bestand kon niet worden uitgeschakeld. u server mag het misschien niet toestaan - vraag u hostingbedrijf om de bestandsrechten te controleren."
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:139
 msgid "The file gets its original name back."
@@ -13346,7 +13346,7 @@ msgstr "Het bestand krijgt zijn oorspronkelijke naam terug."
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:125
 msgid "The file stays on your server - nothing is deleted. Use delete for that."
-msgstr ""
+msgstr "Het bestand blijft op u server staan - er wordt niets verwijderd. Gebruik verwijderen daarvoor."
 
 #: admin/templates/tools/modals/object-cache.php:19
 msgid "The internal WordPress cache and external caching systems (Redis, Memcached) will be reset."
@@ -13354,7 +13354,7 @@ msgstr "De interne WordPress-cache en externe cachesystemen (Redis, Memcached) w
 
 #: includes/inc-botblocker-wp-abilities.php:542
 msgid "The IP rule could not be saved."
-msgstr ""
+msgstr "De IP-regel kon niet worden bespaart."
 
 #: addons/bbcs-cookie-alert/views/settings.php:90
 msgid "The label for the cookie consent button."
@@ -13502,7 +13502,7 @@ msgstr "De tekst die wordt weergegeven in de cookiemelding. Houd deze beknopt en
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:425
 msgid "The traffic activity level (as a fraction of the Core Rate Inspector's block RPM limit) where we start tracking and recording reputation. For example, at 0.10, once a visitor reaches 10% of that core limit, we begin monitoring their patterns. (Default: 0.10)"
-msgstr ""
+msgstr "Het niveau van verkeersactiviteit (als fractie van de blokkeren RPM-beperken/beperking van de Core Rate Inspector) waarbij we beginnen met volgen en het vastleggen van reputatie. Bijvoorbeeld: bij 0,10 beginnen we, zodra een bezoeker 10% van die kern-beperken/beperking bereikt, hun patronen te monitoren. (Standaard: 0,10)"
 
 #: admin/class-botblocker-admin.php:640
 #: includes/class-botblocker-toastify.php:248
@@ -13540,7 +13540,7 @@ msgstr "Het WordPress-logbestand (debug.log) wordt gewist:"
 
 #: addons/bbcs-forced-inclusions/views/settings.php:162
 msgid "The WPMU_PLUGIN_DIR constant is set - your mu-plugins are loading from a non-standard location. If you did not change this, an attacker may have redirected the directory to hide malicious files."
-msgstr "De WPMU_PLUGIN_DIR constante is ingesteld - je mu-plugins laden vanaf een niet-standaard locatie. Als je dit niet hebt gewijzigd, kan een aanvaller de folder/directory hebben omgeleid om kwaadaardige bestanden te verbergen."
+msgstr "De constante WPMU_PLUGIN_DIR is ingesteld - u mu-plugins worden geladen uit een niet-standaard locatie. Als u dit niet hebt gewijzigd, kan een aanvaller de folder/directory hebben omgeleid om kwaadaardige bestanden te verbergen."
 
 #: addons/bbcs-hcaptcha/views/settings.php:72
 #: addons/bbcs-turnstile/views/settings.php:73
@@ -13559,7 +13559,7 @@ msgstr "Thema's"
 #: includes/data/class-botblocker-alerts.php:775
 #, php-format
 msgid "These add-ons could not start and were switched off to keep the site running: %s. Your settings are kept. Please update or reinstall them."
-msgstr ""
+msgstr "Deze add-ons konden niet starten en zijn uitgeschakeld om de site/locatie draaiende te houden: %s. u instellingen blijven behouden. Gelieve updaten of installeer ze opnieuw."
 
 #: admin/templates/settings/status.php:22
 msgid "These options require no form save - they apply immediately and are safe to experiment with."
@@ -13604,7 +13604,7 @@ msgstr "Dit kan helpen 404-fouten op te lossen na het wijzigen van de permalinks
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:113
 msgid "This cannot be undone. If you only want to test whether it causes a problem, turn it off instead."
-msgstr "Dit kan niet ongedaan worden gemaakt. Als je alleen wilt testen of het een probleem veroorzaakt, schakel het dan uit."
+msgstr "Dit kan niet ongedaan worden gemaakt. Als u alleen wilt testen of het een probleem veroorzaakt, schakel het dan in plaats daarvan uit."
 
 #: addons/bbcs-antispam/inc/class-bbcs-antispam-checker.php:469
 msgid "This comment has not been checked by AI Anti-Spam."
@@ -13620,11 +13620,11 @@ msgstr "Dit bestand is al ingeschakeld."
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:105
 msgid "This file is one of the risky ones: your site can go offline or slow down badly until you undo this."
-msgstr "Dit bestand is een van de risicovolle: je site kan offline gaan of ernstig vertragen totdat je dit ongedaan maakt."
+msgstr "Dit bestand is een van de risicovolle bestanden: u site/locatie kan offline gaan of ernstig vertragen totdat u dit ongedaan maakt."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:239
 msgid "This file only does something on a multisite network, and your site is not one. It is doing nothing here, so it is worth finding out who put it there."
-msgstr "Dit bestand doet alleen iets op een multisite netwerk, en je site is dat niet. Het doet hier niets, dus het is de moeite waard om uit te zoeken wie het daar heeft geplaatst."
+msgstr "Dit bestand doet alleen iets op een multisite-netwerk, en u site/locatie is er geen. Het doet hier niets, dus het is de moeite waard om uit te zoeken wie het daar heeft neergezet."
 
 #: admin/templates/tools/modals/salt-clear.php:24
 msgid "This process is irreversible."
@@ -13805,7 +13805,7 @@ msgstr "Te veel aanvragen. Probeer het later opnieuw."
 #: includes/data/class-botblocker-snav.php:714
 #: includes/viewmodels/class-tools-viewmodel.php:99
 msgid "Tools"
-msgstr "Tools"
+msgstr "tools"
 
 #: includes/data/class-botblocker-palette.php:192
 msgid "Tools - maintenance, utilities, repair, cleanup"
@@ -13997,7 +13997,7 @@ msgstr "Vertrouw proxy-headers voor IP-allowlisting"
 
 #: admin/templates/setup-wizard/exclusions.php:22
 msgid "Trust your current IP"
-msgstr "Vertrouw je huidige IP"
+msgstr "Vertrouw u huidige IP"
 
 #: admin/templates/rules.php:40
 #: admin/templates/rules/body.php:14
@@ -14140,7 +14140,7 @@ msgstr "Twee-factor authenticatie is gereset."
 
 #: includes/data/class-botblocker-alerts.php:219
 msgid "Two-factor authentication is enabled but your account has no authenticator secret yet. Set it up to protect this account."
-msgstr "Tweefactorauthenticatie is ingeschakeld maar je account heeft nog geen authenticator geheim. Stel het in om dit account te beschermen."
+msgstr "Twee-factor-authenticatie is ingeschakeld, maar u account heeft nog geen authenticator geheim. Stel deze in om dit account te beschermen."
 
 #: public/2FA/bbcs-2fa-setup.php:152
 msgid "Two-factor authentication is now active on your account."
@@ -14409,7 +14409,7 @@ msgstr "Niet-ondersteunde periode."
 
 #: addons/bbcs-forced-inclusions/views/settings.php:138
 msgid "Unsure what a file does? Ask your host before removing it. Some hosts restore their own files automatically, so a disabled file may reappear."
-msgstr ""
+msgstr "Weet u niet wat een bestand doet? Vraag het u host voordat u het verwijdert. Sommige hosts terugzetten hun eigen bestanden automatisch, dus een uitgeschakeld bestand kan opnieuw verschijnen."
 
 #: admin/class-botblocker-admin.php:668
 #: admin/templates/addons/addon-market-card.php:106
@@ -14506,6 +14506,7 @@ msgid "Upgrade to PRO - premium, pricing, license, features"
 msgstr "Upgraden naar PRO - premium, prijzen, licentie, functies"
 
 #: admin/templates/settings/rate-limiting.php:38
+#, fuzzy
 msgid "Upgrade to Pro for the Behavioral Engine. It features advanced multi-signal scoring and decay-based reputation, preventing bots from spamming your site by tightening thresholds for repeat offenders."
 msgstr "Upgrade naar Pro voor de Behavioral Engine. Deze beschikt over geavanceerde multi-signaal scoring en op verval gebaseerde reputatie, waardoor bots worden tegengehouden uw site te spammen door drempels te verhogen voor herhaalde overtreders."
 
@@ -14536,7 +14537,7 @@ msgstr "URI"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:292
 msgid "URL to fetch remote regex signatures for malware detection. Endpoint must return JSON with version + signatures array. Each signature: id, severity (critical/high/medium/low), regex (valid PHP regex), score (1-100), confidence, category, description."
-msgstr "URL om externe regex-signaturen voor malware-detectie op te halen. Endpoint moet JSON retourneren met version + signatures-array. Elke signature: id, severity (kritieke/hoog/medium/laag), regex (geldige PHP-regex), score (1-100), confidence, category, beschrijving."
+msgstr "URL om externe regex-signaturen op te halen voor malware-detectie. endpoint moet JSON retourneren met version + signatures-array. Elke signature: id, severity (kritieke/high/medium/low), regex (geldige PHP-regex), score (1-100), confidence, category, beschrijving."
 
 #: addons/bbcs-hide-admin/views/settings.php:98
 msgid "URL to redirect to when someone tries to access the default login URL. Only used when behavior is set to Redirect."
@@ -14548,7 +14549,7 @@ msgstr "Gebruik"
 
 #: admin/templates/setup-wizard/recaptcha.php:22
 msgid "Use BotBlocker verification only. You can add Google later."
-msgstr "Gebruik alleen BotBlocker verificatie. Je kunt Google later toevoegen."
+msgstr "Gebruik alleen BotBlocker-verificatie. u kan later Google toevoegen."
 
 #: admin/templates/settings/cookie.php:139
 msgid "Use explicit CORS headers (Content-Type, X-Requested-With) instead of wildcard (*). Fixes Fetch-spec violation when Access-Control-Allow-Credentials is active. Enable if CAPTCHA verification breaks in browsers."
@@ -14716,7 +14717,7 @@ msgstr "Verifieer elke bezoeker via cloud-database. Alleen Ultimate tier."
 
 #: addons/bbcs-antispam/views/settings.php:142
 msgid "Verify the server TLS certificate on wss:// connections. Keep enabled unless you have a specific reason to disable it."
-msgstr "Verifieer het server TLS-certificaat op wss:// verbindingen. Laat ingeschakeld tenzij je een specifieke reden hebt om het uit te schakelen."
+msgstr "Verifieer het server-TLS-certificaat op wss://-verbindingen. Houd ingeschakeld tenzij u een specifieke reden heeft om het uit te schakelen."
 
 #: addons/bbcs-antispam/views/settings.php:141
 msgid "Verify TLS Certificate"
@@ -14826,7 +14827,7 @@ msgstr "VPN-, Tor- en proxy-blokkering"
 
 #: includes/data/class-botblocker-alerts.php:654
 msgid "W3 Total Cache detected. If using Disk Enhanced mode with rewrite rules, add a cookie-based server exception. See CACHE-COMPATIBILITY.md."
-msgstr "W3 Total Cache gedetecteerd. Als je de Disk Enhanced-modus met rewrite-regels gebruikt, voeg dan een cookie-gebaseerde serveruitzondering toe. Zie CACHE-COMPATIBILITY.md."
+msgstr "W3 Total Cache gedetecteerd. Als u de Disk Enhanced-modus met rewrite-regels gebruikt, toevoegen een cookiegebaseerde serveruitzondering. Zie CACHE-COMPATIBILITY.md."
 
 #: addons/bbcs-cookie-alert/inc/class-bbcs-cookie-alert-settings.php:12
 msgid "We use cookies to improve site security and user experience."
@@ -14860,7 +14861,7 @@ msgstr "Websitebeveiliging werkte deze week normaal."
 
 #: addons/bbcs-antispam/views/settings.php:118
 msgid "WebSocket URL"
-msgstr "WebSocket URL"
+msgstr "WebSocket-URL"
 
 #: includes/cron/class-botblocker-cron.php:131
 msgid "Weekly"
@@ -15059,7 +15060,7 @@ msgstr "WordPress-connectors"
 
 #: admin/templates/integrations/wp-connectors.php:15
 msgid "WordPress Connectors integrates your site with the WordPress ecosystem. Disable to save ~180ms per page load when not needed."
-msgstr "WordPress Connectors integreert je site met het WordPress ecosysteem. Schakel uit om ~180ms per pagina laden te besparen wanneer niet nodig."
+msgstr "WordPress Connectors integreert u site/locatie met het WordPress-ecosysteem. Schakel uit om ~180ms per pagina load te opslaan/besparen wanneer niet nodig."
 
 #: admin/templates/tools/tools-content.php:22
 #: includes/data/class-botblocker-snav.php:719
@@ -15165,7 +15166,7 @@ msgstr "Werkt overal"
 #: admin/templates/integrations/wp-abilities.php:21
 #: includes/viewmodels/class-integrations-viewmodel.php:185
 msgid "WP Abilities API"
-msgstr "WP Abilities API"
+msgstr "WP abilities API"
 
 #: includes/data/class-botblocker-snav.php:408
 msgid "WP Cron"
@@ -15275,7 +15276,7 @@ msgstr ""
 
 #: admin/templates/setup-wizard/captcha.php:159
 msgid "You can change this choice later in Settings."
-msgstr ""
+msgstr "u kan deze keuze later wijzigen in Instellingen."
 
 #: admin/partials/class-botblocker-dashboard-widgets.php:182
 msgid "You can prepare your list in any text editor. Each line should contain a single IP address or subnet in CIDR format (e.g. 192.168.1.0/24)."
@@ -15283,11 +15284,11 @@ msgstr "U kunt uw lijst in elke teksteditor voorbereiden. Elke regel moet een en
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:126
 msgid "You can turn it back on from this page whenever you want."
-msgstr ""
+msgstr "u kunt het vanaf deze pagina weer inschakelen wanneer u maar wilt."
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:140
 msgid "You can turn it off again at any time."
-msgstr ""
+msgstr "u kunt het op elk moment weer uitschakelen."
 
 #: includes/shortcode/class-botblocker-sidebar-shortcodes.php:129
 #: includes/shortcode/class-botblocker-sidebar-shortcodes.php:162
@@ -15309,7 +15310,7 @@ msgstr "U ontvangt hier wekelijkse beveiligingsrapporten."
 
 #: includes/data/class-botblocker-alerts.php:227
 msgid "Your authenticator secret is saved but the QR code was not verified yet. Complete the verification to actually protect this account."
-msgstr ""
+msgstr "u authenticator-geheim is bespaart, maar de QR-code is nog niet geverifieerd. Rond de verificatie af om deze account daadwerkelijk te beschermen."
 
 #: admin/templates/setup-guide/chain-body.php:56
 msgid "Your browser does not support the video tag."
@@ -15358,11 +15359,11 @@ msgstr "Uw Google reCaptcha v3 site key voor onzichtbare botdetectie."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:91
 msgid "Your host, or added by hand."
-msgstr ""
+msgstr "u host, of toegevoegd handmatig."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:115
 msgid "Your host, or whoever set up database replication or sharding."
-msgstr ""
+msgstr "u host, of degene die database replicatie of sharding heeft ingesteld."
 
 #: admin/templates/setup-wizard/exclusions.php:23
 msgid "Your IP address will be permanently added to the whitelist"
@@ -15374,19 +15375,19 @@ msgstr "Uw bericht is verzonden."
 
 #: addons/bbcs-pusher/views/settings.php:61
 msgid "Your Pusher app ID from the dashboard."
-msgstr ""
+msgstr "u Pusher app-ID van het dashboard."
 
 #: addons/bbcs-pusher/views/settings.php:72
 msgid "Your Pusher app key (public)."
-msgstr ""
+msgstr "u Pusher app sleutel/toets (openbaar)."
 
 #: addons/bbcs-pusher/views/settings.php:83
 msgid "Your Pusher app secret. Used to sign events; never share it."
-msgstr ""
+msgstr "u Pusher app geheim. Wordt gebruikt om gebeurtenissen te ondertekenen; deel deze nooit."
 
 #: addons/bbcs-pusher/views/settings.php:94
 msgid "Your Pusher cluster, e.g. mt1, eu, us2. Leave empty to use the default."
-msgstr ""
+msgstr "u Pusher-cluster, bijvoorbeeld mt1, eu, us2. Laat leeg om de standaard te gebruiken."
 
 #: includes/shortcode/class-botblocker-recommendations-shortcodes.php:124
 msgid "Your security configuration is complete."
@@ -15394,7 +15395,7 @@ msgstr "Uw beveiligingsconfiguratie is voltooid."
 
 #: addons/bbcs-antispam/views/settings.php:109
 msgid "Your site API key for the AI WebSocket service. Register at ai.globus.studio to get your key."
-msgstr ""
+msgstr "u site/locatie API-sleutel/toets voor de AI WebSocket-service. Registreer u op ai.globus.studio om u sleutel/toets te verkrijgen."
 
 #: admin/templates/setup-wizard/finish.php:10
 msgid "Your site is protected!"

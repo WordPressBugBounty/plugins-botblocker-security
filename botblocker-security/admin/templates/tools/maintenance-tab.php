@@ -124,7 +124,7 @@ return static function ( Botblocker_ToolsViewModel $data, bool $isActive ): void
 						->withId( 'bbcs-clear-transients' )
 						->withIcon( 'broom' )
 						->withLabel( __( 'Clear transients', 'botblocker-security' ) )
-						->withTooltip( __( 'Clear expired transients from the database', 'botblocker-security' ) )
+						->withTooltip( __( 'Delete BotBlocker cached values', 'botblocker-security' ) )
 						->withDocLink( BotBlockerDocs::page( 'tools-maintenance', 'clear-transients' ) )
 						->render();
 					ActionButton::make()

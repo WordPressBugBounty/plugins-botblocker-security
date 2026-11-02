@@ -184,6 +184,7 @@ class BotBlockerAjaxGeo {
 		if ( $result === false ) {
 			wp_send_json_error( __( 'Failed to add country.', 'botblocker-security' ) );
 		}
+		self::clearLegacyCountryOption();
 
 		BotBlockerFileRenderer::renderCountries();
 		BotBlockerCache::clearFileCache();
@@ -220,6 +221,7 @@ class BotBlockerAjaxGeo {
 		if ( $result === false ) {
 			wp_send_json_error( __( 'Failed to delete country rule.', 'botblocker-security' ) );
 		}
+		self::clearLegacyCountryOption();
 
 		BotBlockerFileRenderer::renderCountries();
 		BotBlockerCache::clearFileCache();
@@ -241,6 +243,7 @@ class BotBlockerAjaxGeo {
 		if ( $result === false ) {
 			wp_send_json_error( __( 'Failed to clear countries.', 'botblocker-security' ) );
 		}
+		self::clearLegacyCountryOption();
 
 		BotBlockerFileRenderer::renderCountries();
 		BotBlockerCache::clearFileCache();
@@ -250,7 +253,17 @@ class BotBlockerAjaxGeo {
 	}
 
 	/**
-	 * Legacy option-based actions kept for compatibility with the deprecated GEO UI.
+	 * Removes the legacy option only after a successful table write. No
+	 * migration: the option stays as a read fallback until the table is used.
+	 */
+	private static function clearLegacyCountryOption(): void {
+		BotBlockerMultisite::deleteOption( 'bbcs_blocked_countries' );
+	}
+
+	/**
+	 * Option-based compat endpoints backed by the bbcs_countries table
+	 * (AUD-14: table is the single source of truth once it has rows; the
+	 * legacy option is only a read fallback for pre-table installs).
 	 */
 	public static function handleGetCountriesLegacy(): void {
 		check_ajax_referer( 'botblocker_nonce', 'nonce' );
@@ -258,34 +271,7 @@ class BotBlockerAjaxGeo {
 			wp_send_json_error( array( 'message' => __( 'Unauthorized.', 'botblocker-security' ) ) );
 		}
 
-		$blockedCountries = BotBlockerMultisite::getOption( 'bbcs_blocked_countries', array() );
-		if ( is_string( $blockedCountries ) ) {
-			$decoded = json_decode( $blockedCountries, true );
-			if ( json_last_error() === JSON_ERROR_NONE && is_array( $decoded ) ) {
-				$blockedCountries = $decoded;
-			} else {
-				$blockedCountries = array_filter( array_map( 'trim', explode( ',', $blockedCountries ) ) );
-			}
-		}
-		if ( ! is_array( $blockedCountries ) ) {
-			$blockedCountries = array();
-		}
-
-		$blockedCountries = array_values(
-			array_unique(
-				array_filter(
-					array_map(
-						function ( $item ) {
-							$country = is_string( $item ) ? strtoupper( trim( $item ) ) : '';
-							return preg_match( '/^[A-Z]{2}$/', $country ) ? $country : '';
-						},
-						$blockedCountries
-					)
-				)
-			)
-		);
-
-		wp_send_json_success( $blockedCountries );
+		wp_send_json_success( BotBlockerData::getBlockedCountries() );
 	}
 
 	public static function handleSaveCountriesLegacy(): void {
@@ -293,6 +279,7 @@ class BotBlockerAjaxGeo {
 		if ( ! current_user_can( BotBlockerMultisite::canManage() ) ) {
 			wp_send_json_error( array( 'message' => __( 'Unauthorized.', 'botblocker-security' ) ) );
 		}
+		global $wpdb;
 
 		$countries = array();
 		if ( isset( $_POST['countries'] ) ) {
@@ -319,7 +306,34 @@ class BotBlockerAjaxGeo {
 			)
 		);
 
-		BotBlockerMultisite::updateOption( 'bbcs_blocked_countries', $sanitized );
+		if ( ! empty( $wpdb->bbcs_countries ) ) {
+			// Replace only the blocked-country rows; allow rules (and any other
+			// non-block rows) are not this legacy endpoint's data (AUD-14).
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$delete_ok = $wpdb->delete( $wpdb->bbcs_countries, array( 'rule' => 'block' ), array( '%s' ) );
+			$write_ok  = false !== $delete_ok;
+			$priority = 1;
+			foreach ( $sanitized as $code ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+				$insert_ok = $wpdb->insert(
+					$wpdb->bbcs_countries,
+					array(
+						'priority' => $priority++,
+						'code'     => $code,
+						'rule'     => 'block',
+						'disable'  => 0,
+					)
+				);
+				if ( false === $insert_ok ) {
+					$write_ok = false;
+				}
+			}
+			if ( $write_ok ) {
+				self::clearLegacyCountryOption();
+			}
+			BotBlockerFileRenderer::renderCountries();
+			BotBlockerCache::clearFileCache();
+		}
 
 		wp_send_json_success( $sanitized );
 	}

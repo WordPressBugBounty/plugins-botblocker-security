@@ -145,7 +145,7 @@ final class Botblocker_ProStatusViewModel {
 			return 'ok';
 		}
 
-		if ( ( $hits !== false && (int) $hits === 0 ) || ( $days !== false && (int) $days === 0 ) ) {
+		if ( ( $hits !== false && (int) $hits === 0 ) || ( $days !== false && (int) $days <= 0 ) ) {
 			return 'critical';
 		}
 

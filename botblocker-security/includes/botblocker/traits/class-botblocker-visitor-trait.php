@@ -140,6 +140,13 @@ trait BotBlockerVisitorTrait {
 			return;
 		}
 
+		// Self-test: treat the admin as a visitor with no pass cookie.
+		if ( BotBlockerSelfTest::isActive() ) {
+			$this->cookie_kind        = 'none';
+			$this->verification_state = self::VERIFY_INVALID;
+			return;
+		}
+
 		// --- parse cookie data ---
 		$this->cookie_visitor_data = isset( $_COOKIE[ $this->uid ] )
 			? trim( wp_strip_all_tags( wp_unslash( $_COOKIE[ $this->uid ] ) ) ) : '';

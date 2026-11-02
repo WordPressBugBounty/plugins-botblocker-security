@@ -1772,6 +1772,29 @@ a.bbcs-pro-opt:hover { background: var(--bbcs-s2); }
 }
 #bbcs-deactivation-reasons label span { line-height: 16px; }
 #bbcs-deactivation-details { margin-top: var(--bbcs-sp-1); }
+.bbcs-deactivation-modal { max-width: 520px; }
+.bbcs-deactivation-followup {
+  background: var(--bbcs-bg);
+  border: 1px solid var(--bbcs-line);
+  border-radius: var(--bbcs-r-md);
+  padding: var(--bbcs-sp-3);
+}
+.bbcs-deactivation-followup__title { font-weight: 600; margin-bottom: var(--bbcs-sp-2); }
+.bbcs-deactivation-followup__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--bbcs-sp-2); }
+.bbcs-deactivation-followup__grid label { cursor: pointer; }
+.bbcs-deactivation-rescue {
+  border-left: 3px solid var(--bbcs-wp-blue);
+  background: #f0f6fc;
+  border-radius: var(--bbcs-r-sm);
+  padding: var(--bbcs-sp-2h) var(--bbcs-sp-3);
+}
+.bbcs-deactivation-rescue__text { font-size: var(--bbcs-fs-sm); margin-bottom: var(--bbcs-sp-2); }
+.bbcs-deactivation-rescue a { font-size: var(--bbcs-fs-xs); color: var(--bbcs-wp-blue); }
+.bbcs-deactivation-rescue__error { color: var(--bbcs-red); font-size: var(--bbcs-fs-xs); margin-top: var(--bbcs-sp-2); }
+.bbcs-deactivation-paused { text-align: center; padding: var(--bbcs-sp-4) var(--bbcs-sp-2); }
+.bbcs-deactivation-paused__icon { color: var(--bbcs-green); font-size: 32px; line-height: 1; margin-bottom: var(--bbcs-sp-2); }
+.bbcs-deactivation-paused h3 { margin: 0 0 var(--bbcs-sp-2) 0; font-size: var(--bbcs-fs-xl); }
+.bbcs-deactivation-paused p { margin: 0 0 var(--bbcs-sp-4) 0; color: var(--bbcs-tx2); }
 
 /* ─────────────── notification badge ─────────────── */
 .bbcs-badge {
@@ -2755,6 +2778,9 @@ body.wp-admin #wpbody-content button.bbcs-snav-collapse-btn:focus-visible {
 .bbcs-plan-head { margin-bottom: var(--bbcs-sp-2); }
 .bbcs-plan-name { font-size: var(--bbcs-fs-lg); font-weight: var(--bbcs-fw-bold); }
 .bbcs-plan-price { margin-top: var(--bbcs-sp-1h); display: flex; align-items: baseline; }
+.bbcs-plan-amount { font-size: var(--bbcs-fs-3xl); font-weight: var(--bbcs-fw-bold); line-height: 1; }
+.bbcs-plan-alt { align-self: center; }
+#bbcs_pro_buy:not(.is-annual) .bbcs-cycle--annual, #bbcs_pro_buy.is-annual .bbcs-cycle--monthly { display: none; }
 .bbcs-plan-feats { display: flex; flex-direction: column; gap: var(--bbcs-sp-2); flex: 1; margin-bottom: var(--bbcs-sp-3); }
 
 /* ─────────────── documentation links ─────────────── */

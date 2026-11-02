@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * This class is responsible for all the operations against bots.
  * It handles detections, logging, and blocking of suspicious bot activities.
  *
- * @version    1.7.6
+ * @version    1.7.7
  * @author     BotBlocker Team
  * @package    Botblocker
  * @subpackage Botblocker/includes
@@ -18,6 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once BOTBLOCKER_DIR . 'includes/botblocker/class-botblocker-base.php';
 require_once BOTBLOCKER_DIR . 'includes/botblocker/class-botblocker-settings.php';
+require_once BOTBLOCKER_DIR . 'includes/class-botblocker-self-test.php';
 require_once BOTBLOCKER_DIR . 'includes/botblocker/class-botblocker-security-page-assets.php';
 require_once BOTBLOCKER_DIR . 'includes/botblocker/traits/class-botblocker-core-trait.php';
 require_once BOTBLOCKER_DIR . 'includes/botblocker/traits/class-botblocker-visitor-trait.php';
@@ -124,11 +125,17 @@ class BotBlocker extends BotBlockerBase {
 		if ( $this->check_options_preflight() ) {
 			return;
 		}
-		if ( $this->is_safe_request() ) {
+		if ( BotBlockerSelfTest::hasPassed() ) {
+			BotBlockerSelfTest::record( 'site_served' );
 			return;
 		}
-		// Real pages let through (verified/allow-IP/white-bot/payment) must never land cookie-blind in an anonymous page cache (finding NN/PP).
-		$this->define_no_cache_constants();
+		if ( ! BotBlockerSelfTest::isActive() && $this->is_safe_request() ) {
+			return;
+		}
+		// Real pages let through (verified/allow-IP/white-bot/payment) must never land cookie-blind in an anonymous page cache (finding NN/PP), unless the Early Init gate guards cache reads.
+		if ( ! $this->early_cache_gate_active() ) {
+			$this->define_no_cache_constants();
+		}
 		$this->collect_visitor_data();
 		$this->update_settings_based_on_visitor_data();
 		$this->check_tls_fingerprint();
@@ -198,6 +205,9 @@ class BotBlocker extends BotBlockerBase {
 
 		if ( $this->process_cookies() ) {
 			$this->send_vary_cookie_header();
+			if ( $this->early_cache_gate_active() ) {
+				$this->set_cache_pass_cookie();
+			}
 			return;
 		}
 
@@ -302,6 +312,18 @@ class BotBlocker extends BotBlockerBase {
 
 	// Native die() - not wp_die() - defense-in-depth: prevents third-party wp_die_handler filter bypass of the security barrier.
 	public function process_die( string $message = '' ): void {
+		$this->terminate( $message, false );
+	}
+
+	/**
+	 * Terminate without the dev-mode banner (file downloads where any extra
+	 * byte would corrupt the body).
+	 */
+	public function process_die_silent(): void {
+		$this->terminate( '', true );
+	}
+
+	private function terminate( string $message = '', bool $silent = false ): void {
 		BotBlockerCounters::flushHits();
 		if ( apply_filters( 'bbcs_test_intercept_termination', false, $message, $this ) ) {
 			return;
@@ -309,7 +331,7 @@ class BotBlocker extends BotBlockerBase {
 		$this->maybe_spawn_cron();
 		if ( ! empty( $message ) ) {
 			die( wp_kses_post( $message ) );
-		} elseif ( BBCS_DIE_MESSAGE ) {
+		} elseif ( BBCS_DIE_MESSAGE && ! $silent ) {
 				$this->print_hive();
 				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				die( did_action( 'init' ) ? __( 'WordPress stopped by BotBlocker', 'botblocker-security' ) : 'WordPress stopped by BotBlocker' );

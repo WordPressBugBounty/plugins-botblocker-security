@@ -19,7 +19,8 @@ return static function ( Botblocker_HeaderViewModel $h ): void {
 				$hits_load = $h->remaining_hits === false && $h->should_fetch;
 				$days_load = $h->remaining_days === false && $h->should_fetch;
 				$hits_txt  = $h->remaining_hits === false ? ( $hits_load ? number_format_i18n( 123456 ) : '–' ) : number_format_i18n( (int) $h->remaining_hits );
-				$days_txt  = $h->remaining_days === false ? ( $days_load ? '30' : '–' ) : (string) (int) $h->remaining_days;
+				$days_txt  = $h->remaining_days === false ? ( $days_load ? '30' : '–' ) : BotBlockerPro::remainingDaysText( $h->remaining_days );
+				$days_unit = $h->remaining_days === false ? __( 'days', 'botblocker-security' ) : BotBlockerPro::remainingDaysUnit( $h->remaining_days );
 				$hits_cls  = $hits_load ? ' is-loading is-empty' : '';
 				$days_cls  = $days_load ? ' is-loading is-empty' : '';
 			?>
@@ -31,7 +32,7 @@ return static function ( Botblocker_HeaderViewModel $h ): void {
 				<span class="bbcs-pro-cta-unit"><?php esc_html_e( 'hits', 'botblocker-security' ); ?></span>
 				<span class="bbcs-pro-cta-sep">·</span>
 				<span class="bbcs-pro-cta-num<?php echo esc_attr( $days_cls ); ?>" data-bbcs-remaining="days"><?php echo esc_html( $days_txt ); ?></span>
-				<span class="bbcs-pro-cta-unit"><?php esc_html_e( 'days', 'botblocker-security' ); ?></span>
+				<span class="bbcs-pro-cta-unit" data-bbcs-remaining-unit="days"<?php echo $days_unit === '' ? ' hidden' : ''; ?>><?php echo esc_html( $days_unit ); ?></span>
 			</a>
 			<?php else : ?>
 			<a class="bbcs-pro-cta" href="<?php echo esc_url( $h->cloud_api_url ); ?>">

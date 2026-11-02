@@ -14,6 +14,8 @@ class BotBlockerPro {
 	public const TIER_PRO      = 'pro';
 	public const TIER_ULTIMATE = 'ultimate';
 
+	public const EXPIRED_DAYS = -1;
+
 	public const PRO_FEATURE_TIERS = array(
 		'check'                    => self::TIER_PRO,
 		'unresponsive'             => self::TIER_PRO,
@@ -134,13 +136,29 @@ class BotBlockerPro {
 		return self::getType() === self::TYPE_EXTENDED && self::getStatus() === self::TYPE_EXTENDED;
 	}
 
+	// Same rules as isActive(), but reads the CURRENT blog's settings table only - never the singleton or data file (F-17).
+	public static function isActiveFromDb(): bool {
+		global $wpdb;
+		if ( ! isset( $wpdb->bbcs_settings ) ) {
+			return false;
+		}
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$type = (string) $wpdb->get_var( $wpdb->prepare( "SELECT value FROM `{$wpdb->bbcs_settings}` WHERE `key` = %s", 'cloud_api_type' ) );
+		if ( $type !== self::TYPE_EXTENDED ) {
+			return false;
+		}
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$key = $wpdb->get_var( $wpdb->prepare( "SELECT value FROM `{$wpdb->bbcs_settings}` WHERE `key` = %s", 'cloud_api_key' ) );
+		return self::isKeyHash( $key ) || self::isLegacyKeyHash( $key );
+	}
+
 	public static function isUltimate(): bool {
 		return self::isActive() && self::getTier() === self::TIER_ULTIMATE;
 	}
 
 	public static function allowsFeature( string $key ): bool {
-		$has_pro_license      = self::isActive();
-		$has_ultimate_license = self::isUltimate();
+		$has_pro_license      = self::isActive() && ! self::isExpired();
+		$has_ultimate_license = $has_pro_license && self::getTier() === self::TIER_ULTIMATE;
 
 		return self::featureAllowed( $key, $has_pro_license, $has_ultimate_license );
 	}
@@ -211,6 +229,37 @@ class BotBlockerPro {
 		return set_transient( 'bbcs_remaining_days', $days, BOTBLOCKER_CACHE_REMAINING_DAYS_TIME );
 	}
 
+	public static function isExpired(): bool {
+		$days = self::getRemainingDays();
+		return $days !== false && (int) $days < 0;
+	}
+
+	public static function setExpired(): bool {
+		delete_transient( 'bbcs_remaining_days' );
+		return set_transient( 'bbcs_remaining_days', self::EXPIRED_DAYS );
+	}
+
+	public static function remainingDaysText( $days ): string {
+		if ( (int) $days < 0 ) {
+			return __( 'Expired', 'botblocker-security' );
+		}
+		return (string) (int) $days;
+	}
+
+	public static function remainingDaysUnit( $days ): string {
+		if ( (int) $days < 0 ) {
+			return '';
+		}
+		return _n( 'day', 'days', (int) $days, 'botblocker-security' );
+	}
+
+	public static function remainingDaysLabel( $days ): string {
+		if ( (int) $days < 0 ) {
+			return '';
+		}
+		return _n( 'day remaining', 'days remaining', (int) $days, 'botblocker-security' );
+	}
+
 	public static function getRemainingHits() {
 		return get_transient( 'bbcs_remaining_hits' );
 	}
@@ -225,6 +274,13 @@ class BotBlockerPro {
 	}
 
 	public static function checkExpiry(): void {
+		if ( self::isExpired() ) {
+			BotBlockerAlerts::setCloudApiExpired();
+			require_once BOTBLOCKER_DIR . 'includes/mail/class-botblocker-mailer.php';
+			BotBlockerMailer::sendExpirationEmail( __( 'Your cloud API has expired. Please renew it.', 'botblocker-security' ), true );
+			return;
+		}
+
 		$remaining_days = self::getRemainingDays();
 		$remaining_hits = self::getRemainingHits();
 
@@ -239,10 +295,13 @@ class BotBlockerPro {
 		$warnings = array();
 		foreach ( self::getExpiryWarningDays() as $threshold ) {
 			if ( $remaining_days == $threshold ) {
-				BotBlockerAlerts::setCloudApiExpired( $threshold == 0 ? null : $threshold );
-				$expired = $threshold == 0;
-				/* translators: %d: number of days until the cloud API expires. */
-				$warnings[] = $expired ? __( 'Your cloud API has expired.', 'botblocker-security' ) : sprintf( __( 'Your cloud API will expire in %d days.', 'botblocker-security' ), $threshold );
+				BotBlockerAlerts::setCloudApiExpired( $threshold );
+				if ( $threshold === 0 ) {
+					$warnings[] = __( 'Your cloud API expires today.', 'botblocker-security' );
+				} else {
+					/* translators: %d: number of days until the cloud API expires. */
+					$warnings[] = sprintf( _n( 'Your cloud API will expire in %d day.', 'Your cloud API will expire in %d days.', $threshold, 'botblocker-security' ), $threshold );
+				}
 				break;
 			}
 		}

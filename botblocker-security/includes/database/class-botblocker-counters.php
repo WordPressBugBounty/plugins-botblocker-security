@@ -21,25 +21,22 @@ class BotBlockerCounters {
 	}
 
 	public static function ensureRow( bool $force = false ): void {
-		static $verified = false;
-		if ( $verified && ! $force ) {
-			return;
-		}
+		unset( $force );
 		global $wpdb;
 		if ( empty( $wpdb->bbcs_counters ) ) {
 			return;
 		}
+		// No process-static memo (AUD-29): it cached the TABLE state, so a row
+		// removed after a verified check stayed missing until the next boot.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$exists = $wpdb->get_var( "SELECT id FROM `{$wpdb->bbcs_counters}` WHERE id = 1" );
 		if ( $exists ) {
-			$verified = true;
 			return;
 		}
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->query(
 			"INSERT INTO `{$wpdb->bbcs_counters}` (id, today_hits, today_blocked, total_hits, total_blocked, search_engine_visits) VALUES (1, 0, 0, 0, 0, 0)"
 		);
-		$verified = true;
 	}
 
 	public static function processHit( $reason ): void {

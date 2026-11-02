@@ -3,16 +3,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BotBlocker"
 "Report-Msgid-Bugs-To: "
-"POT-Creation-Date: 2026-09-29 08:37+0000"
-"PO-Revision-Date: 2026-09-29 08:37+0000"
-"Last-Translator: BotBlocker Translator Team"
+"POT-Creation-Date: 2026-10-17 19:43+0000"
+"PO-Revision-Date: 2026-10-17 19:43+0000"
+"Last-Translator: BotBlocker Team (Susana_raposo)"
 "Language-Team: Portuguese"
 "Language: pt_BR"
 "Plural-Forms: nplurals=2; plural=(n > 1);"
 "MIME-Version: 1.0"
 "Content-Type: text/plain; charset=UTF-8"
 "Content-Transfer-Encoding: 8bit"
-"X-Generator: BotBlocker Translator Engine"
 "X-Domain: botblocker-security"
 
 
@@ -624,7 +623,7 @@ msgstr "Ativando..."
 
 #: includes/class-botblocker-toastify.php:263
 msgid "Activation refused: the add-on runtime copy is outdated and could not be refreshed automatically. Check uploads write permissions and try again."
-msgstr ""
+msgstr "Ativação recusada: a cópia de execução do complemento está desatualizada e Não foi possível ser atualizada automaticamente. marcar as permissões do escrever de envios e tente novamente."
 
 #: includes/ajax/class-botblocker-ajax-email.php:126
 msgid "Activation sent."
@@ -2728,7 +2727,7 @@ msgstr "botblocker/get-ip-rules — retorna as regras de firewall correspondente
 
 #: admin/templates/integrations/wp-abilities.php:47
 msgid "botblocker/get-scan-results — returns the status and findings of the latest malware scan."
-msgstr ""
+msgstr "botblocker/get-scan-results — retorna o status e as constatações do mais recentes malware examinar."
 
 #: admin/templates/integrations/wp-abilities.php:31
 msgid "botblocker/get-traffic-summary — aggregated request, block, captcha, suspicious and proxy counters."
@@ -2740,7 +2739,7 @@ msgstr ""
 
 #: admin/templates/integrations/wp-abilities.php:46
 msgid "botblocker/run-malware-scan — starts a background malware scan through the Malware Scanner add-on."
-msgstr ""
+msgstr "botblocker/run-malware-scan — inicia um plano de fundo malware examinar através do malware Scanner complemento."
 
 #: admin/templates/integrations/wp-abilities.php:39
 msgid "botblocker/unblock-ip — removes firewall rules for an IP address and regenerates the runtime ban files. Destructive, requires manage_options."
@@ -2856,7 +2855,7 @@ msgstr "Ignorar as marcações do BotBlocker para callbacks de gateway de pagame
 #: includes/data/class-botblocker-snav.php:660
 #: includes/viewmodels/class-integrations-viewmodel.php:172
 msgid "Cache"
-msgstr "Cache"
+msgstr "cache"
 
 #: admin/templates/integrations/cache.php:30
 #: admin/templates/settings/cookie.php:112
@@ -6552,7 +6551,7 @@ msgstr "Arquivos que são executados sem serem exibidos em Plugins"
 
 #: addons/bbcs-malware/inc/views/scan-results/ignored-files.php:18
 msgid "Files you chose to ignore. They no longer count as issues. Restore one to bring it back into the scan results."
-msgstr ""
+msgstr "Arquivos que você escolheu ignorar. Eles não contam mais como problemas. Restaure um para trazê-lo de volta aos resultados do examinar."
 
 #: admin/class-botblocker-admin.php:636
 #: includes/class-botblocker-toastify.php:269
@@ -6914,7 +6913,7 @@ msgstr "Obter regras de IP"
 #: admin/templates/integrations/wp-abilities.php:47
 #: includes/inc-botblocker-wp-abilities.php:192
 msgid "Get malware scan results"
-msgstr ""
+msgstr "Obter resultados de malware examinar"
 
 #: includes/services/class-botblocker-health-service.php:37
 msgid "GET parameter referrer check"
@@ -8734,7 +8733,7 @@ msgstr "IPs maliciosos no banco de dados"
 
 #: addons/bbcs-malware/views/settings.php:20
 msgid "Malware"
-msgstr "Malware"
+msgstr "malware"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-admin.php:220
 msgid "Malware Scan"
@@ -8927,11 +8926,11 @@ msgstr "Compatibilidade máxima para testes e protecção de baixo impacto."
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:238
 msgid "Maximum findings embedded per results card for the Tree view."
-msgstr ""
+msgstr "Máximo de constatações (mídia) incorporada por cartão de resultados para a Árvore ver."
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:230
 msgid "Maximum findings shown in the Flat results view before truncating. Switch to Tree view to browse all."
-msgstr ""
+msgstr "Máximo de constatações exibidas na ver de resultados simples antes de truncar. Alterne para a ver em árvore para procurar todas."
 
 #: admin/templates/setup-guide/one-click-modal.php:68
 msgid "Maximum hardening with cloud threat intelligence."
@@ -9475,7 +9474,7 @@ msgstr "Sem permissão."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:244
 msgid "No Plugin Name header found - suspicious for malware. Run a malware scan on this file."
-msgstr ""
+msgstr "Nenhum plugin nome cabeçalho encontrado — suspeito para malware. Execute malware examinar neste arquivo."
 
 #: includes/ajax/class-botblocker-ajax-ip-rules-trait.php:831
 msgid "No rules provided."
@@ -11196,7 +11195,7 @@ msgstr "Substitua o conteúdo completo do publicar nos feeds por um resumo curto
 
 #: admin/templates/settings/cookie.php:96
 msgid "Replaces IP/host/UA-bound cookie hash with a session token. Eliminates Captcha loops for VPN/proxy users. Disable only if experiencing issues."
-msgstr "Substitui o hash de cookie vinculado a IP/host/UA por um token de sessão. Elimina loops de Captcha para usuários de VPN/proxy. Desactive apenas se tiver problemas."
+msgstr "Substitui o hash de cookie IP/host/UA-bound por um token de sessão. Elimina a necessidade de fazer loop de Captcha para usuários de VPN/proxy. desativar apenas se estiver enfrentando problemas."
 
 #: addons/bbcs-forced-inclusions/inc/class-file-classifier.php:66
 msgid "Replaces the default screen shown while the site is in maintenance mode."
@@ -11473,7 +11472,7 @@ msgstr "Retorna as regras de firewall correspondentes a um determinado Endereço
 
 #: includes/inc-botblocker-wp-abilities.php:193
 msgid "Returns the status and findings of the latest malware scan from the BotBlocker Malware Scanner add-on."
-msgstr ""
+msgstr "Retorna o status e as descobertas do mais recentes malware examinar a partir do BotBlocker malware Scanner complemento."
 
 #: admin/templates/settings/general.php:63
 msgid "Reverse DNS (PTR)"
@@ -11714,11 +11713,11 @@ msgstr "Página de regras - aba GEO"
 #: admin/templates/integrations/wp-abilities.php:46
 #: includes/inc-botblocker-wp-abilities.php:174
 msgid "Run a malware scan"
-msgstr ""
+msgstr "Executar um malware examinar"
 
 #: addons/bbcs-forced-inclusions/inc/class-bbcs-forced-inclusions-plugin.php:152
 msgid "Run a malware scan on this file."
-msgstr ""
+msgstr "Execute malware examinar neste arquivo."
 
 #: admin/templates/settings/cron.php:149
 msgid "Run all recurring tasks immediately"
@@ -11890,7 +11889,7 @@ msgstr "Resultados da verificação limpos."
 
 #: addons/bbcs-malware/inc/views/scan-results.php:25
 msgid "Scan results view"
-msgstr ""
+msgstr "examinar resultados ver"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-addons-page.php:46
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:47
@@ -12300,7 +12299,7 @@ msgstr "Enviar por e-mail"
 #: admin/templates/settings/advanced-protection.php:39
 #: includes/viewmodels/class-pro-status-viewmodel.php:81
 msgid "Send visitors on the check page to BotBlocker Cloud for a verdict."
-msgstr ""
+msgstr "Envie os visitantes da página marcar para o BotBlocker Cloud para obter um veredito."
 
 #: includes/utilites/class-botblocker-support.php:140
 msgid "Sending failed. Please try again later."
@@ -12537,7 +12536,7 @@ msgstr "URL do banco de dados de assinaturas"
 
 #: admin/templates/settings/payment-tab.php:47
 msgid "Signature headers are always verified for format (min 8 chars, POST only). When enabled, payment bypass additionally applies to POST requests only: GET requests with payment query keys or ajax actions will not bypass the shield. Callbacks matched by generic markers (webhook, ipn, callback_handler) always keep IP and rate-limit rules active. Reduces attack surface while keeping real webhooks working."
-msgstr ""
+msgstr "Os cabeçalhos de assinatura são sempre verificados quanto ao formato (mín. 8 caracteres, apenas POST). Quando ativado, o bypass de pagamento se aplica adicionalmente apenas a solicitações POST: solicitações GET com chaves consulta de pagamento ou ações ajax não contornarão o escudo. Callbacks correspondidos por marcadores genéricos (webhook, ipn, callback_handler) sempre mantêm as regras de IP e de limite de taxa ativas. Reduz a superfície de ataque enquanto mantém webhooks reais funcionando."
 
 #: includes/audit/class-botblocker-audit-logger.php:414
 msgid "Signed in from a trusted device."
@@ -12802,7 +12801,7 @@ msgstr "Iniciando verificação..."
 
 #: includes/inc-botblocker-wp-abilities.php:175
 msgid "Starts a background malware scan through the BotBlocker Malware Scanner add-on."
-msgstr ""
+msgstr "Inicia plano de fundo malware examinar através do BotBlocker malware Scanner complemento."
 
 #: admin/templates/settings/ui.php:88
 #: includes/data/class-botblocker-snav.php:560
@@ -13164,7 +13163,7 @@ msgstr "Relatório Semanal do Telegram"
 
 #: addons/bbcs-feed-guard/views/settings.php:100
 msgid "Tell search engines not to index feed URLs."
-msgstr ""
+msgstr "Diga aos mecanismos de pesquisar para não índice URLs de feeds."
 
 #: admin/templates/dashboard/secret.php:38
 msgid "Temporarily disable BotBlocker checks for this session."
@@ -13502,7 +13501,7 @@ msgstr "O texto exibido no aviso de cookies. Mantenha-o conciso e informativo."
 
 #: addons/bbcs-behavior/inc/class-bbcs-behavior-settings.php:425
 msgid "The traffic activity level (as a fraction of the Core Rate Inspector's block RPM limit) where we start tracking and recording reputation. For example, at 0.10, once a visitor reaches 10% of that core limit, we begin monitoring their patterns. (Default: 0.10)"
-msgstr ""
+msgstr "O nível de atividade de tráfego (como uma fração do limite de RPM Bloco do Rate Inspector arquivos básicos) em que nós iniciar o rastreamento e registro de reputação. Por exemplo, em 0,10, quando um visitante atinge 10% desse limite arquivos básicos, começamos a monitorar seus padrões. (padrão: 0,10)"
 
 #: admin/class-botblocker-admin.php:640
 #: includes/class-botblocker-toastify.php:248
@@ -13558,8 +13557,9 @@ msgstr "Temas"
 #. translators: %s: comma-separated list of add-on names that failed to load.
 #: includes/data/class-botblocker-alerts.php:775
 #, php-format
+#, fuzzy
 msgid "These add-ons could not start and were switched off to keep the site running: %s. Your settings are kept. Please update or reinstall them."
-msgstr ""
+msgstr "Esses complementos Não foi possível iniciar e foram desativados para manter o site funcionando: %s. Suas configurações são mantidas. Por favor, atualização ou reinstale-os."
 
 #: admin/templates/settings/status.php:22
 msgid "These options require no form save - they apply immediately and are safe to experiment with."
@@ -13857,7 +13857,7 @@ msgstr "Principais IPs"
 #: includes/class-botblocker-shortcodes.php:131
 #, php-format
 msgid "Top-%d IPs"
-msgstr "Top-%d IPs"
+msgstr "Principais %d IPs"
 
 #: admin/templates/settings/connection-types.php:27
 msgid "Tor"
@@ -14170,11 +14170,11 @@ msgstr "Configuração da Autenticação de Dois Factores"
 
 #: includes/audit/class-botblocker-audit-logger.php:413
 msgid "Two-factor check failed."
-msgstr ""
+msgstr "Two-factor marcar falhou."
 
 #: includes/audit/class-botblocker-audit-logger.php:412
 msgid "Two-factor check passed via %via%."
-msgstr ""
+msgstr "Two-factor marcar aprovado via %via%."
 
 #: admin/templates/dashboard/quick-links.php:18
 msgid "Two-factor login protection"
@@ -14536,7 +14536,7 @@ msgstr "URI"
 
 #: addons/bbcs-malware/inc/class-bbcs-malware-settings-view.php:292
 msgid "URL to fetch remote regex signatures for malware detection. Endpoint must return JSON with version + signatures array. Each signature: id, severity (critical/high/medium/low), regex (valid PHP regex), score (1-100), confidence, category, description."
-msgstr "URL para coletar assinaturas de regex remotas para detecção de malware. O endpoint deve retornar JSON com versão + array de assinaturas. Cada assinatura: ID, severidade (crítica/alta/média/baixa), regex (regex PHP válida), pontuação (1-100), confiança, categoria, descrição."
+msgstr "URL para coletar assinaturas regex remotas para detecção de malware. endpoint deve retornar JSON com versão + assinaturas array. Cada assinatura: ID, severidade (critical/high/média/low), regex (PHP regex válida), pontuação (1-100), confiança, categoria, descrição."
 
 #: addons/bbcs-hide-admin/views/settings.php:98
 msgid "URL to redirect to when someone tries to access the default login URL. Only used when behavior is set to Redirect."
