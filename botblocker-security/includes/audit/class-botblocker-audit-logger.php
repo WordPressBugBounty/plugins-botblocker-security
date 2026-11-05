@@ -468,6 +468,8 @@ class BotBlockerAuditLogger {
 			// phpcs:enable WordPress.WP.I18n.UnorderedPlaceholdersText
 			BotBlockerAuditEvents::BOTBLOCKER_RULE_CHANGED   => array( 'severity' => self::SEVERITY_MEDIUM, 'object_type' => 'rule', 'message' => __( 'BotBlocker rule changed (%action%).', 'botblocker-security' ) ),
 			BotBlockerAuditEvents::BOTBLOCKER_MAINTENANCE    => array( 'severity' => self::SEVERITY_INFO, 'object_type' => 'maintenance', 'message' => __( 'BotBlocker maintenance task ran.', 'botblocker-security' ) ),
+			/* translators: %ability%: ability name; %outcome%: call outcome. */
+			BotBlockerAuditEvents::BOTBLOCKER_ABILITY_CALL  => array( 'severity' => self::SEVERITY_MEDIUM, 'object_type' => 'ability', 'message' => __( 'BotBlocker ability %ability%: %outcome%.', 'botblocker-security' ) ),
 			/* translators: %count%: number of changed settings. */
 			BotBlockerAuditEvents::BOTBLOCKER_SETTINGS_CHANGED => array( 'severity' => self::SEVERITY_INFO, 'object_type' => 'settings', 'message' => __( 'BotBlocker settings changed (%count%).', 'botblocker-security' ) ),
 			/* translators: %from%: previous protection state; %to%: new protection state. */

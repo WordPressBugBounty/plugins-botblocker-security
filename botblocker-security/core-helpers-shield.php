@@ -34,6 +34,7 @@ require_once BOTBLOCKER_DIR . 'includes/ip/class-botblocker-ip.php';
 require_once BOTBLOCKER_DIR . 'includes/botblocker/class-botblocker-ban-target-resolver.php';
 require_once BOTBLOCKER_DIR . 'includes/pro/class-botblocker-pro.php';
 require_once BOTBLOCKER_DIR . 'includes/pro/class-botblocker-cloud-bb.php';
+require_once BOTBLOCKER_DIR . 'includes/class-botblocker-license-push.php';
 require_once BOTBLOCKER_DIR . 'includes/database/class-botblocker-asn-db.php';
 require_once BOTBLOCKER_DIR . 'includes/cache/class-botblocker-cache.php';
 require_once BOTBLOCKER_DIR . 'includes/class-botblocker-addons.php';
@@ -42,3 +43,24 @@ require_once BOTBLOCKER_DIR . 'includes/database/class-botblocker-db.php';
 require_once BOTBLOCKER_DIR . 'includes/database/class-botblocker-store.php';
 require_once BOTBLOCKER_DIR . 'includes/cache/class-botblocker-file-renderer.php';
 require_once BOTBLOCKER_DIR . 'includes/data/class-botblocker-data-time.php';
+
+add_filter( 'the_content', 'bbcs_register_content_shortcodes_lazily', 9 );
+function bbcs_register_content_shortcodes_lazily( $content ) {
+	static $registered = false;
+
+	if ( $registered || ! is_string( $content ) ) {
+		return $content;
+	}
+	if ( strpos( $content, '[bbcs_' ) === false && strpos( $content, '[botblocker_' ) === false ) {
+		return $content;
+	}
+
+	$registered = true;
+	require_once BOTBLOCKER_DIR . 'includes/data/class-botblocker-stats.php';
+	require_once BOTBLOCKER_DIR . 'includes/data/class-botblocker-lang-options.php';
+	require_once BOTBLOCKER_DIR . 'includes/components/component-loader.php';
+	require_once BOTBLOCKER_DIR . 'includes/class-botblocker-shortcodes.php';
+	BotBlockerShortcodes::register();
+
+	return $content;
+}

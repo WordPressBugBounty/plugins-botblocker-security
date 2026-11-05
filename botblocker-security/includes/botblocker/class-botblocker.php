@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * This class is responsible for all the operations against bots.
  * It handles detections, logging, and blocking of suspicious bot activities.
  *
- * @version    1.7.7
+ * @version    1.7.8
  * @author     BotBlocker Team
  * @package    Botblocker
  * @subpackage Botblocker/includes
@@ -304,9 +304,7 @@ class BotBlocker extends BotBlockerBase {
 		 */
         /* phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_print_r */
 		$BBCS = $this->get_bot_blocker_hive();
-		echo '<small><pre>';
-		print_r( $BBCS );
-		echo '</pre></small>';
+		echo '<small><pre>' . esc_html( print_r( $BBCS, true ) ) . '</pre></small>';
         /* phpcs:enable WordPress.PHP.DevelopmentFunctions.error_log_print_r */
 	}
 

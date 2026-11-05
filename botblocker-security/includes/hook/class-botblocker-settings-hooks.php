@@ -86,6 +86,19 @@ class BotBlockerSettingsHooks {
 			'bbcs_ability_unblock_ip',
 			'bbcs_ability_run_malware_scan',
 			'bbcs_ability_get_scan_results',
+			'bbcs_ability_set_protection',
+			'bbcs_ability_set_secure_mode',
+			'bbcs_ability_set_captcha_mode',
+			'bbcs_ability_get_captcha_state',
+			'bbcs_ability_list_ip_rules',
+			'bbcs_ability_get_blocked_ips',
+			'bbcs_ability_get_recent_events',
+			'bbcs_ability_get_settings',
+			'bbcs_ability_run_self_test',
+			'bbcs_ability_upsert_ip_rule',
+			'bbcs_ability_delete_ip_rule',
+			'bbcs_ability_check_ips',
+			'bbcs_ability_clear_cache',
 		);
 
 		foreach ( $checkbox_fields as $field ) {

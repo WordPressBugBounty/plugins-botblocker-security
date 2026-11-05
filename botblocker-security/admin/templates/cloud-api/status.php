@@ -122,11 +122,13 @@ return static function ( Botblocker_CloudApiViewModel $data ): void {
 			<?php else : ?>
 			<div class="bbcs-row bbcs-g-2">
 				<a id="bbcs_cloud_api_account_link" class="bbcs-btn" href="<?php echo esc_url( $data->account_url ); ?>" target="_blank" rel="noopener noreferrer"><svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-key"></use></svg><?php esc_html_e( 'Already have a license? Get your key', 'botblocker-security' ); ?></a>
+				<button type="button" id="bbcs_request_license_push_btn" class="bbcs-btn"><svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-cloud-download"></use></svg><?php esc_html_e( 'Load license from cloud', 'botblocker-security' ); ?></button>
 			</div>
 			<?php endif; ?>
 
 			<?php wp_nonce_field( 'bbcs_connect_cloud_api_action', 'bbcs_connect_cloud_api_nonce' ); ?>
 			<?php wp_nonce_field( 'bbcs_deactivate_cloud_api_action', 'bbcs_deactivate_cloud_api_nonce' ); ?>
+			<?php wp_nonce_field( 'bbcs_request_license_push_action', 'bbcs_request_license_push_nonce' ); ?>
 		</div>
 
 		<?php if ( ! $data->is_cloud_api_active ) : ?>

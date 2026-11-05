@@ -21,6 +21,12 @@ class BotBlockerTwoFactorAuth {
 	const VERIFIED_VIA_TOTP        = 'totp';
 	const VERIFIED_VIA_BACKUP_CODE = 'backup_code';
 
+	const SESSION_PASSED_KEY = 'bbcs_2fa_passed';
+
+	const STATE_NONE   = 'none';
+	const STATE_SETUP  = 'setup';
+	const STATE_VERIFY = 'verify';
+
 	/** @var BotBlockerTwoFactorAuth|null */
 	private static $instance = null;
 
@@ -158,7 +164,6 @@ class BotBlockerTwoFactorAuth {
 					return site_url( '/?bbcs_2fa_setup=1' );
 				}
 
-				update_user_meta( $user_id, '_2fa_pending', 1 );
 				$saved_redirect = ! empty( $redirect_to ) ? $redirect_to : admin_url();
 				update_user_meta( $user_id, '_2fa_redirect_to', $saved_redirect );
 				return site_url( '/?bbcs_2fa=1' );
@@ -188,7 +193,7 @@ class BotBlockerTwoFactorAuth {
 				}
 
 				$state = self::getPendingState( $user_id );
-				if ( 'none' === $state ) {
+				if ( self::STATE_NONE === $state ) {
 					return;
 				}
 
@@ -202,11 +207,11 @@ class BotBlockerTwoFactorAuth {
 				return;
 			}
 
-			if ( get_query_var( 'bbcs_2fa_setup' ) && 'setup' === $state ) {
+			if ( get_query_var( 'bbcs_2fa_setup' ) && self::STATE_SETUP === $state ) {
 				return;
 			}
 
-				$bbcs_2fa_url = home_url( 'setup' === $state ? '/?bbcs_2fa_setup=1' : '/?bbcs_2fa=1' );
+				$bbcs_2fa_url = home_url( self::STATE_SETUP === $state ? '/?bbcs_2fa_setup=1' : '/?bbcs_2fa=1' );
 
 				if ( wp_doing_ajax() ) {
 					if ( self::isAllowed2faAjaxAction( $action ) ) {
@@ -504,40 +509,112 @@ class BotBlockerTwoFactorAuth {
 		}
 
 		$user = get_userdata( $user_id );
-		if ( ! $user || empty( $user->roles ) ) {
+		if ( ! $user ) {
 			return false;
 		}
 
-		foreach ( $user->roles as $role ) {
+		$bbcs_roles = is_array( $user->roles ) ? $user->roles : array();
+
+		foreach ( $bbcs_roles as $role ) {
 			if ( ! empty( $bbcs_saved_settings['bbcs_2fa_roles'][ $role ] ) ) {
 				return true;
 			}
+		}
+
+		if ( is_multisite() && is_super_admin( $user_id ) && ! empty( $bbcs_saved_settings['bbcs_2fa_roles']['administrator'] ) ) {
+			return true;
 		}
 
 		return false;
 	}
 
 	/**
-	 * Pending challenge state of a logged-in session: 'setup' (no secret
-	 * yet), 'verify' (TOTP not entered) or 'none'. Non-2FA roles are never
-	 * pending.
+	 * Pending challenge state of the current session: STATE_SETUP (no
+	 * secret yet), STATE_VERIFY (secret set, this session has not passed
+	 * 2FA) or STATE_NONE. A session that passed 2FA is bound to the current
+	 * secret, so resetting the secret invalidates every old session
+	 * automatically.
 	 */
 	public static function getPendingState( int $user_id ): string {
 		if ( ! self::isRequiredForUser( $user_id ) ) {
-			return 'none';
+			return self::STATE_NONE;
+		}
+
+		if ( self::isSessionPassed( $user_id ) ) {
+			return self::STATE_NONE;
 		}
 
 		$secret = get_user_meta( $user_id, '_2fa_secret', true );
-
-		if ( empty( $secret ) && get_user_meta( $user_id, '_2fa_setup_pending', true ) ) {
-			return 'setup';
+		if ( empty( $secret ) ) {
+			return self::STATE_SETUP;
 		}
 
-		if ( get_user_meta( $user_id, '_2fa_pending', true ) ) {
-			return 'verify';
+		if ( self::isDeviceTrusted( $user_id ) ) {
+			self::markSessionPassed( $user_id );
+			return self::STATE_NONE;
 		}
 
-		return 'none';
+		return self::STATE_VERIFY;
+	}
+
+	public static function isSessionPassed( int $user_id ): bool {
+		if ( $user_id <= 0 || get_current_user_id() !== $user_id ) {
+			return false;
+		}
+
+		$marker = self::sessionMarker( $user_id );
+		if ( '' === $marker ) {
+			return false;
+		}
+
+		$token = wp_get_session_token();
+		if ( '' === $token ) {
+			return false;
+		}
+
+		$manager = WP_Session_Tokens::get_instance( $user_id );
+		$session = $manager->get( $token );
+		if ( ! is_array( $session ) ) {
+			return false;
+		}
+
+		return isset( $session[ self::SESSION_PASSED_KEY ] ) && $session[ self::SESSION_PASSED_KEY ] === $marker;
+	}
+
+	public static function markSessionPassed( int $user_id ): bool {
+		if ( $user_id <= 0 ) {
+			return false;
+		}
+
+		$marker = self::sessionMarker( $user_id );
+		if ( '' === $marker ) {
+			return false;
+		}
+
+		$token = wp_get_session_token();
+		if ( '' === $token ) {
+			return false;
+		}
+
+		$manager = WP_Session_Tokens::get_instance( $user_id );
+		$session = $manager->get( $token );
+		if ( ! is_array( $session ) ) {
+			return false;
+		}
+
+		$session[ self::SESSION_PASSED_KEY ] = $marker;
+		$manager->update( $token, $session );
+
+		return true;
+	}
+
+	private static function sessionMarker( int $user_id ): string {
+		$secret = get_user_meta( $user_id, '_2fa_secret', true );
+		if ( empty( $secret ) || ! is_string( $secret ) ) {
+			return '';
+		}
+
+		return hash( 'sha256', $secret );
 	}
 
 	/**
@@ -571,7 +648,7 @@ class BotBlockerTwoFactorAuth {
 			return $result;
 		}
 
-		if ( 'none' !== self::getPendingState( $user_id ) ) {
+		if ( self::STATE_NONE !== self::getPendingState( $user_id ) ) {
 			return new WP_Error(
 				'bbcs_2fa_pending',
 				__( 'Two-factor authentication is required.', 'botblocker-security' ),
@@ -601,11 +678,12 @@ class BotBlockerTwoFactorAuth {
 		}
 
 		global $wpdb;
-		$claim = 'bbcs_2fa_bc_' . $user_id . '_' . md5( $normalized );
+		$claim              = 'bbcs_2fa_bc_' . $user_id . '_' . md5( $normalized );
+		$bbcs_options_table = is_multisite() ? $wpdb->base_prefix . 'options' : $wpdb->options;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->query(
 			$wpdb->prepare(
-				"INSERT IGNORE INTO {$wpdb->options} (option_name, option_value, autoload) VALUES (%s, %s, 'no')",
+				"INSERT IGNORE INTO {$bbcs_options_table} (option_name, option_value, autoload) VALUES (%s, %s, 'no')",
 				$claim,
 				'1'
 			)
@@ -739,7 +817,6 @@ class BotBlockerTwoFactorAuth {
 		delete_user_meta( $user_id, '_2fa_backup_codes' );
 		delete_user_meta( $user_id, '_2fa_secret_temp' );
 		delete_user_meta( $user_id, '_2fa_backup_codes_temp' );
-		delete_user_meta( $user_id, '_2fa_pending' );
 		delete_user_meta( $user_id, '_2fa_setup_pending' );
 		delete_user_meta( $user_id, '_2fa_redirect_to' );
 		delete_user_meta( $user_id, '_2fa_verified' );
@@ -747,10 +824,11 @@ class BotBlockerTwoFactorAuth {
 		delete_user_meta( $user_id, '_2fa_recovery_token' );
 		delete_transient( 'bbcs_2fa_attempts_' . $user_id );
 		global $wpdb;
+		$bbcs_options_table = is_multisite() ? $wpdb->base_prefix . 'options' : $wpdb->options;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->query(
 			$wpdb->prepare(
-				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
+				"DELETE FROM {$bbcs_options_table} WHERE option_name LIKE %s",
 				$wpdb->esc_like( 'bbcs_2fa_bc_' . $user_id . '_' ) . '%'
 			)
 		);
@@ -795,7 +873,7 @@ class BotBlockerTwoFactorAuth {
 			return false;
 		}
 
-		if ( ! get_user_meta( $user_id, '_2fa_pending', true ) ) {
+		if ( self::isSessionPassed( $user_id ) ) {
 			return false;
 		}
 
@@ -879,7 +957,7 @@ class BotBlockerTwoFactorAuth {
 			return false;
 		}
 
-		if ( ! get_user_meta( $user_id, '_2fa_pending', true ) ) {
+		if ( self::isSessionPassed( $user_id ) ) {
 			return false;
 		}
 
@@ -1133,7 +1211,7 @@ class BotBlockerTwoFactorAuth {
 			);
 		}
 
-		if ( 'setup' !== self::getPendingState( $user_id ) ) {
+		if ( self::STATE_SETUP !== self::getPendingState( $user_id ) ) {
 			wp_send_json_error(
 				array(
 					'message' => __( 'Two-factor authentication is required.', 'botblocker-security' ),
@@ -1165,11 +1243,11 @@ class BotBlockerTwoFactorAuth {
 		update_user_meta( $user_id, '_2fa_secret', $secret );
 		update_user_meta( $user_id, '_2fa_backup_codes', $hashed_backup_codes );
 		update_user_meta( $user_id, '_2fa_verified', 1 ); // Added: verification flag
+		self::markSessionPassed( $user_id );
 
 		delete_user_meta( $user_id, '_2fa_secret_temp' );
 		delete_user_meta( $user_id, '_2fa_backup_codes_temp' );
 		delete_user_meta( $user_id, '_2fa_setup_pending' );
-		delete_user_meta( $user_id, '_2fa_pending' );
 		delete_user_meta( $user_id, '_2fa_redirect_to' );
 		self::resetRateLimit( $user_id );
 
@@ -1200,7 +1278,7 @@ class BotBlockerTwoFactorAuth {
 			wp_send_json_error( __( '2FA service unavailable', 'botblocker-security' ) );
 		}
 
-		if ( 'none' !== self::getPendingState( $user_id ) || ! current_user_can( BotBlockerMultisite::canManage() ) ) {
+		if ( self::STATE_NONE !== self::getPendingState( $user_id ) || ! current_user_can( BotBlockerMultisite::canManage() ) ) {
 			wp_send_json_error(
 				array(
 					'message' => __( 'Not allowed.', 'botblocker-security' ),

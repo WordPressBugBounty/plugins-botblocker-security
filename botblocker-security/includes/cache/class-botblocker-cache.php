@@ -647,9 +647,16 @@ class BotBlockerCache {
 		}
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename
 		if ( ! @rename( $tmp, $file ) ) {
+			// Windows can refuse a rename over an existing destination while another
+			// process briefly holds it. Remove the stale file and retry once.
 			// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
-			@unlink( $tmp );
-			return self::transientFallbackSet( $key, $data, $ttl );
+			@unlink( $file );
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename
+			if ( ! @rename( $tmp, $file ) ) {
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+				@unlink( $tmp );
+				return self::transientFallbackSet( $key, $data, $ttl );
+			}
 		}
 		delete_transient( $key );
 		return true;

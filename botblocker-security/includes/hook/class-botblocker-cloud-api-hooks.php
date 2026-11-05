@@ -10,6 +10,8 @@ class BotBlockerCloudApiHooks {
 	const RETRY_HOOK  = 'bbcs_retry_connect';
 	const RETRY_DELAY = 3600;
 	const FIRM_REFUSAL_CODES = array( 400, 403, 404, 409 );
+	const PUSH_NONCE_TTL = 300;
+	const PUSH_TIMEOUT   = 20;
 
 	public static function connectApi(): void {
 		check_ajax_referer( 'bbcs_connect_cloud_api_action', 'nonce' );
@@ -29,6 +31,65 @@ class BotBlockerCloudApiHooks {
 		}
 
 		wp_send_json_success( array( 'message' => __( 'Cloud API key connected and validated.', 'botblocker-security' ) ) );
+	}
+
+	public static function requestLicensePush(): void {
+		check_ajax_referer( 'bbcs_request_license_push_action', 'nonce' );
+		if ( ! current_user_can( BotBlockerMultisite::canManage() ) ) {
+			wp_send_json_error( array( 'message' => __( 'Unauthorized.', 'botblocker-security' ) ) ); }
+
+		$push_nonce = wp_generate_password( 32, false );
+		set_transient( BotBlockerCloudBb::PUSH_NONCE_TRANSIENT, $push_nonce, self::PUSH_NONCE_TTL );
+
+		$cloud = BotBlockerBackend::sendToCloud( array( 'push_nonce' => $push_nonce ), 'request_license_push', self::PUSH_TIMEOUT );
+		delete_transient( BotBlockerCloudBb::PUSH_NONCE_TRANSIENT );
+		if ( ! is_array( $cloud ) ) {
+			wp_send_json_error(
+				array(
+					'push'      => BotBlockerLicensePush::UNREACHABLE,
+					'http_code' => 0,
+					'reason'    => BotBlockerLicensePush::CLOUD_UNREACHABLE,
+					'message'   => __( 'Could not reach the license server. Try again later.', 'botblocker-security' ),
+				)
+			);
+		}
+
+		$push      = isset( $cloud['push'] ) ? sanitize_key( (string) $cloud['push'] ) : '';
+		$http_code = isset( $cloud['http_code'] ) ? (int) $cloud['http_code'] : 0;
+		$reason    = isset( $cloud['reason'] ) ? sanitize_key( (string) $cloud['reason'] ) : '';
+		$data      = array(
+			'push'      => $push,
+			'http_code' => $http_code,
+			'reason'    => $reason,
+		);
+
+		if ( BotBlockerLicensePush::CONNECTED === $push ) {
+			wp_send_json_success( $data );
+		}
+
+		switch ( $push ) {
+			case BotBlockerLicensePush::BLOCKED:
+				$message = __( 'Your firewall or security service blocked the cloud. Allow requests to /botblocker_cloud_api or paste the key manually.', 'botblocker-security' );
+				break;
+			case BotBlockerLicensePush::UNAVAILABLE:
+				$message = __( 'Your site is temporarily unavailable. Try again later or paste the key manually.', 'botblocker-security' );
+				break;
+			case BotBlockerLicensePush::NO_LICENSE:
+				$message = __( 'No active license found for this domain.', 'botblocker-security' );
+				break;
+			case BotBlockerLicensePush::REJECTED:
+				$message = __( 'Your site rejected the cloud request. Check the BotBlocker settings and try again.', 'botblocker-security' );
+				break;
+			case BotBlockerLicensePush::RATE_LIMITED:
+				$message = __( 'Please wait a minute before trying again.', 'botblocker-security' );
+				break;
+			default:
+				$message = __( 'Cloud could not reach your site (may be host limits). Paste the key manually.', 'botblocker-security' );
+				break;
+		}
+
+		$data['message'] = $message;
+		wp_send_json_error( $data );
 	}
 
 	public static function connectKey( string $key, int $license_id ): ?string {
@@ -248,6 +309,7 @@ class BotBlockerCloudApiHooks {
 }
 
 add_action( 'wp_ajax_bbcs_connect_cloud_api', array( 'BotBlockerCloudApiHooks', 'connectApi' ) );
+add_action( 'wp_ajax_bbcs_request_license_push', array( 'BotBlockerCloudApiHooks', 'requestLicensePush' ) );
 add_action( 'wp_ajax_bbcs_refresh_cloud_api', array( 'BotBlockerCloudApiHooks', 'refreshApi' ) );
 add_action( 'wp_ajax_bbcs_deactivate_cloud_api', array( 'BotBlockerCloudApiHooks', 'deactivateApi' ) );
 add_action( BotBlockerCloudApiHooks::RETRY_HOOK, array( 'BotBlockerCloudApiHooks', 'retryConnect' ), 10, 2 );

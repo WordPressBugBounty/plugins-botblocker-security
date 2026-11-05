@@ -31,6 +31,30 @@
         });
     });
  
+    jQuery(document).on('click', '#bbcs_request_license_push_btn', function (e) {
+        e.preventDefault();
+        var $btn = $(this);
+        if ($btn.prop('disabled')) return;
+        $btn.prop('disabled', true).addClass('is-busy');
+        var nonce = $('[name="bbcs_request_license_push_nonce"]').val();
+        $.post(ajaxurl, {
+            action: 'bbcs_request_license_push',
+            nonce: nonce
+        }, function (response) {
+            if (response && response.success) {
+                location.reload();
+                return;
+            }
+            var data = (response && response.data) || {};
+            var message = data.message || bbcsCloudApiL10n.push_failed;
+            bbcsToast('error', message);
+            $btn.prop('disabled', false).removeClass('is-busy');
+        }).fail(function (xhr, status, error) {
+            bbcsToast('error', bbcsCloudApiL10n.ajax_error + error);
+            $btn.prop('disabled', false).removeClass('is-busy');
+        });
+    });
+
     jQuery(document).ready(function ($) {
         $('#bbcs_toggle_cloud_api_btn').on('click', function (e) {
             e.preventDefault();

@@ -4,7 +4,7 @@ Tags: security, firewall, anti-spam, captcha, brute force
 Requires at least: 5.9
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.7.7
+Stable tag: 1.7.8
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -326,6 +326,14 @@ New to website security? The words BotBlocker uses, in plain language, are in th
 14. Settings panel with security presets, CAPTCHA, integrations (reCAPTCHA, Redis, Memcached), and detailed options
 
 == Changelog ==
+
+= 1.7.8 =
+Add WordPress Abilities for protection, secure and CAPTCHA modes, IP rules, blocked IPs, recent events, settings, self-test and cache clearing, each with its own toggle, off by default
+Load the license from the Cloud with live status
+Track 2FA verification per session and enforce it on every site of a multisite network
+Fix file cache writes on Windows when the cache file is briefly locked
+Load shortcode code only on pages that use BotBlocker shortcodes
+Escape debug output
 
 = 1.7.7 =
 Enable Freemius licensing by default, with PRO checkout on the PRO page and an already-have-a-license link

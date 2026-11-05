@@ -194,11 +194,11 @@ return static function (Botblocker_SetupGuideViewModel $data, string $mode): voi
 								<?php endif; ?>
 							</span>
 							<?php if ( $settings_link ) : ?>
-								<a href="<?php echo esc_url( $settings_link ); ?>" class="bbcs-dim bbcs-pointer bbcs-d-flex bbcs-ml-auto" title="<?php esc_attr_e( 'Settings', 'botblocker-security' ); ?>">
+								<a href="<?php echo esc_url( $settings_link ); ?>" class="bbcs-dim bbcs-pointer bbcs-d-flex bbcs-ml-auto" title="<?php esc_attr_e( 'Settings', 'botblocker-security' ); ?>" aria-label="<?php esc_attr_e( 'Settings', 'botblocker-security' ); ?>">
 									<svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-gear"></use></svg>
 								</a>
 							<?php else : ?>
-								<a href="<?php echo esc_url( $data->addons_url ); ?>" class="bbcs-dim bbcs-d-flex bbcs-ml-auto">
+								<a href="<?php echo esc_url( $data->addons_url ); ?>" class="bbcs-dim bbcs-d-flex bbcs-ml-auto" aria-label="<?php esc_attr_e( 'Open add-ons', 'botblocker-security' ); ?>">
 									<svg class="bbcs-ico bbcs-ico--sm"><use href="#bbcs-i-arrowR"></use></svg>
 								</a>
 							<?php endif; ?>

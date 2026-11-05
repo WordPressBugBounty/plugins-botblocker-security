@@ -162,7 +162,7 @@ class Botblocker_Admin {
 			wp_enqueue_script( BOTBLOCKER_SHORT_NAME . '-dash-js', plugin_dir_url( __FILE__ ) . 'js/bbcs-js/bbcs-dashboard.js', array( 'jquery', BOTBLOCKER_SHORT_NAME . '-multipage-js', BOTBLOCKER_SHORT_NAME . '-toast-js' ), BOTBLOCKER_VERSION, true );
 			wp_localize_script( BOTBLOCKER_SHORT_NAME . '-dash-js', 'bbcsDashL10n', array(
 				'error_prefix'        => __( 'Error: ', 'botblocker-security' ),
-				'ajax_error'          => __( 'AJAX Error: ', 'botblocker-security' ),
+				'ajax_error'     => __( 'AJAX Error: ', 'botblocker-security' ),
 				'regenerate_confirm'  => __( 'Regenerate security action links? Old links will stop working immediately.', 'botblocker-security' ),
 			) );
 		}
@@ -550,6 +550,7 @@ class Botblocker_Admin {
 				'refreshed'      => __( 'BotBlocker PRO information refreshed successfully!', 'botblocker-security' ),
 				'failed_refresh' => __( 'Failed to refresh BotBlocker PRO information.', 'botblocker-security' ),
 				'ajax_error'     => __( 'AJAX Error: ', 'botblocker-security' ),
+				'push_failed'    => __( 'Could not load the license from the cloud. Try again later.', 'botblocker-security' ),
 			) );
 		}
 
@@ -589,7 +590,7 @@ class Botblocker_Admin {
 			wp_localize_script( BOTBLOCKER_SHORT_NAME . '-maintenance-js', 'bbcsMaintenanceL10n', array(
 				'db_reinstalled'          => __( 'Database reinstalled successfully!', 'botblocker-security' ),
 				'failed_reinstall'        => __( 'Failed to reinstall database: ', 'botblocker-security' ),
-				'ajax_error'              => __( 'AJAX Error: ', 'botblocker-security' ),
+				'ajax_error'     => __( 'AJAX Error: ', 'botblocker-security' ),
 				'failed_backup'           => __( 'Failed backup: ', 'botblocker-security' ),
 				'import_success'          => __( 'Import data and settings was successful!', 'botblocker-security' ),
 				'failed_import'           => __( 'Failed import: ', 'botblocker-security' ),
@@ -620,6 +621,7 @@ class Botblocker_Admin {
 				'refreshed'      => __( 'BotBlocker PRO information refreshed successfully!', 'botblocker-security' ),
 				'failed_refresh' => __( 'Failed to refresh BotBlocker PRO information.', 'botblocker-security' ),
 				'ajax_error'     => __( 'AJAX Error: ', 'botblocker-security' ),
+				'push_failed'    => __( 'Could not load the license from the cloud. Try again later.', 'botblocker-security' ),
 			) );
 		}
 

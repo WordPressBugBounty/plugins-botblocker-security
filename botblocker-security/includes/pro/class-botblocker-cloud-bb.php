@@ -7,7 +7,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class BotBlockerCloudBb {
 
-	const DOORBELL_COOLDOWN = 360;
+	const DOORBELL_COOLDOWN    = 360;
+	const PUSH_NONCE_TRANSIENT = 'bbcs_license_push_nonce';
+
+	private static function consumePushNonce(): void {
+		$posted  = isset( $_POST['push_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['push_nonce'] ) ) : '';
+		$pending = get_transient( self::PUSH_NONCE_TRANSIENT );
+		if ( '' === $posted || ! is_string( $pending ) || ! hash_equals( $pending, $posted ) ) {
+			wp_send_json_error( 'Unauthorized: push nonce mismatch.', 403 );
+			return;
+		}
+		delete_transient( self::PUSH_NONCE_TRANSIENT );
+	}
 
 	public static function registerRewriteRules(): void {
 		add_rewrite_tag( '%botblocker_cloud_api%', '([01])' );
@@ -52,6 +63,10 @@ class BotBlockerCloudBb {
 					/* phpcs:enable WordPress.PHP.DevelopmentFunctions.error_log_error_log */
 					/* phpcs:disable WordPress.Security.NonceVerification.Missing */
 					// External API endpoint from trusted server. Nonce not applicable.
+					$bbcs_push = isset( $_POST['push_nonce'] );
+					if ( $bbcs_push ) {
+						self::consumePushNonce();
+					}
 					$stored     = BotBlockerPro::getSettings();
 					$stored_key = isset( $stored['cloud_api_key'] ) ? (string) $stored['cloud_api_key'] : '';
 					$api_key    = $stored_key;
@@ -63,7 +78,7 @@ class BotBlockerCloudBb {
 						return;
 					}
 					$is_stored_key = $stored_key !== '' && hash_equals( $stored_key, $api_key );
-					if ( ! $is_stored_key || ! isset( $_POST['cloud_api_key'] ) ) {
+					if ( ! $bbcs_push && ( ! $is_stored_key || ! isset( $_POST['cloud_api_key'] ) ) ) {
 						// Anyone can ring without the stored key, so those rings are throttled; the owner's push never is.
 						if ( get_transient( 'bbcs_cloud_doorbell_cooldown' ) ) {
 							wp_send_json_error( 'Too many requests.', 429 );

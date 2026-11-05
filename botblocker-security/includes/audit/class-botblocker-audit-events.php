@@ -62,6 +62,7 @@ class BotBlockerAuditEvents {
 	public const BOTBLOCKER_ADDON_LIFECYCLE = 'botblocker.addon.lifecycle';
 	public const BOTBLOCKER_RULE_CHANGED    = 'botblocker.rule.changed';
 	public const BOTBLOCKER_MAINTENANCE     = 'botblocker.maintenance';
+	public const BOTBLOCKER_ABILITY_CALL    = 'botblocker.ability.call';
 
 	public const BOTBLOCKER_PROTECTION      = 'botblocker.protection.toggled';
 	public const BOTBLOCKER_SETTINGS_CHANGED = 'botblocker.settings.changed';

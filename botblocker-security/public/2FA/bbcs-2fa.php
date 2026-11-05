@@ -37,6 +37,22 @@ add_action(
 			exit;
 		}
 
+		$bbcs_2fa_state = BotBlockerTwoFactorAuth::getPendingState( $user_id );
+		if ( BotBlockerTwoFactorAuth::STATE_NONE === $bbcs_2fa_state && ! isset( $_GET['bbcs_2fa_reset'] ) ) {
+			$bbcs_saved_redirect = get_user_meta( $user_id, '_2fa_redirect_to', true );
+			delete_user_meta( $user_id, '_2fa_redirect_to' );
+			if ( empty( $bbcs_saved_redirect ) ) {
+				$bbcs_saved_redirect = admin_url();
+			}
+			wp_safe_redirect( $bbcs_saved_redirect );
+			exit;
+		}
+
+		if ( BotBlockerTwoFactorAuth::STATE_SETUP === $bbcs_2fa_state ) {
+			wp_safe_redirect( home_url( '/?bbcs_2fa_setup=1' ) );
+			exit;
+		}
+
 		$auth          = BotBlockerTwoFactorAuth::instance();
 		$user          = wp_get_current_user();
 		$error         = '';
@@ -111,7 +127,7 @@ add_action(
 				}
 
 				if ( $code_verified ) {
-					delete_user_meta( $user_id, '_2fa_pending' );
+					BotBlockerTwoFactorAuth::markSessionPassed( $user_id );
 					BotBlockerTwoFactorAuth::resetRateLimit( $user_id );
 
 					do_action( 'bbcs_2fa_verified', $user_id, $verified_via );
@@ -120,8 +136,8 @@ add_action(
 						BotBlockerTwoFactorAuth::setTrustedDevice( $user_id );
 					}
 
-					// Session cookie regeneration
-					wp_set_auth_cookie( $user_id, true );
+					// Refresh the cookie for the same session token.
+					wp_set_auth_cookie( $user_id, true, '', wp_get_session_token() );
 
 					// Redirect to the saved URL
 					$redirect_to = get_user_meta( $user_id, '_2fa_redirect_to', true );
@@ -138,7 +154,7 @@ add_action(
 		}
 
 		// Handle user-initiated 2FA reset (fully authenticated sessions only).
-		if ( isset( $_GET['bbcs_2fa_reset'] ) && 'none' === BotBlockerTwoFactorAuth::getPendingState( $user_id ) ) {
+		if ( isset( $_GET['bbcs_2fa_reset'] ) && BotBlockerTwoFactorAuth::STATE_NONE === BotBlockerTwoFactorAuth::getPendingState( $user_id ) ) {
 
 			if (
 			! isset( $_GET['_wpnonce'] ) ||
@@ -151,7 +167,6 @@ add_action(
 			delete_user_meta( $user_id, '_2fa_secret' );
 			delete_user_meta( $user_id, '_2fa_backup_codes' );
 			delete_user_meta( $user_id, '_2fa_verified' );
-			delete_user_meta( $user_id, '_2fa_pending' );
 			delete_user_meta( $user_id, '_2fa_redirect_to' );
 
 			delete_user_meta( $user_id, '_2fa_secret_temp' );

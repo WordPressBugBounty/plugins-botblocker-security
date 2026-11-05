@@ -51,7 +51,7 @@ class BotBlockerBackend {
 	 * every backend answered but rejected), or false when no backend could
 	 * be reached at all.
 	 */
-	public static function sendToCloud( array $data, string $endpoint = '' ) {
+	public static function sendToCloud( array $data, string $endpoint = '', int $timeout_override = 0 ) {
 		$urls = self::urls();
 		if ( $urls === array() ) {
 			return false;
@@ -86,7 +86,7 @@ class BotBlockerBackend {
 		}
 		$last = false;
 		foreach ( $ordered as $url ) {
-			$result = BotBlockerWpRequest::send_to_cloud( $data, $url, $endpoint );
+			$result = BotBlockerWpRequest::send_to_cloud( $data, $url, $endpoint, $timeout_override );
 			if ( is_array( $result ) ) {
 				$last = $result;
 				if ( ! isset( $result['error'] ) ) {

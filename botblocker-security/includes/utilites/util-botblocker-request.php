@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class BotBlockerWpRequest {
 
-	public static function send_to_cloud( array $data, string $url, string $endpoint = '' ) {
+	public static function send_to_cloud( array $data, string $url, string $endpoint = '', int $timeout_override = 0 ) {
 		$base = untrailingslashit( $url );
 		$path = 'botblocker';
 		if ( ! empty( $endpoint ) ) {
@@ -21,6 +21,9 @@ class BotBlockerWpRequest {
 			if ( isset( $inst->settings->cloud_api_timeout ) ) {
 				$timeout = max( 1, min( 30, (int) $inst->settings->cloud_api_timeout ) );
 			}
+		}
+		if ( $timeout_override > 0 ) {
+			$timeout = max( 1, min( 30, $timeout_override ) );
 		}
 
 		$args = array(

@@ -37,6 +37,19 @@ class BotBlockerSettings
 	public $bbcs_ability_unblock_ip      = 0;
 	public $bbcs_ability_run_malware_scan = 0;
 	public $bbcs_ability_get_scan_results = 0;
+	public $bbcs_ability_set_protection = 0;
+	public $bbcs_ability_set_secure_mode = 0;
+	public $bbcs_ability_set_captcha_mode = 0;
+	public $bbcs_ability_get_captcha_state = 0;
+	public $bbcs_ability_list_ip_rules = 0;
+	public $bbcs_ability_get_blocked_ips = 0;
+	public $bbcs_ability_get_recent_events = 0;
+	public $bbcs_ability_get_settings = 0;
+	public $bbcs_ability_run_self_test = 0;
+	public $bbcs_ability_upsert_ip_rule = 0;
+	public $bbcs_ability_delete_ip_rule = 0;
+	public $bbcs_ability_check_ips = 0;
+	public $bbcs_ability_clear_cache = 0;
 	public $bbcs_ddos_resilience    = 0;
 
 	public $block_adblocker_users      = 1;

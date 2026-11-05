@@ -49,10 +49,14 @@ return static function (Botblocker_IntegrationsViewModel $data, bool $isActive):
 					<a id="bbcs_cloud_api_account_link" class="bbcs-btn" href="<?php echo esc_url( $data->account_url ); ?>" target="_blank" rel="noopener noreferrer">
 						<?php esc_html_e( 'Already have a license? Get your key', 'botblocker-security' ); ?>
 					</a>
+					<button type="button" id="bbcs_request_license_push_btn" class="bbcs-btn">
+						<?php esc_html_e( 'Load license from cloud', 'botblocker-security' ); ?>
+					</button>
 					<?php endif; ?>
 				</div>
 				<?php wp_nonce_field( 'bbcs_connect_cloud_api_action', 'bbcs_connect_cloud_api_nonce' ); ?>
 				<?php wp_nonce_field( 'bbcs_deactivate_cloud_api_action', 'bbcs_deactivate_cloud_api_nonce' ); ?>
+				<?php wp_nonce_field( 'bbcs_request_license_push_action', 'bbcs_request_license_push_nonce' ); ?>
 			</div>
 
 			<?php if ( $data->is_cloud_api_active ) : ?>

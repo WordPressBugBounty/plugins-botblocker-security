@@ -31,7 +31,13 @@ add_action(
 			exit;
 		}
 
-		if ( 'setup' !== BotBlockerTwoFactorAuth::getPendingState( $user_id ) ) {
+		$bbcs_2fa_state = BotBlockerTwoFactorAuth::getPendingState( $user_id );
+		if ( BotBlockerTwoFactorAuth::STATE_NONE === $bbcs_2fa_state ) {
+			wp_safe_redirect( admin_url() );
+			exit;
+		}
+
+		if ( BotBlockerTwoFactorAuth::STATE_SETUP !== $bbcs_2fa_state ) {
 			wp_safe_redirect( home_url( '/?bbcs_2fa=1' ) );
 			exit;
 		}
@@ -98,16 +104,16 @@ add_action(
 					$hashed_backup_codes = array_map( array( 'BotBlockerTwoFactorAuth', 'hashBackupCode' ), $plain_backup_codes );
 					update_user_meta( $user_id, '_2fa_backup_codes', $hashed_backup_codes );
 					update_user_meta( $user_id, '_2fa_verified', 1 );
+					BotBlockerTwoFactorAuth::markSessionPassed( $user_id );
 					delete_user_meta( $user_id, '_2fa_secret_temp' );
 					delete_user_meta( $user_id, '_2fa_backup_codes_temp' );
 					delete_user_meta( $user_id, '_2fa_setup_pending' );
-					delete_user_meta( $user_id, '_2fa_pending' );
 					$redirect_after_setup = get_user_meta( $user_id, '_2fa_redirect_to', true );
 					delete_user_meta( $user_id, '_2fa_redirect_to' );
 					BotBlockerTwoFactorAuth::resetRateLimit( $user_id );
 
-					// Session cookie regeneration
-					wp_set_auth_cookie( $user_id, true );
+					// Refresh the cookie for the same session token.
+					wp_set_auth_cookie( $user_id, true, '', wp_get_session_token() );
 
 					do_action( 'bbcs_2fa_setup_completed', $user_id );
 

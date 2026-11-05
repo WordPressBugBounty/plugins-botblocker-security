@@ -24,7 +24,7 @@ class BBCS_2FA_CLI {
 			'verified'           => (bool) get_user_meta( $user_id, '_2fa_verified', true ),
 			'secret_set'         => (bool) get_user_meta( $user_id, '_2fa_secret', true ),
 			'backup_codes_count' => is_array( $backup_codes ) ? count( $backup_codes ) : 0,
-			'pending'            => (bool) ( get_user_meta( $user_id, '_2fa_pending', true ) || get_user_meta( $user_id, '_2fa_setup_pending', true ) ),
+			'pending'            => (bool) get_user_meta( $user_id, '_2fa_setup_pending', true ),
 		);
 	}
 
