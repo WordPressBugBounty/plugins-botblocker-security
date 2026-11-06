@@ -683,7 +683,7 @@ class BotBlockerTwoFactorAuth {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->query(
 			$wpdb->prepare(
-				"INSERT IGNORE INTO {$bbcs_options_table} (option_name, option_value, autoload) VALUES (%s, %s, 'no')",
+				"INSERT IGNORE INTO {$bbcs_options_table} (option_name, option_value, autoload) VALUES (%s, %s, 'no')", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table from $wpdb; values prepared.
 				$claim,
 				'1'
 			)
@@ -828,7 +828,7 @@ class BotBlockerTwoFactorAuth {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->query(
 			$wpdb->prepare(
-				"DELETE FROM {$bbcs_options_table} WHERE option_name LIKE %s",
+				"DELETE FROM {$bbcs_options_table} WHERE option_name LIKE %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table from $wpdb; values prepared.
 				$wpdb->esc_like( 'bbcs_2fa_bc_' . $user_id . '_' ) . '%'
 			)
 		);

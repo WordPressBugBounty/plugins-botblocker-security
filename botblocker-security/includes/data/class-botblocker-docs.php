@@ -20,6 +20,7 @@ final class BotBlockerDocs {
 		'admin_store_period' => 'notifications-reports',
 		'admin_uniq_type' => 'notifications-reports',
 		'allow_self_call_header' => 'connection-types',
+		'allow_app_password_rest' => 'connection-types',
 		'allow_self_ip_req' => 'connection-types',
 		'apcu_enable' => 'cache-backends',
 		'apcu_prefix' => 'cache-backends',

@@ -16,6 +16,7 @@ class BotBlockerSettings
 	public $admin_uniq_type			= 'host';
 	public $allow_self_ip_req		= 1;
 	public $allow_self_call_header	= 1;
+	public $allow_app_password_rest	= 1;
 	public $autosave_admin_ip		= 0;
 	public $skip_logged_in_users	= 0;
 

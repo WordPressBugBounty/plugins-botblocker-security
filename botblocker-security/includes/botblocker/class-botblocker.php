@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * This class is responsible for all the operations against bots.
  * It handles detections, logging, and blocking of suspicious bot activities.
  *
- * @version    1.7.8
+ * @version    1.7.9
  * @author     BotBlocker Team
  * @package    Botblocker
  * @subpackage Botblocker/includes
@@ -179,6 +179,9 @@ class BotBlocker extends BotBlockerBase {
 			return;
 		}
 		if ( $this->apply_addon_traffic_decisions( 'post_core_rules' ) ) {
+			return;
+		}
+		if ( $this->check_app_password_rest() ) {
 			return;
 		}
 		if ( $this->apply_core_rate_limit() ) {

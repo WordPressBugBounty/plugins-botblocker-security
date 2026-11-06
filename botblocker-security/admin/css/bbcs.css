@@ -345,7 +345,7 @@ a.bbcs-btn.is-disabled { pointer-events: none; }
 .bbcs-pill--violet { background: var(--bbcs-violet-dim); color: var(--bbcs-violet); }
 .bbcs-pill--red { background: var(--bbcs-red); color: var(--bbcs-s1); }
 .bbcs-pill--dot::before { content: ''; width: 7px; height: 7px; border-radius: var(--bbcs-r-pill); background: currentColor; }
-.bbcs-pill--amber { background: var(--bbcs-amber-dim); color: var(--bbcs-amber); }
+.bbcs-pill--amber { background: var(--bbcs-amber-dim); color: var(--bbcs-amber-d); }
 .bbcs-pill--addon { background: var(--bbcs-violet-dim); color: var(--bbcs-violet); }
 .bbcs-pill--pro { font-size: var(--bbcs-fs-nano); padding: var(--bbcs-sp-xs) var(--bbcs-sp-1h); }
 

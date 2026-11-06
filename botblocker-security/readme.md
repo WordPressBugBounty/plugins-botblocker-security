@@ -4,7 +4,7 @@ Tags: security, firewall, anti-spam, captcha, brute force
 Requires at least: 5.9
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.7.8
+Stable tag: 1.7.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -310,22 +310,34 @@ New to website security? The words BotBlocker uses, in plain language, are in th
 
 == Screenshots ==
 
-1. Dashboard with KPI cards, attack map, blocked-vs-allowed chart, hourly bar chart, distribution donuts, and social proof card
-2. 9-step Setup Wizard - from welcome to Google reCAPTCHA and protection in under 5 minutes
-3. Two-Factor Authentication setup with QR code and backup codes
-4. Live traffic monitor with full request context - IP, country, ASN, device, browser, block reason
-5. CAPTCHA mode selector - all modes with visual preview and Hybrid Mode toggle
-6. Rules manager - IP, IP range, ASN, country, User-Agent, Referer, hostname, path rules
-7. Anti-detect settings - 9 weighted detection signals with individual toggles
-8. Rate limiting configuration - sliding window, thresholds, subnet aggregation, floor protection
-9. Telegram Bot integration (add-on) - Bot Token + Chat ID setup with connection test
-10. Tools panel - maintenance and diagnostic actions with one-click execution
-11. Shortcode reference - embeddable widgets with preview
-12. PRO addon marketplace - one-click install for Security Headers, Hide Login, Speed Up, Malware Scanner, Behavioral Analysis, Truth Source, and more
-13. Health Score gauge - parameters, security levels, real-time scoring
-14. Settings panel with security presets, CAPTCHA, integrations (reCAPTCHA, Redis, Memcached), and detailed options
+1. Dashboard with live traffic, blocked attacks and the current protection score
+2. Live visitor log with IP, PTR, ASN, country, device, browser and block status
+3. Reports and logs with request context, block reasons and traffic charts
+4. Rules and IP lists for allow and deny control by IP, network, user agent or path
+5. GEO rules with country, ASN and network controls
+6. Bot detection checks for automation that pretends to be a browser
+7. Rate limiting with Captcha and block thresholds, sliding window and subnet aggregation
+8. CAPTCHA challenge page with the hold-to-verify human check
+9. Two-Factor Authentication setup for wp-admin roles, with backup codes
+10. Hide Admin URL add-on with a custom login endpoint and disabled-login behavior
+11. Malware Scanner findings with severity, confidence, file, indicator and action
+12. Firewall Export with Apache, nginx, fail2ban and iptables rule downloads
+13. Layered protection chain: Early Init, MU-plugin and the main BotBlocker engine
+14. Security Headers add-on with CSP, HSTS, permissions and cross-origin controls
+15. Speed Up add-on with frontend cleanup and WordPress optimization toggles
+16. Telegram add-on for the weekly security report
+17. Add-on marketplace with install, update and enable controls
+18. Setup Wizard protection levels, with the recommended preset selected
+19. System Status checklist with the protection score and active layers
 
 == Changelog ==
+
+= 1.7.9 =
+Allow REST API requests that use trusted application passwords
+Return a proper REST response for REST API requests blocked by the firewall
+Remove data of inactive add-ons when the plugin is uninstalled
+Fix several issues in the page cache add-on, including multisite support
+UI improvements in the admin area
 
 = 1.7.8 =
 Add WordPress Abilities for protection, secure and CAPTCHA modes, IP rules, blocked IPs, recent events, settings, self-test and cache clearing, each with its own toggle, off by default

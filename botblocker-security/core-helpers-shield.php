@@ -46,16 +46,13 @@ require_once BOTBLOCKER_DIR . 'includes/data/class-botblocker-data-time.php';
 
 add_filter( 'the_content', 'bbcs_register_content_shortcodes_lazily', 9 );
 function bbcs_register_content_shortcodes_lazily( $content ) {
-	static $registered = false;
-
-	if ( $registered || ! is_string( $content ) ) {
+	if ( ! is_string( $content ) || shortcode_exists( 'bbcs_latest_hits' ) ) {
 		return $content;
 	}
 	if ( strpos( $content, '[bbcs_' ) === false && strpos( $content, '[botblocker_' ) === false ) {
 		return $content;
 	}
 
-	$registered = true;
 	require_once BOTBLOCKER_DIR . 'includes/data/class-botblocker-stats.php';
 	require_once BOTBLOCKER_DIR . 'includes/data/class-botblocker-lang-options.php';
 	require_once BOTBLOCKER_DIR . 'includes/components/component-loader.php';

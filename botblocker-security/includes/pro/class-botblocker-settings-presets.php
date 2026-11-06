@@ -18,6 +18,7 @@ class BotBlockerSettingsPresets {
 			'admin_uniq_type',
 			'allow_self_ip_req',
 			'allow_self_call_header',
+			'allow_app_password_rest',
 			'autosave_admin_ip',
 			'skip_logged_in_users',
 			'bbcs_captcha_img_inline',
@@ -217,6 +218,7 @@ class BotBlockerSettingsPresets {
 			'whitelist_whatsapp_preview'           => 0,
 			'allow_self_ip_req'                    => 1,
 			'allow_self_call_header'               => 1,
+			'allow_app_password_rest'             => 1,
 
 			'get_browser_type'                     => 1,
 			'get_os_type'                          => 1,
@@ -382,6 +384,7 @@ class BotBlockerSettingsPresets {
 			'whitelist_whatsapp_preview'           => 0,
 			'allow_self_ip_req'                    => 1,
 			'allow_self_call_header'               => 1,
+			'allow_app_password_rest'             => 1,
 
 			'get_browser_type'                     => 1,
 			'get_os_type'                          => 1,
@@ -473,6 +476,7 @@ class BotBlockerSettingsPresets {
 			'whitelist_whatsapp_preview'           => 0,
 			'allow_self_ip_req'                    => 1,
 			'allow_self_call_header'               => 1,
+			'allow_app_password_rest'             => 1,
 
 			'get_browser_type'                     => 1,
 			'get_os_type'                          => 1,
@@ -564,6 +568,7 @@ class BotBlockerSettingsPresets {
 			'whitelist_whatsapp_preview'           => 0,
 			'allow_self_ip_req'                    => 1,
 			'allow_self_call_header'               => 1,
+			'allow_app_password_rest'             => 1,
 
 			'early_geo_enable'                     => 0,
 			'mu_geo_enable'                        => 0,

@@ -171,10 +171,7 @@ class Botblocker_Uninstaller {
 		}
 	}
 
-	/**
-	 * Dispatch 'delete' lifecycle to all active add-ons.
-	 */
-	private static function uninstallAddons(): void {
+	public static function uninstallAddons(): void {
 		self::log( '--- STEP: addon cleanup ---' );
 
 		if ( ! file_exists( BOTBLOCKER_DIR . 'includes/class-botblocker-addons.php' ) ) {
@@ -191,8 +188,9 @@ class Botblocker_Uninstaller {
 		try {
 			$addons = BotBlockerAddons::scanAll();
 			$active = BotBlockerAddons::getActive();
+			$addons_to_clean_up = self::addonsToCleanUp( $addons, $active );
 
-			foreach ( $active as $slug ) {
+			foreach ( $addons_to_clean_up as $slug ) {
 				if ( isset( $addons[ $slug ] ) && ! empty( $addons[ $slug ]['valid'] ) ) {
 					BotBlockerAddons::loadCore( $addons[ $slug ] );
 					BotBlockerAddons::dispatchLifecycle(
@@ -203,7 +201,7 @@ class Botblocker_Uninstaller {
 						self::log( 'Addons: dispatched "delete" lifecycle to ' . $slug . '.' );
 					}
 				} elseif ( self::isDebug() ) {
-					self::log( 'Addons: ' . $slug . ' active but missing or invalid on disk. SKIPPED.' );
+					self::log( 'Addons: ' . $slug . ' missing or invalid on disk. SKIPPED.' );
 				}
 			}
 
@@ -212,6 +210,16 @@ class Botblocker_Uninstaller {
 				self::log( 'Addons: ERROR - ' . $e->getMessage() );
 			}
 		}
+	}
+
+	private static function addonsToCleanUp( array $addons, array $active ): array {
+		$slugs = $active;
+		foreach ( $addons as $slug => $addon ) {
+			if ( ! empty( $addon['valid'] ) && ! empty( $addon['storage']['cleanup_on_uninstall'] ) ) {
+				$slugs[] = $slug;
+			}
+		}
+		return array_unique( $slugs );
 	}
 
 	/**

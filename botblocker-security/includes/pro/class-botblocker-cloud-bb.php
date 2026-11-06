@@ -11,7 +11,7 @@ class BotBlockerCloudBb {
 	const PUSH_NONCE_TRANSIENT = 'bbcs_license_push_nonce';
 
 	private static function consumePushNonce(): void {
-		$posted  = isset( $_POST['push_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['push_nonce'] ) ) : '';
+		$posted  = isset( $_POST['push_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['push_nonce'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- External API push token verified below.
 		$pending = get_transient( self::PUSH_NONCE_TRANSIENT );
 		if ( '' === $posted || ! is_string( $pending ) || ! hash_equals( $pending, $posted ) ) {
 			wp_send_json_error( 'Unauthorized: push nonce mismatch.', 403 );

@@ -1290,7 +1290,7 @@ if ( ! function_exists( 'bbcs_get_wp_ability_definitions' ) ) {
 		if ( $table === '' ) {
 			return null;
 		}
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table from $wpdb; values prepared.
 		$row = $wpdb->get_row( $wpdb->prepare( "SELECT `id`, `search`, `rule`, `priority`, `comment`, `expires`, `readonly` FROM `{$table}` WHERE `search` = %s ORDER BY `priority` ASC, `id` ASC LIMIT 1", $search ), ARRAY_A );
 		return is_array( $row ) ? $row : null;
 	}
@@ -1301,7 +1301,7 @@ if ( ! function_exists( 'bbcs_get_wp_ability_definitions' ) ) {
 			if ( empty( $table ) ) {
 				continue;
 			}
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table from $wpdb; values prepared.
 			$row = $wpdb->get_row( $wpdb->prepare( "SELECT `id`, `search`, `rule`, `priority`, `comment`, `expires`, `readonly` FROM `{$table}` WHERE `id` = %d LIMIT 1", $id ), ARRAY_A );
 			if ( is_array( $row ) ) {
 				$row['family'] = $family;
@@ -1680,7 +1680,7 @@ if ( ! function_exists( 'bbcs_get_wp_ability_definitions' ) ) {
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 				$rows = $wpdb->get_results(
 					$wpdb->prepare(
-						"SELECT ( FLOOR( `date` / %d ) * %d ) AS `bucket`, COUNT(*) AS `count` FROM `{$table}` WHERE `date` >= %d AND {$query[1]} GROUP BY `bucket` ORDER BY `bucket` ASC",
+						"SELECT ( FLOOR( `date` / %d ) * %d ) AS `bucket`, COUNT(*) AS `count` FROM `{$table}` WHERE `date` >= %d AND {$query[1]} GROUP BY `bucket` ORDER BY `bucket` ASC", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Tables from $wpdb; predicates fixed above.
 						$bucket_seconds,
 						$bucket_seconds,
 						$start
@@ -1957,7 +1957,7 @@ if ( ! function_exists( 'bbcs_get_wp_ability_definitions' ) ) {
 
 		$dry_run = bbcs_wp_ability_is_dry_run( $input );
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table from $wpdb; values prepared.
 		$rows = $wpdb->get_results( $wpdb->prepare( "SELECT `id`, `rule`, `readonly` FROM `{$table}` WHERE `search` = %s", $ip ), ARRAY_A );
 		$previous_rules = array();
 		$deletable_ids  = array();

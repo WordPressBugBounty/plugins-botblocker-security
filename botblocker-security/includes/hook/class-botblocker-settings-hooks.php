@@ -267,6 +267,7 @@ class BotBlockerSettingsHooks {
 			'botblocker_log_bbcs',
 			'allow_self_ip_req',
 			'allow_self_call_header',
+			'allow_app_password_rest',
 			'cache_ui_data',
 			'autosave_admin_ip',
 			'skip_logged_in_users',

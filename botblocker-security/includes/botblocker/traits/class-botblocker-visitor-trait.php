@@ -106,14 +106,60 @@ trait BotBlockerVisitorTrait {
 		return false;
 	}
 
+	public function trusted_user_roles(): array {
+		return array( 'administrator', 'editor', 'moderator', 'shop_manager' );
+	}
+
 	public function check_admin_status(): void {
-		$allowed_roles = array( 'administrator', 'editor', 'moderator', 'shop_manager' );
+		$allowed_roles = $this->trusted_user_roles();
 		$user          = wp_get_current_user();
 		if ( is_user_logged_in() && ! empty( array_intersect( $allowed_roles, $user->roles ) ) ) {
 			$this->isAdmin = true;
 		} else {
 			$this->isAdmin = false;
 		}
+	}
+
+	public function check_app_password_rest(): bool {
+		if ( ! isset( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] ) ) {
+			return false;
+		}
+
+		$path = (string) wp_parse_url( (string) $this->uri, PHP_URL_PATH );
+		$prefix = '/' . rest_get_url_prefix();
+		if ( ! isset( $_GET['rest_route'] ) && $path !== $prefix && strpos( $path, $prefix . '/' ) !== 0 ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- REST route detection, not form submission.
+			return false;
+		}
+		if ( (int) ( $this->settings->allow_app_password_rest ?? 1 ) !== 1 ) {
+			return false;
+		}
+
+		$api_request = static function () { return true; };
+		add_filter( 'application_password_is_api_request', $api_request, PHP_INT_MAX );
+		try {
+			$user = wp_authenticate_application_password( null, $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Core authentication requires raw credentials.
+		} finally {
+			remove_filter( 'application_password_is_api_request', $api_request, PHP_INT_MAX );
+		}
+
+		if ( ! ( $user instanceof WP_User ) ) {
+			if ( is_wp_error( $user ) ) {
+				BotBlockerLoginBruteForce::onFailedLogin( $_SERVER['PHP_AUTH_USER'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Preserve the raw authentication identity.
+			}
+			return false;
+		}
+		$roles = (array) apply_filters( 'bbcs_app_password_bypass_roles', $this->trusted_user_roles() );
+		if ( empty( array_intersect( $roles, $user->roles ) ) ) {
+			return false;
+		}
+
+		$route = $path;
+		if ( isset( $_GET['rest_route'] ) && is_string( $_GET['rest_route'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- REST route detection, not form submission.
+			$route = sanitize_text_field( wp_unslash( $_GET['rest_route'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- REST route logging, not form submission.
+		}
+		BotBlockerStore::storeData( 'Application password REST bypass: ' . $user->user_login . ' ' . $route, 71 );
+		BotBlockerCounters::processHit( 71 );
+		return true;
 	}
 
 	/**
