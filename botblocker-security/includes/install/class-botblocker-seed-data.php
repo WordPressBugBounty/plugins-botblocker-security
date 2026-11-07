@@ -17,6 +17,7 @@ class BotBlockerSeedData {
 		self::insertExtendedPaths();
 		self::insertDefaultSettings();
 		self::insertDefaultProxies();
+		self::insertDefaultIpRules();
 		self::insertDefaultCounters();
 		self::insertDefaultPageFilters();
 	}
@@ -1334,6 +1335,43 @@ class BotBlockerSeedData {
 					$key,
 					$value,
 					$comment
+				)
+			);
+		}
+	}
+
+	// Source: https://jetpack.com/ips-v4.txt
+	public static function jetpackIpv4Ranges(): array {
+		return array(
+			'122.248.245.244/32',
+			'54.217.201.243/32',
+			'54.232.116.4/32',
+			'192.0.80.0/20',
+			'192.0.96.0/20',
+			'192.0.112.0/20',
+			'195.234.108.0/22',
+			'192.0.64.0/18',
+		);
+	}
+
+	public static function insertDefaultIpRules(): void {
+		global $wpdb;
+
+		foreach ( self::jetpackIpv4Ranges() as $cidr ) {
+			$range = BotBlockerIp::toRange( $cidr );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->query(
+				$wpdb->prepare(
+					"INSERT IGNORE INTO `{$wpdb->bbcs_ipv4rules}` (`priority`, `search`, `ip1`, `ip2`, `rule`, `comment`, `expires`, `disable`, `readonly`) VALUES (%d, %s, %s, %s, %s, %s, %d, %d, %d)",
+					100,
+					$cidr,
+					(string) BotBlockerIp::toNumeric( (string) $range[0] ),
+					(string) BotBlockerIp::toNumeric( (string) $range[1] ),
+					BBCS_RULE_ALLOW,
+					'Jetpack (WordPress.com)',
+					BOTBLOCKER_EXP_INF,
+					0,
+					0
 				)
 			);
 		}

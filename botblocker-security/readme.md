@@ -4,7 +4,7 @@ Tags: security, firewall, anti-spam, captcha, brute force
 Requires at least: 5.9
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.7.9
+Stable tag: 1.7.10
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -331,6 +331,10 @@ New to website security? The words BotBlocker uses, in plain language, are in th
 19. System Status checklist with the protection score and active layers
 
 == Changelog ==
+
+= 1.7.10 =
+Support the WordPress.com platform: Jetpack connections are allowed by default
+Let WP-CLI commands run without being blocked by the firewall
 
 = 1.7.9 =
 Allow REST API requests that use trusted application passwords

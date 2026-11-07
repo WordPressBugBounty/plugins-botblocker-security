@@ -14,19 +14,18 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @link              https://globus.studio
  * @package           botblocker-security
- * @version           1.7.9
+ * @version           1.7.10
  *
  * @wordpress-plugin
  * Plugin Name:       BotBlocker Security - Complete security platform
  * Plugin URI:        https://botblocker.top/
  * Description:       Complete security platform for everyday: block bots, brute-force, viruses, spam, fake crawlers. WAF, 2FA, no-malware, proactive defense, 200+ tools
- * Version:           1.7.9
+ * Version:           1.7.10
  * Author:            Yevhen Leonidov
  * Author URI:        https://leonidov.dev/
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Requires at least: 5.9
- * Tested up to:      7.1
  * Requires PHP:      7.4
  * Text Domain:       botblocker-security
  * Domain Path:       /languages

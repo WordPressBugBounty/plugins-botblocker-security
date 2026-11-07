@@ -58,6 +58,10 @@ class BotBlockerMigration {
 				'file'     => 'migration-2-12-0.php',
 				'callback' => 'bbcs_migration_2_12_0',
 			),
+			'2.13.0' => array(
+				'file'     => 'migration-2-13-0.php',
+				'callback' => 'bbcs_migration_2_13_0',
+			),
 			)
 		);
 	}

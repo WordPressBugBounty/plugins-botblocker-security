@@ -180,6 +180,10 @@ trait BotBlockerMuUtils {
 		return rtrim( $parsed, '/' );
 	}
 
+	protected function is_cli_sapi(): bool {
+		return PHP_SAPI === 'cli';
+	}
+
 	private function is_wordpress_self_request(): bool {
 		if ( ! isset( $_SERVER['HTTP_USER_AGENT'] ) ) {
 			return false;

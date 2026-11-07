@@ -31,6 +31,9 @@ class BotBlockerMuPhase {
 	public function __construct() {}
 
 	public function run(): void {
+		if ( $this->is_cli_sapi() ) {
+			return;
+		}
 		$this->load_directories();
 		$this->load_settings();
 		if ( $this->check_disabled_state() ) {
