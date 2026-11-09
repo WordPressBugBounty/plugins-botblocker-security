@@ -45,7 +45,7 @@ trait BBCS_RenderRecaptchaWithButtonTrait {
 				'confirmText'  => self::t( 'Confirm that you are human:' ),
 				'loadingText'  => self::t( 'Loading...' ),
 				'recaptchaKey' => $this->BBCS->settings->recaptcha_key2,
-				'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
+				'ajaxUrl'      => BotBlockerCheck::same_origin_url( admin_url( 'admin-ajax.php' ) ),
 			),
 		);
 	}

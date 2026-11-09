@@ -56,12 +56,15 @@ final class Botblocker_SidebarViewModel {
 	public $contact_email;
 	/** @var string */
 	public $early_init_disabled_message;
+	/** @var Botblocker_NotificationsViewModel */
+	public $notifications;
 
 	public function __construct() {
 		require_once BOTBLOCKER_DIR . 'includes/data/class-botblocker-pro-features.php';
 		require_once BOTBLOCKER_DIR . 'includes/data/class-botblocker-marketing-blocks.php';
 		require_once BOTBLOCKER_DIR . 'includes/viewmodels/class-social-proof-data.php';
 		require_once BOTBLOCKER_DIR . 'includes/dto/class-status-toggles.php';
+		require_once BOTBLOCKER_DIR . 'includes/viewmodels/class-notifications-viewmodel.php';
 
 		$bbcs  = BotBlocker::getInstance();
 		$bbcsa = Botblocker_Admin::getInstance();
@@ -74,6 +77,7 @@ final class Botblocker_SidebarViewModel {
 		$this->integrations_url = $bbcsa->pages_integrations;
 		$this->tools_url        = $bbcsa->pages_tools;
 		$this->cloud_api_active = BotBlockerPro::isActive();
+		$this->notifications    = new Botblocker_NotificationsViewModel( BotBlockerAlerts::dashboardList() );
 
 		$early_addon = class_exists( 'BotBlockerGateway' ) && ! empty( BotBlockerGateway::isEnabled( 'early_init' ) );
 

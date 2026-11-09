@@ -645,7 +645,7 @@ class BotBlockerAddons {
 		$gateway = self::normalizeGateway( $manifest );
 		$ui      = self::normalizeUi( $manifest, $name );
 		$storage = self::normalizeStorage( $manifest );
-
+		$abilities = self::normalizeAbilities( $manifest );
 		$valid = $slug !== ''
 			&& $slug === sanitize_key( $slug )
 			&& ( $folder_slug === '' || $folder_slug === $slug )
@@ -688,8 +688,77 @@ class BotBlockerAddons {
 			'gateway'           => $gateway,
 			'ui'                => $ui,
 			'storage'           => $storage,
+			'abilities'         => $abilities,
 			'captcha_modes'     => self::normalizeCaptcha( $manifest, $base ),
 		);
+	}
+
+	private static function normalizeAbilities( array $manifest ): array {
+		if ( ! isset( $manifest['abilities'] ) || ! is_array( $manifest['abilities'] ) ) {
+			return array();
+		}
+
+		$abilities = array();
+		$names     = array();
+		$keys      = array();
+
+		foreach ( $manifest['abilities'] as $entry ) {
+			if ( ! is_array( $entry ) ) {
+				self::debugLog( 'normalizeAbilities: dropped non-array entry' );
+				continue;
+			}
+			$name = isset( $entry['name'] ) && is_string( $entry['name'] ) ? trim( $entry['name'] ) : '';
+			if ( $name === '' || strpos( $name, 'botblocker/' ) !== 0 || ! preg_match( '/^botblocker\/[a-z0-9][a-z0-9-]*$/', $name ) ) {
+				self::debugLog( 'normalizeAbilities: dropped entry with invalid name' );
+				continue;
+			}
+			$setting_key = isset( $entry['setting_key'] ) && is_string( $entry['setting_key'] ) ? trim( $entry['setting_key'] ) : '';
+			if ( $setting_key === '' || ! preg_match( '/^bbcs_ability_[a-z0-9_]+$/', $setting_key ) ) {
+				self::debugLog( 'normalizeAbilities: dropped ' . $name . ' with invalid setting_key' );
+				continue;
+			}
+			$definition = isset( $entry['definition'] ) ? self::safeCallableName( $entry['definition'] ) : '';
+			$execute    = isset( $entry['execute'] ) ? self::safeCallableName( $entry['execute'] ) : '';
+			if ( $definition === '' || $execute === '' ) {
+				self::debugLog( 'normalizeAbilities: dropped ' . $name . ' with invalid callable' );
+				continue;
+			}
+			$permission = '';
+			if ( isset( $entry['permission'] ) ) {
+				$permission = self::safeCallableName( $entry['permission'] );
+				if ( $permission === '' ) {
+					self::debugLog( 'normalizeAbilities: dropped ' . $name . ' with invalid permission callable' );
+					continue;
+				}
+			}
+			if ( isset( $names[ $name ] ) || isset( $keys[ $setting_key ] ) ) {
+				self::debugLog( 'normalizeAbilities: dropped duplicate ' . $name );
+				continue;
+			}
+			$names[ $name ] = true;
+			$keys[ $setting_key ] = true;
+
+			$risk = isset( $entry['risk'] ) && is_string( $entry['risk'] ) ? strtolower( $entry['risk'] ) : 'read';
+			if ( ! in_array( $risk, array( 'read', 'manage', 'danger' ), true ) ) {
+				$risk = 'read';
+			}
+			$pii    = ! empty( $entry['pii'] );
+			$public = $pii ? false : ! empty( $entry['public'] );
+
+			$abilities[] = array(
+				'name'        => $name,
+				'setting_key' => $setting_key,
+				'definition'  => $definition,
+				'execute'     => $execute,
+				'permission'  => $permission,
+				'public'      => $public,
+				'pii'         => $pii,
+				'risk'        => $risk,
+				'label'       => isset( $entry['label'] ) && is_string( $entry['label'] ) ? trim( $entry['label'] ) : '',
+			);
+		}
+
+		return $abilities;
 	}
 
 	private static function normalizeCaptcha( array $manifest, string $base ): array {
@@ -1838,7 +1907,7 @@ class BotBlockerAddons {
 				}
 				if ( class_exists( 'BotBlockerAlerts' ) ) {
 					BotBlockerAlerts::setCustom(
-						'bbcs_addon_redeploy_failed_alert',
+						BotBlockerAlerts::TRANSIENT_ADDON_REDEPLOY_FAILED,
 						self::redeployFailedAlert( $names )
 					);
 				}

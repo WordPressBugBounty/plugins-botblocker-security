@@ -57,6 +57,9 @@ final class Botblocker_IntegrationsViewModel {
 	/** @var array */
 	public $wp_roles;
 
+	/** @var array */
+	public $wp_abilities_addon_groups = array();
+
 	/** @var string */
 	public $integrations_url;
 	/** @var string */
@@ -205,6 +208,16 @@ final class Botblocker_IntegrationsViewModel {
 		}
 
 		$this->active_tab_id = 'recaptcha-v2';
+
+		if ( function_exists( 'wp_register_ability' ) && class_exists( 'BotBlockerAbilityRegistry' ) ) {
+			$groups = BotBlockerAbilityRegistry::getAddonGroups();
+			foreach ( $groups as $index => $group ) {
+				$groups[ $index ]['settings_url'] = ! empty( $this->urls->addons )
+					? $this->urls->addons . '#' . (string) $group['slug']
+					: '';
+			}
+			$this->wp_abilities_addon_groups = (array) apply_filters( 'bbcs_ability_addon_sections', $groups );
+		}
 
 		$this->cache_systems = class_exists( 'BotBlockerAlerts' ) ? BotBlockerAlerts::detectCacheSystems() : array();
 

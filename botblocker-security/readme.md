@@ -4,7 +4,7 @@ Tags: security, firewall, anti-spam, captcha, brute force
 Requires at least: 5.9
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.7.10
+Stable tag: 1.7.11
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -331,6 +331,16 @@ New to website security? The words BotBlocker uses, in plain language, are in th
 19. System Status checklist with the protection score and active layers
 
 == Changelog ==
+
+= 1.7.11 =
+Mask the Telegram bot token field in the add-on settings
+Add WordPress Abilities for health, license, audit, masked event and user views, targeted IP/country/ASN rules, threat-data refresh, export and presets, plus add-on abilities on Integrations
+Add a Dashboard Notifications card with PRO tips and active alerts, counted in the admin menu badge
+Add the Hide WordPress add-on that removes readme.html and closes the debug.log on Apache and LiteSpeed, with an nginx-aware warning
+Add CSP domain management from WordPress Abilities, with confirmation, dry run and per-domain validation
+Move the run malware scan and scan results abilities into the Malware Scanner add-on, with their switches in the add-on settings
+Fix the endless CAPTCHA loop for visitors who open a site on a hostname other than its configured address, such as the domain without www
+Allow blob workers on public pages so the WordPress emoji loader and client-side media features are not blocked by Content-Security-Policy
 
 = 1.7.10 =
 Support the WordPress.com platform: Jetpack connections are allowed by default

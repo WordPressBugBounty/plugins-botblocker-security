@@ -11,7 +11,7 @@ if ( ! defined( 'BOTBLOCKER_TABLE_PREFIX' ) ) {
 }
 define( 'BOTBLOCKER_PREFIX', 'bb_' ); // The prefix for cache keys (Redis/Memcached) and secret-link values
 
-define( 'BOTBLOCKER_VERSION', '1.7.10' );
+define( 'BOTBLOCKER_VERSION', '1.7.11' );
 // The version number of the plugin
 define( 'BOTBLOCKER_DB_VERSION', '2.13.0' ); // The database version of the plugin
 define( 'BOTBLOCKER_WIZARD_ON_UPDATE', false ); // Show setup wizard after plugin update

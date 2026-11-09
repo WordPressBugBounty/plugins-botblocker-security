@@ -8,6 +8,10 @@ return static function ( Botblocker_SidebarViewModel $s ): void {
 	$t = $s->toggles;
 	?>
 	<aside class="bbcs-rail">
+		<?php
+		$render_notifications = require BOTBLOCKER_DIR . 'admin/templates/shared/sidebar/notifications.php';
+		$render_notifications( $s->notifications );
+		?>
 		<div class="bbcs-card bbcs-rail-card">
 			<div class="bbcs-row bbcs-row--between bbcs-mb-3h">
 				<span class="bbcs-rail-title"><?php esc_html_e( 'Status', 'botblocker-security' ); ?></span>
@@ -135,63 +139,6 @@ return static function ( Botblocker_SidebarViewModel $s ): void {
 		</script>
 		<?php endif; ?>
 
-		<?php if ( ! $s->cloud_api_active ) : ?>
-		<?php
-		$tips = array(
-			esc_html__( 'Enable Two-Factor Authentication (2FA) for all administrator accounts. It adds an essential layer of security that stops 99% of automated credential stuffing and brute-force attacks from accessing your dashboard.', 'botblocker-security' ),
-			esc_html__( 'BotBlocker PRO validates visitors in the cloud before they reach your WordPress installation. This preserves your server CPU and memory while stopping aggressive DDoS attacks in their tracks.', 'botblocker-security' ),
-			esc_html__( 'Are you getting spam from specific regions? You can block entire high-risk countries in the Rules & IPs section. Country blocking is a highly effective way to reduce unwanted bot traffic by up to 80%.', 'botblocker-security' ),
-			esc_html__( 'PRO users automatically share real-time threat intelligence. When one site on our network is attacked by a new botnet, the IP addresses are flagged and all PRO sites are protected instantly.', 'botblocker-security' ),
-			esc_html__( 'The Early Init add-on allows BotBlocker to execute at the very beginning of the WordPress load cycle. This stops bad bots early, saving massive amounts of database queries and server resources.', 'botblocker-security' )
-		);
-		?>
-		<div class="bbcs-card bbcs-rail-card bbcs-tips-card" id="bbcs-tips-card">
-			<div class="bbcs-row bbcs-row--between bbcs-mb-3">
-				<span class="bbcs-rail-title"><?php esc_html_e( 'Security Tips', 'botblocker-security' ); ?></span>
-				<a class="bbcs-link bbcs-fs-xs" href="<?php echo esc_url( $s->cloud_api_url ); ?>"><?php esc_html_e( 'Explore PRO', 'botblocker-security' ); ?></a>
-			</div>
-			<div class="bbcs-dim bbcs-fs-sm bbcs-tips-body" id="bbcs-rotating-tip">
-				<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
-				<?php echo $tips[0]; ?>
-			</div>
-			<div class="bbcs-tips-progress-wrap">
-				<div class="bbcs-tips-progress-fill"></div>
-			</div>
-		</div>
-		<script>
-		document.addEventListener('DOMContentLoaded', function() {
-			<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
-			var tips = <?php echo wp_json_encode( $tips ); ?>;
-			var idx = 0;
-			var el = document.getElementById('bbcs-rotating-tip');
-			var card = document.getElementById('bbcs-tips-card');
-			if(el && card && tips.length > 1) {
-				var isHovered = false;
-				var ticks = 0;
-				
-				card.addEventListener('mouseenter', function() { isHovered = true; });
-				card.addEventListener('mouseleave', function() { isHovered = false; });
-
-				setInterval(function() {
-					if (isHovered) return;
-					
-					ticks++;
-					
-					if (ticks === 592) { // 59.2 seconds -> start fading out
-						el.classList.add('bbcs-tips-body--hidden');
-					}
-					
-					if (ticks >= 600) { // 60.0 seconds -> swap text and fade in
-						ticks = 0;
-						idx = (idx + 1) % tips.length;
-						el.innerText = tips[idx];
-						el.classList.remove('bbcs-tips-body--hidden');
-					}
-				}, 100);
-			}
-		});
-		</script>
-		<?php endif; ?>
 	</aside>
 	<?php
 };

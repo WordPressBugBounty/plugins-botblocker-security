@@ -395,21 +395,6 @@ class BotBlockerAddonsMarket {
 		return array_values( array_filter( $stored, 'is_string' ) );
 	}
 
-	public static function countAvailableUpdates(): int {
-		return count( self::getAvailableUpdates() );
-	}
-
-	public static function menuBubbleHtml(): string {
-		$count = self::countAvailableUpdates();
-		if ( $count < 1 ) {
-			return '';
-		}
-		return sprintf(
-			' <span class="update-plugins count-%1$d"><span class="plugin-count">%1$d</span></span>',
-			$count
-		);
-	}
-
 	/**
 	 * Recompute the stored list of add-on updates. Without $force a cold
 	 * market cache returns the stored list untouched: admin page loads must

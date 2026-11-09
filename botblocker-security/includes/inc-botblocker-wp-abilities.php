@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! function_exists( 'bbcs_get_wp_ability_definitions' ) ) {
 
 	function bbcs_get_wp_ability_definitions(): array {
-		return array(
+		$definitions = array(
 			array(
 				'name'          => 'botblocker/get-firewall-status',
 				'setting_key'   => 'bbcs_ability_get_firewall_status',
@@ -511,6 +511,7 @@ if ( ! function_exists( 'bbcs_get_wp_ability_definitions' ) ) {
 						'priority'   => array( 'type' => 'integer', 'minimum' => 0, 'maximum' => 100000 ),
 						'force'      => array( 'type' => 'boolean', 'default' => false ),
 						'dry_run'    => array( 'type' => 'boolean', 'default' => false ),
+						'confirm'    => array( 'type' => 'string' ),
 					),
 					'additionalProperties' => false,
 				),
@@ -633,6 +634,7 @@ if ( ! function_exists( 'bbcs_get_wp_ability_definitions' ) ) {
 						'mode'         => array( 'type' => array( 'integer', 'string' ) ),
 						'wait_seconds' => array( 'type' => 'integer', 'minimum' => 0, 'maximum' => 300 ),
 						'dry_run'      => array( 'type' => 'boolean', 'default' => false ),
+						'confirm'      => array( 'type' => 'string' ),
 					),
 					'additionalProperties' => false,
 				),
@@ -658,7 +660,15 @@ if ( ! function_exists( 'bbcs_get_wp_ability_definitions' ) ) {
 				'label'         => __( 'Clear the plugin file cache', 'botblocker-security' ),
 				'description'   => __( 'Clears the BotBlocker file cache after manual rule or data changes.', 'botblocker-security' ),
 				'annotations'   => array( 'readonly' => false, 'destructive' => true, 'idempotent' => true ),
-				'input_schema'  => array(),
+				'input_schema'  => array(
+					'type'       => 'object',
+					'default'    => array(),
+					'properties' => array(
+						'confirm' => array( 'type' => 'string' ),
+						'dry_run' => array( 'type' => 'boolean', 'default' => false ),
+					),
+					'additionalProperties' => false,
+				),
 				'output_schema' => array(
 					'type'                 => 'object',
 					'properties'           => array(
@@ -669,69 +679,10 @@ if ( ! function_exists( 'bbcs_get_wp_ability_definitions' ) ) {
 				),
 				'execute'       => 'bbcs_wp_ability_execute_clear_cache',
 			),
-			array(
-				'name'          => 'botblocker/run-malware-scan',
-				'setting_key'   => 'bbcs_ability_run_malware_scan',
-				'label'         => __( 'Run a malware scan', 'botblocker-security' ),
-				'description'   => __( 'Starts a background malware scan through the BotBlocker Malware Scanner add-on. Requires confirm "SCAN".', 'botblocker-security' ),
-				'addon'         => 'bbcs-malware',
-				'annotations'   => array( 'readonly' => false, 'destructive' => true, 'idempotent' => false ),
-				'input_schema'  => array(
-					'type'       => 'object',
-					'properties' => array(
-						'confirm' => array( 'type' => 'string' ),
-					),
-					'additionalProperties' => false,
-				),
-				'output_schema' => array(
-					'type'                 => 'object',
-					'properties'           => array(
-						'scan_id' => array( 'type' => 'string' ),
-						'status'  => array( 'type' => 'string' ),
-					),
-					'required'             => array( 'scan_id', 'status' ),
-					'additionalProperties' => false,
-				),
-				'execute'       => 'bbcs_wp_ability_execute_run_malware_scan',
-			),
-			array(
-				'name'          => 'botblocker/get-scan-results',
-				'setting_key'   => 'bbcs_ability_get_scan_results',
-				'label'         => __( 'Get malware scan results', 'botblocker-security' ),
-				'description'   => __( 'Returns the status and findings of the latest malware scan from the BotBlocker Malware Scanner add-on.', 'botblocker-security' ),
-				'addon'         => 'bbcs-malware',
-				'annotations'   => array( 'readonly' => true, 'destructive' => false, 'idempotent' => true ),
-				'input_schema'  => array(
-					'type'       => 'object',
-					'properties' => array(
-						'scan_id' => array( 'type' => 'string' ),
-					),
-					'additionalProperties' => false,
-				),
-				'output_schema' => array(
-					'type'                 => 'object',
-					'properties'           => array(
-						'status'   => array( 'type' => 'string' ),
-						'findings' => array(
-							'type'  => 'array',
-							'items' => array(
-								'type'                 => 'object',
-								'properties'           => array(
-									'file'           => array( 'type' => 'string' ),
-									'severity'       => array( 'type' => 'string' ),
-									'classification' => array( 'type' => 'string' ),
-								),
-								'required'             => array( 'file', 'severity', 'classification' ),
-								'additionalProperties' => false,
-							),
-						),
-					),
-					'required'             => array( 'status', 'findings' ),
-					'additionalProperties' => false,
-				),
-				'execute'       => 'bbcs_wp_ability_execute_get_scan_results',
-			),
 		);
+
+		$extended = function_exists( 'bbcs_get_wp_ability_extended_definitions' ) ? bbcs_get_wp_ability_extended_definitions() : array();
+		return array_merge( $definitions, is_array( $extended ) ? $extended : array() );
 	}
 
 	function bbcs_wp_ability_allowed( string $key ): bool {
@@ -742,20 +693,47 @@ if ( ! function_exists( 'bbcs_get_wp_ability_definitions' ) ) {
 		return isset( $BBCS->settings->$key ) && (int) $BBCS->settings->$key === 1;
 	}
 
-	function bbcs_wp_ability_addon_active( string $slug ): bool {
-		if ( ! class_exists( 'BotBlockerAddons' ) ) {
-			return false;
+	function bbcs_ability_risk( string $ability_name ): string {
+		if ( class_exists( 'BotBlockerAbilityRegistry' ) ) {
+			$definition = BotBlockerAbilityRegistry::get( $ability_name );
+			if ( ! empty( $definition['risk'] ) && is_string( $definition['risk'] ) ) {
+				return $definition['risk'];
+			}
 		}
-		return BotBlockerAddons::isActive( $slug );
+		return 'manage';
 	}
 
-	function bbcs_ability_required_capability( string $ability_name ): string {
-		$capability = apply_filters( 'bbcs_ability_required_capability', 'manage_options', $ability_name );
+	function bbcs_ability_required_capability( string $ability_name, string $risk = '' ): string {
+		$base = 'manage_options';
+		if ( class_exists( 'BotBlockerAbilityRegistry' ) ) {
+			$definition = BotBlockerAbilityRegistry::get( $ability_name );
+			if ( ! empty( $definition['capability'] ) && is_string( $definition['capability'] ) ) {
+				$base = $definition['capability'];
+			}
+		}
+		$capability = apply_filters( 'bbcs_ability_required_capability', $base, $ability_name );
+		if ( ! is_string( $capability ) || $capability === '' ) {
+			$capability = 'manage_options';
+		}
+		if ( $risk === '' ) {
+			$risk = bbcs_ability_risk( $ability_name );
+		}
+		$capability = apply_filters( 'bbcs_ability_capability_by_risk', $capability, $risk, $ability_name );
 		return is_string( $capability ) && $capability !== '' ? $capability : 'manage_options';
 	}
 
-	function bbcs_wp_ability_user_allowed( string $ability_name ): bool {
-		if ( ! current_user_can( bbcs_ability_required_capability( $ability_name ) ) ) {
+	function bbcs_ability_public_flag( array $definition ): bool {
+		if ( ! empty( $definition['pii'] ) ) {
+			return false;
+		}
+		if ( array_key_exists( 'public', $definition ) ) {
+			return (bool) $definition['public'];
+		}
+		return empty( $definition['annotations']['destructive'] );
+	}
+
+	function bbcs_wp_ability_user_allowed( string $ability_name, string $risk = '' ): bool {
+		if ( ! current_user_can( bbcs_ability_required_capability( $ability_name, $risk ) ) ) {
 			return false;
 		}
 		if ( is_multisite() && BotBlockerMultisite::isNetworkActive() ) {
@@ -783,10 +761,10 @@ if ( ! function_exists( 'bbcs_get_wp_ability_definitions' ) ) {
 		BotBlockerAuditLogger::record( BotBlockerAuditEvents::BOTBLOCKER_ABILITY_CALL, $payload );
 	}
 
-	function bbcs_ability_permission_admin( $ability_name = '' ) {
+	function bbcs_ability_permission_admin( $ability_name = '', string $risk = '' ) {
 		$name = is_string( $ability_name ) ? $ability_name : '';
 
-		if ( bbcs_wp_ability_user_allowed( $name ) ) {
+		if ( bbcs_wp_ability_user_allowed( $name, $risk ) ) {
 			return true;
 		}
 
@@ -859,31 +837,66 @@ if ( ! function_exists( 'bbcs_get_wp_ability_definitions' ) ) {
 		if ( ! bbcs_wp_ability_allowed( 'bbcs_wp_abilities_enabled' ) ) {
 			return;
 		}
-		foreach ( bbcs_get_wp_ability_definitions() as $definition ) {
-			if ( ! bbcs_wp_ability_allowed( $definition['setting_key'] ) ) {
+
+		$registry    = class_exists( 'BotBlockerAbilityRegistry' ) ? BotBlockerAbilityRegistry::all() : array();
+		$definitions = $registry;
+		if ( empty( $definitions ) ) {
+			foreach ( bbcs_get_wp_ability_definitions() as $definition ) {
+				$definitions[ $definition['name'] ] = $definition;
+			}
+		}
+
+		foreach ( $definitions as $definition ) {
+			if ( ! is_array( $definition ) || empty( $definition['name'] ) ) {
 				continue;
 			}
-			if ( isset( $definition['addon'] ) && ! bbcs_wp_ability_addon_active( $definition['addon'] ) ) {
+			if ( ! bbcs_wp_ability_definition_enabled( $definition ) ) {
 				continue;
 			}
 
 			$bbcs_executor = $definition['execute'];
 			$bbcs_execute  = static function ( $input = null ) use ( $bbcs_executor, $definition ) {
-				$bbcs_start  = microtime( true );
-				$bbcs_result = call_user_func( $bbcs_executor, $input );
-				bbcs_wp_ability_audit(
-					$definition['name'],
-					is_wp_error( $bbcs_result ) ? 'error' : 'success',
-					array(
-						'input'       => is_array( $input ) ? $input : array(),
-						'error'       => is_wp_error( $bbcs_result ) ? $bbcs_result->get_error_code() : '',
-						'duration_ms' => (int) round( ( microtime( true ) - $bbcs_start ) * 1000 ),
-					)
+				$bbcs_start     = microtime( true );
+				$bbcs_exception = '';
+				try {
+					$bbcs_result = call_user_func( $bbcs_executor, $input );
+				} catch ( Throwable $bbcs_error ) {
+					$bbcs_exception = get_class( $bbcs_error );
+					$bbcs_result    = new WP_Error( 'ability_execution_failed', __( 'The ability could not be completed.', 'botblocker-security' ) );
+				}
+				$bbcs_audit = array(
+					'input'       => is_array( $input ) ? $input : array(),
+					'error'       => is_wp_error( $bbcs_result ) ? $bbcs_result->get_error_code() : '',
+					'duration_ms' => (int) round( ( microtime( true ) - $bbcs_start ) * 1000 ),
 				);
+				if ( '' !== $bbcs_exception ) {
+					$bbcs_audit['exception'] = $bbcs_exception;
+				}
+				bbcs_wp_ability_audit( $definition['name'], is_wp_error( $bbcs_result ) ? 'error' : 'success', $bbcs_audit );
 				return $bbcs_result;
 			};
 
-			$bbcs_is_public = empty( $definition['annotations']['destructive'] );
+			$bbcs_is_public = bbcs_ability_public_flag( $definition );
+			$bbcs_risk      = isset( $definition['risk'] ) ? (string) $definition['risk'] : 'manage';
+			$bbcs_permission = static function ( $permission_input = null ) use ( $definition, $bbcs_risk ) {
+				unset( $permission_input );
+				if ( empty( $definition['permission_callback'] ) || ! is_callable( $definition['permission_callback'] ) ) {
+					return bbcs_ability_permission_admin( $definition['name'], $bbcs_risk );
+				}
+				$result = bbcs_ability_permission_admin( $definition['name'], $bbcs_risk );
+				if ( $result !== true ) {
+					return $result;
+				}
+				$custom = call_user_func( $definition['permission_callback'], $definition['name'] );
+				if ( $custom === true ) {
+					return true;
+				}
+				bbcs_wp_ability_audit( $definition['name'], 'denied', array( 'reason' => 'custom_permission' ) );
+				if ( is_wp_error( $custom ) ) {
+					return $custom;
+				}
+				return new WP_Error( 'rest_forbidden', __( 'You are not allowed to execute BotBlocker abilities.', 'botblocker-security' ) );
+			};
 
 			wp_register_ability(
 				$definition['name'],
@@ -892,19 +905,25 @@ if ( ! function_exists( 'bbcs_get_wp_ability_definitions' ) ) {
 					'description'         => $definition['description'],
 					'category'            => 'botblocker',
 					'execute_callback'    => $bbcs_execute,
-					'permission_callback' => static function () use ( $definition ) {
-						return bbcs_ability_permission_admin( $definition['name'] );
-					},
+					'permission_callback' => $bbcs_permission,
 					'input_schema'        => $definition['input_schema'],
 					'output_schema'       => $definition['output_schema'],
 					'meta'                => array(
 						'public'       => $bbcs_is_public,
-						'show_in_rest' => true,
+						'show_in_rest' => $definition['show_in_rest'] ?? true,
 						'annotations'  => $definition['annotations'],
+						'mcp'          => array( 'public' => $bbcs_is_public ),
 					),
 				)
 			);
 		}
+	}
+
+	function bbcs_wp_ability_definition_enabled( array $definition ): bool {
+		if ( class_exists( 'BotBlockerAbilityRegistry' ) ) {
+			return BotBlockerAbilityRegistry::isEnabled( (string) $definition['name'] );
+		}
+		return bbcs_wp_ability_allowed( (string) $definition['setting_key'] );
 	}
 
 	function bbcs_wp_ability_audit_log( $ability_name, $input, $ability ): void {
@@ -990,6 +1009,13 @@ if ( ! function_exists( 'bbcs_get_wp_ability_definitions' ) ) {
 
 	function bbcs_wp_ability_is_dry_run( $input ): bool {
 		return bbcs_wp_ability_input_bool( $input, 'dry_run', false );
+	}
+
+	function bbcs_ability_strict_confirm( $input, string $token ) {
+		if ( ! apply_filters( 'bbcs_ability_strict_confirm', false, $token ) ) {
+			return true;
+		}
+		return bbcs_wp_ability_confirm( $input, $token );
 	}
 
 	function bbcs_wp_ability_rate_limited( string $ability_name ): bool {
@@ -2012,6 +2038,11 @@ if ( ! function_exists( 'bbcs_get_wp_ability_definitions' ) ) {
 		if ( is_wp_error( $guard ) ) {
 			return $guard;
 		}
+		$strict = bbcs_ability_strict_confirm( $input, 'UPSERT' );
+		if ( is_wp_error( $strict ) ) {
+			bbcs_wp_ability_audit( 'botblocker/upsert-ip-rule', 'denied', array( 'reason' => 'confirmation' ) );
+			return $strict;
+		}
 
 		$target = bbcs_wp_ability_input_target( $input );
 		if ( is_wp_error( $target ) ) {
@@ -2246,6 +2277,11 @@ if ( ! function_exists( 'bbcs_get_wp_ability_definitions' ) ) {
 		if ( is_wp_error( $guard ) ) {
 			return $guard;
 		}
+		$strict = bbcs_ability_strict_confirm( $input, 'CAPTCHA' );
+		if ( is_wp_error( $strict ) ) {
+			bbcs_wp_ability_audit( 'botblocker/set-captcha-mode', 'denied', array( 'reason' => 'confirmation' ) );
+			return $strict;
+		}
 
 		if ( ! is_array( $input ) || ! array_key_exists( 'mode', $input ) ) {
 			return new WP_Error( 'ability_invalid_input', __( 'A CAPTCHA mode is required.', 'botblocker-security' ) );
@@ -2289,6 +2325,15 @@ if ( ! function_exists( 'bbcs_get_wp_ability_definitions' ) ) {
 		if ( is_wp_error( $guard ) ) {
 			return $guard;
 		}
+		$strict = bbcs_ability_strict_confirm( $input, 'CLEAR' );
+		if ( is_wp_error( $strict ) ) {
+			bbcs_wp_ability_audit( 'botblocker/clear-cache', 'denied', array( 'reason' => 'confirmation' ) );
+			return $strict;
+		}
+		if ( bbcs_wp_ability_is_dry_run( $input ) ) {
+			bbcs_wp_ability_audit( 'botblocker/clear-cache', 'cache_dry_run', array( 'cleared' => false ) );
+			return array( 'cleared' => false );
+		}
 
 		$cleared = BotBlockerCache::clearFileCache();
 		bbcs_wp_ability_audit( 'botblocker/clear-cache', 'cache_cleared', array( 'cleared' => (bool) $cleared ) );
@@ -2296,68 +2341,8 @@ if ( ! function_exists( 'bbcs_get_wp_ability_definitions' ) ) {
 		return array( 'cleared' => (bool) $cleared );
 	}
 
-	function bbcs_wp_ability_execute_run_malware_scan( $input = null ) {
-		$guard = bbcs_wp_ability_guard( 'botblocker/run-malware-scan', $input, 'SCAN', true );
-		if ( is_wp_error( $guard ) ) {
-			return $guard;
-		}
-		if ( ! bbcs_wp_ability_addon_active( 'bbcs-malware' ) ) {
-			return new WP_Error( 'ability_unavailable', __( 'The malware scanner add-on is not active.', 'botblocker-security' ) );
-		}
-		if ( ! class_exists( 'BBCS_Malware_Plugin' ) ) {
-			return new WP_Error( 'ability_unavailable', __( 'The malware scanner is not available.', 'botblocker-security' ) );
-		}
-
-		$plugin = BBCS_Malware_Plugin::instance();
-		if ( ! method_exists( $plugin, 'getBackground' ) ) {
-			return new WP_Error( 'ability_unavailable', __( 'The malware scanner is not available.', 'botblocker-security' ) );
-		}
-
-		$state = $plugin->getBackground()->startBackgroundScan( array(), 'ability' );
-
-		return array(
-			'scan_id' => ( is_array( $state ) && isset( $state['id'] ) ) ? (string) $state['id'] : '',
-			'status'  => ( is_array( $state ) && isset( $state['status'] ) ) ? (string) $state['status'] : '',
-		);
-	}
-
-	function bbcs_wp_ability_execute_get_scan_results( $input = null ) {
-		$guard = bbcs_wp_ability_guard( 'botblocker/get-scan-results', $input );
-		if ( is_wp_error( $guard ) ) {
-			return $guard;
-		}
-		if ( ! bbcs_wp_ability_addon_active( 'bbcs-malware' ) ) {
-			return new WP_Error( 'ability_unavailable', __( 'The malware scanner add-on is not active.', 'botblocker-security' ) );
-		}
-		if ( ! class_exists( 'BBCS_Malware_Plugin' ) ) {
-			return new WP_Error( 'ability_unavailable', __( 'The malware scanner is not available.', 'botblocker-security' ) );
-		}
-
-		$plugin = BBCS_Malware_Plugin::instance();
-		if ( ! method_exists( $plugin, 'getSettings' ) ) {
-			return new WP_Error( 'ability_unavailable', __( 'The malware scanner is not available.', 'botblocker-security' ) );
-		}
-
-		$result   = $plugin->getSettings()->getLastResult();
-		$findings = array();
-		if ( is_array( $result ) && isset( $result['findings'] ) && is_array( $result['findings'] ) ) {
-			foreach ( $result['findings'] as $finding ) {
-				if ( ! is_array( $finding ) ) {
-					continue;
-				}
-				$findings[] = array(
-					'file'           => isset( $finding['relative_path'] ) ? (string) $finding['relative_path'] : ( isset( $finding['file'] ) ? (string) $finding['file'] : '' ),
-					'severity'       => isset( $finding['severity'] ) ? (string) $finding['severity'] : '',
-					'classification' => isset( $finding['classification'] ) ? (string) $finding['classification'] : '',
-				);
-			}
-		}
-
-		return array(
-			'status'   => ( is_array( $result ) && isset( $result['status'] ) ) ? (string) $result['status'] : '',
-			'findings' => $findings,
-		);
-	}
+	require_once __DIR__ . '/class-botblocker-ability-registry.php';
+	require_once __DIR__ . '/inc-botblocker-wp-abilities-extended.php';
 
 	add_action( 'wp_abilities_api_categories_init', 'bbcs_register_wp_ability_categories' );
 	add_action( 'wp_abilities_api_init', 'bbcs_register_wp_abilities' );

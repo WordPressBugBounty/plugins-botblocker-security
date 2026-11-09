@@ -10,6 +10,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 // (e.g., by external tooling, CLI scripts, or addon bootstrap), the helpers are
 // guaranteed to be available without depending on the main plugin load order.
 require_once BOTBLOCKER_DIR . 'core-helpers.php';
+require_once BOTBLOCKER_DIR . 'includes/data/class-botblocker-pro-tips.php';
+
+use BotBlocker\Component\Botblocker_NotificationRow;
 
 class BotBlockerAlerts {
 
@@ -19,6 +22,7 @@ class BotBlockerAlerts {
 	const TRANSIENT_ADDON_UPDATE_FAILED = 'bbcs_addon_update_failed_alert';
 	const TRANSIENT_ADDON_INCOMPATIBLE  = 'bbcs_addon_incompatible_alert';
 	const TRANSIENT_ADDON_FAILED        = 'bbcs_addon_failed_alert';
+	const TRANSIENT_ADDON_REDEPLOY_FAILED = 'bbcs_addon_redeploy_failed_alert';
 	const TRANSIENT_SECRET_LINK_USED    = 'bbcs_secret_link_used_alert';
 
 	/**
@@ -412,6 +416,11 @@ class BotBlockerAlerts {
 			$alerts[] = $addon_failed_alert;
 		}
 
+		$addon_redeploy_failed_alert = get_transient( self::TRANSIENT_ADDON_REDEPLOY_FAILED );
+		if ( ! empty( $addon_redeploy_failed_alert ) ) {
+			$alerts[] = $addon_redeploy_failed_alert;
+		}
+
 		$addon_updates_alert = self::addonUpdatesAlert();
 		if ( ! empty( $addon_updates_alert ) ) {
 			$alerts[] = $addon_updates_alert;
@@ -462,6 +471,26 @@ class BotBlockerAlerts {
 					$alerts
 				)
 			)
+		);
+	}
+
+	public static function dashboardList(): array {
+		$tips = BotBlockerProTips::getAll();
+		$alerts = array();
+		foreach ( self::getAll() as $alert ) {
+			$alerts[] = Botblocker_NotificationRow::fromAlert( $alert );
+		}
+		return array_merge( $tips, $alerts );
+	}
+
+	public static function menuBubbleHtml(): string {
+		$count = count( self::dashboardList() );
+		if ( $count < 1 ) {
+			return '';
+		}
+		return sprintf(
+			' <span class="update-plugins count-%1$d"><span class="plugin-count">%1$d</span></span>',
+			$count
 		);
 	}
 

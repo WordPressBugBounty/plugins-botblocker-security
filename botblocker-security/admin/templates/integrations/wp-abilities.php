@@ -9,7 +9,6 @@ if (! defined('ABSPATH')) {
 use BotBlocker\Component\Base;
 
 return static function (Botblocker_IntegrationsViewModel $data, bool $isActive): void {
-	$malware_active = function_exists('bbcs_wp_ability_addon_active') && bbcs_wp_ability_addon_active('bbcs-malware');
 	?>
 	<div role="tabpanel" class="bbcs-tabpanel bbcs-protect-layout" data-tabpanel="wp-abilities"<?php echo $isActive ? '' : ' hidden' ?>>
 		<div class="bbcs-infocol">
@@ -65,6 +64,33 @@ return static function (Botblocker_IntegrationsViewModel $data, bool $isActive):
 						<div class="bbcs-option bbcs-hoverbg"><button class="bbcs-toggle<?php echo $data->is_checked('bbcs_ability_check_ips', '1') ? ' is-on' : ''; ?>" role="switch" type="button" aria-checked="<?php echo $data->is_checked('bbcs_ability_check_ips', '1') ? 'true' : 'false'; ?>" data-field="bbcs_ability_check_ips"><span class="bbcs-toggle-knob"></span></button><input type="hidden" name="bbcs_ability_check_ips" value="<?php echo $data->is_checked('bbcs_ability_check_ips', '1') ? '1' : '0'; ?>"><span class="bbcs-option-label"><?php esc_html_e('Check several IP addresses', 'botblocker-security'); ?></span>
 							<?php echo Base::help( __( 'botblocker/check-ips — batch check of up to 20 addresses in one call.', 'botblocker-security' ), BotBlockerDocs::url( 'bbcs_ability_check_ips' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 						</div>
+						<?php
+						$bbcs_extra_read = array(
+							'bbcs_ability_get_health_score'        => array( __( 'Get health score', 'botblocker-security' ), __( 'botblocker/get-health-score — health score and the state of every scored protection item.', 'botblocker-security' ) ),
+							'bbcs_ability_get_protection_snapshot' => array( __( 'Get protection snapshot', 'botblocker-security' ), __( 'botblocker/get-protection-snapshot — protection state, secure mode, CAPTCHA mode, preset and layers.', 'botblocker-security' ) ),
+							'bbcs_ability_get_addons_status'       => array( __( 'Get add-ons status', 'botblocker-security' ), __( 'botblocker/get-addons-status — installed add-ons with activation and compatibility state.', 'botblocker-security' ) ),
+							'bbcs_ability_get_license_status'      => array( __( 'Get license status', 'botblocker-security' ), __( 'botblocker/get-license-status — license state without the key or secret.', 'botblocker-security' ) ),
+							'bbcs_ability_get_capabilities'        => array( __( 'Get capabilities', 'botblocker-security' ), __( 'botblocker/get-capabilities — feature map, add-on features and protection gates.', 'botblocker-security' ) ),
+							'bbcs_ability_validate_config'         => array( __( 'Validate configuration', 'botblocker-security' ), __( 'botblocker/validate-config — read-only configuration checks.', 'botblocker-security' ) ),
+							'bbcs_ability_get_cron_jobs'           => array( __( 'Get cron jobs', 'botblocker-security' ), __( 'botblocker/get-cron-jobs — BotBlocker cron events. Event arguments are hidden by default.', 'botblocker-security' ) ),
+							'bbcs_ability_get_db_health'           => array( __( 'Get database health', 'botblocker-security' ), __( 'botblocker/get-db-health — table presence, size and approximate row counts.', 'botblocker-security' ) ),
+							'bbcs_ability_get_top_entities'        => array( __( 'Get top entities', 'botblocker-security' ), __( 'botblocker/get-top-entities — aggregated country, ASN, user agent, status and path totals.', 'botblocker-security' ) ),
+							'bbcs_ability_get_2fa_summary'         => array( __( 'Get 2FA summary', 'botblocker-security' ), __( 'botblocker/get-2fa-summary — administrator two-factor counters only.', 'botblocker-security' ) ),
+							'bbcs_ability_get_audit_log'           => array( __( 'Get audit log (PII)', 'botblocker-security' ), __( 'botblocker/get-audit-log — filtered audit log. Masked by default, never public.', 'botblocker-security' ) ),
+							'bbcs_ability_get_event_details'       => array( __( 'Get event details (PII)', 'botblocker-security' ), __( 'botblocker/get-event-details — one visitor event with IP, user agent and path. Masked by default.', 'botblocker-security' ) ),
+							'bbcs_ability_get_top_ips'             => array( __( 'Get top IP addresses (PII)', 'botblocker-security' ), __( 'botblocker/get-top-ips — busiest IP addresses. Masked by default.', 'botblocker-security' ) ),
+							'bbcs_ability_get_login_attempts'      => array( __( 'Get login attempts (PII)', 'botblocker-security' ), __( 'botblocker/get-login-attempts — successful and failed login audit events. Masked by default.', 'botblocker-security' ) ),
+							'bbcs_ability_get_visitor_log'         => array( __( 'Get visitor log (PII)', 'botblocker-security' ), __( 'botblocker/get-visitor-log — recent visitor events. Masked by default.', 'botblocker-security' ) ),
+							'bbcs_ability_get_user_risk'           => array( __( 'Get user risk (PII)', 'botblocker-security' ), __( 'botblocker/get-user-risk — user role, 2FA state and failed login counts. Masked by default.', 'botblocker-security' ) ),
+							'bbcs_ability_get_ability_calls'       => array( __( 'Get ability calls (PII)', 'botblocker-security' ), __( 'botblocker/get-ability-calls — recorded ability calls with outcome and duration. Masked by default.', 'botblocker-security' ) ),
+							'bbcs_ability_export_settings'         => array( __( 'Export settings', 'botblocker-security' ), __( 'botblocker/export-settings — settings export. Secrets are always redacted.', 'botblocker-security' ) ),
+						);
+						foreach ( $bbcs_extra_read as $bbcs_key => $bbcs_meta ) :
+							?>
+						<div class="bbcs-option bbcs-hoverbg"><button class="bbcs-toggle<?php echo $data->is_checked($bbcs_key, '1') ? ' is-on' : ''; ?>" role="switch" type="button" aria-checked="<?php echo $data->is_checked($bbcs_key, '1') ? 'true' : 'false'; ?>" data-field="<?php echo esc_attr($bbcs_key); ?>"><span class="bbcs-toggle-knob"></span></button><input type="hidden" name="<?php echo esc_attr($bbcs_key); ?>" value="<?php echo $data->is_checked($bbcs_key, '1') ? '1' : '0'; ?>"><span class="bbcs-option-label"><?php echo esc_html($bbcs_meta[0]); ?></span>
+							<?php echo Base::help( $bbcs_meta[1], BotBlockerDocs::url( $bbcs_key ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
+						</div>
+						<?php endforeach; ?>
 					</div>
 				</div>
 				<div>
@@ -82,6 +108,20 @@ return static function (Botblocker_IntegrationsViewModel $data, bool $isActive):
 						<div class="bbcs-option bbcs-hoverbg"><button class="bbcs-toggle<?php echo $data->is_checked('bbcs_ability_delete_ip_rule', '1') ? ' is-on' : ''; ?>" role="switch" type="button" aria-checked="<?php echo $data->is_checked('bbcs_ability_delete_ip_rule', '1') ? 'true' : 'false'; ?>" data-field="bbcs_ability_delete_ip_rule"><span class="bbcs-toggle-knob"></span></button><input type="hidden" name="bbcs_ability_delete_ip_rule" value="<?php echo $data->is_checked('bbcs_ability_delete_ip_rule', '1') ? '1' : '0'; ?>"><span class="bbcs-option-label"><?php esc_html_e('Delete an IP rule by id', 'botblocker-security'); ?></span>
 							<?php echo Base::help( __( 'botblocker/delete-ip-rule — deletes a single rule by id. Requires confirm "DELETE" and refuses readonly rows.', 'botblocker-security' ), BotBlockerDocs::url( 'bbcs_ability_delete_ip_rule' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 						</div>
+						<?php
+						$bbcs_extra_manage = array(
+							'bbcs_ability_delete_ip_rules'       => array( __( 'Delete IP rules for an address', 'botblocker-security' ), __( 'botblocker/delete-ip-rules — removes non-readonly rules for an IP or CIDR, optionally one rule type. Requires confirm "DELETE".', 'botblocker-security' ) ),
+							'bbcs_ability_set_country_rule'      => array( __( 'Set a country rule', 'botblocker-security' ), __( 'botblocker/set-country-rule — creates, updates or disables a country rule. Requires confirm "COUNTRY".', 'botblocker-security' ) ),
+							'bbcs_ability_set_asn_rule'          => array( __( 'Set an ASN rule', 'botblocker-security' ), __( 'botblocker/set-asn-rule — creates, updates or disables an ASN rule. Requires confirm "ASN".', 'botblocker-security' ) ),
+							'bbcs_ability_update_threat_data'    => array( __( 'Update threat data', 'botblocker-security' ), __( 'botblocker/update-threat-data — refreshes ASN, LLM or TLS data. Requires confirm "UPDATE" and dry-run first.', 'botblocker-security' ) ),
+							'bbcs_ability_apply_preset'          => array( __( 'Apply a security preset', 'botblocker-security' ), __( 'botblocker/apply-preset — applies Light, Strong or Full and keeps the current ability toggles. Requires confirm "PRESET".', 'botblocker-security' ) ),
+						);
+						foreach ( $bbcs_extra_manage as $bbcs_key => $bbcs_meta ) :
+							?>
+						<div class="bbcs-option bbcs-hoverbg"><button class="bbcs-toggle<?php echo $data->is_checked($bbcs_key, '1') ? ' is-on' : ''; ?>" role="switch" type="button" aria-checked="<?php echo $data->is_checked($bbcs_key, '1') ? 'true' : 'false'; ?>" data-field="<?php echo esc_attr($bbcs_key); ?>"><span class="bbcs-toggle-knob"></span></button><input type="hidden" name="<?php echo esc_attr($bbcs_key); ?>" value="<?php echo $data->is_checked($bbcs_key, '1') ? '1' : '0'; ?>"><span class="bbcs-option-label"><?php echo esc_html($bbcs_meta[0]); ?></span>
+							<?php echo Base::help( $bbcs_meta[1], BotBlockerDocs::url( $bbcs_key ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
+						</div>
+						<?php endforeach; ?>
 					</div>
 					<div class="bbcs-setgroup">
 						<div class="bbcs-setgroup-head"><?php esc_html_e('Protection control (destructive)', 'botblocker-security'); ?></div>
@@ -99,15 +139,31 @@ return static function (Botblocker_IntegrationsViewModel $data, bool $isActive):
 							<?php echo Base::help( __( 'botblocker/clear-cache — clears the BotBlocker file cache after manual rule or data changes.', 'botblocker-security' ), BotBlockerDocs::url( 'bbcs_ability_clear_cache' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 						</div>
 					</div>
-				<?php if ($malware_active) : ?>
-					<div class="bbcs-setgroup">
-						<div class="bbcs-setgroup-head"><?php esc_html_e('Malware Scanner (PRO)', 'botblocker-security'); ?></div>
-						<div class="bbcs-option bbcs-hoverbg"><button class="bbcs-toggle<?php echo $data->is_checked('bbcs_ability_run_malware_scan', '1') ? ' is-on' : ''; ?>" role="switch" type="button" aria-checked="<?php echo $data->is_checked('bbcs_ability_run_malware_scan', '1') ? 'true' : 'false'; ?>" data-field="bbcs_ability_run_malware_scan"><span class="bbcs-toggle-knob"></span></button><input type="hidden" name="bbcs_ability_run_malware_scan" value="<?php echo $data->is_checked('bbcs_ability_run_malware_scan', '1') ? '1' : '0'; ?>"><span class="bbcs-option-label"><?php esc_html_e('Run a malware scan', 'botblocker-security'); ?></span>
-							<?php echo Base::help( __( 'botblocker/run-malware-scan — starts a background malware scan through the Malware Scanner add-on.', 'botblocker-security' ), BotBlockerDocs::url( 'bbcs_ability_run_malware_scan' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
-						</div>
-						<div class="bbcs-option bbcs-hoverbg"><button class="bbcs-toggle<?php echo $data->is_checked('bbcs_ability_get_scan_results', '1') ? ' is-on' : ''; ?>" role="switch" type="button" aria-checked="<?php echo $data->is_checked('bbcs_ability_get_scan_results', '1') ? 'true' : 'false'; ?>" data-field="bbcs_ability_get_scan_results"><span class="bbcs-toggle-knob"></span></button><input type="hidden" name="bbcs_ability_get_scan_results" value="<?php echo $data->is_checked('bbcs_ability_get_scan_results', '1') ? '1' : '0'; ?>"><span class="bbcs-option-label"><?php esc_html_e('Get malware scan results', 'botblocker-security'); ?></span>
-							<?php echo Base::help( __( 'botblocker/get-scan-results — returns the status and findings of the latest malware scan.', 'botblocker-security' ), BotBlockerDocs::url( 'bbcs_ability_get_scan_results' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
-						</div>
+				<?php if (! empty($data->wp_abilities_addon_groups)) : ?>
+					<div class="bbcs-setgroup" data-bbcs-addon-abilities="1">
+						<div class="bbcs-setgroup-head"><?php esc_html_e('Add-on abilities', 'botblocker-security'); ?></div>
+						<?php foreach ($data->wp_abilities_addon_groups as $bbcs_group) : ?>
+							<?php $bbcs_master_on = $data->is_checked('bbcs_wp_abilities_enabled', '1'); ?>
+							<div class="bbcs-option bbcs-hoverbg" data-bbcs-addon-ability-group="<?php echo esc_attr((string) $bbcs_group['slug']); ?>">
+								<span class="bbcs-option-label"><?php echo esc_html((string) $bbcs_group['name']); ?></span>
+								<?php if (! empty($bbcs_group['settings_url'])) : ?>
+									<a href="<?php echo esc_url((string) $bbcs_group['settings_url']); ?>"><?php esc_html_e('Open add-on settings', 'botblocker-security'); ?></a>
+								<?php endif; ?>
+								<div class="bbcs-infocol-desc">
+									<?php foreach ((array) $bbcs_group['abilities'] as $bbcs_ability) : ?>
+										<div data-bbcs-addon-ability="<?php echo esc_attr((string) $bbcs_ability['name']); ?>">
+											<?php echo esc_html((string) $bbcs_ability['label']); ?> — <code><?php echo esc_html((string) $bbcs_ability['name']); ?></code>
+											<span class="bbcs-badge"><?php echo ! empty($bbcs_ability['enabled']) ? esc_html__('Enabled', 'botblocker-security') : esc_html__('Disabled', 'botblocker-security'); ?></span>
+										</div>
+									<?php endforeach; ?>
+									<?php if (empty($bbcs_group['active'])) : ?>
+										<div class="bbcs-dim bbcs-fs-xs"><?php esc_html_e('Abilities are not registered while the add-on is inactive.', 'botblocker-security'); ?></div>
+									<?php elseif (! $bbcs_master_on) : ?>
+										<div class="bbcs-dim bbcs-fs-xs"><?php esc_html_e('Disabled because the master switch is off.', 'botblocker-security'); ?></div>
+									<?php endif; ?>
+								</div>
+							</div>
+						<?php endforeach; ?>
 					</div>
 				<?php endif; ?>
 				</div>

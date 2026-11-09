@@ -118,7 +118,7 @@ trait BBCS_RenderImageButtonTrait {
 				'instruction'       => self::t( 'Click on the matching image' ),
 				'buttons'           => $button_elements,
 				'imageRequests'     => $image_requests,
-				'ajaxUrl'           => admin_url( 'admin-ajax.php' ),
+				'ajaxUrl'           => BotBlockerCheck::same_origin_url( admin_url( 'admin-ajax.php' ) ),
 				'nonce'             => wp_create_nonce( 'botblocker_nonce' ),
 				'time'              => $this->BBCS->time,
 				'selectRequestMode' => $this->BBCS->select_request_mode,

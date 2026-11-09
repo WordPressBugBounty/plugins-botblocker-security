@@ -67,6 +67,7 @@ class Botblocker_Uninstaller {
 		'bbcs_addon_update_failed_alert',
 		'bbcs_addon_incompatible_alert',
 		'bbcs_addon_failed_alert',
+		'bbcs_addon_redeploy_failed_alert',
 		'bbcs_addon_updates_available',
 		'bbcs_ip_render_throttle',
 	);

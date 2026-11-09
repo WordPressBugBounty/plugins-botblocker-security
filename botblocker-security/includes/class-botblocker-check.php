@@ -143,6 +143,14 @@ class BotBlockerCheck {
 		return preg_replace( '/' . preg_quote( $host, '/' ) . '/', self::strip_www( $host ), $url, 1 );
 	}
 
+	public static function same_origin_url( string $url ): string {
+		$path = wp_parse_url( $url, PHP_URL_PATH );
+		if ( ! is_string( $path ) || '' === $path ) {
+			return $url;
+		}
+		return $path;
+	}
+
 	public static function isEmptyLanguage( ?string $accept_lang, ?string $lang ): bool {
 		if ( empty( $accept_lang ) || $accept_lang === null ||
 					$accept_lang === '' || $accept_lang === BOTBLOCKER_EMPTY || empty( $lang ) || $lang === null || $lang === '' || $lang === BOTBLOCKER_EMPTY ) {

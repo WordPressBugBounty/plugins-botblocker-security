@@ -33,7 +33,7 @@ trait BotBlockerCheckPageTrait {
 		$this->captcha_data = array_merge(
 			$this->captcha_data,
 			array(
-				'ajaxUrl'           => admin_url( 'admin-ajax.php' ),
+				'ajaxUrl'           => BotBlockerCheck::same_origin_url( admin_url( 'admin-ajax.php' ) ),
 				'nonce'             => wp_create_nonce( 'botblocker_nonce' ),
 				'time'              => $this->time,
 				'selectRequestMode' => $this->select_request_mode,
@@ -82,8 +82,8 @@ trait BotBlockerCheckPageTrait {
 		$backend_reserve = $backend_urls !== array() ? end( $backend_urls ) : '';
 
 		$this->js_data = array(
-			'ajaxUrl'            => admin_url( 'admin-ajax.php' ),
-			'verifyUrl'          => home_url( '/bbcs-verify/' ),
+			'ajaxUrl'            => BotBlockerCheck::same_origin_url( admin_url( 'admin-ajax.php' ) ),
+			'verifyUrl'          => BotBlockerCheck::same_origin_url( home_url( '/bbcs-verify/' ) ),
 			'nonce'              => wp_create_nonce( 'botblocker_nonce' ),
 			'debugEnabled'       => ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG === true ),
 			'version'            => $this->version,

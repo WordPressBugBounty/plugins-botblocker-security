@@ -835,12 +835,13 @@ class Botblocker_Admin {
 		);
 
 		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-		if ( class_exists( 'BotBlockerAddonsMarket' ) ) {
+		$bubble = BotBlockerAlerts::menuBubbleHtml();
+		if ( '' !== $bubble ) {
 			global $menu;
 			if ( is_array( $menu ) ) {
 				foreach ( $menu as $key => $item ) {
 					if ( isset( $item[2] ) && 'bbcs_dashboard' === $item[2] ) {
-						$menu[ $key ][0] .= BotBlockerAddonsMarket::menuBubbleHtml();
+						$menu[ $key ][0] .= $bubble;
 						break;
 					}
 				}
