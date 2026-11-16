@@ -56,13 +56,11 @@ trait BotBlockerLocalCloudTrait {
 				} elseif ( isset( $cloud['error'] ) ) {
 					$this->cloud_error = 'Cloud API error: ' . $cloud['error'];
 				}
-				if ( $this->settings->unresponsive == 0 ) {
-					$payload = BotBlockerStore::localCheckResult( BBCS_LOCAL_RESULT_ERROR, $this->cloud_error, '' );
-					if ( $this->settings->bbcs_ddos_resilience == 1 ) {
-						$payload = $this->sign_response_payload( (array) $payload );
-					}
-					wp_send_json( $payload );
+				if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+					error_log( '[BBCS DEBUG] [Cloud] cloud check failed: ' . $this->cloud_error . ' unresponsive=' . (int) $this->settings->unresponsive . ' -> continue with local result' );
 				}
+				return;
 			}
 
 			$this->cloud_data = array();
@@ -84,7 +82,7 @@ trait BotBlockerLocalCloudTrait {
 		$status     = $this->cloud_data['status'] ?? BBCS_CLOUD_STATUS_UNKNOWN;
 		$BBCS_score = $this->cloud_data['bbcs_score'] ?? 0;
 
-		if ( ( $status === BBCS_CLOUD_STATUS_BAD || $BBCS_score >= 5 ) && $this->settings->unresponsive == 0 ) {
+		if ( ( $status === BBCS_CLOUD_STATUS_BAD || $BBCS_score >= 5 ) && $this->settings->unresponsive == 1 ) {
 			$payload = BotBlockerStore::localCheckResult( BBCS_LOCAL_RESULT_ERROR, 'Cloud API ident visitor as bad', '' );
 			if ( $this->settings->bbcs_ddos_resilience == 1 ) {
 				$payload = $this->sign_response_payload( (array) $payload );
@@ -92,7 +90,7 @@ trait BotBlockerLocalCloudTrait {
 			wp_send_json( $payload );
 		}
 
-		if ( $status === BBCS_CLOUD_STATUS_GRAY && $this->settings->unresponsive == 0 ) {
+		if ( $status === BBCS_CLOUD_STATUS_GRAY && $this->settings->unresponsive == 1 ) {
 			$payload = BotBlockerStore::localCheckResult( BBCS_LOCAL_RESULT_ERROR, 'Cloud API ident visitor as gray', '' );
 			if ( $this->settings->bbcs_ddos_resilience == 1 ) {
 				$payload = $this->sign_response_payload( (array) $payload );
@@ -100,7 +98,7 @@ trait BotBlockerLocalCloudTrait {
 			wp_send_json( $payload );
 		}
 
-		if ( $status !== BBCS_CLOUD_STATUS_GOOD && $this->settings->unresponsive == 1 ) {
+		if ( $status !== BBCS_CLOUD_STATUS_GOOD && $this->settings->unresponsive == 0 ) {
 			// $message = 'Cloud API mark visitor as not good, but access allowed due to unresponsive flag';
 		}
 
@@ -117,7 +115,7 @@ trait BotBlockerLocalCloudTrait {
 				error_log( '[BBCS DEBUG] [Cloud] Cloud API unexpected status: ' . $status . ', cache invalidated' );
 			}
 
-			if ( $this->settings->cloud_fallback_block == 1 && $this->settings->unresponsive == 0 ) {
+			if ( $this->settings->cloud_fallback_block == 1 && $this->settings->unresponsive == 1 ) {
 				$payload = BotBlockerStore::localCheckResult( BBCS_LOCAL_RESULT_ERROR, 'Cloud API unexpected status', '' );
 				if ( $this->settings->bbcs_ddos_resilience == 1 ) {
 					$payload = $this->sign_response_payload( (array) $payload );

@@ -75,6 +75,17 @@ abstract class BotBlockerBase {
 	public $ip_version;
 	public $ipnum;
 	public $ip_short;
+	public $peer_ip     = '';
+	public $edge_state  = '';
+	public $edge_header = '';
+	public $edge_scope  = '';
+	public $edge_client = '';
+	public $edge_claimed = '';
+	public $edge_role          = '';
+	public $edge_shared        = false;
+	public $edge_subject       = '';
+	public $edge_subject_source = '';
+	public $edge_verified_by   = '';
 	public $ptr;
 	public $useragent;
 	public $referer;
@@ -129,6 +140,7 @@ abstract class BotBlockerBase {
 	public $bbcs_path      = array();
 	public $bbcs_custom_rules = array();
 	public $bbcs_proxy     = array();
+	public $bbcs_bot_networks = array();
 	public $self_ips       = array();
 	public $admin_ips      = array();
 	public $bbcs_good_bots = array();
@@ -235,6 +247,12 @@ abstract class BotBlockerBase {
 	protected function emit_header( string $header_line, bool $replace = true ): void {
 		if ( $this->header_can_send() ) {
 			header( $header_line, $replace );
+		}
+	}
+
+	protected function remove_header( string $name ): void {
+		if ( $this->header_can_send() ) {
+			header_remove( $name );
 		}
 	}
 

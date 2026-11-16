@@ -244,6 +244,7 @@ trait BotBlockerResponseTrait {
 		if ( (int) $this->settings->secure_mode === self::SECURE_MODE_FULL ) {
 			$guard = $this->start_output_guard();
 		}
+		$this->set_iframe_headers();
 		$this->set_denied_headers();
 		$this->set_denied_page( $message );
 		if ( $guard !== null ) {
@@ -439,6 +440,7 @@ trait BotBlockerResponseTrait {
 	private function emit_api_shaped_response( string $format, string $status_line, string $code_key, ?string $reason = null ): void {
 		$this->define_no_cache_constants();
 		if ( $this->header_can_send() ) {
+			$this->emit_security_page_headers();
 			$this->send_no_cache_headers();
 			$this->emit_header( 'X-Robots-Tag: noindex' );
 			$this->emit_header( 'Content-Type: ' . ( $format === 'json' ? 'application/json; charset=UTF-8' : 'text/xml; charset=UTF-8' ) );

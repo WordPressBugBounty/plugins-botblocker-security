@@ -54,6 +54,14 @@ if ( ! class_exists( 'BotBlockerAbilityRegistry' ) ) {
 				$all[ $name ] = $definition;
 			}
 
+			if ( function_exists( 'bbcs_ability_enrich_definition' ) ) {
+				foreach ( $all as $bbcs_name => $bbcs_definition ) {
+					if ( is_array( $bbcs_definition ) ) {
+						$all[ $bbcs_name ] = bbcs_ability_enrich_definition( $bbcs_definition );
+					}
+				}
+			}
+
 			self::$allCache = $all;
 			return $all;
 		}
@@ -241,7 +249,7 @@ if ( ! class_exists( 'BotBlockerAbilityRegistry' ) ) {
 							'idempotent'  => 'read' === $risk,
 						);
 
-					$public = ! empty( $entry['pii'] ) ? false : (bool) ( $entry['public'] ?? false );
+					$public = ( defined( 'PII_OFF' ) && PII_OFF ) ? true : ( ! empty( $entry['pii'] ) ? false : (bool) ( $entry['public'] ?? false ) );
 
 					$entries[ $name ] = array(
 						'name'                => $name,

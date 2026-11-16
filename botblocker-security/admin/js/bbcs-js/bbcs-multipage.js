@@ -674,6 +674,27 @@ jQuery(function ($) {
     }, 2000);
   }
 
+  function cronToast(resp) {
+    if (typeof window.bbcsToast !== 'function' || !resp || !resp.data || !resp.data.message) return;
+    var type = 'success';
+    if (!resp.success) {
+      type = 'error';
+    } else if (resp.data.failed && Object.keys(resp.data.failed).length) {
+      type = 'warning';
+    }
+    window.bbcsToast(type, resp.data.message);
+  }
+
+  function resetCronRows(resp) {
+    if (!resp || !resp.data || !resp.data.tasks) return;
+    var failed = resp.data.failed || {};
+    resp.data.tasks.forEach(function (hook) {
+      if (Object.prototype.hasOwnProperty.call(failed, hook)) return;
+      var $row = $('.bbcs-table--cron tr[data-bbcs-cron-hook="' + hook + '"]');
+      if ($row.length) resetCronProgressRow($row);
+    });
+  }
+
   function resetCronProgressRow($row) {
     var $prog  = $row.find('.bbcs-cron-progress');
     var $bar   = $row.find('.bbcs-cron-progress-bar');
@@ -710,7 +731,9 @@ jQuery(function ($) {
         hook: hook,
         nonce: (typeof botblockerData !== 'undefined') ? botblockerData.nonce : ''
       },
-      success: function () {
+      success: function (resp) {
+        cronToast(resp);
+        if (!resp || !resp.success) return;
         var $row = $btn.closest('tr');
         if ($row.length) resetCronProgressRow($row);
       },
@@ -731,12 +754,8 @@ jQuery(function ($) {
         nonce: (typeof botblockerData !== 'undefined') ? botblockerData.nonce : ''
       },
       success: function (resp) {
-        if (resp.success && resp.data && resp.data.tasks) {
-          resp.data.tasks.forEach(function (hook) {
-            var $row = $('.bbcs-table--cron tr[data-bbcs-cron-hook="' + hook + '"]');
-            if ($row.length) resetCronProgressRow($row);
-          });
-        }
+        cronToast(resp);
+        resetCronRows(resp);
       },
       error: function () {
         $btn.prop('disabled', false);
@@ -755,12 +774,8 @@ jQuery(function ($) {
         nonce: (typeof botblockerData !== 'undefined') ? botblockerData.nonce : ''
       },
       success: function (resp) {
-        if (resp.success && resp.data && resp.data.tasks) {
-          resp.data.tasks.forEach(function (hook) {
-            var $row = $('.bbcs-table--cron tr[data-bbcs-cron-hook="' + hook + '"]');
-            if ($row.length) resetCronProgressRow($row);
-          });
-        }
+        cronToast(resp);
+        resetCronRows(resp);
       },
       error: function () {
         $btn.prop('disabled', false);

@@ -218,11 +218,6 @@ class BotBlockerAddonHooks {
 			wp_safe_redirect( BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' ) );
 			exit;
 		}
-		if ( ! in_array( $slug, $active, true ) && ! BotBlockerPro::isActive() ) {
-			BBCS_Toastify::flash_addon_error( 'pro_required' );
-			wp_safe_redirect( BotBlockerMultisite::getAdminPageUrl( 'bbcs_addons' ) );
-			exit;
-		}
 		$was_active = in_array( $slug, $active, true );
 
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {

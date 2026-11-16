@@ -128,6 +128,13 @@ return static function ( Botblocker_ToolsViewModel $data, bool $isActive ): void
 						->withDocLink( BotBlockerDocs::page( 'tools-maintenance', 'clear-transients' ) )
 						->render();
 					ActionButton::make()
+						->withId( 'bbcs-clear-ptr-cache' )
+						->withIcon( 'broom' )
+						->withLabel( __( 'Clear PTR cache', 'botblocker-security' ) )
+						->withTooltip( __( 'Delete cached reverse-DNS results so crawler verification runs a fresh lookup', 'botblocker-security' ) )
+						->withDocLink( BotBlockerDocs::page( 'tools-maintenance', 'clear-ptr-cache' ) )
+						->render();
+					ActionButton::make()
 						->withId( 'bbcs-update-asn-database' )
 						->withDataAttribute( 'anchor', 'bbcs-update-asn-database' )
 						->withIcon( 'cloud-download' )

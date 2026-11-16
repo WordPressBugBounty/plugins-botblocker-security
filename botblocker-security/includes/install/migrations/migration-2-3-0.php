@@ -161,14 +161,8 @@ function bbcs_migration_2_3_0() {
         ['priority' => 5,  'search' => 'Google-CloudVertexBot', 'data' => '.google.com .googleusercontent.com', 'rule' => 'allow', 'comment' => 'Vertex AI',                  'disable' => 0],
 
         ['priority' => 10, 'search' => 'GoogleOther',           'data' => '.google.com',                        'rule' => 'allow', 'comment' => 'GoogleOther (Catch-all)',    'disable' => 0],
-
-        ['priority' => 31, 'search' => 'GPTBot',                'data' => '.openai.com',                        'rule' => 'allow', 'comment' => 'OpenAI GPT training crawler',      'disable' => 0],
-        ['priority' => 32, 'search' => 'OAI-SearchBot',         'data' => '.openai.com',                        'rule' => 'allow', 'comment' => 'OpenAI search crawler',             'disable' => 0],
-        ['priority' => 33, 'search' => 'ChatGPT-User',          'data' => '.openai.com',                        'rule' => 'allow', 'comment' => 'ChatGPT user-initiated requests',   'disable' => 0],
-        ['priority' => 34, 'search' => 'ClaudeBot',             'data' => '.anthropic.com',                     'rule' => 'allow', 'comment' => 'Anthropic Claude training crawler', 'disable' => 0],
-        ['priority' => 35, 'search' => 'Claude-User',           'data' => '.anthropic.com',                     'rule' => 'allow', 'comment' => 'Claude user-initiated requests',    'disable' => 0],
-        ['priority' => 36, 'search' => 'Claude-SearchBot',      'data' => '.anthropic.com',                     'rule' => 'allow', 'comment' => 'Claude search crawler',             'disable' => 0],
     ];
+    $new_search_engines = array_merge( $new_search_engines, BotBlockerSeedData::getAiCrawlerRules() );
 
     $value_placeholders = [];
     $value_args         = [];

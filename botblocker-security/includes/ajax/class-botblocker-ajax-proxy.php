@@ -68,7 +68,7 @@ class BotBlockerAjaxProxy {
 	        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$results = $wpdb->get_results(
 				$wpdb->prepare(
-					"SELECT id, `key`, `value`, comment
+					"SELECT id, `key`, `value`, comment, role
 	                 FROM `{$wpdb->bbcs_proxy}`
 	                 WHERE id LIKE %s OR `key` LIKE %s OR `value` LIKE %s OR comment LIKE %s
 	                 ORDER BY `comment`, `key`
@@ -89,7 +89,7 @@ class BotBlockerAjaxProxy {
 	        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$results = $wpdb->get_results(
 				$wpdb->prepare(
-					"SELECT id, `key`, `value`, comment
+					"SELECT id, `key`, `value`, comment, role
 	                 FROM `{$wpdb->bbcs_proxy}`
 	                 WHERE 1 = %d
 	                 ORDER BY `comment`, `key`
@@ -108,6 +108,7 @@ class BotBlockerAjaxProxy {
 				'id'      => $row['id'],
 				'key'     => $row['key'],
 				'value'   => $row['value'],
+				'role'    => $row['role'],
 				'comment' => $row['comment'],
 			);
 		}
@@ -238,6 +239,7 @@ class BotBlockerAjaxProxy {
 			'key'     => sanitize_text_field( wp_unslash( $_POST['key'] ) ),
 			'value'   => sanitize_text_field( wp_unslash( $_POST['value'] ) ),
 			'comment' => isset( $_POST['comment'] ) ? sanitize_textarea_field( wp_unslash( $_POST['comment'] ) ) : '',
+			'role'    => ( isset( $_POST['role'] ) && 'bot_network' === sanitize_text_field( wp_unslash( $_POST['role'] ) ) ) ? 'bot_network' : 'edge',
 		);
 	    /* phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotValidated */
 
@@ -427,6 +429,7 @@ class BotBlockerAjaxProxy {
 			'key'     => $key,
 			'value'   => sanitize_text_field( wp_unslash( $_POST['value'] ) ),
 			'comment' => isset( $_POST['comment'] ) ? sanitize_textarea_field( wp_unslash( $_POST['comment'] ) ) : '',
+			'role'    => ( isset( $_POST['role'] ) && 'bot_network' === sanitize_text_field( wp_unslash( $_POST['role'] ) ) ) ? 'bot_network' : 'edge',
 		);
 	    /* phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotValidated */
 
@@ -555,6 +558,7 @@ class BotBlockerAjaxProxy {
 						'key'     => $key,
 						'value'   => isset( $proxy['value'] ) ? sanitize_text_field( $proxy['value'] ) : '',
 						'comment' => isset( $proxy['comment'] ) ? sanitize_textarea_field( $proxy['comment'] ) : '',
+						'role'    => ( isset( $proxy['role'] ) && 'bot_network' === sanitize_text_field( $proxy['role'] ) ) ? 'bot_network' : 'edge',
 					);
 					// REVIEWER NOTE: custom table operations require direct database queries.
 	                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching

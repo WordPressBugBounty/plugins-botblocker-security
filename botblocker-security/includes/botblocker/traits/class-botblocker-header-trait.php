@@ -40,8 +40,14 @@ trait BotBlockerHeaderTrait {
 		}
 
 		if ( ! $this->isDisabled ) {
+			$this->strip_php_version_header();
 			$this->process_headers();
 			$this->set_x_robot_headers();
+			$this->send_vary_cookie_header();
+			$this->emit_allowed_baseline_headers();
+			if ( isset( $this->settings->iframe_stop ) && (int) $this->settings->iframe_stop === 1 && $this->header_can_send() ) {
+				$this->emit_header( 'X-Frame-Options: SAMEORIGIN' );
+			}
 		}
 
 		if ( ! class_exists( 'Botblocker_Security_Headers' ) ) {
@@ -62,9 +68,44 @@ trait BotBlockerHeaderTrait {
 	}
 
 	public function set_iframe_headers(): void {
-		if ( $this->settings->iframe_stop == 1 && $this->header_can_send() ) {
+		if ( $this->header_can_send() ) {
 			$this->emit_header( 'X-Frame-Options: SAMEORIGIN' );
 		}
+	}
+
+	/**
+	 * Barrier pages (check, denied, block) are always sent with their own
+	 * protection set, independent of the security-headers add-on.
+	 */
+	private function emit_security_page_headers(): void {
+		if ( ! $this->header_can_send() ) {
+			return;
+		}
+		$this->strip_php_version_header();
+		$this->emit_header( 'X-Content-Type-Options: nosniff' );
+		$this->emit_header( 'Referrer-Policy: same-origin' );
+		$this->emit_header( "Content-Security-Policy: frame-ancestors 'self'" );
+	}
+
+	private function strip_php_version_header(): void {
+		if ( isset( $this->settings->bbcs_strip_php_version ) && (int) $this->settings->bbcs_strip_php_version !== 1 ) {
+			return;
+		}
+		$this->remove_header( 'X-Powered-By' );
+	}
+
+	/**
+	 * Baseline browser-protection headers for an allowed request. The
+	 * security-headers add-on (when active) is emitted afterwards and
+	 * replaces any header it manages.
+	 */
+	private function emit_allowed_baseline_headers(): void {
+		if ( ! $this->header_can_send() ) {
+			return;
+		}
+		$this->emit_header( 'X-Content-Type-Options: nosniff' );
+		$this->emit_header( 'Referrer-Policy: strict-origin-when-cross-origin' );
+		$this->emit_header( "Content-Security-Policy: frame-ancestors 'self'" );
 	}
 
 	/**
@@ -112,6 +153,7 @@ trait BotBlockerHeaderTrait {
 		if ( ! $this->header_can_send() ) {
 			return;
 		}
+		$this->emit_security_page_headers();
 		$this->send_no_cache_headers();
 		$this->emit_header( 'Content-Type: text/html; charset=UTF-8' );
 		if ( isset( $_SERVER['HTTP_ORIGIN'] ) ) {
@@ -135,6 +177,7 @@ trait BotBlockerHeaderTrait {
 
 	public function set_check_headers(): void {
 		$this->send_no_cache_headers();
+		$this->emit_security_page_headers();
 		if ( $this->header_can_send() ) {
 			$this->emit_header( 'Content-Type: text/html; charset=UTF-8' );
 			$this->emit_header( 'X-Robots-Tag: noindex' );
@@ -147,6 +190,7 @@ trait BotBlockerHeaderTrait {
 
 	public function set_denied_headers(): void {
 		$this->send_no_cache_headers();
+		$this->emit_security_page_headers();
 		if ( $this->header_can_send() ) {
 			$this->emit_header( 'X-Robots-Tag: noindex, noarchive' );
 		}

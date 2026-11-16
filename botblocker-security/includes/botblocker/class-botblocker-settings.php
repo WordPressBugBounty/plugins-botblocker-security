@@ -20,7 +20,7 @@ class BotBlockerSettings
 	public $autosave_admin_ip		= 0;
 	public $skip_logged_in_users	= 0;
 
-	public $bbcs_allow_empty_accept_lang = 0;
+	public $bbcs_allow_empty_accept_lang = 1;
 	public $bbcs_captcha_img_inline = 1;
 	public $bbcs_captcha_img_pack   = 1;
 	public $bbcs_captcha_mode       = 1;
@@ -72,23 +72,48 @@ class BotBlockerSettings
 	public $bbcs_ability_update_threat_data = 0;
 	public $bbcs_ability_export_settings = 0;
 	public $bbcs_ability_apply_preset = 0;
+	public $bbcs_ability_simulate_request = 0;
+	public $bbcs_ability_get_decision_trace = 0;
+	public $bbcs_ability_get_rate_limit_state = 0;
+	public $bbcs_ability_get_request_fingerprint = 0;
+	public $bbcs_ability_get_data_integrity = 0;
+	public $bbcs_ability_get_bot_signature_match = 0;
+	public $bbcs_ability_get_tls_match = 0;
+	public $bbcs_ability_get_geo = 0;
+	public $bbcs_ability_get_pass_state = 0;
+	public $bbcs_ability_get_challenge_state = 0;
+	public $bbcs_ability_get_rule_match = 0;
+	public $bbcs_ability_get_layer_state = 0;
+	public $bbcs_ability_export_diagnostics = 0;
+	public $bbcs_ability_reset_rate_limit = 0;
+	public $bbcs_ability_reset_ptr_cache = 0;
+	public $bbcs_ability_seed_test_rule = 0;
+	public $bbcs_ability_clear_test_rules = 0;
+	public $bbcs_ability_set_setting   = 0;
+	public $bbcs_ability_load_license_from_cloud = 0;
+	public $bbcs_ability_get_edge_trust = 0;
+	public $bbcs_ability_get_edge_evidence = 0;
+	public $bbcs_ability_explain_ban_decision = 0;
+	public $bbcs_ability_remove_edge_trust = 0;
 	public $bbcs_ddos_resilience    = 0;
+	public $bbcs_edge_autotrust     = 1;
 
-	public $block_adblocker_users      = 1;
-	public $block_cf_users             = 1;
+	public $block_adblocker_users      = 0;
+	public $block_cf_users             = 0;
 	public $block_device_options       = 0;
-	public $block_empty_lang           = 1;
+	public $block_empty_lang           = 0;
+	public $bbcs_hide_user_enumeration = 1;
 	public $block_empty_ua             = 1;
-	public $block_fake_ref             = 1;
-	public $block_http10_users         = 1;
-	public $block_incognito_users      = 1;
+	public $block_fake_ref             = 0;
+	public $block_http10_users         = 0;
+	public $block_incognito_users      = 0;
 	public $block_incorrect_lang_users = 0;
 	public $block_ipv6_users           = 0;
 	public $block_ip_ptr_match         = 0;
 	public $block_override             = 0;
-	public $block_proxy_users          = 1;
+	public $block_proxy_users          = 0;
 	public $block_rkn                  = 0;
-	public $block_simple_antidetect    = 1;
+	public $block_simple_antidetect    = 0;
 	public $block_simplebot_ua         = 1;
 	public $block_tor_users            = 0;
 	public $block_vpn_users            = 0;
@@ -124,7 +149,7 @@ class BotBlockerSettings
 	public $cache_ui_data     = 0;
 	public $cache_ui_duration = 3600;
 	public $check             = 0;
-	public $check_get_ref     = 1;
+	public $check_get_ref     = 0;
 
 	public $cloud_api_timeout = 5;
 
@@ -160,7 +185,7 @@ class BotBlockerSettings
 	public $noarchive          = 0;
 	public $ptr_cache_in_db    = 1;
 	public $ptrcache_time      = DAY_IN_SECONDS;
-	public $ptrcache_subnet    = '24-64';
+	public $ptrcache_subnet    = '32-128';
 	public $ptrcache_rule_ttl  = 90;
 
 	public $recaptcha_check         = 0;
@@ -179,6 +204,7 @@ class BotBlockerSettings
 
 	public $redis_enable   = 0;
 	public $transients_enable = 1;
+	public $file_cache_max_files = BotBlockerCache::FILE_CAP_DEFAULT;
 	public $redis_host     = '127.0.0.1';
 	public $redis_password = '';
 	public $redis_port     = 6379;
@@ -206,8 +232,8 @@ class BotBlockerSettings
 	public $action_off                  = '';
 	public $action_on                   = '';
 
-	public $time_ban   = 200;
-	public $time_ban_2 = 400;
+	public $time_ban   = 50;
+	public $time_ban_2 = 100;
 
 	public $unresponsive            = 0;
 	public $cloud_fallback_block	= 0;
@@ -223,15 +249,19 @@ class BotBlockerSettings
 	public $tls_fingerprint_header_ja4 		= 'X-TLS-JA4';
 	public $tls_fingerprint_trusted_proxy	= '';
 
+	public $bbcs_strip_php_version = 1;
+
 	public $bbcs_rate_check_enabled     = 1;
-	public $bbcs_rate_captcha_rpm       = 30;
-	public $bbcs_rate_block_rpm         = 50;
+	public $bbcs_rate_captcha_rpm       = 60;
+	public $bbcs_rate_block_rpm         = 120;
+	public $bbcs_rate_passed_rpm        = 300;
+	public $bbcs_rate_passed_captcha_rpm = 150;
 	public $bbcs_rate_window_minutes    = 5;
-	public $bbcs_rate_subnet_enabled    = 1;
+	public $bbcs_rate_subnet_enabled    = 0;
 	public $bbcs_rate_subnet_multiplier = 3.0;
-	public $bbcs_rate_floor_percent     = 0.1;
+	public $bbcs_rate_floor_percent     = 0.2;
 	public $bbcs_rate_subnet_mask       = '24-64';
-	public $bbcs_rate_block_duration    = 600;
+	public $bbcs_rate_block_duration    = 300;
 
 	public $fingerprint_sticky_block = 0;
 

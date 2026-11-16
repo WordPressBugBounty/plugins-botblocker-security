@@ -6,6 +6,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class BotBlockerCache {
 
+	const FILE_CAP_DEFAULT = 2000;
+	const FILE_CAP_MIN = 500;
+	const FILE_CAP_MAX = 50000;
+	const FILE_CAP_STEP = 500;
+	const FILE_CACHE_FOLDERS = 16;
+	const FILE_CACHE_TRIM_RATIO = 0.9;
+	const RENAME_ATTEMPTS = 20;
+	const RENAME_RETRY_USEC = 1000;
+
 	/**
 	 * Log debug message if debug and cache debug modes are enabled
 	 *
@@ -579,37 +588,62 @@ class BotBlockerCache {
 	}
 
 	private static function cacheDir(): string {
-		return BotBlockerMultisite::getDataDir() . 'cache/';
+		$dir = BotBlockerMultisite::getDataDir() . 'cache/';
+		if ( ! is_dir( $dir ) ) {
+			wp_mkdir_p( $dir );
+		}
+		return $dir;
+	}
+
+	private static function migrateFileCache( string $dir ): void {
+		if ( ! is_file( $dir . '.layout-v2' ) ) {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
+			$handle = @fopen( $dir . '0.lock', 'c' );
+			if ( $handle ) {
+				try {
+					if ( flock( $handle, LOCK_EX ) && ! is_file( $dir . '.layout-v2' ) ) {
+						$entries = @scandir( $dir, SCANDIR_SORT_NONE );
+						foreach ( (array) $entries as $entry ) {
+							if ( preg_match( '/^[a-f0-9]{32}\.(cache|lock|cache\.[0-9]+\.tmp)$/D', $entry ) && is_file( $dir . $entry ) ) {
+								// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+								@unlink( $dir . $entry );
+							}
+						}
+						// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_touch
+						@touch( $dir . '.layout-v2' );
+					}
+				} finally {
+					flock( $handle, LOCK_UN );
+					// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+					fclose( $handle );
+				}
+			}
+		}
 	}
 
 	private static function cacheFilePath( string $key ): string {
-		return self::cacheDir() . md5( $key ) . '.cache';
+		$hash = md5( $key );
+		return self::cacheDir() . $hash[0] . '/' . $hash . '.cache';
 	}
 
-	/**
-	 * @return mixed|null
-	 */
 	public static function fileGet( string $key ) {
 		$file = self::cacheFilePath( $key );
-		if ( ! file_exists( $file ) ) {
-			return self::transientFallbackGet( $key );
-		}
 		$content = @file_get_contents( $file );
-		if ( $content === false || $content === '' ) {
+		if ( $content === false ) {
 			return self::transientFallbackGet( $key );
 		}
 		$data = @unserialize( $content, array( 'allowed_classes' => false ) );
-		if ( ! is_array( $data ) || ! isset( $data['d'], $data['e'] ) ) {
-			// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
-			@unlink( $file );
+		if ( ! is_array( $data ) || ! array_key_exists( 'd', $data ) || ! array_key_exists( 'e', $data ) ) {
 			return self::transientFallbackGet( $key );
 		}
 		if ( time() > (int) $data['e'] ) {
-			// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
-			@unlink( $file );
 			return self::transientFallbackGet( $key );
 		}
 		return $data['d'];
+	}
+
+	public static function sanitizeFileCap( $value ): int {
+		return is_scalar( $value ) && is_numeric( $value ) ? max( self::FILE_CAP_MIN, min( self::FILE_CAP_MAX, (int) $value ) ) : self::FILE_CAP_DEFAULT;
 	}
 
 	public static function transientsEnabled(): bool {
@@ -632,34 +666,106 @@ class BotBlockerCache {
 		return is_array( $value ) ? $value : null;
 	}
 
-	public static function fileSet( string $key, $data, int $ttl ): bool {
-		$dir = self::cacheDir();
-		if ( ! is_dir( $dir ) ) {
-			if ( ! wp_mkdir_p( $dir ) ) {
-				return self::transientFallbackSet( $key, $data, $ttl );
-			}
+	public static function fileSet( string $key, $data, int $ttl, $held_lock = null ): bool {
+		$lock_path = self::cacheDir() . md5( $key )[0] . '.lock';
+		if ( is_resource( $held_lock ) && stream_get_meta_data( $held_lock )['uri'] === $lock_path ) {
+			return self::writeFile( $key, $data, $ttl );
 		}
-		$file    = self::cacheFilePath( $key );
-		$tmp     = $file . '.' . getmypid() . '.tmp';
-		$payload = serialize( array( 'd' => $data, 'e' => time() + $ttl ) );
-		if ( @file_put_contents( $tmp, $payload, LOCK_EX ) === false ) {
+		$handle = self::fileLock( $key );
+		if ( $handle === false ) {
 			return self::transientFallbackSet( $key, $data, $ttl );
 		}
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename
-		if ( ! @rename( $tmp, $file ) ) {
-			// Windows can refuse a rename over an existing destination while another
-			// process briefly holds it. Remove the stale file and retry once.
-			// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
-			@unlink( $file );
-			// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename
-			if ( ! @rename( $tmp, $file ) ) {
-				// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
-				@unlink( $tmp );
+		try {
+			if ( ! flock( $handle, LOCK_EX ) ) {
 				return self::transientFallbackSet( $key, $data, $ttl );
 			}
+			return self::writeFile( $key, $data, $ttl );
+		} finally {
+			flock( $handle, LOCK_UN );
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+			fclose( $handle );
 		}
-		delete_transient( $key );
-		return true;
+	}
+
+	private static function writeFile( string $key, $data, int $ttl ): bool {
+		$file = self::cacheFilePath( $key );
+		$dir = dirname( $file ) . '/';
+		if ( ! is_dir( $dir ) && ! wp_mkdir_p( $dir ) ) {
+			return self::transientFallbackSet( $key, $data, $ttl );
+		}
+		clearstatcache( true, $file );
+		if ( ! is_file( $file ) && ! self::trimFolder( $dir ) ) {
+			return self::transientFallbackSet( $key, $data, $ttl );
+		}
+		$tmp = $dir . 'write.tmp';
+		$payload = serialize( array( 'd' => $data, 'e' => time() + $ttl ) );
+		try {
+			if ( @file_put_contents( $tmp, $payload ) === false ) {
+				return self::transientFallbackSet( $key, $data, $ttl );
+			}
+			$renamed = false;
+			for ( $attempt = 0; $attempt < self::RENAME_ATTEMPTS; $attempt++ ) {
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename
+				if ( @rename( $tmp, $file ) ) {
+					$renamed = true;
+					break;
+				}
+				usleep( self::RENAME_RETRY_USEC );
+			}
+			if ( ! $renamed ) {
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+				@unlink( $file );
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename
+				$renamed = @rename( $tmp, $file );
+			}
+			if ( ! $renamed ) {
+				return self::transientFallbackSet( $key, $data, $ttl );
+			}
+			delete_transient( $key );
+			return true;
+		} finally {
+			if ( is_file( $tmp ) ) {
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+				@unlink( $tmp );
+			}
+		}
+	}
+
+	private static function trimFolder( string $dir ): bool {
+		$quota = (int) floor( self::sanitizeFileCap( BotBlocker::getInstance()->settings->file_cache_max_files ?? self::FILE_CAP_DEFAULT ) / self::FILE_CACHE_FOLDERS );
+		$entries = @scandir( $dir, SCANDIR_SORT_NONE );
+		if ( $entries === false ) {
+			return false;
+		}
+		$entries = array_values( array_diff( $entries, array( '.', '..' ) ) );
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+		@unlink( $dir . 'write.tmp' );
+		$entries = array_values( array_diff( $entries, array( 'write.tmp' ) ) );
+		if ( count( $entries ) < $quota - 1 ) {
+			return true;
+		}
+		$live = array();
+		foreach ( $entries as $entry ) {
+			$path = $dir . $entry;
+			clearstatcache( true, $path );
+			$mtime = @filemtime( $path );
+			if ( $mtime === false ) {
+				continue;
+			}
+			$live[ $path ] = $mtime;
+		}
+		asort( $live, SORT_NUMERIC );
+		$target = (int) floor( $quota * self::FILE_CACHE_TRIM_RATIO );
+		foreach ( $live as $path => $mtime ) {
+			if ( count( $live ) <= $target ) {
+				break;
+			}
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+			if ( @unlink( $path ) ) {
+				unset( $live[ $path ] );
+			}
+		}
+		return count( $live ) < $quota - 1;
 	}
 
 	private static function transientFallbackSet( string $key, $data, int $ttl ): bool {
@@ -670,32 +776,62 @@ class BotBlockerCache {
 		return set_transient( $key, $data, $ttl );
 	}
 
-	public static function fileDelete( string $key ): void {
+	public static function fileDelete( string $key ): bool {
 		$file = self::cacheFilePath( $key );
+		$deleted = false;
 		if ( file_exists( $file ) ) {
 			// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
-			@unlink( $file );
+			$deleted = (bool) @unlink( $file );
 		}
 		delete_transient( $key );
+		return $deleted;
 	}
 
 	/**
-	 * Opens (creates) a persistent lock handle for a cache key so callers can
-	 * serialize read-modify-write cycles across processes.
-	 *
-	 * @return resource|false
+	 * @return array<int,string>
 	 */
+	private static function fileCachePaths(): array {
+		$dir   = self::cacheDir();
+		$paths = array();
+		for ( $bbcs_index = 0; $bbcs_index < self::FILE_CACHE_FOLDERS; $bbcs_index++ ) {
+			$folder  = $dir . dechex( $bbcs_index ) . '/';
+			$entries = @scandir( $folder, SCANDIR_SORT_NONE );
+			if ( ! is_array( $entries ) ) {
+				continue;
+			}
+			foreach ( $entries as $entry ) {
+				if ( ! preg_match( '/^[a-f0-9]{32}\.cache$/D', $entry ) ) {
+					continue;
+				}
+				$path = $folder . $entry;
+				if ( is_file( $path ) ) {
+					$paths[] = $path;
+				}
+			}
+		}
+		return $paths;
+	}
+
+	public static function fileCacheCount(): int {
+		return count( self::fileCachePaths() );
+	}
+
+	public static function clearFileCacheBuckets(): bool {
+		$ok = true;
+		foreach ( self::fileCachePaths() as $path ) {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+			if ( ! @unlink( $path ) ) {
+				$ok = false;
+			}
+		}
+		return $ok;
+	}
+
 	public static function fileLock( string $key ) {
 		$dir = self::cacheDir();
-		if ( ! is_dir( $dir ) && ! wp_mkdir_p( $dir ) ) {
-			return false;
-		}
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- temporary lock requires native fopen and flock before filesystem abstraction is available
-		$handle = @fopen( self::cacheDir() . md5( $key ) . '.lock', 'c' );
-		if ( ! $handle ) {
-			return false;
-		}
-		return $handle;
+		self::migrateFileCache( $dir );
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
+		return @fopen( $dir . md5( $key )[0] . '.lock', 'c' );
 	}
 
 	public static function resetHealthTransients(): bool {

@@ -42,7 +42,6 @@ trait BotBlockerVisitorTrait {
 		$this->identify_by_user_agent();
 		$this->get_ip_info();
 		$this->check_restricted_country();
-		$this->check_blocked_country();
 	}
 
 	public function read_tls_fingerprints(): void {
@@ -249,12 +248,12 @@ trait BotBlockerVisitorTrait {
 		} else {
 			$this->ga_uid = '';
 		}
+		$bbcs_path              = (string) strtok( (string) $this->uri, '?' );
+		$this->is_asset_request = (bool) preg_match( '/\.(js|css|map|jpe?g|png|gif|svg|webp|ico|woff2?|ttf|otf|eot|mp[34]|webm|ogg|wav|pdf)$/i', $bbcs_path );
 		if ( isset( $_COOKIE[ $this->settings->cookie . '_hits' ] ) ) {
 			$current_value             = (int) trim( preg_replace( '/[^0-9]/', '', sanitize_text_field( wp_unslash( $_COOKIE[ $this->settings->cookie . '_hits' ] ) ) ) );
-			$this->is_asset_request    = (bool) preg_match( '/\.(js|css|map|jpe?g|png|gif|svg|webp|ico|woff2?|ttf|otf|eot|mp[34]|webm|ogg|wav|pdf)$/i', $this->uri );
 			$this->cookie_hits_counter = $this->is_asset_request ? $current_value : $current_value + 1;
 		} else {
-			$this->is_asset_request    = (bool) preg_match( '/\.(js|css|map|jpe?g|png|gif|svg|webp|ico|woff2?|ttf|otf|eot|mp[34]|webm|ogg|wav|pdf)$/i', $this->uri );
 			$this->cookie_hits_counter = $this->is_asset_request ? 0 : 1;
 		}
 		$this->resolve_cookie_identity();
@@ -267,7 +266,7 @@ trait BotBlockerVisitorTrait {
 		if ( $cookie_valid && $kind === 'legacy' && method_exists( $this, 'set_allow_cookie_uid' ) ) {
 			$this->set_allow_cookie_uid();
 		}
-		if ( $this->time - $this->cookie_timestamp > $this->settings->cookie_lifetime ) {
+		if ( $this->cookie_timestamp > 0 && $this->time - $this->cookie_timestamp > $this->settings->cookie_lifetime ) {
 			if ( ! empty( $this->uid ) ) {
 				$this->delete_cookie( $this->uid );
 			}
@@ -401,75 +400,36 @@ trait BotBlockerVisitorTrait {
 		if ( method_exists( $this, 'lazy_load_proxy' ) ) {
 			$this->lazy_load_proxy();
 		}
-		if ( filter_var( $this->ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
-			foreach ( $this->bbcs_proxy as $proxy_mask => $proxy_attr ) {
-				if ( BotBlockerIp::netMatch( $proxy_mask, $this->ip ) == 1 && isset( $_SERVER[ $proxy_attr ] ) ) {
-					$proxy_ip = $this->extract_proxy_header_ip( $_SERVER[ $proxy_attr ] );    // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-					if ( $proxy_ip !== '' && $this->apply_visitor_ip( $proxy_ip ) ) {
-						$this->read_ptr();
-						$this->isProxy      = 'PROXY_v4';
-						$this->is_proxy_det = $proxy_attr;
-						break;
-					}
-				}
+
+		$this->isProxy      = BOTBLOCKER_EMPTY;
+		$this->is_proxy_det = BOTBLOCKER_EMPTY;
+
+		if ( $this->edge_state === 'trusted_edge' ) {
+			if ( $this->edge_scope !== 'auto_bot' ) {
+				$this->isProxy      = $this->ip_version === 6 ? 'PROXY_v6' : 'PROXY_v4';
+				$this->is_proxy_det = $this->edge_header;
 			}
+			return;
 		}
-		if ( $this->isProxy === BOTBLOCKER_EMPTY && filter_var( $this->ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
-			foreach ( $this->bbcs_proxy as $proxy_mask => $proxy_attr ) {
-				if ( BotBlockerIp::netMatch( $proxy_mask, $this->ip ) == 1 && isset( $_SERVER[ $proxy_attr ] ) ) {
-					$proxy_ip = $this->extract_proxy_header_ip( $_SERVER[ $proxy_attr ] );    // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-					if ( $proxy_ip !== '' && $this->apply_visitor_ip( $proxy_ip ) ) {
-						$this->read_ptr();
-						$this->isProxy      = 'PROXY_v6';
-						$this->is_proxy_det = $proxy_attr;
-						break;
-					}
-				}
-			}
+
+		$peer = $this->peer_ip !== '' ? $this->peer_ip : (string) $this->ip;
+		if ( $peer === '' ) {
+			return;
 		}
+
 		$proxy_headers = BotBlockerData::getProxyHeaders();
-		if ( $this->isProxy === BOTBLOCKER_EMPTY ) {
-			foreach ( $this->bbcs_proxy as $proxy_mask => $proxy_attr ) {
-				if ( BotBlockerIp::netMatch( $proxy_mask, $this->ip ) == 1 ) {
-					foreach ( $proxy_headers as $header ) {
-						if ( ! empty( $_SERVER[ $header ] ) && $this->ip !== '127.0.0.1' ) {
-							$this->isProxy      = 'DETECTED';
-							$this->is_proxy_det = 'CLASSIC';
-							break 2;
-						}
-					}
+		foreach ( $this->bbcs_proxy as $proxy_mask => $proxy_attr ) {
+			if ( BotBlockerIp::netMatch( (string) $proxy_mask, $peer ) !== true ) {
+				continue;
+			}
+			foreach ( $proxy_headers as $header ) {
+				if ( ! empty( $_SERVER[ $header ] ) && $peer !== '127.0.0.1' ) {
+					$this->isProxy      = 'DETECTED';
+					$this->is_proxy_det = 'CLASSIC';
+					return;
 				}
 			}
 		}
-	}
-
-	private function extract_proxy_header_ip( $raw_header ): string {
-		$header     = sanitize_text_field( wp_unslash( (string) $raw_header ) );
-		$candidates = explode( ',', $header );
-		for ( $i = count( $candidates ) - 1; $i >= 0; $i-- ) {
-			$candidate = trim( $candidates[ $i ] );
-			if ( $candidate === '' ) {
-				continue;
-			}
-			$candidate = trim( $candidate, " \t\n\r\0\x0B[]" );
-			if ( ! filter_var( $candidate, FILTER_VALIDATE_IP ) ) {
-				continue;
-			}
-			if ( $this->isTrustedProxyIp( $candidate ) ) {
-				continue;
-			}
-			return $candidate;
-		}
-		return '';
-	}
-
-	private function isTrustedProxyIp( string $ip ): bool {
-		foreach ( $this->bbcs_proxy as $proxy_mask => $proxy_attr ) {
-			if ( BotBlockerIp::netMatch( $proxy_mask, $ip ) == 1 ) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	public function validate_referer(): void {
@@ -758,15 +718,17 @@ trait BotBlockerVisitorTrait {
 		}
 	}
 
-	public function check_blocked_country(): void {
+	public function check_blocked_country(): bool {
 		if ( $this->isAdmin ) {
-			return;
+			return false;
 		}
 
 		$blockedCountries = BotBlockerData::getBlockedCountries();
 		if ( ! empty( $blockedCountries ) && in_array( $this->country, $blockedCountries, true ) ) {
 			$this->redirect_to_denied( 13, 'Denied by country: ' . $this->country );
+			return true;
 		}
+		return false;
 	}
 
 	public function is_safe_request(): bool {
@@ -958,8 +920,8 @@ trait BotBlockerVisitorTrait {
 			$this->redirect_to_denied( 53, 'Http/1.0' );
 			return true;
 		}
-		if ( $this->settings->block_ip_ptr_match && $this->ptr === $this->ip ) {
-			$this->redirect_to_denied( 60, 'IP equals PTR record' );
+		if ( $this->settings->block_ip_ptr_match && BotBlockerIp::isPtrDnsAnomaly( $this->ip, $this->ptr ) ) {
+			$this->redirect_to_denied( 60, 'PTR/DNS anomaly' );
 			return true;
 		}
 		if (
@@ -1023,18 +985,58 @@ trait BotBlockerVisitorTrait {
 	}
 
 	public function read_ip(): void {
-		$ip = '';
-		if ( isset( $_SERVER['REMOTE_ADDR'] ) ) {
-			$ip = trim( wp_strip_all_tags( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) );
-		} else {
+		if ( method_exists( $this, 'lazy_load_proxy' ) ) {
+			$this->lazy_load_proxy();
+		}
+
+		$proxy_map = is_array( $this->bbcs_proxy ) ? $this->bbcs_proxy : array();
+		if ( class_exists( 'BotBlockerEdgeStats' ) ) {
+			foreach ( BotBlockerEdgeStats::autoTrustMap() as $mask => $entry ) {
+				if ( ! isset( $proxy_map[ $mask ] ) ) {
+					$proxy_map[ $mask ] = $entry;
+				}
+			}
+		}
+		foreach ( BotBlockerIp::currentSharedProxy() as $mask => $is_shared ) {
+			if ( empty( $is_shared ) || ! isset( $proxy_map[ $mask ] ) || is_array( $proxy_map[ $mask ] ) ) {
+				continue;
+			}
+			$proxy_map[ $mask ] = array(
+				'header' => (string) $proxy_map[ $mask ],
+				'scope'  => 'manual',
+				'shared' => true,
+			);
+		}
+		$bot_networks = isset( $this->bbcs_bot_networks ) && is_array( $this->bbcs_bot_networks ) ? $this->bbcs_bot_networks : array();
+		$resolved     = BotBlockerIp::resolveClientIp( $proxy_map, $_SERVER, $bot_networks );
+
+		$this->peer_ip             = $resolved['peer'];
+		$this->edge_state          = $resolved['state'];
+		$this->edge_header         = $resolved['header'];
+		$this->edge_scope          = $resolved['scope'];
+		$this->edge_claimed        = $resolved['claimed'];
+		$this->edge_role           = $resolved['role'];
+		$this->edge_shared         = ! empty( $resolved['shared'] );
+		$this->edge_subject        = $resolved['subject'];
+		$this->edge_subject_source = $resolved['subject_source'];
+		$this->edge_verified_by    = '';
+		$this->edge_client         = '';
+
+		if ( $this->peer_ip === '' ) {
 			if ( $this->settings->botblocker_log_block == 1 ) {
-				BotBlockerStore::storeData( 'IP not reading', 15 );
+				BotBlockerStore::storeData( isset( $_SERVER['REMOTE_ADDR'] ) ? 'IP not valid' : 'IP not reading', 15 );
 			}
 			BotBlockerCounters::processHit( 15 );
 			$this->process_die();
+			return;
 		}
 
-		if ( ! $this->apply_visitor_ip( $ip ) ) {
+		$decision_ip = $resolved['subject'] !== '' ? $resolved['subject'] : $resolved['peer'];
+		if ( in_array( $resolved['role'], array( 'edge', 'edge_auto' ), true ) && $resolved['client'] !== '' ) {
+			$this->edge_client = $resolved['client'];
+		}
+
+		if ( ! $this->apply_visitor_ip( (string) $decision_ip ) ) {
 			if ( $this->settings->botblocker_log_block == 1 ) {
 				BotBlockerStore::storeData( 'IP not valid', 15 );
 			}
@@ -1188,18 +1190,27 @@ trait BotBlockerVisitorTrait {
 			return $cache[ $useragent ];
 		}
 
-		foreach ( BotBlockerData::getBotSignatures() as $signature ) {
-			if ( stripos( $useragent, $signature ) !== false ) {
-				$cache[ $useragent ] = $signature;
-				return $signature;
+		$variants = class_exists( 'BotBlockerCheck' ) ? BotBlockerCheck::userAgentVariants( (string) $useragent ) : array( (string) $useragent );
+
+		foreach ( $variants as $variant ) {
+			foreach ( BotBlockerData::getBotSignatures() as $signature ) {
+				if ( stripos( $variant, $signature ) !== false ) {
+					$cache[ $useragent ] = $signature;
+					return $signature;
+				}
+			}
+
+			foreach ( BotBlockerData::getBotSignaturePatterns() as $pattern ) {
+				if ( preg_match( '~' . $pattern . '~i', $variant ) === 1 ) {
+					$cache[ $useragent ] = $pattern;
+					return $pattern;
+				}
 			}
 		}
 
-		foreach ( BotBlockerData::getBotSignaturePatterns() as $pattern ) {
-			if ( preg_match( '~' . $pattern . '~i', $useragent ) === 1 ) {
-				$cache[ $useragent ] = $pattern;
-				return $pattern;
-			}
+		if ( class_exists( 'BotBlockerCheck' ) && BotBlockerCheck::userAgentHasNonAscii( (string) $useragent ) ) {
+			$cache[ $useragent ] = 'non-ascii-user-agent';
+			return 'non-ascii-user-agent';
 		}
 
 		$cache[ $useragent ] = false;

@@ -224,7 +224,7 @@ class BotBlockerAddons {
 		if ( ! empty( $clean ) ) {
 			self::setActive( array_values( array_diff( self::getActive(), $clean ) ) );
 		}
-		if ( ! empty( $failed ) ) {
+		if ( ! empty( $failed ) && class_exists( 'BotBlockerAlerts' ) ) {
 			BotBlockerAlerts::setAddonFailed( $failed );
 		}
 	}

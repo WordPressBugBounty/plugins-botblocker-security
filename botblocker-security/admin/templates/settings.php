@@ -21,6 +21,7 @@ return static function ( Botblocker_Settings_View $view, Botblocker_Layout_View 
 						<input type="hidden" name="action" value="save_botblocker_settings">
 						<?php wp_nonce_field( 'save_botblocker_settings', 'botblocker_settings_nonce' ); ?>
 						<input type="hidden" name="bbcs_anchor" id="bbcs_anchor" value="">
+						<input type="hidden" name="bbcs_full_settings_form" value="1">
 
 						<?php $view->page_head(); ?>
 

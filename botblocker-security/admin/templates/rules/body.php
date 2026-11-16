@@ -110,11 +110,49 @@ return static function (Botblocker_RulesViewModel $data): void {
 					<th style="min-width: 50px;"><?php esc_html_e('ID', 'botblocker-security'); ?></th>
 					<th style="min-width: 150px;"><?php esc_html_e('Network Mask', 'botblocker-security'); ?></th>
 					<th style="min-width: 150px;"><?php esc_html_e('HTTP Header', 'botblocker-security'); ?></th>
+					<th style="min-width: 110px;"><?php esc_html_e('Role', 'botblocker-security'); ?></th>
 					<th style="min-width: 150px;"><?php esc_html_e('Comment', 'botblocker-security'); ?></th>
 					<th style="min-width: 100px;"><?php esc_html_e('Actions', 'botblocker-security'); ?></th>
 				</tr>
 			</thead>
 		</table>
+
+		<?php
+		$bbcs_auto_edges = class_exists( 'BotBlockerEdgeStats' ) ? BotBlockerEdgeStats::autoTrustEntries() : array();
+		if ( ! empty( $bbcs_auto_edges ) ) :
+			?>
+			<h4 class="bbcs-mt-2"><?php esc_html_e( 'Auto-trusted edges', 'botblocker-security' ); ?></h4>
+			<p class="bbcs-dim"><?php esc_html_e( 'Read-only list. Remove an entry to revoke automatic trust immediately. Automatic trust is time-limited and cannot be made spoof-proof.', 'botblocker-security' ); ?></p>
+			<table class="bbcs-table compact bbcs-mb-0" style="width:100%; font-size:11px;">
+				<thead>
+					<tr>
+						<th><?php esc_html_e( 'Mask', 'botblocker-security' ); ?></th>
+						<th><?php esc_html_e( 'Header', 'botblocker-security' ); ?></th>
+						<th><?php esc_html_e( 'Expires', 'botblocker-security' ); ?></th>
+						<th><?php esc_html_e( 'Evidence', 'botblocker-security' ); ?></th>
+						<th><?php esc_html_e( 'Action', 'botblocker-security' ); ?></th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php foreach ( $bbcs_auto_edges as $bbcs_mask => $bbcs_entry ) : ?>
+						<tr>
+							<td><code><?php echo esc_html( (string) $bbcs_mask ); ?></code></td>
+							<td><code><?php echo esc_html( (string) ( $bbcs_entry['header'] ?? '' ) ); ?></code></td>
+							<td><?php echo esc_html( gmdate( 'Y-m-d H:i', (int) ( $bbcs_entry['expires'] ?? 0 ) ) . ' UTC' ); ?></td>
+							<td><?php echo esc_html( (string) (int) ( $bbcs_entry['evidence'] ?? 0 ) ); ?></td>
+							<td>
+								<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+									<input type="hidden" name="action" value="bbcs_remove_auto_edge" />
+									<input type="hidden" name="mask" value="<?php echo esc_attr( (string) $bbcs_mask ); ?>" />
+									<?php wp_nonce_field( 'bbcs_remove_auto_edge', 'bbcs_auto_edge_nonce' ); ?>
+									<button type="submit" class="button button-small"><?php esc_html_e( 'Remove', 'botblocker-security' ); ?></button>
+								</form>
+							</td>
+						</tr>
+					<?php endforeach; ?>
+				</tbody>
+			</table>
+		<?php endif; ?>
 	</div>
 	<div role="tabpanel" class="bbcs-tabpanel" data-tabpanel="ASN" id="bbcs_asn_list" hidden>
 		<table class="bbcs-table compact bbcs-mb-0" id="botblocker-asn-rules"

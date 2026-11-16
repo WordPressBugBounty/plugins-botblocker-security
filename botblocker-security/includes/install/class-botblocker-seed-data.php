@@ -7,19 +7,32 @@ if ( ! defined( 'ABSPATH' ) ) {
 class BotBlockerSeedData {
 
 	public static function insertInitialData(): void {
-		self::insertDefaultRules();
-		self::insertDefaultSearchEngines();
-		self::insertDefaultAsn();
-		self::insertDefaultPaths();
-		// Extended templates ship DISABLED (disable=1): visible in the admin
-		// path-rules UI for one-click enable, but nothing is exempt from the
-		// challenge wall out of the box (finding FF, 2026-09-04).
-		self::insertExtendedPaths();
-		self::insertDefaultSettings();
-		self::insertDefaultProxies();
-		self::insertDefaultIpRules();
-		self::insertDefaultCounters();
-		self::insertDefaultPageFilters();
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->query( 'START TRANSACTION' );
+		try {
+			self::insertDefaultRules();
+			self::insertDefaultSearchEngines();
+			self::insertDefaultAsn();
+			self::insertDefaultPaths();
+			// Extended templates ship DISABLED (disable=1): visible in the admin
+			// path-rules UI for one-click enable, but nothing is exempt from the
+			// challenge wall out of the box (finding FF, 2026-09-04).
+			self::insertExtendedPaths();
+			self::insertDefaultSettings();
+			self::insertDefaultProxies();
+			self::insertDefaultIpRules();
+			self::insertDefaultCounters();
+			self::insertDefaultPageFilters();
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			if ( $wpdb->query( 'COMMIT' ) === false ) {
+				throw new RuntimeException( 'Seed data commit failed.' );
+			}
+		} catch ( Throwable $e ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->query( 'ROLLBACK' );
+			throw $e;
+		}
 	}
 
 	public static function insertDefaultRules(): void {
@@ -616,6 +629,8 @@ class BotBlockerSeedData {
 				'disable'  => 0,
 			),
 		);
+
+		$default_search_engines = array_merge( $default_search_engines, self::getAiCrawlerRules() );
 
 		foreach ( $default_search_engines as $se ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -1260,6 +1275,27 @@ class BotBlockerSeedData {
 		);
 	}
 
+	public static function getAiCrawlerRules(): array {
+		return array(
+			array( 'priority' => 31, 'search' => 'GPTBot', 'data' => '.openai.com', 'rule' => 'allow', 'comment' => 'OpenAI GPT training crawler', 'disable' => 0 ),
+			array( 'priority' => 32, 'search' => 'OAI-SearchBot', 'data' => '.openai.com', 'rule' => 'allow', 'comment' => 'OpenAI search crawler', 'disable' => 0 ),
+			array( 'priority' => 33, 'search' => 'ChatGPT-User', 'data' => '.openai.com', 'rule' => 'allow', 'comment' => 'ChatGPT user-initiated requests', 'disable' => 0 ),
+			array( 'priority' => 34, 'search' => 'ClaudeBot', 'data' => '.anthropic.com', 'rule' => 'allow', 'comment' => 'Anthropic Claude training crawler', 'disable' => 0 ),
+			array( 'priority' => 35, 'search' => 'Claude-User', 'data' => '.anthropic.com', 'rule' => 'allow', 'comment' => 'Claude user-initiated requests', 'disable' => 0 ),
+			array( 'priority' => 36, 'search' => 'Claude-SearchBot', 'data' => '.anthropic.com', 'rule' => 'allow', 'comment' => 'Claude search crawler', 'disable' => 0 ),
+		);
+	}
+
+	public static function getDefaultAuditRoles(): array {
+		$roles = array();
+		if ( function_exists( 'wp_roles' ) ) {
+			foreach ( wp_roles()->roles as $role_key => $role ) {
+				$roles[ $role_key ] = '1';
+			}
+		}
+		return $roles;
+	}
+
 	public static function insertDefaultSettings(): void {
 		global $wpdb;
 
@@ -1271,6 +1307,7 @@ class BotBlockerSeedData {
 		require_once BOTBLOCKER_DIR . 'includes/pro/class-botblocker-settings-presets.php';
 		$default_settings   = BotBlockerSettingsPresets::loadDefaultSettings();
 		$generated_settings = array(
+			'audit_log_roles'             => wp_json_encode( self::getDefaultAuditRoles() ),
 			'salt'                        => bin2hex( random_bytes( 16 ) ),
 			'cloud_api_key'               => $cloud_api_key,
 			'cloud_api_secret'            => $cloud_api_secret,
@@ -1291,52 +1328,68 @@ class BotBlockerSeedData {
 		global $wpdb;
 
 		$default_proxies = array(
-			'173.245.48.0/20'  => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv4' ),
-			'103.21.244.0/22'  => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv4' ),
-			'103.22.200.0/22'  => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv4' ),
-			'103.31.4.0/22'    => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv4' ),
-			'141.101.64.0/18'  => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv4' ),
-			'108.162.192.0/18' => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv4' ),
-			'190.93.240.0/20'  => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv4' ),
-			'188.114.96.0/20'  => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv4' ),
-			'197.234.240.0/22' => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv4' ),
-			'198.41.128.0/17'  => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv4' ),
-			'162.158.0.0/15'   => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv4' ),
-			'104.16.0.0/13'    => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv4' ),
-			'104.24.0.0/14'    => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv4' ),
-			'172.64.0.0/13'    => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv4' ),
-			'131.0.72.0/22'    => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv4' ),
-			'2400:cb00::/32'   => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv6' ),
-			'2606:4700::/32'   => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv6' ),
-			'2803:f800::/32'   => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv6' ),
-			'2405:b500::/32'   => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv6' ),
-			'2405:8100::/32'   => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv6' ),
-			'2a06:98c0::/29'   => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv6' ),
-			'2c0f:f248::/32'   => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv6' ),
-			'54.239.0.0/16'    => array( 'HTTP_X_FORWARDED_FOR', 'AWS (Amazon Web Services)' ),
-			'54.240.0.0/12'    => array( 'HTTP_X_FORWARDED_FOR', 'AWS (Amazon Web Services)' ),
-			'204.246.164.0/22' => array( 'HTTP_X_FORWARDED_FOR', 'AWS (Amazon Web Services)' ),
-			'205.251.192.0/19' => array( 'HTTP_X_FORWARDED_FOR', 'AWS (Amazon Web Services)' ),
-			'35.190.0.0/17'    => array( 'HTTP_X_FORWARDED_FOR', 'Google Cloud' ),
-			'64.233.160.0/19'  => array( 'HTTP_X_FORWARDED_FOR', 'Google Cloud' ),
-			'66.102.0.0/20'    => array( 'HTTP_X_FORWARDED_FOR', 'Google Cloud' ),
-			'66.249.80.0/20'   => array( 'HTTP_X_FORWARDED_FOR', 'Google Cloud' ),
-			'72.14.192.0/18'   => array( 'HTTP_X_FORWARDED_FOR', 'Google Cloud' ),
-			'74.125.0.0/16'    => array( 'HTTP_X_FORWARDED_FOR', 'Google Cloud' ),
+			'173.245.48.0/20'  => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv4', 'edge' ),
+			'103.21.244.0/22'  => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv4', 'edge' ),
+			'103.22.200.0/22'  => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv4', 'edge' ),
+			'103.31.4.0/22'    => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv4', 'edge' ),
+			'141.101.64.0/18'  => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv4', 'edge' ),
+			'108.162.192.0/18' => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv4', 'edge' ),
+			'190.93.240.0/20'  => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv4', 'edge' ),
+			'188.114.96.0/20'  => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv4', 'edge' ),
+			'197.234.240.0/22' => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv4', 'edge' ),
+			'198.41.128.0/17'  => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv4', 'edge' ),
+			'162.158.0.0/15'   => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv4', 'edge' ),
+			'104.16.0.0/13'    => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv4', 'edge' ),
+			'104.24.0.0/14'    => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv4', 'edge' ),
+			'172.64.0.0/13'    => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv4', 'edge' ),
+			'131.0.72.0/22'    => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv4', 'edge' ),
+			'2400:cb00::/32'   => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv6', 'edge' ),
+			'2606:4700::/32'   => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv6', 'edge' ),
+			'2803:f800::/32'   => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv6', 'edge' ),
+			'2405:b500::/32'   => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv6', 'edge' ),
+			'2405:8100::/32'   => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv6', 'edge' ),
+			'2a06:98c0::/29'   => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv6', 'edge' ),
+			'2c0f:f248::/32'   => array( 'HTTP_CF_CONNECTING_IP', 'Cloudflare IPv6', 'edge' ),
+			'54.239.0.0/16'    => array( 'HTTP_X_FORWARDED_FOR', 'AWS (Amazon Web Services)', 'edge' ),
+			'54.240.0.0/12'    => array( 'HTTP_X_FORWARDED_FOR', 'AWS (Amazon Web Services)', 'edge' ),
+			'204.246.164.0/22' => array( 'HTTP_X_FORWARDED_FOR', 'AWS (Amazon Web Services)', 'edge' ),
+			'205.251.192.0/19' => array( 'HTTP_X_FORWARDED_FOR', 'AWS (Amazon Web Services)', 'edge' ),
+			'64.233.160.0/19'  => array( 'HTTP_X_FORWARDED_FOR', 'Google crawler network', 'bot_network' ),
+			'66.102.0.0/20'    => array( 'HTTP_X_FORWARDED_FOR', 'Google crawler network', 'bot_network' ),
+			'66.249.80.0/20'   => array( 'HTTP_X_FORWARDED_FOR', 'Google crawler network', 'bot_network' ),
+			'72.14.192.0/18'   => array( 'HTTP_X_FORWARDED_FOR', 'Google crawler network', 'bot_network' ),
+			'74.125.0.0/16'    => array( 'HTTP_X_FORWARDED_FOR', 'Google crawler network', 'bot_network' ),
 		);
 
 		foreach ( $default_proxies as $key => $data ) {
 			$value   = $data[0];
 			$comment = $data[1];
+			$role    = $data[2];
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->query(
 				$wpdb->prepare(
-					"INSERT IGNORE INTO `{$wpdb->bbcs_proxy}` (`key`, `value`, `comment`) VALUES (%s, %s, %s)",
+					"INSERT IGNORE INTO `{$wpdb->bbcs_proxy}` (`key`, `value`, `comment`, `role`) VALUES (%s, %s, %s, %s)",
 					$key,
 					$value,
-					$comment
+					$comment,
+					$role
 				)
 			);
+		}
+
+		$shared_ranges = array( '54.239.0.0/16', '54.240.0.0/12', '204.246.164.0/22', '205.251.192.0/19' );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$has_shared = $wpdb->get_col( "SHOW COLUMNS FROM `{$wpdb->bbcs_proxy}` LIKE 'shared'" );
+		if ( ! empty( $has_shared ) ) {
+			foreach ( $shared_ranges as $mask ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->query(
+					$wpdb->prepare(
+						"UPDATE `{$wpdb->bbcs_proxy}` SET `shared` = 1 WHERE `key` = %s",
+						$mask
+					)
+				);
+			}
 		}
 	}
 

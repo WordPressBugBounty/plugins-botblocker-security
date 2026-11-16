@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class BotBlockerDocs {
 
-	const BASE = 'https://docs.botblocker.top/#/';
+	const BASE = 'https://docs.botblocker.top/';
 
 	const LANGS = array( 'ar', 'de', 'en', 'es', 'fr', 'it', 'nl', 'pl', 'pt', 'sv', 'tr', 'ru', 'uk', 'he', 'zh', 'ja', 'ko' );
 
@@ -49,22 +49,45 @@ final class BotBlockerDocs {
 		'bbcs_ability_check_ip' => 'wp-abilities',
 		'bbcs_ability_check_ips' => 'wp-abilities',
 		'bbcs_ability_clear_cache' => 'wp-abilities',
+		'bbcs_ability_clear_test_rules' => 'wp-abilities',
 		'bbcs_ability_delete_ip_rule' => 'wp-abilities',
+		'bbcs_ability_export_diagnostics' => 'wp-abilities',
 		'bbcs_ability_get_blocked_ips' => 'wp-abilities',
+		'bbcs_ability_get_bot_signature_match' => 'wp-abilities',
 		'bbcs_ability_get_captcha_state' => 'wp-abilities',
+		'bbcs_ability_explain_ban_decision' => 'wp-abilities',
+		'bbcs_ability_get_challenge_state' => 'wp-abilities',
+		'bbcs_ability_get_data_integrity' => 'wp-abilities',
+		'bbcs_ability_get_decision_trace' => 'wp-abilities',
+		'bbcs_ability_get_edge_evidence' => 'wp-abilities',
+		'bbcs_ability_get_edge_trust' => 'wp-abilities',
 		'bbcs_ability_get_firewall_status' => 'wp-abilities',
+		'bbcs_ability_get_geo' => 'wp-abilities',
 		'bbcs_ability_get_ip_rules' => 'wp-abilities',
+		'bbcs_ability_get_layer_state' => 'wp-abilities',
+		'bbcs_ability_get_pass_state' => 'wp-abilities',
+		'bbcs_ability_get_rate_limit_state' => 'wp-abilities',
 		'bbcs_ability_get_recent_events' => 'wp-abilities',
+		'bbcs_ability_get_request_fingerprint' => 'wp-abilities',
+		'bbcs_ability_get_rule_match' => 'wp-abilities',
+		'bbcs_ability_get_tls_match' => 'wp-abilities',
 		'bbcs_ability_get_scan_results' => 'addon-malware',
 		'bbcs_ability_get_settings' => 'wp-abilities',
 		'bbcs_ability_get_traffic_summary' => 'wp-abilities',
 		'bbcs_ability_list_ip_rules' => 'wp-abilities',
+		'bbcs_ability_load_license_from_cloud' => 'wp-abilities',
+		'bbcs_ability_remove_edge_trust' => 'wp-abilities',
+		'bbcs_ability_reset_rate_limit' => 'wp-abilities',
+		'bbcs_ability_reset_ptr_cache' => 'wp-abilities',
 		'bbcs_ability_run_diagnostics' => 'wp-abilities',
 		'bbcs_ability_run_malware_scan' => 'addon-malware',
 		'bbcs_ability_run_self_test' => 'wp-abilities',
+		'bbcs_ability_seed_test_rule' => 'wp-abilities',
 		'bbcs_ability_set_captcha_mode' => 'wp-abilities',
+		'bbcs_ability_set_setting' => 'ability-set-setting',
 		'bbcs_ability_set_protection' => 'wp-abilities',
 		'bbcs_ability_set_secure_mode' => 'wp-abilities',
+		'bbcs_ability_simulate_request' => 'wp-abilities',
 		'bbcs_ability_unblock_ip' => 'wp-abilities',
 		'bbcs_ability_upsert_ip_rule' => 'wp-abilities',
 		'bbcs_allow_empty_accept_lang' => 'bot-detection',
@@ -204,6 +227,8 @@ final class BotBlockerDocs {
 		'bbcs_pusher_enabled' => 'addon-pusher',
 		'bbcs_rate_block_duration' => 'rate-limiting',
 		'bbcs_rate_block_rpm' => 'rate-limiting',
+		'bbcs_rate_passed_rpm' => 'rate-limiting',
+		'bbcs_rate_passed_captcha_rpm' => 'rate-limiting',
 		'bbcs_rate_captcha_rpm' => 'rate-limiting',
 		'bbcs_rate_check_enabled' => 'rate-limiting',
 		'bbcs_rate_floor_percent' => 'rate-limiting',
@@ -252,12 +277,15 @@ final class BotBlockerDocs {
 		'block_cf_users' => 'connection-types',
 		'block_device_options' => 'browser-checks',
 		'block_empty_lang' => 'bot-detection',
+		'bbcs_hide_user_enumeration' => 'bot-detection',
+		'bbcs_strip_php_version' => 'security-headers',
 		'block_empty_ua' => 'bot-detection',
 		'block_fake_ref' => 'bot-detection',
 		'block_http10_users' => 'connection-types',
 		'block_incognito_users' => 'browser-checks',
 		'block_incorrect_lang_users' => 'bot-detection',
 		'block_ip_ptr_match' => 'bot-detection',
+		'bbcs_edge_autotrust' => 'bot-detection',
 		'block_ipv6_users' => 'connection-types',
 		'block_override' => 'browser-checks',
 		'block_proxy_users' => 'connection-types',
@@ -378,6 +406,7 @@ final class BotBlockerDocs {
 		'tls_fingerprint_header_ja4' => 'tls-fingerprinting',
 		'tls_fingerprint_trusted_proxy' => 'tls-fingerprinting',
 		'transients_enable' => 'cache-backends',
+		'file_cache_max_files' => 'cache-backends',
 		'trusted-bots-comment' => 'rules-trusted-bots',
 		'trusted-bots-data' => 'rules-trusted-bots',
 		'trusted-bots-priority' => 'rules-trusted-bots',
@@ -403,14 +432,16 @@ final class BotBlockerDocs {
 	}
 
 	public static function page( string $page, string $heading = '' ): string {
+		$page = trim( $page, '/' );
+
 		if ( $page === '' ) {
 			return '';
 		}
 
-		$url = self::BASE . self::lang() . '/' . $page;
+		$url = self::BASE . self::lang() . ( strtoupper( $page ) === 'README' ? '/' : '/' . $page . '/' );
 
 		if ( $heading !== '' ) {
-			$url .= '?id=' . rawurlencode( $heading );
+			$url .= '#' . rawurlencode( $heading );
 		}
 
 		return $url;

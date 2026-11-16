@@ -237,7 +237,7 @@ class BotBlockerMuPhase {
 <head>
   <meta charset="utf-8" />
   <meta name="author" content="BotBlocker project by GLOBUS.studio" />
-  <meta name="referrer" content="unsafe-url" />
+  <meta name="referrer" content="no-referrer" />
   <meta name="robots" content="noindex" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <link rel="icon" href="data:,">

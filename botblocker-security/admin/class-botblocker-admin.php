@@ -602,6 +602,8 @@ class Botblocker_Admin {
 				'failed_get_log'          => __( 'Failed to get log file.', 'botblocker-security' ),
 				'transients_cleared'      => __( 'Transients successfully cleared!', 'botblocker-security' ),
 				'failed_clear_transients' => __( 'Failed to clear transients.', 'botblocker-security' ),
+				'ptr_cache_cleared'       => __( 'PTR cache cleared successfully!', 'botblocker-security' ),
+				'failed_clear_ptr_cache'  => __( 'Failed to clear the PTR cache.', 'botblocker-security' ),
 				'visitors_cleared'        => __( 'Visitors data successfully cleared!', 'botblocker-security' ),
 				'failed_clear_visitors'   => __( 'Failed to clear visitors data.', 'botblocker-security' ),
 				'rewrite_flushed'         => __( 'Rewrite rules successfully flushed!', 'botblocker-security' ),

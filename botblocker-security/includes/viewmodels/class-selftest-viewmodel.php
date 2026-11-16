@@ -74,6 +74,8 @@ final class Botblocker_SelfTestViewModel {
 				'on'          => __( 'On', 'botblocker-security' ),
 				'off'         => __( 'Off', 'botblocker-security' ),
 				'silent'      => __( 'Silent', 'botblocker-security' ),
+				'full'        => __( 'Full', 'botblocker-security' ),
+				'frontend'    => __( 'Frontend', 'botblocker-security' ),
 				'silentAlert' => __( 'Silent captcha is on. Every new visitor goes through the captcha, but it runs automatically, so there is nothing to click or solve.', 'botblocker-security' ),
 			),
 			'steps'             => array(

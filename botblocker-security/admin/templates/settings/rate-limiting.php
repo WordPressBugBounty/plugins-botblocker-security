@@ -13,6 +13,14 @@ use BotBlocker\Component\FieldPair;
 return static function (Botblocker_SettingsViewModel $data, bool $isActive): void {
     $captcha_rpm = (string) $data->get('bbcs_rate_captcha_rpm', '30');
     $block_rpm = (string) $data->get('bbcs_rate_block_rpm', '50');
+    $passed_rpm = (string) $data->get('bbcs_rate_passed_rpm', '300');
+    $passed_captcha = (string) $data->get('bbcs_rate_passed_captcha_rpm', '150');
+    if ($passed_rpm === '') {
+        $passed_rpm = '300';
+    }
+    if ($passed_captcha === '') {
+        $passed_captcha = '150';
+    }
     $block_dur = (string) $data->get('bbcs_rate_block_duration', '600');
     $window = (string) $data->get('bbcs_rate_window_minutes', '5');
     $subnet_mult = (string) $data->get('bbcs_rate_subnet_multiplier', '3');
@@ -61,7 +69,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
             <?php
             SettingsGroup::make()
                 ->withTitle( __( 'Rate Limiting', 'botblocker-security' ) )
-                ->withItems( static function () use ( $data, $captcha_rpm, $block_rpm, $block_dur, $window ): void {
+                ->withItems( static function () use ( $data, $captcha_rpm, $block_rpm, $block_dur, $window, $passed_rpm, $passed_captcha ): void {
                     ToggleOption::make()->withName( 'bbcs_rate_check_enabled' )->withChecked( $data->is_checked( 'bbcs_rate_check_enabled' ) )->withLabel( __( 'Enable Rate Limiting', 'botblocker-security' ) )->withTooltip( __( 'Track request velocity per IP and issue Captcha or block when thresholds are exceeded.', 'botblocker-security' ) )->withDocLink( BotBlockerDocs::url( 'bbcs_rate_check_enabled' ) )->render();
 
                     FieldPair::make()
@@ -85,6 +93,31 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
                                 ->withSuffix( __( 'rpm', 'botblocker-security' ) )
                                 ->withEditable()
                                 ->withDocLink( BotBlockerDocs::url( 'bbcs_rate_block_rpm' ) )
+                                ->render();
+                        } )
+                        ->render();
+
+                    FieldPair::make()
+                        ->withItems( static function () use ( $passed_rpm, $passed_captcha ): void {
+                            TextInput::make()
+                                ->withName( 'bbcs_rate_passed_rpm' )
+                                ->withValue( (string) $passed_rpm )
+                                ->withType( 'number' )
+                                ->withLabel( __( 'Passed Visitor Block Threshold', 'botblocker-security' ) )
+                                ->withTooltip( __( 'Requests per minute that block a visitor who already passed the challenge. Passed visitors are counted too, with a higher limit. Default: 300.', 'botblocker-security' ) )
+                                ->withSuffix( __( 'rpm', 'botblocker-security' ) )
+                                ->withEditable()
+                                ->withDocLink( BotBlockerDocs::url( 'bbcs_rate_passed_rpm' ) )
+                                ->render();
+                            TextInput::make()
+                                ->withName( 'bbcs_rate_passed_captcha_rpm' )
+                                ->withValue( (string) $passed_captcha )
+                                ->withType( 'number' )
+                                ->withLabel( __( 'Passed Visitor Captcha Threshold', 'botblocker-security' ) )
+                                ->withTooltip( __( 'Requests per minute that re-challenge a passed visitor. Default: 150.', 'botblocker-security' ) )
+                                ->withSuffix( __( 'rpm', 'botblocker-security' ) )
+                                ->withEditable()
+                                ->withDocLink( BotBlockerDocs::url( 'bbcs_rate_passed_captcha_rpm' ) )
                                 ->render();
                         } )
                         ->render();

@@ -18,24 +18,7 @@ return static function (Botblocker_SettingsViewModel $data, bool $isActive): voi
 	$pkg = $data->get('bbcs_captcha_img_pack', '1');
 	$wait = (string) $data->get('bbcs_captcha_wait', '30');
 
-	$mode_options = array(
-		(string) BOTBLOCKER_CAPTCHA_MODE_SILENT            => __( 'Silent Auto-Verify (No Captcha)', 'botblocker-security' ),
-		(string) BOTBLOCKER_CAPTCHA_MODE_BUTTON            => __( 'Button - "I am not a robot"', 'botblocker-security' ),
-		(string) BOTBLOCKER_CAPTCHA_MODE_COLOR_BUTTONS     => __( 'Color Buttons', 'botblocker-security' ),
-		(string) BOTBLOCKER_CAPTCHA_MODE_IMAGE             => __( 'BotBlocker Image Captcha', 'botblocker-security' ),
-		(string) BOTBLOCKER_CAPTCHA_MODE_RECAPTCHA_V2_BUTTON => __( 'reCaptcha v2 - "I am not a robot"', 'botblocker-security' ),
-		(string) BOTBLOCKER_CAPTCHA_MODE_RECAPTCHA_V2      => __( 'reCaptcha v2', 'botblocker-security' ),
-		(string) BOTBLOCKER_CAPTCHA_MODE_SHAPE             => __( 'Dynamic Shape Captcha', 'botblocker-security' ),
-		(string) BOTBLOCKER_CAPTCHA_MODE_DIGIT             => __( 'Dynamic Digit Captcha', 'botblocker-security' ),
-		(string) BOTBLOCKER_CAPTCHA_MODE_HOLD              => __( 'Hold Button Captcha', 'botblocker-security' ),
-	);
-
-	// Active addon captcha modes appear automatically; the filter may
-	// override labels or add extras.
-	if ( class_exists( 'BotBlockerCaptchaRegistry' ) ) {
-		$mode_options = BotBlockerCaptchaRegistry::optionsForSelect( $mode_options );
-	}
-	$mode_options = apply_filters( 'bbcs_captcha_mode_options', $mode_options );
+	$mode_options = BotBlockerUI::captcha_mode_options();
 
 	// Without configured Site/Secret keys the reCaptcha v2 modes must not be selectable.
 	if ( ! $data->has_recaptcha_v2 ) {

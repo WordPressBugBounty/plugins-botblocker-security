@@ -34,8 +34,8 @@
             var mode = $btn.data('mode');
             var $card = $btn.closest('.bbcs-profile-choice');
             
-            // Check if Full Protection requires PRO
-            if (mode === 'full') {
+            // Check if a PRO-only protection level was requested
+            if (mode === 'full' || mode === 'emergency') {
                 var $modal = $btn.closest('.bbcs-oneclick-modal, .modal');
                 if (!$modal.length) { $modal = $('#bbcsOneClickSetupModal'); }
                 var proAttr = $modal.attr('data-pro');

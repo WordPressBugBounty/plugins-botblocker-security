@@ -87,6 +87,7 @@ class BotBlockerRugov {
 	}
 
 	public static function recordFailure( string $error ): void {
+		do_action( 'bbcs_cron_task_failed', $error );
 		$status   = self::getStatus();
 		$failures = (int) ( $status['failures'] ?? 0 ) + 1;
 		self::setStatus(

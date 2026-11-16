@@ -7,6 +7,39 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class BotBlockerCheck {
 
+	/**
+	 * Variants of a User-Agent used for signature matching: the raw value plus
+	 * up to two percent-decoded forms, so encoded and double-encoded tokens
+	 * cannot slip past a literal signature.
+	 *
+	 * @return array<int,string>
+	 */
+	public static function userAgentVariants( string $ua ): array {
+		$variants = array();
+		if ( '' === $ua ) {
+			return $variants;
+		}
+		$variants[] = $ua;
+		$decoded    = $ua;
+		for ( $i = 0; $i < 2; $i++ ) {
+			$next = urldecode( $decoded );
+			if ( $next === $decoded ) {
+				break;
+			}
+			$decoded    = $next;
+			$variants[] = $decoded;
+		}
+		return $variants;
+	}
+
+	/**
+	 * Real browsers and bots send printable ASCII. Any other byte is an
+	 * anomaly: fullwidth, combining marks, homoglyphs and control bytes.
+	 */
+	public static function userAgentHasNonAscii( string $ua ): bool {
+		return 1 === preg_match( '/[^\x20-\x7E]/', $ua );
+	}
+
 	public static function responseFormatForUri( string $uri ): string {
 		$query = wp_parse_url( $uri, PHP_URL_QUERY );
 		if ( is_string( $query ) ) {

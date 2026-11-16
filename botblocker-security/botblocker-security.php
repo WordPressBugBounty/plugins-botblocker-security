@@ -14,13 +14,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @link              https://globus.studio
  * @package           botblocker-security
- * @version           1.7.11
+ * @version           1.7.12
  *
  * @wordpress-plugin
  * Plugin Name:       BotBlocker Security - Complete security platform
  * Plugin URI:        https://botblocker.top/
  * Description:       Complete security platform for everyday: block bots, brute-force, viruses, spam, fake crawlers. WAF, 2FA, no-malware, proactive defense, 200+ tools
- * Version:           1.7.11
+ * Version:           1.7.12
  * Author:            Yevhen Leonidov
  * Author URI:        https://leonidov.dev/
  * License:           GPL-2.0+
@@ -57,9 +57,7 @@ require_once BOTBLOCKER_DIR . 'includes/integrations/class-botblocker-freemius.p
 BotBlockerFreemius::boot();
 
 if ( is_admin() || wp_doing_cron() || wp_doing_ajax() || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
-	require_once BOTBLOCKER_DIR . 'helpers-admin-deferred.php';
-	require_once BOTBLOCKER_DIR . 'core-helpers-admin.php';
-	require_once BOTBLOCKER_DIR . 'helpers-admin.php';
+	BotBlockerBootstrap::loadAdminHelpers();
 }
 
 // Include license functionality
@@ -75,7 +73,7 @@ if ( class_exists( 'BotBlockerCloudBb' ) ) {
  *
  * @return void
  */
-register_activation_hook( __FILE__, array( 'Botblocker_Activator', 'activate' ) );
+register_activation_hook( __FILE__, array( 'BotBlockerBootstrap', 'activate' ) );
 
 /**
  * Deactivates the BotBlocker plugin.
@@ -85,6 +83,6 @@ register_activation_hook( __FILE__, array( 'Botblocker_Activator', 'activate' ) 
  *
  * @return void
  */
-register_deactivation_hook( __FILE__, array( 'Botblocker_Deactivator', 'deactivate' ) );
+register_deactivation_hook( __FILE__, array( 'BotBlockerBootstrap', 'deactivate' ) );
 
 /* End of file botblocker-security.php */

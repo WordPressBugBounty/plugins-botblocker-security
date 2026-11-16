@@ -301,16 +301,7 @@
       var slug = tabId.replace(/\s+/g, '-').replace(/_/g, '-').toLowerCase();
       var focusMatch = (window.location.hash || '').match(/[?&]focus=([^&]+)/);
       var focusSuffix = focusMatch ? '&focus=' + focusMatch[1] : '';
-
-      // Marketplace items: set hash to #marketplace&focus=slug so &focus highlights the card
-      if (tabId.indexOf('market-') === 0) {
-        focusSuffix = '&focus=' + encodeURIComponent(tabId.slice(7));
-        try { history.replaceState(null, '', '#marketplace' + focusSuffix); } catch (_) {}
-        var fn = (window.BBCS_Helpers && window.BBCS_Helpers.findAndScrollToSetting) || function(){};
-        setTimeout(function() { fn(tabId.slice(7)); }, 200);
-      } else {
-        try { history.replaceState(null, '', '#' + slug + focusSuffix); } catch (_) {}
-      }
+      try { history.replaceState(null, '', '#' + slug + focusSuffix); } catch (_) {}
 
       var label = $item.find('.bbcs-snav-label').text();
       var icon = $item.data('snav-icon');

@@ -38,34 +38,47 @@ class BotBlockerCloudApiHooks {
 		if ( ! current_user_can( BotBlockerMultisite::canManage() ) ) {
 			wp_send_json_error( array( 'message' => __( 'Unauthorized.', 'botblocker-security' ) ) ); }
 
+		$result = self::requestLicensePushResult();
+		$data   = array(
+			'push'      => (string) $result['push'],
+			'http_code' => (int) $result['http_code'],
+			'reason'    => (string) $result['reason'],
+		);
+
+		if ( BotBlockerLicensePush::CONNECTED === $result['push'] ) {
+			wp_send_json_success( $data );
+		}
+
+		$data['message'] = (string) $result['message'];
+		wp_send_json_error( $data );
+	}
+
+	/**
+	 * Ask the cloud to push the license to this site.
+	 *
+	 * @return array{push:string,http_code:int,reason:string,message:string,activated:bool,license:array}
+	 */
+	public static function requestLicensePushResult(): array {
 		$push_nonce = wp_generate_password( 32, false );
 		set_transient( BotBlockerCloudBb::PUSH_NONCE_TRANSIENT, $push_nonce, self::PUSH_NONCE_TTL );
 
 		$cloud = BotBlockerBackend::sendToCloud( array( 'push_nonce' => $push_nonce ), 'request_license_push', self::PUSH_TIMEOUT );
 		delete_transient( BotBlockerCloudBb::PUSH_NONCE_TRANSIENT );
 		if ( ! is_array( $cloud ) ) {
-			wp_send_json_error(
-				array(
-					'push'      => BotBlockerLicensePush::UNREACHABLE,
-					'http_code' => 0,
-					'reason'    => BotBlockerLicensePush::CLOUD_UNREACHABLE,
-					'message'   => __( 'Could not reach the license server. Try again later.', 'botblocker-security' ),
-				)
+			return array(
+				'push'      => BotBlockerLicensePush::UNREACHABLE,
+				'http_code' => 0,
+				'reason'    => BotBlockerLicensePush::CLOUD_UNREACHABLE,
+				'message'   => __( 'Could not reach the license server. Try again later.', 'botblocker-security' ),
+				'activated' => false,
+				'license'   => self::licenseState(),
 			);
 		}
 
 		$push      = isset( $cloud['push'] ) ? sanitize_key( (string) $cloud['push'] ) : '';
 		$http_code = isset( $cloud['http_code'] ) ? (int) $cloud['http_code'] : 0;
 		$reason    = isset( $cloud['reason'] ) ? sanitize_key( (string) $cloud['reason'] ) : '';
-		$data      = array(
-			'push'      => $push,
-			'http_code' => $http_code,
-			'reason'    => $reason,
-		);
-
-		if ( BotBlockerLicensePush::CONNECTED === $push ) {
-			wp_send_json_success( $data );
-		}
+		$message   = __( 'The license was pushed to this site.', 'botblocker-security' );
 
 		switch ( $push ) {
 			case BotBlockerLicensePush::BLOCKED:
@@ -83,13 +96,51 @@ class BotBlockerCloudApiHooks {
 			case BotBlockerLicensePush::RATE_LIMITED:
 				$message = __( 'Please wait a minute before trying again.', 'botblocker-security' );
 				break;
+			case BotBlockerLicensePush::CONNECTED:
+				break;
 			default:
 				$message = __( 'Cloud could not reach your site (may be host limits). Paste the key manually.', 'botblocker-security' );
 				break;
 		}
 
-		$data['message'] = $message;
-		wp_send_json_error( $data );
+		$license = self::licenseState();
+
+		return array(
+			'push'      => $push,
+			'http_code' => $http_code,
+			'reason'    => $reason,
+			'message'   => $message,
+			'activated' => BotBlockerLicensePush::CONNECTED === $push && ! empty( $license['active'] ),
+			'license'   => $license,
+		);
+	}
+
+	/**
+	 * @return array{active:bool,expired:bool,type:string,tier:string,key_configured:bool,remaining_days:int,remaining_hits:int}
+	 */
+	private static function licenseState(): array {
+		if ( ! class_exists( 'BotBlockerPro' ) ) {
+			return array(
+				'active'         => false,
+				'expired'        => false,
+				'type'           => '',
+				'tier'           => '',
+				'key_configured' => false,
+				'remaining_days' => 0,
+				'remaining_hits' => 0,
+			);
+		}
+		$days = BotBlockerPro::getRemainingDays();
+		$hits = BotBlockerPro::getRemainingHits();
+		return array(
+			'active'         => BotBlockerPro::isActive(),
+			'expired'        => BotBlockerPro::isExpired(),
+			'type'           => (string) BotBlockerPro::getType(),
+			'tier'           => (string) BotBlockerPro::getTier(),
+			'key_configured' => BotBlockerPro::getKey() !== '',
+			'remaining_days' => is_numeric( $days ) ? (int) $days : 0,
+			'remaining_hits' => is_numeric( $hits ) ? (int) $hits : 0,
+		);
 	}
 
 	public static function connectKey( string $key, int $license_id ): ?string {

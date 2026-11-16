@@ -98,6 +98,152 @@ trait BotBlockerRulesTrait {
 		return false;
 	}
 
+	/**
+	 * Effective trust role for the current request.
+	 */
+	private function bot_edge_role(): string {
+		if ( isset( $this->edge_role ) && $this->edge_role !== '' ) {
+			return (string) $this->edge_role;
+		}
+		if ( $this->edge_scope === 'auto_bot' ) {
+			return 'edge_auto';
+		}
+		if ( $this->edge_state === 'unknown_edge' || $this->edge_state === 'edge_unresolved' ) {
+			return 'unknown_edge';
+		}
+		if ( $this->edge_state === 'trusted_edge' ) {
+			return 'edge';
+		}
+		return 'direct';
+	}
+
+	/**
+	 * Addresses that may prove the bot identity, in trust order.
+	 *
+	 * @return array<int,string>
+	 */
+	private function bot_candidate_ips(): array {
+		$role = $this->bot_edge_role();
+		$ips  = array();
+
+		if ( $role === 'edge' ) {
+			if ( $this->ip !== '' ) {
+				$ips[] = (string) $this->ip;
+			}
+			if ( $this->peer_ip !== '' ) {
+				$ips[] = (string) $this->peer_ip;
+			}
+		} elseif ( $role === 'edge_auto' ) {
+			if ( $this->edge_client !== '' ) {
+				$ips[] = (string) $this->edge_client;
+			}
+			if ( $this->peer_ip !== '' ) {
+				$ips[] = (string) $this->peer_ip;
+			}
+			if ( $this->ip !== '' ) {
+				$ips[] = (string) $this->ip;
+			}
+		} else {
+			$ip = $this->peer_ip !== '' ? (string) $this->peer_ip : (string) $this->ip;
+			if ( $ip !== '' ) {
+				$ips[] = $ip;
+			}
+		}
+
+		return array_values( array_unique( $ips ) );
+	}
+
+	/**
+	 * Verify an arbitrary address against the trusted-bot token set.
+	 *
+	 * @param array<int,mixed> $tokens PTR, asn: and ip: tokens of one bot row.
+	 */
+	// A claimed client is auto-trust evidence only when it is outside every trust map.
+	private function bot_claim_outside_trust_maps( string $ip ): bool {
+		if ( filter_var( $ip, FILTER_VALIDATE_IP ) === false ) {
+			return false;
+		}
+		foreach ( array_keys( (array) $this->bbcs_proxy ) as $mask ) {
+			if ( BotBlockerIp::netMatch( (string) $mask, $ip ) ) {
+				return false;
+			}
+		}
+		foreach ( array_keys( (array) $this->bbcs_bot_networks ) as $mask ) {
+			if ( BotBlockerIp::netMatch( (string) $mask, $ip ) ) {
+				return false;
+			}
+		}
+		if ( class_exists( 'BotBlockerEdgeStats' ) ) {
+			foreach ( array_keys( BotBlockerEdgeStats::autoTrustMap() ) as $mask ) {
+				if ( BotBlockerIp::netMatch( (string) $mask, $ip ) ) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	private function verify_bot_ip( string $ip, array $tokens ): bool {
+		if ( $ip === '' || ! filter_var( $ip, FILTER_VALIDATE_IP ) ) {
+			return false;
+		}
+		if ( $this->ip_matches_bot_tokens( $ip, $tokens ) ) {
+			return true;
+		}
+		if ( $this->asn_matches_bot_tokens( $ip, $tokens ) ) {
+			return true;
+		}
+
+		$ptr_tokens = array();
+		foreach ( $tokens as $token ) {
+			if ( ! is_string( $token ) || strncmp( $token, 'asn:', 4 ) === 0 || strncmp( $token, 'ip:', 3 ) === 0 ) {
+				continue;
+			}
+			$ptr_tokens[] = $token;
+		}
+		if ( empty( $ptr_tokens ) ) {
+			return false;
+		}
+		return BotBlockerIp::isWhiteBot( $ip, $ptr_tokens, $this->time, $this->settings->ptrcache_time ) === true;
+	}
+
+	private function ip_matches_bot_tokens( string $ip, array $tokens ): bool {
+		foreach ( $tokens as $token ) {
+			if ( ! is_string( $token ) || strncmp( $token, 'ip:', 3 ) !== 0 ) {
+				continue;
+			}
+			$value = substr( $token, 3 );
+			if ( strpos( $value, '/' ) !== false ) {
+				if ( BotBlockerIp::matches( $value, $ip ) ) {
+					return true;
+				}
+			} elseif ( $value === $ip ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private function asn_matches_bot_tokens( string $ip, array $tokens ): bool {
+		$asnum = $ip === (string) $this->ip ? $this->get_normalized_asnum() : '';
+		if ( $asnum === '' && class_exists( 'BotBlockerAsnDb' ) ) {
+			$row   = BotBlockerAsnDb::lookup( $ip );
+			$asnum = is_array( $row ) ? preg_replace( '/[^0-9]/', '', (string) ( $row['asn'] ?? '' ) ) : '';
+		}
+		if ( $asnum === '' || empty( $this->bbcs_asn[ $asnum ] ) ) {
+			return false;
+		}
+		if ( strtolower( trim( (string) $this->bbcs_asn[ $asnum ] ) ) !== BBCS_RULE_ALLOW ) {
+			return false;
+		}
+		foreach ( $tokens as $token ) {
+			if ( is_string( $token ) && strncmp( $token, 'asn:', 4 ) === 0 && preg_replace( '/[^0-9]/', '', substr( $token, 4 ) ) === $asnum ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public function check_options_preflight(): bool {
 		if ( ! isset( $this->settings->options_preflight ) || $this->settings->options_preflight != 1 ) {
 			return false;
@@ -141,17 +287,29 @@ trait BotBlockerRulesTrait {
 				return false;
 			}
 
-			foreach ( $cidrs as $cidr ) {
-				if ( BotBlockerIp::matches( $cidr, $this->ip ) ) {
-					$this->result_of_action = "Legal LLM bot: {$matched_token}";
-					$this->white_bot        = $matched_token;
-					$this->visitorType      = self::VISITOR_LEGALBOT;
-					BotBlockerStore::storeData( null, 5 );
-					BotBlockerCounters::processHit( 5 );
-					return true;
+			foreach ( $this->bot_candidate_ips() as $candidate_ip ) {
+				foreach ( $cidrs as $cidr ) {
+					if ( BotBlockerIp::matches( $cidr, $candidate_ip ) ) {
+						$this->edge_verified_by = $candidate_ip === $this->peer_ip ? 'peer' : 'client';
+						$this->result_of_action = "Legal LLM bot: {$matched_token}";
+						$this->white_bot        = $matched_token;
+						$this->visitorType      = self::VISITOR_LEGALBOT;
+						BotBlockerStore::storeData( null, 5 );
+						BotBlockerCounters::processHit( 5 );
+						return true;
+					}
 				}
 			}
 
+			$role  = $this->bot_edge_role();
+			$state = (string) $this->edge_state;
+			if ( $role === 'unknown_edge' && class_exists( 'BotBlockerEdgeStats' ) ) {
+				BotBlockerEdgeStats::record( $this, $matched_token, false );
+			}
+			if ( $role === 'unknown_edge' || $state === 'edge_unresolved' ) {
+				$this->redirect_to_denied( 61, "Unverified LLM bot edge: {$matched_token} (peer: {$this->peer_ip})" );
+				return true;
+			}
 			$this->redirect_to_denied( 7, "Fake LLM bot: {$matched_token}" );
 			return true;
 		}
@@ -314,21 +472,9 @@ trait BotBlockerRulesTrait {
 					break;
 				}
 
-				if ( $this->is_allowed_asn_for_white_bot( $bbcs_sign ) ) {
-					$this->result_of_action = 'Legal bot by ASN token: ' . $bbcs_line . ' (asn:' . (string) $this->asnum . ')';
-					$this->white_bot        = $bbcs_line;
-					$this->visitorType      = self::VISITOR_LEGALBOT;
-					break;
-				}
+				$role            = $this->bot_edge_role();
+				$edge_unresolved = in_array( $this->edge_state, array( 'unknown_edge', 'edge_unresolved' ), true );
 
-				if ( $this->has_matching_ip_token( $bbcs_sign ) ) {
-					$this->result_of_action = 'Legal bot by IP token: ' . $bbcs_line . ' (ip:' . (string) $this->ip . ')';
-					$this->white_bot        = $bbcs_line;
-					$this->visitorType      = self::VISITOR_LEGALBOT;
-					break;
-				}
-
-				// Strip asn: and ip: tokens - PTR verification only works with domain suffixes.
 				$ptr_tokens = array();
 				foreach ( $bbcs_sign as $token ) {
 					if ( ! is_string( $token ) || strncmp( $token, 'asn:', 4 ) === 0 || strncmp( $token, 'ip:', 3 ) === 0 ) {
@@ -336,18 +482,46 @@ trait BotBlockerRulesTrait {
 					}
 					$ptr_tokens[] = $token;
 				}
-				if ( empty( $ptr_tokens ) ) {
-					$this->redirect_to_denied( 7, "Fake bot detected: {$bbcs_line}" );
-				} elseif ( BotBlockerIp::isWhiteBot( $this->ip, $ptr_tokens, $this->time, $this->settings->ptrcache_time ) === true ) {
-					if ( ! in_array( '.', $ptr_tokens, true ) ) {
-						BotBlockerDb::storePTRrule();
+
+				$verified_ip = '';
+				$verified_by = '';
+				foreach ( $this->bot_candidate_ips() as $candidate ) {
+					if ( $candidate === '' || ! $this->verify_bot_ip( $candidate, $bbcs_sign ) ) {
+						continue;
 					}
-					$this->result_of_action = "Legal bot detected: {$bbcs_line}";
+					$verified_ip = $candidate;
+					$verified_by = $candidate === $this->peer_ip ? 'peer' : 'client';
+					break;
+				}
+
+				if ( $verified_ip !== '' ) {
+					$this->edge_verified_by = $verified_by;
+					if ( $verified_by === 'client' && $role === 'edge' && ! in_array( '.', $ptr_tokens, true ) ) {
+						BotBlockerDb::storePTRrule( $verified_ip );
+					}
+					$this->result_of_action = "Legal bot detected ({$verified_by}): {$bbcs_line}";
 					$this->white_bot        = $bbcs_line;
 					$this->visitorType      = self::VISITOR_LEGALBOT;
-				} else {
-					$this->redirect_to_denied( 7, "Fake bot detected: {$bbcs_line}" );
+					if ( class_exists( 'BotBlockerEdgeStats' ) && $role === 'unknown_edge' ) {
+						$verified_client = '';
+						$claimed         = (string) $this->edge_claimed;
+						if ( $claimed !== '' && $this->bot_claim_outside_trust_maps( $claimed ) && $this->verify_bot_ip( $claimed, $bbcs_sign ) ) {
+							$verified_client = $claimed;
+						}
+						BotBlockerEdgeStats::record( $this, $bbcs_line, true, $verified_client );
+					}
+					break;
 				}
+
+				if ( $edge_unresolved ) {
+					if ( class_exists( 'BotBlockerEdgeStats' ) && $role === 'unknown_edge' ) {
+						BotBlockerEdgeStats::record( $this, $bbcs_line, false );
+					}
+					$this->redirect_to_denied( 61, "Unverified bot edge: {$bbcs_line} (peer: {$this->peer_ip})" );
+					break;
+				}
+
+				$this->redirect_to_denied( 7, "Fake bot detected: {$bbcs_line} (ptr: " . (string) $this->ptr . ')' );
 				break;
 			}
 		}
@@ -588,7 +762,7 @@ trait BotBlockerRulesTrait {
 				BotBlockerSelfTest::record( 'allow_rule_ignored', (string) $bbcs_ip_test['search'] );
 			} elseif ( $ip_sign === BBCS_RULE_ALLOW ) {
 
-				if ( (int) $bbcs_ip_test['readonly'] === 1 && ( $bbcs_ip_test['comment'] === 'IPv4 BotBlocker Server' || $bbcs_ip_test['comment'] === 'IPv6 BotBlocker Server' ) ) {
+				if ( (int) $bbcs_ip_test['readonly'] === 1 && strpos( (string) $bbcs_ip_test['comment'], BotBlockerInstallIp::SERVER_POOL_MARKER ) !== false ) {
 					$this->visitorType = self::VISITOR_BOTBLOCKER;
 					$this->isDisabled  = true;
 					BotBlockerStore::storeData( 'BotBlocker server', 99 );

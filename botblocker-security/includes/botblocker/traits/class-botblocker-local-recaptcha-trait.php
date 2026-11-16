@@ -36,6 +36,10 @@ trait BotBlockerLocalReCaptchaTrait {
 
 			$body = wp_remote_retrieve_body( $resp );
 			$re   = json_decode( $body, true );
+			if ( defined( 'BBCS_CAPTCHA_DIAG' ) && BBCS_CAPTCHA_DIAG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+				error_log( 'BBCS reCAPTCHA v3 siteverify response: ' . wp_json_encode( $re ) );
+			}
 
 			if ( isset( $re['score'] ) ) {
 				$this->post_recaptcha_score = trim( (string) $re['score'] );

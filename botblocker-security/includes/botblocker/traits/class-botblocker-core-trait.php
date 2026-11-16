@@ -38,6 +38,7 @@ trait BotBlockerCoreTrait {
 			'asn_rules.php'      => 'BotBlockerFileRenderer::renderAsn',
 			'ip.php'             => 'BotBlockerFileRenderer::renderIps',
 			'proxy.php'          => 'BotBlockerFileRenderer::renderProxy',
+			'bot-networks.php'   => 'BotBlockerFileRenderer::renderBotNetworks',
 			'paths.php'          => 'BotBlockerFileRenderer::renderPaths',
 			'rules.php'          => 'BotBlockerFileRenderer::renderRules',
 			'tls_fingerprints.php' => 'BotBlockerFileRenderer::renderTlsFingerprints',
@@ -72,6 +73,7 @@ trait BotBlockerCoreTrait {
 		$this->bbcs_llm       = array();
 		$this->bbcs_good_bots = array();
 		$this->bbcs_proxy     = array();
+		$this->bbcs_bot_networks = array();
 		$this->bbcs_path      = array();
 		$this->bbcs_custom_rules = array();
 		$this->bbcs_tls_fingerprints = array();
@@ -146,6 +148,10 @@ trait BotBlockerCoreTrait {
 		if ( file_exists( BotBlockerMultisite::getDataDir() . 'proxy.php' ) ) {
 			$proxy            = BotBlockerDataFile::safeLoadWithRecovery( BotBlockerMultisite::getDataDir() . 'proxy.php' );
 			$this->bbcs_proxy = $proxy['bbcs_proxy'] ?? $this->bbcs_proxy;
+		}
+		if ( file_exists( BotBlockerMultisite::getDataDir() . 'bot-networks.php' ) ) {
+			$networks                 = BotBlockerDataFile::safeLoadWithRecovery( BotBlockerMultisite::getDataDir() . 'bot-networks.php' );
+			$this->bbcs_bot_networks  = $networks['bbcs_bot_networks'] ?? $this->bbcs_bot_networks;
 		}
 	}
 

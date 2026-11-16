@@ -11,6 +11,17 @@ class BotBlocker_SetupWizard {
 
 	use BotBlocker_SetupWizardAjaxTrait;
 
+	const REDIRECT_POSTPONED_PAGES = array(
+		'post.php',
+		'post-new.php',
+		'site-editor.php',
+		'plugin-editor.php',
+		'theme-editor.php',
+		'update.php',
+		'update-core.php',
+		'admin-post.php',
+	);
+
 	public function hooks(): void {
 		add_action( 'admin_init', array( $this, 'load_wizard' ) );
 		add_action( 'admin_init', array( $this, 'redirect_after_activation' ), 9999 );
@@ -63,7 +74,7 @@ class BotBlocker_SetupWizard {
 
 	public function redirect_after_activation(): void {
 
-		if ( wp_doing_ajax() || wp_doing_cron() ) {
+		if ( wp_doing_ajax() || wp_doing_cron() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
 			return;
 		}
 
@@ -81,6 +92,20 @@ class BotBlocker_SetupWizard {
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( isset( $_GET['page'] ) && $_GET['page'] === 'bbcs_setup_wizard' ) {
+			return;
+		}
+
+		global $pagenow;
+		if ( in_array( $pagenow, self::REDIRECT_POSTPONED_PAGES, true ) ) {
+			return;
+		}
+
+		$method = 'GET';
+		if ( isset( $_SERVER['REQUEST_METHOD'] ) ) {
+			$method = strtoupper( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) );
+		}
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( $method !== 'GET' || isset( $_GET['_wpnonce'] ) ) {
 			return;
 		}
 
@@ -106,19 +131,9 @@ class BotBlocker_SetupWizard {
 			return;
 		}
 
-		// On single site or per-site activation: redirect immediately from plugins.php.
-		global $pagenow;
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$is_activation_request = isset( $_GET['activate'] ) || isset( $_GET['activate-multi'] );
-		$is_plugins_page       = 'plugins.php' === $pagenow && $is_activation_request;
-
-		// On multisite subsites the admin may never visit plugins.php, so
-		// redirect from any admin page when the flag is still present.
-		if ( $is_plugins_page || is_multisite() ) {
-			BotBlockerMultisite::deleteOption( 'bbcs_activation_redirect' );
-			wp_safe_redirect( BotBlockerMultisite::getSiteAdminPageUrl( 'bbcs_setup_wizard' ) );
-			exit;
-		}
+		BotBlockerMultisite::deleteOption( 'bbcs_activation_redirect' );
+		wp_safe_redirect( BotBlockerMultisite::getSiteAdminPageUrl( 'bbcs_setup_wizard' ) );
+		exit;
 	}
 
 	private function load_new_ui_wizard(): void {
@@ -214,6 +229,7 @@ class BotBlocker_SetupWizard {
 							'ajax_error_captcha'     => __( 'AJAX error during captcha save', 'botblocker-security' ),
 							'ajax_error_init'        => __( 'AJAX error during init mode save', 'botblocker-security' ),
 							'ajax_error_cache'       => __( 'AJAX error during cache save', 'botblocker-security' ),
+							'test_passed'            => __( 'Passed', 'botblocker-security' ),
 							'test_failed_prefix'     => __( 'Test failed: ', 'botblocker-security' ),
 							'saving'                 => __( 'Saving...', 'botblocker-security' ),
 							'apply_preset'           => __( 'Apply preset', 'botblocker-security' ),

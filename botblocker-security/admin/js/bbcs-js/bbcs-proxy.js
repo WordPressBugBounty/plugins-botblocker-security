@@ -100,6 +100,7 @@
                     { data: "id", visible: false },
                     { data: "key", width: "150px" },
                     { data: "value", width: "150px" },
+                    { data: "role", width: "110px" },
                     { data: "comment", width: "150px" },
                     {
                         data: null,
@@ -339,6 +340,7 @@
                         $("#editProxyForm").find('[name="id"]').val(data.id);
                         $("#editProxyForm").find('[name="key"]').val(data.key);
                         $("#editProxyForm").find('[name="value"]').val(data.value);
+                        $("#editProxyForm").find('[name="role"]').val(data.role || "edge");
                         $("#editProxyForm").find('[name="comment"]').val(data.comment);
                         $("#editProxyModal").modal("show");
                     } else {

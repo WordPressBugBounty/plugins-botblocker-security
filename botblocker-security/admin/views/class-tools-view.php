@@ -38,6 +38,7 @@ final class Botblocker_Tools_View {
 			'db-repair.php',
 			'hits-clear.php',
 			'transient-clear.php',
+			'ptr-cache-clear.php',
 			'rewrite-rules.php',
 			'object-cache.php',
 		);

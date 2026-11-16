@@ -40,22 +40,51 @@ class BotBlockerDb {
 		$done = true;
 	}
 
-	public static function storePTRrule(): bool {
+	/**
+	 * PTR rules are exact by default. An empty or malformed setting must never
+	 * fall back to the rate-limit /24-/64 parser default.
+	 *
+	 * @return array{0:int,1:int}
+	 */
+	private static function ptrSubnetMasks( string $setting ): array {
+		$setting = trim( $setting );
+		if ( $setting === '' || ! preg_match( '/^(ipv6-)?[0-9]{1,3}(-[0-9]{1,3})?$/', $setting ) ) {
+			return array( 32, 128 );
+		}
+		$masks = BotBlockerIp::parseRateSubnetMask( $setting );
+		if ( $masks[0] < 0 || $masks[0] > 32 || $masks[1] < 0 || $masks[1] > 128 ) {
+			return array( 32, 128 );
+		}
+		return $masks;
+	}
+
+	public static function storePTRrule( string $ip = '' ): bool {
 		$BBCS = BotBlocker::getInstance();
 		global $wpdb;
 
-		if ( $BBCS->ip_version != 4 && $BBCS->ip_version != 6 ) {
+		if ( $ip === '' ) {
+			if ( $BBCS->ip_version != 4 && $BBCS->ip_version != 6 ) {
+				return false;
+			}
+			$ip = (string) $BBCS->ip;
+		}
+		$ip_version = BotBlockerIp::getVersion( $ip );
+		if ( $ip_version !== 4 && $ip_version !== 6 ) {
 			return false;
 		}
 
-		$subnet_setting = isset( $BBCS->settings->ptrcache_subnet ) ? (string) $BBCS->settings->ptrcache_subnet : '24-64';
-		$masks          = BotBlockerIp::parseRateSubnetMask( $subnet_setting );
+		$subnet_setting = isset( $BBCS->settings->ptrcache_subnet ) ? (string) $BBCS->settings->ptrcache_subnet : '32-128';
+		$masks          = self::ptrSubnetMasks( $subnet_setting );
 		$mask_v4        = $masks[0];
 		$mask_v6        = $masks[1];
 
-		$search_cidr = BotBlockerIp::computePtrSubnet( $BBCS->ip, $BBCS->ip_version, $mask_v4, $mask_v6 );
+		if ( $ip_version == 4 ) {
+			$search_cidr = $mask_v4 >= 32 ? $ip . '/32' : BotBlockerIp::computePtrSubnet( $ip, 4, $mask_v4, $mask_v6 );
+		} else {
+			$search_cidr = $mask_v6 >= 128 ? BotBlockerIp::expandIPv6( $ip ) . '/128' : BotBlockerIp::computePtrSubnet( $ip, 6, $mask_v4, $mask_v6 );
+		}
 
-		if ( $BBCS->ip_version == 4 ) {
+		if ( $ip_version == 4 ) {
 			// REVIEWER NOTE: custom table operations require direct database queries.
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$existing_entry = $wpdb->get_var(
@@ -94,11 +123,11 @@ class BotBlockerDb {
 			'priority' => '10',
 			'search'   => sanitize_text_field( $search_cidr ),
 			'rule'     => BBCS_RULE_ALLOW,
-			'comment'  => sanitize_text_field( $BBCS->useragent . ' (ip: ' . $BBCS->ip . ')' ),
+			'comment'  => sanitize_text_field( $BBCS->useragent . ' (ip: ' . $ip . ')' ),
 			'expires'  => ( $BBCS->time + $ttl_days * DAY_IN_SECONDS ),
 		);
 
-		if ( $BBCS->ip_version == 4 ) {
+		if ( $ip_version == 4 ) {
 			$data['ip1'] = BotBlockerIp::toNumeric( $ips[0] );
 			$data['ip2'] = BotBlockerIp::toNumeric( $ips[1] );
 		} else {
@@ -113,7 +142,7 @@ class BotBlockerDb {
 		 * - no user input is interpolated into this query.
 		 */
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		if ( $BBCS->ip_version == 4 ) {
+		if ( $ip_version == 4 ) {
 			$result = $wpdb->insert( $wpdb->bbcs_ipv4rules, $data );
 		} else {
 			$result = $wpdb->insert( $wpdb->bbcs_ipv6rules, $data );

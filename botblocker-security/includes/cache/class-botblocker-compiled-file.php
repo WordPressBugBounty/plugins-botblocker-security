@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class BotBlockerCompiledFile {
 
-	public const EXPECTED_CLASS_REV = 2;
+	public const EXPECTED_CLASS_REV = 3;
 
 	public static function invalidate( string $file ): void {
 		if ( method_exists( 'BotBlockerDataFile', 'invalidateCompiled' ) ) {

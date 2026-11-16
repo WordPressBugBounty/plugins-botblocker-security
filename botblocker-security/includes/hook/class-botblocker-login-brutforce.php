@@ -80,6 +80,68 @@ class BotBlockerLoginBruteForce {
 			return false;
 		}
 
+		$BBCS     = BotBlocker::getInstance();
+		$identity = class_exists( 'BotBlockerIdentity' ) ? BotBlockerIdentity::resolveFresh() : array();
+		$maps     = class_exists( 'BotBlockerIdentity' ) ? BotBlockerIdentity::trustMaps() : array( 'proxy' => array(), 'bot_networks' => array() );
+		$peer     = ! empty( $identity['peer'] ) ? (string) $identity['peer'] : $ip;
+		$edge_shared = false;
+		foreach ( array_keys( BotBlockerIp::currentSharedProxy() ) as $mask ) {
+			if ( BotBlockerIp::netMatch( (string) $mask, $peer ) ) {
+				$edge_shared = true;
+				break;
+			}
+		}
+		$policy   = BotBlockerBanPolicy::check(
+			$ip,
+			array(
+				'peer'              => $peer,
+				'isProxy'           => isset( $BBCS->isProxy ) ? (string) $BBCS->isProxy : BOTBLOCKER_EMPTY,
+				'block_proxy_users' => isset( $BBCS->settings->block_proxy_users ) ? (int) $BBCS->settings->block_proxy_users === 1 : false,
+				'edge_state'        => ! empty( $identity['state'] ) ? (string) $identity['state'] : (string) ( $BBCS->edge_state ?? '' ),
+				'role'              => ! empty( $identity['role'] ) ? (string) $identity['role'] : (string) ( $BBCS->edge_role ?? '' ),
+				'edge_shared'       => $edge_shared,
+				'proxy_map'         => $maps['proxy'],
+				'bot_networks'      => $maps['bot_networks'],
+				'ptr'               => (string) ( $BBCS->ptr ?? '' ),
+				'asname'            => (string) ( $BBCS->asname ?? '' ),
+				'hosting'           => $BBCS->hosting ?? '',
+				'time'              => time(),
+				'ttl'               => isset( $BBCS->settings->ptrcache_time ) ? (int) $BBCS->settings->ptrcache_time : DAY_IN_SECONDS,
+				'writer'            => 'bruteforce',
+			)
+		);
+
+		if ( empty( $policy['allowed'] ) ) {
+			if ( class_exists( 'BotBlockerAuditLogger' ) && class_exists( 'BotBlockerAuditEvents' ) ) {
+				BotBlockerAuditLogger::record(
+					BotBlockerAuditEvents::BOTBLOCKER_BAN_DECISION,
+					array(
+						'object_type' => 'rule',
+						'data'        => array(
+							'ip'     => $ip,
+							'reason' => (string) ( $policy['reason'] ?? '' ),
+							'writer' => 'bruteforce',
+						),
+					)
+				);
+			}
+			return false;
+		}
+		$ip = (string) $policy['target'];
+		$block_time = (int) $policy['clamp'] > 0 && (int) $policy['clamp'] < $block_time
+			? (int) $policy['clamp']
+			: $block_time;
+
+		$ip_version = null;
+		if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
+			$ip_version = 4;
+		} elseif ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
+			$ip_version = 6;
+		}
+		if ( $ip_version === null ) {
+			return false;
+		}
+
 		$now     = time();
 		$expires = $now + $block_time;
 

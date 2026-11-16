@@ -43,6 +43,28 @@ return static function (Botblocker_IntegrationsViewModel $data, bool $isActive):
 					<?php endif; ?>
 				</div>
 			</div>
+			<div class="bbcs-setgroup">
+				<div class="bbcs-setgroup-head"><?php esc_html_e( 'Check page', 'botblocker-security' ); ?></div>
+				<div class="bbcs-recaptcha-use">
+					<div class="bbcs-recaptcha-use__now">
+						<span><?php esc_html_e( 'Visitors see now:', 'botblocker-security' ); ?></span>
+						<span class="bbcs-pill <?php echo $data->recaptcha_v2_active ? 'bbcs-pill--green' : 'bbcs-recaptcha-use__mode'; ?>"><?php echo esc_html( $data->captcha_mode_label ); ?></span>
+					</div>
+					<?php if ( ! $data->recaptcha_v2_active ) : ?>
+						<div class="bbcs-card bbcs-card-pad bbcs-amber-card bbcs-recaptcha-use__hint">
+							<div class="bbcs-row bbcs-g-2h">
+								<svg class="bbcs-ico bbcs-ico--md bbcs-tx-amber"><use href="#bbcs-i-warning"></use></svg>
+								<span class="bbcs-fs-xs bbcs-tx-amber"><?php esc_html_e( 'The Save button only stores your keys. Click the button below to also show reCAPTCHA v2 to visitors on the check page.', 'botblocker-security' ); ?></span>
+							</div>
+						</div>
+						<div class="bbcs-recaptcha-use__action">
+							<button type="button" class="bbcs-btn bbcs-btn--pri bbcs-btn--sm" data-bbcs-use-recaptcha data-field="bbcs_captcha_mode" data-value="<?php echo esc_attr( (string) BOTBLOCKER_CAPTCHA_MODE_RECAPTCHA_V2 ); ?>" data-need="bbcs-recaptcha-v2-need" data-keys="recaptcha_key2,recaptcha_secret2"><?php esc_html_e( 'Use reCAPTCHA v2', 'botblocker-security' ); ?></button>
+							<span class="bbcs-field-desc" id="bbcs-recaptcha-v2-need" hidden><?php esc_html_e( 'Enter both keys above first.', 'botblocker-security' ); ?></span>
+						</div>
+					<?php endif; ?>
+					<a class="bbcs-link bbcs-fs-sm" href="<?php echo esc_url( $data->captcha_settings_url ); ?>"><?php esc_html_e( 'Change in CAPTCHA settings', 'botblocker-security' ); ?> &rarr;</a>
+				</div>
+			</div>
 		</div>
 	</div>
 <?php

@@ -72,6 +72,22 @@ class BotBlockerBootstrap {
 		return true;
 	}
 
+	public static function loadAdminHelpers(): void {
+		require_once BOTBLOCKER_DIR . 'helpers-admin-deferred.php';
+		require_once BOTBLOCKER_DIR . 'core-helpers-admin.php';
+		require_once BOTBLOCKER_DIR . 'helpers-admin.php';
+	}
+
+	public static function activate( bool $network_wide = false ): void {
+		self::loadAdminHelpers();
+		Botblocker_Activator::activate( $network_wide );
+	}
+
+	public static function deactivate( bool $network_wide = false ): void {
+		self::loadAdminHelpers();
+		Botblocker_Deactivator::deactivate( $network_wide );
+	}
+
 	public static function minimumPhpVersionNotice(): void {
 		echo '<div class="notice notice-error"><p>' . esc_html__( 'BotBlocker requires PHP 7.4 or higher.', 'botblocker-security' ) . '</p></div>';
 	}

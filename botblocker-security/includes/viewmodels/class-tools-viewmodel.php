@@ -101,11 +101,7 @@ final class Botblocker_ToolsViewModel {
 		);
 
 		$addon_tabs = array();
-		// Same lock gate as the Addons viewmodel: when add-ons are locked
-		// (no cloud API, not local mode) no addon settings tabs are exposed.
-		$has_cloud_api = class_exists( 'BotBlockerPro' ) && BotBlockerPro::isActive();
-		$addons_locked = ! $has_cloud_api && ! BotBlockerMultisite::isAddonsLocalMode();
-		if ( ! $addons_locked && class_exists( 'BotBlockerAddons' ) ) {
+		if ( class_exists( 'BotBlockerAddons' ) ) {
 			$bbcs_addons = BotBlockerAddons::scanAll();
 			$bbcs_active = BotBlockerAddons::getActive();
 

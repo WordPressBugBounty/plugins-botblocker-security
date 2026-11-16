@@ -249,10 +249,10 @@
     var rows = createElement('ul', 'bbcs-st-rows');
 
     rows.appendChild(settingsRow(labels.protection, onOff(!settings.disabled)));
-    rows.appendChild(settingsRow(labels.mode, pill(settings.secure_mode)));
+    rows.appendChild(settingsRow(labels.mode, pill(labels[settings.secure_mode] || settings.secure_mode)));
     rows.appendChild(settingsRow(
       labels.captcha,
-      settings.silent ? pill(labels.silent, 'warn') : pill(settings.captcha_mode)
+      settings.silent ? pill(labels.silent, 'warn') : pill(settings.captcha_mode_label || settings.captcha_mode)
     ));
     rows.appendChild(settingsRow(labels.forceCheck, onOff(settings.force_check)));
 

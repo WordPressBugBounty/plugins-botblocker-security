@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * This class is responsible for all the operations against bots.
  * It handles detections, logging, and blocking of suspicious bot activities.
  *
- * @version    1.7.11
+ * @version    1.7.12
  * @author     BotBlocker Team
  * @package    Botblocker
  * @subpackage Botblocker/includes
@@ -18,6 +18,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once BOTBLOCKER_DIR . 'includes/botblocker/class-botblocker-base.php';
 require_once BOTBLOCKER_DIR . 'includes/botblocker/class-botblocker-settings.php';
+require_once BOTBLOCKER_DIR . 'includes/class-botblocker-enumeration-guard.php';
+require_once BOTBLOCKER_DIR . 'includes/class-botblocker-header-guard.php';
+require_once BOTBLOCKER_DIR . 'includes/class-botblocker-upload-guard.php';
 require_once BOTBLOCKER_DIR . 'includes/class-botblocker-self-test.php';
 require_once BOTBLOCKER_DIR . 'includes/botblocker/class-botblocker-security-page-assets.php';
 require_once BOTBLOCKER_DIR . 'includes/botblocker/traits/class-botblocker-core-trait.php';
@@ -86,6 +89,10 @@ class BotBlocker extends BotBlockerBase {
 		$this->load_data();
 		$this->initialize_config();
 		$this->load_settings();
+		$this->strip_php_version_header();
+		BotBlockerEnumerationGuard::register( $this->settings );
+		BotBlockerHeaderGuard::register( $this->settings );
+		BotBlockerUploadGuard::register();
 		$this->register_wpsc_cookie_exception();
 		$this->generate_connection_id();
 		add_filter( 'http_request_args', array( $this, 'inject_self_call_header' ), 10, 2 );
@@ -166,6 +173,9 @@ class BotBlocker extends BotBlockerBase {
 		if ( $this->check_ip_rules() ) {
 			return;
 		}
+		if ( $this->check_blocked_country() ) {
+			return;
+		}
 		if ( $this->check_rugov_rules() ) {
 			return;
 		}
@@ -207,7 +217,6 @@ class BotBlocker extends BotBlockerBase {
 		$this->perform_simple_bot_checks();
 
 		if ( $this->process_cookies() ) {
-			$this->send_vary_cookie_header();
 			if ( $this->early_cache_gate_active() ) {
 				$this->set_cache_pass_cookie();
 			}

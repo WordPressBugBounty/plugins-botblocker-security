@@ -177,10 +177,8 @@ final class Botblocker_AddonsViewModel {
 			$this->marketplace_available_cards[] = $row['card'];
 		}
 
-		// Build addon settings tabs - only when add-ons are unlocked (PRO or local mode).
-		// Locked: skip entirely, no addon hooks triggered.
 		$this->addon_tabs = array();
-		if ( ! $this->addons_locked ) {
+		if ( class_exists( 'BotBlockerAddons' ) ) {
 			$bbcs_addons = BotBlockerAddons::scanAll();
 			$bbcs_active = BotBlockerAddons::getActive();
 
@@ -209,7 +207,6 @@ final class Botblocker_AddonsViewModel {
 			);
 		}
 
-		// Vertical sidebar nav: per-addon settings tabs + market items (non-PRO).
 		$items = array();
 
 		$tabpanels = array(
@@ -223,25 +220,6 @@ final class Botblocker_AddonsViewModel {
 				$tab_item->withIconImage( $addon->icon_image );
 			}
 			$items[] = $tab_item;
-		}
-
-		// For non-PRO users, add marketplace addons as searchable snav items.
-		if ( ! $this->has_cloud_api ) {
-			foreach ( $this->market as $m ) {
-				$tab = new TabItem(
-					'market-' . $m->slug,
-					'',
-					false,
-					'',
-					'',
-					$m->name ?: $m->slug,
-					'puzzle'
-				);
-				if ( $m->icon ) {
-					$tab->withIconImage( $m->icon );
-				}
-				$items[] = $tab;
-			}
 		}
 
 		usort(

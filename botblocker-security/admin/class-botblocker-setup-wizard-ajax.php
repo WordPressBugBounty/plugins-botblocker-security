@@ -16,7 +16,7 @@ trait BotBlocker_SetupWizardAjaxTrait {
 
 		$preset = isset( $_POST['preset'] ) ? sanitize_text_field( wp_unslash( $_POST['preset'] ) ) : '';
 
-		if ( ! in_array( $preset, array( 'light', 'strong', 'full' ) ) ) {
+		if ( ! in_array( $preset, array( 'light', 'medium', 'strong', 'strong_api', 'full', 'emergency' ), true ) ) {
 			wp_send_json_error( __( 'Invalid preset.', 'botblocker-security' ) );
 		}
 
@@ -27,9 +27,19 @@ trait BotBlocker_SetupWizardAjaxTrait {
 					BotBlockerSettingsPresets::loadSettingsLight();
 				}
 				break;
+			case 'medium':
+				if ( class_exists( 'BotBlockerSettingsPresets' ) ) {
+					BotBlockerSettingsPresets::loadSettingsMedium();
+				}
+				break;
 			case 'strong':
 				if ( class_exists( 'BotBlockerSettingsPresets' ) ) {
 					BotBlockerSettingsPresets::loadSettingsStrong();
+				}
+				break;
+			case 'strong_api':
+				if ( class_exists( 'BotBlockerSettingsPresets' ) ) {
+					BotBlockerSettingsPresets::loadSettingsStrongApi();
 				}
 				break;
 			case 'full':
@@ -40,6 +50,15 @@ trait BotBlocker_SetupWizardAjaxTrait {
 					}
 				} else {
 					wp_send_json_error( __( 'Full protection requires PRO license.', 'botblocker-security' ) );
+				}
+				break;
+			case 'emergency':
+				if ( BotBlockerPro::isActive() ) {
+					if ( class_exists( 'BotBlockerSettingsPresets' ) ) {
+						BotBlockerSettingsPresets::loadSettingsEmergency();
+					}
+				} else {
+					wp_send_json_error( __( 'Emergency protection requires PRO license.', 'botblocker-security' ) );
 				}
 				break;
 		}
@@ -473,7 +492,7 @@ trait BotBlocker_SetupWizardAjaxTrait {
 		wp_send_json_success(
 			array(
 				'score' => $score,
-				'mode'  => BotBlockerMultisite::getOption( 'bbcs_wizard_preset', 'strong' ),
+				'mode'  => BotBlockerMultisite::getOption( 'bbcs_wizard_preset', 'light' ),
 			)
 		);
 	}

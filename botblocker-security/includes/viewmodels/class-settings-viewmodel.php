@@ -58,6 +58,8 @@ final class Botblocker_SettingsViewModel {
 	public $nav_groups;
 	/** @var string Current preset name */
 	public $preset_name;
+	/** @var string Current preset subtitle */
+	public $preset_subtitle;
 	/** @var string Current mode label */
 	public $mode_label;
 
@@ -223,7 +225,31 @@ final class Botblocker_SettingsViewModel {
 		);
 
 		$sm = (int) $this->get( 'secure_mode', '2' );
-		$this->preset_name = __( 'Recommended preset', 'botblocker-security' );
+		$this->preset_name     = __( 'Custom settings', 'botblocker-security' );
+		$this->preset_subtitle = __( 'Custom ruleset.', 'botblocker-security' );
+		if ( class_exists( 'BotBlockerSettingsPresets' ) ) {
+			$labels = array(
+				'light'      => __( 'Balanced preset', 'botblocker-security' ),
+				'medium'     => __( 'Medium preset', 'botblocker-security' ),
+				'strong'     => __( 'Strong preset', 'botblocker-security' ),
+				'strong_api' => __( 'Strong API preset', 'botblocker-security' ),
+				'full'       => __( 'Full preset', 'botblocker-security' ),
+				'emergency'  => __( 'Emergency preset', 'botblocker-security' ),
+				'custom'     => __( 'Custom settings', 'botblocker-security' ),
+			);
+			$subtitles = array(
+				'light'      => __( 'Safe defaults for shops, forms and integrations.', 'botblocker-security' ),
+				'medium'     => __( 'Extra checks without ad-blocker friction.', 'botblocker-security' ),
+				'strong'     => __( 'Strict ruleset for sites under attack.', 'botblocker-security' ),
+				'strong_api' => __( 'Strong rules for REST and automation.', 'botblocker-security' ),
+				'full'       => __( 'Maximum detection for hardened sites.', 'botblocker-security' ),
+				'emergency'  => __( 'Temporary lockdown during an attack.', 'botblocker-security' ),
+				'custom'     => __( 'Custom ruleset.', 'botblocker-security' ),
+			);
+			$detected              = BotBlockerSettingsPresets::detectPreset( $BBCS->settings );
+			$this->preset_name     = isset( $labels[ $detected ] ) ? $labels[ $detected ] : $labels['custom'];
+			$this->preset_subtitle = isset( $subtitles[ $detected ] ) ? $subtitles[ $detected ] : $subtitles['custom'];
+		}
 		$this->mode_label  = $sm === 2 ? __( 'Full mode', 'botblocker-security' ) : __( 'Frontend only mode', 'botblocker-security' );
 
 		$this->cache_durations         = BotBlockerDataTime::getCacheDurations();

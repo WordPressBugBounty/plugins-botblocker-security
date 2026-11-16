@@ -11,6 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // guaranteed to be available without depending on the main plugin load order.
 require_once BOTBLOCKER_DIR . 'core-helpers.php';
 require_once BOTBLOCKER_DIR . 'includes/data/class-botblocker-pro-tips.php';
+require_once BOTBLOCKER_DIR . 'includes/class-botblocker-cdn-detector.php';
 
 use BotBlocker\Component\Botblocker_NotificationRow;
 
@@ -785,6 +786,10 @@ class BotBlockerAlerts {
 		if ( defined( 'KINSTAMU_VERSION' ) ) {
 			$systems['kinsta']['state']   = 'needs_config';
 			$systems['kinsta']['warning'] = __( 'Kinsta hosting detected. Add the BotBlocker cookie as a cache bypass rule in the Kinsta dashboard. See CACHE-COMPATIBILITY.md.', 'botblocker-security' );
+		}
+
+		if ( class_exists( 'BotBlockerCdnDetector' ) ) {
+			$systems = array_merge( $systems, BotBlockerCdnDetector::cacheSystems() );
 		}
 
 		return $systems;

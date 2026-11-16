@@ -31,7 +31,9 @@ trait BotBlockerCoreRateTrait {
 		}
 
 		if ( $this->verification_state === self::VERIFY_VALID ) {
-			return false;
+			$passed = true;
+		} else {
+			$passed = false;
 		}
 
 		$window_minutes = (int) ( $this->settings->bbcs_rate_window_minutes ?? 5 );
@@ -41,6 +43,13 @@ trait BotBlockerCoreRateTrait {
 
 		$captcha_rpm = (int) ( $this->settings->bbcs_rate_captcha_rpm ?? 30 );
 		$block_rpm   = (int) ( $this->settings->bbcs_rate_block_rpm ?? 50 );
+
+		if ( $passed ) {
+			$passed_rpm     = (int) ( $this->settings->bbcs_rate_passed_rpm ?? 300 );
+			$passed_captcha = (int) ( $this->settings->bbcs_rate_passed_captcha_rpm ?? 150 );
+			$block_rpm      = max( $block_rpm, $passed_rpm );
+			$captcha_rpm    = max( $captcha_rpm, $passed_captcha );
+		}
 
 		$individual_rpm = $this->recordHitAndGetRpm( $ip, $window_minutes );
 
@@ -114,8 +123,47 @@ trait BotBlockerCoreRateTrait {
 		if ( $duration < 1 ) {
 			$duration = 600;
 		}
-		$expires  = time() + $duration;
-		$table    = $this->ip_version == 4 ? $wpdb->bbcs_ipv4rules : $wpdb->bbcs_ipv6rules;
+		$proxy_map = is_array( $this->bbcs_proxy ) ? $this->bbcs_proxy : array();
+		if ( class_exists( 'BotBlockerEdgeStats' ) ) {
+			foreach ( BotBlockerEdgeStats::autoTrustMap() as $mask => $entry ) {
+				if ( ! isset( $proxy_map[ $mask ] ) ) {
+					$proxy_map[ $mask ] = $entry;
+				}
+			}
+		}
+
+		$policy = BotBlockerBanPolicy::check(
+			$ip,
+			array(
+				'peer'              => (string) $this->peer_ip,
+				'isProxy'           => (string) $this->isProxy,
+				'block_proxy_users' => isset( $this->settings->block_proxy_users ) ? (int) $this->settings->block_proxy_users === 1 : false,
+				'edge_state'        => (string) $this->edge_state,
+				'role'              => (string) $this->edge_role,
+				'edge_shared'       => ! empty( $this->edge_shared ),
+				'proxy_map'         => $proxy_map,
+				'bot_networks'      => is_array( $this->bbcs_bot_networks ) ? $this->bbcs_bot_networks : array(),
+				'ptr'               => (string) ( $this->ptr ?? '' ),
+				'asname'            => (string) ( $this->asname ?? '' ),
+				'hosting'           => $this->hosting ?? '',
+				'time'              => (int) $this->time,
+				'ttl'               => isset( $this->settings->ptrcache_time ) ? (int) $this->settings->ptrcache_time : DAY_IN_SECONDS,
+				'writer'            => 'rate_limit',
+			)
+		);
+
+		if ( ! $policy['allowed'] ) {
+			$this->rate_limit_block_emitted = true;
+			do_action( 'bbcs_rate_limit_blocked', $ip );
+			return;
+		}
+		$ip = (string) $policy['target'];
+		if ( (int) $policy['clamp'] > 0 && (int) $policy['clamp'] < $duration ) {
+			$duration = (int) $policy['clamp'];
+		}
+		$expires    = time() + $duration;
+		$ip_version = BotBlockerIp::getVersion( $ip );
+		$table      = 6 === $ip_version ? $wpdb->bbcs_ipv6rules : $wpdb->bbcs_ipv4rules;
 
 		$exists = $wpdb->get_var( $wpdb->prepare(
 			"SELECT id FROM `{$table}` WHERE `search` = %s AND `rule` = 'block' AND `comment` = 'Rate Limit Block' LIMIT 1",
@@ -125,7 +173,7 @@ trait BotBlockerCoreRateTrait {
 		if ( $exists ) {
 			$wpdb->update( $table, array( 'expires' => $expires ), array( 'id' => $exists ) );
 		} else {
-			$encoded_ip = $this->ip_version == 4
+			$encoded_ip = 4 === $ip_version
 				? BotBlockerIp::toNumeric( $ip )
 				: BotBlockerIp::toBinary( $ip );
 
@@ -165,7 +213,7 @@ trait BotBlockerCoreRateTrait {
 
 		if ( $handle !== false && flock( $handle, LOCK_EX ) ) {
 			try {
-				return $this->recordBucketHit( $key, $window_minutes );
+				return $this->recordBucketHit( $key, $window_minutes, $handle );
 			} finally {
 				flock( $handle, LOCK_UN );
 				// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- release native lock handle
@@ -176,7 +224,7 @@ trait BotBlockerCoreRateTrait {
 		return $this->recordBucketHit( $key, $window_minutes );
 	}
 
-	private function recordBucketHit( string $key, int $window_minutes ): float {
+	private function recordBucketHit( string $key, int $window_minutes, $held_lock = null ): float {
 		$bucket = $this->getAndCleanBucket( $key, $window_minutes );
 
 		$current_minute = (int) ( time() / 60 );
@@ -186,7 +234,7 @@ trait BotBlockerCoreRateTrait {
 		$bucket['b'][ $current_minute ]++;
 		$bucket['t'] = (int) ( $bucket['t'] ?? 0 ) + 1;
 
-		BotBlockerCache::fileSet( $key, $bucket, max( 60, $window_minutes * 60 ) );
+		BotBlockerCache::fileSet( $key, $bucket, max( 60, $window_minutes * 60 ), $held_lock );
 
 		return (float) $bucket['t'] / $window_minutes;
 	}

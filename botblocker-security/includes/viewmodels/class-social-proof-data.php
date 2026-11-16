@@ -21,8 +21,9 @@ final class Botblocker_SocialProofData {
 
 	public function __construct( array $stats ) {
 		$rating_5    = ( $stats['rating'] / 100 ) * 5;
-		$full        = (int) floor( $rating_5 );
-		$half        = ( $rating_5 - $full ) >= 0.25 && ( $rating_5 - $full ) < 0.75;
+		$halves      = (int) round( $rating_5 * 2 );
+		$full        = intdiv( $halves, 2 );
+		$half        = 1 === $halves % 2;
 		$installs    = $stats['active_installs'];
 
 		$this->num_ratings    = $stats['num_ratings'];

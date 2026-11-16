@@ -60,6 +60,33 @@ class BotBlockerUI {
 		}
 	}
 
+	public static function captcha_mode_options(): array {
+		$mode_options = array(
+			(string) BOTBLOCKER_CAPTCHA_MODE_SILENT              => __( 'Silent Auto-Verify (No Captcha)', 'botblocker-security' ),
+			(string) BOTBLOCKER_CAPTCHA_MODE_BUTTON              => __( 'Button - "I am not a robot"', 'botblocker-security' ),
+			(string) BOTBLOCKER_CAPTCHA_MODE_COLOR_BUTTONS       => __( 'Color Buttons', 'botblocker-security' ),
+			(string) BOTBLOCKER_CAPTCHA_MODE_IMAGE               => __( 'BotBlocker Image Captcha', 'botblocker-security' ),
+			(string) BOTBLOCKER_CAPTCHA_MODE_RECAPTCHA_V2_BUTTON => __( 'reCaptcha v2 - "I am not a robot"', 'botblocker-security' ),
+			(string) BOTBLOCKER_CAPTCHA_MODE_RECAPTCHA_V2        => __( 'reCaptcha v2', 'botblocker-security' ),
+			(string) BOTBLOCKER_CAPTCHA_MODE_SHAPE               => __( 'Dynamic Shape Captcha', 'botblocker-security' ),
+			(string) BOTBLOCKER_CAPTCHA_MODE_DIGIT               => __( 'Dynamic Digit Captcha', 'botblocker-security' ),
+			(string) BOTBLOCKER_CAPTCHA_MODE_HOLD                => __( 'Hold Button Captcha', 'botblocker-security' ),
+		);
+		if ( class_exists( 'BotBlockerCaptchaRegistry' ) ) {
+			$mode_options = BotBlockerCaptchaRegistry::optionsForSelect( $mode_options );
+		}
+		return apply_filters( 'bbcs_captcha_mode_options', $mode_options );
+	}
+
+	public static function captcha_mode_label( int $mode ): string {
+		$options = self::captcha_mode_options();
+		$label   = isset( $options[ (string) $mode ] ) ? $options[ (string) $mode ] : '';
+		if ( is_array( $label ) ) {
+			$label = isset( $label['label'] ) ? $label['label'] : '';
+		}
+		return (string) $label;
+	}
+
 	/**
 	 * Check if reCAPTCHA v3 keys are present and valid for enabling the feature
 	 *

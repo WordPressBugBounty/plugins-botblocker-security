@@ -274,6 +274,12 @@ class BotBlockerDataCodes {
 					'count'     => true,
 					'searchbot' => false,
 				),
+				61  => array(
+					'msg'       => 'Trusted bot claim from an unverified edge',
+					'allow'     => false,
+					'count'     => true,
+					'searchbot' => false,
+				),
 				62  => array(
 					'msg'       => 'RKN block (Roskomnadzor)',
 					'allow'     => false,

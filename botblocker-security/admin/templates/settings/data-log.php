@@ -53,7 +53,7 @@ return static function ( Botblocker_SettingsViewModel $data, bool $isActive ): v
 								->withName( 'admin_store_period' )
 								->withValue( $store_period )
 								->withLabel( __( 'Log Retention Period:', 'botblocker-security' ) )
-								->withTooltip( __( 'How many days to keep raw visitor log data before automatic cleanup.', 'botblocker-security' ) )
+								->withTooltip( __( 'How many days to keep raw visitor log data before automatic cleanup. Values above 7 days create a heavy load on shared hosting.', 'botblocker-security' ) )
 								->withDocLink( BotBlockerDocs::url( 'admin_store_period' ) )
 								->render();
 						} )

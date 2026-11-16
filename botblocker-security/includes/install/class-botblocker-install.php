@@ -22,13 +22,7 @@ class BotBlockerInstall {
 			self::createTables();
 			self::tablesExist( true );
 
-			global $wpdb;
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$has_settings = (bool) $wpdb->get_var(
-				"SELECT COUNT(*) FROM `{$wpdb->bbcs_settings}`"
-			);
-
-			if ( $has_settings ) {
+			if ( self::hasSettings() ) {
 				BotBlockerMigration::maybeUpgradeDb();
 				BotBlockerDb::generateAllFiles();
 				BotBlockerFileRenderer::generateSettingsFile();
@@ -37,31 +31,38 @@ class BotBlockerInstall {
 			}
 
 			set_transient( 'bbcs_tables_verified', BOTBLOCKER_DB_VERSION, HOUR_IN_SECONDS );
+		} elseif ( ! self::hasSettings() ) {
+			if ( get_option( 'bbcs_db_version' ) && ! BotBlockerMigration::maybeUpgradeDb() ) {
+				return;
+			}
+			self::initDbAndFiles();
+			set_transient( 'bbcs_tables_verified', BOTBLOCKER_DB_VERSION, HOUR_IN_SECONDS );
 		} else {
 			BotBlockerCounters::ensureRow();
 			BotBlockerMigration::maybeUpgradeDb();
 		}
 	}
 
+	private static function hasSettings(): bool {
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return (bool) $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->bbcs_settings}`" );
+	}
+
 	public static function initDbAndFiles(): void {
 		// Fresh only: watermark 0. Upgrades use migration timestamp; never set watermark in createTables().
 		update_option( BotBlockerStore::FILTERED_COLUMN_OPTION, '1', true );
 		update_option( BotBlockerStore::FILTERED_WATERMARK_OPTION, 0, true );
+		update_option( 'bbcs_edge_roles_rev', '1', true );
+		update_option( 'bbcs_ban_safety_rev', '1', true );
 
 		BotBlockerInstallIp::addServerIPs();
 		BotBlockerInstallIp::addAdminIPs();
-		try {
-			BotBlockerInstallIp::fetchAndStoreParentIPs();
-		} catch ( \Exception $e ) {
-			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-				error_log( '[BBCS DEBUG] [Install] fetchAndStoreParentIPs failed: ' . $e->getMessage() );
-			}
-		}
 		BotBlockerSeedData::insertInitialData();
 		BotBlockerDb::generateAllFiles();
 		BotBlockerFileRenderer::generateSettingsFile();
 		BotBlockerLlmSync::scheduleSync( 'install', 60 );
+		update_option( 'bbcs_db_version', BOTBLOCKER_DB_VERSION, true );
 	}
 
 	public static function getCloudAPIEmail(): string {
@@ -254,6 +255,7 @@ class BotBlockerInstall {
 		self::createFingerprintTable();
 		self::createSessionsTable();
 		self::createAuditLogTable();
+		self::createEdgeStatsTable();
 		// Watermark set by initDbAndFiles() (fresh) or migration 2.10.0 (upgrade) — not here.
 		self::markFilteredColumnReady();
 	}
@@ -628,6 +630,8 @@ class BotBlockerInstall {
  			`key` TEXT NOT NULL,
         	`value` TEXT NOT NULL,
         	`comment` TEXT NOT NULL,
+        	`role` VARCHAR(20) NOT NULL DEFAULT 'edge',
+	        `shared` TINYINT(1) NOT NULL DEFAULT 0,
 	        UNIQUE KEY uniq_key (`key`(191))
 	    ) $charset_collate;";
 
@@ -935,6 +939,36 @@ class BotBlockerInstall {
 			`created_at` INT UNSIGNED NOT NULL DEFAULT 0,
 			PRIMARY KEY (id),
 			KEY i_created_at (created_at)
+		) $charset_collate;";
+
+		dbDelta( $sql );
+	}
+
+	public static function createEdgeStatsTable(): void {
+		global $wpdb;
+		$charset_collate = $wpdb->get_charset_collate();
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+
+		$sql = "CREATE TABLE `{$wpdb->bbcs_edge_stats}` (
+			`id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+			`peer` VARCHAR(64) NOT NULL DEFAULT '',
+			`peer_key` VARCHAR(64) NOT NULL DEFAULT '',
+			`family` TINYINT UNSIGNED NOT NULL DEFAULT 4,
+			`asn` VARCHAR(32) NOT NULL DEFAULT '',
+			`asname` VARCHAR(191) NOT NULL DEFAULT '',
+			`ptr` VARCHAR(255) NOT NULL DEFAULT '',
+			`header` VARCHAR(64) NOT NULL DEFAULT '',
+			`hits` INT UNSIGNED NOT NULL DEFAULT 0,
+			`bot_hits` INT UNSIGNED NOT NULL DEFAULT 0,
+			`verified_hits` INT UNSIGNED NOT NULL DEFAULT 0,
+			`clients` TEXT NOT NULL,
+			`first_seen` BIGINT UNSIGNED NOT NULL DEFAULT 0,
+			`last_seen` BIGINT UNSIGNED NOT NULL DEFAULT 0,
+			`state` VARCHAR(32) NOT NULL DEFAULT '',
+			`signature` VARCHAR(191) NOT NULL DEFAULT '',
+			PRIMARY KEY (id),
+			UNIQUE KEY peer_key (peer_key),
+			KEY i_last_seen (last_seen)
 		) $charset_collate;";
 
 		dbDelta( $sql );

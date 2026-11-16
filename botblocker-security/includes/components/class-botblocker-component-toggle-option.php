@@ -166,7 +166,8 @@ final class ToggleOption extends Base {
 
 		// Build toggle button attributes.
 		$btn_attrs = ' class="' . $toggle_class . '" role="switch"'
-			. ' aria-checked="' . ( $is_checked ? 'true' : 'false' ) . '"';
+			. ' aria-checked="' . ( $is_checked ? 'true' : 'false' ) . '"'
+			. ' aria-label="' . self::escape( wp_strip_all_tags( (string) $this->label ), 'attr' ) . '"';
 
 		if ( $this->ajax_action !== '' ) {
 			// AJAX toggle – send to server on click (handled by bbcs-multipage.js).

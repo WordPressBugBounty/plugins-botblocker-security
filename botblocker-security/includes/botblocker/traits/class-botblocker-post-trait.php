@@ -21,6 +21,18 @@ trait BotBlockerPostTrait {
 			}
 		}
 
+		if ( $this->captcha_retry_throttled() ) {
+			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
+				error_log( '[BBCS DEBUG] [Post] STEP_DIE: captcha_retry_throttled peer=' . ( $this->peer_ip ?? '' ) );
+			}
+			$payload = array( 'error' => 'Wrong Click' );
+			if ( $this->settings->bbcs_ddos_resilience == 1 ) {
+				$payload = $this->sign_response_payload( $payload );
+			}
+			$this->process_die( wp_json_encode( $payload ) );
+		}
+
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 			error_log( '[BBCS DEBUG] [Post] processPostRequest: entry. captcha_mode=' . $this->settings->bbcs_captcha_mode . ' has_challenge_token=' . ( empty( $_POST['challenge_token'] ) ? 'NO' : 'YES' ) . ' has_recaptcha=' . ( empty( $_POST['g-recaptcha-response'] ) ? 'NO' : 'YES' ) . ' post_data_keys=' . implode( ',', array_keys( $_POST ) ) );
@@ -542,6 +554,17 @@ trait BotBlockerPostTrait {
 	 *   RV = reCAPTCHA rejected the answer, AV = add-on provider rejected the answer,
 	 *   NM = no matching CAPTCHA mode (fallback)
 	 */
+	// A shared edge refused a rule must not hammer the CAPTCHA verifier.
+	private function captcha_retry_throttled(): bool {
+		$peer = isset( $this->peer_ip ) && $this->peer_ip !== ''
+			? (string) $this->peer_ip
+			: ( isset( $_SERVER['REMOTE_ADDR'] ) ? trim( preg_replace( '/[^0-9a-zA-Z\.\:]/', '', sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) ) ) : '' );
+		if ( $peer === '' ) {
+			return false;
+		}
+		return (bool) get_transient( 'bbcs_cc_' . md5( $peer ) );
+	}
+
 	public function process_wrong_click( string $reason = '' ) {
 		if ( defined( 'BBCS_CAPTCHA_DIAG' ) && BBCS_CAPTCHA_DIAG ) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
@@ -567,11 +590,42 @@ trait BotBlockerPostTrait {
 
 		global $wpdb;
 
-		// Ban the server-resolved client IP (trusted proxy map); REMOTE_ADDR is the fallback only.
+		// Ban the server-resolved sender only; the identity model decides who that is.
 		$remote_addr = isset( $_SERVER['REMOTE_ADDR'] ) ? trim( preg_replace( '/[^0-9a-zA-Z\.\:]/', '', sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) ) ) : '';
-		$ip          = BotBlockerBanTargetResolver::resolve( (string) $this->ip, $remote_addr, (string) $this->isProxy, (int) $this->settings->block_proxy_users === 1 );
+		$peer        = isset( $this->peer_ip ) && $this->peer_ip !== '' ? $this->peer_ip : $remote_addr;
+		$proxy_map   = is_array( $this->bbcs_proxy ) ? $this->bbcs_proxy : array();
+		if ( class_exists( 'BotBlockerEdgeStats' ) ) {
+			foreach ( BotBlockerEdgeStats::autoTrustMap() as $mask => $entry ) {
+				if ( ! isset( $proxy_map[ $mask ] ) ) {
+					$proxy_map[ $mask ] = $entry;
+				}
+			}
+		}
+		$policy      = BotBlockerBanPolicy::check(
+			(string) $this->ip,
+			array(
+				'peer'              => $peer,
+				'isProxy'           => (string) $this->isProxy,
+				'block_proxy_users' => isset( $this->settings->block_proxy_users ) ? (int) $this->settings->block_proxy_users === 1 : false,
+				'edge_state'        => (string) $this->edge_state,
+				'role'              => (string) $this->edge_role,
+				'edge_shared'       => ! empty( $this->edge_shared ),
+				'proxy_map'         => $proxy_map,
+				'bot_networks'      => is_array( $this->bbcs_bot_networks ) ? $this->bbcs_bot_networks : array(),
+				'ptr'               => (string) $this->ptr,
+				'asname'            => (string) ( $this->asname ?? '' ),
+				'hosting'           => $this->hosting ?? '',
+				'time'              => (int) $this->time,
+				'ttl'               => isset( $this->settings->ptrcache_time ) ? (int) $this->settings->ptrcache_time : DAY_IN_SECONDS,
+				'writer'            => 'captcha',
+			)
+		);
+		$ip = $policy['allowed'] ? (string) $policy['target'] : '';
 
 		if ( $ip === '' ) {
+			if ( $peer !== '' ) {
+				set_transient( 'bbcs_cc_' . md5( $peer ), 1, 60 );
+			}
 			$payload = array(
 				'error' => BotBlockerBanTargetResolver::hasValidIp( (string) $this->ip, $remote_addr ) ? 'Wrong Click' : 'Bad IP',
 			);
@@ -646,7 +700,11 @@ trait BotBlockerPostTrait {
 		}
 
 		$table_name = $this->ip_version == 4 ? $wpdb->bbcs_ipv4rules : $wpdb->bbcs_ipv6rules;
-		$expires    = $this->time + $this->settings->time_ban;
+		$ban_ttl    = (int) $this->settings->time_ban;
+		if ( (int) $policy['clamp'] > 0 && (int) $policy['clamp'] < $ban_ttl ) {
+			$ban_ttl = (int) $policy['clamp'];
+		}
+		$expires    = $this->time + $ban_ttl;
 		if ( $existing_rule ) {
 			// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.NoCaching

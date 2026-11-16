@@ -12,7 +12,7 @@ require_once __DIR__ . '/../class-botblocker-captcha-renderer.php';
 	<meta charset="utf-8" />
 	<meta name="generator" content="<?php echo esc_attr( sprintf( BotBlockerCaptchaRenderer::t( 'BotBlocker v. %s' ), $BBCS->version ) ); ?>" />
 	<meta name="author" content="<?php echo esc_attr( BotBlockerCaptchaRenderer::t( 'BotBlocker project by GLOBUS.studio' ) ); ?>" />
-	<meta name="referrer" content="unsafe-url" />
+	<meta name="referrer" content="no-referrer" />
 	<meta name="robots" content="noindex" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 	<link rel="icon" href="data:,">

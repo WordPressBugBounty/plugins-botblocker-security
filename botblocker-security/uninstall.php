@@ -11,6 +11,9 @@ if ( ! defined( 'BOTBLOCKER' ) ) {
 	define( 'BOTBLOCKER', true );
 }
 define( 'BOTBLOCKER_DIR', plugin_dir_path( __FILE__ ) );
+if ( ! defined( 'BOTBLOCKER_URL' ) ) {
+	define( 'BOTBLOCKER_URL', trailingslashit( content_url( 'plugins/botblocker-security' ) ) );
+}
 
 if (
 	! file_exists( BOTBLOCKER_DIR . 'includes/inc-botblocker-define.php' )

@@ -141,7 +141,7 @@
 		$$('.bbcs-wiztest-status .bbcs-ico').forEach(function (el) {
 			el.classList.remove('bbcs-tx-green', 'bbcs-tx-red');
 			el.classList.add('bbcs-ico--spinner');
-			el.setAttribute('href', '#bbcs-i-refresh');
+			$('use', el).setAttribute('href', '#bbcs-i-refresh');
 		});
 
 		ajax({
@@ -157,13 +157,17 @@
 				if (!row) continue;
 				var icon = $('.bbcs-ico', row);
 				if (!icon) continue;
+				var use = $('use', icon);
+				var statusText = $('.bbcs-wiztest-status', row).lastChild;
 				icon.classList.remove('bbcs-ico--spinner');
 				if (results[testName].status === 'ok') {
-					icon.setAttribute('href', '#bbcs-i-check');
+					use.setAttribute('href', '#bbcs-i-check');
 					icon.classList.add('bbcs-tx-green');
+					statusText.nodeValue = ' ' + bbcsSetWizVars.i18n.test_passed;
 				} else {
-					icon.setAttribute('href', '#bbcs-i-x');
+					use.setAttribute('href', '#bbcs-i-x');
 					icon.classList.add('bbcs-tx-red');
+					statusText.nodeValue = ' ' + bbcsSetWizVars.i18n.test_failed_prefix + (results[testName].message || bbcsSetWizVars.i18n.unknown_error);
 					hasWarnings = true;
 				}
 			}

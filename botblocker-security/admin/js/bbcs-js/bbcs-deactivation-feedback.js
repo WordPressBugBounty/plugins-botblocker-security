@@ -26,9 +26,13 @@
 		var $content = $('#bbcs-deactivation-feedback-content');
 		var $footer = $('#bbcs-deactivation-modal-footer');
 		var $stayBtn = $('#bbcs-deactivation-stay');
+		var $rescuePauseText = $('#bbcs-deactivation-rescue-pause-text');
+		var $rescueTempText = $('#bbcs-deactivation-rescue-temp-text');
+		var $rescuePanels = $rescue.find('[data-rescue-panel]');
 
 		var followupReasons = cfg.followupReasons || [];
-		var rescueReasons = cfg.rescueReasons || [];
+		var rescuePanels = cfg.rescuePanels || {};
+		var followupTitles = cfg.followupTitles || {};
 
 		function isDeactivateLink(href) {
 			if (!href || href.indexOf('action=deactivate') === -1) {
@@ -88,17 +92,13 @@
 		function updateFollowupOptions(reason) {
 			$followup.find('label[data-only-reasons]').each(function () {
 				var only = $(this).attr('data-only-reasons');
-				var visible = only === '' || only.split(',').indexOf(reason) !== -1;
+				var visible = only.split(',').indexOf(reason) !== -1;
 				$(this).toggle(visible);
 				if (!visible) {
 					$(this).find('input').prop('checked', false);
 				}
 			});
-			if (reason === 'temporary') {
-				$followupTitle.text(cfg.i18n.questionTemp);
-			} else {
-				$followupTitle.text(cfg.i18n.questionBroke);
-			}
+			$followupTitle.text(followupTitles[reason] || '');
 		}
 
 		function onReasonChange() {
@@ -111,7 +111,15 @@
 				$('input[name="bbcs_deactivation_what_broke"]').prop('checked', false);
 			}
 
-			if (rescueReasons.indexOf(reason) !== -1) {
+			var panel = rescuePanels[reason] || '';
+			$rescuePanels.each(function () {
+				$(this).toggle($(this).attr('data-rescue-panel') === panel);
+			});
+
+			var isTemporary = reason === 'temporary';
+			$rescueTempText.toggle(isTemporary);
+			$rescuePauseText.toggle(!isTemporary);
+			if (panel) {
 				$rescue.slideDown(150);
 			} else {
 				$rescue.slideUp(150);
@@ -120,6 +128,8 @@
 			if (reason === 'other') {
 				$detailsLabel.text(cfg.i18n.detailsOther);
 				$details.trigger('focus');
+			} else if (reason === 'missing_feature') {
+				$detailsLabel.text(cfg.i18n.detailsMissing);
 			} else {
 				$detailsLabel.text(cfg.i18n.details);
 			}

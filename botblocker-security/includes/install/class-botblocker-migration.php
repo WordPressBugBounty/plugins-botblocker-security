@@ -62,6 +62,10 @@ class BotBlockerMigration {
 				'file'     => 'migration-2-13-0.php',
 				'callback' => 'bbcs_migration_2_13_0',
 			),
+				'2.14.0' => array(
+					'file'     => 'migration-2-14-0.php',
+					'callback' => 'bbcs_migration_2_14_0',
+				),
 			)
 		);
 	}
@@ -82,6 +86,8 @@ class BotBlockerMigration {
 		$target    = BOTBLOCKER_DB_VERSION;
 
 		if ( version_compare( $installed, $target, '>=' ) ) {
+			self::maybeRepairEdgeRoles( $installed );
+			self::maybeRepairBanSafety();
 			return true;
 		}
 
@@ -165,6 +171,39 @@ class BotBlockerMigration {
 		return empty( $failed );
 	}
 
+	/**
+	 * Repair installs that already stored 2.14.0 before the role column existed.
+	 */
+	private static function maybeRepairEdgeRoles( string $installed ): void {
+		if ( get_option( 'bbcs_edge_roles_rev' ) === '1' ) {
+			return;
+		}
+		$registry = self::getRegistry();
+		if ( ! isset( $registry['2.14.0'] ) || ! self::loadMigration( $registry['2.14.0'] ) ) {
+			return;
+		}
+		if ( function_exists( 'bbcs_migration_2_14_0_edge_roles' ) ) {
+			bbcs_migration_2_14_0_edge_roles();
+		}
+	}
+
+	/**
+	 * Repair installs that already stored 2.14.0 before the shared flag and the
+	 * auto-trust file repair existed.
+	 */
+	private static function maybeRepairBanSafety(): void {
+		if ( get_option( 'bbcs_ban_safety_rev' ) === '1' ) {
+			return;
+		}
+		$registry = self::getRegistry();
+		if ( ! isset( $registry['2.14.0'] ) || ! self::loadMigration( $registry['2.14.0'] ) ) {
+			return;
+		}
+		if ( function_exists( 'bbcs_migration_2_14_0_ban_safety' ) ) {
+			bbcs_migration_2_14_0_ban_safety();
+		}
+	}
+
 	public static function runMigration( $callback ): bool {
 		try {
 			$result = call_user_func( $callback );
@@ -179,3 +218,4 @@ class BotBlockerMigration {
 		}
 	}
 }
+

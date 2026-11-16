@@ -4,7 +4,7 @@ Tags: security, firewall, anti-spam, captcha, brute force
 Requires at least: 5.9
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.7.11
+Stable tag: 1.7.12
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -100,7 +100,7 @@ Auto-detects 25+ e-commerce platforms (WooCommerce, Easy Digital Downloads, Sure
 * **Inline IP rule widget** - add IP allow/block rules via AJAX. Bulk import with 4 one-click buttons (IPv4/IPv6 whitelist/blacklist)
 * **Protection Status Checklist** - per-feature toggles with "Enable remaining" bulk action
 * **Health Score gauge** - parameters across categories, levels from Critical (<25) to Secure (≥85), real-time updates
-* **3 security presets** - Light, Strong, Full - one-click configuration. Plus Default for new installs
+* **Security presets** - Light, Medium, Strong, Strong API, Full and Emergency - one-click configuration. Plus Default for new installs
 * **Setup Wizard** - under 5 minutes, including Google reCAPTCHA setup
 * **⌘K Command Palette** - Ctrl+K / ⌘K on any admin page to search every setting, tab, and action. 30+ quick-action shortcuts. Near-zero-click configuration
 * **Interactive analytics** - 8 KPI metrics, donut charts, traffic line chart, world map, top IPs and countries rankings
@@ -191,7 +191,7 @@ Four plans to match your traffic: **Premium** ($12/month, 25k cloud checks), **P
 2. Click **Install Now**, then **Activate**
 3. Open **BotBlocker** in the admin menu and follow the Setup Wizard with compatibility test and Google reCAPTCHA setup
 
-Default settings protect most sites immediately. For advanced configuration, three security presets (Light / Strong / Full) give you one-click protection tuned to your needs.
+Default settings protect most sites immediately. For advanced configuration, the security presets (Light / Medium / Strong / Strong API / Full / Emergency) give you one-click protection tuned to your needs.
 
 == Frequently Asked Questions ==
 
@@ -292,7 +292,7 @@ No. BotBlocker Security does **not** collect or process personal data of your vi
 
 * Product site: [https://botblocker.top/products/](https://botblocker.top/products/)
 * Pricing and PRO plans: [https://botblocker.top/pricing/](https://botblocker.top/pricing/)
-* Documentation: [https://docs.botblocker.top/#/en/README](https://docs.botblocker.top/#/en/README)
+* Documentation: [https://docs.botblocker.top/en/](https://docs.botblocker.top/en/)
 * Contact/support: [https://botblocker.top/contacts/](https://botblocker.top/contacts/)
 * Community: [https://botblocker.top/community/](https://botblocker.top/community/)
 
@@ -306,7 +306,7 @@ Developed and maintained by GLOBUS.studio. Concept, architecture & code - Yevhen
 
 = Where can I find the glossary? =
 
-New to website security? The words BotBlocker uses, in plain language, are in the [glossary](https://docs.botblocker.top/#/en/glossary).
+New to website security? The words BotBlocker uses, in plain language, are in the [glossary](https://docs.botblocker.top/en/glossary/).
 
 == Screenshots ==
 
@@ -331,6 +331,62 @@ New to website security? The words BotBlocker uses, in plain language, are in th
 19. System Status checklist with the protection score and active layers
 
 == Changelog ==
+
+= 1.7.12 =
+Reject HTML, SVG and other active markup uploads that would run in the site origin
+Send the baseline browser-protection headers on allowed pages and on user-enumeration refusals
+Add Enable all, Read-only and Disable all buttons to the WordPress abilities page
+Add diagnostic abilities that explain BotBlocker decisions, such as request simulation, decision trace, rate limits, fingerprint, geo and cache checks, plus add-on abilities with their own switch
+Add an all group to the get-settings ability so a client can read every non-secret setting instead of only the curated groups
+Add the Privileged Session Manager add-on to list active sessions of users with selected capabilities under Tools and revoke them one by one, per user or in bulk, with every revoke logged
+Show detected CDN and edge-cache providers such as Cloudflare, CloudFront, Fastly, Akamai and Bunny on the Cache tab
+Add a "Visitors get in, but are asked to verify too often" reason to the deactivation survey, with a link to set up reCAPTCHA, hCaptcha or Cloudflare Turnstile
+Add Auto-trust Verified Edges, on by default, to trust a CDN or proxy edge after repeated verified traffic without creating allow rules
+Add administrator abilities for edge identity, stored edge evidence, ban decisions, auto-trust removal and cloud license push, with explicit confirmation on the destructive paths
+Add a file limit for the disk cache, active by default and adjustable on the Cache tab, so hosts with an inode limit stay safe; the least recently written entries are removed first
+Add Hide PHP Version, on by default, to drop the X-Powered-By header from site, REST and block pages, and send nosniff, same-origin framing and no-referrer headers on REST and 404 responses
+Add Hide User Enumeration, on by default: author archives, author feeds and the users REST route answer 404 to anyone who cannot list users, and the users sitemap and oEmbed author names are removed
+Turn on Google reCAPTCHA v2 or v3 in one click from Integrations after pasting the keys, and see which check visitors get now
+Add the Strong API preset (Strong with empty Accept-Language allowed, user enumeration hidden and reCAPTCHA off), and stop any preset from turning on reCAPTCHA when the site has no reCAPTCHA keys
+Add a Clear PTR cache button and a matching ability that reset saved reverse-DNS answers
+Add a Test installed headers button that marks redundant header groups and explains why to disable them
+Add Medium and Emergency presets: Medium sits between Balanced and Strong, and Emergency (PRO) tightens limits during an attack and restores your settings after six hours unless you change them first
+Add a set-setting ability that turns one allow-listed protection switch on or off through the same save path as the settings form, with confirmation, dry run and PRO license checks
+Return the reverse-DNS answer in the visitor log and event details abilities
+Make the abilities state what they actually did: no reverse-DNS check in the simulator, real ability counters, and only genuinely missing runtime files
+Make Balanced (formerly Light) the default for new sites and the setup wizard; it now allows missing Accept-Language, classic proxies, HTTP/1.0 and WooCommerce payment callbacks
+Shorten the deactivation survey and give each reason a short follow-up question with a fix to try, such as the setup wizard when settings feel too complex
+Update the MCP ability contract to revision 2 with full schema descriptions, consistent field names and stable error codes; scripts that read renamed fields or send removed inputs need updating
+Show every enabled ability to MCP clients, including visitor logs and abilities that change rules or settings; access still needs an administrator, and setting PII_OFF to false in wp-config undoes it
+Make security presets carry the whole protection set, so switching profiles fully resets the previous one while risky detection options stay off and credentials and 2FA keep their value
+Keep PTR/DNS anomaly blocking switched off in every security preset
+Stop the PTR/DNS anomaly check from refusing visitors without a reverse DNS record; it now blocks only a reverse name that exists but fails validation
+Return each ability error with its own HTTP status (400, 404, 409, 429, 503) instead of the core 500 fallback, and show the current protection state in a set-protection dry run
+Stop activation waiting on network requests or replaying migrations after a fresh install, allowlist the server's own public IP, and refresh the BotBlocker server list weekly
+Open pending first-time setup on the next admin page when the activation response is lost or activation runs through a command-line tool or hosting installer
+Let installed add-ons be turned on and configured without PRO; only installing and updating add-ons needs a license
+Stop treating visitors behind a CDN or proxy missing from the Proxy list as fake bots, and stop denying PageSpeed Insights
+Stop counting versioned stylesheets and scripts as page views, and keep counting pages whose address query happens to end in .css
+Fix database health reporting every table as missing, also on restricted hosts, and load the health score ability on REST and MCP requests
+Let read-only abilities run over REST GET without an input object
+Show the error when a task run from the Cron page fails instead of treating it as completed
+Keep the blue setting highlight visible when reduced motion is enabled
+Keep saved toggles when a partial settings form leaves them out instead of switching them off
+Answer rejected media uploads with a client error instead of a server error
+Fix a fatal error when BotBlocker is activated or deactivated through the WordPress REST API or remote site managers
+Show each result and failure reason in the setup wizard compatibility check instead of leaving every row on Checking
+Reset an address's rate-limit counter when its IP rule is deleted or all IP rules are cleared, so an unblocked visitor is not throttled again right away
+Make the add or update IP rule, set CAPTCHA mode and clear cache abilities require the confirmation token they publish, and declare every required input in the ability schemas
+Fix the MCP ability contract: document every confirmation token and parameter, make rule ids family-aware, unify rule fields, reject unknown export groups and label dry runs
+Fix the apply-preset ability reporting presets as unavailable on REST and MCP requests
+Stop saving failed reverse-DNS lookups and drop the ones already stored, so a crawler is not treated as fake for a day
+Stop a solved challenge from exempting visitors from rate limiting; passed visitors are now counted against their own higher Passed Visitor Block and Captcha thresholds
+Fix the admin sidebar rating stars so they match the rating shown next to them
+Show the Role value in every Proxy rules row instead of leaving the column empty and triggering a DataTables warning on the Rules page
+Keep Security Headers from breaking sites with an oversized header block: domains are de-duplicated and size-capped, the admin is warned, and updates apply without an admin visit
+Stop block and denied pages from advertising unsafe-url, and every barrier page now sends nosniff, Referrer-Policy and frame-ancestors plus X-Frame-Options regardless of the iframe traffic setting
+Stop blocked User-Agents from slipping past the signature list with fullwidth letters, combining marks, homoglyphs, percent or double-percent encoding
+Send the Vary Cookie header once on every allowed response, including allowed addresses and verified search engines, when the setting is on
 
 = 1.7.11 =
 Mask the Telegram bot token field in the add-on settings

@@ -28,6 +28,7 @@ $bbcs_tables = array(
 	'bbcs_fingerprint'     => 'fingerprint',
 	'bbcs_sessions'        => 'sessions',
 	'bbcs_audit_log'       => 'audit_log',
+	'bbcs_edge_stats'      => 'edge_stats',
 );
 
 foreach ( $bbcs_tables as $bbcs_prop => $bbcs_suffix ) {

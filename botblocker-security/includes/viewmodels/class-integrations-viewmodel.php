@@ -31,6 +31,9 @@ final class Botblocker_IntegrationsViewModel {
 	public $has_recaptcha_v3;
 	/** @var bool */
 	public $recaptcha_v3_keys_ready;
+	public $recaptcha_v2_active;
+	public $captcha_mode_label;
+	public $captcha_settings_url;
 
 	/** @var Botblocker_DashboardUrls */
 	public $urls;
@@ -127,6 +130,11 @@ final class Botblocker_IntegrationsViewModel {
 		}
 
 		$this->recaptcha_v3_keys_ready = class_exists( 'BotBlockerUI' ) ? BotBlockerUI::recaptcha_v3_keys_ready() : false;
+
+		$captcha_mode               = (int) $this->get( 'bbcs_captcha_mode', (string) BOTBLOCKER_CAPTCHA_MODE_DEFAULT );
+		$this->recaptcha_v2_active  = in_array( $captcha_mode, array( BOTBLOCKER_CAPTCHA_MODE_RECAPTCHA_V2_BUTTON, BOTBLOCKER_CAPTCHA_MODE_RECAPTCHA_V2 ), true );
+		$this->captcha_mode_label   = BotBlockerUI::captcha_mode_label( $captcha_mode );
+		$this->captcha_settings_url = BotBlockerSnav::getSettingLink( 'bbcs_captcha_mode', true );
 
 		$this->urls            = new Botblocker_DashboardUrls();
 		$this->urls->cloud_api = $BBCSA->pages_cloud_api;

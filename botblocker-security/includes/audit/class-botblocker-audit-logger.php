@@ -36,6 +36,8 @@ class BotBlockerAuditLogger {
 		BotBlockerAuditEvents::BOTBLOCKER_SECRET_BYPASS,
 		BotBlockerAuditEvents::BOTBLOCKER_SECRET_OFF,
 		BotBlockerAuditEvents::BOTBLOCKER_SECRET_ON,
+		BotBlockerAuditEvents::BOTBLOCKER_BAN_DECISION,
+		BotBlockerAuditEvents::EDGE_TRUST_ADDED,
 	);
 
 	/**
@@ -470,6 +472,11 @@ class BotBlockerAuditLogger {
 			BotBlockerAuditEvents::BOTBLOCKER_MAINTENANCE    => array( 'severity' => self::SEVERITY_INFO, 'object_type' => 'maintenance', 'message' => __( 'BotBlocker maintenance task ran.', 'botblocker-security' ) ),
 			/* translators: %ability%: ability name; %outcome%: call outcome. */
 			BotBlockerAuditEvents::BOTBLOCKER_ABILITY_CALL  => array( 'severity' => self::SEVERITY_MEDIUM, 'object_type' => 'ability', 'message' => __( 'BotBlocker ability %ability%: %outcome%.', 'botblocker-security' ) ),
+			/* translators: %ip%: target address; %reason%: policy reason; %writer%: automatic writer. */
+			BotBlockerAuditEvents::BOTBLOCKER_BAN_DECISION  => array( 'severity' => self::SEVERITY_MEDIUM, 'object_type' => 'rule', 'message' => __( 'Automatic ban for %ip% denied by %writer% (%reason%).', 'botblocker-security' ) ),
+			BotBlockerAuditEvents::EDGE_TRUST_REMOVED       => array( 'severity' => self::SEVERITY_MEDIUM, 'object_type' => 'edge', 'message' => __( 'Removed auto-trusted edge %mask%.', 'botblocker-security' ) ),
+			/* translators: %mask%: CIDR mask; %evidence%: verified request count. */
+			BotBlockerAuditEvents::EDGE_TRUST_ADDED        => array( 'severity' => self::SEVERITY_MEDIUM, 'object_type' => 'edge', 'message' => __( 'Auto-trusted edge %mask% after %evidence% verified requests.', 'botblocker-security' ) ),
 			/* translators: %count%: number of changed settings. */
 			BotBlockerAuditEvents::BOTBLOCKER_SETTINGS_CHANGED => array( 'severity' => self::SEVERITY_INFO, 'object_type' => 'settings', 'message' => __( 'BotBlocker settings changed (%count%).', 'botblocker-security' ) ),
 			/* translators: %from%: previous protection state; %to%: new protection state. */

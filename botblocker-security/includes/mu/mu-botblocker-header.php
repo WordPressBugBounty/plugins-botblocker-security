@@ -22,6 +22,10 @@ trait BotBlockerMuHeader {
 	}
 
 	protected function set_denied_headers(): void {
+		$this->strip_php_version_header();
+		$this->emit_header( 'X-Content-Type-Options: nosniff' );
+		$this->emit_header( 'Referrer-Policy: no-referrer' );
+		$this->emit_header( "Content-Security-Policy: frame-ancestors 'self'" );
 		$this->emit_header( 'X-Robots-Tag: noindex, noarchive' );
 		$this->emit_header( $this->protocol . ' 403 Forbidden' );
 		$this->emit_header( 'Status: ' . '403 Forbidden' );
@@ -33,5 +37,18 @@ trait BotBlockerMuHeader {
 
 	protected function emit_header( string $header_line ): void {
 		header( $header_line );
+	}
+
+	protected function strip_php_version_header(): void {
+		if ( isset( $this->settings['bbcs_strip_php_version'] ) && (int) $this->settings['bbcs_strip_php_version'] !== 1 ) {
+			return;
+		}
+		$this->remove_header( 'X-Powered-By' );
+	}
+
+	protected function remove_header( string $name ): void {
+		if ( $this->header_can_send() ) {
+			header_remove( $name );
+		}
 	}
 }

@@ -28,6 +28,7 @@ class Botblocker_Uninstaller {
 		'bbcs_addon_ledger',
 		'bbcs_asn_db_status',
 		'bbcs_llm_sync_status',
+		'bbcs_server_ips_sync_failures',
 		'bbcs_blocked_countries',
 		'bbcs_payment_autodetect_lastrun',
 		'bbcs_payment_autoenabled_done',
@@ -99,6 +100,7 @@ class Botblocker_Uninstaller {
 		'bbcs_fingerprint',
 		'bbcs_sessions',
 		'bbcs_audit_log',
+		'bbcs_edge_stats',
 	);
 
 	/**
@@ -187,28 +189,36 @@ class Botblocker_Uninstaller {
 		}
 
 		try {
-			$addons = BotBlockerAddons::scanAll();
+			$addons = BotBlockerAddons::scanAllRaw();
 			$active = BotBlockerAddons::getActive();
 			$addons_to_clean_up = self::addonsToCleanUp( $addons, $active );
-
-			foreach ( $addons_to_clean_up as $slug ) {
-				if ( isset( $addons[ $slug ] ) && ! empty( $addons[ $slug ]['valid'] ) ) {
-					BotBlockerAddons::loadCore( $addons[ $slug ] );
-					BotBlockerAddons::dispatchLifecycle(
-						$slug, 'delete', $addons[ $slug ],
-						array( 'reason' => 'delete' )
-					);
-					if ( self::isDebug() ) {
-						self::log( 'Addons: dispatched "delete" lifecycle to ' . $slug . '.' );
-					}
-				} elseif ( self::isDebug() ) {
-					self::log( 'Addons: ' . $slug . ' missing or invalid on disk. SKIPPED.' );
-				}
-			}
-
 		} catch ( \Throwable $e ) {
 			if ( self::isDebug() ) {
 				self::log( 'Addons: ERROR - ' . $e->getMessage() );
+			}
+			return;
+		}
+
+		foreach ( $addons_to_clean_up as $slug ) {
+			if ( ! isset( $addons[ $slug ] ) || empty( $addons[ $slug ]['valid'] ) ) {
+				if ( self::isDebug() ) {
+					self::log( 'Addons: ' . $slug . ' missing or invalid on disk. SKIPPED.' );
+				}
+				continue;
+			}
+			try {
+				BotBlockerAddons::loadCore( $addons[ $slug ] );
+				BotBlockerAddons::dispatchLifecycle(
+					$slug, 'delete', $addons[ $slug ],
+					array( 'reason' => 'delete' )
+				);
+				if ( self::isDebug() ) {
+					self::log( 'Addons: dispatched "delete" lifecycle to ' . $slug . '.' );
+				}
+			} catch ( \Throwable $e ) {
+				if ( self::isDebug() ) {
+					self::log( 'Addons: ' . $slug . ' delete ERROR - ' . $e->getMessage() );
+				}
 			}
 		}
 	}
@@ -310,7 +320,7 @@ class Botblocker_Uninstaller {
 		if ( class_exists( 'BotBlockerAddons' ) ) {
 			$addons_dir = BotBlockerAddons::rootDir();
 			if ( $addons_dir !== '' && is_dir( $addons_dir ) ) {
-				foreach ( BotBlockerAddons::scanAll() as $addon ) {
+				foreach ( BotBlockerAddons::scanAllRaw() as $addon ) {
 					if ( ! empty( $addon['storage']['cache_dirs'] ) && is_array( $addon['storage']['cache_dirs'] ) ) {
 						foreach ( $addon['storage']['cache_dirs'] as $cache_dir ) {
 							$addon_cache_dirs[] = $cache_dir;

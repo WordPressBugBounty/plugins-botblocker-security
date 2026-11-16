@@ -20,13 +20,8 @@ if ( ! function_exists( 'bbcs_ability_input_string' ) ) {
 	}
 
 	function bbcs_ability_mask_enabled( $input, bool $allow_disable = false ): bool {
-		if ( ! $allow_disable ) {
-			return true;
-		}
-		if ( ! is_array( $input ) || ! array_key_exists( 'mask_pii', $input ) ) {
-			return true;
-		}
-		return (bool) filter_var( $input['mask_pii'], FILTER_VALIDATE_BOOLEAN );
+		unset( $input, $allow_disable );
+		return true;
 	}
 
 	function bbcs_ability_mask_ip( string $ip ): string {
@@ -68,6 +63,11 @@ if ( ! function_exists( 'bbcs_ability_input_string' ) ) {
 		return strlen( $value ) > $keep ? substr( $value, 0, $keep ) . '...' : $value;
 	}
 
+	function bbcs_ability_mask_short( string $value ): string {
+		$masked = bbcs_ability_mask_text( $value, 20 );
+		return $masked === $value ? bbcs_ability_mask_identity( $value ) : $masked;
+	}
+
 	function bbcs_ability_mask_rows( array $rows, bool $mask, bool $nested = false ): array {
 		if ( ! $mask ) {
 			return $rows;
@@ -89,21 +89,45 @@ if ( ! function_exists( 'bbcs_ability_input_string' ) ) {
 			}
 			$lower = strtolower( $key );
 			$text  = (string) $value;
-			if ( in_array( $lower, array( 'ip', 'ip1', 'ip2', 'remote_addr', 'client_ip', 'server_ip', 'ip_short', 'target_ip' ), true ) ) {
+			if ( in_array( $lower, array( 'ip', 'ip1', 'ip2', 'remote_addr', 'client_ip', 'peer_ip', 'server_ip', 'ip_short', 'target_ip', 'edge_client' ), true ) ) {
 				$out[ $key ] = bbcs_ability_mask_ip( $text );
 			} elseif ( in_array( $lower, array( 'login', 'username', 'user_login', 'actor_username' ), true ) ) {
 				$out[ $key ] = bbcs_ability_mask_identity( $text );
-			} elseif ( in_array( $lower, array( 'email', 'user_email', 'actor_email' ), true ) ) {
+			} elseif ( strpos( $lower, 'email' ) !== false ) {
 				$out[ $key ] = bbcs_ability_mask_email( $text );
-			} elseif ( in_array( $lower, array( 'user_agent', 'ua', 'useragent' ), true ) ) {
-				$out[ $key ] = bbcs_ability_mask_text( $text, 20 );
-			} elseif ( in_array( $lower, array( 'path', 'request_path', 'page', 'referer', 'url' ), true ) ) {
+			} elseif ( in_array( $lower, array( 'user_agent', 'ua', 'useragent', 'ptr' ), true ) ) {
+				$out[ $key ] = bbcs_ability_mask_short( $text );
+			} elseif ( in_array( $lower, array( 'path', 'request_path', 'page', 'referer', 'url', 'result' ), true ) ) {
 				$out[ $key ] = bbcs_ability_mask_text( $text, 80 );
 			} else {
 				$out[ $key ] = $value;
 			}
 		}
 		return $out;
+	}
+
+	/**
+	 * Expand the edge diagnostics stored in the hits.access column.
+	 *
+	 * @param array<string,mixed> $row Hit row.
+	 * @return array<string,mixed>
+	 */
+	function bbcs_ability_expand_edge_access( array $row ): array {
+		$raw = isset( $row['access'] ) && is_string( $row['access'] ) ? trim( $row['access'] ) : '';
+		if ( $raw !== '' && $raw[0] === '{' ) {
+			$decoded = json_decode( $raw, true );
+			if ( is_array( $decoded ) ) {
+				$row['peer_ip']     = (string) ( $decoded['peer'] ?? '' );
+				$row['edge_state']  = (string) ( $decoded['edge'] ?? '' );
+				$row['edge_header'] = (string) ( $decoded['hdr'] ?? '' );
+				$row['edge_role']   = (string) ( $decoded['role'] ?? '' );
+				$row['subject_source'] = (string) ( $decoded['source'] ?? '' );
+				$row['verified_by'] = (string) ( $decoded['verified'] ?? '' );
+				$row['edge_client'] = (string) ( $decoded['client'] ?? '' );
+				$row['xff_present'] = ! empty( $decoded['hdr'] );
+			}
+		}
+		return $row;
 	}
 
 	function bbcs_ability_iso_time( $timestamp ): string {
@@ -159,6 +183,12 @@ if ( ! function_exists( 'bbcs_ability_input_string' ) ) {
 			return $guard;
 		}
 		if ( ! class_exists( 'BotBlockerHealthService' ) ) {
+			$health_file = BOTBLOCKER_DIR . 'includes/services/class-botblocker-health-service.php';
+			if ( is_readable( $health_file ) ) {
+				require_once $health_file;
+			}
+		}
+		if ( ! class_exists( 'BotBlockerHealthService' ) ) {
 			return new WP_Error( 'ability_unavailable', __( 'The health service is not available.', 'botblocker-security' ) );
 		}
 		$bbcS          = BotBlocker::getInstance();
@@ -192,28 +222,16 @@ if ( ! function_exists( 'bbcs_ability_input_string' ) ) {
 		}
 
 		$preset = 'custom';
+		if ( ! class_exists( 'BotBlockerSettingsPresets' ) ) {
+			$preset_class = BOTBLOCKER_DIR . 'includes/pro/class-botblocker-settings-presets.php';
+			if ( is_readable( $preset_class ) ) {
+				require_once $preset_class;
+			}
+		}
 		if ( class_exists( 'BotBlockerSettingsPresets' ) ) {
-			$candidates = array(
-				'light'  => BotBlockerSettingsPresets::loadLightSecurity(),
-				'strong' => BotBlockerSettingsPresets::loadStrongSecurity(),
-				'full'   => BotBlockerSettingsPresets::loadFullSecurity(),
-			);
-			foreach ( $candidates as $name => $values ) {
-				$match = true;
-				foreach ( $values as $key => $expected ) {
-					$actual = isset( $settings->$key ) ? (string) $settings->$key : null;
-					if ( $actual === null ) {
-						continue;
-					}
-					if ( $actual !== (string) $expected ) {
-						$match = false;
-						break;
-					}
-				}
-				if ( $match ) {
-					$preset = $name;
-					break;
-				}
+			$detected = (string) BotBlockerSettingsPresets::detectPreset( $settings );
+			if ( in_array( $detected, array( 'light', 'medium', 'strong', 'strong_api', 'full', 'emergency' ), true ) ) {
+				$preset = $detected;
 			}
 		}
 
@@ -229,20 +247,13 @@ if ( ! function_exists( 'bbcs_ability_input_string' ) ) {
 		}
 
 		return array(
-			'enabled'            => $enabled,
+			'protection_enabled' => $enabled,
 			'secure_mode'        => $secure,
 			'secure_mode_label'  => 2 === $secure ? __( 'Full', 'botblocker-security' ) : __( 'Frontend', 'botblocker-security' ),
 			'captcha_mode'       => $mode,
 			'captcha_mode_label' => bbcs_wp_ability_mode_label( $mode ),
 			'preset'             => $preset,
-			'layers'             => array(
-				'early_init'   => ! empty( $settings->early_init_enable ),
-				'early_geo'    => ! empty( $settings->early_geo_enable ),
-				'mu_plugin'    => ! empty( $settings->mu_enable ),
-				'mu_geo'       => ! empty( $settings->mu_geo_enable ),
-				'wp_abilities' => ! empty( $settings->bbcs_wp_abilities_enabled ),
-				'connectors'   => ! empty( $settings->bbcs_wp_connectors_enabled ),
-			),
+			'edge_autotrust'     => ! empty( $settings->bbcs_edge_autotrust ),
 			'warnings'           => $warnings,
 		);
 	}
@@ -258,9 +269,36 @@ if ( ! function_exists( 'bbcs_ability_input_string' ) ) {
 		}
 		$addons = BotBlockerAddons::scanAll();
 		$rows   = array();
+		$invalid = array();
+		$core_version = defined( 'BOTBLOCKER_VERSION' ) ? (string) BOTBLOCKER_VERSION : '';
 		foreach ( (array) $addons as $slug => $addon ) {
-			if ( empty( $addon['valid'] ) ) {
+			if ( ! is_array( $addon ) ) {
 				continue;
+			}
+			$slug = (string) ( $addon['slug'] ?? $slug );
+			if ( empty( $addon['valid'] ) ) {
+				$invalid[] = array(
+					'slug'          => $slug,
+					'name'          => (string) ( $addon['name'] ?? '' ),
+					'version'       => (string) ( $addon['version'] ?? '' ),
+					'requires_core' => (string) ( $addon['requires_core'] ?? '' ),
+					'requires_php'  => (string) ( $addon['requires_php'] ?? '' ),
+					'max_core'      => (string) ( $addon['max_core'] ?? '' ),
+				);
+				continue;
+			}
+			$requires_core = (string) ( $addon['requires_core'] ?? '' );
+			$requires_php  = (string) ( $addon['requires_php'] ?? '' );
+			$max_core      = (string) ( $addon['max_core'] ?? '' );
+			$compatible    = true;
+			if ( '' !== $requires_core && '' !== $core_version && version_compare( $core_version, $requires_core, '<' ) ) {
+				$compatible = false;
+			}
+			if ( '' !== $requires_php && version_compare( PHP_VERSION, $requires_php, '<' ) ) {
+				$compatible = false;
+			}
+			if ( '' !== $max_core && '' !== $core_version && version_compare( $core_version, $max_core, '>' ) ) {
+				$compatible = false;
 			}
 			$abilities = array();
 			foreach ( (array) ( $addon['abilities'] ?? array() ) as $entry ) {
@@ -269,27 +307,22 @@ if ( ! function_exists( 'bbcs_ability_input_string' ) ) {
 				}
 			}
 			$rows[] = array(
-				'slug'          => (string) $slug,
-				'name'          => (string) ( $addon['name'] ?? $slug ),
+				'slug'          => $slug,
+				'name'          => (string) ( $addon['name'] ?? '' ),
 				'version'       => (string) ( $addon['version'] ?? '' ),
-				'active'        => BotBlockerAddons::isActive( (string) $slug ),
-				'compatible'    => class_exists( 'BotBlockerAddons' ) ? BotBlockerAddons::isCompatible( $addon ) : true,
-				'requires_core' => (string) ( $addon['requires_core'] ?? '' ),
+				'active'        => BotBlockerAddons::isActive( $slug ),
+				'compatible'    => $compatible,
+				'requires_core' => $requires_core,
 				'features'      => array_values( (array) ( $addon['features'] ?? array() ) ),
 				'abilities'     => $abilities,
 			);
 		}
-		return array( 'addons' => $rows );
+		return array( 'addons' => $rows, 'invalid' => $invalid );
 	}
 
-	function bbcs_wp_ability_execute_get_license_status( $input = null ) {
-		unset( $input );
-		$guard = bbcs_wp_ability_guard( 'botblocker/get-license-status', null );
-		if ( is_wp_error( $guard ) ) {
-			return $guard;
-		}
+	function bbcs_wp_ability_license_state(): array {
 		if ( ! class_exists( 'BotBlockerPro' ) ) {
-			return new WP_Error( 'ability_unavailable', __( 'The license component is not available.', 'botblocker-security' ) );
+			return array();
 		}
 		$days = BotBlockerPro::getRemainingDays();
 		$hits = BotBlockerPro::getRemainingHits();
@@ -301,6 +334,90 @@ if ( ! function_exists( 'bbcs_ability_input_string' ) ) {
 			'key_configured' => BotBlockerPro::getKey() !== '',
 			'remaining_days' => is_numeric( $days ) ? (int) $days : 0,
 			'remaining_hits' => is_numeric( $hits ) ? (int) $hits : 0,
+		);
+	}
+
+	function bbcs_wp_ability_execute_get_license_status( $input = null ) {
+		unset( $input );
+		$guard = bbcs_wp_ability_guard( 'botblocker/get-license-status', null );
+		if ( is_wp_error( $guard ) ) {
+			return $guard;
+		}
+		$state = bbcs_wp_ability_license_state();
+		if ( empty( $state ) ) {
+			return new WP_Error( 'ability_unavailable', __( 'The license component is not available.', 'botblocker-security' ) );
+		}
+		return $state;
+	}
+
+	function bbcs_wp_ability_execute_load_license_from_cloud( $input = null ) {
+		$guard = bbcs_wp_ability_guard( 'botblocker/load-license-from-cloud', $input, bbcs_ability_confirm_token( 'botblocker/load-license-from-cloud' ), true );
+		if ( is_wp_error( $guard ) ) {
+			return $guard;
+		}
+		if ( ! class_exists( 'BotBlockerPro' ) ) {
+			return new WP_Error( 'ability_unavailable', __( 'The cloud license component is not available.', 'botblocker-security' ) );
+		}
+
+		$dry_run = bbcs_wp_ability_is_dry_run( $input );
+		if ( $dry_run ) {
+			return array(
+				'push'      => 'not_sent',
+				'http_code' => 0,
+				'reason'    => '',
+				'message'   => '',
+				'activated' => false,
+				'license'   => bbcs_wp_ability_license_state(),
+				'applied'   => false,
+				'dry_run'   => true,
+			);
+		}
+
+		if ( ! class_exists( 'BotBlockerBackend' ) || ! class_exists( 'BotBlockerCloudApiHooks' ) ) {
+			return new WP_Error( 'ability_unavailable', __( 'The cloud license component is not available.', 'botblocker-security' ) );
+		}
+		$urls = BotBlockerBackend::urls();
+		if ( empty( $urls ) ) {
+			return new WP_Error( 'ability_backend_unavailable', __( 'The cloud transport is not configured.', 'botblocker-security' ) );
+		}
+
+		$result = BotBlockerCloudApiHooks::requestLicensePushResult();
+		bbcs_wp_ability_audit(
+			'botblocker/load-license-from-cloud',
+			'license_push_requested',
+			array(
+				'push'      => (string) $result['push'],
+				'http_code' => (int) $result['http_code'],
+			)
+		);
+		$result['applied'] = 'unreachable' !== (string) $result['push'];
+		$result['dry_run'] = false;
+		return $result;
+	}
+
+	function bbcs_wp_ability_automation_state(): array {
+		$settings = BotBlocker::getInstance()->settings;
+		$ip       = class_exists( 'BotBlockerIp' ) ? (string) BotBlockerIp::getCurrentIp() : '';
+		$allowlisted = false;
+		if ( '' !== $ip && function_exists( 'bbcs_wp_ability_lookup_ip_rules' ) ) {
+			foreach ( bbcs_wp_ability_lookup_ip_rules( $ip ) as $rule ) {
+				if ( 'allow' === (string) ( $rule['rule'] ?? '' ) && empty( $rule['expired'] ) ) {
+					$allowlisted = true;
+					break;
+				}
+			}
+		}
+		$abilities = is_object( $settings ) && ! empty( $settings->bbcs_wp_abilities_enabled );
+		$warning   = '';
+		if ( $abilities && ! $allowlisted ) {
+			$warning = __( 'Abilities are enabled and this IP is not allowlisted: a rate or login ban will block MCP and app-password REST until it expires.', 'botblocker-security' );
+		}
+		return array(
+			'current_ip'        => $ip,
+			'allowlisted'       => $allowlisted,
+			'app_password_rest' => is_object( $settings ) && (int) ( $settings->allow_app_password_rest ?? 1 ) === 1,
+			'abilities'         => $abilities,
+			'warning'           => $warning,
 		);
 	}
 
@@ -337,10 +454,41 @@ if ( ! function_exists( 'bbcs_ability_input_string' ) ) {
 		}
 
 		$settings = BotBlocker::getInstance()->settings;
+
+		$abilities = array(
+			'master'  => is_object( $settings ) && ! empty( $settings->bbcs_wp_abilities_enabled ),
+			'total'   => 0,
+			'enabled' => 0,
+			'items'   => array(),
+		);
+		if ( class_exists( 'BotBlockerAbilityRegistry' ) ) {
+			$registry = (array) BotBlockerAbilityRegistry::all();
+			$abilities['total'] = count( $registry );
+			foreach ( $registry as $ability_name => $ability_definition ) {
+				$ability_enabled = BotBlockerAbilityRegistry::isEnabled( (string) $ability_name );
+				if ( $ability_enabled ) {
+					++$abilities['enabled'];
+				}
+				$ability_risk = isset( $ability_definition['risk'] ) ? (string) $ability_definition['risk'] : '';
+				if ( ! in_array( $ability_risk, array( 'read', 'manage', 'danger' ), true ) ) {
+					$ability_risk = 'manage';
+				}
+				$abilities['items'][] = array(
+					'name'    => (string) $ability_name,
+					'enabled' => $ability_enabled,
+					'risk'    => $ability_risk,
+					'owner'   => (string) ( $ability_definition['owner'] ?? '' ),
+				);
+			}
+		}
+
 		return array(
-			'pro'    => $pro,
-			'addons' => $addons,
-			'gates'  => array(
+			'pro'              => $pro,
+			'addons'           => $addons,
+			'automation'       => bbcs_wp_ability_automation_state(),
+			'abilities'        => $abilities,
+			'contract_version' => defined( 'MCP_CONTRACT_VERSION' ) ? (string) MCP_CONTRACT_VERSION : '2',
+			'gates'            => array(
 				'wp_abilities' => is_object( $settings ) && ! empty( $settings->bbcs_wp_abilities_enabled ),
 				'connectors'   => is_object( $settings ) && ! empty( $settings->bbcs_wp_connectors_enabled ),
 				'early_init'   => is_object( $settings ) && ! empty( $settings->early_init_enable ),
@@ -372,14 +520,8 @@ if ( ! function_exists( 'bbcs_ability_input_string' ) ) {
 				$issues[] = (string) $check['key'];
 			}
 		}
-		$score = 0;
-		if ( class_exists( 'BotBlockerHealthService' ) && $settings ) {
-			$recaptcha = ! empty( $settings->recaptcha_key2 ) && ! empty( $settings->recaptcha_secret2 );
-			$score     = BotBlockerHealthService::calculateHealthScore( $settings, $recaptcha );
-		}
 		return array(
 			'valid'  => empty( $issues ),
-			'score'  => $score,
 			'checks' => $checks,
 			'issues' => $issues,
 		);
@@ -406,7 +548,7 @@ if ( ! function_exists( 'bbcs_ability_input_string' ) ) {
 						'timestamp'  => (int) $timestamp,
 						'next_run'   => bbcs_ability_iso_time( $timestamp ),
 						'recurrence' => isset( $event['schedule'] ) && is_string( $event['schedule'] ) ? $event['schedule'] : '',
-						'interval'   => isset( $event['interval'] ) ? (int) $event['interval'] : 0,
+						'interval'   => isset( $event['interval'] ) ? max( 0, (int) $event['interval'] ) : 0,
 					);
 					if ( $expose_args ) {
 						$job['args'] = isset( $event['args'] ) && is_array( $event['args'] ) ? $event['args'] : array();
@@ -452,10 +594,10 @@ if ( ! function_exists( 'bbcs_ability_input_string' ) ) {
 			);
 		}
 
+		$suppress = $wpdb->suppress_errors( true );
 		$existing = $wpdb->get_col( 'SHOW TABLES' );
 		$existing = is_array( $existing ) ? array_map( 'strval', $existing ) : null;
 
-		$suppress = $wpdb->suppress_errors( true );
 		$schema = $wpdb->get_results(
 			$wpdb->prepare(
 				'SELECT table_name AS name, table_rows AS rows_count, ( data_length + index_length ) AS size_bytes
@@ -464,33 +606,56 @@ if ( ! function_exists( 'bbcs_ability_input_string' ) ) {
 			),
 			ARRAY_A
 		);
+
+		$status_rows = $wpdb->get_results( 'SHOW TABLE STATUS', ARRAY_A );
 		$wpdb->suppress_errors( $suppress );
 
-		$available = is_array( $schema ) && ! empty( $schema );
-		$reason    = $available ? '' : 'information_schema_unavailable';
+		$status_map = array();
+		if ( is_array( $status_rows ) ) {
+			foreach ( $status_rows as $row ) {
+				$row_name = (string) ( $row['Name'] ?? $row['name'] ?? '' );
+				if ( '' === $row_name ) {
+					continue;
+				}
+				$status_map[ $row_name ] = array(
+					'rows'       => (int) ( $row['Rows'] ?? 0 ),
+					'size_bytes' => (int) ( $row['Data_length'] ?? 0 ) + (int) ( $row['Index_length'] ?? 0 ),
+				);
+			}
+		}
+
 		if ( is_array( $schema ) ) {
 			foreach ( $schema as $row ) {
-				$name = (string) $row['name'];
-				if ( ! isset( $tables[ $name ] ) ) {
+				$name = (string) ( $row['name'] ?? '' );
+				if ( '' === $name || ! isset( $tables[ $name ] ) ) {
 					continue;
 				}
 				$tables[ $name ]['exists']     = true;
-				$tables[ $name ]['rows']       = (int) $row['rows_count'];
-				$tables[ $name ]['size_bytes'] = (int) $row['size_bytes'];
-			}
-		}
-		if ( is_array( $existing ) ) {
-			foreach ( $names as $name ) {
-				$tables[ $name ]['exists'] = in_array( $wpdb->prefix . 'bbcs_' . substr( $name, 7 ), $existing, true ) || in_array( $name, $existing, true );
-			}
-			if ( ! $available && ! empty( $tables ) ) {
-				$reason = 'information_schema_unavailable';
+				$tables[ $name ]['rows']       = (int) ( $row['rows_count'] ?? 0 );
+				$tables[ $name ]['size_bytes'] = (int) ( $row['size_bytes'] ?? 0 );
 			}
 		}
 
+		if ( is_array( $existing ) ) {
+			foreach ( $names as $name ) {
+				$resolved = $wpdb->prefix . $name;
+				$exists   = in_array( $resolved, $existing, true ) || in_array( $name, $existing, true );
+				$tables[ $name ]['exists'] = $exists;
+				if ( $exists && isset( $status_map[ $resolved ] ) ) {
+					$tables[ $name ]['rows']       = $status_map[ $resolved ]['rows'];
+					$tables[ $name ]['size_bytes'] = $status_map[ $resolved ]['size_bytes'];
+				} elseif ( $exists && isset( $status_map[ $name ] ) ) {
+					$tables[ $name ]['rows']       = $status_map[ $name ]['rows'];
+					$tables[ $name ]['size_bytes'] = $status_map[ $name ]['size_bytes'];
+				}
+			}
+		}
+
+		$available = is_array( $existing ) || ! empty( $status_map ) || ( is_array( $schema ) && ! empty( $schema ) );
+
 		return array(
 			'available' => $available,
-			'reason'    => $reason,
+			'reason'    => $available ? '' : 'information_schema_unavailable',
 			'tables'    => array_values( $tables ),
 		);
 	}
@@ -569,7 +734,7 @@ if ( ! function_exists( 'bbcs_ability_input_string' ) ) {
 			'xmlrpc_block'       => is_object( $settings ) && ! empty( $settings->bbcs_2fa_xmlrpc_block ),
 			'admins_total'       => $total,
 			'admins_with_2fa'    => $with,
-			'admins_without_2fa' => max( 0, $total - $with ),
+			'admins_without_2fa' => max( 0, $total - $with - $pending ),
 			'admins_pending'     => $pending,
 		);
 	}
@@ -604,28 +769,55 @@ if ( ! function_exists( 'bbcs_ability_input_string' ) ) {
 		if ( $cid === '' ) {
 			return new WP_Error( 'ability_invalid_input', __( 'A client id is required.', 'botblocker-security' ) );
 		}
-		$table = bbcs_ability_input_enum( $input, 'table', array( 'hits', 'suspicious' ), 'suspicious' );
-		$name  = 'hits' === $table ? $wpdb->bbcs_hits : $wpdb->bbcs_hits_suspicious;
-		if ( empty( $name ) ) {
+		$table = bbcs_ability_input_enum( $input, 'table', array( 'hits', 'suspicious', 'both' ), 'both' );
+		$hits_table       = isset( $wpdb->bbcs_hits ) ? (string) $wpdb->bbcs_hits : '';
+		$suspicious_table = isset( $wpdb->bbcs_hits_suspicious ) ? (string) $wpdb->bbcs_hits_suspicious : '';
+		$names = array();
+		if ( 'hits' === $table ) {
+			$names[] = $hits_table;
+		} elseif ( 'suspicious' === $table ) {
+			$names[] = $suspicious_table;
+		} else {
+			$names[] = $hits_table;
+			$names[] = $suspicious_table;
+		}
+		$names = array_values( array_filter( $names, static function ( $name ) {
+			return '' !== $name;
+		} ) );
+		if ( empty( $names ) ) {
 			return new WP_Error( 'ability_unavailable', __( 'Traffic tables are not available.', 'botblocker-security' ) );
 		}
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table from $wpdb.
-		$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `{$name}` WHERE `cid` = %s LIMIT 1", $cid ), ARRAY_A );
+		$row = null;
+		foreach ( $names as $name ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table from $wpdb.
+			$found = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `{$name}` WHERE `cid` = %s LIMIT 1", $cid ), ARRAY_A );
+			if ( is_array( $found ) ) {
+				$row = $found;
+				break;
+			}
+		}
 		if ( ! is_array( $row ) ) {
 			return new WP_Error( 'ability_not_found', __( 'The event was not found.', 'botblocker-security' ) );
 		}
-		$keep = array( 'cid', 'ip', 'date', 'country', 'country_name', 'asnum', 'asname', 'browser', 'os', 'device', 'method', 'page', 'referer', 'useragent', 'result', 'access', 'passed', 'proxy', 'tor', 'vpn', 'recaptcha', 'hosting', 'hit' );
+		$row  = bbcs_ability_expand_edge_access( $row );
+		$keep = array( 'cid', 'ip', 'ptr', 'date', 'country', 'country_name', 'asnum', 'asname', 'browser', 'os', 'device', 'method', 'page', 'referer', 'useragent', 'result', 'passed', 'proxy', 'tor', 'vpn', 'recaptcha', 'hosting', 'hit', 'peer_ip', 'edge_state', 'edge_header', 'edge_role', 'subject_source', 'verified_by', 'edge_client', 'xff_present' );
 		$event = array();
 		foreach ( $keep as $key ) {
 			if ( array_key_exists( $key, $row ) ) {
 				$event[ $key ] = $row[ $key ];
 			}
 		}
-		$event['date'] = bbcs_ability_iso_time( $event['date'] ?? 0 );
-		$mask  = bbcs_ability_mask_enabled( $input );
+		$event['date']        = bbcs_ability_iso_time( $event['date'] ?? 0 );
+		$event['page']        = (string) preg_replace( '/\?.*$/', '', (string) ( $event['page'] ?? '' ) );
+		$event['passed']      = (int) ( $event['passed'] ?? 0 );
+		$event['hosting']     = ! empty( $event['hosting'] );
+		$event['hit']         = (int) ( $event['hit'] ?? 0 );
+		if ( array_key_exists( 'xff_present', $event ) ) {
+			$event['xff_present'] = ! empty( $event['xff_present'] );
+		}
 		return array(
-			'event'  => bbcs_ability_mask_rows( array( $event ), $mask )[0],
-			'masked' => $mask,
+			'event'  => bbcs_ability_mask_rows( array( $event ), true )[0],
+			'masked' => true,
 		);
 	}
 
@@ -637,7 +829,6 @@ if ( ! function_exists( 'bbcs_ability_input_string' ) ) {
 		}
 		$period = bbcs_ability_input_enum( $input, 'period', array( 'day', 'week', 'month' ), 'day' );
 		$limit  = max( 1, min( 100, bbcs_wp_ability_input_int( $input, 'limit', 20 ) ) );
-		$mask   = bbcs_ability_mask_enabled( $input );
 		$days   = bbcs_wp_ability_period_days( $period );
 		$start  = gmdate( 'Y-m-d', time() - ( $days * DAY_IN_SECONDS ) );
 		$end    = gmdate( 'Y-m-d', time() );
@@ -658,14 +849,9 @@ if ( ! function_exists( 'bbcs_ability_input_string' ) ) {
 		}
 		$items = array();
 		foreach ( $values as $ip => $count ) {
-			$items[] = array( 'ip' => (string) $ip, 'count' => (int) $count );
+			$items[] = array( 'ip' => bbcs_ability_mask_ip( (string) $ip ), 'count' => (int) $count );
 		}
-		if ( $mask ) {
-			foreach ( $items as $index => $item ) {
-				$items[ $index ]['ip'] = bbcs_ability_mask_ip( (string) $item['ip'] );
-			}
-		}
-		return array( 'period' => $period, 'source' => $source, 'items' => $items, 'masked' => $mask );
+		return array( 'period' => $period, 'source' => $source, 'items' => $items, 'masked' => true );
 	}
 
 	function bbcs_wp_ability_execute_get_login_attempts( $input = null ) {
@@ -699,7 +885,6 @@ if ( ! function_exists( 'bbcs_ability_input_string' ) ) {
 		$table  = bbcs_ability_input_enum( $input, 'table', array( 'hits', 'suspicious', 'both' ), 'suspicious' );
 		$limit  = max( 1, min( 200, bbcs_wp_ability_input_int( $input, 'limit', 50 ) ) );
 		$offset = max( 0, bbcs_wp_ability_input_int( $input, 'offset', 0 ) );
-		$mask   = bbcs_ability_mask_enabled( $input );
 		$since  = time() - ( bbcs_wp_ability_period_days( $period ) * DAY_IN_SECONDS );
 
 		$tables = array();
@@ -718,7 +903,7 @@ if ( ! function_exists( 'bbcs_ability_input_string' ) ) {
 				continue;
 			}
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table from $wpdb.
-			$found = $wpdb->get_results( $wpdb->prepare( "SELECT `cid`, `ip`, `date`, `country`, `asnum`, `asname`, `browser`, `os`, `device`, `method`, `page`, `referer`, `useragent`, `result`, `access`, `passed`, `proxy`, `tor`, `vpn` FROM `{$name}` WHERE `date` >= %d ORDER BY `date` DESC LIMIT %d OFFSET %d", $since, $limit, $offset ), ARRAY_A );
+			$found = $wpdb->get_results( $wpdb->prepare( "SELECT `cid`, `ip`, `ptr`, `date`, `country`, `asnum`, `asname`, `browser`, `os`, `device`, `method`, `page`, `referer`, `useragent`, `result`, `passed`, `proxy`, `tor`, `vpn` FROM `{$name}` WHERE `date` >= %d ORDER BY `date` DESC LIMIT %d OFFSET %d", $since, $limit, $offset ), ARRAY_A );
 			foreach ( (array) $found as $row ) {
 				$rows[] = $row;
 			}
@@ -731,11 +916,13 @@ if ( ! function_exists( 'bbcs_ability_input_string' ) ) {
 		);
 		$rows = array_slice( $rows, 0, $limit );
 		foreach ( $rows as $index => $row ) {
-			$rows[ $index ]['date'] = bbcs_ability_iso_time( $row['date'] ?? 0 );
+			$rows[ $index ]['date']   = bbcs_ability_iso_time( $row['date'] ?? 0 );
+			$rows[ $index ]['passed'] = (int) ( $row['passed'] ?? 0 );
+			$rows[ $index ]['page']   = (string) preg_replace( '/\?.*$/', '', (string) ( $row['page'] ?? '' ) );
 		}
 		return array(
-			'rows'   => bbcs_ability_mask_rows( $rows, $mask ),
-			'masked' => $mask,
+			'rows'   => bbcs_ability_mask_rows( $rows, true ),
+			'masked' => true,
 		);
 	}
 
@@ -745,7 +932,6 @@ if ( ! function_exists( 'bbcs_ability_input_string' ) ) {
 		if ( is_wp_error( $guard ) ) {
 			return $guard;
 		}
-		$mask   = bbcs_ability_mask_enabled( $input );
 		$limit  = max( 1, min( 100, bbcs_wp_ability_input_int( $input, 'limit', 25 ) ) );
 		$offset = max( 0, bbcs_wp_ability_input_int( $input, 'offset', 0 ) );
 		$role   = bbcs_ability_input_string( $input, 'role' );
@@ -774,6 +960,7 @@ if ( ! function_exists( 'bbcs_ability_input_string' ) ) {
 			}
 			$secret   = get_user_meta( $id, '_2fa_secret', true );
 			$verified = get_user_meta( $id, '_2fa_verified', true );
+			$pending  = ( ! empty( $secret ) && empty( $verified ) ) || ! empty( get_user_meta( $id, '_2fa_secret_temp', true ) );
 			$rows[]   = array(
 				'user_id'          => $id,
 				'login'            => $login,
@@ -781,13 +968,13 @@ if ( ! function_exists( 'bbcs_ability_input_string' ) ) {
 				'roles'            => array_values( (array) $user->roles ),
 				'registered'       => bbcs_ability_iso_time( strtotime( (string) $user->user_registered ) ),
 				'2fa_enabled'      => ! empty( $secret ) && ! empty( $verified ),
-				'2fa_pending'      => ! empty( get_user_meta( $id, '_2fa_secret_temp', true ) ),
+				'2fa_pending'      => $pending,
 				'failed_logins_30d' => $failed,
 			);
 		}
 		return array(
-			'rows'   => bbcs_ability_mask_rows( $rows, $mask ),
-			'masked' => $mask,
+			'rows'   => bbcs_ability_mask_rows( $rows, true ),
+			'masked' => true,
 		);
 	}
 
@@ -799,40 +986,43 @@ if ( ! function_exists( 'bbcs_ability_input_string' ) ) {
 		$period  = bbcs_ability_input_enum( $input, 'period', array( 'day', 'week', 'month' ), 'week' );
 		$ability = bbcs_ability_input_string( $input, 'ability' );
 		$outcome = bbcs_ability_input_string( $input, 'outcome' );
-		$mask    = bbcs_ability_mask_enabled( $input );
 		$args    = array(
 			'event_key'  => 'botblocker.ability.call',
 			'start'      => bbcs_wp_ability_input_int( $input, 'offset', 0 ),
 			'length'     => max( 1, min( 200, bbcs_wp_ability_input_int( $input, 'limit', 50 ) ) ),
 			'date_from'  => time() - ( bbcs_wp_ability_period_days( $period ) * DAY_IN_SECONDS ),
 		);
-		$result = bbcs_ability_audit_rows( $args, $mask );
-		if ( $ability === '' && $outcome === '' ) {
-			return $result;
-		}
-		$rows  = array();
-		$total = 0;
+		$result = bbcs_ability_audit_rows( $args, true );
+		$rows   = array();
 		foreach ( $result['rows'] as $row ) {
 			$data = is_array( $row['data'] ) ? $row['data'] : array();
-			if ( $ability !== '' && (string) ( $data['ability'] ?? '' ) !== $ability ) {
+			$raw  = (string) ( $data['outcome'] ?? '' );
+			if ( 'denied' === $raw ) {
+				$normalized = 'denied';
+			} elseif ( 'error' === $raw || false !== strpos( $raw, 'fail' ) ) {
+				$normalized = 'error';
+			} else {
+				$normalized = 'success';
+			}
+			$ability_name = (string) ( $data['ability'] ?? '' );
+			if ( $ability !== '' && $ability_name !== $ability ) {
 				continue;
 			}
-			if ( $outcome !== '' && (string) ( $data['outcome'] ?? '' ) !== $outcome ) {
+			if ( $outcome !== '' && $normalized !== $outcome ) {
 				continue;
 			}
-			++$total;
 			$rows[] = array(
-				'id'          => (int) $row['id'],
-				'created_at'  => (string) $row['created_at'],
-				'ability'     => (string) ( $data['ability'] ?? '' ),
-				'outcome'     => (string) ( $data['outcome'] ?? '' ),
-				'error'       => (string) ( $data['error'] ?? '' ),
-				'duration_ms' => (int) ( $data['duration_ms'] ?? 0 ),
+				'id'            => (int) $row['id'],
+				'created_at'    => (string) $row['created_at'],
+				'ability'       => $ability_name,
+				'outcome'       => $normalized,
+				'error'         => 'success' === $normalized ? '' : (string) ( $data['error'] ?? '' ),
+				'duration_ms'   => (int) ( $data['duration_ms'] ?? 0 ),
 				'actor_user_id' => (int) $row['actor_user_id'],
-				'ip'          => (string) $row['ip'],
-				'masked'      => $mask,
+				'ip'            => (string) $row['ip'],
+				'masked'        => true,
 			);
 		}
-		return array( 'rows' => $rows, 'total' => $total, 'masked' => $mask );
+		return array( 'rows' => $rows, 'total' => count( $rows ), 'masked' => true );
 	}
 }

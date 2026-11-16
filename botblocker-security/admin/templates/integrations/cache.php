@@ -24,6 +24,14 @@ return static function ( Botblocker_IntegrationsViewModel $data, bool $isActive 
 		</div>
 		<div>
 			<div class="bbcs-setgroup">
+				<div class="bbcs-setgroup-head"><?php esc_html_e( 'File cache', 'botblocker-security' ); ?></div>
+				<div class="bbcs-field">
+					<label class="bbcs-field-label" for="bbcs_file_cache_max_files"><?php esc_html_e( 'Maximum cache files', 'botblocker-security' ); ?> - <span id="bbcs_file_cache_max_files_value"><?php echo esc_html( (string) BotBlockerCache::sanitizeFileCap( $data->get( 'file_cache_max_files', BotBlockerCache::FILE_CAP_DEFAULT ) ) ); ?></span></label>
+					<div class="bbcs-field-desc"><?php esc_html_e( 'Limit disk cache usage per site. When space is needed, the least recently written entries are removed. Overwriting an entry refreshes its write time. Lower limits can evict active rate buckets.', 'botblocker-security' ); ?></div>
+					<div class="bbcs-field-box"><input type="range" class="bbcs-range bbcs-fill" id="bbcs_file_cache_max_files" name="file_cache_max_files" min="<?php echo esc_attr( (string) BotBlockerCache::FILE_CAP_MIN ); ?>" max="<?php echo esc_attr( (string) BotBlockerCache::FILE_CAP_MAX ); ?>" step="<?php echo esc_attr( (string) BotBlockerCache::FILE_CAP_STEP ); ?>" value="<?php echo esc_attr( (string) BotBlockerCache::sanitizeFileCap( $data->get( 'file_cache_max_files', BotBlockerCache::FILE_CAP_DEFAULT ) ) ); ?>"></div>
+				</div>
+			</div>
+			<div class="bbcs-setgroup">
 				<div class="bbcs-setgroup-head"><?php esc_html_e( 'Cache Compatibility', 'botblocker-security' ); ?></div>
 				<?php foreach ( $data->cache_systems as $bbcs_sys_key => $bbcs_sys ) : ?>
 					<?php

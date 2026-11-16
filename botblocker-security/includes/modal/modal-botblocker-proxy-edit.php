@@ -52,6 +52,21 @@ use BotBlocker\Component\Base;
 						<div class="col-md-12">
 							<div class="bbcs_text_input">
 								<div class="bbcs_label_input_box">
+									<span class="bbcs-label-input"><?php esc_html_e( 'Role', 'botblocker-security' ); ?></span><?php echo Base::help( __( 'Site edge trusts the forwarding header. Crawler network keeps the peer address and never trusts the header.', 'botblocker-security' ), BotBlockerDocs::url( 'proxy-role' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
+								</div>
+								<div class="bbcs_text_input_inner">
+									<select class="bbcs_select_input_input" id="role" name="role">
+										<option value="edge"><?php esc_html_e( 'Site edge', 'botblocker-security' ); ?></option>
+										<option value="bot_network"><?php esc_html_e( 'Crawler network', 'botblocker-security' ); ?></option>
+									</select>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-md-12">
+							<div class="bbcs_text_input">
+								<div class="bbcs_label_input_box">
 									<span class="bbcs-label-input"><?php esc_html_e( 'Comment', 'botblocker-security' ); ?></span><?php echo Base::help( __( 'Comment for this proxy (e.g., Cloudflare IPv4)', 'botblocker-security' ), BotBlockerDocs::url( 'proxy-comment' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- component renderer returns safe HTML ?>
 								</div>
 								<div class="bbcs_text_input_inner">

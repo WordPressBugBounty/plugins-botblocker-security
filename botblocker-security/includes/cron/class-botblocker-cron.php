@@ -55,6 +55,11 @@ class BotBlockerCron
 			'interval' => 300,
 			'label'    => 'RUGOV Update',
 		),
+		'bbcs_server_ips_sync_event' => array(
+			'schedule' => 'weekly',
+			'interval' => WEEK_IN_SECONDS,
+			'label'    => 'Server IP Sync',
+		),
 		'bbcs_llm_sync_event'        => array(
 			'schedule' => 'weekly',
 			'interval' => WEEK_IN_SECONDS,
@@ -80,6 +85,11 @@ class BotBlockerCron
 			'interval' => DAY_IN_SECONDS,
 			'label'    => 'Add-on Updates Check',
 		),
+		'bbcs_emergency_revert'            => array(
+			'schedule' => null,
+			'interval' => 21600,
+			'label'    => 'Emergency Revert',
+		),
 	);
 
 	public static function getAllTasks(): array
@@ -98,11 +108,13 @@ class BotBlockerCron
 			'bbcs_asn_db_freshness_task' => __('ASN Database Freshness Check', 'botblocker-security'),
 			'bbcs_rugov_freshness_task'  => __('RUGOV Freshness Check', 'botblocker-security'),
 			'bbcs_rugov_update_event'    => __('RUGOV Update', 'botblocker-security'),
+			'bbcs_server_ips_sync_event' => __('Server IP Sync', 'botblocker-security'),
 			'bbcs_llm_sync_event'        => __('LLM Provider Sync', 'botblocker-security'),
 			'bbcs_tls_fingerprints_sync_event' => __('TLS Fingerprint Sync', 'botblocker-security'),
 			'bbcs_summary_backfill'		 => __('Daily Summary Backfill', 'botblocker-security'),
 			'bbcs_cleanup_hot_bans'            => __('Cleanup Hot Bans', 'botblocker-security'),
 			'bbcs_addon_updates_task'          => __('Add-on Updates Check', 'botblocker-security'),
+			'bbcs_emergency_revert'            => __('Emergency Revert', 'botblocker-security'),
 		);
 	}
 
@@ -238,12 +250,18 @@ class BotBlockerCron
 			BotBlockerAudit::cleanOldEntries();
 		}
 		BotBlockerIp::clearExpiredPtrCache();
+		if ( class_exists( 'BotBlockerEdgeStats' ) ) {
+			BotBlockerEdgeStats::daily();
+		}
 		BotBlockerCloudApiHooks::refreshApiInternal();
 		self::updateIpFiles();
 	}
 
 	public static function hourlyHandler(): void
 	{
+		if ( class_exists( 'BotBlockerEdgeStats' ) ) {
+			BotBlockerEdgeStats::maybeAutoTrust();
+		}
 		// REVIEWER NOTE: Conditional debug logging; gated behind BBCS_DEBUG and disabled in production.
 		if (defined('BBCS_DEBUG') && BBCS_DEBUG) {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
@@ -314,13 +332,24 @@ class BotBlockerCron
 		$now   = time();
 		$event = BotBlockerCompatibility::getScheduledEvent( $hook );
 		wp_unschedule_hook( $hook );
-		self::runTask( $hook );
+		$error = self::runTask( $hook );
 		if ( $is_core ) {
 			if ( $all_tasks[ $hook ]['schedule'] !== null ) {
 				wp_schedule_event( $now + $all_tasks[ $hook ]['interval'], $all_tasks[ $hook ]['schedule'], $hook );
 			}
 		} elseif ( $event && ! empty( $event->schedule ) ) {
 			wp_schedule_event( $now + (int) $event->interval, (string) $event->schedule, $hook );
+		}
+
+		if ( $error !== '' ) {
+			wp_send_json_error( array(
+				'message' => sprintf(
+					// translators: 1: cron hook name, 2: error message
+					__( 'Task %1$s failed: %2$s', 'botblocker-security' ),
+					$hook,
+					$error
+				),
+			) );
 		}
 
 		wp_send_json_success( array(
@@ -340,29 +369,33 @@ class BotBlockerCron
 			wp_send_json_error( __( 'No permission.', 'botblocker-security' ) );
 		}
 
-		$tasks = self::getFallbackTasks();
-		$ran   = array();
-		$now   = time();
+		$tasks  = self::getFallbackTasks();
+		$ran    = array();
+		$failed = array();
+		$now    = time();
 
 		foreach ( $tasks as $hook => $config ) {
 			wp_unschedule_hook( $hook );
-			self::runTask( $hook );
+			$error = self::runTask( $hook );
 			if ( ! empty( $config['schedule'] ) ) {
 				wp_schedule_event( $now + $config['interval'], $config['schedule'], $hook );
 			}
 
 			$ran[] = $hook;
+			if ( $error !== '' ) {
+				$failed[ $hook ] = $error;
+			}
 		}
 
-		wp_send_json_success( array(
-			'ran'     => count( $ran ),
-			'tasks'   => $ran,
-			'message' => sprintf(
+		self::sendRunResult(
+			$ran,
+			$failed,
+			sprintf(
 				// translators: %d: number of tasks executed
 				_n( '%d task executed.', '%d tasks executed.', count( $ran ), 'botblocker-security' ),
 				count( $ran )
-			),
-		) );
+			)
+		);
 	}
 
 	public static function handleRunStaleCronTasks(): void
@@ -376,6 +409,7 @@ class BotBlockerCron
 		$current_time = time();
 		$tasks        = self::getFallbackTasks();
 		$ran          = array();
+		$failed       = array();
 
 		foreach ( $tasks as $hook => $config ) {
 			$event = BotBlockerCompatibility::getScheduledEvent( $hook );
@@ -386,25 +420,59 @@ class BotBlockerCron
 			$overdue_threshold = $event->timestamp + ( $config['interval'] * 1.5 );
 			if ( $current_time > $overdue_threshold ) {
 				wp_unschedule_hook( $hook );
-				self::runTask( $hook );
+				$error = self::runTask( $hook );
 				$ran[] = $hook;
+				if ( $error !== '' ) {
+					$failed[ $hook ] = $error;
+				}
 				if ( ! empty( $config['schedule'] ) ) {
 					wp_schedule_event( $current_time + $config['interval'], $config['schedule'], $hook );
 				}
 			}
 		}
 
-		wp_send_json_success( array(
-			'ran'     => count( $ran ),
-			'tasks'   => $ran,
-			'message' => count( $ran ) > 0
-				? sprintf(
-					// translators: %d: number of stale tasks executed
-					_n( '%d stale task executed.', '%d stale tasks executed.', count( $ran ), 'botblocker-security' ),
-					count( $ran )
-				)
-				: __( 'No stale tasks found.', 'botblocker-security' ),
-		) );
+		if ( count( $ran ) > 0 ) {
+			$message = sprintf(
+				// translators: %d: number of stale tasks executed
+				_n( '%d stale task executed.', '%d stale tasks executed.', count( $ran ), 'botblocker-security' ),
+				count( $ran )
+			);
+		} else {
+			$message = __( 'No stale tasks found.', 'botblocker-security' );
+		}
+
+		self::sendRunResult( $ran, $failed, $message );
+	}
+
+	private static function sendRunResult( array $ran, array $failed, string $message ): void
+	{
+		$data = array(
+			'ran'    => count( $ran ),
+			'tasks'  => $ran,
+			'failed' => $failed,
+		);
+
+		if ( empty( $failed ) ) {
+			$data['message'] = $message;
+			wp_send_json_success( $data );
+		}
+
+		$lines = array();
+		foreach ( $failed as $hook => $error ) {
+			$lines[] = $hook . ': ' . $error;
+		}
+		$data['message'] = sprintf(
+			// translators: 1: number of failed tasks, 2: number of tasks run, 3: failed tasks with their errors
+			__( '%1$d of %2$d tasks failed. %3$s', 'botblocker-security' ),
+			count( $failed ),
+			count( $ran ),
+			implode( '; ', $lines )
+		);
+
+		if ( count( $failed ) === count( $ran ) ) {
+			wp_send_json_error( $data );
+		}
+		wp_send_json_success( $data );
 	}
 
 	public static function cleanOldHits(): void
@@ -623,19 +691,29 @@ class BotBlockerCron
 		return true;
 	}
 
-	public static function runTask(string $hook, array $args = array()): void
+	public static function runTask(string $hook, array $args = array()): string
 	{
 		self::loadTaskDependencies();
+
+		$error   = '';
+		$collect = static function ($message) use (&$error) {
+			$error = (string) $message;
+		};
+		add_action('bbcs_cron_task_failed', $collect);
 
 		try {
 			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 			do_action_ref_array($hook, $args);
 		} catch (\Throwable $e) {
+			$error = $e->getMessage();
 			if (defined('BBCS_DEBUG') && BBCS_DEBUG) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 				error_log(sprintf('[BBCS] [Cron] Task %s failed: %s in %s:%d', $hook, $e->getMessage(), $e->getFile(), $e->getLine()));
 			}
 		}
+
+		remove_action('bbcs_cron_task_failed', $collect);
+		return $error;
 	}
 
 	public static function fallbackRunner(): void
@@ -754,6 +832,18 @@ class BotBlockerCron
 			set_transient('bbcs_cron_fallback_last_check', time(), 15 * MINUTE_IN_SECONDS);
 		}
 	}
+
+	public static function emergencyRevertHandler(): void {
+		if ( ! class_exists( 'BotBlockerSettingsPresets' ) ) {
+			$path = BOTBLOCKER_DIR . 'includes/pro/class-botblocker-settings-presets.php';
+			if ( is_readable( $path ) ) {
+				require_once $path;
+			}
+		}
+		if ( class_exists( 'BotBlockerSettingsPresets' ) ) {
+			BotBlockerSettingsPresets::revertEmergency();
+		}
+	}
 }
 
 add_filter('cron_schedules', array('BotBlockerCron', 'registerIntervals'));
@@ -770,3 +860,4 @@ add_action('init', array('BotBlockerCron', 'fallbackRunner'));
 add_action('bbcs_hourly_task', array('BotBlockerSummary', 'cronHandler'));
 add_action('bbcs_summary_backfill', array('BotBlockerSummary', 'backfillHandler'));
 add_action('bbcs_cleanup_hot_bans', array('BotBlockerCron', 'cleanupHotBansHandler'));
+add_action('bbcs_emergency_revert', array('BotBlockerCron', 'emergencyRevertHandler'));

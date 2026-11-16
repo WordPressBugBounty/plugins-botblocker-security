@@ -93,6 +93,24 @@
         }
     }
 
+    function showConfirmPtrCacheClearModal(callback) {
+        modalShow('confirmPtrCacheClearModal');
+        var btn = document.getElementById('confirmPtrCacheClearButton');
+        if (isNewUI && btn) {
+            var handler = function () {
+                btn.removeEventListener('click', handler);
+                modalHide('confirmPtrCacheClearModal');
+                if (typeof callback === 'function') callback();
+            };
+            btn.addEventListener('click', handler);
+        } else {
+            $("#confirmPtrCacheClearButton").off("click").on("click", function () {
+                modalHide('confirmPtrCacheClearModal');
+                if (typeof callback === "function") callback();
+            });
+        }
+    }
+
     function showConfirmHitsClearModal(callback) {
         modalShow('confirmHitsClearModal');
         var btn = document.getElementById('confirmHitsClearButton');
@@ -420,6 +438,30 @@
                         bbcsToast('success', response.data.message || bbcsMaintenanceL10n.transients_cleared);
                     } else {
                         bbcsToast('error', response.data.message || bbcsMaintenanceL10n.failed_clear_transients);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('AJAX error:', error);
+                    bbcsToast('error', bbcsMaintenanceL10n.operation_error);
+                }
+            });
+        });
+    });
+
+    $('#bbcs-clear-ptr-cache').on('click', function () {
+        showConfirmPtrCacheClearModal(function () {
+            $.ajax({
+                url: botblockerData.ajaxurl,
+                method: 'POST',
+                data: {
+                    action: 'bbcs_clear_ptr_cache',
+                    nonce: botblockerData.nonce
+                },
+                success: function (response) {
+                    if (response.success) {
+                        bbcsToast('success', response.data.message || bbcsMaintenanceL10n.ptr_cache_cleared);
+                    } else {
+                        bbcsToast('error', response.data.message || bbcsMaintenanceL10n.failed_clear_ptr_cache);
                     }
                 },
                 error: function (xhr, status, error) {

@@ -18,7 +18,7 @@ if ( ! class_exists( 'BotBlockerDataFile' ) ) {
 	class BotBlockerDataFile {
 
 		// Layer-1 shared class: bump on every member addition (see BotBlockerCompiledFile::EXPECTED_CLASS_REV).
-		public const CLASS_REV = 2;
+		public const CLASS_REV = 3;
 
 		public static $invalidated_file = '';
 
@@ -77,6 +77,8 @@ if ( ! class_exists( 'BotBlockerDataFile' ) ) {
 				'rules.php'          => 'BotBlockerFileRenderer::renderRules',
 				'paths.php'          => 'BotBlockerFileRenderer::renderPaths',
 				'proxy.php'          => 'BotBlockerFileRenderer::renderProxy',
+				'proxy-shared.php'   => 'BotBlockerFileRenderer::renderSharedProxy',
+				'bot-networks.php'   => 'BotBlockerFileRenderer::renderBotNetworks',
 				'search_engines.php' => 'BotBlockerFileRenderer::renderSearchEngines',
 				'llm_trusted.php'    => 'BotBlockerFileRenderer::renderLlmTrusted',
 				'asn_rules.php'      => 'BotBlockerFileRenderer::renderAsn',
@@ -84,6 +86,7 @@ if ( ! class_exists( 'BotBlockerDataFile' ) ) {
 				'tls_fingerprints.php' => 'BotBlockerFileRenderer::renderTlsFingerprints',
 				'geo_countries.php'    => 'BotBlockerFileRenderer::renderCountries',
 				'hot-bans.php'         => 'BotBlockerFileRenderer::renderHotBans',
+				'auto-edges.php'       => 'BotBlockerEdgeStats::repairAutoEdgesFile',
 				'addons.php'           => 'BotBlockerFileRenderer::renderAddons',
 				'bot-signatures-processed.php' => 'BotBlockerFileRenderer::renderBotSignatures',
 			);

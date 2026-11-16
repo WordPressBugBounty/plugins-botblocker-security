@@ -109,12 +109,7 @@ function bbcs_migration_2_11_0_add_audit_settings(): bool {
 		);
 	}
 
-	$roles = array();
-	if ( function_exists( 'wp_roles' ) ) {
-		foreach ( wp_roles()->roles as $role_key => $role ) {
-			$roles[ $role_key ] = '1';
-		}
-	}
+	$roles = BotBlockerSeedData::getDefaultAuditRoles();
 
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	$roles_exist = $wpdb->get_var(

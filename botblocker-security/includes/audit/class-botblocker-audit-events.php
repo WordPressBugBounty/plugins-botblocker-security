@@ -63,6 +63,9 @@ class BotBlockerAuditEvents {
 	public const BOTBLOCKER_RULE_CHANGED    = 'botblocker.rule.changed';
 	public const BOTBLOCKER_MAINTENANCE     = 'botblocker.maintenance';
 	public const BOTBLOCKER_ABILITY_CALL    = 'botblocker.ability.call';
+	public const BOTBLOCKER_BAN_DECISION    = 'botblocker.ban.decision';
+	public const EDGE_TRUST_ADDED           = 'edge.trust.added';
+	public const EDGE_TRUST_REMOVED         = 'edge.trust.removed';
 
 	public const BOTBLOCKER_PROTECTION      = 'botblocker.protection.toggled';
 	public const BOTBLOCKER_SETTINGS_CHANGED = 'botblocker.settings.changed';

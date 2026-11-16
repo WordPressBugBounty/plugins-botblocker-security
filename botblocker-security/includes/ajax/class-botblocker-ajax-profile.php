@@ -32,7 +32,7 @@ class BotBlockerAjaxProfile {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 			error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' mode=' . $mode );
 		}
-		if ( ! in_array( $mode, array( 'light', 'strong', 'full' ), true ) ) {
+		if ( ! in_array( $mode, array( 'light', 'medium', 'strong', 'strong_api', 'full', 'emergency' ), true ) ) {
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 				error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' invalid mode' );
@@ -59,6 +59,19 @@ class BotBlockerAjaxProfile {
 				wp_send_json_error( array( 'message' => __( 'Full profile function is not available.', 'botblocker-security' ) ) );
 			}
 			BotBlockerSettingsPresets::loadSettingsFull();
+		} elseif ( $mode === 'emergency' ) {
+			if ( ! ( class_exists( 'BotBlockerPro' ) && BotBlockerPro::isActive() ) ) {
+				wp_send_json_error( array( 'message' => __( 'Emergency profile requires Cloud API connection to be active.', 'botblocker-security' ) ) );
+			}
+			if ( ! class_exists( 'BotBlockerSettingsPresets' ) ) {
+				wp_send_json_error( array( 'message' => __( 'Emergency profile function is not available.', 'botblocker-security' ) ) );
+			}
+			BotBlockerSettingsPresets::loadSettingsEmergency();
+		} elseif ( $mode === 'medium' ) {
+			if ( ! class_exists( 'BotBlockerSettingsPresets' ) ) {
+				wp_send_json_error( array( 'message' => __( 'Medium profile function is not available.', 'botblocker-security' ) ) );
+			}
+			BotBlockerSettingsPresets::loadSettingsMedium();
 		} elseif ( $mode === 'strong' ) {
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
@@ -72,6 +85,11 @@ class BotBlockerAjaxProfile {
 				wp_send_json_error( array( 'message' => __( 'Strong profile function is not available.', 'botblocker-security' ) ) );
 			}
 			BotBlockerSettingsPresets::loadSettingsStrong();
+		} elseif ( 'strong_api' === $mode ) {
+			if ( ! class_exists( 'BotBlockerSettingsPresets' ) ) {
+				wp_send_json_error( array( 'message' => __( 'Strong API profile function is not available.', 'botblocker-security' ) ) );
+			}
+			BotBlockerSettingsPresets::loadSettingsStrongApi();
 		} elseif ( $mode === 'light' ) {
 			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
@@ -82,11 +100,12 @@ class BotBlockerAjaxProfile {
 					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- guarded by BBCS_DEBUG
 					error_log( '[BBCS DEBUG] [AJAX] ' . $bbcs_action . ' settings presets not available' );
 				}
-				wp_send_json_error( array( 'message' => __( 'Light profile function is not available.', 'botblocker-security' ) ) );
+				wp_send_json_error( array( 'message' => __( 'Balanced profile function is not available.', 'botblocker-security' ) ) );
 			}
 			BotBlockerSettingsPresets::loadSettingsLight();
 		}
 
+		BotBlockerMultisite::updateOption( 'bbcs_wizard_preset', $mode );
 		BotBlockerCache::resetHealthTransients();
 
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {

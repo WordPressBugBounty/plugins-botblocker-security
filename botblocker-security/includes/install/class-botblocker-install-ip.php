@@ -5,6 +5,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class BotBlockerInstallIp {
+	const SERVER_POOL_MARKER     = 'BotBlocker Server';
+	const SERVER_POOL_IPV4_LABEL = 'IPv4 BotBlocker Server (for license activation, can be removed)';
+	const SERVER_POOL_IPV6_LABEL = 'IPv6 BotBlocker Server (for license activation, can be removed)';
+	const PUBLIC_IPV4_LABEL      = 'Server Public IPv4';
+	const PUBLIC_IPV6_LABEL      = 'Server Public IPv6';
 
 	public static function addServerIPs(): void {
 		$localhostIPv4 = '127.0.0.1';
@@ -17,10 +22,6 @@ class BotBlockerInstallIp {
 				self::addIPv4Rule( $server_addr, 'Local IP from SERVER_ADDR' );
 			}
 		}
-		$serverIPv4 = self::getServerIPv4();
-		if ( $serverIPv4 && ! BotBlockerIp::isPublicIp( $serverIPv4 ) ) {
-			self::addIPv4Rule( $serverIPv4, 'Server IPv4' );
-		}
 
 		self::addIPv6Rule( $localhostIPv6, 'Local IPv6' );
 		if ( isset( $_SERVER['SERVER_ADDR'] ) && ! empty( $_SERVER['SERVER_ADDR'] ) ) {
@@ -29,10 +30,50 @@ class BotBlockerInstallIp {
 				self::addIPv6Rule( $server_addr, 'Local IP from SERVER_ADDR' );
 			}
 		}
-		$serverIPv6 = self::getServerIPv6();
-		if ( $serverIPv6 && ! BotBlockerIp::isPublicIp( $serverIPv6 ) ) {
-			self::addIPv6Rule( $serverIPv6, 'Server IPv6' );
+	}
+
+	public static function scheduleSync( string $reason = 'retry', int $delay = 60 ): bool {
+		$args = array( $reason );
+		if ( wp_next_scheduled( 'bbcs_server_ips_sync_event', $args ) !== false ) {
+			return false;
 		}
+		return (bool) wp_schedule_single_event( time() + max( 60, $delay ), 'bbcs_server_ips_sync_event', $args );
+	}
+
+	public static function syncServerIPs( string $reason = '' ): bool {
+		try {
+			self::fetchAndStoreParentIPs();
+			$ipv4 = self::getServerIPv4();
+			$ipv6 = self::getServerIPv6();
+			global $wpdb;
+			if ( $ipv4 ) {
+				$wpdb->delete( $wpdb->bbcs_ipv4rules, array( 'readonly' => 1, 'comment' => self::PUBLIC_IPV4_LABEL ) );
+				self::addIPv4Rule( $ipv4, self::PUBLIC_IPV4_LABEL );
+			}
+			if ( $ipv6 ) {
+				$wpdb->delete( $wpdb->bbcs_ipv6rules, array( 'readonly' => 1, 'comment' => self::PUBLIC_IPV6_LABEL ) );
+				self::addIPv6Rule( $ipv6, self::PUBLIC_IPV6_LABEL );
+			}
+			BotBlockerFileRenderer::renderIps();
+			BotBlockerCache::clearFileCache();
+			// IPv6-only absence is normal on IPv4 hosts; retry only when IPv4 is unknown.
+			if ( ! $ipv4 ) {
+				return self::recordSyncFailure();
+			}
+			BotBlockerMultisite::deleteOption( 'bbcs_server_ips_sync_failures' );
+			return true;
+		} catch ( Exception $e ) {
+			return self::recordSyncFailure();
+		}
+	}
+
+	private static function recordSyncFailure(): bool {
+		$failures = (int) BotBlockerMultisite::getOption( 'bbcs_server_ips_sync_failures', 0 ) + 1;
+		BotBlockerMultisite::updateOption( 'bbcs_server_ips_sync_failures', $failures, false );
+		if ( $failures < 7 ) {
+			self::scheduleSync( 'retry', min( 6, $failures ) * HOUR_IN_SECONDS );
+		}
+		return false;
 	}
 
 	public static function addAdminIPs( string $ip = '' ): void {
@@ -223,7 +264,7 @@ class BotBlockerInstallIp {
 			)
 		);
 
-		if ( is_wp_error( $response ) ) {
+		if ( is_wp_error( $response ) || wp_remote_retrieve_response_code( $response ) !== 200 ) {
 			return null;
 		}
 
@@ -265,11 +306,22 @@ class BotBlockerInstallIp {
 			throw new \Exception( 'Too many IP entries in response (max 10000).' );
 		}
 
-		foreach ( $ipAddresses as $ip ) {
+		$valid = array_filter( $ipAddresses, static function ( $ip ) {
+			return is_string( $ip ) && filter_var( $ip, FILTER_VALIDATE_IP );
+		} );
+		if ( empty( $valid ) ) {
+			throw new Exception( 'Empty or invalid server IP pool.' );
+		}
+		global $wpdb;
+		$marker = '%' . $wpdb->esc_like( self::SERVER_POOL_MARKER ) . '%';
+		$wpdb->query( $wpdb->prepare( "DELETE FROM `{$wpdb->bbcs_ipv4rules}` WHERE readonly = 1 AND comment LIKE %s", $marker ) );
+		$wpdb->query( $wpdb->prepare( "DELETE FROM `{$wpdb->bbcs_ipv6rules}` WHERE readonly = 1 AND comment LIKE %s", $marker ) );
+
+		foreach ( $valid as $ip ) {
 			if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
-				self::addIPv4Rule( $ip, 'IPv4 BotBlocker Server' );
+				self::addIPv4Rule( $ip, self::SERVER_POOL_IPV4_LABEL );
 			} elseif ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
-				self::addIPv6Rule( $ip, 'IPv6 BotBlocker Server' );
+				self::addIPv6Rule( $ip, self::SERVER_POOL_IPV6_LABEL );
 			} elseif ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG == true ) {
 					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 					error_log( '[BBCS DEBUG] [Install] INVALID IP: ' . $ip );
@@ -278,3 +330,5 @@ class BotBlockerInstallIp {
 		}
 	}
 }
+
+add_action( 'bbcs_server_ips_sync_event', array( 'BotBlockerInstallIp', 'syncServerIPs' ), 10, 1 );

@@ -109,6 +109,26 @@ class BotBlockerAjaxMaintenance {
 		wp_send_json_success( array( 'message' => __( 'All visitors data has been cleared successfully.', 'botblocker-security' ) ) );
 	}
 
+	public static function handleClearPtrCache(): void {
+		check_ajax_referer( 'botblocker_nonce', 'nonce' );
+
+		if ( ! current_user_can( BotBlockerMultisite::canManage() ) ) {
+			wp_send_json_error( array( 'message' => __( 'Not enough permissions to perform the operation.', 'botblocker-security' ) ) );
+		}
+
+		global $wpdb;
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		if ( $wpdb->query( "TRUNCATE TABLE `{$wpdb->bbcs_ptrcache}`" ) === false ) {
+			// phpcs:enable
+			wp_send_json_error( array( 'message' => __( 'Failed to clear the PTR cache.', 'botblocker-security' ) ) );
+		}
+		// phpcs:enable
+
+		BotBlockerCache::flush();
+
+		wp_send_json_success( array( 'message' => __( 'PTR cache cleared successfully.', 'botblocker-security' ) ) );
+	}
+
 	public static function handleClearTransients(): void {
 		$bbcs_action = 'maintenance_clear_transients';
 		if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {

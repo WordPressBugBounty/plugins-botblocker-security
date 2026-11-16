@@ -120,6 +120,20 @@ class BotBlockerStore {
 				? wp_json_encode( $BBCS->post_antidetect_scope, JSON_UNESCAPED_UNICODE )
 				: sanitize_text_field( $BBCS->post_antidetect_scope ?? BOTBLOCKER_EMPTY ),
 			'wbot'         => sanitize_text_field( $BBCS->white_bot ?? BOTBLOCKER_EMPTY ),
+			'access'       => ( ! empty( $BBCS->peer_ip ) && ( $BBCS->edge_state !== 'direct' || $BBCS->peer_ip !== $BBCS->ip ) )
+				? wp_json_encode(
+					array(
+						'peer'     => (string) $BBCS->peer_ip,
+						'edge'     => (string) $BBCS->edge_state,
+						'hdr'      => (string) $BBCS->edge_header,
+						'claimed'  => (string) $BBCS->edge_claimed,
+						'role'     => (string) ( $BBCS->edge_role ?? '' ),
+						'source'   => (string) ( $BBCS->edge_subject_source ?? '' ),
+						'verified' => (string) ( $BBCS->edge_verified_by ?? '' ),
+						'client'   => (string) ( $BBCS->edge_client ?? '' ),
+					)
+				)
+				: '',
 		);
 
 		// Skip filtered key if column missing (DDL denied) — else every insert breaks.

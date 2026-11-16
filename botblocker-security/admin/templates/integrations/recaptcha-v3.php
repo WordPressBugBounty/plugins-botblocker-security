@@ -10,6 +10,7 @@ use BotBlocker\Component\Base;
 
 return static function (Botblocker_IntegrationsViewModel $data, bool $isActive): void {
 	$keys_ready = ! empty( $data->get( 'recaptcha_key3' ) ) && ! empty( $data->get( 'recaptcha_secret3' ) );
+	$v3_on      = $keys_ready && $data->is_checked( 'recaptcha_check', '1' );
 ?>
 	<div role="tabpanel" class="bbcs-tabpanel bbcs-protect-layout" data-tabpanel="recaptcha-v3"<?php echo $isActive ? '' : ' hidden' ?>>
 		<div class="bbcs-infocol">
@@ -60,6 +61,37 @@ return static function (Botblocker_IntegrationsViewModel $data, bool $isActive):
 					<div class="bbcs-field-box">
 						<input type="range" class="bbcs-range bbcs-fill" id="bbcs_recaptcha_tresshold" name="recaptcha_tresshold" min="0.1" max="1" step="0.1" value="<?php echo esc_attr($data->get('recaptcha_tresshold', '0.5')); ?>">
 					</div>
+				</div>
+			</div>
+			<div class="bbcs-setgroup">
+				<div class="bbcs-setgroup-head"><?php esc_html_e( 'Background check', 'botblocker-security' ); ?></div>
+				<div class="bbcs-recaptcha-use">
+					<div class="bbcs-recaptcha-use__now">
+						<span><?php esc_html_e( 'reCAPTCHA v3:', 'botblocker-security' ); ?></span>
+						<?php if ( $v3_on ) : ?>
+							<span class="bbcs-pill bbcs-pill--green"><?php esc_html_e( 'On', 'botblocker-security' ); ?></span>
+						<?php else : ?>
+							<span class="bbcs-pill bbcs-recaptcha-use__mode"><?php esc_html_e( 'Off', 'botblocker-security' ); ?></span>
+						<?php endif; ?>
+					</div>
+					<div class="bbcs-field-desc">
+						<?php
+						/* translators: %s: name of the current check page mode */
+						echo esc_html( sprintf( __( 'Scores visitors in the background. The check page stays: %s.', 'botblocker-security' ), $data->captcha_mode_label ) );
+						?>
+					</div>
+					<?php if ( ! $v3_on ) : ?>
+						<div class="bbcs-card bbcs-card-pad bbcs-amber-card bbcs-recaptcha-use__hint">
+							<div class="bbcs-row bbcs-g-2h">
+								<svg class="bbcs-ico bbcs-ico--md bbcs-tx-amber"><use href="#bbcs-i-warning"></use></svg>
+								<span class="bbcs-fs-xs bbcs-tx-amber"><?php esc_html_e( 'The Save button only stores your keys. Click the button below to also turn reCAPTCHA v3 on.', 'botblocker-security' ); ?></span>
+							</div>
+						</div>
+						<div class="bbcs-recaptcha-use__action">
+							<button type="button" class="bbcs-btn bbcs-btn--pri bbcs-btn--sm" data-bbcs-use-recaptcha data-field="recaptcha_check" data-value="1" data-need="bbcs-recaptcha-v3-need" data-keys="recaptcha_key3,recaptcha_secret3"><?php esc_html_e( 'Turn on reCAPTCHA v3', 'botblocker-security' ); ?></button>
+							<span class="bbcs-field-desc" id="bbcs-recaptcha-v3-need" hidden><?php esc_html_e( 'Enter both keys above first.', 'botblocker-security' ); ?></span>
+						</div>
+					<?php endif; ?>
 				</div>
 			</div>
 		</div>

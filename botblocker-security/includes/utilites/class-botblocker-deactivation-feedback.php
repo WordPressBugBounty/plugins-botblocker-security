@@ -13,34 +13,50 @@ class BotBlockerDeactivationFeedback {
 
 	// Rendered group by group; options are shuffled inside a group so no single answer wins by position.
 	private static $reason_groups = array(
-		array( 'technical_issue', 'false_positives', 'performance' ),
-		array( 'too_complex', 'missing_feature', 'better_alternative' ),
+		array( 'technical_issue', 'false_positives', 'check_page_too_often' ),
+		array( 'too_complex', 'missing_feature' ),
 		array( 'temporary' ),
 		array( 'other' ),
 	);
 
-	private static $followup_reasons = array( 'technical_issue', 'false_positives', 'temporary' );
+	private static $followup_reasons = array( 'technical_issue', 'false_positives', 'check_page_too_often', 'too_complex', 'missing_feature', 'temporary' );
 
-	private static $rescue_reasons = array( 'technical_issue', 'false_positives', 'performance', 'temporary' );
+	// Reason => rescue panel shown under the reasons.
+	private static $rescue_panels = array(
+		'technical_issue'      => 'pause',
+		'false_positives'      => 'pause',
+		'temporary'            => 'pause',
+		'check_page_too_often' => 'captcha',
+		'too_complex'          => 'wizard',
+		'missing_feature'      => 'addons',
+	);
 
-	// Option key => reasons it is offered for; empty = every follow-up reason.
+	// Option key => reasons it is offered for.
 	private static $what_broke_reasons = array(
-		'visitors_blocked'  => array(),
-		'good_bots_blocked' => array(),
-		'checkout_forms'    => array(),
-		'admin_login'       => array(),
-		'api_integrations'  => array(),
-		'plugin_conflict'   => array(),
-		'nothing'           => array( 'temporary' ),
-		'not_sure'          => array(),
+		'checkout_forms'      => array( 'technical_issue', 'temporary' ),
+		'admin_login'         => array( 'technical_issue', 'false_positives' ),
+		'plugin_conflict'     => array( 'technical_issue' ),
+		'site_slow'           => array( 'technical_issue' ),
+		'visitors_blocked'    => array( 'false_positives', 'temporary' ),
+		'good_bots_blocked'   => array( 'false_positives' ),
+		'returning_visitors'  => array( 'check_page_too_often' ),
+		'mobile_visitors'     => array( 'check_page_too_often' ),
+		'too_many_settings'   => array( 'too_complex' ),
+		'unsure_what_to_pick' => array( 'too_complex' ),
+		'cant_find_setting'   => array( 'too_complex' ),
+		'login_protection'    => array( 'missing_feature' ),
+		'spam_protection'     => array( 'missing_feature' ),
+		'malware_scan'        => array( 'missing_feature' ),
+		'switching_plugin'    => array( 'missing_feature' ),
+		'nothing'             => array( 'temporary' ),
+		'not_sure'            => array( 'technical_issue', 'false_positives', 'check_page_too_often', 'temporary' ),
 	);
 
 	public static function register(): void {
 		add_action( 'admin_enqueue_scripts', array( self::class, 'enqueueAssets' ) );
 		add_action( 'admin_footer', array( self::class, 'renderModal' ) );
 		add_action( 'wp_ajax_bbcs_store_deactivation_feedback', array( self::class, 'handleStoreFeedback' ) );
-		add_action( 'wp_ajax_bbcs_pause_protection', array( self::class, 'handlePauseProtection' ) );
-	}
+		add_action( 'wp_ajax_bbcs_pause_protection', array( self::class, 'handlePauseProtection' ) );	}
 
 	public static function enqueueAssets( string $hook_suffix ): void {
 		if ( $hook_suffix !== 'plugins.php' ) {
@@ -78,7 +94,8 @@ class BotBlockerDeactivationFeedback {
 				'pluginBasename' => BOTBLOCKER_BASENAME,
 				'reasons'        => self::getReasonLabels(),
 				'followupReasons' => self::$followup_reasons,
-				'rescueReasons'   => self::$rescue_reasons,
+				'rescuePanels'    => self::$rescue_panels,
+				'followupTitles'  => self::getFollowupTitles(),
 				'i18n'           => array(
 					'title'           => __( 'Before you go', 'botblocker-security' ),
 					'intro'           => __( 'Help us improve BotBlocker. Why are you deactivating the plugin?', 'botblocker-security' ),
@@ -90,8 +107,7 @@ class BotBlockerDeactivationFeedback {
 					'pausing'         => __( 'Pausing...', 'botblocker-security' ),
 					'pauseFailed'     => __( 'Could not pause protection. Try again or deactivate the plugin.', 'botblocker-security' ),
 					'detailsOther'    => __( 'Please tell us why you are deactivating', 'botblocker-security' ),
-					'questionBroke'   => __( 'What went wrong?', 'botblocker-security' ),
-					'questionTemp'    => __( 'Did something break before you turned it off?', 'botblocker-security' ),
+					'detailsMissing'  => __( 'What were you missing, or which plugin are you switching to?', 'botblocker-security' ),
 				),
 			)
 		);
@@ -178,27 +194,46 @@ class BotBlockerDeactivationFeedback {
 
 	public static function getReasonLabels(): array {
 		return array(
-			'technical_issue'    => __( 'Technical issues or bugs', 'botblocker-security' ),
-			'false_positives'    => __( 'Blocked legitimate traffic (false positives)', 'botblocker-security' ),
-			'performance'        => __( 'Site performance issues', 'botblocker-security' ),
+			'technical_issue'    => __( 'Something broke or slowed my site down', 'botblocker-security' ),
+			'false_positives'    => __( 'Real visitors could not get into the site', 'botblocker-security' ),
+			'check_page_too_often' => __( 'Visitors get in, but are asked to verify too often', 'botblocker-security' ),
 			'too_complex'        => __( 'Too complex or hard to configure', 'botblocker-security' ),
-			'missing_feature'    => __( 'Missing a feature I need', 'botblocker-security' ),
-			'better_alternative' => __( 'Found a better alternative', 'botblocker-security' ),
+			'missing_feature'    => __( 'It does not do what I need', 'botblocker-security' ),
 			'temporary'          => __( 'Temporary - I will turn it back on later', 'botblocker-security' ),
 			'other'              => __( 'Other', 'botblocker-security' ),
 		);
 	}
 
+	public static function getFollowupTitles(): array {
+		return array(
+			'technical_issue'      => __( 'What went wrong?', 'botblocker-security' ),
+			'false_positives'      => __( 'Who could not get in?', 'botblocker-security' ),
+			'check_page_too_often' => __( 'When do they see it?', 'botblocker-security' ),
+			'too_complex'          => __( 'What was hard?', 'botblocker-security' ),
+			'missing_feature'      => __( 'What were you looking for?', 'botblocker-security' ),
+			'temporary'            => __( 'Did something break before you turned it off?', 'botblocker-security' ),
+		);
+	}
+
 	public static function getWhatBrokeLabels(): array {
 		return array(
-			'visitors_blocked'  => __( 'Real visitors were blocked or stuck on a check', 'botblocker-security' ),
-			'good_bots_blocked' => __( 'Search engines or other good bots were blocked', 'botblocker-security' ),
-			'checkout_forms'    => __( 'Checkout, payments or forms stopped working', 'botblocker-security' ),
-			'admin_login'       => __( 'Admin or login access was blocked', 'botblocker-security' ),
-			'api_integrations'  => __( 'API, webhooks or integrations failed', 'botblocker-security' ),
-			'plugin_conflict'   => __( 'Conflict with another plugin or theme', 'botblocker-security' ),
-			'nothing'           => __( 'Nothing broke', 'botblocker-security' ),
-			'not_sure'          => __( 'Not sure yet', 'botblocker-security' ),
+			'checkout_forms'      => __( 'Checkout, payments or forms stopped working', 'botblocker-security' ),
+			'admin_login'         => __( 'Admins could not log in', 'botblocker-security' ),
+			'plugin_conflict'     => __( 'Another plugin, theme or integration broke', 'botblocker-security' ),
+			'site_slow'           => __( 'Site got slower', 'botblocker-security' ),
+			'visitors_blocked'    => __( 'Visitors were blocked or stuck on a check', 'botblocker-security' ),
+			'good_bots_blocked'   => __( 'Search engines or other good bots', 'botblocker-security' ),
+			'returning_visitors'  => __( 'Every time they come back', 'botblocker-security' ),
+			'mobile_visitors'     => __( 'Mostly on phones', 'botblocker-security' ),
+			'too_many_settings'   => __( 'Too many settings', 'botblocker-security' ),
+			'unsure_what_to_pick' => __( 'Not sure which settings to choose', 'botblocker-security' ),
+			'cant_find_setting'   => __( 'Could not find a setting', 'botblocker-security' ),
+			'login_protection'    => __( 'Login protection', 'botblocker-security' ),
+			'spam_protection'     => __( 'Spam or form protection', 'botblocker-security' ),
+			'malware_scan'        => __( 'Malware scanning', 'botblocker-security' ),
+			'switching_plugin'    => __( 'Moving to another plugin', 'botblocker-security' ),
+			'nothing'             => __( 'Nothing broke', 'botblocker-security' ),
+			'not_sure'            => __( 'Not sure yet', 'botblocker-security' ),
 		);
 	}
 
@@ -223,7 +258,6 @@ class BotBlockerDeactivationFeedback {
 		if ( ! in_array( $reason, self::$followup_reasons, true ) || ! isset( self::$what_broke_reasons[ $what_broke ] ) ) {
 			return false;
 		}
-		$only = self::$what_broke_reasons[ $what_broke ];
-		return $only === array() || in_array( $reason, $only, true );
+		return in_array( $reason, self::$what_broke_reasons[ $what_broke ], true );
 	}
 }

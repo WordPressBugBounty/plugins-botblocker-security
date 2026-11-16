@@ -23,7 +23,7 @@ the snippets below.
 
 ## Early Init Page-Cache Gate
 
-With the [Early Init addon](https://docs.botblocker.top/#/addon-early-init?id=fast-cached-pages-for-verified-visitors)
+With the [Early Init addon](https://docs.botblocker.top/en/addon-early-init/#fast-cached-pages-for-verified-visitors)
 active and **Cached pages for verified visitors** on (default), PHP cache
 plugins serve cached pages to verified visitors only:
 

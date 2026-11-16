@@ -20,7 +20,7 @@ return static function (Botblocker_SettingsViewModel $data): void {
 				&middot;
 				<?php echo esc_html($data->mode_label); ?>
 			</div>
-			<div class="bbcs-preset-sub"><?php esc_html_e('Balanced ruleset suitable for most websites.', 'botblocker-security'); ?></div>
+			<div class="bbcs-preset-sub"><?php echo esc_html($data->preset_subtitle); ?></div>
 		</div>
 		<a class="bbcs-btn bbcs-btn--surface" href="<?php echo esc_url($data->urls->setup); ?>"><?php esc_html_e('Change preset', 'botblocker-security'); ?></a>
 	</div>

@@ -278,11 +278,12 @@ class BotBlockerSelfTest {
 		);
 
 		return array(
-			'disabled'     => (int) $settings->disable === 1,
-			'secure_mode'  => (int) $settings->secure_mode === 2 ? __( 'Full', 'botblocker-security' ) : __( 'Frontend', 'botblocker-security' ),
-			'captcha_mode' => isset( $modes[ $mode ] ) ? $modes[ $mode ] : __( 'Unknown', 'botblocker-security' ),
-			'silent'       => $mode === BOTBLOCKER_CAPTCHA_MODE_SILENT,
-			'force_check'  => (int) $settings->botblocker_force_check === 1,
+			'disabled'          => (int) $settings->disable === 1,
+			'secure_mode'       => (int) $settings->secure_mode === 2 ? 'full' : 'frontend',
+			'captcha_mode'      => $mode,
+			'captcha_mode_label' => isset( $modes[ $mode ] ) ? $modes[ $mode ] : __( 'Unknown', 'botblocker-security' ),
+			'silent'            => $mode === BOTBLOCKER_CAPTCHA_MODE_SILENT,
+			'force_check'       => (int) $settings->botblocker_force_check === 1,
 		);
 	}
 

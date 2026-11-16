@@ -207,14 +207,14 @@ trait BotBlockerAjaxIpRulesTrait {
 
 		if ( $result !== false ) {
 			if ( $rule && ! empty( $rule->search ) ) {
-				delete_transient( 'bbcs_fr_' . md5( $rule->search ) );
+				BotBlockerCache::fileDelete( 'bbcs_fr_' . md5( $rule->search ) );
 
 				$mask_parts = BotBlockerIp::parseRateSubnetMask( BotBlocker::getInstance()->settings->bbcs_rate_subnet_mask ?? '' );
 				if ( $mask_parts[0] > 0 && $mask_parts[1] > 0 ) {
 					$ip_version  = BotBlockerIp::getVersion( $rule->search );
 					if ( $ip_version ) {
 						$subnet_cidr = BotBlockerIp::computePtrSubnet( $rule->search, $ip_version, $mask_parts[0], $mask_parts[1] );
-						delete_transient( 'bbcs_fr_subnet_' . md5( $subnet_cidr ) );
+						BotBlockerCache::fileDelete( 'bbcs_fr_subnet_' . md5( $subnet_cidr ) );
 					}
 				}
 
@@ -1070,7 +1070,7 @@ trait BotBlockerAjaxIpRulesTrait {
 				$do_subnet = $mask_parts[0] > 0 && $mask_parts[1] > 0;
 
 				foreach ( $cleared_ips as $cleared_ip ) {
-					delete_transient( 'bbcs_fr_' . md5( $cleared_ip ) );
+					BotBlockerCache::fileDelete( 'bbcs_fr_' . md5( $cleared_ip ) );
 
 					// Remove from hot-bans.php so short-term bans don't persist after DB clear.
 					BotBlockerFileRenderer::removeHotBan( $cleared_ip );
@@ -1079,7 +1079,7 @@ trait BotBlockerAjaxIpRulesTrait {
 						$ip_version = BotBlockerIp::getVersion( $cleared_ip );
 						if ( $ip_version ) {
 							$subnet_cidr = BotBlockerIp::computePtrSubnet( $cleared_ip, $ip_version, $mask_parts[0], $mask_parts[1] );
-							delete_transient( 'bbcs_fr_subnet_' . md5( $subnet_cidr ) );
+							BotBlockerCache::fileDelete( 'bbcs_fr_subnet_' . md5( $subnet_cidr ) );
 						}
 					}
 				}

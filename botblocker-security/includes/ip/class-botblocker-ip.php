@@ -87,7 +87,24 @@ class BotBlockerIp {
 
 	public static function isPublicIp( string $ip ): bool {
 		if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
-			return filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) !== false;
+			if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) === false ) {
+				return false;
+			}
+			$long = ip2long( $ip );
+			if ( $long === false ) {
+				return false;
+			}
+			$reserved = array(
+				array( ip2long( '100.64.0.0' ), ip2long( '100.127.255.255' ) ),
+				array( ip2long( '192.0.0.0' ), ip2long( '192.0.0.255' ) ),
+				array( ip2long( '198.18.0.0' ), ip2long( '198.19.255.255' ) ),
+			);
+			foreach ( $reserved as $range ) {
+				if ( $long >= $range[0] && $long <= $range[1] ) {
+					return false;
+				}
+			}
+			return true;
 		}
 		if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
 			$bytes = inet_pton( $ip );
@@ -107,6 +124,12 @@ class BotBlockerIp {
 			}
 			if ( strncmp( $bytes, "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff", 12 ) === 0 ) {
 				return false; // ::ffff:0:0/96 v4-mapped
+			}
+			if ( strncmp( $bytes, (string) inet_pton( '2001:db8::' ), 4 ) === 0 ) {
+				return false; // 2001:db8::/32 documentation
+			}
+			if ( strncmp( $bytes, (string) inet_pton( '64:ff9b::' ), 12 ) === 0 ) {
+				return false; // 64:ff9b::/96 NAT64
 			}
 			return true;
 		}
@@ -348,7 +371,7 @@ class BotBlockerIp {
 				$cache_key = $BBCS->settings->redis_prefix . BotBlockerMultisite::getCurrentSiteClear() . '_PTR_' . md5( $ip );
 			}
 			$cached_response = $storage->get( $cache_key );
-			if ( is_array( $cached_response ) && isset( $cached_response['ptr'] ) ) {
+			if ( is_array( $cached_response ) && isset( $cached_response['ptr'] ) && filter_var( (string) $cached_response['ptr'], FILTER_VALIDATE_IP ) === false ) {
 				return $cached_response['ptr'];
 			}
 		}
@@ -359,33 +382,84 @@ class BotBlockerIp {
 		$get_ptr = $wpdb->get_row( $wpdb->prepare( "SELECT ptr, date FROM `{$wpdb->bbcs_ptrcache}` WHERE ip = %s", $ip ), ARRAY_A );
 
 		if ( isset( $get_ptr['ptr'] ) && $BBCS->settings->ptr_cache_in_db ) {
-			if ( $storage !== null ) {
-				$storage->set( $cache_key, array( 'ptr' => $get_ptr['ptr'] ), $ttl );
-			}
-			return $get_ptr['ptr'];
-		} else {
-			$ptr = trim( preg_replace( '/[^0-9a-z-.:]/', '', strtolower( gethostbyaddr( $ip ) ) ) );
-			if ( $BBCS->settings->ptr_cache_in_db ) {
-				$time = $time + $ttl;
-				// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared and sanitized. No direct unsanitized SQL is executed.
+			$cached_ptr = (string) $get_ptr['ptr'];
+			$cached_at  = (int) $get_ptr['date'];
+			$expired    = $cached_at > 0 && $cached_at + $ttl < $time;
+			// Legacy rows can hold a stored DNS failure (ptr = ip) or an expired answer: drop them and re-resolve (BB-IP-02).
+			if ( $expired || filter_var( $cached_ptr, FILTER_VALIDATE_IP ) !== false ) {
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-				$wpdb->query(
-					$wpdb->prepare(
-						"INSERT INTO `{$wpdb->bbcs_ptrcache}` (ip, ptr, date, etime) VALUES (%s, %s, %d, %s)
-				ON DUPLICATE KEY UPDATE ptr = VALUES(ptr), date = VALUES(date), etime = VALUES(etime)",
-						$ip,
-						$ptr,
-						$time,
-						$ttl
-					)
-				);
+				$wpdb->delete( $wpdb->bbcs_ptrcache, array( 'ip' => $ip ), array( '%s' ) );
+			} else {
+				if ( $storage !== null ) {
+					$storage->set( $cache_key, array( 'ptr' => $cached_ptr ), $ttl );
+				}
+				return $cached_ptr;
 			}
-			if ( $storage !== null && $BBCS->settings->ptr_cache_in_db ) {
-				// $ttl already seconds - do not multiply by 60.
-				$storage->set( $cache_key, array( 'ptr' => $ptr ), $ttl );
-			}
-			return $ptr;
 		}
+
+		$ptr = trim( preg_replace( '/[^0-9a-z-.:]/', '', strtolower( gethostbyaddr( $ip ) ) ) );
+		// gethostbyaddr() returns the input address on failure: a failed lookup must never be cached (BB-IP-02).
+		if ( $ptr === '' || filter_var( $ptr, FILTER_VALIDATE_IP ) !== false ) {
+			return BOTBLOCKER_EMPTY;
+		}
+		if ( $BBCS->settings->ptr_cache_in_db ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->query(
+				$wpdb->prepare(
+					"INSERT INTO `{$wpdb->bbcs_ptrcache}` (ip, ptr, date, etime) VALUES (%s, %s, %d, %s)
+			ON DUPLICATE KEY UPDATE ptr = VALUES(ptr), date = VALUES(date), etime = VALUES(etime)",
+					$ip,
+					$ptr,
+					$time,
+					$ttl
+				)
+			);
+		}
+		if ( $storage !== null && $BBCS->settings->ptr_cache_in_db ) {
+			// $ttl already seconds - do not multiply by 60.
+			$storage->set( $cache_key, array( 'ptr' => $ptr ), $ttl );
+		}
+		return $ptr;
+	}
+
+	// Missing PTR is not an anomaly: home, mobile and cloud addresses usually have none.
+	public static function isPtrDnsAnomaly( string $ip, string $ptr ): bool {
+		$ptr = strtolower( rtrim( trim( $ptr ), '.' ) );
+		if ( $ptr === '' || $ptr === BOTBLOCKER_EMPTY ) {
+			return false;
+		}
+		if ( filter_var( $ptr, FILTER_VALIDATE_IP ) !== false ) {
+			return true;
+		}
+		if ( filter_var( $ptr, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME ) === false ) {
+			return true;
+		}
+
+		$type    = strpos( $ip, ':' ) !== false ? DNS_AAAA : DNS_A;
+		$records = apply_filters( 'bbcs_dns_get_record', null, $ptr );
+		if ( $records === null ) {
+			$records = @dns_get_record( $ptr, $type );
+		}
+		if ( ! is_array( $records ) || $records === array() ) {
+			return false;
+		}
+
+		$needle = @inet_pton( $ip );
+		if ( $needle === false ) {
+			return false;
+		}
+		foreach ( $records as $line ) {
+			$candidate = '';
+			if ( is_array( $line ) && isset( $line['ip'] ) ) {
+				$candidate = (string) $line['ip'];
+			} elseif ( is_array( $line ) && isset( $line['ipv6'] ) ) {
+				$candidate = (string) $line['ipv6'];
+			}
+			if ( $candidate !== '' && @inet_pton( $candidate ) === $needle ) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public static function clearExpiredPtrCache(): void {
@@ -496,41 +570,313 @@ class BotBlockerIp {
 	}
 
 	public static function getCurrentIp(): string {
-		$remote = isset( $_SERVER['REMOTE_ADDR'] )
-			? sanitize_text_field( wp_unslash( (string) $_SERVER['REMOTE_ADDR'] ) )
-			: '';
+		if ( class_exists( 'BotBlockerIdentity' ) ) {
+			$identity = BotBlockerIdentity::resolveFresh();
+			if ( isset( $identity['subject'] ) && (string) $identity['subject'] !== '' ) {
+				return (string) $identity['subject'];
+			}
+			return '';
+		}
 
-		$raw = self::readTrustedProxyHeader( $remote );
-		if ( $raw === '' ) {
-			$raw = $remote;
+		$proxy_map = self::currentProxyMap();
+		if ( class_exists( 'BotBlockerEdgeStats' ) ) {
+			foreach ( BotBlockerEdgeStats::autoTrustMap() as $mask => $entry ) {
+				if ( ! isset( $proxy_map[ $mask ] ) ) {
+					$proxy_map[ $mask ] = $entry;
+				}
+			}
 		}
-		if ( strpos( $raw, ',' ) !== false ) {
-			$raw = trim( explode( ',', $raw )[0] );
+		foreach ( self::currentSharedProxy() as $mask => $is_shared ) {
+			if ( empty( $is_shared ) || ! isset( $proxy_map[ $mask ] ) || is_array( $proxy_map[ $mask ] ) ) {
+				continue;
+			}
+			$proxy_map[ $mask ] = array(
+				'header' => (string) $proxy_map[ $mask ],
+				'scope'  => 'manual',
+				'shared' => true,
+			);
 		}
-		return sanitize_text_field( $raw );
+		$resolved = self::resolveClientIp( $proxy_map, $_SERVER, self::currentBotNetworks() );
+		if ( $resolved['subject'] !== '' ) {
+			return $resolved['subject'];
+		}
+		if ( $resolved['client'] !== '' ) {
+			return $resolved['client'];
+		}
+		return $resolved['peer'];
 	}
 
-	private static function readTrustedProxyHeader( string $remote ): string {
-		if ( $remote === '' || ! class_exists( 'BotBlockerMultisite' ) || ! class_exists( 'BotBlockerDataFile' ) ) {
-			return '';
+	/**
+	 * Resolve the visitor identity from a socket peer and proxy headers.
+	 *
+	 * Pure function: no WordPress calls, no superglobal access. Only a peer that
+	 * matches the edge map may supply a client. A peer that matches the bot
+	 * network map never does. The header is walked from right to left and a
+	 * candidate must be a public address outside the trust maps.
+	 *
+	 * @param array<string,mixed> $proxy_map    Mask => header or Mask => [header, scope].
+	 * @param array<string,mixed> $server       $_SERVER-shaped input.
+	 * @param array<string,mixed> $bot_networks Mask => true for header-inert networks.
+	 * @return array{peer:string,client:string,claimed:string,state:string,header:string,scope:string,role:string,subject:string,subject_source:string,shared:bool}
+	 */
+	public static function resolveClientIp( array $proxy_map, array $server, array $bot_networks = array() ): array {
+		$result = array(
+			'peer'           => '',
+			'client'         => '',
+			'claimed'        => '',
+			'state'          => 'invalid',
+			'header'         => '',
+			'scope'          => '',
+			'role'           => 'invalid',
+			'subject'        => '',
+			'subject_source' => '',
+			'shared'         => false,
+		);
+
+		$peer = self::normalizeHeaderIp( isset( $server['REMOTE_ADDR'] ) ? (string) $server['REMOTE_ADDR'] : '' );
+		if ( $peer === '' ) {
+			return $result;
+		}
+		$result['peer'] = $peer;
+
+		$matched_header = '';
+		$matched_scope  = '';
+		$matched_shared = false;
+		$matched_prefix = -1;
+		foreach ( $proxy_map as $mask => $attr ) {
+			$header = is_array( $attr ) ? (string) ( $attr['header'] ?? '' ) : (string) $attr;
+			$scope  = is_array( $attr ) ? (string) ( $attr['scope'] ?? 'manual' ) : 'manual';
+			if ( $header === '' || ! self::netMatch( (string) $mask, $peer ) ) {
+				continue;
+			}
+			$prefix = strpos( (string) $mask, '/' ) !== false ? (int) substr( (string) $mask, strpos( (string) $mask, '/' ) + 1 ) : ( 6 === self::getVersion( $peer ) ? 128 : 32 );
+			if ( $prefix <= $matched_prefix ) {
+				continue;
+			}
+			$matched_header = $header;
+			$matched_scope  = $scope;
+			$matched_shared = is_array( $attr ) && ! empty( $attr['shared'] );
+			$matched_prefix = $prefix;
+		}
+
+		if ( $matched_header !== '' ) {
+			$role                    = $matched_scope === 'auto_bot' ? 'edge_auto' : 'edge';
+			$result['header']        = $matched_header;
+			$result['scope']         = $matched_scope;
+			$result['role']          = $role;
+			$result['shared']        = $matched_shared;
+			$raw                     = isset( $server[ $matched_header ] ) ? (string) $server[ $matched_header ] : '';
+			$candidates              = self::headerIpCandidates( $raw, $matched_header );
+			$result['claimed']       = self::rightmostPublicCandidate( $candidates, $proxy_map );
+
+			for ( $i = count( $candidates ) - 1; $i >= 0; $i-- ) {
+				$candidate = $candidates[ $i ];
+				if ( self::isTrustedProxyIp( $candidate, $proxy_map ) || ! self::isPublicIp( $candidate ) ) {
+					continue;
+				}
+				$result['client'] = $candidate;
+				break;
+			}
+
+			if ( $result['client'] !== '' ) {
+				$result['state'] = 'trusted_edge';
+				if ( $role === 'edge_auto' ) {
+					$result['subject']        = $peer;
+					$result['subject_source'] = 'peer';
+				} else {
+					$result['subject']        = $result['client'];
+					$result['subject_source'] = 'client';
+				}
+				return $result;
+			}
+
+			$result['state']          = 'edge_unresolved';
+			$result['subject']        = $peer;
+			$result['subject_source'] = 'peer';
+			return $result;
+		}
+
+		foreach ( array_keys( $bot_networks ) as $mask ) {
+			if ( ! self::netMatch( (string) $mask, $peer ) ) {
+				continue;
+			}
+			$result['role']   = 'bot_network';
+			$result['state']  = 'bot_network';
+			foreach ( self::diagnosticHeaders() as $header ) {
+				if ( ! isset( $server[ $header ] ) || trim( (string) $server[ $header ] ) === '' ) {
+					continue;
+				}
+				$candidates        = self::headerIpCandidates( (string) $server[ $header ], $header );
+				$result['header']  = $header;
+				$result['claimed'] = self::rightmostPublicCandidate( $candidates, $proxy_map );
+				break;
+			}
+			$result['subject']        = $peer;
+			$result['subject_source'] = 'peer';
+			return $result;
+		}
+
+		foreach ( self::diagnosticHeaders() as $header ) {
+			if ( ! isset( $server[ $header ] ) || trim( (string) $server[ $header ] ) === '' ) {
+				continue;
+			}
+			$candidates        = self::headerIpCandidates( (string) $server[ $header ], $header );
+			$result['header']  = $header;
+			$result['claimed'] = self::rightmostPublicCandidate( $candidates, $proxy_map );
+			$result['state']   = 'unknown_edge';
+			$result['role']    = 'unknown_edge';
+			$result['subject'] = $peer;
+			$result['subject_source'] = 'peer';
+			return $result;
+		}
+
+		$result['state']          = 'direct';
+		$result['role']           = 'direct';
+		$result['client']         = $peer;
+		$result['subject']        = $peer;
+		$result['subject_source'] = 'peer';
+		return $result;
+	}
+
+	/**
+	 * @return array<int,string> Proxy headers that may describe an edge.
+	 */
+	private static function diagnosticHeaders(): array {
+		return array(
+			'HTTP_X_FORWARDED_FOR',
+			'HTTP_FORWARDED',
+			'HTTP_CF_CONNECTING_IP',
+			'HTTP_TRUE_CLIENT_IP',
+			'HTTP_FASTLY_CLIENT_IP',
+			'HTTP_X_REAL_IP',
+			'HTTP_CLIENT_IP',
+		);
+	}
+
+	/**
+	 * @return array<string,mixed> Manual proxy map for the current site.
+	 */
+	public static function currentProxyMap(): array {
+		if ( ! class_exists( 'BotBlockerMultisite' ) || ! class_exists( 'BotBlockerDataFile' ) ) {
+			return array();
 		}
 		$file = BotBlockerMultisite::getDataDir() . 'proxy.php';
 		if ( ! file_exists( $file ) ) {
+			return array();
+		}
+		$data = BotBlockerDataFile::safeLoad( $file );
+		return isset( $data['bbcs_proxy'] ) && is_array( $data['bbcs_proxy'] ) ? $data['bbcs_proxy'] : array();
+	}
+
+	/**
+	 * @return array<string,bool> Masks whose client is resolved but never banned.
+	 */
+	public static function currentSharedProxy(): array {
+		if ( ! class_exists( 'BotBlockerMultisite' ) || ! class_exists( 'BotBlockerDataFile' ) ) {
+			return array();
+		}
+		$file = BotBlockerMultisite::getDataDir() . 'proxy-shared.php';
+		if ( ! file_exists( $file ) ) {
+			return array();
+		}
+		$data = BotBlockerDataFile::safeLoad( $file );
+		return isset( $data['bbcs_proxy_shared'] ) && is_array( $data['bbcs_proxy_shared'] ) ? $data['bbcs_proxy_shared'] : array();
+	}
+
+	/**
+	 * @return array<string,mixed> Networks whose proxy headers are never trusted.
+	 */
+	public static function currentBotNetworks(): array {
+		if ( ! class_exists( 'BotBlockerMultisite' ) || ! class_exists( 'BotBlockerDataFile' ) ) {
+			return array();
+		}
+		$file = BotBlockerMultisite::getDataDir() . 'bot-networks.php';
+		if ( ! file_exists( $file ) ) {
+			return array();
+		}
+		$data = BotBlockerDataFile::safeLoad( $file );
+		return isset( $data['bbcs_bot_networks'] ) && is_array( $data['bbcs_bot_networks'] ) ? $data['bbcs_bot_networks'] : array();
+	}
+
+	private static function normalizeHeaderIp( string $value ): string {
+		$value = trim( $value );
+		$value = trim( $value, "\"'" );
+		if ( $value === '' ) {
 			return '';
 		}
-		$data  = BotBlockerDataFile::safeLoad( $file );
-		$rules = isset( $data['bbcs_proxy'] ) && is_array( $data['bbcs_proxy'] ) ? $data['bbcs_proxy'] : array();
-		foreach ( $rules as $mask => $attr ) {
-			$attr = (string) $attr;
-			if ( $attr === '' || ! isset( $_SERVER[ $attr ] ) || ! self::netMatch( (string) $mask, $remote ) ) {
-				continue;
+		if ( $value[0] === '[' ) {
+			$end = strpos( $value, ']' );
+			if ( $end !== false ) {
+				$value = substr( $value, 1, $end - 1 );
 			}
-			$value = sanitize_text_field( wp_unslash( (string) $_SERVER[ $attr ] ) );
-			if ( $value !== '' ) {
-				return $value;
+		} elseif ( substr_count( $value, ':' ) === 1 && strpos( $value, '.' ) !== false ) {
+			$parts = explode( ':', $value, 2 );
+			if ( ctype_digit( $parts[1] ) ) {
+				$value = $parts[0];
+			}
+		}
+		return filter_var( $value, FILTER_VALIDATE_IP ) !== false ? $value : '';
+	}
+
+	/**
+	 * @return array<int,string> Valid IP candidates in header order.
+	 */
+	private static function headerIpCandidates( string $raw, string $header ): array {
+		$candidates = array();
+		$raw        = trim( $raw );
+		if ( $raw === '' ) {
+			return $candidates;
+		}
+
+		if ( $header === 'HTTP_FORWARDED' || $header === 'Forwarded' ) {
+			foreach ( explode( ',', $raw ) as $element ) {
+				foreach ( explode( ';', $element ) as $pair ) {
+					$pair = trim( $pair );
+					if ( stripos( $pair, 'for=' ) !== 0 ) {
+						continue;
+					}
+					$ip = self::normalizeHeaderIp( trim( substr( $pair, 4 ) ) );
+					if ( $ip !== '' ) {
+						$candidates[] = $ip;
+					}
+				}
+			}
+			return array_slice( $candidates, -32 );
+		}
+
+		foreach ( explode( ',', $raw ) as $part ) {
+			$ip = self::normalizeHeaderIp( $part );
+			if ( $ip !== '' ) {
+				$candidates[] = $ip;
+			}
+		}
+		return array_slice( $candidates, -32 );
+	}
+
+	/**
+	 * @param array<int,string>    $candidates Candidates in header order.
+	 * @param array<string,mixed>  $proxy_map  Trusted proxy map.
+	 */
+	private static function rightmostPublicCandidate( array $candidates, array $proxy_map ): string {
+		for ( $i = count( $candidates ) - 1; $i >= 0; $i-- ) {
+			$candidate = $candidates[ $i ];
+			if ( self::isPublicIp( $candidate ) && ! self::isTrustedProxyIp( $candidate, $proxy_map ) ) {
+				return $candidate;
 			}
 		}
 		return '';
+	}
+
+	/**
+	 * @param array<string,mixed> $proxy_map Trusted proxy map.
+	 */
+	private static function isTrustedProxyIp( string $ip, array $proxy_map ): bool {
+		foreach ( array_keys( $proxy_map ) as $mask ) {
+			if ( self::netMatch( (string) $mask, $ip ) ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static function computePtrSubnet( string $ip, int $ip_version, int $mask_v4, int $mask_v6 ): string {

@@ -11,13 +11,16 @@ if ( ! defined( 'BOTBLOCKER_TABLE_PREFIX' ) ) {
 }
 define( 'BOTBLOCKER_PREFIX', 'bb_' ); // The prefix for cache keys (Redis/Memcached) and secret-link values
 
-define( 'BOTBLOCKER_VERSION', '1.7.11' );
+define( 'BOTBLOCKER_VERSION', '1.7.12' );
 // The version number of the plugin
-define( 'BOTBLOCKER_DB_VERSION', '2.13.0' ); // The database version of the plugin
+defined( 'MCP_CONTRACT_VERSION' ) || define( 'MCP_CONTRACT_VERSION', '2' ); // Ability schema revision, not the MCP protocol version
+define( 'BOTBLOCKER_DB_VERSION', '2.14.0' ); // The database version of the plugin
 define( 'BOTBLOCKER_WIZARD_ON_UPDATE', false ); // Show setup wizard after plugin update
 define( 'BOTBLOCKER_MODE_STABLE', 'stable' );
 define( 'BOTBLOCKER_MODE_DEV', 'dev' );
 define( 'BOTBLOCKER_MODE_LOCAL', 'local' );
+// PII_OFF removes the PII floor: PII and destructive abilities become MCP-public. Pre-define it in wp-config.php to override.
+defined( 'PII_OFF' ) || define( 'PII_OFF', true );
 
 $bbcs_is_dev = file_exists( BOTBLOCKER_DIR . '.bbcdev' );
 
@@ -47,6 +50,7 @@ if ( ! defined( 'BOTBLOCKER_ADDONS_MODE' ) ) {
 // BotBlockerMultisite::getCurrentSiteEmail(), BotBlockerMultisite::getCurrentUserAgent()
 
 define( 'BOTBLOCKER_EXP_INF', 9999999999 ); // The maximum value for the expires field in the Unix timestamp format
+define( 'BBCS_UNKNOWN_EDGE_BAN_TTL', 900 ); // Maximum TTL (seconds) for a peer rule written for an unresolved or auto-trusted edge.
 define( 'BOTBLOCKER_UID_MAX_LEN', 64 ); // Max visitor uid length adopted from the main cookie; oversized uids flow into header/cookie names (nginx 502)
 define( 'BOTBLOCKER_SELF_CALL_WINDOW', 120 ); // Replay window (seconds) for the X-BotBlocker-Self self-call proof header
 define( 'BOTBLOCKER_HONEYPOT_NAME_WINDOW', 60 ); // Accepted staleness (seconds) for a filled honeypot field name rendered by a non-JS client

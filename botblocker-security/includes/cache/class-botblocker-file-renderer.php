@@ -61,7 +61,7 @@ class BotBlockerFileRenderer {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$result = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT id, `key`, `value`, comment FROM `{$wpdb->bbcs_proxy}` WHERE 1 = %d ORDER BY `comment`, `key`",
+				"SELECT * FROM `{$wpdb->bbcs_proxy}` WHERE 1 = %d ORDER BY `comment`, `key`",
 				1
 			),
 			ARRAY_A
@@ -71,6 +71,9 @@ class BotBlockerFileRenderer {
 		$comments = array();
 
 		foreach ( (array) $result as $proxy ) {
+			if ( isset( $proxy['role'] ) && 'bot_network' === (string) $proxy['role'] ) {
+				continue;
+			}
 			$key     = $proxy['key'];
 			$value   = $proxy['value'];
 			$comment = $proxy['comment'];
@@ -103,6 +106,79 @@ class BotBlockerFileRenderer {
 
 		$proxyFile = BotBlockerMultisite::getDataDir() . 'proxy.php';
 		self::atomicFileWrite( $proxyFile, $proxyContent );
+		self::renderBotNetworks();
+		self::renderSharedProxy();
+	}
+
+	/**
+	 * Shared site edges: the client is resolved for decisions, but a ban is
+	 * written for the peer with a TTL clamp (CloudFront/AWS style).
+	 */
+	public static function renderSharedProxy(): void {
+		global $wpdb;
+		if ( empty( $wpdb->bbcs_proxy ) ) {
+			return;
+		}
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$column = $wpdb->get_col( "SHOW COLUMNS FROM `{$wpdb->bbcs_proxy}` LIKE 'shared'" );
+		if ( empty( $column ) ) {
+			return;
+		}
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$result = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT `key` FROM `{$wpdb->bbcs_proxy}` WHERE `shared` = %d AND `role` = %s ORDER BY `key`",
+				1,
+				'edge'
+			),
+			ARRAY_A
+		);
+
+		$content  = BBCS_STOP_DIRECT . "\n";
+		$content .= "return [\n";
+		$content .= "    'bbcs_proxy_shared' => [\n";
+		foreach ( (array) $result as $row ) {
+			$content .= "        '" . addslashes( (string) $row['key'] ) . "' => true,\n";
+		}
+		$content .= "    ]\n";
+		$content .= "];\n";
+
+		self::atomicFileWrite( BotBlockerMultisite::getDataDir() . 'proxy-shared.php', $content );
+	}
+
+	/**
+	 * Render networks whose proxy headers must never be trusted.
+	 */
+	public static function renderBotNetworks(): void {
+		global $wpdb;
+		// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared and sanitized. No direct unsanitized SQL is executed.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$result = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT * FROM `{$wpdb->bbcs_proxy}` WHERE 1 = %d ORDER BY `key`",
+				1
+			),
+			ARRAY_A
+		);
+
+		$networks = array();
+		foreach ( (array) $result as $row ) {
+			if ( ! isset( $row['role'] ) || 'bot_network' !== (string) $row['role'] ) {
+				continue;
+			}
+			$networks[ (string) $row['key'] ] = true;
+		}
+
+		$content  = BBCS_STOP_DIRECT . "\n";
+		$content .= "return [\n";
+		$content .= "    'bbcs_bot_networks' => [\n";
+		foreach ( array_keys( $networks ) as $mask ) {
+			$content .= "        '" . addslashes( (string) $mask ) . "' => true,\n";
+		}
+		$content .= "    ]\n";
+		$content .= "];\n";
+
+		self::atomicFileWrite( BotBlockerMultisite::getDataDir() . 'bot-networks.php', $content );
 	}
 
 	public static function renderPaths(): void {

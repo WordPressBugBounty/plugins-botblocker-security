@@ -17,6 +17,15 @@ class BotBlockerSettingsHooks {
 
 		global $wpdb;
 
+		// The reCAPTCHA v2 tab may only switch the check page to v2, and only with both keys in this save.
+		if ( isset( $_POST['bbcs_captcha_mode'] ) ) {
+			$key2   = isset( $_POST['recaptcha_key2'] ) ? sanitize_text_field( wp_unslash( $_POST['recaptcha_key2'] ) ) : '';
+			$secret2 = isset( $_POST['recaptcha_secret2'] ) ? sanitize_text_field( wp_unslash( $_POST['recaptcha_secret2'] ) ) : '';
+			if ( (int) $_POST['bbcs_captcha_mode'] !== BOTBLOCKER_CAPTCHA_MODE_RECAPTCHA_V2 || $key2 === '' || $secret2 === '' ) {
+				unset( $_POST['bbcs_captcha_mode'] );
+			}
+		}
+
 		// Truth-toggle: enabling a cache backend is persisted only when the
 		// backend answers a real connection probe against the submitted
 		// host/port. A failed probe forces the flag off and warns the admin.
@@ -63,6 +72,16 @@ class BotBlockerSettingsHooks {
 					BBCS_Toastify::TYPE_WARNING,
 					BBCS_Toastify::PAGE_INTEGRATIONS
 				);
+			}
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name is the plugin's own registry table
+		$current_settings = $wpdb->get_results( "SELECT `key`, `value` FROM `{$wpdb->bbcs_settings}`", ARRAY_A );
+		$current_settings = is_array( $current_settings ) ? $current_settings : array();
+		$current_map      = array();
+		foreach ( $current_settings as $current_row ) {
+			if ( isset( $current_row['key'] ) ) {
+				$current_map[ (string) $current_row['key'] ] = (string) ( $current_row['value'] ?? '' );
 			}
 		}
 
@@ -120,10 +139,41 @@ class BotBlockerSettingsHooks {
 			'bbcs_ability_update_threat_data',
 			'bbcs_ability_export_settings',
 			'bbcs_ability_apply_preset',
+			'bbcs_ability_simulate_request',
+			'bbcs_ability_get_decision_trace',
+			'bbcs_ability_get_rate_limit_state',
+			'bbcs_ability_get_request_fingerprint',
+			'bbcs_ability_get_data_integrity',
+			'bbcs_ability_get_bot_signature_match',
+			'bbcs_ability_get_tls_match',
+			'bbcs_ability_get_geo',
+			'bbcs_ability_get_pass_state',
+			'bbcs_ability_get_challenge_state',
+			'bbcs_ability_get_rule_match',
+			'bbcs_ability_get_layer_state',
+			'bbcs_ability_get_edge_trust',
+			'bbcs_ability_get_edge_evidence',
+			'bbcs_ability_explain_ban_decision',
+			'bbcs_ability_load_license_from_cloud',
+			'bbcs_ability_remove_edge_trust',
+			'bbcs_ability_export_diagnostics',
+			'bbcs_ability_reset_rate_limit',
+			'bbcs_ability_reset_ptr_cache',
+			'bbcs_ability_seed_test_rule',
+			'bbcs_ability_clear_test_rules',
+			'bbcs_ability_set_setting',
 		);
 
+		$bbcs_settings_obj = BotBlocker::getInstance()->settings;
 		foreach ( $checkbox_fields as $field ) {
-			$value = ( isset( $_POST[ $field ] ) && $_POST[ $field ] !== '0' ) ? '1' : '0';
+			if ( array_key_exists( $field, $_POST ) ) {
+				$raw   = is_array( $_POST[ $field ] ) ? '' : sanitize_text_field( wp_unslash( (string) $_POST[ $field ] ) );
+				$value = ( $raw !== '' && $raw !== '0' ) ? '1' : '0';
+			} elseif ( isset( $current_map[ $field ] ) ) {
+				$value = $current_map[ $field ] !== '0' ? '1' : '0';
+			} else {
+				$value = isset( $bbcs_settings_obj->{$field} ) && (int) $bbcs_settings_obj->{$field} === 1 ? '1' : '0';
+			}
 			// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
 	        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$result = $wpdb->replace(
@@ -150,33 +200,35 @@ class BotBlockerSettingsHooks {
 			'bbcs_anchor',
 		);
 
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- each array item is sanitized via array_map below
-		$post_roles_raw = isset( $_POST['bbcs_2fa_roles'] ) ? wp_unslash( $_POST['bbcs_2fa_roles'] ) : array();
-		$post_roles_raw = is_array( $post_roles_raw ) ? $post_roles_raw : array();
+		if ( isset( $_POST['bbcs_2fa_roles'] ) ) {
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- each array item is sanitized via array_map below
+			$post_roles_raw = wp_unslash( $_POST['bbcs_2fa_roles'] );
+			$post_roles_raw = is_array( $post_roles_raw ) ? $post_roles_raw : array();
 
-		$post_roles = array_map( 'sanitize_text_field', $post_roles_raw );
+			$post_roles = array_map( 'sanitize_text_field', $post_roles_raw );
 
-		$roles          = wp_roles()->roles;
-		$bbcs_2fa_roles = array();
+			$roles          = wp_roles()->roles;
+			$bbcs_2fa_roles = array();
 
-		foreach ( $roles as $role_key => $role ) {
-			$bbcs_2fa_roles[ $role_key ] = ( isset( $post_roles[ $role_key ] ) && (string) $post_roles[ $role_key ] === '1' ) ? '1' : '0';
-		}
+			foreach ( $roles as $role_key => $role ) {
+				$bbcs_2fa_roles[ $role_key ] = ( isset( $post_roles[ $role_key ] ) && (string) $post_roles[ $role_key ] === '1' ) ? '1' : '0';
+			}
 
-		// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
-	    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$result_roles = $wpdb->replace(
-			$wpdb->bbcs_settings,
-			array(
-				'key'   => 'bbcs_2fa_roles',
-				'value' => wp_json_encode( $bbcs_2fa_roles ),
-			),
-			array( '%s', '%s' )
-		);
-		if ( $result_roles === false ) {
-			if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
-				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-				error_log( '[BBCS DEBUG] [Settings] replace failed for bbcs_2fa_roles: ' . $wpdb->last_error );
+			// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
+		    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$result_roles = $wpdb->replace(
+				$wpdb->bbcs_settings,
+				array(
+					'key'   => 'bbcs_2fa_roles',
+					'value' => wp_json_encode( $bbcs_2fa_roles ),
+				),
+				array( '%s', '%s' )
+			);
+			if ( $result_roles === false ) {
+				if ( defined( 'BBCS_DEBUG' ) && BBCS_DEBUG ) {
+					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+					error_log( '[BBCS DEBUG] [Settings] replace failed for bbcs_2fa_roles: ' . $wpdb->last_error );
+				}
 			}
 		}
 
@@ -195,6 +247,9 @@ class BotBlockerSettingsHooks {
 					$prepared_value  = wp_json_encode( $sanitized_array );
 				} else {
 					$prepared_value = sanitize_text_field( wp_unslash( $_POST[ $key ] ) );
+				}
+				if ( $key === 'file_cache_max_files' ) {
+					$prepared_value = (string) BotBlockerCache::sanitizeFileCap( is_array( $_POST[ $key ] ) ? null : $prepared_value );
 				}
 				// REVIEWER NOTE: Custom BotBlocker-Security table. Query is prepared, cached and sanitized. No direct unsanitized SQL is executed.
 	            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -231,6 +286,32 @@ class BotBlockerSettingsHooks {
 		exit;
 	}
 
+	public static function handleRemoveAutoEdge(): void {
+		if ( ! current_user_can( BotBlockerMultisite::canManage() ) ) {
+			wp_die( esc_html__( 'Insufficient permissions.', 'botblocker-security' ) );
+		}
+		check_admin_referer( 'bbcs_remove_auto_edge', 'bbcs_auto_edge_nonce' );
+
+		$mask = isset( $_POST['mask'] ) ? sanitize_text_field( wp_unslash( $_POST['mask'] ) ) : '';
+		if ( $mask !== '' && class_exists( 'BotBlockerEdgeStats' ) && BotBlockerEdgeStats::removeAutoEdge( $mask ) ) {
+			if ( class_exists( 'BotBlockerAuditLogger' ) && class_exists( 'BotBlockerAuditEvents' ) ) {
+				BotBlockerAuditLogger::record(
+					BotBlockerAuditEvents::EDGE_TRUST_REMOVED,
+					array(
+						'object_type' => 'edge',
+						'data'        => array( 'mask' => $mask ),
+					)
+				);
+			}
+			if ( class_exists( 'BBCS_Toastify' ) ) {
+				BBCS_Toastify::flash( __( 'Auto-trusted edge removed.', 'botblocker-security' ), BBCS_Toastify::TYPE_SUCCESS, BBCS_Toastify::PAGE_RULES );
+			}
+		}
+
+		wp_safe_redirect( BotBlockerMultisite::getAdminPageUrl( 'bbcs_rules' ) . '#bbcs_proxy_list' );
+		exit;
+	}
+
 	public static function handleSettingsSave(): void {
 		if ( ! current_user_can( BotBlockerMultisite::canManage() ) ) {
 			wp_die( esc_html__( 'Insufficient permissions.', 'botblocker-security' ) );
@@ -238,6 +319,16 @@ class BotBlockerSettingsHooks {
 		check_admin_referer( 'save_botblocker_settings', 'botblocker_settings_nonce' );
 
 		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name is the plugin's own registry table
+		$current_settings = $wpdb->get_results( "SELECT `key`, `value` FROM `{$wpdb->bbcs_settings}`", ARRAY_A );
+		$current_settings = is_array( $current_settings ) ? $current_settings : array();
+		$current_map      = array();
+		foreach ( $current_settings as $current_row ) {
+			if ( isset( $current_row['key'] ) ) {
+				$current_map[ (string) $current_row['key'] ] = (string) ( $current_row['value'] ?? '' );
+			}
+		}
 
 		$checkbox_fields = array(
 			'block_empty_ua',
@@ -301,22 +392,33 @@ class BotBlockerSettingsHooks {
 			'payment_keep_ip_rules',
 			// 'session_token_enabled',
 			'bbcs_ddos_resilience',
+			'bbcs_edge_autotrust',
 			'bbcs_honeypot_enabled',
 			'tls_fingerprint_check',
 			'bbcs_rate_check_enabled',
 			'bbcs_rate_subnet_enabled',
+			'bbcs_hide_user_enumeration',
+			'bbcs_strip_php_version',
 			'fingerprint_sticky_block',
 			'options_preflight',
 		);
 
-		if ( ! isset( $_POST['x_robots_directives'] ) ) {
+		if ( ! isset( $_POST['x_robots_directives'] ) && ! empty( $_POST['bbcs_full_settings_form'] ) ) {
 			$_POST['x_robots_directives'] = array();
 		}
 
-		$old_block_rkn = (string) ( BotBlocker::getInstance()->settings->block_rkn ?? '0' );
+		$bbcs_settings_obj = BotBlocker::getInstance()->settings;
+		$old_block_rkn     = (string) ( $bbcs_settings_obj->block_rkn ?? '0' );
 
 		foreach ( $checkbox_fields as $field ) {
-			$value = ( isset( $_POST[ $field ] ) && $_POST[ $field ] !== '0' ) ? '1' : '0';
+			if ( array_key_exists( $field, $_POST ) ) {
+				$raw   = is_array( $_POST[ $field ] ) ? '' : sanitize_text_field( wp_unslash( (string) $_POST[ $field ] ) );
+				$value = ( $raw !== '' && $raw !== '0' ) ? '1' : '0';
+			} elseif ( isset( $current_map[ $field ] ) ) {
+				$value = $current_map[ $field ] !== '0' ? '1' : '0';
+			} else {
+				$value = isset( $bbcs_settings_obj->{$field} ) && (int) $bbcs_settings_obj->{$field} === 1 ? '1' : '0';
+			}
 			if ( $value === '1' && ! BotBlockerPro::allowsFeature( $field ) ) {
 				$value = '0';
 			}
@@ -520,6 +622,9 @@ class BotBlockerSettingsHooks {
 
 		BotBlockerFileRenderer::generateSettingsFile();
 		BotBlockerCache::resetHealthTransients();
+		if ( class_exists( 'BotBlockerSettingsPresets' ) ) {
+			BotBlockerSettingsPresets::clearEmergencyRevert();
+		}
 
 		// In-App Browser Mode options (D8: separate wp_options keys, not the settings table).
 		if ( class_exists( 'BotBlockerInApp' ) ) {
@@ -658,4 +763,5 @@ class BotBlockerSettingsHooks {
 
 add_action( 'admin_post_save_botblocker_integrations', array( 'BotBlockerSettingsHooks', 'handleIntegrationsSave' ) );
 add_action( 'admin_post_save_botblocker_settings', array( 'BotBlockerSettingsHooks', 'handleSettingsSave' ) );
+add_action( 'admin_post_bbcs_remove_auto_edge', array( 'BotBlockerSettingsHooks', 'handleRemoveAutoEdge' ) );
 add_action( 'bbcs_addon_toggled', array( 'BotBlockerSettingsHooks', 'handleAddonCaptchaFallback' ), 10, 2 );
